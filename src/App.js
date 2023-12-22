@@ -1,25 +1,71 @@
-import logo from './logo.svg';
-import './App.css';
+// Importing required dependencies and components
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {_base} from './settings/constants'
+import Sidebar from "./components/Common/Sidebar";
+import AuthIndex from "./screens/AuthIndex";
+import MainIndex from "./screens/MainIndex";
+import SignIn from "./components/Auth/SignIn";
+import LeftSide from "./components/Auth/LeftSide";
+import useOnlineStatus from "./components/Utilities/useOnlineStatus";
 
-function App() {
+// Main application component
+const App = () => {
+  // State to manage the token (password) using useState hook
+  const [token, setToken] = useState(sessionStorage.getItem("password"));
+  const onlineStatus = useOnlineStatus()
+  // useEffect hook to check token expiration on component mount
+  useEffect(() => {
+    // Function to check token expiration
+    const checkTokenExpiration = () => {
+      const tokenExpirationTime = localStorage.getItem("jwt_token_expiration");
+      const currentTime = new Date().getTime();
+
+      // Check if token expiration time exists and if it is in the past
+      if (tokenExpirationTime && Number(currentTime) > Number(tokenExpirationTime)) {
+        // Token has expired, log out the user and clear relevant data
+        localStorage.removeItem("jwt_token");
+        localStorage.removeItem("jwt_token_expiration");
+        sessionStorage.clear();
+        // Redirect user to the login page
+        window.location.href = `${process.env.PUBLIC_URL}/`;
+      }
+    };
+
+    // Set up an interval to periodically check token expiration
+    const interval = setInterval(checkTokenExpiration, 3600000); // Change the interval duration as needed (e.g., 10000 ms = 10 seconds)
+
+    // Clean up the interval when the component is unmounted
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div id="mytask-layout" className="theme-indigo">
+        {!token &&  (
+          <><AuthIndex/></>
+          )}
+        
+        {token && onlineStatus && 
+            
+          <><Sidebar/><MainIndex /></>
+        
+        }
+        {token && onlineStatus=== false && 
+        
+        
+        <h1 className="mt-4"> Looks like you're offline 🔴🔴🔴 Please check your internet connection </h1>
+      }
+      </div>
+
+      </>
+        
   );
-}
+};
 
 export default App;
+// updated by Rushikesh harkare 01/08/2023
+
+
