@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { _base } from '../../settings/constants';
 import ErrorLogService from "../../services/ErrorLogService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
@@ -15,7 +15,9 @@ import { RoleDropdown } from '../Masters/RoleMaster/RoleComponent';
 
 
 const ManageMenu = ({match}) => {
-    const roleId = match.params.id  
+    // const roleId = match.params.id  
+    const id =useParams()
+    const roleId =id
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
     const [accountFor, setAccountFor] = useState();
