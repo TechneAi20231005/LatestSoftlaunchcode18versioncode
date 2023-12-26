@@ -46,20 +46,6 @@ export default function CreateCustomer({ match }) {
     });
   };
 
-  // function isValidEmail(email) {
-  //     return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email);
-  // }
-
-  // const handleMobileValidation = (e) => {
-  //     const mobileNumber = e.target.value;
-  //     console.log(mobileNumber)
-  //     if (mobileNumber.charAt(0) == "9" || mobileNumber.charAt(0) == "8" || mobileNumber.charAt(0) == "7") {
-  //     } else {
-  //         alert("INVALID MOBILE NUMBER")
-
-  //     }
-  // }
-
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
@@ -93,10 +79,6 @@ export default function CreateCustomer({ match }) {
     var flag = 1;
     setNotify(null);
 
-    // if (!isValidEmail(formData.getAll('email_id'))) {
-    //     flag = 0;
-    //     setNotify({ type: 'danger', message: "Invalid Email...." });
-    // }
     var customerType = formData.getAll("customer_type_id");
     var selectEmail = formData.getAll("email_id");
     var selectCountry = formData.getAll("country_id");
@@ -144,12 +126,11 @@ export default function CreateCustomer({ match }) {
       return false;
     } else {
       if (flag === 1) {
-        await new CustomerService()
-          .postCustomer(formData)
+        await new CustomerService().postCustomer(formData)
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                history.push({
+                history({
                   pathname: `/${_base}/Customer`,
                   state: {
                     alert: { type: "success", message: res.data.message },
@@ -168,17 +149,36 @@ export default function CreateCustomer({ match }) {
               );
             }
           })
+
           .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setNotify({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "Customer",
-              "Create_Customer",
-              "INSERT",
-              errorObject.data.message
-            );
+            if (error.response) {
+              const { response } = error;
+              const { request, ...errorObject } = response;
+              setNotify({ type: "danger", message: "Request Error !!!" });
+              new ErrorLogService().sendErrorLog(
+                "Customer",
+                "Create_Customer",
+                "INSERT",
+                errorObject.data.message
+              );
+            } else {
+              // Handle non-HTTP errors
+              console.error("Non-HTTP error occurred:", error.message);
+              setNotify({ type: "danger", message: "Non-HTTP error occurred" });
+            }
           });
+          
+          // .catch((error) => {
+          //   const { response } = error;
+          //   const { request, ...errorObject } = response;
+          //   setNotify({ type: "danger", message: "Request Error !!!" });
+          //   new ErrorLogService().sendErrorLog(
+          //     "Customer",
+          //     "Create_Customer",
+          //     "INSERT",
+          //     errorObject.data.message
+          //   );
+          // });
       }
     }
   };

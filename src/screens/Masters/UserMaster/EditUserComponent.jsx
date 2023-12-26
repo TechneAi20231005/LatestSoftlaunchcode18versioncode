@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
@@ -28,7 +28,12 @@ function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
 
-  const userId = parseInt(match.params.id);
+  // const userId = parseInt(match.params.id);
+
+  const {id}=useParams()
+  const userId=parseInt(id)
+
+  
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
   const [country, setCountry] = useState(null);
@@ -293,7 +298,7 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history.push({
+              history({
                 pathname: `/${_base}/User`,
                 state: {
                   alert: { type: "success", message: res.data.message },
@@ -313,14 +318,21 @@ function EditUserComponent({ match }) {
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "User",
-            "Create_User",
-            "INSERT",
-            errorObject.data.message
-          );
+
+          if (error.response) {
+            const { request, ...errorObject } = error.response;
+            new ErrorLogService().sendErrorLog(
+              "User",
+              "Create_User",
+              "INSERT",
+              errorObject.data.message
+            );
+          } else {
+            console.error(error);
+          }
+          
+          
+          
         });
       // }
     }

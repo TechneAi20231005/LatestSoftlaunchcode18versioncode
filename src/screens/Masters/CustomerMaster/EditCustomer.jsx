@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ErrorLogService from "../../../services/ErrorLogService";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
@@ -19,7 +19,14 @@ function EditCustomer({ match }) {
   
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    const customerId = match.params.id;
+    // const customerId = match.params.id;
+    const  id = useParams()
+    const customerId = parseInt(id)
+    console.log(customerId);
+
+
+    
+
     const [data, setData] = useState(null);
     const [customerType, setCustomerType] = useState(null);
 

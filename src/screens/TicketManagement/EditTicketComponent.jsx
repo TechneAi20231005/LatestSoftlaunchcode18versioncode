@@ -38,23 +38,12 @@ import SubModuleService from "../../services/ProjectManagementService/SubModuleS
 import DesignationService from "../../services/MastersService/DesignationService";
 
 
-//TAGGING
-// import { Editor, EditorState } from "draft-js";
-// import Editor from "draft-js-plugins-editor";
 
-// import createMentionPlugin, { defaultSuggestionsFilter } from "draft-js-mention-plugin";
-
-// import "draft-js/dist/Draft.css";
-// import "draft-js-mention-plugin/lib/plugin.css";
-// import mentions from "./mentions";
-// import { convertToHTML } from "draft-convert";
 import StatusService from "../../services/MastersService/StatusService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
 
-// const mentionPlugin = createMentionPlugin();
-// const { MentionSuggestions } = mentionPlugin;
-// const plugins = [mentionPlugin];
+
 
 export default function EditTicketComponent({ match }) {
 
@@ -62,30 +51,15 @@ export default function EditTicketComponent({ match }) {
     const [notify, setNotify] = useState(null);
     const ticketId = match.params.id;
     const [dateValue, setDateValue] = useState(new Date())
-    // const [suggestions, setSuggestions] = useState(mentions);
-    // const [editorState, setEditorState] = useState(() =>
-    //     EditorState.createEmpty()
-    // );
+  
     const editor = useRef(null);
 
-    // const onSearchChange = ({ value }) => {
-    //     setSuggestions(defaultSuggestionsFilter(value, mentions));
-    // };
+    
 
     const [idCount, setIdCount] = useState([]);
 
-    // const onAddMention = (e) => {
-    //     setIdCount(idCount => [...idCount, e.id]);
-    // };
-
-    // const focusEditor = () => {
-    //     editor.current.focus();
-    // };
-    // const [commentData, setCommentData] = useState({
-    //     ticketId: ticketId,
-    //     userId: localStorage.getItem("id"),
-    //     comments: [],
-    // });
+  
+    
 
     const [convertedContent, setConvertedContent] = useState(null);
     const [allUsers, setAllUsers] = useState();
@@ -144,30 +118,13 @@ export default function EditTicketComponent({ match }) {
     const [selectedFile, setSelectedFile] = useState([])
     const fileInputRef = useRef(null);
 
-    // const handleTicketStatus = (e) => {
-
-    //     var status = e.target.value ? parseInt(e.target.value) : 0;
-    //     // data["status_id"] = status;
-    //     alert(status);
-    //     setData(prev => {
-    //         const newPrev = { ...prev }
-    //         newPrev["status_id"] = status
-    //         return newPrev
-    //     })
-
-    //     if (e.target.value == 3) {
-    //         setProceed(false);
-    //     }
-    // }
+  
+    
 
 
 
     const handleTicketStatus = (e) => {
-        // var status = e.value ? parseInt(e.value) : 0;
-        // // console.log("e.value",e.value)
-        // // data["status_id"] = status;
-        // // alert(status);
-
+       
         setData(prev => {
             const newPrev = { ...prev }
             newPrev["status_id"] = e.value
@@ -340,14 +297,7 @@ const [expectedTrue,setExpectedTrue] = useState()
         setShowLoaderModal(null);
         setShowLoaderModal(true);
 
-        // const allTempUser = mentions.map(d => d.name);
-        // var tempString = "";
-        // allTempUser.forEach((d) => {
-        //     tempString = tempString + d;
-        // })
-
-        // setAllUsers(allTempUser);
-        // setAllUsersString(tempString);
+    
         const inputRequired = 'id,employee_id,first_name,last_name,middle_name';
         await new UserService().getUserForMyTickets(inputRequired).then((res) => {
                         if (res.status == 200) {
@@ -540,40 +490,8 @@ const [expectedTrue,setExpectedTrue] = useState()
             }
         });
     }
-    // const handleComment = async (e) => {
-    //     e.preventDefault();
-
-    //     const convertContentToHTML = () => {
-    //         let currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
-    //         // console.log(commentData);
-    //         // var comment = currentContentAsHTML;
-    //         var ticket_id = ticketId;
-
-    //         var comment = currentContentAsHTML.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
-    //         var mentions_id = idCount.reduce((acc, curr) => `${acc}${curr},`, '');
-    //         if (comment != '') {
-    //             new MyTicketService().postComment({ ticket_id, comment, mentions_id }).then((res) => {
-
-    //                 if (res.status === 200) {
-    //                     loadComments();
-    //                     // setCommentData({
-    //                     // ...commentData,
-    //                     //     comments: [{
-    //                     //         cmt: comment,
-    //                     //         time: getDateTime(),
-    //                     //         user_id: localStorage.getItem("name"),
-    //                     //     },
-    //                     //     ...commentData.comments,
-    //                     //     ],
-    //                     //     });
-    //                     setEditorState(EditorState.createEmpty());
-    //                 }
-    //             });
-    //         }
-
-    //     };
-    //     convertContentToHTML();
-    // }
+   
+    
     const handleAttachment = (type, ticket_id, attachmentId = null) => {
         if (type === "GetAttachment") {
             getAttachment(ticket_id, 'TICKET').then(res => {
@@ -596,45 +514,7 @@ const [expectedTrue,setExpectedTrue] = useState()
         }
     }
 
-    // const handleChatForm = async (e) => {
-    //     e.preventDefault();
-
-    //     const convertContentToHTML = () => {
-    //         //console.log("Edi:"+editorState.getCurrentContent());
-    //         let currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
-    //         var comment = currentContentAsHTML;
-    //         //console.log("HTML :"+comment);
-
-    //         var ticket_id = ticketId;
-    //         // var comment1 = currentContentAsHTML.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace("\r\n", "<br />");
-    //         // console.log("com1 :"+comment1);
-    //         // var comment = comment1.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#x27;/g, "'")
-    //         // // var comment = currentContentAsHTML.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
-    //         // console.log("com2 :"+comment);
-
-    //         var mentions_id = idCount.reduce((acc, curr) => `${acc}${curr},`, '');
-    //         if (comment != '') {
-    //             new MyTicketService().postComment({ ticket_id, comment, mentions_id }).then((res) => {
-    //                 if (res.status === 200) {
-    //                     loadComments();
-    //                     // setCommentData({
-    //                     // ...commentData,
-    //                     //     comments: [{
-    //                     //         cmt: comment,
-    //                     //         time: getDateTime(),
-    //                     //         user_id: localStorage.getItem("name"),
-    //                     //     },
-    //                     //     ...commentData.comments,
-    //                     //     ],
-    //                     //     });
-    //                     setEditorState(EditorState.createEmpty());
-    //                 }
-    //             });
-    //         }
-
-    //     };
-    //     convertContentToHTML();
-    // }
+    
 
 
     const handleDateChange = (e) => {
@@ -748,10 +628,7 @@ const [expectedTrue,setExpectedTrue] = useState()
         })
     }
 
-    // const date = new Date();
-    // const futureDate = date.getDate();
-    // date.setDate(futureDate);
-    // const currentDate = date.toLocaleDateString('en-CA');
+    
 
 const option = [{
     value:"Priyanka Dupargude",

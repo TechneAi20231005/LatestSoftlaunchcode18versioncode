@@ -10,7 +10,7 @@ const root = document.getElementById('root');
 const renderApp = () => {
   createRoot(root).render(
     <BrowserRouter forceRefresh={true}>
-      <App />
+    <App />
     </BrowserRouter>
   );
 };

@@ -264,15 +264,19 @@ function UserComponent({ location }) {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+        if (error.response) {
+          const { request, ...errorObject } = error.response;
+          new ErrorLogService().sendErrorLog(
+            "Status",
+            "Get_Status",
+            "INSERT",
+            errorObject.data.message
+          );
+        } else {
+          console.error(error);
+        }
+        
+        });
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
