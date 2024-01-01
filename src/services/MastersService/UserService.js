@@ -32,6 +32,8 @@ export default class UserService {
     // const url = `${_URL}?input_required=${queryParams}`;
       
     return axios.get(_URL, config);
+
+    
   }
 
   // getUsers(id){
