@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import { Astrick } from "../../../components/Utilities/Style";
@@ -18,7 +18,8 @@ import { _attachmentUrl } from "../../../settings/constants";
 import { da } from "date-fns/locale";
 
 export default function ViewBillTransaction({ match }, props) {
-  const id = match.params.id;
+  // const id = match.params.id;
+  const {id} =useParams()
   var section = 0;
 
   const history = useNavigate();

@@ -55,7 +55,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   // Now you can access 'decryptedId' in your component
   // const id = match.params.id;
   var section = 0;
-  const id = match.params.id;
+const {id}=useParams()
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -64,11 +64,25 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [ip, setIp] = useState("");
   const [statusValue, setStatusValue] = useState("");
 
-  useEffect(async () => {
-    //passing getData method to the lifecycle method
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    setIp(res.data.ip);
+  useEffect(() => {
+    // Define an async function fetchData
+    const fetchData = async () => {
+      try {
+        // Asynchronously fetch data
+        const res = await axios.get("https://api.ipify.org/?format=json");
+        setIp(res.data.ip);
+      } catch (error) {
+        // Handle errors if needed
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    // Call the async function immediately
+    fetchData();
+  
+    // Dependency array remains empty if the effect doesn't depend on any props or state
   }, []);
+  
   const history = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -475,7 +489,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history.push({
+            history({
               pathname: `/${_base}/BillCheckingTransaction`,
               state: { alert: { type: "success", message: res.data.message } },
             });

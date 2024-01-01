@@ -11,12 +11,12 @@ import Alert from "../../../components/Common/Alert";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
 import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants"
+
 import BillCheckingService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
+import { useParams } from "react-router-dom";
 
 function AssignedPerson({match}) {
-const id = match.params.id
+const {id}=useParams()
     const [data, setData] = useState(null);
     const [notify, setNotify] = useState();
     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });

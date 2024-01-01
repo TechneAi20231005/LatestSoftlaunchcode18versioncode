@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { _base } from "../../settings/constants";
 
 import PageHeader from "../../components/Common/PageHeader";
-import ErrorLogService from "../../services/ErrorLogService";
+
 import TenantService from "../../services/MastersService/TenantService";
-import Alert from "../../components/Common/Alert";
+
 import { Astrick } from "../../components/Utilities/Style";
 import * as Validation from "../../components/Utilities/Validation";
 import Select from "react-select";
@@ -18,6 +18,10 @@ export default function EditTenant({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
+
+
+  const {id} = useParams()
+ const  tenanatId=id
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
     { label: "Public limited company", value: "Public limited company" },
@@ -93,7 +97,7 @@ export default function EditTenant({ match }) {
       }
     });
 
-    await new TenantService().getTenantById(match.params.id).then((res) => {
+    await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setData(res.data.data);
@@ -116,11 +120,11 @@ export default function EditTenant({ match }) {
     const formData = new FormData(e.target);
     setNotify(null);
     await new TenantService()
-      .updateTenant(match.params.id, formData)
+      .updateTenant(tenanatId, formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history.push({
+            history({
               pathname: `/${_base}/TenantMaster`,
               state: { alert: { type: "success", message: res.data.message } },
             });

@@ -1002,7 +1002,7 @@ function QueryTypeComponent() {
                       id="form_id"
                       name="form_id"
                       defaultValue={
-                        modal.modalData &&
+                        modal.modalData && dynamicFormDropdown &&
                         dynamicFormDropdown.filter(
                           (d) => d.value == modal.modalData.form_id
                         )

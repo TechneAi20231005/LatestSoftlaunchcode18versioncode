@@ -332,12 +332,12 @@ function CreateUserComponent({ match }) {
       pincodeValid == false
     ) {
       if (flag === 1) {
-await new UserService()
+       await new UserService()
           .postUser(form)
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                history.push({
+                history({
                   pathname: `/${_base}/User`,
                   state: {
                     alert: { type: "success", message: res.data.message },
@@ -357,15 +357,21 @@ await new UserService()
             }
           })
           .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog(
-              "User",
-              "Create_User",
-              "INSERT",
-              errorObject.data.message
-            );
+            if (error.response) {
+              const { request, ...errorObject } = error.response;
+              new ErrorLogService().sendErrorLog(
+                "User",
+                "Create_User",
+                "INSERT",
+                errorObject.data.message
+              );
+            } else if (error.request) {
+              console.error("Error response is undefined:", error.request);
+            } else {
+              console.error("Error:", error.message);
+            }
           });
+          
       }
     }
   };

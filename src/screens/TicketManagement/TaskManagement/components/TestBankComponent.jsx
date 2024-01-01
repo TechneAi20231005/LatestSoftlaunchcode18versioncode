@@ -14,7 +14,7 @@ import { Astrick } from "../../../../components/Utilities/Style";
 import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
 import ErrorLogService from "../../../../services/ErrorLogService";
 import Alert from "../../../../components/Common/Alert";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   getAttachment,
   deleteAttachment,
@@ -37,7 +37,10 @@ import ManageMenuService from "../../../../services/MenuManagementService/Manage
 const TestBankComponent = ({ match, props,  }) => {
   const history = useNavigate();
   const location = useLocation()
-  const ticketId = match.params.id;
+  // const ticketId = match.params.id;
+  const {id} =useParams()
+  const ticketId =id
+
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState();
 

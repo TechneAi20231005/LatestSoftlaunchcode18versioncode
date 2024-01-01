@@ -154,7 +154,8 @@ function CustomerComponent({ location }) {
       }
     })
       .catch((error) => {
-        const { response } = error;
+        if(error.message){
+          const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
           "Customer Master",
@@ -162,6 +163,11 @@ function CustomerComponent({ location }) {
           "INSERT",
           errorObject.data.message
         );
+
+        } else{
+          console.log(error)
+        }
+        
       });
 
     await new ManageMenuService().getRole(roleId).then((res) => {

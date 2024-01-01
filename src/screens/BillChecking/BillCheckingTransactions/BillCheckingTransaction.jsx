@@ -23,15 +23,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
-// import CryptoJS from "crypto-js";
-// const encryptParameter = (id) => {
-//   const secretKey = "rushikesh"; // Replace with a secure key
-//   const encryptedId = CryptoJS.AES.encrypt(
-//     id.toString(),
-//     secretKey
-//   ).toString();
-//   return encryptedId;
-// };
+
 
 function BillCheckingTransaction({ location }) {
   const [data, setData] = useState(null);

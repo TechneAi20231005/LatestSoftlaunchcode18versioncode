@@ -1,11 +1,10 @@
 {
   "name": "connectus3.0",
-  "homepage": "http://3.108.206.34/3_SoftLaunch/TechTicket/",
+  "homepage": "http://3.108.206.34/2_Testing/TechTicket/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@draft-js-plugins/editor": "^4.1.4",
-    "@draft-js-plugins/mention": "^5.2.2",
+  
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

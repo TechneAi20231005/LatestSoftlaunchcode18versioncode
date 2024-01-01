@@ -3560,7 +3560,7 @@
 // }
 
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -3584,7 +3584,8 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import axios from "axios";
 
 export default function CreateBillCheckingTransaction({ match }) {
-  const id = match.params.id;
+  // const id = match.params.id;
+  const {id} =useParams()
 
   const [ip, setIp] = useState("");
 
@@ -4693,8 +4694,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         //   authority.Audit_Remark == true
                         //     ? new Date().getFullYear() - 1 + "-04-01"
                         //     : new Date().getFullYear() + "-04-01"
-                        // }
-                        min={new Date().getFullYear() + "-04-01"}
+                        // // }
+                        // min={new Date().getFullYear() + "-04-01"}
                         max={formattedDate}
                         required
                         // max={new Date().toISOString().split("T")[0]}

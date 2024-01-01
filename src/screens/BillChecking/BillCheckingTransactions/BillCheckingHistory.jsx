@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import MyTicketService from "../../../services/TicketService/MyTicketService";
 import PageHeader from "../../../components/Common/PageHeader";
 import DataTable from "react-data-table-component";
@@ -7,7 +8,7 @@ import BillCheckingService from "../../../services/Bill Checking/Bill Checking T
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 const BillCheckingHistory = ({ match }) => {
-  const id = match.params.id;
+  const { id } = useParams();
 
   const [data, setData] = useState();
 
