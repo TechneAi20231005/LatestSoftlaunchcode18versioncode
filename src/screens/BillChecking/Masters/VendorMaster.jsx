@@ -529,6 +529,8 @@ function VendorMaster({ match }) {
     if (!id) {
       if (
         considerInRef &&
+        considerInRef.current &&
+        considerInRef.current.commonProps &&
         considerInRef.current.commonProps.hasValue == false &&
         considerInPayment === false
       ) {
@@ -616,6 +618,7 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag === 1) {
+        setNotify(null)
         await new VendorMasterService()
           .updateVendor(id, form)
           .then((res) => {

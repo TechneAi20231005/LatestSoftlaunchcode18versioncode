@@ -24,7 +24,7 @@ export default function CreateModuleComponent({match}) {
         await new ModuleService().postModule(formData).then(res =>{
             if(res.status===200){
                 if(res.data.status===1){
-                    history.push({
+                    history({
                         pathname:`/${_base}/Module`,
                         state: {alert : {type: 'success', message:res.data.message} }
                     });
@@ -36,11 +36,18 @@ export default function CreateModuleComponent({match}) {
                 new ErrorLogService().sendErrorLog("Module","Create_Module","INSERT",res.message);
             }
         }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response; 
-            setNotify({type: 'danger', message:errorObject.data.message});
-            new ErrorLogService().sendErrorLog("Module","Create_Module","INSERT",errorObject.data.message);
-        }); 
+            if (error.response) {
+              const { response } = error;
+              const { request, ...errorObject } = response || {};
+              setNotify({ type: 'danger', message: errorObject.data.message });
+              new ErrorLogService().sendErrorLog("Module", "Create_Module", "INSERT", errorObject.data.message);
+            } else {
+              console.error("Error object does not contain expected 'response' property:", error);
+              // Handle cases where 'response' is not available
+              // You may want to log or handle this case accordingly
+            }
+          });
+          
     }
 
 const loadData=async()=>{

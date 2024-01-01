@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react'
 import PageHeader from "../../../components/Common/PageHeader";
 import { _base } from "../../../settings/constants";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
 import VendorMasterService from '../../../services/Bill Checking/Masters/VendorMasterService';
 
@@ -9,21 +9,23 @@ import VendorMasterService from '../../../services/Bill Checking/Masters/VendorM
 
 
 
-const ViewPaymentTemplateDetails = ({match}) => {
-   const templateId= parseInt(match.params.id)
-    const [data, setData] = useState(null);
+  const ViewPaymentTemplateDetails = ({match}) => {
+    // const templateId= parseInt(match.params.id)
+    const {id}=useParams()
+    const templateId =id
+      const [data, setData] = useState(null);
 
 
-    
-    const loadData = async () => {
-        await new PaymentTemplateService().getPaymentTemplateById(templateId).then(res => {
-            if (res.status === 200) {
-                const temp = res.data.data
-                setData(temp);
-            }
-        })
+      
+      const loadData = async () => {
+          await new PaymentTemplateService().getPaymentTemplateById(templateId).then(res => {
+              if (res.status === 200) {
+                  const temp = res.data.data
+                  setData(temp);
+              }
+          })
 
-       
+        
 
 
 

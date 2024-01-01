@@ -92,7 +92,7 @@ export default function CreateTenant({match}) {
     await new TenantService().postTenant(formData).then(res => {
         if (res.status === 200) {
             if (res.data.status === 1) {
-                history.push({
+                history({
                     pathname: `/${_base}/TenantMaster`,
                     state: { alert: { type: 'success', message: res.data.message } }
                 });

@@ -5,7 +5,7 @@ import { ToastContainer, toast, collapseToast } from 'react-toastify';
 function Alert(props) {
 
   const [show, setShow] = useState(true)
-  const [color, setColor] = useState("#f1f4f8");
+  const [color, setColor] = useState("#42ba96");
   const notify = () => toast(props.alertData.message);
 
   useEffect(() => {

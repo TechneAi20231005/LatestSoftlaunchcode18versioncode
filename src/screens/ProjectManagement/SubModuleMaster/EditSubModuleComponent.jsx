@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
 import ProjectService from "../../../services/ProjectManagementService/ProjectService"
 import ModuleService from "../../../services/ProjectManagementService/ModuleService"
@@ -8,8 +8,6 @@ import { _base } from '../../../settings/constants';
 import ErrorLogService from "../../../services/ErrorLogService";
 import Alert from "../../../components/Common/Alert";
 import PageHeader from "../../../components/Common/PageHeader";
-import { ProjectDropdown } from "../ProjectMaster/ProjectComponent"
-import { ModuleDropdown } from "../ModuleMaster/ModuleComponent"
 import { Astrick } from "../../../components/Utilities/Style";
 import *  as Validation from '../../../components/Utilities/Validation';
 import Select from 'react-select';
@@ -17,7 +15,12 @@ import Select from 'react-select';
 export default function EditModuleComponent({ match }) {
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    const subModuleId = match.params.id;
+    // const subModuleId = match.params.id;
+    const {id} =useParams()
+    const subModuleId =id
+
+
+
     const [data, setData] = useState(null);
 
     const [project, setProject] = useState(null)
@@ -94,7 +97,7 @@ export default function EditModuleComponent({ match }) {
         await new SubModuleService().updateSubModule(subModuleId, formData).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
-                    history.push({
+                    history({
                         pathname: `/${_base}/SubModule`,
                         state: { alert: { type: 'success', message: res.data.message } }
                     });
@@ -115,6 +118,10 @@ export default function EditModuleComponent({ match }) {
 
     useState(() => {
         loadData();
+
+        return () => {
+            console.log("");
+        }
     }, [])
 
     useEffect(()=>{
@@ -141,7 +148,7 @@ export default function EditModuleComponent({ match }) {
                                             <b>Select Project : <Astrick color="red" size="13px" /></b>
                                         </label>
                                         <div className="col-sm-4">
-                                            {Projectdropdown &&
+                                            {Projectdropdown && Projectdropdown&&
                                             <Select
                                                 options={Projectdropdown}
                                                 id="project_id"

@@ -1,156 +1,183 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import ProjectService from '../../../services/ProjectManagementService/ProjectService'
-import CustomerService from '../../../services/MastersService/CustomerService'
-import { _base } from '../../../settings/constants'
-import ErrorLogService from '../../../services/ErrorLogService'
-import Alert from '../../../components/Common/Alert'
-import PageHeader from '../../../components/Common/PageHeader'
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import ProjectService from "../../../services/ProjectManagementService/ProjectService";
+import CustomerService from "../../../services/MastersService/CustomerService";
+import { _base } from "../../../settings/constants";
+import ErrorLogService from "../../../services/ErrorLogService";
+import Alert from "../../../components/Common/Alert";
+import PageHeader from "../../../components/Common/PageHeader";
 
-import { Astrick } from '../../../components/Utilities/Style'
-import * as Validation from '../../../components/Utilities/Validation'
-import Select from 'react-select';
+import { Astrick } from "../../../components/Utilities/Style";
+import * as Validation from "../../../components/Utilities/Validation";
+import Select from "react-select";
 
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
-import UserService from '../../../services/MastersService/UserService'
+import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import UserService from "../../../services/MastersService/UserService";
 
 export default function EditProjectComponent({ match }) {
-  const history = useNavigate()
-  const [notify, setNotify] = useState(null)
-  const projectId = match.params.id
-  const [data, setData] = useState(null)
-  const [customer, setCustomer] = useState(null)
-  const [ba, setBa] = useState(null)
+  const history = useNavigate();
+  const [notify, setNotify] = useState(null);
+  // const projectId = match.params.id
+  const {id} = useParams();
+  const projectId = id
 
+  console.log(projectId);
+  const [data, setData] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const [ba, setBa] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
-  const [users, setUsers]= useState(null)
-  const [projectOwners, setProjectOwners]= useState(null)
-
+  const roleId = sessionStorage.getItem("role_id");
+  const [checkRole, setCheckRole] = useState(null);
+  const [users, setUsers] = useState(null);
+  const [projectOwners, setProjectOwners] = useState(null);
 
   const loadData = async () => {
- 
     await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-        
-          setCustomer(res.data.data.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.name })))
+          setCustomer(
+            res.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.name }))
+          );
         }
       }
-    })
+    });
 
-
-    
-
-
-    await new UserService().getUser().then((res)=>{
-      if(res.status === 200){
-        if(res.data.status ==1){
-          const user= res.data.data.filter(d=> d.is_active ==1)
-          const reviewers= res.data.data.filter(d=> d.is_active ==1 && d.account_for == "SELF")
+    await new UserService().getUser().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const user = res.data.data.filter((d) => d.is_active == 1);
+          const reviewers = res.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for == "SELF"
+          );
 
           user.sort((a, b) => {
             if (a.first_name && b.first_name) {
               return a.first_name.localeCompare(b.first_name);
             }
             return 0;
-          });  
-          setUsers(user.map(d=> ({value: d.id, label: d.first_name + " " + d.last_name + " "+ "("+d.id+")"})))
-          setBa(reviewers.map(d=> ({value: d.id, label: d.first_name + " " + d.last_name + " "+ "("+d.id+")"})))
-
+          });
+          setUsers(
+            user.map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+            }))
+          );
+          setBa(
+            reviewers.map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+            }))
+          );
         }
       }
-    })
-    await new ProjectService().getProjectById(projectId).then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data
-        const a = res.data.data.projectOwners.map(d=> ({value:d.user_id, label:d.employee_name}))
-        setProjectOwners(a)
-        if (data) {
-          setData(null)
-          setData(data)
-
-       
+    });
+    await new ProjectService()
+      .getProjectById(projectId)
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          if(data && data.projectOwners){
+          const a = res.data.data.projectOwners.map((d) => ({
+            value: d.user_id,
+            label: d.employee_name,
+          }));
+          setProjectOwners(a);
+          if (data) {
+            setData(null);
+            setData(data);
+          }
         }
       }
-    })
-      .catch((error) => {
-        const { response } = error
-        const { request, ...errorObject } = response
-        new ErrorLogService().sendErrorLog(
-          'Customer',
-          'Get_Customer',
-          'INSERT',
-          errorObject.data.message,
-        )
       })
+      .catch((error) => {
+        if (error.response) {
+          const { response } = error;
+          const { request, ...errorObject } = response;
+      
+          // Continue handling the error as needed
+          setNotify({ type: 'danger', message: errorObject.data.message });
+          new ErrorLogService().sendErrorLog(
+            'Project',
+            'Edit_Project',
+            'INSERT',
+            errorObject.data.message
+          );
+        } else {
+          console.error("Error object does not contain expected 'response' property:", error);
+      
+          // Handle cases where 'response' is not available
+          // You may want to log or handle this case accordingly
+        }
+      });
+      
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
         }
       }
-    })
-  }
+    });
+  };
 
   const handleForm = async (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
+    e.preventDefault();
+    const formData = new FormData(e.target);
 
-    await new ProjectService().updateProject(projectId, formData).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          history.push({
-            pathname: `/${_base}/Project`,
-            state: { alert: { type: 'success', message: res.data.message } },
-          })
+    await new ProjectService()
+      .updateProject(projectId, formData)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            history({
+              pathname: `/${_base}/Project`,
+              state: { alert: { type: "success", message: res.data.message } },
+            });
+          } else {
+            setNotify({ type: "danger", message: res.data.message });
+          }
         } else {
-          setNotify({ type: 'danger', message: res.data.message })
+          setNotify({ type: "danger", message: res.message });
+          new ErrorLogService().sendErrorLog(
+            "Project",
+            "Edit_Project",
+            "INSERT",
+            res.message
+          );
         }
-      } else {
-        setNotify({ type: 'danger', message: res.message })
-        new ErrorLogService().sendErrorLog(
-          'Project',
-          'Edit_Project',
-          'INSERT',
-          res.message,
-        )
-      }
-    })
-      .catch((error) => {
-        const { response } = error
-        const { request, ...errorObject } = response
-        setNotify({ type: 'danger', message: errorObject.data.message })
-        new ErrorLogService().sendErrorLog(
-          'Project',
-          'Edit_Project',
-          'INSERT',
-          errorObject.data.message,
-        )
       })
-  }
+      .catch((error) => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        setNotify({ type: "danger", message: errorObject.data.message });
+        new ErrorLogService().sendErrorLog(
+          "Project",
+          "Edit_Project",
+          "INSERT",
+          errorObject.data.message
+        );
+      });
+  };
 
- const handleShowLogo = (e) =>{
-  var URL= "http://3.108.206.34/2_Testing/TSNewBackend/storage/app/Attachment/project/" + data.logo
-  window.open(
-        URL, '_blank'
-    )
-    
- }
+  const handleShowLogo = (e) => {
+    var URL =
+      "http://3.108.206.34/2_Testing/TSNewBackend/storage/app/Attachment/project/" +
+      data.logo;
+    window.open(URL, "_blank");
+  };
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
-  useEffect(()=>{
-    if(checkRole && checkRole[19].can_update === 0){
-    
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+  useEffect(() => {
+    if (checkRole && checkRole[19].can_update === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -170,19 +197,24 @@ export default function EditProjectComponent({ match }) {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                  
                       <Select
                         id="customer_id"
                         name="customer_id"
                         required={true}
                         options={customer}
-                        defaultValue={data ? customer.filter(d => d.value == data.customer_id) : ''}
+                        defaultValue={
+                          data
+                            ? customer.filter(
+                                (d) => d.value == data.customer_id
+                              )
+                            : ""
+                        }
                       />
                     </div>
 
                     <label
                       className="col-sm-2 col-form-label"
-                      style={{ textAlign: 'right' }}
+                      style={{ textAlign: "right" }}
                     >
                       <b>
                         Project Name : <Astrick color="red" size="13px" />
@@ -197,7 +229,7 @@ export default function EditProjectComponent({ match }) {
                         defaultValue={data ? data.project_name : null}
                         required={true}
                         onKeyPress={(e) => {
-                          Validation.addressFieldOnly(e)
+                          Validation.addressFieldOnly(e);
                         }}
                       />
                     </div>
@@ -209,52 +241,72 @@ export default function EditProjectComponent({ match }) {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      {users &&
-                      <Select
-                       options={users}
-                        id="project_owner"
-                        name="project_owner[]"
-                
-                        isMulti={true}
-                        required={true}
-                        defaultValue={data.projectOwners.map(d=>({value:d.user_id, label:d.employee_name }))}
-                      />
-                      }
+                      {users && (
+                        <Select
+                          options={users}
+                          id="project_owner"
+                          name="project_owner[]"
+                          isMulti={true}
+                          required={true}
+                          defaultValue={data.projectOwners.map((d) => ({
+                            value: d.user_id,
+                            label: d.employee_name,
+                          }))}
+                        />
+                      )}
                     </div>
-                    <label className="col-sm-2 col-form-label" style={{ textAlign: "right" }}>
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: "right" }}
+                    >
                       <b>Project Logo : </b>
                     </label>
                     <div className="col-sm-2">
-                      <input type="file" className="form-control form-control-sm"
-                        id="logo" name="logo" accept="image/*"
+                      <input
+                        type="file"
+                        className="form-control form-control-sm"
+                        id="logo"
+                        name="logo"
+                        accept="image/*"
                       />
-                      {data && data.logo!="" &&
-                      <i onClick={handleShowLogo} className="icofont-eye-alt" style={{position:"absolute", right:"5rem", top:"4.8rem", fontSize:"20px", cursor:"pointer"}}> 
-                      <span style={{fontStyle:"italic", color:"blue"}}>
-                        Click to view logo</span>
+                      {data && data.logo != "" && (
+                        <i
+                          onClick={handleShowLogo}
+                          className="icofont-eye-alt"
+                          style={{
+                            position: "absolute",
+                            right: "5rem",
+                            top: "4.8rem",
+                            fontSize: "20px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <span style={{ fontStyle: "italic", color: "blue" }}>
+                            Click to view logo
+                          </span>
                         </i>
-                        }
-
+                      )}
                     </div>
                   </div>
                   <div className="form-group row mt-2">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Reviewer: </b>
-                  </label>
-                  {ba &&
-                    <div className="col-sm-4">
-                      <Select 
-                      id="project_reviewer"
-                       name="project_reviewer[]"
-                        options={ba}
-                        isMulti={true}
-                        defaultValue={data.projectReviewer.map(d=>({value:d.user_id, label:d.employee_name }))}
-
-                      />
-                    </div>
-                  }
-                </div>
-                
+                    <label className="col-sm-2 col-form-label">
+                      <b>Reviewer: </b>
+                    </label>
+                    {ba && (
+                      <div className="col-sm-4">
+                        <Select
+                          id="project_reviewer"
+                          name="project_reviewer[]"
+                          options={ba}
+                          isMulti={true}
+                          defaultValue={data.projectReviewer.map((d) => ({
+                            value: d.user_id,
+                            label: d.employee_name,
+                          }))}
+                        />
+                      </div>
+                    )}
+                  </div>
 
                   <div className="form-group row mt-2">
                     <label htmlFor="" className="col-sm-2 col-form-label">
@@ -271,7 +323,7 @@ export default function EditProjectComponent({ match }) {
                         defaultValue={data ? data.description : null}
                         required={true}
                         onKeyPress={(e) => {
-                          Validation.addressFieldOnly(e)
+                          Validation.addressFieldOnly(e);
                         }}
                       />
                     </div>
@@ -371,16 +423,17 @@ export default function EditProjectComponent({ match }) {
                       </div>
                     </div>
                   </div>
-                </div>{' '}
-            
+                </div>{" "}
               </div>
-       
 
-              <div className="mt-3" style={{ textAlign: 'right' }}>
-                {checkRole && checkRole[19].can_update === 1 ?
+              <div className="mt-3" style={{ textAlign: "right" }}>
+                {checkRole && checkRole[19].can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
-                  </button> : ""}
+                  </button>
+                ) : (
+                  ""
+                )}
                 <Link
                   to={`/${_base}/Project`}
                   className="btn btn-sm btn-danger text-white"
@@ -393,5 +446,5 @@ export default function EditProjectComponent({ match }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

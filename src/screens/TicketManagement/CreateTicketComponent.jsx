@@ -1262,7 +1262,7 @@ export default function CreateTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history.push({
+            history({
               pathname: `/${_base}/Ticket`,
               state: { alert: { type: "success", message: res.data.message } },
             });
@@ -1291,7 +1291,7 @@ export default function CreateTicketComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
+        if(error.response){ const { response } = error;
         const { request, ...errorObject } = response;
         setNotify({ type: "danger", message: "Request Error !!!" });
         new ErrorLogService().sendErrorLog(
@@ -1299,7 +1299,10 @@ export default function CreateTicketComponent() {
           "Create_Ticket",
           "INSERT",
           errorObject.data.message
-        );
+        )}else{
+          console.log(error)
+        }
+       
       });
     }
     setIsSubmitted(false);
@@ -1308,17 +1311,22 @@ export default function CreateTicketComponent() {
   const queryTypeRef = useRef();
 
   const handleGetQueryTypeForm = async (e) => {
-    if (e.value) {
+    if (e &&e.value) {
       setRows(null);
       var data = customerMapping.filter((val) => val.query_type_id == e.value);
-      const cmId = data[0].id;
-      await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setExpectedSolveDate(res.data.data);
+      const cmId = data.length>0?data[0].id:null
+      if (cmId) {
+        await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              setExpectedSolveDate(res.data.data);
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.error("cmId is null. Cannot make API call.");
+      }
+  
       setRows(null);
       if (data && data.length == 0) {
         alert(
@@ -1600,7 +1608,7 @@ export default function CreateTicketComponent() {
 
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
-      var value = type == "Select2" ? e.value : e.target.value;
+      var value = type == "Select2" ? (e&&e.value) : e.target.value;
       if (nameField == "query_type_id") {
         const x = customerMapping.filter((d) => d.query_type_id == value);
         if (x.length > 0) {

@@ -277,6 +277,13 @@ export const validateTemplateName = (e, existingTemplates) => {
     return;
   }
 
+   // Check if existingTemplates is an array and not null or undefined
+   if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
+    // Handle the case where existingTemplates is not valid
+    console.error("Invalid or empty existingTemplates");
+    return;
+  }
+
   if (existingTemplates.includes(templateName)) {
     alert("Template name already exists");
     e.preventDefault();

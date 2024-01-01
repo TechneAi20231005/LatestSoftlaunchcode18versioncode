@@ -5,9 +5,11 @@ import DataTable from "react-data-table-component";
 import Select from "react-select";
 import PaymentDetailsService from "../../../services/Bill Checking/PaymentDetailsService";
 import { userSessionData } from "../../../settings/constants";
+import { useParams } from "react-router-dom";
 
 const PaymentHistory = ({ match }) => {
-  const id = match.params.id;
+  // const id = match.params.id;
+  const {id}= useParams()
 
   const [data, setData] = useState();
 

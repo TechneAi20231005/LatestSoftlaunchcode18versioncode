@@ -11,7 +11,7 @@ import Alert from "../../../components/Common/Alert";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
 import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { _base, userSessionData } from "../../../settings/constants";
 import BillCheckingService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import PaymentDetailsService from "../../../services/Bill Checking/PaymentDetailsService";
@@ -21,16 +21,30 @@ import BillCheckingTransactionService from "../../../services/Bill Checking/Bill
 import axios from "axios";
 
 function PaymentDetails({ location, match }) {
-  const id = match.params.id;
+
+  const {id}=useParams()
   const [ip, setIp] = useState('');
 
 
 
-  useEffect(async() => {
-    //passing getData method to the lifecycle method
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    setIp(res.data.ip);
-  }, []);
+  
+
+  useEffect(()=>{
+    const fetchData = async()=>{
+      try{
+        const res=await axios.get("https://api.ipify.org/?format=json");
+        setIp(res.data.ip)
+
+      }catch (error){
+        console.error("Error fetching IP:", error)
+
+      }
+
+    }
+    fetchData()
+
+
+  },[])
   const [data, setData] = useState(null);
   const [authorities, SetAuthorities] = useState();
   const [notify, setNotify] = useState();
