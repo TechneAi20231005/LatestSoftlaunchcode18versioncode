@@ -6,14 +6,16 @@ import { Astrick } from "../../../../components/Utilities/Style";
 import UserService from "../../../../services/MastersService/UserService";
 import * as Validation from "../../../../components/Utilities/Validation";
 import BillTypeMasterService from "../../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Alert from "../../../../components/Common/Alert";
 import { _base } from "../../../../settings/constants";
 import "./styles.css"; // Import your CSS file
 
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
-  const BillId = match.params.id;
+
+  const {id} =useParams()
+  const  BillId =id
   const [approverData, setApproverData] = useState({
     data: [
       {
@@ -623,7 +625,7 @@ const validateAmounts = (e, index) => {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history.push({
+          history({
             pathname: `/${_base}/billTypeMaster`,
             message: "once",
             state: { alert: { type: "success", message: res.data.message } },

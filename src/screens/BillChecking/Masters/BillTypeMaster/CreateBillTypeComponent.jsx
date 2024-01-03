@@ -46,6 +46,8 @@ const CreateBillTypeComponent = () => {
   const inputRefs = useRef([]);
   const select1Refs = useRef([]);
   const assignedUserRef = useRef();
+const requiredUserRef = useRef();
+
 
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
@@ -449,6 +451,15 @@ const CreateBillTypeComponent = () => {
       alert("Please select at least one user in the 'Assigned To' field");
       return;
     }
+
+    if (
+      requiredUserRef &&
+      requiredUserRef.current.commonProps.hasValue == false
+    ) {
+      // Show an alert or error message
+      alert("Please select at least one user in the 'Required To' field");
+      return;
+    }
     // Check if any field is empty
     const isEmpty = approverData.data.some((section) => {
       return section.level.some((levelItem) => {
@@ -677,6 +688,7 @@ const CreateBillTypeComponent = () => {
                                   levelItem.required_users.includes(user.value)
                                 )
                               }
+ref={requiredUserRef}
                               options={getAvailableOptions(
                                 assignedUserData,
                                 index,
@@ -697,6 +709,7 @@ const CreateBillTypeComponent = () => {
                         <td>
                           <input
                             type="number"
+disabled ={levelItem.employee_id && levelItem.employee_id != null  ? false : true}
                             max={
                               approverData.data[index].level[rowIndex]
                                 .required_users?.length || ""

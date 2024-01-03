@@ -2,16 +2,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Dropdown, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
+
 import CountryService from "../../../services/MastersService/CountryService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
+
 import Alert from "../../../components/Common/Alert";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
 import { Link } from "react-router-dom";
 import { _base, userSessionData } from "../../../settings/constants";
 import BillCheckingService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
@@ -139,13 +137,15 @@ function BillCheckingTransaction({ location }) {
 
               {row &&
                 ((row.level == parseInt(row.total_level) &&
-                  row.is_assign_to == 1 && row.is_rejected == 0) ||
+                  row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
-                  row.is_rejected == 1 ||
-                  (authorities && authorities.All_Update_Bill === true) ||
+                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+                  (authorities && 
+                    authorities.All_Update_Bill === true && row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) &&(row.is_rejected == 0)&&
-                    (
+                    row.is_approver == 1)) && (
+
+             
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -157,8 +157,7 @@ function BillCheckingTransaction({ location }) {
                   </li>
                 )}
 
-              {/* {row && row.level == row.total_level && ( */}
-              {/* {row && JSON.stringify(row.is_assign_to)} */}
+            
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>
@@ -254,7 +253,30 @@ function BillCheckingTransaction({ location }) {
       name: "Actual Payment Date.",
       selector: (row) => row["Actual Payment Date"],
       sortable: true,
+    cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+          style={{width:"100%",}}
+        >
+          {row["Actual Payment Date"] && (
+            <OverlayTrigger overlay={<Tooltip>{row["Actual Payment Date"]} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row["Actual Payment Date"].substring(0,10)+"..."}
+                  
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
+
+
+
     {
       name: "Bill Amount",
       selector: (row) => row["Bill Amount"],
@@ -270,11 +292,7 @@ function BillCheckingTransaction({ location }) {
       selector: (row) => row["Bill Status"],
       sortable: true,
     },
-    // {
-    //   name: "Bill Type",
-    //   selector: (row) => row["Bill Type"],
-    //   sortable: true,
-    // },
+
     {
       name: "Bil Type",
       selector: (row) => row["Bill Type"],
@@ -300,11 +318,7 @@ function BillCheckingTransaction({ location }) {
         </div>
       ),
     },
-    // {
-    //   name: "Assign From",
-    //   selector: (row) => row["Assign From"],
-    //   sortable: true,
-    // },
+  
     {
       name: "Assign From",
       selector: (row) => row["Assign From"],
@@ -335,11 +349,7 @@ function BillCheckingTransaction({ location }) {
       selector: (row) => row["Assign To"],
       sortable: true,
     },
-    // {
-    //   name: "Levels Of Approval",
-    //   selector: (row) => row["Levels of approval"],
-    //   sortable: true,
-    // },
+   
 
     {
       name: "Levels Of Approval",
@@ -393,18 +403,7 @@ function BillCheckingTransaction({ location }) {
       ),
     },
 
-    // {
-    //   name: "Approved By",
-    //   selector: (row) => row["Approve By"],
-    //   sortable: true,
-    // },
-
-    // {
-    //   name: "Pending From",
-    //   selector: (row) => row["Pending From"],
-    //   sortable: true,
-    // },
-
+ 
     {
       name: "Pending From",
       selector: (row) => row["Pending From"],
@@ -435,12 +434,7 @@ function BillCheckingTransaction({ location }) {
       name: "Rejected By",
       selector: (row) => row["Rejected By"],
       sortable: true,
-      // cell: (row) => (
-      //   <div>
-      //     {row.is_active === 1 && <span className="badge bg-primary">NO</span>}
-      //     {row.is_active === 0 && <span className="badge bg-danger">YES</span>}
-      //   </div>
-      // ),
+     
     },
 
     {
@@ -460,11 +454,7 @@ function BillCheckingTransaction({ location }) {
       sortable: true,
     },
 
-    // {
-    //   name: "Internal Audit",
-    //   selector: (row) => row["Internal Audit"],
-    //   sortable: true,
-    // },
+   
 
     {
       name: "Internal Audit",
@@ -492,11 +482,7 @@ function BillCheckingTransaction({ location }) {
       ),
     },
 
-    // {
-    //   name: "External Audit",
-    //   selector: (row) => row["External Audit"],
-    //   sortable: true,
-    // },
+    
 
     {
       name: "External Audit",
@@ -549,7 +535,6 @@ function BillCheckingTransaction({ location }) {
 
       selector: (row) => row["Is Canceled"],
 
-      // selector: (row) => (row["Is Canceled"] != null ? row["Is Canceled"] : 0),
 
       sortable: true,
 
@@ -578,22 +563,7 @@ function BillCheckingTransaction({ location }) {
       ),
     },
 
-    // {
-    //   name: "Levels of Approver",
-    //   selector: (row) => row.total_level,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Last Approver",
-    //   selector: (row) => row.last_approved_by,
-    //   sortable: true,
-    // },
-
-    // {
-    //   name: "Created At",
-    //   selector: (row) => row["Created at"],
-    //   sortable: true,
-    // },
+    
 
     {
       name: "Created At",
@@ -621,11 +591,7 @@ function BillCheckingTransaction({ location }) {
       ),
     },
 
-    // {
-    //   name: "Created by",
-    //   selector: (row) => row["Created by"],
-    //   sortable: true,
-    // },
+ 
 
     {
       name: "Created By",
@@ -652,11 +618,7 @@ function BillCheckingTransaction({ location }) {
         </div>
       ),
     },
-    // {
-    //   name: "Updated At",
-    //   selector: (row) => row["Updated At"],
-    //   sortable: true,
-    // },
+    
 
     {
       name: "Updated At",
@@ -707,11 +669,7 @@ function BillCheckingTransaction({ location }) {
         </div>
       ),
     },
-    // {
-    //   name: "Updated By",
-    //   selector: (row) => row["Updated By"],
-    //   sortable: true,
-    // },
+   
   ];
 
   const handleCancelBill = async (e, id) => {
@@ -767,7 +725,7 @@ function BillCheckingTransaction({ location }) {
 
             "Payment Date": temp[key].payment_date,
             "Bill No": temp[key].vendor_bill_no,
-            "Actual Payment Date": temp[key].payment_date,
+            "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
             "Net Amount": temp[key].net_payment,
             is_active: temp[key].is_active,
@@ -805,9 +763,9 @@ function BillCheckingTransaction({ location }) {
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
             is_rejected: temp[key].is_rejected,
+"Is cancelled": temp[key].cancelled,
 
-            // levels_1_approvals: temp[key].levels_1_approvals,
-            // levels_2_approvals: temp[key].levels_2_approvals,
+          
           });
         }
         for (const key in temp) {
@@ -818,12 +776,12 @@ function BillCheckingTransaction({ location }) {
             "Vendor Name": temp[key].vendor_id_name,
             "Payment Date": temp[key].payment_date,
             "Bill No": temp[key].vendor_bill_no,
-            "Actual Payment Date": temp[key].payment_date,
+            "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
             "Net Amount": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
             "Is TCS applicable": temp[key].is_tcs_applicable,
-            // "Bill Type": temp[key].bill_type_name,
+       
             bill_type_name: temp[key].bill_type_name,
 
             "Taxable Amount": temp[key].taxable_amount,
@@ -845,7 +803,7 @@ function BillCheckingTransaction({ location }) {
 
             "Assign From": temp[key].created_by,
             "Assign To": temp[key].assign_to_name,
-            is_assign_to: temp[key].is_assign_to,
+            is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
             approvedBy: temp[key].approvedBy,
             "Is Original Bill": temp[key].is_original_bill_needed,
@@ -855,7 +813,7 @@ function BillCheckingTransaction({ location }) {
             "External Audit": temp[key].external_audit_remark,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
-            // "Is cancelled": temp[key].cancelled,
+            "Is cancelled": temp[key].cancelled,
 
             "Created at": temp[key].created_at,
             "Created by": temp[key].created_by,
@@ -1037,11 +995,13 @@ function BillCheckingTransaction({ location }) {
               // "Bill Status": temp[key].bill_status,
               "Bill Status": temp[key].payment_status,
 
-              "Bill Type": temp[key].bill_type_name,
+              bill_type_name: temp[key].bill_type_name,
               "Assign From": temp[key].created_by,
-              "Assign To": temp[key].is_assign_to,
+              "Assign To": temp[key].assign_to_name,
               "Levels of approval": temp[key].levels_of_approval,
               approvedBy: temp[key].approvedBy,
+"Pending From": temp[key].level_approver,
+              rejectedBy:temp[key].rejectedBy,
 
               // "Approve By": temp[key].approved_by,
 
@@ -1050,9 +1010,9 @@ function BillCheckingTransaction({ location }) {
               "Taxable Amount": temp[key].taxable_amount,
               "Debit Advance": temp[key].debit_advance,
               // "is original Bill": temp[key].is_original_bill_needed,
-              "Is Original Bill": temp[key].is_original_bill_needed,
+              "Is Original Bill": temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
-              is_original_bill_needed: temp[key].is_original_bill_needed,
+              // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
               audit_remark: temp[key].audit_remark,
               external_audit_remark: temp[key].external_audit_remark,
               "Bill date": temp[key].bill_date,
@@ -1060,7 +1020,7 @@ function BillCheckingTransaction({ location }) {
               "Hold Amount": temp[key].hold_amount,
               "Paid Amount": temp[key].actual_paid,
               "Is cancelled": temp[key].cancelled,
-              // "Is TCS applicable": temp[key].is_tcs_applicable,
+              "Is TCS applicable": temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
 
@@ -1379,6 +1339,7 @@ function BillCheckingTransaction({ location }) {
                       className="form-control"
                       name="to_received_date"
                       id="to_received_date"
+min={receivedate}
                       required={isReceivedDate}
                     />
                   </div>

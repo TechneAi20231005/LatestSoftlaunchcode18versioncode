@@ -390,13 +390,16 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.city,
+          res.data.data.filter((d)=>d.is_active == 1).map((i) => ({
+            value: i.id,
+            label: i.city,
           }))
         );
+
+          
       }
     });
+
 
     await new VendorMasterService().getActivePaymentTemplate().then((res) => {
       if (res.status === 200) {
@@ -487,10 +490,10 @@ function VendorMaster({ match }) {
       alert("Invalid GST Number ");
       return;
     }
-    if (inputState.MSMENumberErr) {
-      alert("Invalid MSME Number ");
-      return;
-    }
+    // if (inputState.MSMENumberErr) {
+      //   alert("Invalid MSME Number ");
+      //   return;
+    // }
     if (inputState.BankNameErr) {
       alert("Invalid Bank Name ");
       return;
@@ -531,7 +534,7 @@ function VendorMaster({ match }) {
         considerInRef &&
         considerInRef.current &&
         considerInRef.current.commonProps &&
-        considerInRef.current.commonProps.hasValue == false &&
+        considerInRef.current.commonProps.hasValue === false &&
         considerInPayment === false
       ) {
         alert("please select the template");
@@ -1129,7 +1132,7 @@ function VendorMaster({ match }) {
     await new VendorMasterService().downloadBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
           window.open(URL, "_blank").focus();
         }
       }
@@ -1147,7 +1150,7 @@ function VendorMaster({ match }) {
           loadData();
         } else {
           setError({ type: "danger", message: res.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
           window.open(URL, "_blank").focus();
         }
       }
@@ -1294,7 +1297,7 @@ function VendorMaster({ match }) {
                       id="vendor_name"
                       name="vendor_name"
                       maxLength={50}
-                      minLength={5}
+                      minLength={3}
                       onKeyUp={(e) => {
                         handleErp(e);
                       }}
@@ -2268,7 +2271,8 @@ function VendorMaster({ match }) {
                             ...state,
                             MSMENumberErr: "",
                           });
-                        } else if (msmeNo.length < 19) {
+                        } else 
+if (msmeNo.length < 19) {
                           setInputState({
                             ...state,
                             MSMENumberErr: "Invalid MSME No.",
@@ -2558,6 +2562,9 @@ function VendorMaster({ match }) {
                         id="bank_name"
                         name="bank_name"
                         maxLength={50}
+onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
                         readOnly={
                           authorities &&
                           authorities.Edit_Vendor_Master_Bank_Details === false
@@ -2600,9 +2607,9 @@ function VendorMaster({ match }) {
                         id="bank_name"
                         name="bank_name"
                         maxLength={50}
-                        // onKeyPress={(e) => {
-                        //   Validation.CharactersNumbersSpeicalOnly(e);
-                        // }}
+                        onKeyPress={(e) => {
+                        Validation.CharacterWithSpace(e);
+                        }}
                         required={true}
                         onChange={(event) => {
                           const value = event.target.value;
@@ -2647,6 +2654,9 @@ function VendorMaster({ match }) {
                         id="bank_branch_name"
                         name="bank_branch_name"
                         maxLength={25}
+onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
                         readOnly={
                           authorities &&
                           authorities.Edit_Vendor_Master_Bank_Details === false
@@ -2700,6 +2710,9 @@ function VendorMaster({ match }) {
                         // onKeyPress={(e) => {
                         //   Validation.CharactersNumbersSpeicalOnly(e);
                         // }}
+onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
                         onChange={(event) => {
                           const value = event.target.value;
                           if (value === "") {

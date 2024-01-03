@@ -1,28 +1,37 @@
 import React, { useState, useEffect, useRef } from "react";
 // import { ProgressBar } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
+import { saveAs } from 'file-saver';
+import { Link, useHistory, useParams } from "react-router-dom";
+// import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
+import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService"
+
+import GeneralSettingService from "../../services/ProjectManagementService/GeneralSettingService";
 import {
   _apiUrl,
   _attachmentUrl,
   _base,
-  attachmentUrl,
-} from "../../settings/constants";
+  } from "../../settings/constants";
+
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 import SubModuleService from "../../services/ProjectManagementService/SubModuleService";
+import ModuleService from "../../services/ProjectManagementService/ModuleService";
 import Alert from "../../components/Common/Alert";
 import { Modal, Button } from "react-bootstrap";
 import { Astrick } from "../../components/Utilities/Style";
-
 export default function ProjectwiseModule({ match }) {
-  const projectId = match.params.projectId;
-  const moduleId = match.params.moduleId;
+
+  const {projectId} =useParams()
+  const {moduleId}=useParams()
+
+  // const projectId = match.params.projectId;
+  // const moduleId = match.params.moduleId;
   const [data, setData] = useState(null);
   const [idd, setId] = useState(null);
-  const [submoduleData, setSubmoduleData] = useState(null);
+  const [submoduleData, setSubmoduleData] = useState([]);
   const [subModuleDropdown, setSubModuleDropdown] = useState(null);
-  const [show, setShow] = useState(false);
+const [moduleDropdown, setModuleDropdown] = useState(null);
+  const [show, setShow] = useState("");
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
   const [toggleList, setToggleList] = useState(false);
@@ -33,16 +42,31 @@ export default function ProjectwiseModule({ match }) {
   const [showbtn, setShowbtn] = useState(true);
   const [selectedRows, setSelectedRows] = useState();
   const [selectedData, setSelectedData] = useState();
+const [generalSetting, setGeneralSetting] = useState([])
+  const [checkSetting, setCheckSetting] = useState({
+    upload: false,
+    deleteRestore: false,
+    check: false
+  })
+  const [authorityData, setAuthorityData] = useState([]);
+  const [authorityCheck, setAuthorityCheck] = useState([])
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
     modalHeader: "",
   });
   const handleModal = (data) => {
+
     setModal(data);
   };
   const submoduleRef = useRef(null);
+const moduleRef = useRef(null);
+
+
   const loadData = async () => {
+const userId = sessionStorage.getItem("id");
+
     await new ConsolidatedService()
       .getProjectsModules(projectId, moduleId)
       .then((res) => {
@@ -54,12 +78,24 @@ export default function ProjectwiseModule({ match }) {
           }
         }
       });
-
+await new ModuleService().getModule().then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            const temp = res.data.data;
+            // const a = res.data.data.filter((d) => d.module_id);  
+            setModuleDropdown(
+              temp
+                .filter((d) => d.id == moduleId)
+                .map((d) => ({ value: d.id, label: d.module_name }))
+            );
+          }
+        }
+      });
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-          const a = res.data.data.filter((d) => d.module_id);
+          // const a = res.data.data.filter((d) => d.module_id);
           setSubmoduleData(res.data.data);
 
           setSubModuleDropdown(
@@ -70,10 +106,50 @@ export default function ProjectwiseModule({ match }) {
         }
       }
     });
+  
+    await new SubModuleService()
+      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", subModuleValue ? subModuleValue : 0).then(res => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+
+            let count = 1;
+            let temp = res.data.data;
+            for (let i = 0; i < temp.length; i++) {
+              temp[i].counter = count++
+            }
+            setDocList(temp)
+          }
+        }
+      });
+
+    await new GeneralSettingService().getGeneralSetting().then(res => {
+      if (res?.status === 200 && res?.data?.status) {
+        setGeneralSetting(res.data.data)
+      }
+    });
+
+
+    try {
+      await new GeneralSettingService().getAuthorityCheck(userId).then(res => {
+
+        if (res?.status === 200 && res?.data?.status==1) {
+          const authorityData = res.data.data;
+          setAuthorityCheck(authorityData);
+          // setCheckSetting(updatedCheckSetting);
+        }
+      })
+    } catch (error) {
+      console.error("Error fetching authority data:", error);
+    }
+
   };
-  const changeSubModuleHandle = async (e) => {
-    const { value } = e;
+  const changeSubModuleHandle = async (e, type) => {
+    const { value, label } = e;
+if(type === "SUBMODULE"){
     setSubModuleValue(value);
+if(moduleRef.current){
+      moduleRef.current.clearValue()
+    }
     await new SubModuleService()
       .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
       .then((res) => {
@@ -98,62 +174,106 @@ export default function ProjectwiseModule({ match }) {
           }
         }
       });
+  }else if(type === "MODULE"){
+        if(submoduleRef.current){
+          submoduleRef.current.clearValue()
+        }
+    await new SubModuleService()
+      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", 0)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            var tempData = [];
+            var temp = res.data.data;
+            let counter = 1;
+            for (const key in temp) {
+              tempData.push({
+                counter: counter++,
+                id: temp[key].id,
+                show_to_all: temp[key].show_to_all,
+                project_name: temp[key].project_name,
+                module_name: temp[key].module_name,
+sub_module_name: temp[key].sub_module_name,
+                is_active: temp[key].is_active,
+                document_attachment: temp[key].document_attachment,
+              });
+            }
+            setDocList(null);
+            setDocList(tempData);
+          }
+        }
+      });
+  }
+     
   };
 
-  const fetchActiveData = async (projectId, moduleId, value) => {
-    setSubModuleValue(value);
-    await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            var tempData = [];
-            var temp = res.data.data;
-            let counter = 1;
-            for (const key in temp) {
-              tempData.push({
-                counter: counter++,
-                id: temp[key].id,
-                show_to_all: temp[key].show_to_all,
-                project_name: temp[key].project_name,
-                module_name: temp[key].module_name,
-                is_active: temp[key].is_active,
-                document_attachment: temp[key].document_attachment,
-              });
-            }
-            setDocList(null);
-            setDocList(tempData);
-          }
-        }
-      });
-  };
+  // const fetchActiveData = async (projectId, moduleId, value) => {
+  //   setSubModuleValue(value);
+  //   await new SubModuleService()
+  //     .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         if (res.data.status == 1) {
+  //           var tempData = [];
+  //           var temp = res.data.data;
+  //           let counter = 1;
+  //           for (const key in temp) {
+  //             tempData.push({
+  //               counter: counter++,
+  //               id: temp[key].id,
+  //               show_to_all: temp[key].show_to_all,
+  //               project_name: temp[key].project_name,
+  //               module_name: temp[key].module_name,
+  //               sub_module_name: temp[key].sub_module_name,
+  //               is_active: temp[key].is_active,
+  //               document_attachment: temp[key].document_attachment,
+  //             });
+  //           }
+  //           setDocList(null);
+  //           setDocList(tempData);
+  //         }
+  //       }
+  //     });
+  // };
 
   const uploadDocHandler = async (e) => {
+e.preventDefault();
     if (isLoading) {
       return;
     }
     setIsLoading(true);
-    e.preventDefault();
-    setNotify();
+    
+    setNotify(null);
+
     const form = new FormData(e.target);
-    const value = parseInt(form.getAll("submodule_id"));
+    
+    form.append("submodule_id", subModuleValue ? subModuleValue : 0)
+    form.append("show_to_all", 1)
     await new SubModuleService().postSubModuleDocument(form).then((res) => {
       if (res?.data?.status === 1) {
         setNotify({ type: "success", message: res?.data?.message });
         handleModal({ showModal: false, modalData: "", modalHeader: "" });
-        fetchActiveData(projectId, moduleId, value);
+        
+        // fetchActiveData(projectId, moduleId, subModuleValue ?);
       } else {
         setNotify({ type: "danger", message: res?.data?.message });
       }
     });
     await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, subModuleValue)
+      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", subModuleValue ? subModuleValue : 0)
       .then((res) => setDocList(res.data.data));
     setIsLoading(false);
   };
 
-  // ids: [1, 2, 3];
-  // is_active: 0 / 1;
+  
+
+  const downloadFile = async (e, url) => {
+    e.preventDefault()
+    const binaryLink = _attachmentUrl + 'storage/app/Attachment/ProjectManagement/Submodule/Screenshot (2).png';
+    saveAs(binaryLink, 'downloadedFile.png');
+  }
+
+
   const deleteRestoreDoc = async () => {
     try {
       if (isLoading) {
@@ -162,16 +282,22 @@ export default function ProjectwiseModule({ match }) {
       setIsLoading(true);
       const payload = {};
       let idArr = [];
+
       for (let i = 0; i < selectedData.length; i++) {
         idArr.push(selectedData[i].id);
       }
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
         payload.is_active = 0;
+deleteAndFetch("DEACTIVE")
+
       } else {
         payload.is_active = 1;
+deleteAndFetch("ACTIVE")
+
       }
-      console.log("idArr", payload);
+      
+      async function deleteAndFetch(status) {
       await new SubModuleService()
         .deleteAndRestoreSubModuleDocuments(payload)
         .then((res) => {
@@ -184,7 +310,7 @@ export default function ProjectwiseModule({ match }) {
         });
 
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, moduleId, subModuleValue)
+        .getSubModuleDocuments(projectId, moduleId, status, subModuleValue ? subModuleValue : 0)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -208,6 +334,9 @@ export default function ProjectwiseModule({ match }) {
             }
           }
         });
+}
+
+
       setIsLoading(false);
     } catch (error) {
       setNotify({ type: "danger", message: error });
@@ -215,12 +344,15 @@ export default function ProjectwiseModule({ match }) {
     }
   };
 
+  const dontShowToAll = async(e, row)=>{
+
+  }
+
   const columns = [
     {
       name: "Sr no",
       selector: (row) => row.counter,
       sortable: true,
-
       width: "10%",
     },
 
@@ -228,9 +360,10 @@ export default function ProjectwiseModule({ match }) {
       name: "Show to all",
       sortable: false,
       cell: (row) => {
+
         return (
           <>
-            <input type="checkbox" checked={true} />
+            <input type="checkbox" onChange={(e)=>{dontShowToAll(e,row)}} disabled={authorityCheck.map((check)=> check.setting_name === "Show To ALL") ? false :true} defaultChecked={row.show_to_all === 1 ? true :false} />
           </>
         );
       },
@@ -243,12 +376,20 @@ export default function ProjectwiseModule({ match }) {
       cell: (row) => (
         <>
           <div className="d-flex">
-            <p>
-              <i
-                className="icofont-history me-3 btn btn-sm btn-primary text-white"
-                style={{ color: "#000AFF" }}
-              ></i>
+            
+
+            <p >
+              <Link to={`/${_base}/ConsolidatedView/ProjectwiseModule/${projectId}/${moduleId}/${row.id}`}>
+                <i className="icofont-history btn btn-sm btn-info text-white"></i>
+              </Link>
             </p>
+
+            <p onClick={(e) => downloadFile(e, row?.document_attachment)} >
+              <a href="" >
+                <i className="icofont-eye-alt btn btn-sm btn-info text-white"></i>
+              </a>
+            </p>
+
             <p
               style={{ display: row.is_active === 0 ? "none" : "block" }}
               data-bs-toggle="tooltip"
@@ -266,21 +407,8 @@ export default function ProjectwiseModule({ match }) {
                 ></i>
               </a>
             </p>
-            {/* <p
-              onClick={() => deleteRestoreDoc(row)}
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title={row.is_active === 1 ? "Delete" : " Restore"}
-            >
-              {row.is_active == 1 ? (
-                <i
-                  className="icofont-ui-delete btn btn-sm btn-danger text-white "
-                  style={{ color: "#E23434" }}
-                ></i>
-              ) : (
-                <i className="icofont-save btn btn-sm btn-info text-white"></i>
-              )}
-            </p> */}
+            
+
           </div>
         </>
       ),
@@ -288,7 +416,8 @@ export default function ProjectwiseModule({ match }) {
     },
     {
       name: "File Name",
-      selector: (row) => row.document_attachment,
+      selector: (row) => row.document_attachment       
+      ,
       sortable: true,
       width: "20%",
       cell: (row) => {
@@ -302,13 +431,16 @@ export default function ProjectwiseModule({ match }) {
       name: "Project Name",
       selector: (row) => row.project_name,
       sortable: true,
-      width: "20%",
-    },
+          },
     {
       name: "Module Name",
       selector: (row) => row.module_name,
       sortable: true,
-      width: "20%",
+      },
+    {
+      name: "SubModule Name",
+selector: (row) => row.sub_module_name,
+      sortable: true,
     },
   ];
 
@@ -331,9 +463,8 @@ export default function ProjectwiseModule({ match }) {
   };
 
   const handleDataShow = async (type) => {
-    if (subModuleValue) {
-      await new SubModuleService()
-        .getSubModuleDocuments(projectId, moduleId, type, subModuleValue)
+          await new SubModuleService()
+        .getSubModuleDocuments(projectId, moduleId, type, subModuleValue ? subModuleValue : 0)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -356,7 +487,7 @@ export default function ProjectwiseModule({ match }) {
             }
           }
         });
-    }
+    
     if (type === "ACTIVE") {
       setShowbtn(true);
     } else if (type === "DEACTIVE") {
@@ -369,11 +500,39 @@ export default function ProjectwiseModule({ match }) {
     const idArray = e.selectedRows.map((d) => d.id);
     setSelectedRows(idArray);
   };
+
+  // const checkRole = async () => {
+  //   let settingArray = generalSetting.map(setting => ({
+  //     ...setting,
+  //     setting_name: setting.setting_name.toLowerCase()
+  //   }));
+
+  //   let checkUploadSetting = settingArray.filter(setting => setting.setting_name.includes("upload"));
+  //   let checkDeleteSetting = settingArray.filter(setting => setting.setting_name.includes("delete"));
+  //   let getUserIdFromSession = sessionStorage.getItem("id");
+  //   let userFoundForUpload = checkUploadSetting.find(elm => elm.user_id === Number(getUserIdFromSession));
+  //   let userFoundForDelete = checkDeleteSetting.find(elm => elm.user_id === Number(getUserIdFromSession));
+  //   if (userFoundForUpload) {
+  //     setUploadSetting(true)
+  //   } else {
+  //     setUploadSetting(false)
+  //   };
+
+  //   if (userFoundForDelete) {
+  //     setDeleteSetting(true)
+  //   } else {
+  //     setDeleteSetting(false)
+  //   }
+
+
+  // };
+
+
+
   useEffect(() => {
     loadData();
-   
-  }, []);
-  console.log(selectedRows)
+     }, []);
+  
   return (
     <>
       <div className=" card col-md-6 w-100">
@@ -451,44 +610,47 @@ export default function ProjectwiseModule({ match }) {
         </div>
       </div>
 
-      {/* new document add/delete/restore document feature */}
-
-      {/* <button
-        className=" col-2 mt-5 btn btn-primary "
-        onClick={() => setToggleList(!toggleList)}
-      >
-        {toggleList ? (
-          <i class="icofont-minus"> Hide Document</i>
-        ) : (
-          <i class="icofont-plus"> Show Document</i>
-        )}
-      </button> */}
-
       <div>
         <div className="col mt-5 mb-4 ">
           <div className="px-2 border border border-dark border-2 ">
             <div className="row align-items-center justify-content-between py-2 mt-2">
               <div className="col-4">
                 <div className="d-md-flex ">
-                  <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                    Sub Module:
+<label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                    Module:
                   </label>
-                  {subModuleDropdown && (
+                  {moduleDropdown && (
                     <Select
                       className="w-100"
-                      options={subModuleDropdown}
-                      ref={submoduleRef}
-                      onChange={changeSubModuleHandle}
+                      options={moduleDropdown}
+                      ref={moduleRef}
+                      onChange={(e)=>{changeSubModuleHandle(e,"MODULE")}}
                       name="submodule_id"
                     />
                   )}
                 </div>
+                  {subModuleDropdown && subModuleDropdown.length >0 && (
+                <div className="d-md-flex mt-2">
+                  <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                    Sub Module:
+                  </label>
+                                      <Select
+                      className="w-100"
+                      options={subModuleDropdown}
+                      ref={submoduleRef}
+                      onChange={(e)=>{changeSubModuleHandle(e,"SUBMODULE")}}
+                      name="submodule_id"
+                    />
+                                  </div>
+)}
               </div>
-              {subModuleValue && (
+              {(
                 <div className="col-4 text-center">
-                  <div className="row">
+                  <div className="row align-items-center">
+
                     <label className="col-md-3 form-label font-weight-bold">
-                      Show DOC :<Astrick color="red" size="13px" />
+                      Status :
+                      {/* Show DOC :<Astrick color="red" size="13px" /> */}
                     </label>
                     <div className="col-md-2">
                       <div className="form-check">
@@ -498,6 +660,7 @@ export default function ProjectwiseModule({ match }) {
                           name="is_active"
                           id="is_active_1"
                           value="1"
+
                           onChange={() => {
                             handleDataShow("ACTIVE");
                           }}
@@ -536,15 +699,15 @@ export default function ProjectwiseModule({ match }) {
                 </div>
               )}
               <div className="col-4 text-center">
-                {subModuleValue && showbtn === true && docList && (
-                  <button type="button" className="btn btn-danger" onClick={deleteRestoreDoc}>
-                    Delete
+                {showbtn === true && docList && selectedRows?.length >0 && (
+                  <button type="button"  disabled={authorityCheck.map((check)=> check.setting_name === "Delete DOC") ? false :true} className="btn btn-danger" onClick={deleteRestoreDoc}>
+                    Delete Files
                   </button>
                 )}
-                {subModuleValue && showbtn === false && docList && (
+                {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
-                    className="btn btn-success"
+                    disabled={authorityCheck.map((check)=> check.setting_name === "Delete DOC") ? false :true}                    className="btn btn-success"
                     onClick={deleteRestoreDoc}
                   >
                     Restore
@@ -590,19 +753,7 @@ export default function ProjectwiseModule({ match }) {
               <input type="hidden" value={projectId} name="project_id" />
               <input type="hidden" value={moduleId} name="module_id" />
               <div className="deadline-form">
-                <div className="d-md-flex ">
-                  <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                    Sub Module:
-                  </label>
-                  {subModuleDropdown && (
-                    <Select
-                      className="w-100"
-                      options={subModuleDropdown}
-                      name="submodule_id"
-                    />
-                  )}
-                </div>
-                <div className="row g-3 mb-3 mt-2">
+                                <div className="row g-3 mb-3 mt-2">
                   <input
                     type="file"
                     name="document_attachment"
@@ -642,7 +793,14 @@ export default function ProjectwiseModule({ match }) {
           </form>
         </Modal>
         <div className="col">
-          {docList && (
+          {docList && ( <>
+            <span style={{ fontStyle:"italic", color:"blue", fontWeight:"bold"}}>Note:</span>
+            <br/>
+          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>1) Please Select Documents for Delete and Restore</span>
+          <br/>
+          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>2) Please Select Deactive To Check Deleted Documents</span>
+          <br/>
+          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>3) Please Select Module or Submodule to Filter The Documents</span>
             <DataTable
               columns={columns}
               data={docList}
@@ -654,7 +812,7 @@ export default function ProjectwiseModule({ match }) {
               className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
               highlightOnHover={true}
             />
-          )}
+          </>)}
         </div>
       </div>
     </>
