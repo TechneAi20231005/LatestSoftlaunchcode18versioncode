@@ -32,28 +32,10 @@ import {
 } from "../../../components/Utilities/Button/Button";
 import axios from "axios";
 
-const secretKey = "rushikesh"; // Make sure it matches the key used for encryption
-
-// const decryptParameter = (encryptedId) => {
-//   try {
-//     const decryptedId = CryptoJS.AES.decrypt(encryptedId, secretKey).toString(CryptoJS.enc.Utf8);
-//     return decryptedId;
-//   } catch (error) {
-//     console.error("Decryption error:", error);
-//     return null;
-//   }
-// };
+const secretKey = "rushikesh"; 
 
 export default function CreateBillCheckingTransaction({ match }) {
-  // const { encryptedId } = useParams();
-  // console.log("Encrypted ID:", encryptedId);
-  // const decodedId = decodeURIComponent(encryptedId);
-  // console.log("Decoded ID:", decodedId);
-  // const decryptedId = decryptParameter(decodedId);
-  // console.log("Decrypted ID:", decryptedId);
-
-  // Now you can access 'decryptedId' in your component
-  // const id = match.params.id;
+  
   var section = 0;
 const {id}=useParams()
   const [modal, setModal] = useState({
@@ -65,7 +47,7 @@ const {id}=useParams()
   const [statusValue, setStatusValue] = useState("");
 
   useEffect(() => {
-    // Define an async function fetchData
+ 
     const fetchData = async () => {
       try {
         // Asynchronously fetch data
@@ -152,11 +134,7 @@ const {id}=useParams()
     const date = new Date(`04/31/${new Date().getFullYear() - 1}`);
   };
 
-  const [netInWords, setNetInWords] = useState();
-  // const handleAmountWords = (e) => {
-  //     setNetInWords(null);
-  //     setNetInWords(numWords(netPayment));
-  // }
+ 
 
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
@@ -522,40 +500,7 @@ const {id}=useParams()
   };
 
   const fileInputRef = useRef(null);
-  // const handleShowFiles = (e) => {
-
-  //     const selectedFiles = e.target.files
-  //     const selectedFilesArray = Array.from(selectedFiles)
-
-  //     const imagesArray = selectedFilesArray.map((file) => {
-  //         return (
-  //             URL.createObjectURL(file)
-  //         )
-  //     })
-  //     setAttachment(imagesArray)
-  // }
-
-  // const handleAttachment = (type, id, attachmentId = null) => {
-  //     if (type === "GetAttachment") {
-  //         getAttachment( id,'BILL_CHECK').then(res => {
-  //             if (res.status === 200) {
-  //                 setAttachment(res.data.data);
-  //             }
-  //         })
-  //     }
-  //     if (type === "DeleteAttachment") {
-  //         deleteAttachment(attachmentId).then(res => {
-  //             if (res.status === 200) {
-  //                 getAttachment(id, 'BILL_CHECK').then(resp => {
-  //                     if (resp.status === 200) {
-  //                         setAttachment(resp.data.data);
-  //                     }
-  //                 })
-
-  //             }
-  //         })
-  //     }
-  // }
+ 
 
   const date = new Date();
   const futureDate = date.getDate();
@@ -576,53 +521,7 @@ const {id}=useParams()
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     for (var i = 0; i < e.target.files.length; i++) {
-  //       tempSelectedFile.push({
-  //         file: e.target.files[i],
-  //         fileName: e.target.files[i].name,
-  //         tempUrl: URL.createObjectURL(e.target.files[i]),
-  //       });
-  //     }
-  //     fileInputRef.current.value = "";
-  //     setSelectedFiles(tempSelectedFile);
-  //   }
-  //   else if (type === "DELETE") {
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
-
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [...selectedFiles]; // Make a copy of the current selected files
-
-  //     // Calculate the number of additional attachments that can be added without exceeding the limit
-  //     const remainingSlots = 10 - selectedFiles.length;
-
-  //     for (var i = 0; i < e.target.files.length && i < remainingSlots; i++) {
-  //       tempSelectedFile.push({
-  //         file: e.target.files[i],
-  //         fileName: e.target.files[i].name,
-  //         tempUrl: URL.createObjectURL(e.target.files[i]),
-  //       });
-  //     }
-
-  //     fileInputRef.current.value = "";
-  //     setSelectedFiles(tempSelectedFile);
-  //   }
-  //   else if (type === "DELETE") {
-  //         let filteredFileArray = selectedFiles.filter(
-  //           (item, index) => id !== index
-  //         );
-  //         setSelectedFiles(filteredFileArray);
-  //       }
-  // };
-  const [tempSelectedFile, setTempSelectedFile] = useState([]);
+  
   const validFileTypes = [
     "image/png",
     "image/jpeg",
@@ -702,22 +601,15 @@ const {id}=useParams()
     } else {
       setIgst((e.target.checked = false));
     }
-    // const newValue = e.target.checked;
 
-    // Update the local state
-    // setIgst(newValue);
   };
 
 
-  const [tcsApplicable, setTcsApplicable] = useState(false);
+;
   const [isTcsApplicable, setIsTcsApplicable] = useState(false);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
   const [isoriginalbillneeded, SetIsOriginalBillNeeded] = useState(false);
-
-  // const handleTcsApplicable = (e) => {
-  //   setIsTcsApplicable(e.target.checked);
-  // };
 
   const handleTcsApplicable = (e) => {
     setIsTcsApplicable(e.target.checked);
@@ -864,7 +756,7 @@ const {id}=useParams()
 
       <PageHeader />
 
-      {console.log("data",data)}
+
 
       <div className="row clearfix g-3">
         
@@ -1030,6 +922,9 @@ const {id}=useParams()
                       )}
                     </div>
 
+{console.log("a",authorities && authorities)}
+
+                    {authorities && authorities.Record_Room === true ?
                     <div className="col-md-3">
                       {/* {data && data.is_assign_to == 0 && ( */}
                       <input
@@ -1045,12 +940,62 @@ const {id}=useParams()
                         </b>
                       </label>
 
-                      {/* {console.log("us",userDropdown.filter(
+                      
+                       {/* <Select
+                         type="text"
+                         className="form-control form-control-sm"
+                         id="assign_to"
+                        //  options={userDropdown}
+                         name="assign_to"
+                         placeholder="Assign To"
+                         required
+                        //  isDisabled
+                         // isDisabled={
+                         //   authorities && authorities.All_Update_Bill === true
+                         //     ? false
+                         //     : true
+                         // }
+                         defaultValue="Record Room"
+                       /> */}
 
-          (d) => d.value == data.assign_to
+{/* <Select
+  type="text"
+  className="form-control form-control-sm"
+  id="assign_to"
+  name="assign_to"
+  placeholder="Assign To"
+  required
+  defaultValue="Record Room" // Set the default value to "Record Room"
+/> */}
 
-        ))} */}
+<input
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="assign_to"
+                        name="assign_to"
+                        required
+                        defaultValue={"Record room"}
+                       
+                      />
 
+                   
+                   </div>
+                    :
+<>
+                    <div className="col-md-3">
+                      {/* {data && data.is_assign_to == 0 && ( */}
+                      <input
+                        type="hidden"
+                        name="assign_to"
+                        value={data && data.assign_to}
+                      />
+                      {/* )} */}
+
+                      <label className="col-form-label">
+                        <b>
+                          Assign To : <Astrick color="red" size="13px" />
+                        </b>
+                      </label>
 
                       {userDropdown && data ? (
                         <Select
@@ -1075,6 +1020,11 @@ const {id}=useParams()
                         <p>Loading....</p>
                       )}
                     </div>
+</>}
+
+
+
+
                     <div className="col-md-3">
                       <label className="col-form-label">
                         <b>
@@ -1245,9 +1195,7 @@ const {id}=useParams()
                         id="debit_advance"
                         name="debit_advance"
                         onChange={(e) => handleDebit(e)}
-                        defaultValue={
-                          data.debit_advance ? data.debit_advance : 0
-                        }
+                        defaultValue={data.debit_advance ? data.debit_advance : 0}
                         required
 
                         readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
@@ -1554,7 +1502,29 @@ value={igst=== true ?1 :0} */}
                           )}
                         </b>
                       </label>
-                      {isTcsApplicable === true ? (
+                                              <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          id="tcs"
+                          name="tcs"
+                          step="any"
+                          onChange={(e) => handleTcs(e)}
+                          defaultValue={data.tcs ? data.tcs : 0}
+                          readOnly={isTcsApplicable === true ? false : true}
+                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          // value={data.tcs}
+
+                          // readOnly={
+                          //   data.is_active == 0 && isTcsApplicable === false
+                          //     ? true
+                          //     : false
+                          // }
+                          required={isTcsApplicable === true ? true : false}
+                          onKeyPress={(e) => {
+                            Validation.NumbersSpeicalOnlyDot(e);
+                          }}
+                        />
+                      {/* {isTcsApplicable === true  ? (
                         <input
                           type="number"
                           className="form-control form-control-sm"
@@ -1563,7 +1533,8 @@ value={igst=== true ?1 :0} */}
                           step="any"
                           onChange={(e) => handleTcs(e)}
                           defaultValue={data.tcs ? data.tcs : 0}
-                          readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          readOnly={isTcsApplicable === true ? false : true}
+                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                           // value={data.tcs}
 
                           // readOnly={
@@ -1584,7 +1555,8 @@ value={igst=== true ?1 :0} */}
                           name="tcs"
                           step="any"
                           onChange={(e) => handleTcs(e)}
-                          defaultValue={data.tcs && data.tcs}
+                          // value={0}
+                          value={data.is_tcs_applicable == 1 ? data.tcs : 0}
                           // readOnly={true}
                           // readOnly={
                           //   (data.is_active == 0 &&
@@ -1594,14 +1566,16 @@ value={igst=== true ?1 :0} */}
                           //     ? true
                           //     : false
                           // }
+readOnly={isTcsApplicable === true ? false : true}
 
-                          readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          
+                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                           required={true}
                           onKeyPress={(e) => {
                             Validation.NumbersSpeicalOnlyDot(e);
                           }}
                         />
-                      )}
+                      )} */}
                     </div>
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
@@ -1672,6 +1646,12 @@ value={igst=== true ?1 :0} */}
                   {showTdsFileds && (
                     <div className=" form-group row mt-3 ">
                       <div className="col-md-3  ">
+<input
+                        type="hidden"
+                        name="tds_section"
+                        value={data && data.tds_section}
+                      />
+
                         <label className="col-form-label">
                           <b>TDS section : </b>
                         </label>
@@ -1696,6 +1676,11 @@ value={igst=== true ?1 :0} */}
                         )}
                       </div>
                       <div className=" col-md-3 ">
+<input
+                        type="hidden"
+                        name="tds_constitution"
+                        value={data && data.tds_constitution}
+                      />
                         <label className=" col-form-label">
                           <b>
                             TDS Constitution :{" "}
@@ -1753,12 +1738,13 @@ value={igst=== true ?1 :0} */}
                                   )
                                   : null
                               }
+required
                             />
                           )}
                         </span>
                         {/* )} */}
                       </div>
-                      <div className=" col-md-3 ">
+                      <div className="col-md-3">
                         <label className=" col-form-label">
                           <b>
                             TDS Amount : <Astrick color="red" size="13px" />

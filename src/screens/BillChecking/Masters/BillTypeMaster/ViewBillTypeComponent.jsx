@@ -6,13 +6,14 @@ import { Astrick } from "../../../../components/Utilities/Style";
 import UserService from "../../../../services/MastersService/UserService";
 import * as Validation from "../../../../components/Utilities/Validation";
 import BillTypeMasterService from "../../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Alert from "../../../../components/Common/Alert";
 import { _base } from "../../../../settings/constants";
 
 const ViewBillTypeComponent = ({ match }) => {
   const history = useNavigate();
-  const BillId = match.params.id;
+ const {id} =useParams()
+  const  BillId = id
   const [approverData, setApproverData] = useState({
     data: [
       {
@@ -175,7 +176,7 @@ const ViewBillTypeComponent = ({ match }) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             let data = res.data.data;
-            console.log(data);
+        
             setBilltypeData(data);
           }
         }
@@ -241,7 +242,7 @@ const ViewBillTypeComponent = ({ match }) => {
     newData[sectionIndex].level[rowIndex].required_users = selectedValues;
   
     // Set the updated array as the new state
-    setApproverData({data:newData})
+    setApproverData({ data: newData })
     setSelectedUsersArray(updatedSelectedUsersArray);
   };
   
@@ -422,7 +423,7 @@ const transformData = (billTypeData) => {
                   <Select
                     isMulti
                     isDisabled
-                    name ="assign_employee_id[]"
+                    name="assign_employee_id[]"
                     defaultValue={
                       billTypeData &&
                       billTypeData.assigned_users &&
@@ -453,9 +454,70 @@ const transformData = (billTypeData) => {
                 />
               </div>
             </div>
+
+            <div className="col-sm-6">
+
+              <div className="row">
+                <div className="col-md-2">
+
+                  <label className="form-label font-weight-bold">
+                    Status :<Astrick color="red" size="13px" />
+                  </label>
+                </div>
+                <div className="col-md-2">
+                  <div className="form-check">
+                    {billTypeData && (
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_active"
+                        id="is_active_1"
+                        value="1"
+                        readOnly
+                        disabled={true}
+
+                        defaultChecked={
+                          billTypeData && billTypeData.is_active === 1
+                            ? true
+                            : false
+                        }
+                      />
+                    )}
+                    <label className="form-check-label" htmlFor="is_active_1">
+                      Active
+                    </label>
+                  </div>
+                </div>
+                <div className="col-md-1">
+                  <div className="form-check">
+                    {billTypeData && (
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_active"
+                        id="is_active_0"
+                        value="0"
+                        disabled={true}
+                        defaultChecked={
+                          billTypeData && billTypeData.is_active === 0
+                            ? true
+                            : false
+                        }
+                      />
+                    )}
+                    <label className="form-check-label" htmlFor="is_active_0">
+                      Deactive
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
             {billTypeData &&
               approverData.data.map((item, index) => (
-                <div key={index}>
+                <div key={index} className="mt-3">
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
@@ -517,7 +579,7 @@ const transformData = (billTypeData) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {item && item.level?.length >0 &&
+                      {item && item.level?.length > 0 &&
                         item.level.map((levelItem, rowIndex) => (
                           <tr key={rowIndex}>
                             <td> {rowIndex + 1}</td>
