@@ -223,7 +223,7 @@ function TestCase({ match }) {
           // console.log(res.data);
           if (res.data.status == 1) {
             document.getElementById("create-course-form").reset();
-            history.push({
+            history({
               pathname: `/${_base}/TestCase/${module_id}/${submodule_id}`,
               // state: { showAlert: true, alertData: returnValue },
             });

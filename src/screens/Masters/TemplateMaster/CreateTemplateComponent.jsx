@@ -200,7 +200,7 @@ const CreateTemplateComponent = () => {
             const data = res.data;
 
             if (res.data.status === 1) {
-              history.push({
+              history({
                 pathname: `/${_base}/Template`,
                 state: {
                   notify: { type: "success", message: res.data.message },

@@ -69,7 +69,7 @@ const ManageMenu_copy = () => {
             if(res.status===200){
                 if(res.data.status===1){
                     document.getElementById("MenuMangementForm").reset();
-                    history.push({
+                    history({
                         pathname:`/${_base}/MenuManage`,
                         // state: {alert : {type: 'success', message:res.data.message} }
                     });

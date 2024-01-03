@@ -188,7 +188,7 @@ const EditTemplateComponent = ({ match, props }) => {
             const data = res.data;
 
             if (res.data.status === 1) {
-              history.push({
+              history({
                 pathname: `/${_base}/Template`,
                 state: {
                   notify: { type: "success", message: res.data.message },
@@ -374,7 +374,7 @@ const EditTemplateComponent = ({ match, props }) => {
     await new TemplateService().updateTemplate(templateId, form).then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          history.push({
+          history({
             pathname: `/${_base}/Template`,
             state: {
               notify: { type: "success", message: res.data.message },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { _base } from "../../../settings/constants";
 import { Dropdown } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -10,11 +10,12 @@ import ConsolidatedService from '../../../services/ProjectManagementService/Cons
 
 
 const DelayedTasks = ({match}) => {
-  const project_id = match.params.projectId
+  // const project_id = match.params.projectId
+  const {project_id} =useParams()
   const [data, setData] = useState(null)
 
 
-  
+
 const columns=[
   {
     name: "Action", selector: (row) => 

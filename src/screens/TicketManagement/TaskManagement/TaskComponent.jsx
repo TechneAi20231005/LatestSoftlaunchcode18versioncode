@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useParams } from "react-router-dom";
 import { Dropdown, Modal } from "react-bootstrap";
 import PageHeader from "../../../components/Common/PageHeader";
 import { _attachmentUrl, userSessionData } from "../../../settings/constants";
@@ -30,7 +30,8 @@ import { Spinner } from "react-bootstrap";
 
 export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
-  const ticketId = match.params.id;
+  const ticketId = useParams()
+
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();

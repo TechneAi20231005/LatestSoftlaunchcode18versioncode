@@ -13,7 +13,7 @@ import { _base } from "../../../settings/constants";
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  // const moduleId = match.params.id;
+  
   const { id } = useParams();
   const moduleId = id;
 

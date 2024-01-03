@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Spinner, Modal, Table } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
 import { userSessionData, _base } from '../../settings/constants';
@@ -49,7 +49,7 @@ export default function EditTicketComponent({ match }) {
 
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    const ticketId = match.params.id;
+    const {ticketId} =useParams()
     const [dateValue, setDateValue] = useState(new Date())
   
     const editor = useRef(null);
@@ -227,7 +227,7 @@ const [expectedTrue,setExpectedTrue] = useState()
                 setShowLoaderModal(false);
                 if (res.status === 200) {
                     if (res.data.status === 1) {
-                        history.push({
+                        history({
                             pathname: `/${_base}/Ticket`,
                             state: { alert: { type: 'success', message: res.data.message } }
                         });
@@ -484,7 +484,7 @@ const [expectedTrue,setExpectedTrue] = useState()
 
 
     const loadComments = async () => {
-        await new MyTicketService().getComments(match.params.id).then((res) => {
+        await new MyTicketService().getComments(ticketId).then((res) => {
             if (res.status === 200) {
                 // setCommentData(res.data.data);
             }

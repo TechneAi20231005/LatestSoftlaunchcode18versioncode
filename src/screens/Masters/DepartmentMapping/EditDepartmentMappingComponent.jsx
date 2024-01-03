@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import {_base} from '../../../settings/constants'
 import { Modal,Table } from "react-bootstrap";
@@ -23,7 +23,7 @@ function EditDepartmentMappingComponent({match}) {
 
     const history = useNavigate();
     const [data, setData] = useState({employee_id:null,departments:null});
-    const employee_id=match.params.id;
+    const {employee_id}=useParams()
     const mappingData={department_id:null,ticket_show_type:null};
 
     const [departmentData,setDepartmentData] = useState(null);
@@ -86,7 +86,7 @@ function EditDepartmentMappingComponent({match}) {
             await new DepartmentMappingService().postDepartmentMapping(form).then(res => {
                 if (res.status === 200) {
                     if (res.data.status === 1) {
-                        history.push({
+                        history({
                             pathname:`/${_base}/DepartmentMapping`,
                             state: {alert : {type: 'success', message:res.data.message} }
                         });
