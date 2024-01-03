@@ -15,7 +15,7 @@ import Select from 'react-select';
 export default function EditModuleComponent({ match }) {
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    // const subModuleId = match.params.id;
+   
     const {id} =useParams()
     const subModuleId =id
 

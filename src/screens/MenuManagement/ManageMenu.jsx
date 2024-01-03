@@ -15,8 +15,8 @@ import { RoleDropdown } from '../Masters/RoleMaster/RoleComponent';
 
 
 const ManageMenu = ({match}) => {
-    // const roleId = match.params.id  
-    const id =useParams()
+
+    const {id} =useParams()
     const roleId =id
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
@@ -146,7 +146,7 @@ const ManageMenu = ({match}) => {
                     // setNotify({ type: 'success', message: res.data.message });
                     document.getElementById("MenuMangementForm").reset();
                     loadData();
-                    history.push({
+                    history({
                         pathname:`/${_base}/Role`,
                         state: {alert : {id: Math.random(), type: 'success', message:res.data.message} }
                         

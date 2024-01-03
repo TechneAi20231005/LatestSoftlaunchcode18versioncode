@@ -92,7 +92,7 @@
 //         await new DynamicFormDropdownMasterService().updateDropdown(match.params.id,formData).then(res => {
 //             if (res.status === 200) {
 //                 if (res.data.status === 1) {
-//                     history.push({
+//                     history({
 //                         pathname: `/${_base}/DynamicFormDropdown`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -333,7 +333,7 @@
 
 
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
@@ -352,6 +352,7 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 export default function EditDropdownComponent({ match }) {
 
     const history = useNavigate();
+    const {id}=useParams()
     const [master, setMaster] = useState();
     const [data, setData] = useState([{ id: null, label: null, value: null }]);
     const [notify, setNotify] = useState(null);
@@ -368,7 +369,7 @@ export default function EditDropdownComponent({ match }) {
     }
 
     const loadData = async () => {
-        await new DynamicFormDropdownMasterService().getDropdownById(match.params.id).then(res => {
+        await new DynamicFormDropdownMasterService().getDropdownById(id).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
                     setMaster(res.data.data.master);
@@ -404,10 +405,10 @@ export default function EditDropdownComponent({ match }) {
         e.preventDefault();
         const formData = new FormData(e.target);
 
-        await new DynamicFormDropdownMasterService().updateDropdown(match.params.id,formData).then(res => {
+        await new DynamicFormDropdownMasterService().updateDropdown(id,formData).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
-                    history.push({
+                    history({
                         pathname: `/${_base}/DynamicFormDropdown`,
                         state: { alert: { type: 'success', message: res.data.message } }
                     });

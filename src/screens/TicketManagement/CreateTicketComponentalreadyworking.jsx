@@ -92,7 +92,7 @@ export default function CreateTicketComponent() {
                 if (res.data.status === 1) 
                 {
                     console.log(res);
-                    history.push({
+                    history({
                         pathname: `/${_base}/Ticket`,
                         state: { alert: { type: 'success', message: res.data.message } }
                     });
@@ -105,7 +105,7 @@ export default function CreateTicketComponent() {
                         
                         setNotify({ type: 'danger', message: res.message });
                         
-                        // history.push({
+                        // history({
                         //     pathname: `/${_base}/Ticket`,
                         //     state: { alert: { type: 'danger', message: res.data.message } }
                         // });

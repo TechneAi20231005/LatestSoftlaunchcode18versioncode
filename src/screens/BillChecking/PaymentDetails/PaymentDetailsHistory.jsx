@@ -4,9 +4,10 @@ import PageHeader from "../../../components/Common/PageHeader";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 import PaymentDetailsHistory from '../../../services/Bill Checking/PaymentDetailsService';
+import { useParams } from 'react-router-dom';
 
 const PaymentDetailsHistory = ({ match }) => {
-  const id = match.params.id
+  const {id} = useParams()
 
   const [data, setData] = useState()
 

@@ -75,10 +75,10 @@ class Sidebar extends React.Component{
     }
     GotoChangeMenu(val){
         if(val === "UI Components"){
-            this.props.history.push("ui-alerts");
+            this.props.history("ui-alerts");
             this.setState({ menuData:[...menu2] });
         } else{
-            this.props.history.push("hr-dashboard");
+            this.props.history("hr-dashboard");
             this.setState({ menuData:[...menu] });
         }
     }

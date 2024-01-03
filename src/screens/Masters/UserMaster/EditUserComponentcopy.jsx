@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
@@ -28,7 +28,7 @@ import DepartmentMappingService from "../../../services/MastersService/Departmen
 function EditUserComponentcopy({ match }) {
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    const userId = match.params.id ? match.params.id : null;
+    const {userId} = useParams()
 
     const [data, setData] = useState(null);
     const [accountFor, setAccountFor] = useState("SELF");
@@ -67,7 +67,7 @@ function EditUserComponentcopy({ match }) {
         await new UserService().updateUser(userId, form).then(res => {
             // if (res.status === 200) {   
             //     if (res.data.status === 1) {
-            //         history.push({
+            //         history({
             //             pathname: `/${_base}/User`,
             //             state: { alert: { type: 'success', message: res.data.message } }
             //         });

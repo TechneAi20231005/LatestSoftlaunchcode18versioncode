@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
 import { _base } from "../../../settings/constants";
 
@@ -23,7 +23,7 @@ import Table from 'react-bootstrap/Table';
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
 
-  const mappingId = match.params.id;
+  const {mappingId} =useParams() 
   const [notify, setNotify] = useState();
 
 
@@ -396,10 +396,10 @@ const getDynamicForm = async () =>{
         }
 
       if(flag==1){
-        await new CustomerMappingService().updateCustomerMapping(match.params.id,form).then(res => {
+        await new CustomerMappingService().updateCustomerMapping(mappingId,form).then(res => {
             if(res.status===200){
                 if(res.data.status===1){
-                    history.push({
+                    history({
                         pathname:`/${_base}/CustomerMapping`,
                         state: {alert : {type: 'success', message:res.data.message} }
                     });

@@ -21,12 +21,12 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { _attachmentUrl } from "../../../settings/constants";
 import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import { Table } from "react-bootstrap";
 
 const ViewVendorDetails = ({ match }) => {
-  const id = match.params.id;
+  const {id} =useParams() 
   const [data, setData] = useState(null);
 
   const [CountryDropdown, setCountryDropdown] = useState();

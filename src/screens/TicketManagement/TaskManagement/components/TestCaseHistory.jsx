@@ -6,10 +6,12 @@ import Select from "react-select";
 
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { useParams } from 'react-router-dom';
 
 
 const TestCaseHistory = ({ match }) => {
-  const id = match.params.id
+
+  const {id}=useParams()
 
   const [data, setData] = useState()
 

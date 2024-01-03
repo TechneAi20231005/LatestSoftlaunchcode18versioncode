@@ -92,7 +92,7 @@ export default function CreateTicketComponent() {
         await new MyTicketService().postTicket(formData).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
-                    history.push({
+                    history({
                         pathname: `/${_base}/Ticket`,
                         state: { alert: { type: 'success', message: res.data.message } }
                     });
@@ -100,7 +100,7 @@ export default function CreateTicketComponent() {
                     var URL =`${_attachmentUrl}`+res.data.data 
                     window.open(URL, '_blank').focus();
                     // setNotify({ type: 'danger', message: res.data.message });
-                    history.push({
+                    history({
                         pathname: `/${_base}/Ticket`,
                         state: { alert: { type: 'danger', message: res.data.message } }
                     });

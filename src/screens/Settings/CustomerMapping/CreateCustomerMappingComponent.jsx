@@ -315,7 +315,7 @@ const getDynamicForm = async () =>{
         await new CustomerMappingService().postCustomerMapping(form).then(res => {
             if(res.status===200){
                 if(res.data.status===1){
-                    history.push({
+                    history({
                         pathname:`/${_base}/CustomerMapping`,
                         state: {alert : {type: 'success', message:res.data.message} }
                     });

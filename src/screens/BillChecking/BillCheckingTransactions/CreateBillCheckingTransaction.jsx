@@ -262,7 +262,7 @@
 
 // //             if (res.status === 200) {
 // //                 if (res.data.status === 1) {
-// //                     history.push({
+// //                     history({
 // //                         pathname: `/${_base}/BillCheckingTransaction`,
 // //                         state: { alert: { type: 'success', message: res.data.message } }
 // //                     });
@@ -1313,7 +1313,7 @@
 //       .then((res) => {
 //         if (res.status === 200) {
 //           if (res.data.status === 1) {
-//             history.push({
+//             history({
 //               pathname: `/${_base}/BillCheckingTransaction`,
 //               state: { alert: { type: "success", message: res.data.message } },
 //             });
@@ -2829,7 +2829,7 @@
 
 //             if (res.status === 200) {
 //                 if (res.data.status === 1) {
-//                     history.push({
+//                     history({
 //                         pathname: `/${_base}/BillCheckingTransaction`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -3579,7 +3579,6 @@ import DropdownService from "../../../services/Bill Checking/Bill Checking Trans
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import DepartmentService from "../../../services/MastersService/DepartmentService";
 import UserService from "../../../services/MastersService/UserService";
-
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import axios from "axios";
@@ -3590,11 +3589,32 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [ip, setIp] = useState("");
 
-  useEffect(async () => {
-    //passing getData method to the lifecycle method
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    setIp(res.data.ip);
-  }, []);
+  // useEffect(async () => {
+  //   //passing getData method to the lifecycle method
+  //   const res = await axios.get("https://api.ipify.org/?format=json");
+  //   setIp(res.data.ip);
+  // }, []);
+
+  const featchData=async()=>{
+    try{
+
+      const res=await axios.get("https://api.ipify.org/?format=json");
+      setIp(res.data.ip)
+
+    }catch(error){
+      console.error("Error fetching data:", error)
+
+
+    }
+
+  }
+
+  useEffect(()=>{
+    featchData()
+
+  },[])
+
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3980,7 +4000,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
           if (res.data.status === 1) {
 
-            history.push({
+            history({
               pathname: `/${_base}/BillCheckingTransaction`,
               state: { alert: { type: "success", message: res.data.message } },
             });
