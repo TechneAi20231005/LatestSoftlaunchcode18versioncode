@@ -262,7 +262,7 @@
 
 // //             if (res.status === 200) {
 // //                 if (res.data.status === 1) {
-// //                     history.push({
+// //                     history({
 // //                         pathname: `/${_base}/BillCheckingTransaction`,
 // //                         state: { alert: { type: 'success', message: res.data.message } }
 // //                     });
@@ -1313,7 +1313,7 @@
 //       .then((res) => {
 //         if (res.status === 200) {
 //           if (res.data.status === 1) {
-//             history.push({
+//             history({
 //               pathname: `/${_base}/BillCheckingTransaction`,
 //               state: { alert: { type: "success", message: res.data.message } },
 //             });
@@ -2829,7 +2829,7 @@
 
 //             if (res.status === 200) {
 //                 if (res.data.status === 1) {
-//                     history.push({
+//                     history({
 //                         pathname: `/${_base}/BillCheckingTransaction`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -3610,6 +3610,29 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
+
+
+
+  const featchData=async()=>{
+    try{
+
+      const res=await axios.get("https://api.ipify.org/?format=json");
+      setIp(res.data.ip)
+
+    }catch(error){
+      console.error("Error fetching data:", error)
+
+
+    }
+
+  }
+
+  useEffect(()=>{
+    featchData()
+
+  },[])
+
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3969,6 +3992,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+
             history({
               pathname: `/${_base}/BillCheckingTransaction`,
               state: { alert: { type: "success", message: res.data.message } },
