@@ -1,5 +1,5 @@
 // // import React, { useEffect, useState, useRef } from "react";
-// // import { Link, useNavigate } from 'react-router-dom';
+// // import { Link, useHistory } from 'react-router-dom';
 // // import { Modal } from "react-bootstrap";
 // // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -23,7 +23,7 @@
 // //     const id = match.params.id
 
 // //     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-// //     const history = useNavigate();
+// //     const history = useHistory();
 // //     const [notify, setNotify] = useState(null);
 // //     const [data, setData] = useState(null);
 // //     const [customerType, setCustomerType] = useState(null);
@@ -993,7 +993,7 @@
 // // }
 
 // import React, { useEffect, useState, useRef } from "react";
-// import { Link, useNavigate } from "react-router-dom";
+// import { Link, useHistory } from "react-router-dom";
 // import { Modal } from "react-bootstrap";
 // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -1024,7 +1024,7 @@
 //     modalData: "",
 //     modalHeader: "",
 //   });
-//   const history = useNavigate();
+//   const history = useHistory();
 //   const [notify, setNotify] = useState(null);
 //   const [data, setData] = useState(null);
 //   const [customerType, setCustomerType] = useState(null);
@@ -2566,7 +2566,7 @@
 // }
 
 // import React, { useEffect, useState, useRef } from "react";
-// import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useHistory } from 'react-router-dom';
 // import { Modal } from "react-bootstrap";
 // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -2590,7 +2590,7 @@
 //     const id = match.params.id
 
 //     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-//     const history = useNavigate();
+//     const history = useHistory();
 //     const [notify, setNotify] = useState(null);
 //     const [data, setData] = useState(null);
 //     const [customerType, setCustomerType] = useState(null);
@@ -3585,16 +3585,22 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import axios from "axios";
 
 export default function CreateBillCheckingTransaction({ match }) {
-  // const id = match.params.id;
-  const {id} =useParams()
+  const {id} = useParams()
 
   const [ip, setIp] = useState("");
 
-  useEffect(async () => {
-    //passing getData method to the lifecycle method
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    setIp(res.data.ip);
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("https://api.ipify.org/?format=json");
+        setIp(res.data.ip);
+      } catch (error) {
+        console.error('Error fetching IP:', error);
+      }
+    };
+
+    fetchData();
+  }, []); 
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3658,7 +3664,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-
   const [showTcsFileds, setShowTcsFileds] = useState(false);
 
   const [isTcsApplicable, setIsTcsApplicable] = useState(0);
@@ -3685,7 +3690,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     setIsOriginalBill(newValue);
   };
 
- 
+
 
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
@@ -3908,65 +3913,23 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleForm = async (e) => {
-
-
-    e.preventDefault();
+   e.preventDefault();
 
     const form = new FormData(e.target);
     setNotify(null);
     form.delete("attachment[]");
     form.append("client_ip_address", ip);
-    // if (document.getElementById("is_igst_applicable").value == "on") {
-    //   form.append("is_igst_applicable", 1);
-    // } else {
-    //   form.append("is_igst_applicable", 0);
-    // }
-
-
-    // if (document.getElementById("is_tcs_applicable").value == "on") {
-    //   form.append("is_tcs_applicable", 1);
-    // } else {
-    //   form.append("is_tcs_applicable", 0);
-    // }
-
-    // if (document.getElementById("is_tds_applicable").value == "on") {
-    //   console.log("value",document.getElementById("is_tds_applicable").value)
-    //   form.append("is_tds_applicable", 1);
-    // } else {
-    //   form.append("is_tds_applicable", 0);
-    // }
-    if(showTdsFileds === true){
-      form.append("is_tds_applicable", 1);
-    } else {
-      form.append("is_tds_applicable", 0);
-     
-    }
-    if(igst === 1){
+    if (document.getElementById("is_igst_applicable").value == "on") {
       form.append("is_igst_applicable", 1);
     } else {
       form.append("is_igst_applicable", 0);
-     
     }
-    if(isTcsApplicable === 1){
+
+    if (document.getElementById("is_tcs_applicable").value == "on") {
       form.append("is_tcs_applicable", 1);
     } else {
       form.append("is_tcs_applicable", 0);
-     
     }
-
-    if(isOriginal === 1){
-      form.append("is_original_bill_needed", 1);
-    } else {
-      form.append("is_original_bill_needed", 0);
-     
-    }
-
-    
-    // if (document.getElementById("is_original_bill_needed").value == "on") {
-    //   form.append("is_original_bill_needed", 1);
-    // } else {
-    //   form.append("is_original_bill_needed", 0);
-    // }
 
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles.length; i++) {
@@ -3980,7 +3943,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
           if (res.data.status === 1) {
 
-            history.push({
+            history({
               pathname: `/${_base}/BillCheckingTransaction`,
               state: { alert: { type: "success", message: res.data.message } },
             });
@@ -4019,17 +3982,9 @@ export default function CreateBillCheckingTransaction({ match }) {
     const imagesArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
+    
     setShowFiles(imagesArray);
-    // e.preventDefault();
-    // var fileObj = [];
-    // var fileArray = [];
-    // fileObj.push(e.target.files)
-    // document.getElementById("imgTest").innerHTML = "";
-    // for (let i = 0; i < fileObj[0].length; i++) {
-    //     fileArray.push(URL.createObjectURL(fileObj[0][i]))
-    //     // encodeImageFileAsURL(i)
-    // }
-    // setShowFiles({ fileArray })
+ 
   };
   const [igst, setIgst] = useState(0);
   const handleIgst = (e) => {
@@ -4038,17 +3993,6 @@ export default function CreateBillCheckingTransaction({ match }) {
         setIgst(1);
       } else {
         setIgst(0);
-      }
-    }
-  };
-
-  const [isOriginal, setIsOriginal] = useState(0);
-  const handleIsOriginal = (e) => {
-    if (e) {
-      if (e.target.checked) {
-        setIsOriginal(1);
-      } else {
-        setIsOriginal(0);
       }
     }
   };
@@ -4695,7 +4639,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         //   authority.Audit_Remark == true
                         //     ? new Date().getFullYear() - 1 + "-04-01"
                         //     : new Date().getFullYear() + "-04-01"
-                        // // }
+                        // }
                         // min={new Date().getFullYear() + "-04-01"}
                         max={formattedDate}
                         required
@@ -5082,7 +5026,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   }}
 /> */}
 
-
                     <input
                       type="text"
                       step="any"
@@ -5092,8 +5035,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
                       value={billAmountValues.round_off}
                       onChange={(e) => handleRoundOffChange(e)}
-                     
-                      
+                      // required
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -5244,8 +5186,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="tcs"
                         step="any"
                         // onChange={e => { handleTcs(e) }}
-                        // value={billAmountValues.tcs}
-                        value={0}
+                        value={billAmountValues.tcs}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
@@ -5286,7 +5227,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
-                      // name="is_tds_applicable"
+                      name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
                     <label className="col-form-label">
@@ -5322,11 +5263,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_original_bill_needed"
-                      // name="is_original_bill_needed"
-                      onChange={(e) => {
-                        handleIsOriginal(e);
-                      }}
-                      
+                      name="is_original_bill_needed"
                       disabled={
                         authorities &&
                         authorities.Original_Bill_Needed === false

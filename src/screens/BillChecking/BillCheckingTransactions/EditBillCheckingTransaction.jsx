@@ -535,12 +535,12 @@ const {id}=useParams()
       var totalSize = 0; // Initialize total size
 
       // Calculate the total size of all files in tempSelectedFile
-      for (var i = 0; i < tempSelectedFile.length; i++) {
+      for (var i = 0; i < tempSelectedFile?.length; i++) {
         totalSize += tempSelectedFile[i].file.size;
       }
 
       // Check if the total size of all files does not exceed 5MB
-      for (var i = 0; i < e.target.files.length; i++) {
+      for (var i = 0; i < e.target.files?.length; i++) {
         const file = e.target.files[i];
         const fileType = file.type;
         const fileSize = file.size; // Get the file size in bytes
@@ -569,8 +569,7 @@ const {id}=useParams()
         }
       }
       // Check if the maximum 10 attachments condition is met
-
-      if (tempSelectedFile.length <= 10) {
+      if (data && data.attachment?.length + tempSelectedFile?.length <= 10) {
         fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
       } else {
@@ -746,6 +745,32 @@ const {id}=useParams()
 
   
 
+// Get the current date
+const currentDatee = new Date();
+
+// Calculate the start date of the current financial year (April 1 of the current year)
+//  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
+
+// Calculate the end date of the current financial year (March 31 of the next year)
+const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+
+
+
+const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
+
+const startYear = startFinancialYear.getFullYear();
+const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
+
+const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+
+
+const endYear = endFinancialYear.getFullYear();
+const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
+
+// const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
+const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
 
   return (
@@ -922,7 +947,6 @@ const {id}=useParams()
                       )}
                     </div>
 
-{console.log("a",authorities && authorities)}
 
                     {authorities && authorities.Record_Room === true ?
                     <div className="col-md-3">
@@ -1126,8 +1150,13 @@ const {id}=useParams()
                         className="form-control form-control-sm"
                         id="bill_date"
                         name="bill_date"
-                        minDate="01-01-2023"
-                        maxDate="31-03-2023"
+                        // minDate="01-01-2023"
+                        // maxDate="31-03-2023"
+                        min={
+                          authorities &&
+                              authorities.Past_Financial_Year_Bill_Date === true &&
+                          formattedStartDate }
+                        max={formattedEndDate}
                         readOnly={
                           (authorities && authorities?.Edit_In_Bill === true) ||
                             (authorities &&
@@ -1143,14 +1172,14 @@ const {id}=useParams()
                         //     : new Date().getFullYear() + "-04-01"
                         // }
 
-                        min={
-                          authorities &&
-                            authorities.Past_Financial_Year_Bill_Date === true
-                            ? new Date().getFullYear() - 1 + "-04-01"
-                            : new Date().getFullYear() + "-04-01"
-                        }
+                        // min={
+                        //   authorities &&
+                        //     authorities.Past_Financial_Year_Bill_Date === true
+                        //     ? new Date().getFullYear() - 1 + "-04-01"
+                        //     : new Date().getFullYear() + "-04-01"
+                        // }
                         // max={new Date().toISOString().split("T")[0]} // Set max date to current date
-                        max={data.bill_date}
+                        // max={data.bill_date}
                         required
                         defaultValue={data.bill_date}
                       />
