@@ -434,7 +434,6 @@ function PaymentDetails({ location, match }) {
           </div>
         </div>
       </div>
-      {console.log("authorities",authorities&& authorities)}
 
       {/* ADD VENDOR */}
       <Modal
@@ -471,7 +470,7 @@ function PaymentDetails({ location, match }) {
                 />
 
                 <div className="row g-3 mb-3">
-                  <div className="col-sm-3 mt-4">
+                  {/* <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">
                       Amount To Be Paid :<Astrick color="red" size="13px" />
                     </label>
@@ -535,7 +534,64 @@ function PaymentDetails({ location, match }) {
                         modal.modalData ? modal.modalData.amount_to_be_paid : ""
                       }
                     />
-                  </div>
+                  </div> */}
+
+<div className="col-sm-3 mt-4">
+  <label className="form-label font-weight-bold">
+    Amount To Be Paid :<Astrick color="red" size="13px" />
+  </label>
+
+  <input
+    type="text"
+    className="form-control form-control-sm"
+    id="amount_to_be_paid"
+    name="amount_to_be_paid"
+    maxLength={13}
+    onKeyPress={(e) => {
+      const allowedKeys = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "Backspace"
+      ];
+      const inputValue = e.key;
+
+      if (!allowedKeys.includes(inputValue)) {
+        e.preventDefault();
+      }
+
+      const currentInput = e.target.value;
+      const decimalIndex = currentInput.indexOf(".");
+
+      if (inputValue === "." && decimalIndex !== -1) {
+        e.preventDefault(); // Prevent entering more than one decimal point
+      }
+
+      if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
+        e.preventDefault(); // Prevent more than two decimal places
+      }
+
+      if (
+        currentInput.length >= 10 &&
+        inputValue !== "." &&
+        decimalIndex === -1
+      ) {
+        e.preventDefault(); // Limit total length excluding decimal point to 10 characters
+      }
+    }}
+    readOnly={
+      (modal.modalData &&
+        modal.modalData.payment_status == 15) ||
+      (authorities &&
+        authorities.Update_Payment_Details === false &&
+        authorities.Payment_Status_Release === true) ||
+        (authorities && authorities.Prepone_Payment_Date === true)
+        ? true
+        : false
+    }
+    defaultValue={
+      modal.modalData ? modal.modalData.amount_to_be_paid : ""
+    }
+  />
+</div>
+
 
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">

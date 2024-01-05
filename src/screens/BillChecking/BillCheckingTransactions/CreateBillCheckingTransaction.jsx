@@ -1,5 +1,5 @@
 // // import React, { useEffect, useState, useRef } from "react";
-// // import { Link, useNavigate } from 'react-router-dom';
+// // import { Link, useHistory } from 'react-router-dom';
 // // import { Modal } from "react-bootstrap";
 // // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -23,7 +23,7 @@
 // //     const id = match.params.id
 
 // //     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-// //     const history = useNavigate();
+// //     const history = useHistory();
 // //     const [notify, setNotify] = useState(null);
 // //     const [data, setData] = useState(null);
 // //     const [customerType, setCustomerType] = useState(null);
@@ -993,7 +993,7 @@
 // // }
 
 // import React, { useEffect, useState, useRef } from "react";
-// import { Link, useNavigate } from "react-router-dom";
+// import { Link, useHistory } from "react-router-dom";
 // import { Modal } from "react-bootstrap";
 // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -1024,7 +1024,7 @@
 //     modalData: "",
 //     modalHeader: "",
 //   });
-//   const history = useNavigate();
+//   const history = useHistory();
 //   const [notify, setNotify] = useState(null);
 //   const [data, setData] = useState(null);
 //   const [customerType, setCustomerType] = useState(null);
@@ -2566,7 +2566,7 @@
 // }
 
 // import React, { useEffect, useState, useRef } from "react";
-// import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useHistory } from 'react-router-dom';
 // import { Modal } from "react-bootstrap";
 // import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -2590,7 +2590,7 @@
 //     const id = match.params.id
 
 //     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-//     const history = useNavigate();
+//     const history = useHistory();
 //     const [notify, setNotify] = useState(null);
 //     const [data, setData] = useState(null);
 //     const [customerType, setCustomerType] = useState(null);
@@ -3613,19 +3613,19 @@ export default function CreateBillCheckingTransaction({ match }) {
 
 
 
-  const featchData=async()=>{
-    try{
+  // const featchData=async()=>{
+  //   try{
 
-      const res=await axios.get("https://api.ipify.org/?format=json");
-      setIp(res.data.ip)
+  //     const res=await axios.get("https://api.ipify.org/?format=json");
+  //     setIp(res.data.ip)
 
-    }catch(error){
-      console.error("Error fetching data:", error)
+  //   }catch(error){
+  //     console.error("Error fetching data:", error)
 
 
-    }
+  //   }
 
-  }
+  // }
 
   useEffect(()=>{
     featchData()
@@ -4032,6 +4032,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     const imagesArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
+    
     setShowFiles(imagesArray);
   };
   const handleIgst = (e) => {
@@ -4598,7 +4599,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         //   authority.Audit_Remark == true
                         //     ? new Date().getFullYear() - 1 + "-04-01"
                         //     : new Date().getFullYear() + "-04-01"
-                        // // }
+                        // }
                         // min={new Date().getFullYear() + "-04-01"}
                         max={formattedDate}
                         required
@@ -5142,8 +5143,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="tcs"
                         step="any"
                         // onChange={e => { handleTcs(e) }}
-                        // value={billAmountValues.tcs}
-                        value={0}
+                        value={billAmountValues.tcs}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
@@ -5184,7 +5184,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
-                      // name="is_tds_applicable"
+                      name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
                     <label className="col-form-label">
