@@ -163,7 +163,7 @@ function Profile() {
                             })
                             setNotify({ type: 'success', message: res.data.message })
                             window.location.reload(false);
-                            history.push({
+                            history({
                                 pathname: `/${_base}/Profile`,
                                 state: { alert: { type: 'success', message: res.data.message } }
                             });
@@ -187,7 +187,7 @@ function Profile() {
         //             })
         //             setNotify({ type: 'success', message: res.data.message })
         //             window.location.reload(false);
-        //             history.push({
+        //             history({
         //                 pathname: `/${_base}/Profile`,
         //                 state: { alert: { type: 'success', message: res.data.message } }
         //             });

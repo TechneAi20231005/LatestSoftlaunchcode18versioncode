@@ -28,6 +28,29 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [ip, setIp] = useState("");
 
+
+
+
+  const featchData=async()=>{
+    try{
+
+      const res=await axios.get("https://api.ipify.org/?format=json");
+      setIp(res.data.ip)
+
+    }catch(error){
+      console.error("Error fetching data:", error)
+
+
+    }
+
+  }
+
+  useEffect(()=>{
+    featchData()
+
+  },[])
+
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -417,6 +440,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     const imagesArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
+    
     setShowFiles(imagesArray);
   };
   const [igst, setIgst] = useState(0);
@@ -1142,7 +1166,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         //     ? new Date().getFullYear() - 1 + "-04-01"
                         //     : new Date().getFullYear() + "-04-01"
                         // }
-                        // min={new Date().getFullYear() + "-01-01"}
+                        // min={new Date().getFullYear() + "-04-01"}
                         max={formattedDate}
                         required
                         // max={new Date().toISOString().split("T")[0]}
@@ -1685,8 +1709,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="tcs"
                         step="any"
                         // onChange={e => { handleTcs(e) }}
-                        // value={billAmountValues.tcs}
-                        value={0}
+                        value={billAmountValues.tcs}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
@@ -1727,7 +1750,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
-                      // name="is_tds_applicable"
+                      name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
                     <label className="col-form-label">
