@@ -427,7 +427,9 @@ const GetAllTestCases = ({ match, props }) => {
         setData(null);
         setUserTypeData(null);
         let counter = 1;
+  
         const temp = res.data.data;
+        if(temp)
         setIterationCount(res.data.iterationCount);
         const userType = res.data.type;
 

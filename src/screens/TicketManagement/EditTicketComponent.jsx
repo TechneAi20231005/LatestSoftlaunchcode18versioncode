@@ -49,7 +49,10 @@ export default function EditTicketComponent({ match }) {
 
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
-    const {ticketId} =useParams()
+
+    const {ticketId} = useParams() 
+
+
     const [dateValue, setDateValue] = useState(new Date())
   
     const editor = useRef(null);
