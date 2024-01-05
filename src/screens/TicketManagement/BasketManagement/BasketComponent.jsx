@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Dropdown } from "react-bootstrap"
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
@@ -19,7 +19,7 @@ export default function BasketComponent({ match }) {
     const currentDate = new Date();
     const [userData, setUserData] = useState(null);
     const [notify, setNotify] = useState(null);
-    const ticketId = match.params.id;
+    const {ticketId} = useParams()
     const history = useNavigate();
     const mainJson = {
         ticket_id: ticketId,
@@ -136,7 +136,7 @@ export default function BasketComponent({ match }) {
             await new BasketService().postBasket(formData).then(res => {
                 if (res.status === 200) {
                     if (res.data.status === 1) {
-                        history.push({
+                        history({
                             pathname: `/${_base}/Ticket/Task/` + ticketId,
                             state: { alert: { type: 'success', message: res.data.message } }
                         });
@@ -170,7 +170,7 @@ export default function BasketComponent({ match }) {
             //     } else {
             //         returnValue.type = "success";
             //         returnValue.message = "Inserted";
-            //         history.push({
+            //         history({
             //             pathname: `/${_base}/Ticket/Task/` + id,
             //             state: { showAlert: true, alertData: returnValue }
             //         });

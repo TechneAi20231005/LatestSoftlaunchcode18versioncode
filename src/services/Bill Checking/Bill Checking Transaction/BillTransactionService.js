@@ -255,7 +255,6 @@ export default class BillCheckingTransactionService {
         "Content-Type": "application/json",
       },
     };
-    payload.append("tenant_id", userSessionData.tenantId);
     payload.append("created_by", userSessionData.userId);
     payload.append("created_at", getDateTime());
     return axios.post(_URL + "/createBillCheck", payload, config);

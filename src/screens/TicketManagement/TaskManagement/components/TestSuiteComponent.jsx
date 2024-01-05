@@ -19,7 +19,7 @@ import {
   deleteAttachment,
 } from "../../../../services/OtherService/AttachmentService";
 import { Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MyTicketService from "../../../../services/TicketService/MyTicketService";
 import ModuleService from "../../../../services/ProjectManagementService/ModuleService";
 import SubModuleService from "../../../../services/ProjectManagementService/SubModuleService";
@@ -29,9 +29,14 @@ import Tooltip from "react-bootstrap/Tooltip";
 import Select from "react-select";
 import DesignationService from "../../../../services/MastersService/DesignationService";
 import ProjectService from "../../../../services/ProjectManagementService/ProjectService";
-import BasketService from "../../../../services/TicketService/BasketService";
+
 const TestSuiteComponent = ({ match, location }) => {
-  const ticketId = match.params.id;
+  // const ticketId = match.params.id;
+  const {id}=useParams()
+  
+
+
+
   const [data, setData] = useState(null);
   const [userTypeData, setUserTypeData] = useState(null);
   const [notify, setNotify] = useState(null);

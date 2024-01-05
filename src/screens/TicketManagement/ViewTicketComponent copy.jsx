@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { _base, userSessionData } from '../../settings/constants';
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
@@ -38,7 +38,7 @@ const plugins = [mentionPlugin];
 export default function ViewTicketComponent({ match }) {
 
     const history = useNavigate();
-    const ticketId = match.params.id;
+    const ticketId = useParams()
     const [notify, setNotify] = useState(null);
     const [rangeBar, SetRangeBar] = useState(null);
     const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -137,7 +137,7 @@ export default function ViewTicketComponent({ match }) {
     }
 
     const loadComments = async () => {
-        await new MyTicketService().getComments(match.params.id).then((res) => {
+        await new MyTicketService().getComments(ticketId).then((res) => {
             if (res.status === 200) {
                 setCommentData(res.data.data);
             }

@@ -3,11 +3,13 @@ import MyTicketService from '../../../services/TicketService/MyTicketService'
 import PageHeader from "../../../components/Common/PageHeader";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
+import { useParams } from 'react-router-dom';
 
 
 
 const TicketHistory = ({ match }) => {
-  const id = match.params.id
+
+  const {id}=useParams()
 
   const [data, setData] = useState()
 

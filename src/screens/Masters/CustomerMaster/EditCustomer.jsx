@@ -17,7 +17,7 @@ import Select from "react-select";
 function EditCustomer({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  // const customerId = match.params.id;
+
   const { id } = useParams();
   const customerId = id;
 

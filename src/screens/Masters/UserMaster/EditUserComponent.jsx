@@ -28,7 +28,7 @@ function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
 
-  // const userId = parseInt(match.params.id);
+  
 
   const {id}=useParams()
   const userId=parseInt(id)

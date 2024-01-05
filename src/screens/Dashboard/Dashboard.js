@@ -2552,7 +2552,7 @@ export default function Dashboard(props) {
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
-  {console.log(history);}
+
   const [chartData, setChartData] = useState({
     series: [50, 59, 40],
     Chart: {
@@ -2611,7 +2611,7 @@ export default function Dashboard(props) {
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");
       sessionStorage.clear();
-      history.push(`${process.env.PUBLIC_URL}/`);
+      history(`${process.env.PUBLIC_URL}/`);
     }
   };
 

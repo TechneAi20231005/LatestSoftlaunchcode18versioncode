@@ -47,7 +47,7 @@ export default function ForgetPassword(){
     postData(userData).then((res) => {
       if (res.status == 200) {
         if (res.data.status === 1) {
-          history.push({
+          history({
             pathname:`/${_base}/otp`,
             state: { email: userData.email },
           });

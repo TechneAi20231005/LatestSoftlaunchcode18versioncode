@@ -262,7 +262,7 @@
 
 // //             if (res.status === 200) {
 // //                 if (res.data.status === 1) {
-// //                     history.push({
+// //                     history({
 // //                         pathname: `/${_base}/BillCheckingTransaction`,
 // //                         state: { alert: { type: 'success', message: res.data.message } }
 // //                     });
@@ -1313,7 +1313,7 @@
 //       .then((res) => {
 //         if (res.status === 200) {
 //           if (res.data.status === 1) {
-//             history.push({
+//             history({
 //               pathname: `/${_base}/BillCheckingTransaction`,
 //               state: { alert: { type: "success", message: res.data.message } },
 //             });
@@ -2829,7 +2829,7 @@
 
 //             if (res.status === 200) {
 //                 if (res.data.status === 1) {
-//                     history.push({
+//                     history({
 //                         pathname: `/${_base}/BillCheckingTransaction`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -3579,28 +3579,60 @@ import DropdownService from "../../../services/Bill Checking/Bill Checking Trans
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import DepartmentService from "../../../services/MastersService/DepartmentService";
 import UserService from "../../../services/MastersService/UserService";
-
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import axios from "axios";
 
 export default function CreateBillCheckingTransaction({ match }) {
-  const {id} = useParams()
+  // const id = match.params.id;
+  const { id } = useParams();
+  const [isOriginal, setIsOriginal] = useState(0);
 
   const [ip, setIp] = useState("");
+  const [billAmountValues, setBillAmountValues] = useState({
+    tcs: "",
+    bill_amount: "",
+    net_payment: "",
+    debit_advance: "",
+    taxable_amount: "",
+    igst_amount: "",
+    gst_amount: "",
+    round_off: "",
+  });
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get("https://api.ipify.org/?format=json");
-        setIp(res.data.ip);
-      } catch (error) {
-        console.error('Error fetching IP:', error);
-      }
-    };
+  const featchData = async () => {
+    try {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      setIp(res.data.ip);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    fetchData();
-  }, []); 
+
+
+
+  // const featchData=async()=>{
+  //   try{
+
+  //     const res=await axios.get("https://api.ipify.org/?format=json");
+  //     setIp(res.data.ip)
+
+  //   }catch(error){
+  //     console.error("Error fetching data:", error)
+
+
+  //   }
+
+  // }
+
+  useEffect(()=>{
+    featchData()
+
+  },[])
+
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3639,10 +3671,14 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [tdsData, setTdsData] = useState(null);
 
   const [authorities, SetAuthorities] = useState();
+  const [roundOffError, setRoundOffError] = useState("");
 
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
+  const [showTcsFileds, setShowTcsFileds] = useState(false);
 
+  const [isTcsApplicable, setIsTcsApplicable] = useState(0);
+  const [isoriginalBill, setIsOriginalBill] = useState(false);
   const sectionRef = useRef();
   const tdsPercentageRef = useRef();
   // const resetSectionHandle = () =>{
@@ -3664,17 +3700,25 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-  const [showTcsFileds, setShowTcsFileds] = useState(false);
-
-  const [isTcsApplicable, setIsTcsApplicable] = useState(0);
-  const [isoriginalBill, setIsOriginalBill] = useState(false);
+  const [igst, setIgst] = useState(0);
 
   // Step 2: Create an event handler to update the state
   // const handleTcsApplicable = (e) => {
   //   setIsTcsApplicable(e.target.checked);
   // };
+  const [assignTo, setAssignTo] = useState();
+  const [assignToDropdown, setAssignToDropdown] = useState();
 
-
+  const [debit, setDebit] = useState();
+  const [taxable, setTaxable] = useState();
+  const [gst, setGst] = useState();
+  const [roundOff, setRoundOff] = useState();
+  const [tcs, setTcs] = useState();
+  const [tds, setTds] = useState();
+  const [tdsPercent, setTdsPercent] = useState();
+  const [deta, setDeta] = useState();
+  const [showFiles, setShowFiles] = useState();
+  const [authority, setAuthority] = useState();
   const handleTcsApplicable = (e) => {
     if (e) {
       if (e.target.checked) {
@@ -3689,19 +3733,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     const newValue = e.target.checked ? 1 : 0;
     setIsOriginalBill(newValue);
   };
-
-
-
-  const [debit, setDebit] = useState();
-  const [taxable, setTaxable] = useState();
-  const [gst, setGst] = useState();
-  const [roundOff, setRoundOff] = useState();
-  const [tcs, setTcs] = useState();
-  const [tds, setTds] = useState();
-  const [tdsPercent, setTdsPercent] = useState();
-  const [deta, setDeta] = useState();
-  const [showFiles, setShowFiles] = useState();
-  const [authority, setAuthority] = useState();
 
   const handleTaxable = (e) => {
     setTaxable(e.target.value);
@@ -3748,10 +3779,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       });
   };
 
-  const [assignTo, setAssignTo] = useState();
-  const [assignToDropdown, setAssignToDropdown] = useState();
-
-
   const handleAssignToPerson = async (e) => {
     await new DropdownService().getMappedEmp(e.value).then((res) => {
       if (res.status === 200) {
@@ -3772,7 +3799,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const day = String(currentDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
 
-  const handleReset = () => {};
   const handleFilter = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -3891,7 +3917,8 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     });
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -3913,34 +3940,57 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleForm = async (e) => {
-   e.preventDefault();
+    e.preventDefault();
 
     const form = new FormData(e.target);
     setNotify(null);
-    form.delete("attachment[]");
+    // form.delete("attachment[]");
     form.append("client_ip_address", ip);
-    if (document.getElementById("is_igst_applicable").value == "on") {
+
+    if (showTdsFileds === true) {
+      form.append("is_tds_applicable", 1);
+    } else {
+      form.append("is_tds_applicable", 0);
+    }
+    if (igst === 1) {
       form.append("is_igst_applicable", 1);
     } else {
       form.append("is_igst_applicable", 0);
     }
-
-    if (document.getElementById("is_tcs_applicable").value == "on") {
+    if (isTcsApplicable === 1) {
       form.append("is_tcs_applicable", 1);
     } else {
       form.append("is_tcs_applicable", 0);
     }
 
-    if (selectedFiles) {
-      for (var i = 0; i < selectedFiles.length; i++) {
-        form.append("attachment[" + i + "]", selectedFiles[i].file);
-      }
+    if (isOriginal === 1) {
+      form.append("is_original_bill_needed", 1);
+    } else {
+      form.append("is_original_bill_needed", 0);
     }
+
+    if (selectedFiles) {
+      selectedFiles.forEach((file, index) => {
+        form.append(`attachment[${index}]`, file.file, file.file.name);
+      });
+    }
+
+    // if (document.getElementById("is_original_bill_needed").value == "on") {
+    //   form.append("is_original_bill_needed", 1);
+    // } else {
+    //   form.append("is_original_bill_needed", 0);
+    // }
+    // console.log(selectedFiles);
+    // if (selectedFiles) {
+    //   for (var i = 0; i < selectedFiles?.length; i++) {
+    //     console.log(selectedFiles[i]);
+    //     form.append(`attachment`, selectedFiles[i]);
+    //   }
+    // }
     await new BillCheckingTransactionService()
       .createData(form)
       .then((res) => {
         if (res.status === 200) {
-
           if (res.data.status === 1) {
 
             history({
@@ -3953,24 +4003,24 @@ export default function CreateBillCheckingTransaction({ match }) {
           }
         } else {
           setNotify({ type: "danger", message: res.data.message });
-          new ErrorLogService().sendErrorLog(
-            "BillCheckingTransaction",
-            "BillCheckingTransaction",
-            "INSERT",
-            res.message
-          );
+          // new ErrorLogService().sendErrorLog(
+          //   "BillCheckingTransaction",
+          //   "BillCheckingTransaction",
+          //   "INSERT",
+          //   res.message
+          // );
         }
       })
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         setNotify({ type: "danger", message: "Request Error !!!" });
-        new ErrorLogService().sendErrorLog(
-          "BillCheckingTransaction",
-          "BillCheckingTransaction",
-          "INSERT",
-          errorObject.data.message
-        );
+        // new ErrorLogService().sendErrorLog(
+        //   "BillCheckingTransaction",
+        //   "BillCheckingTransaction",
+        //   "INSERT",
+        //   errorObject.data.message
+        // );
       });
   };
 
@@ -3984,15 +4034,23 @@ export default function CreateBillCheckingTransaction({ match }) {
     });
     
     setShowFiles(imagesArray);
- 
   };
-  const [igst, setIgst] = useState(0);
   const handleIgst = (e) => {
     if (e) {
       if (e.target.checked) {
         setIgst(1);
       } else {
         setIgst(0);
+      }
+    }
+  };
+
+  const handleIsOriginal = (e) => {
+    if (e) {
+      if (e.target.checked) {
+        setIsOriginal(1);
+      } else {
+        setIsOriginal(0);
       }
     }
   };
@@ -4004,7 +4062,9 @@ export default function CreateBillCheckingTransaction({ match }) {
   useEffect(() => {
     loadData();
   }, []);
-
+  useEffect(() => {
+    featchData();
+  }, []);
   useEffect(() => {
     var tdsAmount = 0;
     if (tdsAmount >= 0) {
@@ -4041,7 +4101,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
   //     var tempSelectedFile = [];
@@ -4236,17 +4295,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-  const [billAmountValues, setBillAmountValues] = useState({
-    tcs: "",
-    bill_amount: "",
-    net_payment: "",
-    debit_advance: "",
-    taxable_amount: "",
-    igst_amount: "",
-    gst_amount: "",
-    round_off: "",
-  });
-
   function handleInputChange(event, type) {
     const { name, value } = event.target;
     // console.log(igst);
@@ -4323,47 +4371,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
     setBillAmountValues({ ...billAmountValues, [name]: event.target.value });
   }
-  // function handleRoundOffChange(event) {
-  //   const { name, value } = event.target;
 
-  //   if (value === '-') {
-  //     // Show an error message when the input contains only a minus sign
-  //     setRoundOffError('Invalid input');
-  //   } else {
-  //     // Clear the error message if the input is not just a minus sign
-  //     setRoundOffError('');
-
-  //     // Remove any non-numeric, decimal point, or negative sign characters
-  //     let input = value.replace(/[^0-9.-]/g, "");
-
-  //     // Check if the input has more than one dot
-  //     if ((input.match(/\./g) || []).length > 1) {
-  //       // If so, remove all dots after the first one
-  //       input = input.replace(/\.(?=.*\.)/g, "");
-  //     }
-
-  //     // Check if the input has more than 2 decimal places
-  //     if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
-  //       // If so, round the input to 2 decimal places
-  //       input = parseFloat(input).toFixed(2);
-  //     }
-
-  //     // Check if the input has more than one negative sign
-  //     if ((input.match(/-/g) || []).length > 1) {
-  //       // If so, remove all negative signs after the first one
-  //       input = input.replace(/-(?=.*-)/g, "");
-  //     } else if (input.indexOf("-") > 0) {
-  //       // If there's a negative sign not at the beginning, remove it
-  //       input = input.replace("-", "");
-  //     }
-
-  //     event.target.value = input;
-  //   }
-
-  //   setBillAmountValues({ ...billAmountValues, [name]: event.target.value });
-  // }
-
-  // calculate Bill Amount value
   const billValue =
     parseFloat(
       billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
@@ -4392,45 +4400,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const tdsValue = Math.ceil(tdsAmountValue);
 
-  // calculate net payment amount value
-  // useEffect(() => {
-  //   var netPayment = 0;
-  //   {isTcsApplicable === true ?
-
-  //   netPayment =
-  //     parseFloat(BillAmount ? BillAmount : 0) -
-  //     parseFloat(
-  //       billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-  //     ) :
-
-  //     netPayment =
-  //     parseFloat(BillAmount1 ? BillAmount1 : 0) -
-  //     parseFloat(
-  //       billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-  //     );}
-
-  //     console.log("net",netPayment)
-  //     console.log("BillAmount",BillAmount)
-
-  //     console.log("BillAmount1",BillAmount1)
-
-  //   setNetPayment(Math.round(netPayment));
-  //   if (tdsValue > 0) {
-  //     netPayment = netPayment - parseFloat(tdsValue);
-  //     setNetPayment(Math.round(netPayment));
-  //   }
-  //   if (netPayment >= 0) {
-  //     setNetPayment(Math.round(netPayment));
-  //     setNetInWords((prev) => numWords(netInWords));
-  //   }
-  // }, [
-  //   BillAmount,
-  //   billAmountValues.debit_advance,
-  //   tdsValue,
-  //   netPayment,
-  //   tdsPercentage,
-  // ]);
-
   useEffect(() => {
     let netPayment = 0;
 
@@ -4454,10 +4423,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       netPayment = netPayment - parseFloat(tdsValue);
       setNetPayment(Math.round(netPayment));
     }
-
-    // if (netPayment >= 0) {
-    //   setNetInWords((prev) => numWords(netPayment)); // Assuming numWords is a function to convert numbers to words.
-    // }
   }, [
     BillAmount,
     BillAmount1,
@@ -4478,8 +4443,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   //   round_off: '',
   // });
 
-  const [roundOffError, setRoundOffError] = useState("");
-
   const handleRoundOffChangee = (e) => {
     const inputValue = e.target.value;
     // Your other validation logic here
@@ -4497,9 +4460,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       round_off: inputValue,
     });
   };
-
-  
-
 
   return (
     <div className="container-xxl">
@@ -4679,8 +4639,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </b>
                     </label>
 
-                    
-                    
                     <input
                       type="text"
                       step="any"
@@ -5035,7 +4993,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
                       value={billAmountValues.round_off}
                       onChange={(e) => handleRoundOffChange(e)}
-                      // required
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -5213,7 +5170,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       // value={billAmount}
                       // onChange={handleInputChange}
                       value={
-                        BillAmount > 0 && isTcsApplicable ==1
+                        BillAmount > 0 && isTcsApplicable == 1
                           ? BillAmount
                           : BillAmount1
                       }
@@ -5263,7 +5220,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_original_bill_needed"
-                      name="is_original_bill_needed"
+                      // name="is_original_bill_needed"
+                      onChange={(e) => {
+                        handleIsOriginal(e);
+                      }}
                       disabled={
                         authorities &&
                         authorities.Original_Bill_Needed === false
@@ -5281,7 +5241,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" form-group row mt-3 ">
                     <div className="col-md-3  ">
                       <label className="col-form-label">
-                        <b>TDS section : </b> <Astrick color="red" size="13px" />
+                        <b>TDS section : </b>{" "}
+                        <Astrick color="red" size="13px" />
                       </label>
                       {sectionDropdown && (
                         <Select
@@ -5299,7 +5260,8 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
-                        <b>TDS Constitution : </b> <Astrick color="red" size="13px" />
+                        <b>TDS Constitution : </b>{" "}
+                        <Astrick color="red" size="13px" />
                       </label>
                       {tdsData && tdsData.length > 0 && (
                         <span>
@@ -5526,16 +5488,16 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         type="file"
                         id="attachment"
-                        name="attachment[]"
+                        name="attachment"
                         ref={fileInputRef}
                         multiple
                         required={
-                          selectedFiles && selectedFiles.length < 0
+                          selectedFiles && selectedFiles?.length < 0
                             ? true
                             : false
                         }
                         onChange={(e) => {
-                          uploadAttachmentHandler(e, "UPLOAD", "");
+                          // uploadAttachmentHandler(e, "UPLOAD", "");
                           maxLengthCheck(e);
                         }}
                       />

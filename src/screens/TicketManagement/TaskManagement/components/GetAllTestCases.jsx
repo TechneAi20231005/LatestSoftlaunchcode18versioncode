@@ -19,7 +19,7 @@ import {
   deleteAttachment,
 } from "../../../../services/OtherService/AttachmentService";
 import { Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MyTicketService from "../../../../services/TicketService/MyTicketService";
 import ModuleService from "../../../../services/ProjectManagementService/ModuleService";
 import SubModuleService from "../../../../services/ProjectManagementService/SubModuleService";
@@ -33,7 +33,8 @@ import Chart from "react-apexcharts";
 import DesignationService from "../../../../services/MastersService/DesignationService";
 
 const GetAllTestCases = ({ match, props }) => {
-  const ticketId = match.params.id;
+  const {ticketId} = useParams()
+
   const [data, setData] = useState(null);
   const [userTypeData, setUserTypeData] = useState(null);
 
@@ -426,7 +427,9 @@ const GetAllTestCases = ({ match, props }) => {
         setData(null);
         setUserTypeData(null);
         let counter = 1;
+  
         const temp = res.data.data;
+        if(temp)
         setIterationCount(res.data.iterationCount);
         const userType = res.data.type;
 

@@ -37,9 +37,7 @@ import ManageMenuService from "../../../../services/MenuManagementService/Manage
 const TestBankComponent = ({ match, props,  }) => {
   const history = useNavigate();
   const location = useLocation()
-  // const ticketId = match.params.id;
-  const {id} =useParams()
-  const ticketId =id
+  const {ticketId} = useParams()
 
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState();

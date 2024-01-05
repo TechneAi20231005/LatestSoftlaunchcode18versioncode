@@ -20,7 +20,7 @@ import {
   deleteAttachment,
 } from "../../../../services/OtherService/AttachmentService";
 import { Table } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MyTicketService from "../../../../services/TicketService/MyTicketService";
 import ModuleService from "../../../../services/ProjectManagementService/ModuleService";
 import SubModuleService from "../../../../services/ProjectManagementService/SubModuleService";
@@ -32,9 +32,13 @@ import TestingTypeServices from "../../../../services/MastersService/TestingType
 import Select from "react-select";
 import DesignationService from "../../../../services/MastersService/DesignationService";
 const TestCases = ({ match }) => {
-  const ticket_id = match.params.ticketId;
-  const task_id = match.params.taskId;
-  const module_id = match.params.moduleId;
+  // const ticket_id = match.params.ticketId;
+  // const task_id = match.params.taskId;
+const{ticket_id}=useParams()
+const {task_id}=useParams()
+
+
+
   const [testingTypeDropdown, setTestingTypeDropdown] = useState();
   const [testCaseFunction, setTestCaseFunction] = useState();
 
@@ -1262,7 +1266,7 @@ const TestCases = ({ match }) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           // setNotify({ type: "success", message: "Test Cases Added To Test Plan" });
-          history.push({
+          history({
             pathname: `/${_base}/TestBank`,
             state: {
               alert: { type: "success", message: "Test Cases Added To Test Plan" },

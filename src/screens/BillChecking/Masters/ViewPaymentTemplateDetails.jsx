@@ -10,7 +10,7 @@ import VendorMasterService from '../../../services/Bill Checking/Masters/VendorM
 
 
   const ViewPaymentTemplateDetails = ({match}) => {
-    // const templateId= parseInt(match.params.id)
+    
     const {id}=useParams()
     const templateId =id
       const [data, setData] = useState(null);

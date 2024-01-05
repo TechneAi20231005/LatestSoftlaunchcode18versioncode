@@ -321,7 +321,7 @@ const ViewBillTypeComponent = ({ match }) => {
   
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history.push({
+          history({
             pathname: `/${_base}/billTypeMaster`,
             state: { alert: { type: "success", message: res.data.message } },
           });

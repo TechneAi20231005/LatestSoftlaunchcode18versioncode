@@ -11,7 +11,7 @@ import PageHeader from "../../../../components/Common/PageHeader";
 import Alert from "../../../../components/Common/Alert";
 import { Dropdown, Modal } from "react-bootstrap";
 import Select from "react-select";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorLogService from "../../../../services/ErrorLogService";
 import TesttingTypeServices from "../../../../services/MastersService/TestingTypeService";
 import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
@@ -19,8 +19,10 @@ import { object } from "prop-types";
 const TestCasesReviewerView = ({ match }) => {
   const history = useNavigate();
 
-  const ticketId = match.params.ticketId;
-  const taskId = match.params.taskId;
+  // const ticketId = match.params.ticketId;
+  // const taskId = match.params.taskId;
+  const {taskId} =useParams()
+  const {ticketId}=useParams()
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
     modalData: "",
@@ -936,7 +938,7 @@ const TestCasesReviewerView = ({ match }) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setNotify({ type: "success", message: res.data.message });
-          history.push({
+          history({
             pathname: `/${_base}/TestBank`,
             state: {
               alert: { type: "success", message: res.data.message },
@@ -959,7 +961,7 @@ const TestCasesReviewerView = ({ match }) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setNotify({ type: "success", message: res.data.message });
-          history.push({
+          history({
             pathname: `/${_base}/TestBank`,
             state: {
               alert: { type: "success", message: res.data.message },

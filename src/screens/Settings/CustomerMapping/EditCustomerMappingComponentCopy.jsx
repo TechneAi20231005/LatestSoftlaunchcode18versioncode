@@ -1,5 +1,5 @@
               import React, { useState, useEffect, useRef } from "react";
-              import { Link, useNavigate } from "react-router-dom";
+              import { Link, useNavigate, useParams } from "react-router-dom";
               import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
               import { _base } from "../../../settings/constants";
 
@@ -25,7 +25,7 @@
 
               export default function EditCustomerMappingComponent({ match }) {
                 const history = useNavigate();
-                const mappingId = match.params.id;
+                const mappingId =useParams()
                 const [notify, setNotify] = useState();
 
                 const [mainData,setMainData]=useState({approach:null,user_policy:[],})
@@ -195,7 +195,7 @@
                     .then((res) => {
                       if (res.status === 200) {
                         if (res.data.status === 1) {
-                          history.push({
+                          history({
                             pathname: `/${_base}/CustomerMapping`,
                             state: { alert: { type: "success", message: res.data.message } },
                           });

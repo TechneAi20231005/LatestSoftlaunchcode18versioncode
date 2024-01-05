@@ -17,7 +17,7 @@ import UserService from "../../../services/MastersService/UserService";
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  // const projectId = match.params.id
+
   const {id} = useParams();
   const projectId = id
 

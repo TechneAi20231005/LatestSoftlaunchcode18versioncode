@@ -29,9 +29,9 @@ export default class UserService {
         "Content-Type": "application/json",
       },
     };
-    // const url = `${_URL}?input_required=${queryParams}`;
+    const url = `${_URL}?input_required=${queryParams}`;
       
-    return axios.get(_URL, config);
+    return axios.get(url, config);
 
     
   }
