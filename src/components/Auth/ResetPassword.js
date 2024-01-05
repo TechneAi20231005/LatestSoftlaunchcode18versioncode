@@ -34,7 +34,7 @@ export default function ResetPassword({ location }) {
     postData(userData).then((res) => {
       if (res.status == 200) {
         if (res.data.status === 1) {
-          history(`/${_base}/`);
+          history.push(`/${_base}/`);
         } else {
           setNotify();
           setNotify({ type: "danger", message: res.data.message });

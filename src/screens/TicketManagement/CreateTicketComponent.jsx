@@ -93,7 +93,7 @@
 //             {
 //                 if (res.data.status === 1)
 //                 {
-//                     history({
+//                     history.push({
 //                         pathname: `/${_base}/Ticket`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -106,7 +106,7 @@
 //                         window.open(URL, '_blank').focus();
 
 //                         setNotify({ type: 'danger', message: res.message });
-//                         // history({
+//                         // history.push({
 //                         //     pathname: `/${_base}/Ticket`,
 //                         //     state: { alert: { type: 'danger', message: res.data.message } }
 //                         // });
@@ -754,7 +754,7 @@
 //             // console.log(res);
 //             if (res.status === 200) {
 //                 if (res.data.status === 1) {
-//                     history({
+//                     history.push({
 //                         pathname: `/${_base}/Ticket`,
 //                         state: { alert: { type: 'success', message: res.data.message } }
 //                     });
@@ -1274,7 +1274,7 @@ export default function CreateTicketComponent() {
               window.open(URL, "_blank").focus();
 
               setNotify({ type: "danger", message: res.message });
-              // history({
+              // history.push({
               //     pathname: `/${_base}/Ticket`,
               //     state: { alert: { type: 'danger', message: res.data.message } }
               // });

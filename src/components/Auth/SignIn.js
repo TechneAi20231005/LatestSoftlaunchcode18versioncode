@@ -49,7 +49,7 @@
 //             message: "Logged In !!!",
 //           };
 
-//           history({
+//           history.push({
 //             pathname: `${process.env.PUBLIC_URL}/Dashboard`,
 //             state: { alert: { type: "success", message: res.data.message } },
 //           });

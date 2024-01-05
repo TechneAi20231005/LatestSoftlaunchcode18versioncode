@@ -105,7 +105,7 @@ export default function CreateTicketComponent() {
                         
                         setNotify({ type: 'danger', message: res.message });
                         
-                        // history({
+                        // history.push({
                         //     pathname: `/${_base}/Ticket`,
                         //     state: { alert: { type: 'danger', message: res.data.message } }
                         // });

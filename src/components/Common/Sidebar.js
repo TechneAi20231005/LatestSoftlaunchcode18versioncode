@@ -142,10 +142,10 @@ class Sidebar extends React.Component {
   }
   GotoChangeMenu(val) {
     if (val === "UI Components") {
-      this.props.history("ui-alerts");
+      this.props.history.push("ui-alerts");
       this.setState({ menuData: [...menu2] });
     } else {
-      this.props.history("hr-dashboard");
+      this.props.history.push("hr-dashboard");
       this.setState({ menuData: [...menu] });
     }
   }
@@ -505,10 +505,10 @@ export default  Sidebar;
 //   }
 //   GotoChangeMenu(val) {
 //     if (val === "UI Components") {
-//       this.props.history("ui-alerts");
+//       this.props.history.push("ui-alerts");
 //       this.setState({ menuData: [...menu2] });
 //     } else {
-//       this.props.history("hr-dashboard");
+//       this.props.history.push("hr-dashboard");
 //       this.setState({ menuData: [...menu] });
 //     }
 //   }

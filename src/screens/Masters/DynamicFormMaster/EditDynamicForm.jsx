@@ -225,7 +225,7 @@
 //         console.log(res)
 //         if (res.status === 200) {
 //             if (res.data.status === 1) {
-//                 history({
+//                 history.push({
 //                     pathname: `/${_base}/DynamicForm`,
 //                     state: { alert: { type: 'success', message: res.data.message } }
 //                 });
@@ -772,7 +772,7 @@
 //             await new DynamicFormService().updateDynamicForm(match.params.id, data).then(res => {
 //                 if (res.status === 200) {
 //                     if (res.data.status === 1) {
-//                         history({
+//                         history.push({
 //                             pathname: `/${_base}/DynamicForm`,
 //                             state: { alert: { type: 'success', message: res.data.message } }
 //                         });
@@ -788,7 +788,7 @@
 //             await new DynamicFormService().postDynamicForm(data).then(res => {
 //                 if (res.status === 200) {
 //                     if (res.data.status === 1) {
-//                         history({
+//                         history.push({
 //                             pathname: `/${_base}/DynamicForm`,
 //                             state: { alert: { type: 'success', message: res.data.message } }
 //                         });

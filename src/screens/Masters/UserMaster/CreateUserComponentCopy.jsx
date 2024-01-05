@@ -66,7 +66,7 @@ function CreateUserComponentCopy({ match }) {
         await new UserService().postUser(form).then(res => {
             // if(res.status===200){
             //     if(res.data.status===1){
-            //         history({
+            //         history.push({
             //             pathname:`/${_base}/User`,
             //             state: {alert : {type: 'success', message:res.data.message} }
             //         });

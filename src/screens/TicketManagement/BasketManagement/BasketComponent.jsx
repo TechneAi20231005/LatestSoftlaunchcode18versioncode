@@ -170,7 +170,7 @@ export default function BasketComponent({ match }) {
             //     } else {
             //         returnValue.type = "success";
             //         returnValue.message = "Inserted";
-            //         history({
+            //         history.push({
             //             pathname: `/${_base}/Ticket/Task/` + id,
             //             state: { showAlert: true, alertData: returnValue }
             //         });

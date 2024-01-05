@@ -2,11 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import ErrorLogService from "../../../services/ErrorLogService";
-import CustomerType from "../../../services/MastersService/CustomerTypeService";
-import CustomerService from "../../../services/MastersService/CustomerService";
-import CountryService from "../../../services/MastersService/CountryService";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
+
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import { Astrick } from "../../../components/Utilities/Style";
@@ -15,12 +11,10 @@ import { _base, userSessionData } from "../../../settings/constants";
 import Select from "react-select";
 import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import BillCheckingService from "../../../services/Bill Checking/Masters/BillTypeMasterService";
-import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
+
 import DepartmentService from "../../../services/MastersService/DepartmentService";
 import UserService from "../../../services/MastersService/UserService";
-import { _attachmentUrl } from "../../../settings/constants";
-import Attachment from "../../../components/Common/Attachment";
+
 import {
   getAttachment,
   deleteAttachment,

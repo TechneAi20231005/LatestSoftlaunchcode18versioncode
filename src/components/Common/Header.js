@@ -58,7 +58,7 @@ export default function Header() {
     // window.location.reload();
     window.location.href = `${process.env.PUBLIC_URL}/`;
     // var returnValue = { show: true, type: "success", message: "Log Out !!!" };
-    // history({
+    // history.push({
     //     pathname:`${process.env.PUBLIC_URL}/`,
     //     state: { showAlert: true, alertData: returnValue }
     // });
