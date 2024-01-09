@@ -1,7 +1,7 @@
 import axios from "axios";
 import { userSessionData } from "../../settings/constants";
 import { masterURL } from "../../settings/constants";
-export const _apiUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api";
+export const _apiUrl = "http://3.108.206.34/2_Testing/TSNewBackend/public/api";
 
 
 const _URL = masterURL.country;

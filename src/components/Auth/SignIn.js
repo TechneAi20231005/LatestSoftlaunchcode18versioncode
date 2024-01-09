@@ -1,5 +1,5 @@
 // import React, { useState, useEffect } from "react";
-// import { useNavigate, Link } from "react-router-dom";
+// import { useHistory, Link } from "react-router-dom";
 // import GoogleImg from "../../assets/images/google.svg";
 // import Logo from "../../assets/images/logo.jpeg";
 // import { _base } from "../../settings/constants";
@@ -8,7 +8,7 @@
 // import Alert from "../Common/Alert";
 
 // export default function SignIn() {
-//   const history = useNavigate();
+//   const history = useHistory();
 //   const [notify, setNotify] = useState(null);
 
 //   const submitHandler = (e) => {
@@ -49,7 +49,7 @@
 //             message: "Logged In !!!",
 //           };
 
-//           history({
+//           history.push({
 //             pathname: `${process.env.PUBLIC_URL}/Dashboard`,
 //             state: { alert: { type: "success", message: res.data.message } },
 //           });
@@ -81,7 +81,7 @@
 //   }, []);
 
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useHistory, Link, useNavigate } from "react-router-dom";
 import GoogleImg from "../../assets/images/google.svg";
 import Logo from "../../assets/images/logo.jpeg";
 import { _base } from "../../settings/constants";
@@ -92,12 +92,12 @@ import Alert from "../Common/Alert";
 export default function SignIn() {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  
-  const submitHandler = (e) => {
+
+  const submitHandler = async (e) => {
     setNotify(null);
     e.preventDefault();
     const data = new FormData(e.target);
-    postData(data).then((res) => {
+    await postData(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const data = res.data.data;
@@ -165,7 +165,7 @@ export default function SignIn() {
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");
       sessionStorage.clear();
-      history(`${process.env.PUBLIC_URL}/`);
+      history.push(`${process.env.PUBLIC_URL}/`);
     }
   };
 
@@ -201,7 +201,7 @@ export default function SignIn() {
       >
         <form onSubmit={submitHandler} className="row g-1 p-3 p-md-4">
           <div className="col-12 text-center mb-1 mb-lg-5">
-            <h1 style={{fontFamily:"Georgia, serif"}}>Sign In</h1>
+            <h1 style={{ fontFamily: "Georgia, serif" }}>Sign In</h1>
             {/* <span>Free access to our dashboard.</span> */}
           </div>
           {/* <div className="col-12 text-center mb-4">
