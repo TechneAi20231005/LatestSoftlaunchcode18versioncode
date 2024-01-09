@@ -125,7 +125,7 @@ export default function CreateTenant({match}) {
                     <label className="col-sm-2 col-form-label">
                         <b>Tenant Name :<Astrick color='red' /></b>
                     </label>
-                    <div className="col-sm-10">
+                    <div className="col-sm-4">
                       <input type="text" className="form-control form-control-sm"
                           id="company_name"
                           name="company_name"

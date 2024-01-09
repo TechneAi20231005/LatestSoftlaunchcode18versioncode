@@ -77,6 +77,12 @@ export default function MyTicketComponent({ location }) {
     modalHeader: "",
   });
 
+  const [bulkRemarkModal, setBulkRemarkModal] = useState({
+    showModal: false,
+    modalData: "",
+    modalHeader: "",
+  });
+
   const [confirmationModal, setConfirmationModal] = useState({
     showModals: false,
     modalsData: "",
@@ -153,9 +159,16 @@ export default function MyTicketComponent({ location }) {
     setModal(data);
   };
 
+
   const handleRemarkModal = (data) => {
     setRemarkModal(data);
   };
+
+
+  const handleBulkRemarkModal = (data) => {
+    setBulkRemarkModal(data);
+  };
+
 
   const actionComponent = (data, type) => {
     if (type === "SEARCH_RESULT") {
@@ -415,31 +428,31 @@ export default function MyTicketComponent({ location }) {
                 data.basket_configured === 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
                   data.basket_configured === 0)) && (
-                <li>
-                  <Link
-                    to={`/${_base}/Ticket/Basket/` + data.id}
-                    className="btn btn-sm btn-primary text-white"
-                    style={{ width: "100%", zIndex: 100 }}
-                  >
-                    <i className="icofont-bucket2"></i>Basket
-                  </Link>
-                </li>
-              )}
+                  <li>
+                    <Link
+                      to={`/${_base}/Ticket/Basket/` + data.id}
+                      className="btn btn-sm btn-primary text-white"
+                      style={{ width: "100%", zIndex: 100 }}
+                    >
+                      <i className="icofont-bucket2"></i>Basket
+                    </Link>
+                  </li>
+                )}
 
               {((data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
                   data.basket_configured > 0)) && (
-                <li>
-                  <Link
-                    to={`/${_base}/Ticket/Task/` + data.id}
-                    className="btn btn-sm btn-outline-primary"
-                    style={{ width: "100%", zIndex: 100 }}
-                  >
-                    <i className="icofont-tasks"></i> Task
-                  </Link>
-                </li>
-              )}
+                  <li>
+                    <Link
+                      to={`/${_base}/Ticket/Task/` + data.id}
+                      className="btn btn-sm btn-outline-primary"
+                      style={{ width: "100%", zIndex: 100 }}
+                    >
+                      <i className="icofont-tasks"></i> Task
+                    </Link>
+                  </li>
+                )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -458,14 +471,14 @@ export default function MyTicketComponent({ location }) {
               data.basket_configured === 0) ||
               (data.assign_to_user_id == localStorage.getItem("id") &&
                 data.basket_configured === 0)) && (
-              <Link
-                to={`/${_base}/Ticket/Basket/` + data.id}
-                className="btn btn-sm btn-primary text-white"
-                style={{ width: "90px" }}
-              >
-                <i className="icofont-bucket2"></i>Basket
-              </Link>
-            )}
+                <Link
+                  to={`/${_base}/Ticket/Basket/` + data.id}
+                  className="btn btn-sm btn-primary text-white"
+                  style={{ width: "90px" }}
+                >
+                  <i className="icofont-bucket2"></i>Basket
+                </Link>
+              )}
 
             <Link
               to={`/${_base}/Ticket/Edit/` + data.id}
@@ -763,9 +776,8 @@ export default function MyTicketComponent({ location }) {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "SEARCH_RESULT"),
     },
 
@@ -782,7 +794,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -869,9 +881,8 @@ export default function MyTicketComponent({ location }) {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "YOUR_TASK"),
     },
     {
@@ -892,7 +903,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -981,9 +992,8 @@ export default function MyTicketComponent({ location }) {
       name: "Action",
       button: true,
 
-      width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
-      }`,
+      width: `${assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
     },
     { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
@@ -999,7 +1009,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1088,9 +1098,8 @@ export default function MyTicketComponent({ location }) {
       name: "Action",
       button: true,
       ignoreRowClick: true,
-      width: `${
-        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ADDED_BY_ME"),
     },
 
@@ -1112,7 +1121,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1197,21 +1206,59 @@ export default function MyTicketComponent({ location }) {
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
   ];
 
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  // const handleCheckboxChange = (row) => {
+  //   const isSelected = selectedRows.includes(row);
+  //   setSelectedRows((prevSelectedRows) =>
+  //     isSelected
+  //       ? prevSelectedRows.filter((selectedRow) => selectedRow !== row)
+  //       : [...prevSelectedRows, row]
+  //   );
+  // };
+  const handleCheckboxChange = (row) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(row.id)
+        ? prevSelectedRows.filter((selectedRow) => selectedRow !== row.id)
+        : [...prevSelectedRows, row.id]
+    );
+  };
+
   const unpassedColumns = [
     {
       name: "Action",
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        unpassedTickets
-          ? unpassedTickets.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${unpassedTickets
+        ? unpassedTickets.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "UNPASSED_TICKET"),
     },
+    // {
+    //   name: "Checkbox",
+    //   selector: "checkbox", // unique key for the column
+    //   width: "4rem",
+    //   center: true,
+    //   cell: (row) => <input type="checkbox" checked={row.isSelected} onChange={() => handleCheckboxChange(row)} />,
+    // },
+    {
+      name: "Checkbox",
+      selector: "checkbox", // unique key for the column
+      width: "4rem",
+      center: true,
+      cell: (row) => (
+        <input
+          type="checkbox"
+          checked={selectedRows.includes(row.id)}
+          onChange={() => handleCheckboxChange(row)}
+        />
+      ),
+    },
+
     {
       name: "Sr",
       width: "4rem",
@@ -1230,7 +1277,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1321,13 +1368,12 @@ export default function MyTicketComponent({ location }) {
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        departmentwiseTicket
-          ? departmentwiseTicket.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${departmentwiseTicket
+        ? departmentwiseTicket.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "DEPARTMENTWISE_TICKET"),
     },
     {
@@ -1348,7 +1394,7 @@ export default function MyTicketComponent({ location }) {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1611,25 +1657,98 @@ export default function MyTicketComponent({ location }) {
     });
   };
 
-  const handlePassTicketForm = async (e) => {
-    setNotify(null);
-    e.preventDefault();
+  // const handlePassTicketForm = async (e) => {
+  //   setNotify(null);
+  //   e.preventDefault();
 
-    const formData = new FormData(e.target);
-    await new MyTicketService().passTicket(formData).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
+  //   const formData = new FormData(e.target);
+  //   await new MyTicketService().passTicket(formData).then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status == 1) {
+  //         setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+  //         loadData();
+  //         setNotify({ type: "success", message: res.data.message });
+  //       } else {
+  //         setNotify({ type: "danger", message: res.data.message });
+  //       }
+  //     } else {
+  //       setNotify({ type: "danger", message: "Request Error !!!" });
+  //     }
+  //   });
+  // };
+
+  const handlePassTicketForm = async (e) => {
+    try {
+      e.preventDefault();
+      setNotify(null);
+
+      const formData = new FormData(e.target);
+      const response = await new MyTicketService().passTicket(formData);
+
+      if (response.status === 200) {
+        const { status, message } = response.data;
+
+
+        if (status === 1) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+          // window.location.reload(false)
           loadData();
-          setNotify({ type: "success", message: res.data.message });
+
+          setNotify({ type: "success", message });
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: "danger", message });
         }
       } else {
         setNotify({ type: "danger", message: "Request Error !!!" });
       }
-    });
+    } catch (error) {
+      console.error("Error handling passTicket form:", error);
+      setNotify({ type: "danger", message: "An error occurred." });
+    }
   };
+
+
+
+  // bluk ticket pass api calling
+
+  const handleBulkPassTicketForm = async (e) => {
+    try {
+      e.preventDefault();
+      setNotify(null);
+
+      const formData = new FormData(e.target);
+
+      // Append selected IDs to the formData
+      selectedRows.forEach((id) => {
+        formData.append('id', id);
+      });
+
+      const response = await new MyTicketService().passBulkTicket(formData);
+      if (response.status === 200) {
+        const { status, message } = response.data;
+        if (status === 1) {
+          setBulkRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+          // window.location.reload(false)
+          loadData();
+          setSelectedRows([])
+        
+          setNotify({ type: "success", message });
+        } else {
+          setNotify({ type: "danger", message });
+        }
+      } else {
+        setNotify({ type: "danger", message: "Request Error !!!" });
+      }
+    } catch (error) {
+      console.error("Error handling passTicket form:", error);
+      setNotify({ type: "danger", message: "An error occurred." });
+    }
+  };
+
+  console.log("remarkModal", remarkModal)
+
+
+
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -1969,9 +2088,9 @@ export default function MyTicketComponent({ location }) {
     .getHours()
     .toString()
     .padStart(2, "0")}${currentDate
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
   const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
     2,
     4
@@ -2380,7 +2499,7 @@ export default function MyTicketComponent({ location }) {
                       defaultValue={startDate}
                       required={toDateRequired}
                       ref={selectFromDateRef}
-                      // max={disableDate()}
+                    // max={disableDate()}
                     />
                   </div>
                   <div className="col-md-6">
@@ -2849,7 +2968,7 @@ export default function MyTicketComponent({ location }) {
                 </Tab>
                 <Tab eventKey="unpassed_columns" title="Unpassed Ticket">
                   <div className="card mb-3 mt-3">
-                    <div className="card-body">
+                    {/* <div className="card-body">
                       {unpassedTickets && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
@@ -2857,6 +2976,111 @@ export default function MyTicketComponent({ location }) {
                           typeOf="UnPassed"
                         />
                       )}
+<button
+                  className="btn btn-success text-white"
+                  style={{ width: "100%", zIndex: 100 }}
+                  onClick={(e) => {
+                    handleRemarkModal({
+                      showModal: true,
+                      modalData: data,
+                      modalHeader: "Enter Remark",
+                      status: "PASS",
+                    });
+                  }}
+                >
+                  <i className="icofont-checked"></i> Pass
+                </button> */}
+
+                    <div className="card-body">
+                      <div className="row">
+                        {/* <div className="col-md-2 mb-3">
+                          {unpassedTickets && (
+                            <ExportAllTicketsToExcel
+                              className="btn btn-danger btn-block"
+                              fileName="Unpassed Ticket"
+                              typeOf="UnPassed"
+                            />
+                          )}
+
+
+                          <button
+                            className="btn btn-success btn-block text-white"
+
+                            onClick={(e) => {
+                              const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+                              handleBulkRemarkModal({
+                                showModal: true,
+                                modalData: selectedData,
+                                modalHeader: "Enter Remark",
+                                status: "PASS",
+                              });
+                            }}
+                          >
+                            <i className="icofont-checked"></i> Pass
+                          </button>
+
+                          <button
+                            className="btn btn-success btn-block text-white"
+
+                            onClick={(e) => {
+                              const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+                              handleBulkRemarkModal({
+                                showModal: true,
+                                modalData: selectedData,
+                                modalHeader: "Enter Remark",
+                                status: "REJECT",
+                              });
+                            }}>
+                            <i className="icofont-close-squared-alt"></i> Reject
+                          </button>
+
+                        </div> */}
+                        <div className="row">
+  <div className="col-md-3 mb-1">
+    {unpassedTickets && (
+      <ExportAllTicketsToExcel
+        className="btn btn-danger btn-block"
+        fileName="Unpassed Ticket"
+        typeOf="UnPassed"
+      />
+    )}
+ 
+    <button
+      className="btn btn-success btn-block text-white"
+      onClick={(e) => {
+        const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+        handleBulkRemarkModal({
+          showModal: true,
+          modalData: selectedData,
+          modalHeader: "Enter Remark",
+          status: "PASS",
+        });
+      }}
+    >
+      <i className="icofont-checked"></i> Pass
+    </button>
+
+    <button
+      className="btn btn-danger btn-block text-white"
+      onClick={(e) => {
+        const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+        handleBulkRemarkModal({
+          showModal: true,
+          modalData: selectedData,
+          modalHeader: "Enter Remark",
+          status: "REJECT",
+        });
+      }}
+    >
+      <i className="icofont-close-squared-alt"></i> Reject
+    </button>
+  </div>
+</div>
+
+                      </div>
+
+
+
                       {unpassedTickets && (
                         <DataTable
                           columns={unpassedColumns}
@@ -3108,6 +3332,107 @@ export default function MyTicketComponent({ location }) {
           </Modal.Footer>
         </form>
       </Modal>
+
+
+      {/* bulk ticket pass modal */}
+
+      <Modal
+        centered
+        show={bulkRemarkModal.showModal}
+        onHide={(e) => {
+          handleBulkRemarkModal({
+            showModal: false,
+            modalData: "",
+            modalHeader: "",
+            status: bulkRemarkModal.status,
+          });
+        }}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="fw-bold">
+            {bulkRemarkModal.status == "PASS" ? "PASS TICKET " : "REJECT TICKET"}
+          </Modal.Title>
+        </Modal.Header>
+        <form onSubmit={handleBulkPassTicketForm} method="post">
+          <Modal.Body>
+            <div className="deadline-form">
+              <input
+                type="hidden"
+                className="form-control form-control-sm"
+                id="pass_status"
+                name="pass_status"
+                value={bulkRemarkModal.status}
+              />
+              {/* <input
+                type="hidden"
+                className="form-control form-control-sm"
+                id="id"
+                name="id"
+                // defaultValue={bulkRemarkModal.modalData.id}
+              /> */}
+              <div className="row g-3 mb-3">
+                <div className="col-sm-12">
+                  <label className="form-label font-weight-bold">
+                    Ticket Id :
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    // defaultValue={bulkRemarkModal.modalData.ticket_id}
+                    // defaultValue={bulkRemarkModal&& bulkRemarkModal.modalData.map((i)=>i.ticket_id)}
+                    defaultValue={
+                      bulkRemarkModal && Array.isArray(bulkRemarkModal.modalData)
+                        ? bulkRemarkModal.modalData.map((i) => i.ticket_id)
+                        : []
+                    }
+
+                    readOnly={true}
+                  />
+                </div>
+                <div className="col-sm-12">
+                  <label className="form-label font-weight-bold">
+                    Remark :*
+                  </label>
+                  <input
+                    type="text"
+                    name="remark"
+                    id="remark"
+                    className="form-control form-control-sm"
+                    required
+                    onKeyPress={(e) => {
+                      Validation.CharactersNumbersSpeicalOnly(e);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button type="submit" className="btn btn-info text-white">
+              Submit
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger text-white"
+              onClick={() => {
+                handleBulkRemarkModal({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                });
+              }}
+            >
+              Cancel
+            </button>
+          </Modal.Footer>
+        </form>
+      </Modal>
+
+
+
+
+
+
 
       {/* {isLoading === true &&  <LoaderComponent/> } */}
     </div>

@@ -15,6 +15,8 @@ const _getAllComment = _URL + "/comment/getAllComment/";
 const _createGanttChart =_apiUrl+"hoursWiseTaskRecord/";
 
 const _passTicket = _URL + "/passTicket";
+const _passBulkTicket = _URL + "/bulkpassTicket";
+
 
 export default class MyTicketService {
   getUserTickets() {
@@ -176,6 +178,21 @@ export default class MyTicketService {
       },
     };
     return axios.post(_passTicket, payload, config);
+  }
+
+  passBulkTicket(payload) {
+    payload.append("user_id", userSessionData.userId);
+    payload.append("updated_at", userSessionData.time);
+    const token = localStorage.getItem("jwt_token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    return axios.post(_passBulkTicket, payload, config);
   }
 
   sendTicketConfirmationOtp(ticket_id) {
