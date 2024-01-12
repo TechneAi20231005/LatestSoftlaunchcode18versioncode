@@ -3719,6 +3719,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [deta, setDeta] = useState();
   const [showFiles, setShowFiles] = useState();
   const [authority, setAuthority] = useState();
+  const[netPaymentError, setNetPaymentError]=useState()
+
   const handleTcsApplicable = (e) => {
     if (e) {
       if (e.target.checked) {
@@ -4423,6 +4425,12 @@ export default function CreateBillCheckingTransaction({ match }) {
       netPayment = netPayment - parseFloat(tdsValue);
       setNetPayment(Math.round(netPayment));
     }
+    if(netPayment < 0){
+      setNetPaymentError("Net bill payment should be positive value")
+    }
+    else {
+      setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
+    }
   }, [
     BillAmount,
     BillAmount1,
@@ -4430,6 +4438,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     tdsValue,
     isTcsApplicable, // Add isTcsApplicable to the dependency array if it's not part of the state.
   ]);
+
 
   useEffect(() => {
     if (checkRole && checkRole[45].can_create === 0) {
@@ -5387,6 +5396,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                                             readOnly
                                         /> */}
                   </div>
+                  {netPaymentError && <p  style={{
+                          color: "red",
+                        }}>{netPaymentError}</p>}
+
 
                   {/* <div className=" col-md-3 ">
                                         <label className=" col-form-label">

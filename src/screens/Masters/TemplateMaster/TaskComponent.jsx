@@ -50,7 +50,6 @@ export default function TaskComponent(props) {
       // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
   
-      console.log(selectedValue);
   
       // Assuming the name is 'task_type_id', you can adjust it as needed
       const name = "task_type_id";
@@ -61,7 +60,6 @@ export default function TaskComponent(props) {
       // Handle standard input elements
       const { name, value } = e.target;
   
-      console.log(value);
   
       const updatedData = { ...data, [name]: value };
       setData(updatedData);
