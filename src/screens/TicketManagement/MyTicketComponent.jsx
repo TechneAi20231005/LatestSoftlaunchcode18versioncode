@@ -1837,78 +1837,78 @@ export default function MyTicketComponent({ location }) {
       e.preventDefault();
       const formData = new FormData(e.target);
       var flag = 1;
-    await new ReportService()
-      .getTicketReport(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setSearchResult(null);
-            setSearchResult(res.data.data);
-            const temp = res.data.data;
-            var counter = 1;
-            var searchResultExport = [];
-            for (const key in temp) {
-              searchResultExport.push({
-                Sr: counter++,
-                TICKET_ID: temp[key].ticket_id,
-                TICKET_DATE: temp[key].ticket_date,
-                EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                ASSIGN_TO_USER: temp[key].assign_to_user,
-                QUERY_TYPE_NAME: temp[key].query_type_name,
-                PRIORITY: temp[key].priority,
-                STATUS: temp[key].status_name,
-                DESCRIPTION: temp[key].description,
-                CREATED_BY: temp[key].created_by_name,
+      await new ReportService()
+        .getTicketReport(formData)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setSearchResult(null);
+              setSearchResult(res.data.data);
+              const temp = res.data.data;
+              var counter = 1;
+              var searchResultExport = [];
+              for (const key in temp) {
+                searchResultExport.push({
+                  Sr: counter++,
+                  TICKET_ID: temp[key].ticket_id,
+                  TICKET_DATE: temp[key].ticket_date,
+                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
+                  ASSIGN_TO_USER: temp[key].assign_to_user,
+                  QUERY_TYPE_NAME: temp[key].query_type_name,
+                  PRIORITY: temp[key].priority,
+                  STATUS: temp[key].status_name,
+                  DESCRIPTION: temp[key].description,
+                  CREATED_BY: temp[key].created_by_name,
 
-                Basket_Configured: temp[key].basket_configured,
-                Confirmation_Required: temp[key].confirmation_required
-                  ? "YES"
-                  : "NO",
-                Ref_id: temp[key].cuid,
-                from_department_name: temp[key].from_department_name,
-                id: temp[key].id,
-                Status: temp[key].is_active ? "Active" : "Deactive",
-                module_name: temp[key].module_name,
-                Passed_Status: temp[key].passed_status,
-                Passed_Status_Changed_At: temp[key].passed_status_changed_at,
-                Passed_Status_Changed_By_Name:
-                  temp[key].passed_status_changed_by_name,
-                Passed_Status_Remark: temp[key].passed_status_remark,
-                project_name: temp[key].project_name,
-                // query_type_name: dataCreatedByMe[key].query_type_name,
-                Status_name: temp[key].status_name,
-                sub_module_name: temp[key].sub_module_name,
-                Template_id: temp[key].template_id,
-                Tenant_id: temp[key].tenant_id,
-              });
+                  Basket_Configured: temp[key].basket_configured,
+                  Confirmation_Required: temp[key].confirmation_required
+                    ? "YES"
+                    : "NO",
+                  Ref_id: temp[key].cuid,
+                  from_department_name: temp[key].from_department_name,
+                  id: temp[key].id,
+                  Status: temp[key].is_active ? "Active" : "Deactive",
+                  module_name: temp[key].module_name,
+                  Passed_Status: temp[key].passed_status,
+                  Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                  Passed_Status_Changed_By_Name:
+                    temp[key].passed_status_changed_by_name,
+                  Passed_Status_Remark: temp[key].passed_status_remark,
+                  project_name: temp[key].project_name,
+                  // query_type_name: dataCreatedByMe[key].query_type_name,
+                  Status_name: temp[key].status_name,
+                  sub_module_name: temp[key].sub_module_name,
+                  Template_id: temp[key].template_id,
+                  Tenant_id: temp[key].tenant_id,
+                });
+              }
+              setKey("Search_Result");
+              setSearchResultExport(searchResultExport);
+            } else {
+              alert("No Data Found");
+              // setNotify({ type: 'danger', message: "No data Found" });
             }
-            setKey("Search_Result");
-            setSearchResultExport(searchResultExport);
           } else {
-            alert("No Data Found");
-            // setNotify({ type: 'danger', message: "No data Found" });
+            new ErrorLogService().sendErrorLog(
+              "UserTask",
+              "Get_UserTask",
+              "INSERT",
+              res.message
+            );
           }
-        } else {
+        })
+        .catch((error) => {
+          const { response } = error;
+          const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
             "UserTask",
             "Get_UserTask",
             "INSERT",
-            res.message
+            errorObject.data.message
           );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "UserTask",
-          "Get_UserTask",
-          "INSERT",
-          errorObject.data.message
-        );
-        setIsLoading(false);
-      });
+          setIsLoading(false);
+        });
     } catch (error) {
       // Handle errors that may occur during the getTicketReport call
       console.error('Error:', error);
@@ -1949,7 +1949,7 @@ export default function MyTicketComponent({ location }) {
   const selectFromDateRef = useRef();
   const selectToDateRef = useRef();
   const selectTicketRef = useRef();
-    
+
 
 
   const handleClearData = (e) => {
@@ -3124,7 +3124,7 @@ export default function MyTicketComponent({ location }) {
 
                         </div> */}
                         <div className="row">
-                          <div className="col-md-3 mb-1">
+                          <div className="col-md-6 mb-1">
                             {unpassedTickets && (
                               <ExportAllTicketsToExcel
                                 className="btn btn-danger btn-block"
@@ -3137,35 +3137,35 @@ export default function MyTicketComponent({ location }) {
                             {unpassedTickets && (
                               <>
 
-<button
-                                    className="btn btn-success btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "PASS",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-checked"></i> Pass
-                                  </button> 
+                                <button
+                                  className="btn btn-success btn-block text-white"
+                                  onClick={(e) => {
+                                    const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                    handleRemarkModal({
+                                      showModal: true,
+                                      modalData: selectedData,
+                                      modalHeader: "Enter Remark",
+                                      status: "PASS",
+                                    });
+                                  }}
+                                >
+                                  <i className="icofont-checked"></i> Pass
+                                </button>
 
-                                  <button
-                                    className="btn btn-danger btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "REJECT",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-close-squared-alt"></i> Reject
-                                  </button>
+                                <button
+                                  className="btn btn-danger btn-block text-white"
+                                  onClick={(e) => {
+                                    const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                    handleRemarkModal({
+                                      showModal: true,
+                                      modalData: selectedData,
+                                      modalHeader: "Enter Remark",
+                                      status: "REJECT",
+                                    });
+                                  }}
+                                >
+                                  <i className="icofont-close-squared-alt"></i> Reject
+                                </button>
                                 {/* {selectAllNames === true ?
                                   <button
                                     className="btn btn-success btn-block text-white"
