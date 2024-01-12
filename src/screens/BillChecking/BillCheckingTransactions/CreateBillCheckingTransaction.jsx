@@ -3613,19 +3613,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
 
 
-  const featchData=async()=>{
-    try{
 
-      const res=await axios.get("https://api.ipify.org/?format=json");
-      setIp(res.data.ip)
-
-    }catch(error){
-      console.error("Error fetching data:", error)
-
-
-    }
-
-  }
 
   useEffect(()=>{
     featchData()

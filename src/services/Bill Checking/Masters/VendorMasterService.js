@@ -96,8 +96,8 @@ export default class VendorMasterService {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+          'Content-Type': 'multipart/form-data',
+                },
       };
         payload.append('tenant_id',userSessionData.tenantId);
         payload.append('created_by',userSessionData.userId);
@@ -112,8 +112,8 @@ export default class VendorMasterService {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+          'Content-Type': 'multipart/form-data'
+                },
       };
         payload.append('updated_by',userSessionData.userId);
         payload.append('updated_at',getDateTime());
