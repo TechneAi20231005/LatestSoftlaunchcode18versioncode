@@ -1532,7 +1532,7 @@ export default function MyTicketComponent({ location }) {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
     setIsLoading(true);
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
 
     await new UserService()
       .getUserForMyTickets(inputRequired)

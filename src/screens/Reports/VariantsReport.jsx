@@ -85,7 +85,7 @@ export default function ResourcePlanningReportComponent() {
   const loadData = async () => {
     const tempUserData = [];
     const exportTempData = [];
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
