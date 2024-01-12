@@ -301,7 +301,7 @@ const [expectedTrue,setExpectedTrue] = useState()
         setShowLoaderModal(true);
 
     
-        const inputRequired = 'id,employee_id,first_name,last_name,middle_name';
+        const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
         await new UserService().getUserForMyTickets(inputRequired).then((res) => {
                         if (res.status == 200) {
                 if (res.data.status == 1) {
