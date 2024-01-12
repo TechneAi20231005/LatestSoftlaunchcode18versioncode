@@ -47,7 +47,6 @@ function BillCheckingTransaction({ location }) {
   };
   const searchRef = useRef();
 
-  console.log("newD",data)
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -66,14 +65,10 @@ function BillCheckingTransaction({ location }) {
 
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
-    console.log("s",searchValue)
     const result = searchInData(data, searchValue);
-    console.log("ss",searchValue)
-    console.log("d",data)
 
 
     setData(result);
-    console.log("result",result)
   };
 
 

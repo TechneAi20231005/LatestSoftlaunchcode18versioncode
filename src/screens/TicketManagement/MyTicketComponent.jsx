@@ -104,6 +104,16 @@ export default function MyTicketComponent({ location }) {
   const [toDateRequired, setToDateRequired] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [assignedToMeData, setAssignedToMeData] = useState();
+  const [selectAllNames, setSelectAllNames] = useState(false);
+
+
+  const handleSelectAllNamesChange = () => {
+    // Toggle the state of 'selectAllNames'
+    setSelectAllNames(!selectAllNames);
+
+    // If 'selectAllNames' is true, select all rows; otherwise, clear the selection
+    setSelectedRowss(selectAllNames ? [] : unpassedTickets && unpassedTickets.map((row) => row.id));
+  };
 
   const handleConfirmationModal = (e, data) => {
     var d = {};
@@ -115,6 +125,7 @@ export default function MyTicketComponent({ location }) {
     }
     setConfirmationModal(d);
   };
+
 
   const handleSolveTicketModal = async (e) => {
     e.preventDefault();
@@ -165,9 +176,9 @@ export default function MyTicketComponent({ location }) {
   };
 
 
-  const handleBulkRemarkModal = (data) => {
-    setBulkRemarkModal(data);
-  };
+  // const handleBulkRemarkModal = (data) => {
+  //   setBulkRemarkModal(data);
+  // };
 
 
   const actionComponent = (data, type) => {
@@ -1207,6 +1218,8 @@ export default function MyTicketComponent({ location }) {
   ];
 
   const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowss, setSelectedRowss] = useState([]);
+
 
   // const handleCheckboxChange = (row) => {
   //   const isSelected = selectedRows.includes(row);
@@ -1222,6 +1235,16 @@ export default function MyTicketComponent({ location }) {
         ? prevSelectedRows.filter((selectedRow) => selectedRow !== row.id)
         : [...prevSelectedRows, row.id]
     );
+  };
+
+  const handleCheckboxChangee = (row) => {
+    setSelectedRowss((prevSelectedRows) => {
+      if (prevSelectedRows.includes(row.id)) {
+        return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
+      } else {
+        return [...prevSelectedRows, row.id];
+      }
+    });
   };
 
   const unpassedColumns = [
@@ -1245,6 +1268,33 @@ export default function MyTicketComponent({ location }) {
     //   center: true,
     //   cell: (row) => <input type="checkbox" checked={row.isSelected} onChange={() => handleCheckboxChange(row)} />,
     // },
+
+    {
+      name: (
+        <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={handleSelectAllNamesChange}>
+          <input
+            type="checkbox"
+            checked={selectAllNames}
+            onChange={() => setSelectAllNames(!selectAllNames)}
+            style={{ marginRight: '5px' }}
+          />
+          Select All
+        </div>
+      ),
+      selector: "selectAll",
+      width: "7rem",
+      center: true,
+      cell: (row) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            checked={selectedRowss.includes(row.id)}
+            onChange={() => handleCheckboxChangee(row)}
+            style={{ marginRight: '5px' }}
+          />
+        </div>
+      ),
+    },
     {
       name: "Checkbox",
       selector: "checkbox", // unique key for the column
@@ -1677,12 +1727,27 @@ export default function MyTicketComponent({ location }) {
   //   });
   // };
 
+
+
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
       setNotify(null);
 
       const formData = new FormData(e.target);
+      // selectedRows.forEach((id) => {
+      //   formData.append('id', id);
+      // });
+      {
+        selectAllNames === true ?
+        // Append selected IDs to the formData
+        formData.append('id[]', String(selectedRowss))
+        :
+        // Append selected IDs to the formData
+        selectedRows.forEach((id) => {
+          formData.append('id[]', String(id));
+        });
+      }
       const response = await new MyTicketService().passTicket(formData);
 
       if (response.status === 200) {
@@ -1693,6 +1758,8 @@ export default function MyTicketComponent({ location }) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
           // window.location.reload(false)
           loadData();
+          setSelectedRows([])
+          setSelectedRowss([])
 
           setNotify({ type: "success", message });
         } else {
@@ -1710,50 +1777,64 @@ export default function MyTicketComponent({ location }) {
 
 
   // bluk ticket pass api calling
+  // console.log("selectedRowss",selectedRowss)
 
-  const handleBulkPassTicketForm = async (e) => {
-    try {
-      e.preventDefault();
-      setNotify(null);
+  // const handleBulkPassTicketForm = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setNotify(null);
 
-      const formData = new FormData(e.target);
+  //     const formData = new FormData(e.target);
 
-      // Append selected IDs to the formData
-      selectedRows.forEach((id) => {
-        formData.append('id', id);
-      });
+  //      // Append selected IDs to the formData
+  //     //  selectedRowss.forEach((id) => {
+  //     //   formData.append('id', id);
+  //     // })
 
-      const response = await new MyTicketService().passBulkTicket(formData);
-      if (response.status === 200) {
-        const { status, message } = response.data;
-        if (status === 1) {
-          setBulkRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
-          // window.location.reload(false)
-          loadData();
-          setSelectedRows([])
-        
-          setNotify({ type: "success", message });
-        } else {
-          setNotify({ type: "danger", message });
-        }
-      } else {
-        setNotify({ type: "danger", message: "Request Error !!!" });
-      }
-    } catch (error) {
-      console.error("Error handling passTicket form:", error);
-      setNotify({ type: "danger", message: "An error occurred." });
-    }
-  };
+  //     {selectAllNames === true ?
+  //      // Append selected IDs to the formData
+  //      formData.append('id[]', String(selectedRowss))
+  //     :
+  //     // Append selected IDs to the formData
+  //     selectedRows.forEach((id) => {
+  //       formData.append('id', id);
+  //     });
+  //   }
+  //     const response = await new MyTicketService().passBulkTicket(formData);
+  //     if (response.status === 200) {
+  //       const { status, message } = response.data;
+  //       if (status === 1) {
+  //         setBulkRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+  //         // window.location.reload(false)
+  //         loadData();
+  //         setSelectedRows([])
 
-  console.log("remarkModal", remarkModal)
+  //         setNotify({ type: "success", message });
+  //       } else {
+  //         setNotify({ type: "danger", message });
+  //       }
+  //     } else {
+  //       setNotify({ type: "danger", message: "Request Error !!!" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error handling passTicket form:", error);
+  //     setNotify({ type: "danger", message: "An error occurred." });
+  //   }
+  // };
+
+  // console.log("remarkModal", remarkModal)
 
 
 
 
   const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    var flag = 1;
+    // e.preventDefault();
+    // const formData = new FormData(e.target);
+    // var flag = 1;
+    try {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      var flag = 1;
     await new ReportService()
       .getTicketReport(formData)
       .then((res) => {
@@ -1826,6 +1907,11 @@ export default function MyTicketComponent({ location }) {
         );
         setIsLoading(false);
       });
+    } catch (error) {
+      // Handle errors that may occur during the getTicketReport call
+      console.error('Error:', error);
+      // You can add additional error handling logic here, such as displaying an error message to the user.
+    }
   };
 
   const [statusValue, setStatusValue] = useState("");
@@ -1861,7 +1947,7 @@ export default function MyTicketComponent({ location }) {
   const selectFromDateRef = useRef();
   const selectToDateRef = useRef();
   const selectTicketRef = useRef();
-
+    
 
 
   const handleClearData = (e) => {
@@ -3036,46 +3122,90 @@ export default function MyTicketComponent({ location }) {
 
                         </div> */}
                         <div className="row">
-  <div className="col-md-3 mb-1">
-    {unpassedTickets && (
-      <ExportAllTicketsToExcel
-        className="btn btn-danger btn-block"
-        fileName="Unpassed Ticket"
-        typeOf="UnPassed"
-      />
-    )}
- 
-    <button
-      className="btn btn-success btn-block text-white"
-      onClick={(e) => {
-        const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-        handleBulkRemarkModal({
-          showModal: true,
-          modalData: selectedData,
-          modalHeader: "Enter Remark",
-          status: "PASS",
-        });
-      }}
-    >
-      <i className="icofont-checked"></i> Pass
-    </button>
+                          <div className="col-md-3 mb-1">
+                            {unpassedTickets && (
+                              <ExportAllTicketsToExcel
+                                className="btn btn-danger btn-block"
+                                fileName="Unpassed Ticket"
+                                typeOf="UnPassed"
+                              />
+                            )}
 
-    <button
-      className="btn btn-danger btn-block text-white"
-      onClick={(e) => {
-        const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-        handleBulkRemarkModal({
-          showModal: true,
-          modalData: selectedData,
-          modalHeader: "Enter Remark",
-          status: "REJECT",
-        });
-      }}
-    >
-      <i className="icofont-close-squared-alt"></i> Reject
-    </button>
-  </div>
-</div>
+
+                            {unpassedTickets && (
+                              <>
+                                {selectAllNames === true ?
+                                  <button
+                                    className="btn btn-success btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "PASS",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-checked"></i> Pass
+                                  </button> :
+
+
+
+                                  <button
+                                    className="btn btn-success btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "PASS",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-checked"></i> Pass
+                                  </button>
+                                }
+
+
+                                {selectAllNames === true ?
+                                  <button
+                                    className="btn btn-danger btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "REJECT",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-close-squared-alt"></i> Reject
+                                  </button>
+
+                                  :
+                                  <button
+                                    className="btn btn-danger btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "REJECT",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-close-squared-alt"></i> Reject
+                                  </button>
+                                }
+                              </>
+                            )}
+
+                          </div>
+                        </div>
 
                       </div>
 
@@ -3275,13 +3405,15 @@ export default function MyTicketComponent({ location }) {
                 name="pass_status"
                 value={remarkModal.status}
               />
-              <input
-                type="hidden"
-                className="form-control form-control-sm"
-                id="id"
-                name="id"
-                defaultValue={remarkModal.modalData.id}
-              />
+              {(selectedRows && selectedRows.length == 0 && selectedRowss && selectedRowss.length == 0) &&
+                <input
+                  type="hidden"
+                  className="form-control form-control-sm"
+                  id="id[]"
+                  name="id[]"
+                  defaultValue={remarkModal.modalData.id}
+                />
+              }
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
@@ -3290,7 +3422,12 @@ export default function MyTicketComponent({ location }) {
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    defaultValue={remarkModal.modalData.ticket_id}
+                    // defaultValue={remarkModal.modalData.ticket_id}
+                    defaultValue={
+                      remarkModal && Array.isArray(remarkModal.modalData)
+                        ? remarkModal.modalData.map((i) => i.ticket_id)
+                        : remarkModal.modalData.ticket_id
+                    }
                     readOnly={true}
                   />
                 </div>
@@ -3304,6 +3441,7 @@ export default function MyTicketComponent({ location }) {
                     id="remark"
                     className="form-control form-control-sm"
                     required
+                    maxLength={1000}
                     onKeyPress={(e) => {
                       Validation.CharactersNumbersSpeicalOnly(e);
                     }}
@@ -3336,11 +3474,11 @@ export default function MyTicketComponent({ location }) {
 
       {/* bulk ticket pass modal */}
 
-      <Modal
+      {/* <Modal
         centered
         show={bulkRemarkModal.showModal}
         onHide={(e) => {
-          handleBulkRemarkModal({
+          handle({
             showModal: false,
             modalData: "",
             modalHeader: "",
@@ -3363,13 +3501,7 @@ export default function MyTicketComponent({ location }) {
                 name="pass_status"
                 value={bulkRemarkModal.status}
               />
-              {/* <input
-                type="hidden"
-                className="form-control form-control-sm"
-                id="id"
-                name="id"
-                // defaultValue={bulkRemarkModal.modalData.id}
-              /> */}
+
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
@@ -3378,8 +3510,7 @@ export default function MyTicketComponent({ location }) {
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    // defaultValue={bulkRemarkModal.modalData.ticket_id}
-                    // defaultValue={bulkRemarkModal&& bulkRemarkModal.modalData.map((i)=>i.ticket_id)}
+                   
                     defaultValue={
                       bulkRemarkModal && Array.isArray(bulkRemarkModal.modalData)
                         ? bulkRemarkModal.modalData.map((i) => i.ticket_id)
@@ -3426,7 +3557,7 @@ export default function MyTicketComponent({ location }) {
             </button>
           </Modal.Footer>
         </form>
-      </Modal>
+      </Modal> */}
 
 
 

@@ -180,20 +180,7 @@ export default class MyTicketService {
     return axios.post(_passTicket, payload, config);
   }
 
-  passBulkTicket(payload) {
-    payload.append("user_id", userSessionData.userId);
-    payload.append("updated_at", userSessionData.time);
-    const token = localStorage.getItem("jwt_token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    return axios.post(_passBulkTicket, payload, config);
-  }
+  
 
   sendTicketConfirmationOtp(ticket_id) {
     const token = localStorage.getItem("jwt_token");

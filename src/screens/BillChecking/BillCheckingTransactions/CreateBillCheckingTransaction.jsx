@@ -4439,7 +4439,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     isTcsApplicable, // Add isTcsApplicable to the dependency array if it's not part of the state.
   ]);
 
-console.log("netpayment",netPayment)
 
   useEffect(() => {
     if (checkRole && checkRole[45].can_create === 0) {
