@@ -1295,19 +1295,19 @@ export default function MyTicketComponent({ location }) {
         </div>
       ),
     },
-    {
-      name: "Checkbox",
-      selector: "checkbox", // unique key for the column
-      width: "4rem",
-      center: true,
-      cell: (row) => (
-        <input
-          type="checkbox"
-          checked={selectedRows.includes(row.id)}
-          onChange={() => handleCheckboxChange(row)}
-        />
-      ),
-    },
+    // {
+    //   name: "Checkbox",
+    //   selector: "checkbox", // unique key for the column
+    //   width: "4rem",
+    //   center: true,
+    //   cell: (row) => (
+    //     <input
+    //       type="checkbox"
+    //       checked={selectedRows.includes(row.id)}
+    //       onChange={() => handleCheckboxChange(row)}
+    //     />
+    //   ),
+    // },
 
     {
       name: "Sr",
@@ -1738,16 +1738,18 @@ export default function MyTicketComponent({ location }) {
       // selectedRows.forEach((id) => {
       //   formData.append('id', id);
       // });
-      {
-        selectAllNames === true ?
-        // Append selected IDs to the formData
-        formData.append('id[]', String(selectedRowss))
-        :
-        // Append selected IDs to the formData
-        selectedRows.forEach((id) => {
-          formData.append('id[]', String(id));
-        });
-      }
+      // {
+      //   selectAllNames === true ?
+      //   // Append selected IDs to the formData
+      //   formData.append('id[]', String(selectedRowss))
+      //   :
+      //   // Append selected IDs to the formData
+      //   selectedRows.forEach((id) => {
+      //     formData.append('id[]', String(id));
+      //   });
+      // }
+
+      formData.append('id[]', String(selectedRowss))
       const response = await new MyTicketService().passTicket(formData);
 
       if (response.status === 200) {
@@ -3134,7 +3136,37 @@ export default function MyTicketComponent({ location }) {
 
                             {unpassedTickets && (
                               <>
-                                {selectAllNames === true ?
+
+<button
+                                    className="btn btn-success btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "PASS",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-checked"></i> Pass
+                                  </button> 
+
+                                  <button
+                                    className="btn btn-danger btn-block text-white"
+                                    onClick={(e) => {
+                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
+                                      handleRemarkModal({
+                                        showModal: true,
+                                        modalData: selectedData,
+                                        modalHeader: "Enter Remark",
+                                        status: "REJECT",
+                                      });
+                                    }}
+                                  >
+                                    <i className="icofont-close-squared-alt"></i> Reject
+                                  </button>
+                                {/* {selectAllNames === true ?
                                   <button
                                     className="btn btn-success btn-block text-white"
                                     onClick={(e) => {
@@ -3166,10 +3198,10 @@ export default function MyTicketComponent({ location }) {
                                   >
                                     <i className="icofont-checked"></i> Pass
                                   </button>
-                                }
+                                } */}
 
 
-                                {selectAllNames === true ?
+                                {/* {selectAllNames === true ?
                                   <button
                                     className="btn btn-danger btn-block text-white"
                                     onClick={(e) => {
@@ -3200,7 +3232,7 @@ export default function MyTicketComponent({ location }) {
                                   >
                                     <i className="icofont-close-squared-alt"></i> Reject
                                   </button>
-                                }
+                                } */}
                               </>
                             )}
 
