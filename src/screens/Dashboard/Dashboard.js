@@ -2532,7 +2532,7 @@
 // }
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { getData } from "../../services/DashboardService";
 import Chart from "react-apexcharts";
@@ -2544,6 +2544,8 @@ import {
 
 export default function Dashboard(props) {
   const history = useNavigate();
+  const location = useLocation()
+  console.log(location);
   console.log(history);
   const data = props.data;
   var v1 = 50;
@@ -2606,7 +2608,7 @@ export default function Dashboard(props) {
     const currentTime = new Date().getTime();
 
     if (tokenExpirationTime && currentTime > tokenExpirationTime) {
-      console.log("hii");
+      console.log("hii from Dash");
       // Token has expired, log out the user
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");
@@ -2616,7 +2618,7 @@ export default function Dashboard(props) {
   };
 
   async function get() {
-    await getData(localStorage.getItem("id")).then((res) => {
+    await getData().then((res) => {
       if (res.status == 200) {
         setCount(res.data.data.count);
 

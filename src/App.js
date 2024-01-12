@@ -1,6 +1,6 @@
 // Importing required dependencies and components
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, } from "react-router-dom";
 import {_base} from './settings/constants'
 import Sidebar from "./components/Common/Sidebar";
 import AuthIndex from "./screens/AuthIndex";
@@ -8,6 +8,8 @@ import MainIndex from "./screens/MainIndex";
 import SignIn from "./components/Auth/SignIn";
 import LeftSide from "./components/Auth/LeftSide";
 import useOnlineStatus from "./components/Utilities/useOnlineStatus";
+import Dashboard from "./screens/Dashboard/Dashboard";
+import Header from "./components/Common/Header";
 
 // Main application component
 const App = () => {
@@ -45,14 +47,17 @@ const App = () => {
     <>
       <div id="mytask-layout" className="theme-indigo">
         {!token &&  (
-          <><AuthIndex/></>
+          <AuthIndex/>
           )}
         
         {token && onlineStatus && 
             
-          <><Sidebar/><MainIndex /></>
+            <>
+            <Sidebar/>
+          <MainIndex />
+          </>
         
-        }
+      }
         {token && onlineStatus=== false && 
         
         

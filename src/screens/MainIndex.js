@@ -155,6 +155,10 @@ import EditBillTypeComponent from './BillChecking/Masters/BillTypeMaster/EditBil
 import ViewBillTypeComponent from './BillChecking/Masters/BillTypeMaster/ViewBillTypeComponent'
 import TaskAndTicketTypeMaster from './Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster'
 class MainIndex extends React.Component {
+  constructor(props) {
+    super(props);
+    
+  }
   //  encryptParameter = (id) => {
   //   const secretKey = "rushikesh"; // Replace with a secure key
   //   const encryptedId = CryptoJS.AES.encrypt(id.toString(), secretKey).toString();
@@ -163,7 +167,7 @@ class MainIndex extends React.Component {
 
   render () {
     // Encryption function (same as mentioned before)
-
+    console.log("hii from Main index", this.props);
     if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
       for (var a in sessionStorage) {
         // console.log(a, " = ", sessionStorage[a]);
@@ -177,13 +181,14 @@ class MainIndex extends React.Component {
     }
     return (
       <div className='main px-lg-4 px-md-4'>
+
         <Header />
 
         {/* <Redirect to={`/${_base}/Dashboard" /> */}
 
         <div className='body d-flex py-lg-3 py-md-2'>
           <Routes>
-              <Route exact path={`/${_base}/Dashboard`} element={<Dashboard/>} />
+              <Route  path={`/${_base}/Dashboard`} element={<Dashboard/>} />
               <Route
                 exact
                 path={`/${_base}/InsightsTasks`}
