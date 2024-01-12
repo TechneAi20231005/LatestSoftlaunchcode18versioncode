@@ -17,8 +17,11 @@ import BillCheckingTransactionService from "../../../services/Bill Checking/Bill
 import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import UserService from "../../../services/MastersService/UserService";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+// import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+// import Tooltip from "react-bootstrap/Tooltip";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
 
@@ -44,10 +47,11 @@ function BillCheckingTransaction({ location }) {
   };
   const searchRef = useRef();
 
+  console.log("newD",data)
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data&& data.filter((d) => {
       for (const key in d) {
         if (
           typeof d[key] === "string" &&
@@ -62,8 +66,14 @@ function BillCheckingTransaction({ location }) {
 
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
+    console.log("s",searchValue)
     const result = searchInData(data, searchValue);
+    console.log("ss",searchValue)
+    console.log("d",data)
+
+
     setData(result);
+    console.log("result",result)
   };
 
 
@@ -92,6 +102,7 @@ function BillCheckingTransaction({ location }) {
       cell: (row) => {
         // if (data.length > 6) {
         const originalParam = row.id;
+
         // const encryptedParam = encodeURIComponent(encryptParameter(originalParam))
         return (
           <Dropdown className="d-inline-flex m-1">
@@ -351,31 +362,58 @@ function BillCheckingTransaction({ location }) {
     },
    
 
+    // {
+    //   name: "Levels Of Approval",
+    //   selector: (row) => row["Levels Of Approval"],
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.total_level && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.total_level} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {" "}
+    //               {row.total_level && row.total_level.length < 10
+    //                 ? row.total_level
+    //                 : row.total_level.substring(0, 10) + "...."}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   ),
+    // },
+
     {
       name: "Levels Of Approval",
-      selector: (row) => row["Levels Of Approval"],
+      selector: (row) => row.total_level,
       sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.total_level && (
-            <OverlayTrigger overlay={<Tooltip>{row.total_level} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.total_level && row.total_level.length < 10
-                    ? row.total_level
-                    : row.total_level.substring(0, 10) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
     },
+    // {
+    //   name: "Levels Of Approval",
+    //   selector: (row) => row["Levels Of Approval"],
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <div className="btn-group" role="group" aria-label="Basic outlined example">
+     
+    //         <OverlayTrigger overlay={<Tooltip>{row.total_level}</Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {row.total_level.length < 10
+    //                 ? row.total_level
+    //                 : "row.total_level".substring(0, 10) + "...."}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+        
+    //     </div>
+    //   ),
+    // },
+    
 
     {
       name: "Approved By",
@@ -700,11 +738,11 @@ function BillCheckingTransaction({ location }) {
     }
   };
 
+
   const loadData = async (e) => {
     const data = [];
     var temprory = [];
     setIsLoading(true);
-
 
     await new BillCheckingService().getBillCheckData().then((res) => {
       if (res.status === 200) {
@@ -751,7 +789,7 @@ function BillCheckingTransaction({ location }) {
             "Assign To": temp[key].assign_to_name,
             is_assign_to: temp[key].is_assign_to,
             level: temp[key].level,
-            total_level: temp[key].total_level,
+            total_level: temp[key].level + 1,
             last_approved_by: temp[key].last_approved_by,
             approvedBy: temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
@@ -982,7 +1020,7 @@ function BillCheckingTransaction({ location }) {
 
           for (const key in temp) {
             tempData.push({
-              counter: counter++,
+              "Sr No": counter++,
               id: temp[key].id,
               // bc_id: temp[key].bc_id,
               "Bill ID": temp[key].bc_id,
@@ -1001,7 +1039,7 @@ function BillCheckingTransaction({ location }) {
               "Levels of approval": temp[key].levels_of_approval,
               approvedBy: temp[key].approvedBy,
 "Pending From": temp[key].level_approver,
-              rejectedBy:temp[key].rejectedBy,
+              // rejectedBy:temp[key].rejectedBy,
 
               // "Approve By": temp[key].approved_by,
 
@@ -1013,8 +1051,8 @@ function BillCheckingTransaction({ location }) {
               "Is Original Bill": temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
               // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
-              audit_remark: temp[key].audit_remark,
-              external_audit_remark: temp[key].external_audit_remark,
+              // audit_remark: temp[key].audit_remark,
+              // external_audit_remark: temp[key].external_audit_remark,
               "Bill date": temp[key].bill_date,
               "Recieved Date": temp[key].received_date,
               "Hold Amount": temp[key].hold_amount,
