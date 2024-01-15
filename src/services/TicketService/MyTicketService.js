@@ -120,7 +120,6 @@ export default class MyTicketService {
   postComment(payload) {
     payload = {
       ...payload,
-       tenant_id: userSessionData.tenantId,
       created_by: userSessionData.userId,
       created_at: userSessionData.time,
     };
