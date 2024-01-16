@@ -1760,7 +1760,6 @@ export default function MyTicketComponent({ location }) {
         setNotify({ type: "danger", message: "Request Error !!!" });
       }
     } catch (error) {
-      console.error("Error handling passTicket form:", error);
       setNotify({ type: "danger", message: "An error occurred." });
     }
   };
