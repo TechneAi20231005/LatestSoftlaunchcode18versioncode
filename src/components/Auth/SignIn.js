@@ -30,10 +30,10 @@ export default function SignIn() {
             sessionStorage.setItem(key, data[key]);
             localStorage.setItem(key, data[key]);
           });
-          Object.keys(data.access).map((key) => {
-            sessionStorage.setItem(key, data.access[key]);
-            localStorage.setItem(key, data.access[key]);
-          });
+          // Object.keys(data.access).map((key) => {
+          //   sessionStorage.setItem(key, data.access[key]);
+          //   localStorage.setItem(key, data.access[key]);
+          // });
 
           sessionStorage.setItem("jwt_token", token);
           localStorage.setItem("jwt_token", token);
