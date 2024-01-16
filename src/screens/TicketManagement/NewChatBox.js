@@ -1,61 +1,142 @@
-import { HtmlEditor, Image, Inject, Link, QuickToolbar, RichTextEditorComponent, Toolbar } from '@syncfusion/ej2-react-richtexteditor';
-import { MentionComponent } from '@syncfusion/ej2-react-dropdowns';
-import * as React from 'react';
-function App() {
-    let data = [
-        { Name: "Selma Rose", Status: "active", EmployeeImage: "2.png", EmailId: "selma@gmail.com" },
-        { Name: "Maria", Status: "active", EmployeeImage: "1.png", EmailId: "maria@gmail.com" },
-        { Name: "Russo Kay", Status: "busy", EmployeeImage: "8.png", EmailId: "russo@gmail.com" },
-        { Name: "Camden Kate", Status: "active", EmployeeImage: "9.png", EmailId: "camden@gmail.com" },
-        { Name: "Robert", Status: "busy", EmployeeImage: "dp.png", EmailId: "robert@gmail.com" },
-        { Name: "Garth", Status: "active", EmployeeImage: "7.png", EmailId: "garth@gmail.com" },
-        { Name: "Andrew James", Status: "away", EmployeeImage: "pic04.png", EmailId: "noah@gmail.com" },
-        { Name: "Olivia", Status: "busy", EmployeeImage: "5.png", EmailId: "olivia@gmail.com" },
-        { Name: "Sophia", Status: "away", EmployeeImage: "6.png", EmailId: "sophia@gmail.com" },
-        { Name: "Margaret", Status: "active", EmployeeImage: "3.png", EmailId: "margaret@gmail.com" },
-        { Name: "Ursula Ann", Status: "active", EmployeeImage: "dp.png", EmailId: "ursula@gmail.com" },
-        { Name: "Laura Grace", Status: "away", EmployeeImage: "4.png", EmailId: "laura@gmail.com" },
-        { Name: "Albert", Status: "active", EmployeeImage: "pic03.png", EmailId: "albert@gmail.com" },
-        { Name: "William", Status: "away", EmployeeImage: "8.png", EmailId: "william@gmail.com" }
-    ];
-    let fieldsData = { text: 'Name' };
-    function itemTemplate(data) {
-        return (<table>
-          <tr>
-            <td>
-              <div id="mention-TemplateList">
-                <img className="mentionEmpImage" src={"src/rich-text-editor/images/" + data.EmployeeImage}/>
-                <span className={"e-badge e-badge-success e-badge-overlap e-badge-dot e-badge-bottom" + data.Status}></span>
-              </div>
-              </td>
-              <td className="mentionNameList">
-                <span className="person">{data.Name}</span>
-                <span className="email">{data.EmailId}</span>
-              </td>
-            </tr>
-          </table>);
-    }
-    function displayTemplate(data) {
-        return (<React.Fragment>
-           <a title={data.EmailId}>@{data.Name}</a>
-        </React.Fragment>);
-    }
-    function actionBegineHandler(args) {
-        if (args.requestType === 'EnterAction') {
-            args.cancel = true;
+import React, { useState, useEffect } from 'react'
+import { MentionsInput, Mention } from 'react-mentions'
+import { Form, Button, ListGroup } from 'react-bootstrap'
+import UserService from '../../services/MastersService/UserService' // Import your UserService
+import classNames from './example.module.css'
+import MyTicketService from '../../services/TicketService/MyTicketService'
+
+const Chatbox = props => {
+  const { ticketId, loadComment, commentData } = props
+  console.log(props)
+  const [message, setMessage] = useState('')
+  const [users, setUsers] = useState([])
+  const [mentionId, setMentionId] = useState([])
+  const handleMentionAdd = e => {
+    setMentionId([...mentionId, e])
+  }
+  const handleComment = async e => {
+    e.preventDefault()
+    setMessage('')
+    await new MyTicketService()
+      .postComment({
+        ticket_id: ticketId,
+        comment: message,
+        mentions_id: mentionId
+      })
+      .then(res => {
+        loadComment()
+      })
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const inputRequired =
+          'id,employee_id,first_name,last_name,middle_name,is_active'
+        const res = await new UserService().getUserForMyTickets(inputRequired)
+
+        if (res.status === 200 && res.data.status === 1) {
+          const data = res.data.data.filter(d => d.is_active === 1)
+          const select = data.map(d => ({
+            id: d.id,
+            display: `${d.first_name} ${d.last_name}`
+          }))
+          setUsers(select)
         }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
     }
-    return (<div className='control-pane'>
-        <div className='control-section' id="rte">
-        <div className='rte-control-section'>
-            <RichTextEditorComponent id="mention_integration" placeholder="Type @ and tag the name" actionBegin={actionBegineHandler.bind(this)}>
-            <p>Hello <span contentEditable={false} className='e-mention-chip'><a title="maria@gmail.com">@Maria</a></span>&#8203;</p>
-            <p>Welcome to the mention integration with rich text editor demo. Type <code>@</code> character and tag user from the suggestion list. </p>
-            <Inject services={[HtmlEditor, Toolbar, Image, Link, QuickToolbar]}/>
-            </RichTextEditorComponent>
+
+    fetchData()
+  }, [])
+
+  return (
+    <div style={{ maxWidth: '500px', margin: 'auto' }}>
+      <form method='post' onSubmit={handleComment}>
+        <div className='card '>
+          <div className='card-body card-body-height py-4'>
+            <h6 className='mb-0 fw-bold mb-3'>Ticket Chat</h6>
+            <div className='card mb-2'>
+              <div className='card-body'>
+                <MentionsInput
+                  className='mentions'
+                  classNames={classNames}
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                >
+                  <Mention
+                    trigger='@'
+                    data={users}
+                    onAdd={(e, id) => {
+                      handleMentionAdd(e, id)
+                    }}
+                    className={classNames.mentions__mention}
+                    displayTransform={(id, display) => `@${display}`}
+                  />
+                </MentionsInput>
+                <Button variant='primary' className='mt-2' type='submit'>
+                  Send
+                </Button>
+              </div>
+            </div>
+            <ListGroup
+              className='mt-3'
+              style={{ overflowY: 'scroll', height: '70vh' }}
+            >
+              {commentData?.comments?.map((comment, index) => (
+                <ListGroup.Item key={index}>
+                  <div>
+                 <p className='fw-bold'> {highlightMentions(comment.cmt)}</p>
+                  </div>
+            
+                  <div className='d-flex justify-content-between mt-4'>
+                     <p>
+                      {comment.user_id}
+                      </p>
+                      <p>
+                     {comment.time}
+                      </p>
+                  </div>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </div>
         </div>
-        </div>
-        <MentionComponent id="mentionEditor" target="#mention_integration_rte-edit-view" suggestionCount={8} showMentionChar={false} allowSpaces={true} dataSource={data} fields={fieldsData} popupWidth="250px" popupHeight="200px" itemTemplate={itemTemplate} displayTemplate={displayTemplate}></MentionComponent>
-    </div>);
+      </form>
+    </div>
+  )
 }
-export default App;
+
+export default Chatbox
+
+// Function to highlight mentions in the comment
+const highlightMentions = comment => {
+  const mentionRegex = /@\[([^\]]+)]\(\d+\)/g
+  let match
+  let lastIndex = 0
+  const parts = []
+
+  // Iterate through all matches of mentionRegex in the comment
+  while ((match = mentionRegex.exec(comment)) !== null) {
+    // Push the text before the mention
+    parts.push(comment.slice(lastIndex, match.index))
+
+    // Extract the username from the match
+    const userName = match[1]
+    // Push the mention with background color
+    parts.push(
+      <span
+        key={match.index}
+        style={{  color: '#15198f' }}
+      >{`@${userName}`}</span>
+    )
+
+    lastIndex = mentionRegex.lastIndex
+  }
+
+  // Push the remaining text
+  parts.push(comment.slice(lastIndex))
+
+  return parts
+}

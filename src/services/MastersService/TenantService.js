@@ -1,7 +1,9 @@
 import axios from "axios";
-import {masterURL} from '../../settings/constants';
+import {_apiUrl, masterURL} from '../../settings/constants';
 import {getDateTime} from '../../components/Utilities/Functions'
 const _URL=masterURL.tenant;
+const _tenantUrl = _apiUrl + "tenantLogin"
+
 export default class TenantService {
 
     getTenant(){
@@ -59,5 +61,15 @@ export default class TenantService {
         };
         return axios.post(_URL+"/"+id,payload,config)
     }
-
+    switchTenant(payload){
+      const token = localStorage.getItem("jwt_token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
+      return axios.post(_tenantUrl, payload,config)
+    }
 }
