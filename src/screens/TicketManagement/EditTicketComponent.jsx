@@ -44,6 +44,7 @@ import StatusService from "../../services/MastersService/StatusService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { Mention, MentionsInput } from "react-mentions";
 import Chatbox from "./NewChatBox";
+import Shimmer from "./ShimmerComponent";
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -309,7 +310,8 @@ export default function EditTicketComponent({ match }) {
     setSelectedDropdown({ ...selectedDropdown, [name]: value });
     setDynamicTicketData((prev) => ({ ...prev, [name]: value }));
   };
-  const [result, setResult] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState();
   const [commentData, setCommentData] = useState()
   const [users, setUsers] = useState();
@@ -342,7 +344,6 @@ export default function EditTicketComponent({ match }) {
 
     await new MyTicketService().getTicketById(ticketId).then((res) => {
       if (res.status === 200) {
-        setShowLoaderModal(false);
         const data = res.data.data;
         setProjectId(res.data.data.project_id);
         setUsers(res.data.data.ticket_users);
@@ -534,13 +535,16 @@ export default function EditTicketComponent({ match }) {
     });
 
     loadComments();
+    setShowLoaderModal(false);
+
   };
 
   const loadComments = async () => {
+    setIsLoading(true)
     await new MyTicketService().getComments(ticketId).then((res) => {
       if (res.status === 200) {
-        console.log("hit ho gaya re", res.data.data);
         setCommentData(res.data.data);
+        setIsLoading(false)
       }
     });
   };
@@ -1467,170 +1471,13 @@ export default function EditTicketComponent({ match }) {
           )}
         </div>
 
+          {isLoading ? (<Shimmer count={10}/>) :(
         <div className="col-md-4">
             <Chatbox ticketId={ticketId} loadComment ={loadCommentsCallback} commentData={commentData} />
         </div>
+            )}
 
-        {/* comment Data */}
-        {/* <div className="col-md-3">
-                    <div className="card mt-2">
-                        <div className="card-body card-body-height py-4">
-
-                            <h6 className="mb-0 fw-bold mb-3">Ticket Chat</h6>
-                            <div className="card mb-2">
-                                <div className="card-body">
-                                    <div className="post" id="post">
-                                        <form onSubmit={handleComment}>
-                                            <div onClick={() => focusEditor()}>
-                                                <Editor
-                                                    ref={editor}
-                                                    editorState={editorState}
-                                                    plugins={plugins}
-                                                    onChange={(editorState) =>
-                                                        setEditorState(editorState)
-                                                    }
-                                                    placeholder={"Comment here..."}
-                                                    id="comment"
-                                                />
-                                                <MentionSuggestions
-                                                    onSearchChange={onSearchChange}
-                                                    suggestions={suggestions}
-                                                    onAddMention={onAddMention}
-                                                />
-                                            </div>
-
-                                         
-                                                <button type="submit" className="btn btn-primary float-sm-end  mt-2 mt-sm-0">Send</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <ul className="list-unstyled res-set">
-                                <li className="card mb-2">
-                                    <div className="card-body">
-
-                                        {commentData && commentData.comments.map((ele, i) => {
-                                            return (
-                                                <div key={i}>
-                                                    <div className="d-flex mt-3 pt-3 border-top">
-                                             
-                                                        <div className="flex-fill ms-3 text-truncate">
-                                                            <p className="mb-0" style={{
-                                                                whiteSpace: 'pre-wrap',
-                                                                overflowWrap: 'break-word'
-                                                            }}>
-                                                                {ele.cmt}
-                                                            </p>
-                                                            <span className="text-muted d-flex justify-content-between">
-                                                                <span>{ele.user_id}  </span>
-                                                                <small className="msg-time">
-                                                                    {ele.time}
-                                                                </small>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div> */}
-
-        {/* <div className="col-xxl-3 col-xl-3 col-lg-12 col-md-12 mt-2 ">
-
-                    <div className="card ">
-                        <div className="card-body card-body-height py-4">
-                            <div className="row">
-                                <div className="col-lg-12 col-md-12">
-                                    <h6 className="mb-0 fw-bold mb-3">Ticket Chat</h6>
-                                    <div className="card mb-2">
-                                        <div className="card-body">
-                                            <div className="post" id="post">
-                                                <form onSubmit={handleChatForm}>
-                                                    <div
-                                                        className={editorStyles.editor}
-                                                        onClick={() => {
-                                                            focusEditor();
-                                                        }}
-                                                    >
-
-
-                                                        <Editor
-                                                            ref={editor}
-                                                            editorState={editorState}
-                                                            plugins={plugins}
-                                                            onChange={(editorState) =>
-                                                                setEditorState(editorState)
-                                                            }
-                                                            placeholder={"Comment here..."}
-                                                            id="comment"
-                                                        />
-                                                        <MentionSuggestions
-                                                            onSearchChange={onSearchChange}
-                                                            suggestions={suggestions}
-                                                            onAddMention={onAddMention}
-                                                        />
-                                                    </div>
-
-                                                    <div className="py-3">
-                                                        <button type="submit" className="btn btn-primary float-sm-end  mt-2 mt-sm-0">Send</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <ul className="list-unstyled res-set">
-                                        <li className="card mb-2">
-                                            <div className="card-body">
-
-                                                {allUsers && allUsersString && commentData && commentData.comments.map((ele, i) => {
-                                                    return (
-                                                        <div key={i}>
-                                                            <div className="d-flex mt-3 pt-3 border-top">
-                                                                {/* <img
-                                                    className="avatar rounded-circle"
-                                                    src="assets/images/xs/avatar2.jpg"
-                                                    alt=""
-                                                    /> 
-                                                                <span className="flex-fill ms-3 text-truncate">
-
-
-                                                                    <h4 className="mb-0" style={{ whiteSpace: 'pre-line', overflowWrap: 'break-word', fontSize: '14px' }}>
-
-                                                                        <CommentData data={ele.cmt}
-                                                                            allUsers={allUsers}
-                                                                            allUsersString={allUsersString}
-
-                                                                        />
-                                                                    </h4>
-
-                                                                    <span className="text-muted d-flex justify-content-between">
-                                                                        <span>{ele.user_id}  </span>
-                                                                        <small className="msg-time">
-                                                                            {/* {ele.time} 
-                                                                            {formattedDate}
-                                                                        </small>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div> */}
-
-        {/* comment Data */}
+       
       </div>
 
       <Modal show={showLoaderModal} centered>

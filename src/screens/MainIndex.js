@@ -408,11 +408,11 @@ class MainIndex extends React.Component {
                 path={`/${_base}/Ticket/Edit/:id`}
                 element={<EditTicketComponent/>}
               />
-              {/* <Route
+              <Route
                 exact
-                path={`/${_base}/Ticket/View/:id"
+                path={`/${_base}/Ticket/View/:id`}
                 element={<ViewTicketComponent/>}
-              /> */}
+              />
               <Route
                 exact
                 path={`/${_base}/Ticket/Basket/:id`}

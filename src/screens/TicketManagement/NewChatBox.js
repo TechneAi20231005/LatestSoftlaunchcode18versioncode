@@ -54,7 +54,7 @@ const Chatbox = props => {
   return (
     <div style={{ maxWidth: '500px', margin: 'auto' }}>
       <form method='post' onSubmit={handleComment}>
-        <div className='card mt-2'>
+        <div className='card '>
           <div className='card-body card-body-height py-4'>
             <h6 className='mb-0 fw-bold mb-3'>Ticket Chat</h6>
             <div className='card mb-2'>
