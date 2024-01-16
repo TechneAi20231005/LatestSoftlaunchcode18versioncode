@@ -2536,13 +2536,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { getData } from "../../services/DashboardService";
 import Chart from "react-apexcharts";
+import dateFormat from "dateformat";
+import { awsData } from "../../components/Data/test.json";
 import * as time from "../../components/Utilities/Functions";
 import {
   postTimerData,
   deleteTask,
 } from "../../services/TicketService/TaskService";
 
-export default function Dashboard(props) {
+export default function HrDashboard(props) {
   const history = useNavigate();
   const location = useLocation()
   console.log(location);

@@ -13,12 +13,13 @@ import * as Validation from "../../../components/Utilities/Validation";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
+import Select from "react-select";
 
 function TaskAndTicketTypeMaster(props) {
-  const [checkRole, setCheckRole] = useState(null);
-  const [selectedValue, setSelectedValue] = useState("");
+    const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
+const [parent, setParent] = useState();
 
   const [exportData, setExportData] = useState(null);
 
@@ -32,6 +33,72 @@ function TaskAndTicketTypeMaster(props) {
     { value: "TICKET", label: "TICKET" },
     // Add more options as needed
   ];
+const loadData = async () => {
+    const exportTempData = [];
+
+    await new TaskTicketTypeService().getAllType().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          let counter = 1;
+          var tempData = [];
+          const temp = res.data.data;
+          console.log(temp);
+          for (const key in temp) {
+            tempData.push({
+              counter: counter++,
+              id: temp[key].id,
+              type: temp[key].type,
+              parent_id: temp[key].parent_id,
+
+              type_name: temp[key].type_name,
+              remark: temp[key].remark,
+              is_active: temp[key].is_active,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
+              updated_at: temp[key].updated_at,
+              updated_by: temp[key].updated_by,
+            });
+          }
+          setData(null);
+          setData(tempData);
+
+          for (const i in temp) {
+            exportTempData.push({
+              SrNo: exportTempData.length + 1,
+
+              id: temp[i].id,
+              type: temp[i].type,
+
+              parent_name: temp[i].parent_name,
+              type_name: temp[i].type_name,
+              remark: temp[i].remark,
+              is_active: temp[i].is_active,
+              created_at: temp[i].created_at,
+              created_by: temp[i].created_by,
+              updated_at: temp[i].updated_at,
+              updated_by: temp[i].updated_by,
+            });
+          }
+
+          setExportData(null);
+
+          setExportData(exportTempData);
+        }
+      }
+    });
+
+    await new TaskTicketTypeService().getParent().then((res) => {
+      if (res.status === 200) {
+        const mappedData = res.data.data.map((d) => ({
+          value: d.id,
+          label: d.type_name,
+        }));
+        setParent(mappedData);
+      } else {
+        console.error("error", res.status);
+      }
+    });
+  };
   const columns = [
     // Columns definition..
     {
@@ -63,11 +130,27 @@ function TaskAndTicketTypeMaster(props) {
       selector: (row) => row.counter,
       sortable: true,
     },
+
     {
       name: "Type",
       selector: (row) => row.type,
       sortable: true,
       width: "125px",
+    },
+{
+      name: "Parent",
+      width: "150px",
+      cell: (row) => {
+        if (parent) {
+          const parent_name =
+            parent &&
+            parent
+
+              ?.filter((d) => d.value == row.parent_id)
+              .map((d) => ({ value: d.value, label: d.label }));
+          return <span>{parent_name[0]?.label}</span>;
+        }
+      },
     },
     {
       name: "Type Name",
@@ -155,57 +238,10 @@ function TaskAndTicketTypeMaster(props) {
   const handleModal = (data) => {
     setModal(data);
   };
-  const loadData = async () => {
-    const exportTempData = [];
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          let counter = 1;
-          var tempData = [];
-          const temp = res.data.data;
-          for (const key in temp) {
-            tempData.push({
-              counter: counter++,
-              id: temp[key].id,
-              type: temp[key].type,
-              type_name: temp[key].type_name,
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(tempData);
-
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
-
-              id: temp[i].id,
-              type: temp[i].type,
-              type_name: temp[i].type_name,
-              remark: temp[i].remark,
-              is_active: temp[i].is_active,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-
-          setExportData(exportTempData);
-        }
-      }
-    });
-  };
+  
   const handleDropdownChange = (e) => {
-    console.log(e.target.value);
-    setSelectedValue(e.target.value);
+        setSelectedValue(e.target.value);
+console.log(e.target.value);
   };
 
   const handleForm = (id) => async (e) => {
@@ -330,7 +366,7 @@ function TaskAndTicketTypeMaster(props) {
                     Select type: <Astrick color="red" size="13px" />
                   </label>
                   <DropdownComponent
-                    required={true}
+                    required
                     name="type"
                     data={dropdownData}
                     getInputValue={handleDropdownChange}
@@ -339,6 +375,68 @@ function TaskAndTicketTypeMaster(props) {
                     selectedValue={modal.modalData && modal.modalData.type}
                   />
                 </div>
+
+                {selectedValue === "TASK" ||
+                modal?.modalData?.type === "TASK" ? (
+                  <>
+                    <div className="col-sm-12">
+                      <label
+                        className="form-label font-weight-bold"
+                        readOnly={true}
+                      >
+                        Parent Task Type
+                        <Astrick color="red" size="13px" />
+                      </label>
+                      <Select
+                        options={parent}
+                        id="parent_id"
+                        name="parent_id"
+                        required
+                        defaultValue={
+                          modal.modalData
+                            ? modal.modalData &&
+                              parent &&
+                              parent.filter(
+                                (d) => d.value ===modal.modalData.parent_id
+                              )
+                            : parent && parent.filter((d) => d.value[0])
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {selectedValue === "TICKET" ||
+                    modal?.modalData?.type === "TICKET" ? (
+                      <div className="col-sm-12">
+                        <label
+                          className="form-label font-weight-bold"
+                          readOnly={true}
+                        >
+                          Parent Ticket Type
+                          <Astrick color="red" size="13px" />
+                        </label>
+                        <Select
+                          options={parent}
+                          id="parent_id"
+                          name="parent_id"
+                          required
+                          defaultValue={
+                            modal.modalData
+                              ? modal.modalData &&
+                                parent &&
+                                parent.filter(
+                                  (d) => d.value == -modal.modalData.parent_id
+                                )
+                              : parent && parent.filter((d) => d.value[0])
+                          }
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </>
+                )}
 
                 <>
                   <div className="col-sm-12">
@@ -353,7 +451,8 @@ function TaskAndTicketTypeMaster(props) {
                       </label>
                     )}
                   
-                    {selectedValue === "TASK" ||  modal?.modalData?.type=="TASK" ?
+                    {selectedValue === "TASK" ||
+                    modal?.modalData?.type === "TASK" ? (
                       <input
                         type="text"
                         className="form-control form-control-sm"
@@ -364,10 +463,10 @@ function TaskAndTicketTypeMaster(props) {
                           modal.modalData && modal?.modalData?.type_name
                         }
                       />
-                      :""
-                    }
-                    {
-                      selectedValue === "TICKET" || modal?.modalData?.type=="TICKET" ?
+                      ) : (
+                      <>
+                        {selectedValue === "TICKET" ||
+                        modal?.modalData?.type === "TICKET" ? (
                       <input
                         type="text"
                         className="form-control form-control-sm"
@@ -377,15 +476,12 @@ function TaskAndTicketTypeMaster(props) {
                         defaultValue={
                           modal.modalData && modal?.modalData?.type_name
                         }
-
-                      />
-                      :""
-
-                      
-                    }
-
-
-
+/>
+                        ) : (
+                          ""
+                        )}
+                      </>
+                    )}
                   </div>
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">

@@ -6,8 +6,15 @@ import axios from "axios";
 const URL = settingMasterUrl.getGeneralSetting
 const createSetting = URL + "/createGeneralSetting"
 const getGeneralSetting = URL + "/getGeneralSetting"
+
+
+
 const getAuthorityCheck = URL + "/getCheckSettingAuthority";
-console.log("getAuthorityCheck", getAuthorityCheck)
+
+
+
+
+
 export default class GeneralSettingService {
 
   createGeneralSetting(payload) {

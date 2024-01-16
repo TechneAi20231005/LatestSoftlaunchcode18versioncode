@@ -16,11 +16,11 @@ export default function SignIn() {
   const [notify, setNotify] = useState(null);
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     setNotify(null);
     e.preventDefault();
     const data = new FormData(e.target);
-    postData(data).then((res) => {
+ await postData(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const data = res.data.data;
@@ -132,7 +132,7 @@ export default function SignIn() {
       >
         <form onSubmit={submitHandler} className="row g-1 p-3 p-md-4">
           <div className="col-12 text-center mb-1 mb-lg-5">
-            <h1 style={{fontFamily:"Georgia, serif"}}>Sign In</h1>
+            <h1 style={{ fontFamily: "Georgia, serif" }}>Sign In</h1>
             {/* <span>Free access to our dashboard.</span> */}
           </div>
           {/* <div className="col-12 text-center mb-4">

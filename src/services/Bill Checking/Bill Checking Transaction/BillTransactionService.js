@@ -22,24 +22,25 @@ export function getDateTime() {
 }
 
 export default class BillCheckingTransactionService {
+  createModuleAuthorityUserSetting(payload) {
+    const token = localStorage.getItem("jwt_token");
 
-  createModuleAuthorityUserSetting(payload){
-     const token = localStorage.getItem("jwt_token");
-   
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    // payload.append("updated_by", userSessionData.userId);
+    // payload.append("updated_at", getDateTime());
 
-  const config = {
-   
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  };
-  // payload.append("updated_by", userSessionData.userId);
-  // payload.append("updated_at", getDateTime());
-
-  return axios.post(_URL + "/createModuleAuthorityUserSetting", payload, config);
-}
+    return axios.post(
+      _URL + "/createModuleAuthorityUserSetting",
+      payload,
+      config
+    );
+  }
   createModuleAuthority(payload) {
     const token = localStorage.getItem("jwt_token");
 
@@ -72,9 +73,6 @@ export default class BillCheckingTransactionService {
     );
   }
 
-
-
-
   // getUpdatedAuthorities(){
   //   const token=localStorage.getItem("jwt_token")
   //   const config={
@@ -88,12 +86,9 @@ export default class BillCheckingTransactionService {
   //     _URL + "/getUpdatedAuthorities/" + userSessionData.userId,
   //     config
 
-
   //   )
 
   // }
-
-
 
   getUpdatedAuthorities(payload) {
     const token = localStorage.getItem("jwt_token");
@@ -105,12 +100,13 @@ export default class BillCheckingTransactionService {
         "Content-Type": "application/json",
       },
     };
-    payload={}
+    payload = {};
     return axios.post(
-      _URL + "/getUpdatedAuthorities/"+userSessionData.userId,payload,config
+      _URL + "/getUpdatedAuthorities/" + userSessionData.userId,
+      payload,
+      config
     );
   }
-
 
   deleteModuleSettingUser(id) {
     const token = localStorage.getItem("jwt_token");
@@ -122,9 +118,7 @@ export default class BillCheckingTransactionService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(
-      _URL + "/deleteModuleSettingUser/"+id,config
-    );
+    return axios.get(_URL + "/deleteModuleSettingUser/" + id, config);
   }
 
   updateModuleAuthority(payload) {
@@ -142,11 +136,7 @@ export default class BillCheckingTransactionService {
     return axios.post(_URL + "/createModuleAuthority", payload, config);
   }
 
-
-  
-  
-
-  getBillDetailsOfPaymentGrid(id,payload) {
+  getBillDetailsOfPaymentGrid(id, payload) {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -158,10 +148,12 @@ export default class BillCheckingTransactionService {
     };
     // payload.append("updated_by", userSessionData.userId);
     // payload.append("updated_at", getDateTime());
-    return axios.post(_URL + "/getBillDetailsOfPaymentGrid/"+id ,payload, config);
+    return axios.post(
+      _URL + "/getBillDetailsOfPaymentGrid/" + id,
+      payload,
+      config
+    );
   }
-
-
 
   getBillCheckData() {
     const token = localStorage.getItem("jwt_token");
@@ -225,10 +217,6 @@ export default class BillCheckingTransactionService {
     return axios.get(_URL + "/getPaymentDetails/" + id, config);
   }
 
-
-
-
-
   getBillCheckingById(id) {
     const token = localStorage.getItem("jwt_token");
 
@@ -240,7 +228,7 @@ export default class BillCheckingTransactionService {
       },
     };
     return axios.get(
-      _URL + "/getBillCheckById/" + id + "/" + sessionStorage.getItem('id'),
+      _URL + "/getBillCheckById/" + id + "/" + sessionStorage.getItem("id"),
       config
     );
   }
@@ -300,7 +288,7 @@ export default class BillCheckingTransactionService {
         "Content-Type": "application/json",
       },
     };
-    return axios.post(_URL + "/isCancelBill/" + id,{},config);
+    return axios.post(_URL + "/isCancelBill/" + id, {}, config);
   }
 
   getSectionDropdown() {
