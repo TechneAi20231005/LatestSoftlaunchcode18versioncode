@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 // import { ProgressBar } from "react-bootstrap";
-import { saveAs } from 'file-saver';
-import { Link, useHistory, useParams } from "react-router-dom";
-// import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
-import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService"
-
-import GeneralSettingService from "../../services/ProjectManagementService/GeneralSettingService";
-import {
-  _apiUrl,
-  _attachmentUrl,
-  _base,
-  } from "../../settings/constants";
+import FileSaver, { saveAs } from "file-saver";
+import { Link, useHistory, useLocation, useParams } from "react-router-dom";
+import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
+import GeneralSettingService from "../../services/SettingService/GeneralSettingService";
+import { _apiUrl, _attachmentUrl, _base } from "../../settings/constants";
 
 import DataTable from "react-data-table-component";
 import Select from "react-select";
@@ -18,38 +12,35 @@ import SubModuleService from "../../services/ProjectManagementService/SubModuleS
 import ModuleService from "../../services/ProjectManagementService/ModuleService";
 import Alert from "../../components/Common/Alert";
 import { Modal, Button } from "react-bootstrap";
-import { Astrick } from "../../components/Utilities/Style";
-export default function ProjectwiseModule({ match }) {
 
-  const {projectId} =useParams()
-  const {moduleId}=useParams()
+export default function ProjectwiseModule() {
 
-  // const projectId = match.params.projectId;
-  // const moduleId = match.params.moduleId;
+  const params = useParams();
+  const { projectId, moduleId } = params;
+  const location = useLocation();
   const [data, setData] = useState(null);
+  const [isProjectOwner, setIsProjectOwner] = useState(null)
   const [idd, setId] = useState(null);
   const [submoduleData, setSubmoduleData] = useState([]);
   const [subModuleDropdown, setSubModuleDropdown] = useState(null);
-const [moduleDropdown, setModuleDropdown] = useState(null);
+  const [moduleDropdown, setModuleDropdown] = useState(null);
   const [show, setShow] = useState("");
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
-  const [toggleList, setToggleList] = useState(false);
-  const [subModuleValue, setSubModuleValue] = useState(null);
+  const [toggleRadio, setToggleRadio] = useState(true);
+  const [subModuleValue, setSubModuleValue] = useState(0);
   const [fileName, setFileName] = useState("");
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showbtn, setShowbtn] = useState(true);
-  const [selectedRows, setSelectedRows] = useState();
+  const [selectedRows, setSelectedRows] = useState([]);
   const [selectedData, setSelectedData] = useState();
-const [generalSetting, setGeneralSetting] = useState([])
-  const [checkSetting, setCheckSetting] = useState({
-    upload: false,
-    deleteRestore: false,
-    check: false
-  })
-  const [authorityData, setAuthorityData] = useState([]);
-  const [authorityCheck, setAuthorityCheck] = useState([])
+  const [checkDelete, setCheckDelete] = useState();
+  const [authorityCheck, setAuthorityCheck] = useState(false)
+  const [isProjectActive, setIsProjectActive] = useState(1)
+  const [isModuleActive, setIsModuleActive] = useState(1);
+  const [isSubModuleActive, setIsSubModuleActive] = useState(1);
+  const [attachments, setAttachments] = useState([]);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -57,47 +48,56 @@ const [generalSetting, setGeneralSetting] = useState([])
     modalHeader: "",
   });
   const handleModal = (data) => {
-
     setModal(data);
   };
   const submoduleRef = useRef(null);
-const moduleRef = useRef(null);
-
+  const moduleRef = useRef(null);
 
   const loadData = async () => {
-const userId = sessionStorage.getItem("id");
+    const userId = sessionStorage.getItem("id");
+
+    // await new ConsolidatedService().getConsolidatedView().then(res => console.log("res project", res.data.data));
 
     await new ConsolidatedService()
+
       .getProjectsModules(projectId, moduleId)
       .then((res) => {
+
         if (res.status === 200) {
           if (res.data.status === 1) {
             setData(null);
             setData(res.data.data);
             setId(res.data.data.id);
+            setIsProjectActive(res?.data?.data?.is_project_active)
           }
         }
       });
-await new ModuleService().getModule().then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = res.data.data;
-            // const a = res.data.data.filter((d) => d.module_id);  
-            setModuleDropdown(
-              temp
-                .filter((d) => d.id == moduleId)
-                .map((d) => ({ value: d.id, label: d.module_name }))
-            );
-          }
+
+    await new ModuleService().getModule().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const temp = res?.data?.data;
+          // const a = res.data.data.filter((d) => d.module_id);  
+
+          const findModuleActivity = temp.filter(module => module.id == moduleId);
+          setIsModuleActive(findModuleActivity[0]?.is_active);
+
+          setModuleDropdown(
+            temp
+              .filter((d) => d.id == moduleId)
+              .map((d) => ({ value: d.id, label: d.module_name }))
+          );
         }
-      });
+      }
+    });
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
           // const a = res.data.data.filter((d) => d.module_id);
           setSubmoduleData(res.data.data);
-
+          const findSubModuleActivity = temp.filter(subModule => subModule.id == subModuleValue);
+          // setIsSubModuleActive(findModuleActivity[0]?.is_active);
           setSubModuleDropdown(
             temp
               .filter((d) => d.module_id == moduleId)
@@ -106,12 +106,174 @@ await new ModuleService().getModule().then((res) => {
         }
       }
     });
-  
+
+    await new SubModuleService()
+      .getSubModuleDocuments(
+        projectId,
+        moduleId,
+        "ACTIVE",
+        subModuleValue ? subModuleValue : 0
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            setToggleRadio(true);
+            let count = 1;
+            let temp = res.data.data;
+            for (let i = 0; i < temp.length; i++) {
+              temp[i].counter = count++;
+            }
+            setDocList(temp);
+          }
+        }
+      });
+
+    try {
+      await new GeneralSettingService().getAuthorityCheck(userId, projectId).then(res => {
+        if (res?.status === 200 && res?.data?.status == 1) {
+          const authorityData = res?.data?.data?.result;
+          setIsProjectOwner(res?.data?.data?.is_projectOwner);
+          const checked = authorityData.find(d => d.setting_name === "Show To ALL")
+          const deleteCheck = authorityData.find(d => d.setting_name === "Delete DOC")
+          if (checked) {
+            setAuthorityCheck(true);
+          } else {
+            setAuthorityCheck(false);
+          }
+          if (deleteCheck) {
+            setCheckDelete(true)
+          } else {
+            setCheckDelete(false)
+          }
+        }
+
+      })
+
+    } catch (error) {
+      console.error("Error fetching authority data:", error);
+    }
+
+  };
+
+  const changeSubModuleHandle = async (e, type) => {
+    if (e === null) {
+      return;
+    }
+    const { value, label } = e;
+    if (type === "SUBMODULE") {
+      setSubModuleValue(value);
+      if (moduleRef.current) {
+        moduleRef.current.clearValue()
+      }
+      const findSubModuleActivity = submoduleData.filter(subModule => subModule.id == value);
+      setIsSubModuleActive(findSubModuleActivity[0].is_active)
+      await new SubModuleService()
+        .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              var tempData = [];
+              var temp = res.data.data;
+              let counter = 1;
+              for (const key in temp) {
+                tempData.push({
+                  counter: counter++,
+                  id: temp[key].id,
+                  show_to_all: temp[key].show_to_all,
+                  project_name: temp[key].project_name,
+                  module_name: temp[key].module_name,
+                  is_active: temp[key].is_active,
+                  document_attachment: temp[key].document_attachment,
+                });
+              }
+              setDocList(null);
+              setToggleRadio(true)
+              setDocList(tempData);
+            }
+          }
+        });
+    } else if (type === "MODULE") {
+      if (submoduleRef.current) {
+        submoduleRef.current.clearValue()
+        setSubModuleValue(0)
+      }
+      await new SubModuleService()
+        .getSubModuleDocuments(projectId, moduleId, "ACTIVE", 0)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+
+              var tempData = [];
+              var temp = res.data.data;
+              let counter = 1;
+              for (const key in temp) {
+                tempData.push({
+                  counter: counter++,
+                  id: temp[key].id,
+                  show_to_all: temp[key].show_to_all,
+                  project_name: temp[key].project_name,
+                  module_name: temp[key].module_name,
+                  sub_module_name: temp[key].sub_module_name,
+                  is_active: temp[key].is_active,
+                  document_attachment: temp[key].document_attachment,
+                });
+              }
+              setDocList(null);
+              setToggleRadio(true)
+              setDocList(tempData);
+            }
+          }
+        });
+    }
+
+  };
+
+  const uploadDocHandler = async (e) => {
+    e.preventDefault();
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+    setNotify(null);
+
+
+    const form = new FormData(e.target);
+    form.append("submodule_id", subModuleValue ? subModuleValue : 0);
+    form.append("show_to_all", 1);
+    await new SubModuleService().postSubModuleDocument(form).then((res) => {
+
+      if (res?.data?.status === 1) {
+        setNotify({ type: "success", message: res?.data?.message });
+        handleModal({ showModal: false, modalData: "", modalHeader: "" });
+      } else {
+        setNotify({ type: "danger", message: res?.data?.message });
+      }
+    });
+    await new SubModuleService()
+      .getSubModuleDocuments(
+        projectId,
+        moduleId,
+        "ACTIVE",
+        subModuleValue ? subModuleValue : 0
+      )
+      .then((res) => setDocList(res.data.data));
+    setIsLoading(false);
+    setToggleRadio(true);
+  };
+
+  const downloadFile = async (e, url) => {
+    e.preventDefault();
+    const binaryLink =
+      _attachmentUrl +
+      "storage/app/Attachment/ProjectManagement/Submodule/Screenshot (2).png";
+    saveAs(binaryLink, "downloadedFile.png");
+  };
+
+  const fetchData = async (e) => {
     await new SubModuleService()
       .getSubModuleDocuments(projectId, moduleId, "ACTIVE", subModuleValue ? subModuleValue : 0).then(res => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-
             let count = 1;
             let temp = res.data.data;
             for (let i = 0; i < temp.length; i++) {
@@ -121,158 +283,7 @@ await new ModuleService().getModule().then((res) => {
           }
         }
       });
-
-    await new GeneralSettingService().getGeneralSetting().then(res => {
-      if (res?.status === 200 && res?.data?.status) {
-        setGeneralSetting(res.data.data)
-      }
-    });
-
-
-    try {
-      await new GeneralSettingService().getAuthorityCheck(userId).then(res => {
-
-        if (res?.status === 200 && res?.data?.status==1) {
-          const authorityData = res.data.data;
-          setAuthorityCheck(authorityData);
-          // setCheckSetting(updatedCheckSetting);
-        }
-      })
-    } catch (error) {
-      console.error("Error fetching authority data:", error);
-    }
-
-  };
-  const changeSubModuleHandle = async (e, type) => {
-    const { value, label } = e;
-if(type === "SUBMODULE"){
-    setSubModuleValue(value);
-if(moduleRef.current){
-      moduleRef.current.clearValue()
-    }
-    await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            var tempData = [];
-            var temp = res.data.data;
-            let counter = 1;
-            for (const key in temp) {
-              tempData.push({
-                counter: counter++,
-                id: temp[key].id,
-                show_to_all: temp[key].show_to_all,
-                project_name: temp[key].project_name,
-                module_name: temp[key].module_name,
-                is_active: temp[key].is_active,
-                document_attachment: temp[key].document_attachment,
-              });
-            }
-            setDocList(null);
-            setDocList(tempData);
-          }
-        }
-      });
-  }else if(type === "MODULE"){
-        if(submoduleRef.current){
-          submoduleRef.current.clearValue()
-        }
-    await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", 0)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            var tempData = [];
-            var temp = res.data.data;
-            let counter = 1;
-            for (const key in temp) {
-              tempData.push({
-                counter: counter++,
-                id: temp[key].id,
-                show_to_all: temp[key].show_to_all,
-                project_name: temp[key].project_name,
-                module_name: temp[key].module_name,
-sub_module_name: temp[key].sub_module_name,
-                is_active: temp[key].is_active,
-                document_attachment: temp[key].document_attachment,
-              });
-            }
-            setDocList(null);
-            setDocList(tempData);
-          }
-        }
-      });
   }
-     
-  };
-
-  // const fetchActiveData = async (projectId, moduleId, value) => {
-  //   setSubModuleValue(value);
-  //   await new SubModuleService()
-  //     .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
-  //     .then((res) => {
-  //       if (res.status === 200) {
-  //         if (res.data.status == 1) {
-  //           var tempData = [];
-  //           var temp = res.data.data;
-  //           let counter = 1;
-  //           for (const key in temp) {
-  //             tempData.push({
-  //               counter: counter++,
-  //               id: temp[key].id,
-  //               show_to_all: temp[key].show_to_all,
-  //               project_name: temp[key].project_name,
-  //               module_name: temp[key].module_name,
-  //               sub_module_name: temp[key].sub_module_name,
-  //               is_active: temp[key].is_active,
-  //               document_attachment: temp[key].document_attachment,
-  //             });
-  //           }
-  //           setDocList(null);
-  //           setDocList(tempData);
-  //         }
-  //       }
-  //     });
-  // };
-
-  const uploadDocHandler = async (e) => {
-e.preventDefault();
-    if (isLoading) {
-      return;
-    }
-    setIsLoading(true);
-    
-    setNotify(null);
-
-    const form = new FormData(e.target);
-    
-    form.append("submodule_id", subModuleValue ? subModuleValue : 0)
-    form.append("show_to_all", 1)
-    await new SubModuleService().postSubModuleDocument(form).then((res) => {
-      if (res?.data?.status === 1) {
-        setNotify({ type: "success", message: res?.data?.message });
-        handleModal({ showModal: false, modalData: "", modalHeader: "" });
-        
-        // fetchActiveData(projectId, moduleId, subModuleValue ?);
-      } else {
-        setNotify({ type: "danger", message: res?.data?.message });
-      }
-    });
-    await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", subModuleValue ? subModuleValue : 0)
-      .then((res) => setDocList(res.data.data));
-    setIsLoading(false);
-  };
-
-  
-
-  const downloadFile = async (e, url) => {
-    e.preventDefault()
-    const binaryLink = _attachmentUrl + 'storage/app/Attachment/ProjectManagement/Submodule/Screenshot (2).png';
-    saveAs(binaryLink, 'downloadedFile.png');
-  }
-
 
   const deleteRestoreDoc = async () => {
     try {
@@ -289,53 +300,67 @@ e.preventDefault();
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
         payload.is_active = 0;
-deleteAndFetch("DEACTIVE")
+        setToggleRadio(false)
+        deleteAndFetch("DEACTIVE")
 
       } else {
         payload.is_active = 1;
-deleteAndFetch("ACTIVE")
-
+        deleteAndFetch("ACTIVE")
+        setToggleRadio(false)
       }
-      
+
       async function deleteAndFetch(status) {
-      await new SubModuleService()
-        .deleteAndRestoreSubModuleDocuments(payload)
-        .then((res) => {
-          if (res?.data?.status === 1) {
-            setNotify();
-            setNotify({ type: "success", message: res?.data?.message });
-          } else {
-            setNotify({ type: "danger", message: res?.data?.message });
-          }
-        });
+        await new SubModuleService()
+          .deleteAndRestoreSubModuleDocuments(payload)
+          .then((res) => {
+            if (res?.data?.status === 1) {
+              if (status === "ACTIVE") {
+                setToggleRadio(true);
+                setSelectedRows([])
+                // setShowbtn(true)
+              } else if (status === "DEACTIVE") {
+                setToggleRadio(false);
+                setSelectedRows([])
 
-      await new SubModuleService()
-        .getSubModuleDocuments(projectId, moduleId, status, subModuleValue ? subModuleValue : 0)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              var tempData = [];
-              var temp = res.data.data;
-              let counter = 1;
-
-              for (const key in temp) {
-                tempData.push({
-                  counter: counter++,
-                  id: temp[key].id,
-                  show_to_all: temp[key].show_to_all,
-                  project_name: temp[key].project_name,
-                  module_name: temp[key].module_name,
-                  is_active: temp[key].is_active,
-                  document_attachment: temp[key].document_attachment,
-                });
+                // setShowbtn(false)
               }
-              setDocList(null);
-              setDocList(tempData);
+              setNotify({ type: "success", message: res?.data?.message });
+            } else {
+              setNotify({ type: "danger", message: res?.data?.message });
             }
-          }
-        });
-}
+          });
 
+        await new SubModuleService()
+          .getSubModuleDocuments(
+            projectId,
+            moduleId,
+            status,
+            subModuleValue ? subModuleValue : 0
+          )
+          .then((res) => {
+            if (res.status === 200) {
+              if (res.data.status == 1) {
+                var tempData = [];
+                var temp = res.data.data;
+                let counter = 1;
+
+                for (const key in temp) {
+                  tempData.push({
+                    counter: counter++,
+                    id: temp[key].id,
+                    show_to_all: temp[key].show_to_all,
+                    project_name: temp[key].project_name,
+                    module_name: temp[key].module_name,
+                    is_active: temp[key].is_active,
+                    document_attachment: temp[key].document_attachment,
+                  });
+                }
+                setDocList(null);
+                setDocList(tempData);
+              }
+            }
+          });
+      }
 
       setIsLoading(false);
     } catch (error) {
@@ -344,8 +369,20 @@ deleteAndFetch("ACTIVE")
     }
   };
 
-  const dontShowToAll = async(e, row)=>{
-
+  const dontShowToAll = async (e, row) => {
+    let value = e.target.checked
+    let sendVal;
+    if (value === true) {
+      sendVal = 1
+    } else {
+      sendVal = 0
+    }
+    const form = { "show_to_all": sendVal }
+    await new SubModuleService().updateProjectDocument(row.id, form).then((res) => {
+      if (res.status === 200 && res.data.status == 1) {
+        fetchData()
+      }
+    })
   }
 
   const columns = [
@@ -360,10 +397,9 @@ deleteAndFetch("ACTIVE")
       name: "Show to all",
       sortable: false,
       cell: (row) => {
-
         return (
           <>
-            <input type="checkbox" onChange={(e)=>{dontShowToAll(e,row)}} disabled={authorityCheck.map((check)=> check.setting_name === "Show To ALL") ? false :true} defaultChecked={row.show_to_all === 1 ? true :false} />
+            <input type="checkbox" onChange={(e) => { dontShowToAll(e, row) }} disabled={!authorityCheck && isProjectOwner === 0} defaultChecked={row.show_to_all == 1 || isProjectOwner === 1 ? true : false} />
           </>
         );
       },
@@ -375,26 +411,23 @@ deleteAndFetch("ACTIVE")
       sortable: true,
       cell: (row) => (
         <>
-          <div className="d-flex">
-            
-
-            <p >
+          <div className="d-flex align-items-center justify-content-center">
+            <p className="mb-0"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="History"
+            >
               <Link to={`/${_base}/ConsolidatedView/ProjectwiseModule/${projectId}/${moduleId}/${row.id}`}>
                 <i className="icofont-history btn btn-sm btn-info text-white"></i>
               </Link>
-            </p>
-
-            <p onClick={(e) => downloadFile(e, row?.document_attachment)} >
-              <a href="" >
-                <i className="icofont-eye-alt btn btn-sm btn-info text-white"></i>
-              </a>
             </p>
 
             <p
               style={{ display: row.is_active === 0 ? "none" : "block" }}
               data-bs-toggle="tooltip"
               data-bs-placement="top"
-              title="Preview"
+              title="Download"
+              className="mb-0"
             >
               <a
                 href={_attachmentUrl + row?.document_attachment}
@@ -407,8 +440,6 @@ deleteAndFetch("ACTIVE")
                 ></i>
               </a>
             </p>
-            
-
           </div>
         </>
       ),
@@ -416,30 +447,30 @@ deleteAndFetch("ACTIVE")
     },
     {
       name: "File Name",
-      selector: (row) => row.document_attachment       
+      selector: (row) => row.document_attachment
       ,
       sortable: true,
       width: "20%",
       cell: (row) => {
         let file = row.document_attachment;
         let splittedName = file.split("/");
-        setFileName(splittedName[splittedName.length - 1]);
-        return <p>{splittedName[splittedName.length - 1]}</p>;
+        // setFileName(splittedName[splittedName.length - 1]);
+        return <p className="mb-0">{splittedName[splittedName.length - 1]}</p>;
       },
     },
     {
       name: "Project Name",
       selector: (row) => row.project_name,
       sortable: true,
-          },
+    },
     {
       name: "Module Name",
       selector: (row) => row.module_name,
       sortable: true,
-      },
+    },
     {
       name: "SubModule Name",
-selector: (row) => row.sub_module_name,
+      selector: (row) => row.sub_module_name,
       sortable: true,
     },
   ];
@@ -463,31 +494,38 @@ selector: (row) => row.sub_module_name,
   };
 
   const handleDataShow = async (type) => {
-          await new SubModuleService()
-        .getSubModuleDocuments(projectId, moduleId, type, subModuleValue ? subModuleValue : 0)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              var tempData = [];
-              var temp = res.data.data;
-              let counter = 1;
-              for (const key in temp) {
-                tempData.push({
-                  counter: counter++,
-                  id: temp[key].id,
-                  show_to_all: temp[key].show_to_all,
-                  project_name: temp[key].project_name,
-                  module_name: temp[key].module_name,
-                  is_active: temp[key].is_active,
-                  document_attachment: temp[key].document_attachment,
-                });
-              }
-              setDocList(null);
-              setDocList(tempData);
+    await new SubModuleService()
+      .getSubModuleDocuments(projectId, moduleId, type, subModuleValue ? subModuleValue : 0)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            if (type === "ACTIVE") {
+              setShowbtn(true);
+              setToggleRadio(true)
+            } else if (type === "DEACTIVE") {
+              setShowbtn(false);
+              setToggleRadio(false)
             }
+            var tempData = [];
+            var temp = res.data.data;
+            let counter = 1;
+            for (const key in temp) {
+              tempData.push({
+                counter: counter++,
+                id: temp[key].id,
+                show_to_all: temp[key].show_to_all,
+                project_name: temp[key].project_name,
+                module_name: temp[key].module_name,
+                is_active: temp[key].is_active,
+                document_attachment: temp[key].document_attachment,
+              });
+            }
+            setDocList(null);
+            setDocList(tempData);
           }
-        });
-    
+        }
+      });
+
     if (type === "ACTIVE") {
       setShowbtn(true);
     } else if (type === "DEACTIVE") {
@@ -496,43 +534,29 @@ selector: (row) => row.sub_module_name,
   };
 
   const selectedDOC = (e) => {
+    if (!toggleRadio) {
+      setShowbtn(false)
+    } else {
+      setShowbtn(true)
+    }
     setSelectedData(e.selectedRows);
     const idArray = e.selectedRows.map((d) => d.id);
     setSelectedRows(idArray);
   };
 
-  // const checkRole = async () => {
-  //   let settingArray = generalSetting.map(setting => ({
-  //     ...setting,
-  //     setting_name: setting.setting_name.toLowerCase()
-  //   }));
 
-  //   let checkUploadSetting = settingArray.filter(setting => setting.setting_name.includes("upload"));
-  //   let checkDeleteSetting = settingArray.filter(setting => setting.setting_name.includes("delete"));
-  //   let getUserIdFromSession = sessionStorage.getItem("id");
-  //   let userFoundForUpload = checkUploadSetting.find(elm => elm.user_id === Number(getUserIdFromSession));
-  //   let userFoundForDelete = checkDeleteSetting.find(elm => elm.user_id === Number(getUserIdFromSession));
-  //   if (userFoundForUpload) {
-  //     setUploadSetting(true)
-  //   } else {
-  //     setUploadSetting(false)
-  //   };
-
-  //   if (userFoundForDelete) {
-  //     setDeleteSetting(true)
-  //   } else {
-  //     setDeleteSetting(false)
-  //   }
-
-
-  // };
-
+  const uploadAttachmentHandler = (event) => {
+    const files = event.target.files;
+    const filesArray = Array.from(files);
+    setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
+  };
 
 
   useEffect(() => {
     loadData();
-     }, []);
-  
+
+  }, []);
+
   return (
     <>
       <div className=" card col-md-6 w-100">
@@ -541,7 +565,7 @@ selector: (row) => row.sub_module_name,
           <div className="d-flex align-items-center justify-content-center mt-5 mb-4">
             <div className="lesson_name">
               <div className={"project-block bg-lightgreen"}>
-                <i class="icofont-briefcase"></i>
+                <i className="icofont-briefcase"></i>
               </div>
 
               <span className="small text-muted project_name fw-bold text-center">
@@ -583,7 +607,7 @@ selector: (row) => row.sub_module_name,
 
             <div className="col-6">
               <div className="d-flex align-items-center justify-content-center">
-                <i class="icofont-ticket"></i>
+                <i className="icofont-ticket"></i>
                 <Link
                   to={`/${_base}/CompletedTicket/` + projectId + "/" + moduleId}
                 >
@@ -596,7 +620,7 @@ selector: (row) => row.sub_module_name,
             </div>
             <div className="col-6">
               <div className="d-flex align-items-center justify-content-center ">
-                <i class="icofont-bomb"></i>
+                <i className="icofont-bomb"></i>
                 <Link
                   to={`/${_base}/DelayedTask/` + projectId + "/" + moduleId}
                 >
@@ -616,7 +640,7 @@ selector: (row) => row.sub_module_name,
             <div className="row align-items-center justify-content-between py-2 mt-2">
               <div className="col-4">
                 <div className="d-md-flex ">
-<label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                  <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
                     Module:
                   </label>
                   {moduleDropdown && (
@@ -624,90 +648,93 @@ selector: (row) => row.sub_module_name,
                       className="w-100"
                       options={moduleDropdown}
                       ref={moduleRef}
-                      onChange={(e)=>{changeSubModuleHandle(e,"MODULE")}}
+                      onChange={(e) => { changeSubModuleHandle(e, "MODULE") }}
                       name="submodule_id"
                     />
                   )}
                 </div>
-                  {subModuleDropdown && subModuleDropdown.length >0 && (
-                <div className="d-md-flex mt-2">
-                  <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                    Sub Module:
-                  </label>
-                                      <Select
+                {subModuleDropdown && subModuleDropdown.length > 0 && (
+                  <div className="d-md-flex mt-2">
+                    <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                      Sub Module:
+                    </label>
+                    <Select
                       className="w-100"
                       options={subModuleDropdown}
                       ref={submoduleRef}
-                      onChange={(e)=>{changeSubModuleHandle(e,"SUBMODULE")}}
+                      onChange={(e) => { changeSubModuleHandle(e, "SUBMODULE") }}
                       name="submodule_id"
                     />
-                                  </div>
-)}
+
+                  </div>
+                )}
               </div>
-              {(
-                <div className="col-4 text-center">
-                  <div className="row align-items-center">
 
-                    <label className="col-md-3 form-label font-weight-bold">
-                      Status :
-                      {/* Show DOC :<Astrick color="red" size="13px" /> */}
-                    </label>
-                    <div className="col-md-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          id="is_active_1"
-                          value="1"
-
-                          onChange={() => {
-                            handleDataShow("ACTIVE");
-                          }}
-                          defaultChecked={true}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_1"
-                        >
-                          Active
-                        </label>
-                      </div>
+              <div className="col-4 text-center">
+                <div className="row align-items-center">
+                  <label className="col-md-3 form-label font-weight-bold">
+                    Status :
+                    {/* Show DOC :<Astrick color="red" size="13px" /> */}
+                  </label>
+                  <div className="col-md-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_active"
+                        id="is_active_1"
+                        value="1"
+                        checked={toggleRadio}
+                        onChange={() => {
+                          handleDataShow("ACTIVE");
+                          setToggleRadio(true);
+                        }}
+                        defaultChecked={true}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="is_active_1"
+                      >
+                        Active
+                      </label>
                     </div>
-                    <div className="col-md-1">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          id="is_active_0"
-                          onChange={() => {
-                            handleDataShow("DEACTIVE");
-                          }}
-                          value="0"
-                          readOnly={modal.modalData ? false : true}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_0"
-                        >
-                          Deactive
-                        </label>
-                      </div>
+                  </div>
+                  <div className="col-md-1">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="is_active"
+                        id="is_active_0"
+                        checked={!toggleRadio}
+                        onChange={() => {
+                          handleDataShow("DEACTIVE");
+                          setToggleRadio(false);
+                        }}
+                        value="0"
+                        readOnly={modal.modalData ? false : true}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="is_active_0"
+                      >
+                        Deactive
+                      </label>
                     </div>
                   </div>
                 </div>
-              )}
-              <div className="col-4 text-center">
-                {showbtn === true && docList && selectedRows?.length >0 && (
-                  <button type="button"  disabled={authorityCheck.map((check)=> check.setting_name === "Delete DOC") ? false :true} className="btn btn-danger" onClick={deleteRestoreDoc}>
+              </div>
+
+              <div className={isProjectActive === 1 ? "d-block col-4 text-center" : "d-none col-4 text-center"}>
+                {showbtn === true && docList && selectedRows?.length > 0 && (
+                  <button type="button" disabled={(isProjectOwner !== 1 && !checkDelete) ? true : false} className="btn btn-danger" onClick={deleteRestoreDoc}>
                     Delete Files
                   </button>
                 )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
-                    disabled={authorityCheck.map((check)=> check.setting_name === "Delete DOC") ? false :true}                    className="btn btn-success"
+                    disabled={(isProjectOwner !== 1 && !checkDelete) ? true : false} className="btn btn-success"
                     onClick={deleteRestoreDoc}
                   >
                     Restore
@@ -716,6 +743,7 @@ selector: (row) => row.sub_module_name,
                 <button
                   type="button"
                   className="btn btn-primary"
+                  disabled={!isProjectActive || !isModuleActive || !isSubModuleActive}
                   onClick={() => {
                     handleModal({
                       showModal: true,
@@ -745,6 +773,7 @@ selector: (row) => row.sub_module_name,
             method="post"
             onSubmit={uploadDocHandler}
             encType="multipart/form-data"
+
           >
             <Modal.Header closeButton>
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -753,12 +782,13 @@ selector: (row) => row.sub_module_name,
               <input type="hidden" value={projectId} name="project_id" />
               <input type="hidden" value={moduleId} name="module_id" />
               <div className="deadline-form">
-                                <div className="row g-3 mb-3 mt-2">
+                <div className="row g-3 mb-3 mt-2">
                   <input
                     type="file"
-                    name="document_attachment"
+                    onChange={(e) => { uploadAttachmentHandler(e) }}
+                    name="document_attachment[]"
                     id="document_attachment[]"
-                    multiple
+                    multiple="multiple"
                   />
                 </div>
               </div>
@@ -793,14 +823,14 @@ selector: (row) => row.sub_module_name,
           </form>
         </Modal>
         <div className="col">
-          {docList && ( <>
-            <span style={{ fontStyle:"italic", color:"blue", fontWeight:"bold"}}>Note:</span>
-            <br/>
-          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>1) Please Select Documents for Delete and Restore</span>
-          <br/>
-          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>2) Please Select Deactive To Check Deleted Documents</span>
-          <br/>
-          <span style={{fontStyle:"italic", color:"red", fontWeight:"bold"}}>3) Please Select Module or Submodule to Filter The Documents</span>
+          {docList && (<>
+            <span style={{ fontStyle: "italic", color: "blue", fontWeight: "bold" }}>Note:</span>
+            <br />
+            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>1) Please Select Documents for Delete and Restore</span>
+            <br />
+            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>2) Please Select Deactive To Check Deleted Documents</span>
+            <br />
+            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>3) Please Select Module or Submodule to Filter The Documents</span>
             <DataTable
               columns={columns}
               data={docList}

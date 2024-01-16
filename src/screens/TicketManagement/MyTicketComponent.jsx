@@ -205,6 +205,7 @@ export default function MyTicketComponent({ location }) {
                       style={{ width: "100%", zIndex: "100" }}
                     >
                       <i className="icofont-ui-edit"></i> Edit
+
                     </Link>
                   </li>
                 ))}
@@ -406,7 +407,7 @@ export default function MyTicketComponent({ location }) {
               {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') && */}
               <li>
                 <Link
-                  to={`/${_base}/Ticket/Edit/` + data.id}
+                  to={`/${_base}/Ticket/Edit/`+ data.id}
                   className="btn btn-sm btn-warning text-white"
                   style={{ width: "100%", zIndex: "100" }}
                 >
