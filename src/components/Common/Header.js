@@ -9,8 +9,15 @@ import { Link } from "react-router-dom";
 import {
   getNotification, markedReadNotification, getAllmarkAllAsReadNotification
 } from "../../services/NotificationService/NotificationService";
+import TenantService from '../../services/MastersService/TenantService'
+import Select from 'react-select'
 
-export default function Header() {
+export default function Header () {
+  const [tenantId, setTenantId] = useState()
+  const [tenantDropdown, setTenantDropdown] = useState()
+
+
+  
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [notificationHeight, setNotificationHeight] = useState(200);
@@ -88,12 +95,25 @@ export default function Header() {
           setData(res.data.data);
         }
       }
-    });
-  };
-  const blurRef = useRef();
-  const handleBlur = () => {
-  };
+    })
+    new TenantService().getTenant().then(res => {
+      if (res.status === 200 && res.data.status === 1) {
+        const temp = res.data.data.filter(d => d.is_active == 1)
 
+        setTenantDropdown(
+          temp.map(d => ({ value: d.id, label: d.company_name }))
+        )
+      }
+    })
+  }
+  const handleTenantLogin = async(e) => {
+    const form ={ tenant_id:e.value}
+    await new TenantService().switchTenant(form).then((res)=>{
+      if(res.status === 200 && res.data.status === 1){
+        console.log("success", res.data.data);
+      }
+    })
+  }
   useEffect(() => {
     loadData();
   }, [showApprovedOnly]);
@@ -395,9 +415,21 @@ export default function Header() {
                 className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-end"
                 style={{ zIndex: 500, marginTop: "55px" }}
               >
-                <div className="card border-0 w280" style={{ zIndex: 5 }}>
-                  <div className="card-body pb-0" style={{ zIndex: 500 }}>
-                    <div className="d-flex py-1" style={{ zIndex: 500 }}>
+                <div className='card border-0 w280' style={{ zIndex: 5 }}>
+                  <div className='p-2' style={{ zIndex: 700 }}>
+                    {tenantDropdown && tenantId && (
+                      <Select
+                        placeholder={<span className='fw-bold '>Switch Tenant... 
+                        </span>}
+                        name='tenant_id'
+                        options={tenantDropdown}
+                        onChange={handleTenantLogin}
+                        defaultValue={tenantDropdown.filter(d=> d.value == tenantId)}
+                      />
+                    )}
+                  </div>
+                  <div className='card-body pb-0' style={{ zIndex: 500 }}>
+                    <div className='d-flex py-1' style={{ zIndex: 500 }}>
                       <img
                         className="avatar rounded-circle"
                         src={data && data.profile_picture}

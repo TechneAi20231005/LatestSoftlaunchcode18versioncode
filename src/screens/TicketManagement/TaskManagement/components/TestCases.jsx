@@ -1713,7 +1713,6 @@ const {task_id}=useParams()
                       />
                     )}
                   </div>
-{console.log("test",testCaseFunction)}
                   <div className="col-sm-3 mt-2">
                     <label className="col-form-label">
                       <b>

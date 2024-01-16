@@ -140,6 +140,8 @@ const {id}=useParams()
   const [showFiles, setShowFiles] = useState([]);
   const [attachment, setAttachment] = useState();
   const [authorities, SetAuthorities] = useState();
+  const[netPaymentError, setNetPaymentError]=useState()
+
 
   const handleTaxable = (e) => {
     let input = e.target.value;
@@ -371,7 +373,7 @@ const {id}=useParams()
       }
     });
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -707,6 +709,12 @@ const {id}=useParams()
         setBillAmount(billAmount.toFixed(2));
         setBillAmount1(billAmount1.toFixed(2));
       }
+    }
+    if(netPayment < 0){
+      setNetPaymentError("Net bill payment should be positive value")
+    }
+    else {
+      setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
     }
     return () => { };
   }, [
@@ -1862,6 +1870,10 @@ required
                                                 readOnly
                                             /> */}
                     </div>
+
+                    {netPaymentError && <p  style={{
+                          color: "red",
+                        }}>{netPaymentError}</p>}
 
                     {/* <div className=" col-md-3 ">
                       <label className=" col-form-label">

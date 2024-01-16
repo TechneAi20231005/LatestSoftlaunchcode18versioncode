@@ -233,14 +233,15 @@ export default class BillCheckingTransactionService {
     );
   }
 
-  createData(payload) {
+  createData(payload, attachment) {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data'
+
       },
     };
     payload.append("created_by", userSessionData.userId);

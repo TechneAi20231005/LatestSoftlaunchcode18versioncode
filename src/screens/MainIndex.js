@@ -150,8 +150,22 @@ import CalenderMaster from "./HRMS/CalenderMaster";
 import EditBillTypeComponent from "./BillChecking/Masters/BillTypeMaster/EditBillTypeComponent";
 import ViewBillTypeComponent from "./BillChecking/Masters/BillTypeMaster/ViewBillTypeComponent";
 import TaskAndTicketTypeMaster from "./Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster";
+import ViewTicketComponent from "./TicketManagement/ViewTicketComponent";
+
 class MainIndex extends React.Component {
-  render() {
+  constructor(props) {
+    super(props);
+    
+  }
+  //  encryptParameter = (id) => {
+  //   const secretKey = "rushikesh"; // Replace with a secure key
+  //   const encryptedId = CryptoJS.AES.encrypt(id.toString(), secretKey).toString();
+  //   return encryptedId;
+  // };
+
+  render () {
+    // Encryption function (same as mentioned before)
+    console.log("hii from Main index", this.props);
     if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
       for (var a in sessionStorage) {
         localStorage.setItem(a, sessionStorage[a]);
@@ -162,324 +176,325 @@ class MainIndex extends React.Component {
       }
     }
     return (
-      <div className="main px-lg-4 px-md-4">
+      <div className='main px-lg-4 px-md-4'>
+
         <Header />
 
         <div className="body d-flex py-lg-3 py-md-2">
           <Routes>
-            <Route path={`/${_base}/Dashboard`} element={<Dashboard />} />
-            <Route
-              exact
-              path={`/${_base}/InsightsTasks`}
-              element={<InsightsTasks />}
-            />
-            <Route
-              exact
-              path={`/${_base}/InsightsCompletedTask`}
-              element={<InsightsCompletedTask />}
-            />
-            <Route path={`/${_base}/Profile`} element={<Profile />} />
-            <Route
-              exact
-              path={`/${_base}/Notification`}
-              element={<NotificationComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/ApprovedNotification`}
-              element={<ApprovedNotificationComponent />}
-            />
-            <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
-            <Route
-              exact
-              path={`/${_base}/Tenant/Edit/:id`}
-              element={<TenantForm />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Customer`}
-              element={<CustomerComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Customer/Create/`}
-              element={<CreateCustomer />}
-            />
-            {/* <Route path={`/${_base}/Customer/Edit/:id" element={<EditCustomer} /> */}
-            <Route
-              exact
-              path={`/${_base}/Customer/Edit/:id`}
-              element={<EditCustomer />}
-            />
-            <Route path={`/${_base}/User`} element={<UserComponent />} />
-            <Route
-              exact
-              path={`/${_base}/User/Create`}
-              element={<CreateUserComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/User/Edit/:id`}
-              element={<EditUserComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Country`}
-              element={<CountryComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TaskAndTicketTypeMaster`}
-              element={<TaskAndTicketTypeMaster />}
-            />
-            <Route path={`/${_base}/State`} element={<StateComponent />} />
-            <Route path={`/${_base}/City`} element={<CityComponent />} />
-            <Route
-              exact
-              path={`/${_base}/Designation`}
-              element={<DesignationComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Department`}
-              element={<DepartmentComponent />}
-            />
-            <Route path={`/${_base}/Role`} element={<RoleComponent />} />
-            <Route path={`/${_base}/Status`} element={<StatusComponent />} />
-            <Route
-              exact
-              path={`/${_base}/CustomerType`}
-              element={<CustomerTypeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DynamicForm`}
-              element={<DynamicFormComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DynamicForm/Create`}
-              element={<CreateDynamicForm />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DynamicForm/Create/:id`}
-              element={<CreateDynamicForm />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DynamicForm/Edit/:id`}
-              element={<EditDynamicForm />}
-            />
-            <Route
-              exact
-              path={`/${_base}/QueryType`}
-              element={<QueryTypeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/QueryGroupMaster`}
-              element={<QueryGroupMasterComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Template`}
-              element={<TemplateComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Template/Create`}
-              element={<CreateTemplateComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Template/Edit/:id`}
-              element={<EditTemplateComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DepartmentMapping`}
-              element={<DepartmentMappingComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DepartmentMapping/Create`}
-              element={<CreateDepartmentMappingComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/DepartmentMapping/Edit/:id`}
-              element={<EditDepartmentMappingComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Project`}
-              element={<ProjectComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Project/Create`}
-              element={<CreateProjectComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Project/Edit/:id`}
-              element={<EditProjectComponent />}
-            />
-            <Route path={`/${_base}/Module`} element={<ModuleComponent />} />
-            <Route
-              exact
-              path={`/${_base}/Module/Create`}
-              element={<CreateModuleComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Module/Edit/:id`}
-              element={<EditModuleComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SubModule`}
-              element={<SubModuleComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SubModule/Create`}
-              element={<CreateSubModuleComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SubModule/Edit/:id`}
-              element={<EditSubModuleComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/UserTaskReport`}
-              element={<UserTaskReportComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TimelineReport`}
-              element={<TimelineReportComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/ResourcePlanningReport`}
-              element={<ResourcePlanningReportComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/VariantsReport`}
-              element={<VariantsReport />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Ticket`}
-              element={<MyTicketComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Ticket/Create`}
-              element={<CreateTicketComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Ticket/Edit/:id`}
-              element={<EditTicketComponent />}
-            />
-            {/* <Route
+              <Route  path={`/${_base}/Dashboard`} element={<Dashboard/>} />
+              <Route
                 exact
-                path={`/${_base}/Ticket/View/:id"
+                path={`/${_base}/InsightsTasks`}
+                element={<InsightsTasks/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/InsightsCompletedTask`}
+                element={<InsightsCompletedTask/>}
+              />
+              <Route path={`/${_base}/Profile`} element={<Profile/>} />
+              <Route
+                exact
+                path={`/${_base}/Notification`}
+                element={<NotificationComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/ApprovedNotification`}
+                element={<ApprovedNotificationComponent/>}
+              />
+              <Route path={`/${_base}/Tenant`} element={<TenantComponent/>} />
+              <Route
+                exact
+                path={`/${_base}/Tenant/Edit/:id`}
+                element={<TenantForm/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Customer`}
+                element={<CustomerComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Customer/Create/`}
+                element={<CreateCustomer/>}
+              />
+              {/* <Route path={`/${_base}/Customer/Edit/:id" element={<EditCustomer} /> */}
+              <Route
+                exact
+                path={`/${_base}/Customer/Edit/:id`}
+                element={<EditCustomer/>}
+              />
+              <Route path={`/${_base}/User`} element={<UserComponent/>} />
+              <Route
+                exact
+                path={`/${_base}/User/Create`}
+                element={<CreateUserComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/User/Edit/:id`}
+                element={<EditUserComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Country`}
+                element={<CountryComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TaskAndTicketTypeMaster`}
+                element={<TaskAndTicketTypeMaster/>}
+              />
+              <Route path={`/${_base}/State`} element={<StateComponent/>} />
+              <Route path={`/${_base}/City`} element={<CityComponent/>} />
+              <Route
+                exact
+                path={`/${_base}/Designation`}
+                element={<DesignationComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Department`}
+                element={<DepartmentComponent/>}
+              />
+              <Route path={`/${_base}/Role`} element={<RoleComponent/>} />
+              <Route path={`/${_base}/Status`} element={<StatusComponent/>} />
+              <Route
+                exact
+                path={`/${_base}/CustomerType`}
+                element={<CustomerTypeComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DynamicForm`}
+                element={<DynamicFormComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DynamicForm/Create`}
+                element={<CreateDynamicForm/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DynamicForm/Create/:id`}
+                element={<CreateDynamicForm/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DynamicForm/Edit/:id`}
+                element={<EditDynamicForm/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/QueryType`}
+                element={<QueryTypeComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/QueryGroupMaster`}
+                element={<QueryGroupMasterComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Template`}
+                element={<TemplateComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Template/Create`}
+                element={<CreateTemplateComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Template/Edit/:id`}
+                element={<EditTemplateComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DepartmentMapping`}
+                element={<DepartmentMappingComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DepartmentMapping/Create`}
+                element={<CreateDepartmentMappingComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/DepartmentMapping/Edit/:id`}
+                element={<EditDepartmentMappingComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Project`}
+                element={<ProjectComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Project/Create`}
+                element={<CreateProjectComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Project/Edit/:id`}
+                element={<EditProjectComponent/>}
+              />
+              <Route path={`/${_base}/Module`} element={<ModuleComponent/>} />
+              <Route
+                exact
+                path={`/${_base}/Module/Create`}
+                element={<CreateModuleComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Module/Edit/:id`}
+                element={<EditModuleComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/SubModule`}
+                element={<SubModuleComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/SubModule/Create`}
+                element={<CreateSubModuleComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/SubModule/Edit/:id`}
+                element={<EditSubModuleComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/UserTaskReport`}
+                element={<UserTaskReportComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TimelineReport`}
+                element={<TimelineReportComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/ResourcePlanningReport`}
+                element={<ResourcePlanningReportComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/VariantsReport`}
+                element={<VariantsReport/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket`}
+                element={<MyTicketComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket/Create`}
+                element={<CreateTicketComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket/Edit/:id`}
+                element={<EditTicketComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket/View/:id`}
                 element={<ViewTicketComponent/>}
-              /> */}
-            <Route
-              exact
-              path={`/${_base}/Ticket/Basket/:id`}
-              element={<BasketComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Ticket/Task/:id`}
-              element={<TaskComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestCases/:ticketId/:taskId`}
-              element={<TestCases />}
-            />
-            <Route
-              exact
-              path={`/${_base}/GetAllTestCases/:id`}
-              element={<GetAllTestCases />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestBank`}
-              element={<TestBankComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestCasesReviewerView/:ticketId/:taskId`}
-              element={<TestCasesReviewerViewComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestingType`}
-              element={<TestingTypeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestCaseHistory/:id`}
-              element={<TestCaseHistory />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TicketHistory/:id`}
-              element={<TicketHistory />}
-            />
-            <Route
-              exact
-              path={`/${_base}/TestSuite`}
-              element={<TestSuiteComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CustomerMapping`}
-              element={<CustomerMappingComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CustomerMapping/Create`}
-              element={<CreateCustomerMappingComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CustomerMapping/Edit/:id`}
-              element={<EditCustomerMappingComponent />}
-            />
-            <Route path={`/${_base}/Menu/Create`} element={<CreateMenu />} />
-            <Route
-              exact
-              path={`/${_base}/ModuleSetting`}
-              element={<ModuleSettings />}
-            />
-            {/* Suyash */}
-            <Route
-              exact
-              path={`/${_base}/Connector/Sms`}
-              element={<SmsComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Connector/Email`}
-              element={<EmailComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Connector/Whatsapp`}
-              element={<WhatsappComponent />}
-            />
-            {/* <Route path={`/${_base}/Testcase/:module_id/" element={<TestCase}/>
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket/Basket/:id`}
+                element={<BasketComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Ticket/Task/:id`}
+                element={<TaskComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestCases/:ticketId/:taskId`}
+                element={<TestCases/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/GetAllTestCases/:id`}
+                element={<GetAllTestCases/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestBank`}
+                element={<TestBankComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestCasesReviewerView/:ticketId/:taskId`}
+                element={<TestCasesReviewerViewComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestingType`}
+                element={<TestingTypeComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestCaseHistory/:id`}
+                element={<TestCaseHistory/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TicketHistory/:id`}
+                element={<TicketHistory/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/TestSuite`}
+                element={<TestSuiteComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/CustomerMapping`}
+                element={<CustomerMappingComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/CustomerMapping/Create`}
+                element={<CreateCustomerMappingComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/CustomerMapping/Edit/:id`}
+                element={<EditCustomerMappingComponent/>}
+              />
+              <Route path={`/${_base}/Menu/Create`} element={<CreateMenu/>} />
+              <Route
+                exact
+                path={`/${_base}/ModuleSetting`}
+                element={<ModuleSettings/>}
+              />
+              {/* Suyash */}
+              <Route
+                exact
+                path={`/${_base}/Connector/Sms`}
+                element={<SmsComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Connector/Email`}
+                element={<EmailComponent/>}
+              />
+              <Route
+                exact
+                path={`/${_base}/Connector/Whatsapp`}
+                element={<WhatsappComponent/>}
+              />
+              {/* <Route path={`/${_base}/Testcase/:module_id/" element={<TestCase}/>
                     <Route path={`/${_base}/Testcase/:module_id/:submodule_id" element={<TestCase}/> */}
             <Route
               exact

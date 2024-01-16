@@ -6,7 +6,15 @@ import axios from "axios";
 const URL = settingMasterUrl.getGeneralSetting
 const createSetting = URL + "/createGeneralSetting"
 const getGeneralSetting = URL + "/getGeneralSetting"
-const getAuthorityCheck = URL+ "/getCheckSettingAuthority";
+
+
+
+const getAuthorityCheck = URL + "/getCheckSettingAuthority";
+
+
+
+
+
 export default class GeneralSettingService {
 
   createGeneralSetting(payload) {
@@ -21,7 +29,7 @@ export default class GeneralSettingService {
     };
     return axios.post(createSetting, payload, config)
   }
-  updateGeneralSetting(id,payload) {
+  updateGeneralSetting(id, payload) {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -31,7 +39,7 @@ export default class GeneralSettingService {
         "Content-Type": "application/json",
       },
     };
-    return axios.post(createSetting+ "/" + id, payload, config)
+    return axios.post(createSetting + "/" + id, payload, config)
   }
 
   getGeneralSetting() {
@@ -48,7 +56,7 @@ export default class GeneralSettingService {
 
   }
 
-  getAuthorityCheck(userId) {
+  getAuthorityCheck(userId, projectId) {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -58,8 +66,8 @@ export default class GeneralSettingService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${getAuthorityCheck}/${userId}`, config);
+    return axios.get(`${getAuthorityCheck}/${userId}/${projectId}`, config);
   }
 }
 
-//http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/consolidatedView/createGenaralSetting
+//http://3.108.206.34/2_Testing/TSNewBackend/public/api/consolidatedView/createGenaralSetting

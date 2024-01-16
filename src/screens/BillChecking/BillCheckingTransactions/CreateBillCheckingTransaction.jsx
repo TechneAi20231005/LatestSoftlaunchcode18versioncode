@@ -124,6 +124,18 @@ export default function CreateBillCheckingTransaction({ match }) {
   //   setIsTcsApplicable(e.target.checked);
   // };
 
+  const [debit, setDebit] = useState();
+  const [taxable, setTaxable] = useState();
+  const [gst, setGst] = useState();
+  const [roundOff, setRoundOff] = useState();
+  const [tcs, setTcs] = useState();
+  const [tds, setTds] = useState();
+  const [tdsPercent, setTdsPercent] = useState();
+  const [deta, setDeta] = useState();
+  const [showFiles, setShowFiles] = useState();
+  const [authority, setAuthority] = useState();
+  const[netPaymentError, setNetPaymentError]=useState()
+
   const handleTcsApplicable = (e) => {
     if (e) {
       if (e.target.checked) {
@@ -139,16 +151,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     setIsOriginalBill(newValue);
   };
 
-  const [debit, setDebit] = useState();
-  const [taxable, setTaxable] = useState();
-  const [gst, setGst] = useState();
-  const [roundOff, setRoundOff] = useState();
-  const [tcs, setTcs] = useState();
-  const [tds, setTds] = useState();
-  const [tdsPercent, setTdsPercent] = useState();
-  const [deta, setDeta] = useState();
-  const [showFiles, setShowFiles] = useState();
-  const [authority, setAuthority] = useState();
+  
 
   const handleTaxable = (e) => {
     setTaxable(e.target.value);
@@ -957,36 +960,12 @@ export default function CreateBillCheckingTransaction({ match }) {
       netPayment = netPayment - parseFloat(tdsValue);
       setNetPayment(Math.round(netPayment));
     }
-
-    // let netPayment = 0;
-
-    // if (isTcsApplicable === 1) {
-    //   netPayment =
-    //     parseFloat(BillAmount ? BillAmount : 0) -
-    //     parseFloat(
-    //       billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-    //     );
-    // } else {
-    //   netPayment =
-    //     parseFloat(BillAmount1 ? BillAmount1 : 0) -
-    //     parseFloat(
-    //       billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-    //     );
-    // }
-
-    // // Set netPayment to the absolute (positive) value
-    // setNetPayment(Math.round(Math.abs(netPayment)));
-
-    // if (tdsValue > 0) {
-    //   netPayment = netPayment - parseFloat(tdsValue);
-
-    //   // Set netPayment to the absolute (positive) value
-    //   setNetPayment(Math.round(Math.abs(netPayment)));
-    // }
-
-    // if (netPayment >= 0) {
-    //   setNetInWords((prev) => numWords(netPayment)); // Assuming numWords is a function to convert numbers to words.
-    // }
+    if(netPayment < 0){
+      setNetPaymentError("Net bill payment should be positive value")
+    }
+    else {
+      setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
+    }
   }, [
     BillAmount,
     BillAmount1,
@@ -994,6 +973,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     tdsValue,
     isTcsApplicable, // Add isTcsApplicable to the dependency array if it's not part of the state.
   ]);
+
 
   useEffect(() => {
     if (checkRole && checkRole[45].can_create === 0) {
@@ -1953,6 +1933,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                                             readOnly
                                         /> */}
                   </div>
+                  {netPaymentError && <p  style={{
+                          color: "red",
+                        }}>{netPaymentError}</p>}
+
 
                   {/* <div className=" col-md-3 ">
                                         <label className=" col-form-label">

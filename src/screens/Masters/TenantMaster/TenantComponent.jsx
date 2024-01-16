@@ -152,9 +152,7 @@ function TenantComponent() {
                     </div>
                 </div>
             </div>
-
-
-            <div className="row clearfix g-3">
+          <div className="row clearfix g-3">
                 <div className="col-sm-12">
                     {data && <DataTable
                         columns={columns}
@@ -166,7 +164,7 @@ function TenantComponent() {
                         highlightOnHover={true}
                     />
                     }
-                </div>
+            </div>
             </div>
         </div>
     )

@@ -15,6 +15,8 @@ const _getAllComment = _URL + "/comment/getAllComment/";
 const _createGanttChart =_apiUrl+"hoursWiseTaskRecord/";
 
 const _passTicket = _URL + "/passTicket";
+const _passBulkTicket = _URL + "/bulkpassTicket";
+
 
 export default class MyTicketService {
   getUserTickets() {
@@ -120,7 +122,6 @@ export default class MyTicketService {
   postComment(payload) {
     payload = {
       ...payload,
-       tenant_id: userSessionData.tenantId,
       created_by: userSessionData.userId,
       created_at: userSessionData.time,
     };
@@ -177,6 +178,8 @@ export default class MyTicketService {
     };
     return axios.post(_passTicket, payload, config);
   }
+
+  
 
   sendTicketConfirmationOtp(ticket_id) {
     const token = localStorage.getItem("jwt_token");

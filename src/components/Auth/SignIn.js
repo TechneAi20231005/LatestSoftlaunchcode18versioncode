@@ -1,103 +1,26 @@
-// import React, { useState, useEffect } from "react";
-// import { useHistory, Link } from "react-router-dom";
-// import GoogleImg from "../../assets/images/google.svg";
-// import Logo from "../../assets/images/logo.jpeg";
-// import { _base } from "../../settings/constants";
-
-// import { postData } from "../../services/loginService";
-// import Alert from "../Common/Alert";
-
-// export default function SignIn() {
-//   const history = useHistory();
-//   const [notify, setNotify] = useState(null);
-
-//   const submitHandler = (e) => {
-//     setNotify(null);
-//     e.preventDefault();
-//     const data = new FormData(e.target);
-//     postData(data).then((res) => {
-//       if (res.status === 200) {
-//         if (res.data.status === 1) {
-//           const data = res.data.data;
-//           const token = res.data.token;
-
-//           Object.keys(data).map((key) => {
-//             sessionStorage.setItem(key, data[key]);
-//             localStorage.setItem(key, data[key]);
-//           });
-//           sessionStorage.setItem("jwt_token", token);
-//           localStorage.setItem("jwt_token", token);
-//           // console.log(res.data.data);
-//           // foreach
-//           // sessionStorage.setItem('id',res.data.data.id);
-//           // sessionStorage.setItem('tenant_id',res.data.data.tenant_id);
-//           // sessionStorage.setItem('token',res.data.data.token);
-//           // sessionStorage.setItem('name',res.data.data.name);
-//           // sessionStorage.setItem('email',res.data.data.email);
-//           // sessionStorage.setItem('profile_picture',res.data.data.profile_picture);
-
-//           // localStorage.setItem('id',res.data.data.id);
-//           // localStorage.setItem('tenant_id',res.data.data.tenant_id);
-//           // localStorage.setItem('token',res.data.data.token);
-//           // localStorage.setItem('email',res.data.data.email);
-//           // localStorage.setItem('profile_picture',res.data.data.profile_picture);
-
-//           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-//           var returnValue = {
-//             show: true,
-//             type: "success",
-//             message: "Logged In !!!",
-//           };
-
-//           history.push({
-//             pathname: `${process.env.PUBLIC_URL}/Dashboard`,
-//             state: { alert: { type: "success", message: res.data.message } },
-//           });
-//         } else {
-//           setNotify();
-//           setNotify({ type: "danger", message: res.data.message });
-//         }
-//       } else {
-//         setNotify({ type: "danger", message: "Permission not assigned !!!" });
-//       }
-//     });
-//   };
-
-//   const loadData = () => {
-//     if (
-//       sessionStorage.getItem("message_type") &&
-//       sessionStorage.getItem("message")
-//     ) {
-//       setNotify({
-//         type: sessionStorage.getItem("message_type"),
-//         message: sessionStorage.getItem("message"),
-//       });
-//       sessionStorage.setItem("message_type", null);
-//       sessionStorage.setItem("message", null);
-//     }zz
-//   };
-//   useEffect(() => {
-//     loadData();
-//   }, []);
 
 import React, { useState, useEffect } from "react";
-import { useHistory, Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link, Route, useLocation } from "react-router-dom";
 import GoogleImg from "../../assets/images/google.svg";
 import Logo from "../../assets/images/logo.jpeg";
 import { _base } from "../../settings/constants";
 
 import { postData } from "../../services/loginService";
 import Alert from "../Common/Alert";
+import Dashboard from "../../screens/Dashboard/Dashboard";
 
 export default function SignIn() {
-  const history = useNavigate();
+  const location = useLocation()
+  console.log("location",location);
+  const navigate = useNavigate();
   const [notify, setNotify] = useState(null);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
 
   const submitHandler = async (e) => {
     setNotify(null);
     e.preventDefault();
     const data = new FormData(e.target);
-    await postData(data).then((res) => {
+ await postData(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const data = res.data.data;
@@ -118,18 +41,18 @@ export default function SignIn() {
           // Set token expiration time
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
-
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-          var returnValue = {
-            show: true,
-            type: "success",
-            message: "Logged In !!!",
-          };
-
-          history({
-            pathname: `${process.env.PUBLIC_URL}/Dashboard`,
-            state: { alert: { type: "success", message: res.data.message } },
-          });
+          setShouldNavigate(true);
+          // window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          // var returnValue = {
+          //   show: true,
+          //   type: "success",
+          //   message: "Logged In !!!",
+          // };
+          // console.log(process.env.PUBLIC_URL);
+          // history({
+          //   pathname: `${process.env.PUBLIC_URL}/Dashboard`,
+          //   state: { alert: { type: "success", message: res.data.message } },
+          // });
         } else {
           setNotify();
           setNotify({ type: "danger", message: res.data.message });
@@ -165,7 +88,7 @@ export default function SignIn() {
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");
       sessionStorage.clear();
-      // history.push(`${process.env.PUBLIC_URL}/`);
+      // history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
@@ -182,7 +105,15 @@ export default function SignIn() {
       sessionStorage.setItem("message", null);
     }
   };
-
+  useEffect(() => {
+    if (shouldNavigate) {
+      console.log(process.env.PUBLIC_URL);
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`
+      // navigate("/Dashboard");
+      // navigate( `${location.pathname}Dashboard`)
+      setShouldNavigate(false); // Reset flag to prevent multiple navigations
+    }
+}, [shouldNavigate, navigate]);
   useEffect(() => {
     loadData();
     checkTokenExpiration();
