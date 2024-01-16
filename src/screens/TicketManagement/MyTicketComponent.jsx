@@ -1728,28 +1728,16 @@ export default function MyTicketComponent({ location }) {
   // };
 
 
-
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
       setNotify(null);
 
       const formData = new FormData(e.target);
-      // selectedRows.forEach((id) => {
-      //   formData.append('id', id);
-      // });
-      // {
-      //   selectAllNames === true ?
-      //   // Append selected IDs to the formData
-      //   formData.append('id[]', String(selectedRowss))
-      //   :
-      //   // Append selected IDs to the formData
-      //   selectedRows.forEach((id) => {
-      //     formData.append('id[]', String(id));
-      //   });
-      // }
-
-      formData.append('id[]', String(selectedRowss))
+      
+      selectedRowss.forEach((id, index) => {
+        formData.append(`id[${index}]`, id);
+      });
       const response = await new MyTicketService().passTicket(formData);
 
       if (response.status === 200) {
