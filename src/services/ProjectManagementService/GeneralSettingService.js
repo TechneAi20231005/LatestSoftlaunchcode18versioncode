@@ -62,4 +62,4 @@ export default class GeneralSettingService {
   }
 }
 
-//http://3.108.206.34/2_Testing/TSNewBackend/public/api/consolidatedView/createGenaralSetting
+//http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/consolidatedView/createGenaralSetting

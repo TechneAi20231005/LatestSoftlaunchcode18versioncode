@@ -267,6 +267,12 @@ const EditTemplateComponent = ({ match, props }) => {
     setShow((prev) => !prev);
   };
 
+
+  
+
+
+
+
   const handleNewChange = (e, idx, type, name) => {
     const value = type === "select1" ? e.target.value : e.value;
 
@@ -628,6 +634,8 @@ const EditTemplateComponent = ({ match, props }) => {
                   className=" form-control-sm mt-2"
                   options={taskTypeDropdown && taskTypeDropdown}
                 />
+
+                
                 <div className="col-sm-12">
                   <label className="col-form-label">
                     <b>

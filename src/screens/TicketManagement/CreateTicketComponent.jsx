@@ -1207,19 +1207,22 @@ export default function CreateTicketComponent() {
   const [alldepartmentData, setAllDepartmentData] = useState();
   const [getAllType, setGetAllType] = useState();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
-
+  
   const [inputDataSourceData, setInputDataSourceData] = useState();
   const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
   const [checkRole, setCheckRole] = useState(null);
+const [parent, setParent] = useState();
+  const [parentName, setParentName] = useState();
+
+  const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
+
   const roleId = sessionStorage.getItem("role_id");
 
-  const ticketTypeRefs =useRef()
-
+  const ticketTypeRefs = useRef();
 
   const handleForm = async (e) => {
-
     setIsSubmitted(true);
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -1229,7 +1232,7 @@ export default function CreateTicketComponent() {
     // formData.append("dynamicForm", JSON.stringify(rows))
     var selectCountry = formData.getAll("customer_id");
     var selectQueryGroup = formData.getAll("query_group_id");
-    var selectgetAll=formData.get("ticket_type_id")
+    var selectgetAll = formData.get("ticket_type_id");
 
     if (selectCountry == "") {
       flag = 0;
@@ -1245,21 +1248,21 @@ export default function CreateTicketComponent() {
       flag = 1;
     }
 
-    if (ticketTypeRefs && ticketTypeRefs.current.commonProps.hasValue === false) {
-      e.preventDefault()
-      alert("Please select Ticket Type ");
+    // if (
+    //   ticketTypeRefs &&
+    //   ticketTypeRefs.current.commonProps.hasValue === false
+    // ) {
+      //   e.preventDefault();
+    //   alert("Please select Ticket Type ");
       
-      flag = 0
-    } else {
-      flag = 1;
-    }
-
+      //   flag = 0;
+    // } else {
+      //   flag = 1;
+    // }
 
     setNotify(null);
-    if(flag == 1){
-    await new MyTicketService()
-      .postTicket(formData)
-      .then((res) => {
+    if (flag == 1) {
+    await new MyTicketService().postTicket(formData).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             history({
@@ -1433,7 +1436,7 @@ export default function CreateTicketComponent() {
     setSelectedDropdown({ ...selectedDropdown, [name]: value });
     setDynamicTicketData((prev) => ({ ...prev, [name]: value }));
   };
-  const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
+  
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
 
@@ -1489,12 +1492,26 @@ export default function CreateTicketComponent() {
             .filter((d) => d.is_active == 1)
             .map((d) => ({ value: d.id, label: d.group_name }))
         );
-        // setQueryGroupDropdown(res.data.data.filter(d => d.is_active == 1).filter((i)=>i.customer_id).map(d => ({ value: d.id, label: d.group_name })));
-      }
+        }
     });
 
+    await new TaskTicketTypeService().getParent().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          if (res.status === 200) {
+            const mappedData = res.data.data.map((d) => ({
+              value: d.id,
+              label: d.type_name,
+            }));
 
-    
+            setParent(mappedData);
+          
+          } else {
+            console.error("error", res.status);
+          }
+        }
+      }
+    });
 
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
@@ -1504,20 +1521,7 @@ export default function CreateTicketComponent() {
             temp
               .filter((d) => d.id)
               .map((d) => ({ value: d.id, label: d.department }))
-          );
-        }
-      }
-    });
-
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setGetAllType(
-            temp
-            .filter((d) => d.type === "TICKET" && d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.type_name }))
-            );
+                      );
         }
       }
     });
@@ -1590,20 +1594,26 @@ export default function CreateTicketComponent() {
             .filter((d) => d.is_active == 1)
             .map((d) => ({ value: d.id, label: d.query_type_name }))
         );
+}
+    });
+  };
 
-        // setQueryGroupDropdown(res.data.data.filter(d => d.is_active == 1).map(d => ({ value: d.id, label: d.group_name })));
+  const handleParentchange = async (e) => {
+    if (ticketTypeRefs.current) {
+      ticketTypeRefs.current.clearValue();
+    }
+    await new TaskTicketTypeService().getAllType().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data;
+          setGetAllType(
+            temp
+              .filter((d) => d.type === "TICKET" && d.is_active == 1)
+              .map((d) => ({ value: d.id, label: d.type_name }))
+          );
+        }
       }
     });
-
-    //     const queryGroupDropdownData = [];
-    //     for (var i = 0; i < e.length; i++) {
-    //         const select = queryGroupTypeData.filter(d => (d.id == e[i].value)).map(d => ({ value: d.id, label: d.query_type_name }))
-    //         for (var j = 0; j < select.length; j++) {
-    //             queryGroupDropdownData.push(select[j]);
-    //         }
-    //     }
-    //     setQueryGroupTypeData(queryGroupDropdownData)
-    // console.log("queryGroupDropdownData",queryGroupDropdownData)
   };
 
   const handleAutoChanges = async (e, type, nameField) => {
@@ -1725,22 +1735,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {/* <div className="col-sm-3">
-                            <label className="col-form-label">
-                                    <b>Query Group<Astrick color="red" /> :</b>
-                                </label>
-                                {queryGroupDropdown &&
-                                <Select className="form-control form-control-1sm"
-                                 name="query_group_id" id="query_group_id"
-                                 required
-                                 options={queryGroupDropdown}
-                                //  onChange={handleQueryGroupDropDown}
-                                   
-                                    />
-                                }
-                            </div> */}
-
-                <div className="col-sm-3">
+                                <div className="col-sm-3">
                   <label className="col-form-label">
                     <b>
                       Query Group
@@ -1760,16 +1755,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {/* <select className="form-control form-control-1sm" name="query_type_id" id="query_type_id" required
-                                    onChange={e => {handleAutoChanges(e,"Select","query_type_id");handleGetQueryTypeForm(e)}}
-                                >
-                                    <option value="">Select Query Type</option>
-                                    {queryType && queryType.map(q => {
-                                        return <option value={q.id}>{q.query_type_name}</option>;
-                                    })}
-                                </select>   */}
-
-                {queryGroupTypeData && (
+                                {queryGroupTypeData && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -1788,26 +1774,36 @@ export default function CreateTicketComponent() {
                         handleAutoChanges(e, "Select2", "query_type_id");
                         handleGetQueryTypeForm(e);
                       }}
-
-                      //  onChange={handleQueryGroupDropDown}
-                    />
-
-                    {/* <select className="form-control form-control-1sm" name="query_type_id" id="query_type_id" required
-                                    onChange={e => {handleAutoChanges(e,"Select","query_type_id");handleGetQueryTypeForm(e)}}
-                                >
-                                    <option value="">Select Query Type</option>
-                                    {queryType && queryType.map(q => {
-                                        return <option value={q.id}>{q.query_type_name}</option>;
-                                    })}
-                                </select>   */}
+/>
                   </div>
                 )}
 
+<div className="col-sm-3">
+                  <label className="col-form-label">
+                    <b>
+                      Parent Ticket Type
+                      {/* <Astrick color="red" /> : */}
+                    </b>
+                  </label>
+
+                  {parent && (
+                    <Select
+                      className="form-control form-control-1sm"
+                      id="parent_id"
+                      name="parent_id"
+                      required
+                      onChange={(e) => handleParentchange(e)}
+                      options={parent}
+                    />
+                  )}
+                </div>
+
+                {getAllType && (
                 <div className="col-sm-3">
                   <label className="col-form-label">
                     <b>
                        Ticket Type
-                      <Astrick color="red" /> :
+                      {/* <Astrick color="red" /> : */}
                     </b>
                   </label>
 
@@ -1816,12 +1812,13 @@ export default function CreateTicketComponent() {
                       className="form-control form-control-1sm"
                       id="ticket_type_id"
                       name="ticket_type_id"
-                      required
+                      
                       ref={ticketTypeRefs}
                       options={getAllType}
                     />
                   )}
                 </div>
+)}
 
                 {data.ticket_uploading === "BULK_UPLOADING" && (
                   <div className="col-sm-3">

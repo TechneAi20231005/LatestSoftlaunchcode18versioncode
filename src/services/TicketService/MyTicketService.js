@@ -67,7 +67,7 @@ export default class MyTicketService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
     };
     return axios.post(_createTicket, payload, config);

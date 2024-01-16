@@ -165,7 +165,7 @@ export default function SignIn() {
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");
       sessionStorage.clear();
-      history.push(`${process.env.PUBLIC_URL}/`);
+      // history.push(`${process.env.PUBLIC_URL}/`);
     }
   };
 

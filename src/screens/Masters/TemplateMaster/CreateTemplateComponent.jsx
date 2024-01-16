@@ -48,26 +48,43 @@ const CreateTemplateComponent = () => {
     ],
   });
   const [userData, setUserData] = useState();
-  console.log("userData", userData);
+  
 
   const [stack, setStack] = useState({ SE: "", AB: "" });
   const [data, setData] = useState([]);
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
+const [parent, setParent] = useState();
   const [error, setError] = useState("");
 
   const loadData = async () => {
     await new TemplateService().getTemplate().then((res) => {
       setData(res.data.data);
     });
-    await new TaskTicketTypeService().getAllType().then((res) => {
+    // await new TaskTicketTypeService().getAllType().then((res) => {
+//   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data;
+    //       setTaskTypeDropdown(
+    //         temp
+    //           .filter((d) => d.type === "TASK" && d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.type_name }))
+    //       );
+    //     }
+    //   }
+    // });
+    await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data;
-          setTaskTypeDropdown(
-            temp
-              .filter((d) => d.type === "TASK" && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
+        if (res.data.status === 1) {
+          if (res.status === 200) {
+            const mappedData = res.data.data.map((d) => ({
+              value: d.id,
+              label: d.type_name,
+            }));
+
+            setParent(mappedData);
+          } else {
+            console.error("error", res.status);
+          }
         }
       }
     });
@@ -92,6 +109,24 @@ const CreateTemplateComponent = () => {
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+        }
+      }
+    });
+  };
+
+  const handleParentchange = async (e) => {
+    if (typeRef.current) {
+      typeRef.current.clearValue();
+    }
+    await new TaskTicketTypeService().getAllType().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data;
+          setTaskTypeDropdown(
+            temp
+              .filter((d) => d.type === "TICKET" && d.is_active == 1)
+              .map((d) => ({ value: d.id, label: d.type_name }))
+          );
         }
       }
     });
@@ -192,9 +227,7 @@ const CreateTemplateComponent = () => {
       setNotify(null);
       setNotify({ type: "warning", message: "Add Data" });
     } else {
-      setNotify(null);
-      new TemplateService()
-        .postTemplate(rows)
+      setNotify(null);  new TemplateService().postTemplate(rows)
         .then((res) => {
           if (res.status === 200) {
             const data = res.data;
@@ -226,12 +259,14 @@ const CreateTemplateComponent = () => {
     }
   };
 
-  const addTask = (e) => {
-    e.preventDefault();
+  const addTask = (e) => { e.preventDefault();
     var form = new FormData(e.target);
+console.log("form",form);
+    console.log("temp",temp);
     var temp = {
       task_name: form.get("taskName"),
       task_type_id: form.get("task_type_id"),
+parent_id:form.get("parent_id"),
       total_time: form.get("hours"),
       days: form.get("days"),
       start_days: form.get("start_days"),
@@ -284,11 +319,19 @@ const CreateTemplateComponent = () => {
     setShow(false);
   };
 
-  const handleEditTaskData = (e, basketIndex, idx) => {
-    var value = e.target.value;
+  const handleEditTaskData = (e, basketIndex, idx, type, event) => {
+    if(type === "select2"){
+      var value = event.value;
+    }else{
+    var value = e.target.value
+    }
     setRows((prevRows) => {
       const updatedTemplateData = [...prevRows.template_data];
+if(type === "select2"){
+        updatedTemplateData[basketIndex].basket_task[idx][e.name] = value;
+      }else{
       updatedTemplateData[basketIndex].basket_task[idx][e.target.name] = value;
+}
 
       return {
         ...prevRows,
@@ -527,6 +570,16 @@ const CreateTemplateComponent = () => {
                           <b>{idx + 1}) Task Name : </b>
                           {task.task_name}
                         </p>
+
+
+                        <p className="p-0 m-0">
+                          <b>Parent Task Name : </b>
+                          {
+                            parent.find((item) => item.value == task.parent_id)
+                              ?.label
+                          }
+                        </p>
+
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
                           {
@@ -576,6 +629,7 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
+{editTaskModal.modalData && JSON.stringify(editTaskModal.modalData)}
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
@@ -602,6 +656,38 @@ const CreateTemplateComponent = () => {
                                       className="form-control form-control-sm"
                                     />
                                   </div>
+
+                                  <div className="col-sm-12 mt-2">
+                                    <label>
+                                      <b>
+                                        Parent Task type :
+                                        <Astrick color="red" size="13px" />
+                                      </b>
+                                    </label>
+                                    <Select
+                                      id="parent_id"
+                                      name="parent_id"
+                                      ref={typeRef}
+                                      className=" form-control-sm mt-2"
+                                      options={
+                                        parent && parent
+                                      }
+                                      onChange={(e,option)=>{handleEditTaskData(    option,
+                                        editTaskModal.basketIndex,
+                                        editTaskModal.taskIndex, "select2",e)}}
+                                      defaultValue={
+                                        parent &&
+                                        parent.filter(
+                                          (d) =>
+                                            d.value ==
+                                            editTaskModal.modalData.parent_id
+                                        )
+                                      }
+                                    />
+                                  </div>
+
+
+
                                   <div className="col-sm-12 mt-2">
                                     <label>
                                       <b>
@@ -613,6 +699,9 @@ const CreateTemplateComponent = () => {
                                       id="task_type_id"
                                       name="task_type_id"
                                       ref={typeRef}
+onChange={(e, option)=>{handleEditTaskData(    option,
+                                        editTaskModal.basketIndex,
+                                        editTaskModal.taskIndex, "select2",e)}}
                                       className=" form-control-sm mt-2"
                                       options={
                                         taskTypeDropdown && taskTypeDropdown
@@ -762,9 +851,27 @@ const CreateTemplateComponent = () => {
                               />
                               <label>
                                 <b>
-                                  Task Type :<Astrick color="red" size="13px" />
+                                  Parent :<Astrick color="red" size="13px" />
                                 </b>
                               </label>
+<Select
+                                id="parent_id"
+                                name="parent_id"
+                                onChange={(e) => handleParentchange(e)}
+                                className=" form-control-sm mb-2"
+                                options={parent && parent}
+                              />
+
+                              {taskTypeDropdown && (
+                                <label>
+                                  <b>
+                                    Task Type :
+                                    <Astrick color="red" size="13px" />
+                                  </b>
+                                </label>
+                              )}
+
+                              {taskTypeDropdown && (
                               <Select
                                 id="task_type_id"
                                 name="task_type_id"
@@ -772,6 +879,8 @@ const CreateTemplateComponent = () => {
                                 className=" form-control-sm mb-2"
                                 options={taskTypeDropdown && taskTypeDropdown}
                               />
+)}
+
                               <label>
                                 <b>
                                   Days Required:

@@ -8,6 +8,7 @@ const _getAllType=_URL+"/getTaskTicketType"
 const _postType=_URL+"/createTaskTicketType";    
 const _getTypeById=_URL+"/getTaskTicketType/";    
 const _updateType=_URL+"/createTaskTicketType/";   
+const _getParent=_URL+"/getParent"; 
 
 export function getDateTime(){
     var now = new Date(); 
@@ -39,6 +40,23 @@ export default class TaskTicketTypeService{
         return axios.get(_getAllType, config);
       }
     
+
+      getParent() {
+        const token = localStorage.getItem("jwt_token");
+      
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        };
+      
+        return axios.get(_getParent, config);
+      }
+      
+
+
      postType(payload){
         const token = localStorage.getItem("jwt_token");
       

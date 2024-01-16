@@ -50,19 +50,24 @@ export default function TaskComponent(props) {
       // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
   
-      console.log(selectedValue);
-  
+        
       // Assuming the name is 'task_type_id', you can adjust it as needed
       const name = "task_type_id";
   
-      const updatedData = { ...data, [name]: selectedValue };
+      
+      const updatedData = { ...data, [name]: selectedValue};
       setData(updatedData);
-    } else {
+    } else if( type === "select3"){
+      const name = "parent_id";
+      
+      const selectedValue = e.value
+      const updatedData = { ...data, [name]: selectedValue};
+      setData(updatedData)
+    }else {
       // Handle standard input elements
       const { name, value } = e.target;
   
-      console.log(value);
-  
+        
       const updatedData = { ...data, [name]: value };
       setData(updatedData);
     }
@@ -71,20 +76,53 @@ export default function TaskComponent(props) {
   
   
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
+const [parent, setParent] = useState();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
+
+    await new TaskTicketTypeService().getParent().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          if (res.status === 200) {
+            const mappedData = res.data.data.map((d) => ({
+              value: d.id,
+              label: d.type_name,
+            }));
+
+            setParent(mappedData);
+          } else {
+            console.error("error", res.status);
+          }
+        }
+      }
+    });
+
+
+
     await new TaskTicketTypeService().getAllType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
+// setTaskTypeDropdown(
+          //   temp
+          //     .filter((d) => d.type === "TICKET" && d.is_active == 1)
+          //     .map((d) => ({ value: d.id, label: d.type_name }))
+          // );
           setTaskTypeDropdown(
             temp
-              .filter((d) => d.type === "TASK" && d.is_active == 1)
+              .filter((d) =>  d.is_active == 1)
               .map((d) => ({ value: d.id, label: d.type_name }))
           );
         }
       }
     });
+
+
+
   }, []);
+
+
   const { id } = useParams();
 
   const handleSubmit = (e) => {
@@ -196,6 +234,25 @@ export default function TaskComponent(props) {
                         />
                         <br />
 
+<label>
+                          <b>
+                            Parent Task Type :
+                          </b>
+                        </label>
+                        <Select
+                          id="parent_id"
+                          name="parent_id"
+                          onChange={e=>handleChange(e,"select3")}
+                          className="col-7 form-control form-control-sm"
+                          options={parent && parent}
+                          defaultValue={
+                            parent &&
+                            parent.filter(
+                              (d) =>
+                                d.value == props.taskData.parent_id
+                            )
+                          }
+                        />
                         <label>
                           <b>
                             Task Type :
@@ -215,6 +272,10 @@ export default function TaskComponent(props) {
                             )
                           }
                         />
+
+
+
+
                         <br />
                         <label>Days Required</label>
                         <input

@@ -2546,7 +2546,7 @@ import {
 
 export default function HrDashboard(props) {
   const history = useNavigate();
-
+  console.log("hello to dash",history);
   const data = props.data;
   var v1 = 50;
   var v2 = 50;
