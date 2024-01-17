@@ -20,6 +20,7 @@ function TaskAndTicketTypeMaster(props) {
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [parent, setParent] = useState();
+  const [loading,setLoading]=useState(false)
 
   const [exportData, setExportData] = useState(null);
 
@@ -249,43 +250,32 @@ function TaskAndTicketTypeMaster(props) {
   };
 
   const handleForm = (id) => async (e) => {
-    // Example validation (add your own validation rules)
-    if (!typeRef.current?.value) {
-      alert("Type is required.");
-    } else {
-      return false;
-    }
-
-    if (typeRef.current?.value === "TASK" && !parentRef.current?.value) {
-      alert("Parent Task Type is required.");
-    } else {
-      return false;
-    }
-
-    if (!typeNameRef.current?.value) {
-      alert(
-        `${
-          typeRef.current?.value === "TASK" ? "Task" : "Ticket"
-        } Type Name is required.`
-      );
-    } else {
-      return false;
-    }
-
     e.preventDefault();
+    if(loading){
+      return
+    }
+    setLoading(true)
+
+    if (selectedValue === "") {
+      alert("Type is required.");
+      return;
+    }
+
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
       await new TaskTicketTypeService().postType(form).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setNotify({ type: "success", message: res.data.message });
             setModal({ showModal: false });
             loadData();
           } else {
+            setLoading(false)
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
+          setLoading(false)
           setNotify({ type: "danger", message: res.data.message });
         }
       });
@@ -297,9 +287,11 @@ function TaskAndTicketTypeMaster(props) {
             setModal({ showModal: false });
             loadData();
           } else {
+            
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
+          setLoading(false)
           setNotify({ type: "danger", message: res.data.message });
         }
       });
