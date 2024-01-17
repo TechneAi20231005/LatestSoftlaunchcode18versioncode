@@ -16,12 +16,16 @@ import DataTable from "react-data-table-component";
 import Select from "react-select";
 
 function TaskAndTicketTypeMaster(props) {
-    const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
-const [parent, setParent] = useState();
+  const [parent, setParent] = useState();
 
   const [exportData, setExportData] = useState(null);
+
+  const typeRef = useRef(null);
+  const parentRef = useRef(null);
+  const typeNameRef = useRef(null);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -33,7 +37,7 @@ const [parent, setParent] = useState();
     { value: "TICKET", label: "TICKET" },
     // Add more options as needed
   ];
-const loadData = async () => {
+  const loadData = async () => {
     const exportTempData = [];
 
     await new TaskTicketTypeService().getAllType().then((res) => {
@@ -42,7 +46,7 @@ const loadData = async () => {
           let counter = 1;
           var tempData = [];
           const temp = res.data.data;
-          console.log(temp);
+
           for (const key in temp) {
             tempData.push({
               counter: counter++,
@@ -137,7 +141,7 @@ const loadData = async () => {
       sortable: true,
       width: "125px",
     },
-{
+    {
       name: "Parent",
       width: "150px",
       cell: (row) => {
@@ -238,13 +242,36 @@ const loadData = async () => {
   const handleModal = (data) => {
     setModal(data);
   };
-  
+
   const handleDropdownChange = (e) => {
-        setSelectedValue(e.target.value);
-console.log(e.target.value);
+    setSelectedValue(e.target.value);
+    console.log(e.target.value);
   };
 
   const handleForm = (id) => async (e) => {
+    // Example validation (add your own validation rules)
+    if (!typeRef.current?.value) {
+      alert("Type is required.");
+    } else {
+      return false;
+    }
+
+    if (typeRef.current?.value === "TASK" && !parentRef.current?.value) {
+      alert("Parent Task Type is required.");
+    } else {
+      return false;
+    }
+
+    if (!typeNameRef.current?.value) {
+      alert(
+        `${
+          typeRef.current?.value === "TASK" ? "Task" : "Ticket"
+        } Type Name is required.`
+      );
+    } else {
+      return false;
+    }
+
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
@@ -366,8 +393,9 @@ console.log(e.target.value);
                     Select type: <Astrick color="red" size="13px" />
                   </label>
                   <DropdownComponent
-                    required
+                    required={true}
                     name="type"
+                    ref={typeRef}
                     data={dropdownData}
                     getInputValue={handleDropdownChange}
                     className="form-control form-control-sm"
@@ -391,13 +419,14 @@ console.log(e.target.value);
                         options={parent}
                         id="parent_id"
                         name="parent_id"
+                        ref={parentRef}
                         required
                         defaultValue={
                           modal.modalData
                             ? modal.modalData &&
                               parent &&
                               parent.filter(
-                                (d) => d.value ===modal.modalData.parent_id
+                                (d) => d.value === modal.modalData.parent_id
                               )
                             : parent && parent.filter((d) => d.value[0])
                         }
@@ -421,12 +450,13 @@ console.log(e.target.value);
                           id="parent_id"
                           name="parent_id"
                           required
+                          ref={parentRef}
                           defaultValue={
                             modal.modalData
                               ? modal.modalData &&
                                 parent &&
                                 parent.filter(
-                                  (d) => d.value == -modal.modalData.parent_id
+                                  (d) => d.value == modal.modalData.parent_id
                                 )
                               : parent && parent.filter((d) => d.value[0])
                           }
@@ -450,7 +480,7 @@ console.log(e.target.value);
                         Ticket Type Name :<Astrick color="red" size="13px" />
                       </label>
                     )}
-                  
+
                     {selectedValue === "TASK" ||
                     modal?.modalData?.type === "TASK" ? (
                       <input
@@ -458,25 +488,27 @@ console.log(e.target.value);
                         className="form-control form-control-sm"
                         id="type_name"
                         name="type_name"
+                        ref={typeNameRef}
                         required
                         defaultValue={
                           modal.modalData && modal?.modalData?.type_name
                         }
                       />
-                      ) : (
+                    ) : (
                       <>
                         {selectedValue === "TICKET" ||
                         modal?.modalData?.type === "TICKET" ? (
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="type_name"
-                        name="type_name"
-                        required
-                        defaultValue={
-                          modal.modalData && modal?.modalData?.type_name
-                        }
-/>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id="type_name"
+                            name="type_name"
+                            ref={typeNameRef}
+                            required
+                            defaultValue={
+                              modal.modalData && modal?.modalData?.type_name
+                            }
+                          />
                         ) : (
                           ""
                         )}
