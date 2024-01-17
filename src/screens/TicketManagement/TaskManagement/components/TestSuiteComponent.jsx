@@ -34,7 +34,7 @@ const TestSuiteComponent = ({ match, location }) => {
   // const ticketId = match.params.id;
   const {id}=useParams()
   
-
+  const ticketId = id
 
 
   const [data, setData] = useState(null);

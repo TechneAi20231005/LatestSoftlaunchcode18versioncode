@@ -9,12 +9,9 @@ import Select from "react-select";
 export default function TaskComponent(props) {
   const [data, setData] = useState({ task: props.taskData.task_name });
   const [notify, setNotify] = useState(null);
+  const { id } = useParams();
 
   const [show, setShow] = useState(false);
-
-  const [stack, setStack] = useState();
-
-  const [exportData, setExportData] = useState(null);
 
   const searchRef = useRef();
   const handleSearch = (e) => {
@@ -123,7 +120,6 @@ const [parent, setParent] = useState();
   }, []);
 
 
-  const { id } = useParams();
 
   const handleSubmit = (e) => {
     setNotify(null);

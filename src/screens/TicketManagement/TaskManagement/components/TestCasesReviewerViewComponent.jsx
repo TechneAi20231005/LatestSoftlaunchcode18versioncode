@@ -21,8 +21,9 @@ const TestCasesReviewerView = ({ match }) => {
 
   // const ticketId = match.params.ticketId;
   // const taskId = match.params.taskId;
-  const {taskId} =useParams()
-  const {ticketId}=useParams()
+  const {ticketId, taskId} =useParams()
+  const ticket_id = ticketId
+  const task_id = taskId
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
     modalData: "",

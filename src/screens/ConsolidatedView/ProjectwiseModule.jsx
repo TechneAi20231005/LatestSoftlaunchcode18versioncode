@@ -17,6 +17,8 @@ export default function ProjectwiseModule() {
 
   const params = useParams();
   const { projectId, moduleId } = params;
+
+  
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null)

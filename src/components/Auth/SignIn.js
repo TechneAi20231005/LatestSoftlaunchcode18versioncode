@@ -11,7 +11,6 @@ import Dashboard from "../../screens/Dashboard/Dashboard";
 
 export default function SignIn() {
   const location = useLocation()
-  console.log("location",location);
   const navigate = useNavigate();
   const [notify, setNotify] = useState(null);
   const [shouldNavigate, setShouldNavigate] = useState(false);
@@ -49,7 +48,7 @@ export default function SignIn() {
           //   message: "Logged In !!!",
           // };
           // console.log(process.env.PUBLIC_URL);
-          // history({
+          // navigate({
           //   pathname: `${process.env.PUBLIC_URL}/Dashboard`,
           //   state: { alert: { type: "success", message: res.data.message } },
           // });
@@ -107,7 +106,6 @@ export default function SignIn() {
   };
   useEffect(() => {
     if (shouldNavigate) {
-      console.log(process.env.PUBLIC_URL);
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`
       // navigate("/Dashboard");
       // navigate( `${location.pathname}Dashboard`)
