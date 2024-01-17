@@ -67,7 +67,7 @@ const App = () => {
         <h1 className="mt-4"> Looks like you're offline 🔴🔴🔴 Please check your internet connection </h1>
       }
       </div>
-
+{/* 
         {token && onlineStatus && (
           <>
             <Sidebar />
@@ -80,7 +80,7 @@ const App = () => {
             Looks like you're offline 🔴🔴🔴 Please check your internet
             connection{" "}
           </h1>
-        )}
+        )} */}
      
     </>
   );

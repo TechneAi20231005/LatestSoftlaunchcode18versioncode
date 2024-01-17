@@ -11,13 +11,17 @@ import {
 } from "../../services/NotificationService/NotificationService";
 import TenantService from '../../services/MastersService/TenantService'
 import Select from 'react-select'
+import Alert from "./Alert";
 
 export default function Header () {
+
+
   const [tenantId, setTenantId] = useState()
   const [tenantDropdown, setTenantDropdown] = useState()
 
 
-  
+  const [notify, setNotify] = useState(null);
+
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [notificationHeight, setNotificationHeight] = useState(200);
@@ -89,6 +93,7 @@ export default function Header () {
     new UserService().getUserById(localStorage.getItem("id")).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
+          setTenantId(res.data.data.tenant_id)
           res.data.data.profile_picture =
             "http://3.108.206.34/TSNewBackend/" +
             res.data.data.profile_picture;
@@ -99,7 +104,6 @@ export default function Header () {
     new TenantService().getTenant().then(res => {
       if (res.status === 200 && res.data.status === 1) {
         const temp = res.data.data.filter(d => d.is_active == 1)
-
         setTenantDropdown(
           temp.map(d => ({ value: d.id, label: d.company_name }))
         )
@@ -110,7 +114,10 @@ export default function Header () {
     const form ={ tenant_id:e.value}
     await new TenantService().switchTenant(form).then((res)=>{
       if(res.status === 200 && res.data.status === 1){
-        console.log("success", res.data.data);
+        setNotify({ type: "success", message: res.data.message });
+      }else{
+        setNotify({ type: "danger", message: res.data.message });
+
       }
     })
   }
@@ -129,6 +136,7 @@ export default function Header () {
       <nav className="navbar py-4">
         <div className="container-xxl">
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
+            {notify && <Alert alertData={notify}/>}
             <Dropdown className="notifications" style={{ zIndex: -100 }}
               onClick={() => { loadNotifcation() }}
             >
@@ -419,6 +427,7 @@ export default function Header () {
                   <div className='p-2' style={{ zIndex: 700 }}>
                     {tenantDropdown && tenantId && (
                       <Select
+                        
                         placeholder={<span className='fw-bold '>Switch Tenant... 
                         </span>}
                         name='tenant_id'
