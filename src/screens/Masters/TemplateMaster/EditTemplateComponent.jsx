@@ -23,7 +23,10 @@ const EditTemplateComponent = ({ match, props }) => {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
-  const templateId = match.params.id;
+  
+  const {id}=useParams()
+  const templateId = id
+
   const [data, setData] = useState(null);
 
   const [newData, setNewData] = useState({
@@ -165,7 +168,6 @@ const EditTemplateComponent = ({ match, props }) => {
     });
   };
 
-  const { id } = useParams();
 
   const submitHandler = (e) => {
     setNotify(null);
