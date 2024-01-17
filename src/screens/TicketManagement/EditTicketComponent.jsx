@@ -313,7 +313,7 @@ export default function EditTicketComponent({ match }) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState();
-  const [commentData, setCommentData] = useState()
+  const [commentData, setCommentData] = useState();
   const [users, setUsers] = useState();
   const [projectId, setProjectId] = useState();
   const [reviewerData, setReviewerData] = useState();
@@ -536,15 +536,14 @@ export default function EditTicketComponent({ match }) {
 
     loadComments();
     setShowLoaderModal(false);
-
   };
 
   const loadComments = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     await new MyTicketService().getComments(ticketId).then((res) => {
       if (res.status === 200) {
         setCommentData(res.data.data);
-        setIsLoading(false)
+        setIsLoading(false);
       }
     });
   };
@@ -948,6 +947,20 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
+                    <div className="col-sm-4">
+                      <label className="col-form-label">
+                        <b>Parent : </b>
+                      </label>
+
+                      <input
+                        className="form-control form-control-sm"
+                        type="text"
+                        defaultValue={data && data.parent_name}
+                        readOnly
+                        name="parent_id"
+                      />
+                    </div>
+
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Ticket Type : </b>
@@ -1471,13 +1484,17 @@ export default function EditTicketComponent({ match }) {
           )}
         </div>
 
-          {isLoading ? (<Shimmer count={10}/>) :(
-        <div className="col-md-4">
-            <Chatbox ticketId={ticketId} loadComment ={loadCommentsCallback} commentData={commentData} />
-        </div>
-            )}
-
-       
+        {isLoading ? (
+          <Shimmer count={10} />
+        ) : (
+          <div className="col-md-4">
+            <Chatbox
+              ticketId={ticketId}
+              loadComment={loadCommentsCallback}
+              commentData={commentData}
+            />
+          </div>
+        )}
       </div>
 
       <Modal show={showLoaderModal} centered>
