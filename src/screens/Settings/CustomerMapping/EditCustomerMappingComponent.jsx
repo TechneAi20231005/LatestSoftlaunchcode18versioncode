@@ -23,7 +23,8 @@ import Table from 'react-bootstrap/Table';
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
 
-  const {mappingId} =useParams() 
+  const {id} =useParams() 
+  const mappingId = id
   const [notify, setNotify] = useState();
 
 
@@ -451,11 +452,11 @@ const getDynamicForm = async () =>{
                     <b>Select Customer Type :<Astrick color="red" size="13px" /></b>
                   </label>
                   <div className="col-sm-4">
-                    {customerTypeDropdown && <Select
+                    {customerTypeDropdown && data && <Select
                       id="customer_type_id"
                       name="customer_type_id"
                       options={customerTypeDropdown}
-                      defaultValue={ customerTypeDropdown.filter((d)=>data.customer_type_id==d.value)}
+                      defaultValue={data && customerTypeDropdown.filter((d)=>data.customer_type_id == d.value)}
                       onChange={e => handleAutoChanges(e, 'Select2', 'customer_type_id')}
                     />
                     }

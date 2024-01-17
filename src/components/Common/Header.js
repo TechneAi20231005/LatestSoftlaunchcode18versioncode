@@ -427,6 +427,7 @@ export default function Header () {
                   <div className='p-2' style={{ zIndex: 700 }}>
                     {tenantDropdown && tenantId && (
                       <Select
+                        
                         placeholder={<span className='fw-bold '>Switch Tenant... 
                         </span>}
                         name='tenant_id'
