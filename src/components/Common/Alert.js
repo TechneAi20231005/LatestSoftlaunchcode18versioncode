@@ -30,7 +30,7 @@ function Alert(props) {
     // }
 
 
-  }, []);
+  }, [props.alertData]);
 
 
   return (

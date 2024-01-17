@@ -394,12 +394,12 @@ console.log(e.target.value);
                         required
                         defaultValue={
                           modal.modalData
-                            ? modal.modalData &&
+                            ? (modal.modalData &&
                               parent &&
                               parent.filter(
-                                (d) => d.value ===modal.modalData.parent_id
+                                (d) => d.value == modal.modalData.parent_id
                               )
-                            : parent && parent.filter((d) => d.value[0])
+                            ):( parent && parent.filter((d) => d.value == 0))
                         }
                       />
                     </div>

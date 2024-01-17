@@ -311,17 +311,18 @@ function UserComponent( ) {
     data,
   };
   var flag = 1;
+useEffect(()=>{
+  loadData();
 
-  useEffect(() => {
-    loadData();
-    if (location && location.state) {
-      setNotify(location.state);
-      flag = 0;
-    }
-    return () => {
-      setNotify(null)
-    };
-  }, []);
+},[])
+useEffect(() => {
+  if (location && location.state) {
+    setNotify(location.state);
+  }
+  return () => {
+    setNotify(null);
+  };
+}, [location.state]);
 
   useEffect(() => {
     if (checkRole && checkRole[2].can_read === 0) {
