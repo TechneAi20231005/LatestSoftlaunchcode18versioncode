@@ -14,13 +14,14 @@ import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTy
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
+import { el } from "date-fns/locale";
 
 function TaskAndTicketTypeMaster(props) {
   const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [parent, setParent] = useState();
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
 
@@ -121,6 +122,7 @@ function TaskAndTicketTypeMaster(props) {
               handleModal({
                 showModal: true,
                 modalData: row,
+
                 modalHeader: "Edit Type",
               });
             }}
@@ -249,16 +251,21 @@ function TaskAndTicketTypeMaster(props) {
     console.log(e.target.value);
   };
 
+  console.log("m", modal.modalData);
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    if(loading){
-      return
-    }
-    setLoading(true)
 
-    if (selectedValue === "") {
-      alert("Type is required.");
-      return;
+    if (!id) {
+      if (selectedValue === "") {
+        alert("Type is required.");
+        return;
+      }
+    }
+    if (id) {
+      if (modal.modalData.type === "") {
+        alert("Type is required.");
+        return;
+      }
     }
 
     setNotify(null);
@@ -271,15 +278,18 @@ function TaskAndTicketTypeMaster(props) {
             setModal({ showModal: false });
             loadData();
           } else {
-            setLoading(false)
+            // setLoading(false);
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
-          setLoading(false)
+          // setLoading(false);
           setNotify({ type: "danger", message: res.data.message });
         }
       });
     } else {
+      // console.log("loading" ,loading)
+      console.log("selectValiue", modal?.modalData?.type);
+      // setSelectedValue(modal?.modalData?.type);
       await new TaskTicketTypeService()._updateType(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
@@ -287,15 +297,15 @@ function TaskAndTicketTypeMaster(props) {
             setModal({ showModal: false });
             loadData();
           } else {
-            
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
-          setLoading(false)
+          // setLoading(false);
           setNotify({ type: "danger", message: res.data.message });
         }
       });
     }
+    // setLoading(false);
   };
 
   useEffect(() => {
@@ -404,23 +414,22 @@ function TaskAndTicketTypeMaster(props) {
                         className="form-label font-weight-bold"
                         readOnly={true}
                       >
-                        Parent Task Type
+                        Parent Task Type 
                         <Astrick color="red" size="13px" />
                       </label>
                       <Select
                         options={parent}
                         id="parent_id"
                         name="parent_id"
-                        ref={parentRef}
                         required
                         defaultValue={
                           modal.modalData
-                            ? modal.modalData &&
+                            ? (modal.modalData &&
                               parent &&
                               parent.filter(
-                                (d) => d.value === modal.modalData.parent_id
+                                (d) => d.value == modal.modalData.parent_id
                               )
-                            : parent && parent.filter((d) => d.value[0])
+                            ):(  parent && parent.filter((d) => d.value[0]))
                         }
                       />
                     </div>
@@ -442,7 +451,6 @@ function TaskAndTicketTypeMaster(props) {
                           id="parent_id"
                           name="parent_id"
                           required
-                          ref={parentRef}
                           defaultValue={
                             modal.modalData
                               ? modal.modalData &&
