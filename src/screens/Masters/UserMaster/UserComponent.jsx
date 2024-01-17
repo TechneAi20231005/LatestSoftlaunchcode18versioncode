@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { _base,  } from "../../../settings/constants";
@@ -16,7 +16,8 @@ import CountryService from "../../../services/MastersService/CountryService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Spinner } from "react-bootstrap";
 
-function UserComponent({ location }) {
+function UserComponent( ) {
+  const location = useLocation()
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState(null);
@@ -310,17 +311,18 @@ function UserComponent({ location }) {
     data,
   };
   var flag = 1;
+useEffect(()=>{
+  loadData();
 
-  useEffect(() => {
-    loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-      flag = 0;
-    }
-    return () => {
-      setNotify(null);
-    };
-  }, []);
+},[])
+useEffect(() => {
+  if (location && location.state) {
+    setNotify(location.state);
+  }
+  return () => {
+    setNotify(null);
+  };
+}, [location.state]);
 
   useEffect(() => {
     if (checkRole && checkRole[2].can_read === 0) {

@@ -34,8 +34,9 @@ import DesignationService from "../../../../services/MastersService/DesignationS
 const TestCases = ({ match }) => {
   // const ticket_id = match.params.ticketId;
   // const task_id = match.params.taskId;
-const{ticket_id}=useParams()
-const {task_id}=useParams()
+const {ticketId, taskId} =useParams()
+const ticket_id = ticketId
+const task_id = taskId
 
 
 
@@ -2371,10 +2372,8 @@ const {task_id}=useParams()
                       expandableRows={true}
                       selectableRows={true}
                       onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
-                      // onSelectedRowsChange={selectTest}
                       className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                       expandableRowsComponent={ExpandedComponent}
-                      // selectableRowDisabled={selectableRowDisabled} // add the selectableRowDisabled prop
                       responsive={true}
                       onRowClicked={(e, row) => toggleRowSelection(e, row.id)} // Call toggleRowSelection when a row is clicked
                     />

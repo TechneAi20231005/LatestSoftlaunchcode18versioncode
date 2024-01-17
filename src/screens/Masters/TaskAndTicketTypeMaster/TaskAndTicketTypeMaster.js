@@ -429,7 +429,7 @@ function TaskAndTicketTypeMaster(props) {
                               parent.filter(
                                 (d) => d.value == modal.modalData.parent_id
                               )
-                            ):(  parent && parent.filter((d) => d.value[0]))
+                            ):( parent && parent.filter((d) => d.value == 0))
                         }
                       />
                     </div>

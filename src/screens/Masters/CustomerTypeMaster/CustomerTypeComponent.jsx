@@ -23,7 +23,7 @@ function CustomerTypeComponent() {
     modalHeader: "",
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [isActive, setIsActive] = useState()
+  const [isActive, setIsActive] = useState(1)
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");

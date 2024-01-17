@@ -1145,6 +1145,7 @@ function VendorMaster({ match }) {
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
+          console.log(res);
           setNotify({ type: "success", message: res.data.message });
           handleBulkModal({ showModal: false });
           loadData();
