@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
 import CustomerService from "../../../services/MastersService/CustomerService";
@@ -13,7 +13,7 @@ import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 
 
-function CustomerComponent({ location }) {
+function CustomerComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
@@ -23,7 +23,7 @@ function CustomerComponent({ location }) {
   const roleId = sessionStorage.getItem("role_id")
   const [checkRole, setCheckRole] = useState(null)
   const searchRef = useRef();
-
+  const location  = useLocation()
 
 
 
@@ -200,10 +200,13 @@ function CustomerComponent({ location }) {
     }
   };
   useEffect(() => {
-
+    console.log(location);
     loadData();
     if (location && location.state) {
-      setNotify(location.state.alert);
+      setNotify(location.state);
+    }
+    return () =>{
+      setNotify(null)
     }
 
   }, []);
@@ -218,7 +221,7 @@ function CustomerComponent({ location }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      { notify && <Alert alertData={notify} />}
 
       <PageHeader
         headerTitle="Customer Master"

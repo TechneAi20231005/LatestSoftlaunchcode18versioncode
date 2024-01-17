@@ -70,7 +70,7 @@ export default class VendorMasterService {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       };
         return axios.post(bulkUpload,payload,config);

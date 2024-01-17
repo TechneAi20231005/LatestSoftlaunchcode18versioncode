@@ -31,6 +31,7 @@ function QueryTypeComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
+  const [isActive, setIsActive] = useState(1)
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -526,6 +527,14 @@ function QueryTypeComponent() {
 
   // **************************************Add Query Group *****************************************
   const [notifyy, setNotifyy] = useState(null);
+  const handleIsActive = (e) =>{
+    if(e.target.id === "is_active_1"){
+      setIsActive(1)
+
+    }else {
+      setIsActive(0)
+    }
+  }
   const handleFormQueryGroup = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -572,6 +581,8 @@ function QueryTypeComponent() {
           );
         });
     } else {
+      form.delete('is_active')
+      form.append("is_active", isActive);
       await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
@@ -750,6 +761,7 @@ function QueryTypeComponent() {
               setModal({ showModal: false, modalData: "", modalHeader: "" });
               setNotify({ type: "success", message: res.data.message });
               loadData();
+              setIsActive(1)
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -763,6 +775,8 @@ function QueryTypeComponent() {
             );
           }
         } else {
+          form.delete('is_active')
+          form.append("is_active", isActive);
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
             setShowLoaderModal(false);
@@ -770,6 +784,8 @@ function QueryTypeComponent() {
               setModal({ showModal: false, modalData: "", modalHeader: "" });
               setNotify({ type: "success", message: res.data.message });
               loadData();
+              setIsActive(1)
+
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -1098,7 +1114,6 @@ function QueryTypeComponent() {
                       type="hidden"
                       name="is_active"
                       id="is_active_1"
-                      value="1"
                       defaultChecked={
                         modal.modalData && modal.modalData.is_active === 1
                           ? true
@@ -1138,7 +1153,8 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_1"
-                              value="1"
+                              onClick = {(e)=>{handleIsActive(e)}}
+                              value={isActive}
                               defaultChecked={
                                 modal.modalData &&
                                 modal.modalData.is_active === 1
@@ -1163,7 +1179,8 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_0"
-                              value="0"
+                              onClick = {(e)=>{handleIsActive(e)}}
+                              value={isActive}
                               readOnly={modal.modalData ? false : true}
                               defaultChecked={
                                 modal.modalData &&

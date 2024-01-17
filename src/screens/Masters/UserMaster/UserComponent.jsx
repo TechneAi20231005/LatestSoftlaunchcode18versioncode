@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { _base,  } from "../../../settings/constants";
@@ -16,7 +16,8 @@ import CountryService from "../../../services/MastersService/CountryService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Spinner } from "react-bootstrap";
 
-function UserComponent({ location }) {
+function UserComponent( ) {
+  const location = useLocation()
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState(null);
@@ -314,11 +315,11 @@ function UserComponent({ location }) {
   useEffect(() => {
     loadData();
     if (location && location.state) {
-      setNotify(location.state.alert);
+      setNotify(location.state);
       flag = 0;
     }
     return () => {
-      setNotify(null);
+      setNotify(null)
     };
   }, []);
 

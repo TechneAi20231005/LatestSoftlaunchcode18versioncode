@@ -298,12 +298,12 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              
               history({
                 pathname: `/${_base}/User`,
-                state: {
-                  alert: { type: "success", message: res.data.message },
-                },
-              });
+              },   
+                  {state: {type:"success", message: res.data.message}},
+                     );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -1586,25 +1586,27 @@ function EditUserComponent({ match }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {rows.map((item, idx) => (
+                        {rows && rows?.map((item, idx) => (
                           <tr key={idx}>
                             <td className="text-center">{idx + 1}</td>
                             <td>
+                              
+                              {departmentDropdown && item.department_id &&
                               <Select
                                 options={departmentDropdown}
                                 id={`department_id_` + idx}
                                 name="department_id[]"
                                 // onChange={e => departmentHandler(idx, e)}
                                 defaultValue={
-                                  item &&
-                                  item.department_id &&
-                                  departmentDropdown.filter(
+                                  departmentDropdown?.filter(
                                     (d) => d.value == item.department_id
                                   )
                                 }
                               />
+                            }
                             </td>
                             <td>
+                              {options && item.ticket_show_type &&
                               <Select
                                 options={options}
                                 id={`ticket_show_type_id_` + idx}
@@ -1618,6 +1620,7 @@ function EditUserComponent({ match }) {
                                   )
                                 }
                               />
+                              }
                             </td>
 
                             <td className="text-center">
