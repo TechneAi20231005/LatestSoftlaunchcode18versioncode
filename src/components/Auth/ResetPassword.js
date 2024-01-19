@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import GoogleImg from "../../assets/images/forgot-password.svg";
 import { postData } from "../../services/ForgetPasswordService/ResetPasswordService";
 import * as Validation from "../Utilities/Validation";
@@ -8,7 +8,9 @@ import { _base } from "../../settings/constants";
 import InputGroup from 'react-bootstrap/InputGroup';
 
 
-export default function ResetPassword({ location }) {
+export default function ResetPassword() {
+  const location = useLocation()
+
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [userData, setUserData] = useState({ email: null });

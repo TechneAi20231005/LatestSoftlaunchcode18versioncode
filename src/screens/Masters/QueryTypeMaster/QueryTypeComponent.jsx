@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -31,7 +28,7 @@ function QueryTypeComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
-  const [isActive, setIsActive] = useState(1)
+  const [isActive, setIsActive] = useState(1);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -140,10 +137,6 @@ function QueryTypeComponent() {
       return false;
     });
   }
-
-
-
-
 
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
@@ -527,14 +520,13 @@ function QueryTypeComponent() {
 
   // **************************************Add Query Group *****************************************
   const [notifyy, setNotifyy] = useState(null);
-  const handleIsActive = (e) =>{
-    if(e.target.id === "is_active_1"){
-      setIsActive(1)
-
-    }else {
-      setIsActive(0)
+  const handleIsActive = (e) => {
+    if (e.target.id === "is_active_1") {
+      setIsActive(1);
+    } else {
+      setIsActive(0);
     }
-  }
+  };
   const handleFormQueryGroup = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -581,7 +573,7 @@ function QueryTypeComponent() {
           );
         });
     } else {
-      form.delete('is_active')
+      form.delete("is_active");
       form.append("is_active", isActive);
       await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
         if (res.status === 200) {
@@ -659,7 +651,7 @@ function QueryTypeComponent() {
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
               Status: data[i].is_active ? "Active" : "Deactive",
-              Remark:data[i].remark,
+              Remark: data[i].remark,
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
@@ -753,6 +745,8 @@ function QueryTypeComponent() {
     if (flag === 1) {
       try {
         if (!id) {
+          form.delete("is_active");
+          form.append("is_active", 1);
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
             setShowLoaderModal(false);
@@ -761,7 +755,7 @@ function QueryTypeComponent() {
               setModal({ showModal: false, modalData: "", modalHeader: "" });
               setNotify({ type: "success", message: res.data.message });
               loadData();
-              setIsActive(1)
+              setIsActive(1);
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -775,7 +769,7 @@ function QueryTypeComponent() {
             );
           }
         } else {
-          form.delete('is_active')
+          form.delete("is_active");
           form.append("is_active", isActive);
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
@@ -784,8 +778,7 @@ function QueryTypeComponent() {
               setModal({ showModal: false, modalData: "", modalHeader: "" });
               setNotify({ type: "success", message: res.data.message });
               loadData();
-              setIsActive(1)
-
+              setIsActive(1);
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -848,20 +841,18 @@ function QueryTypeComponent() {
   // },[formId])
 
   useEffect(() => {
-    
     loadData();
     loadDataEditPopup();
     setNotify(null);
   }, []);
 
-
-  useEffect(()=>{
-    if(checkRole && checkRole[13].can_read === 0){
+  useEffect(() => {
+    if (checkRole && checkRole[13].can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
 
   // const queryGroupDropdownValue = modal.modalData && JSON.stringify(modal.modalData.query_group)
 
@@ -1018,7 +1009,8 @@ function QueryTypeComponent() {
                       id="form_id"
                       name="form_id"
                       defaultValue={
-                        modal.modalData && dynamicFormDropdown &&
+                        modal.modalData &&
+                        dynamicFormDropdown &&
                         dynamicFormDropdown.filter(
                           (d) => d.value == modal.modalData.form_id
                         )
@@ -1153,7 +1145,9 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_1"
-                              onClick = {(e)=>{handleIsActive(e)}}
+                              onClick={(e) => {
+                                handleIsActive(e);
+                              }}
                               value={isActive}
                               defaultChecked={
                                 modal.modalData &&
@@ -1179,7 +1173,9 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_0"
-                              onClick = {(e)=>{handleIsActive(e)}}
+                              onClick={(e) => {
+                                handleIsActive(e);
+                              }}
                               value={isActive}
                               readOnly={modal.modalData ? false : true}
                               defaultChecked={
@@ -1208,7 +1204,11 @@ function QueryTypeComponent() {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px"  }}
+                  style={{
+                    backgroundColor: "#484C7F",
+                    width: "80px",
+                    padding: "8px",
+                  }}
                 >
                   Add
                 </button>
@@ -1298,7 +1298,6 @@ function QueryTypeComponent() {
                 <div className="col-sm-12">
                   {modalQueryGroup.modalDataQueryGroup && (
                     <input
-                    
                       type="text"
                       style={{ height: "40px" }}
                       id="group_name"
@@ -1405,7 +1404,11 @@ function QueryTypeComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px"  }}
+                style={{
+                  backgroundColor: "#484C7F",
+                  width: "80px",
+                  padding: "8px",
+                }}
               >
                 Add
               </button>

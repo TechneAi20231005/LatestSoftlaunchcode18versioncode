@@ -19,10 +19,9 @@ import { object } from "prop-types";
 const TestCasesReviewerView = ({ match }) => {
   const history = useNavigate();
 
-  // const ticketId = match.params.ticketId;
-  // const taskId = match.params.taskId;
-  const {taskId} =useParams()
-  const {ticketId}=useParams()
+  const {ticketId, taskId} = useParams();
+  const ticket_id = ticketId
+  const task_id = taskId
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
     modalData: "",
@@ -73,20 +72,16 @@ const TestCasesReviewerView = ({ match }) => {
   const [ExportData, setExportData] = useState();
   const [isReviewer, setIsReviewer] = useState()
   const [testingTypeDropdown, setTestingTypeDropdown] = useState();
-  const [testCaseFunction, setTestCaseFunction] = useState();
-
-  const[paginationData, setPaginationData] = useState()
   const loadData = async () => {
     let counter = 1;
     await new TestCasesService()
-      .getTestCases(userSessionData.userId, ticketId, taskId)
+      .getTestCases(userSessionData.userId, ticket_id, task_id)
       .then((res) => {
         setData(null);
         const temp = res.data.data.data;
         const ExportTempData = [];
         const userType = res.data.type;
         const execution = res.data.execution;
-        setPaginationData(res.data.data)
         setIsReviewer(res.data.show_review_btn)
         const tempData = [];
         for (const key in temp) {
@@ -156,20 +151,6 @@ const TestCasesReviewerView = ({ match }) => {
       }
     });
 
-    
-    // called To show the Function field aptions - Asmita Margaje
-    await new TestCasesService()
-      .getTestcasesFunction()
-      .then((res) => {
-        var temFunction = res.data.data
-
-        setTestCaseFunction(temFunction.map(d => ({
-          value: d.id,
-          label: d.function,
-        })));
-
-      })
-
     await new TestCasesService().getAllTestSuites().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -181,96 +162,6 @@ const TestCasesReviewerView = ({ match }) => {
       }
     });
   };
-
-  const handlePaginationRowChanged = async (e, type)=>{
-    e.preventDefault()
-    var form;
-    if(type == "LIMIT"){
-      const limit = parseInt(e.target.value)
-      const typeOf = type
-      // const currentPage = limit < 
-       form = {
-        limit: limit,
-        // typeOf: "AssignToMe",
-        page: 1
-      }
-    }else if(type == "MINUS"){
-      // const limit = parseInt(e.target.value)
-       form = {
-        // limit: limit,
-        // typeOf: "AssignToMe",
-        page: paginationData.current_page -1
-      }
-    } else if( type == "PLUS"){
-       form = {
-        // limit: limit,
-        // typeOf: "AssignToMe",
-        page: paginationData.current_page +1
-      }
-    }
-    await new TestCasesService()
-    .getTestCases(userSessionData.userId, ticketId, taskId)
-    .then((res) => {
-      setData(null);
-      const temp = res.data.data.data;
-      const ExportTempData = [];
-      const userType = res.data.type;
-      const execution = res.data.execution;
-      setIsReviewer(res.data.show_review_btn)
-      const tempData = [];
-      for (const key in temp) {
-        tempData.push({
-          id: temp[key].id,
-          test_case_id: temp[key].test_case_id,
-          task_name: temp[key].task_name,
-          testing_type_name: temp[key].testing_type_name,
-          testing_type: temp[key].testing_type,
-          function: temp[key].function,
-          field: temp[key].field,
-          submodule: temp[key].submodule,
-          platform: temp[key].platform,
-          apk_version: temp[key].apk_version,
-          os_version: temp[key].os_version,
-          test_description: temp[key].test_description,
-          expected_result: temp[key].expected_result,
-          actual_result: temp[key].actual_result,
-          tester_comments: temp[key].tester_comments,
-          reviewer_comments: temp[key].reviewer_comments,
-          severity: temp[key].severity,
-          priority: temp[key].priority,
-          module_name: temp[key].module_name,
-          attachments: temp[key].attachments,
-          approved_status: temp[key].approved_status,
-          userId: temp[key].userId,
-        });
-      }
-      setData(tempData);
-
-      for (const key in temp) {
-        ExportTempData.push({
-          test_case_id: temp[key].test_case_id,
-          task_name: temp[key].task_name,
-          testing_type_name: temp[key].testing_type_name,
-          function: temp[key].function,
-          field: temp[key].field,
-          platform: temp[key].platform,
-          apk_version: temp[key].apk_version,
-          os_version: temp[key].os_version,
-          test_description: temp[key].test_description,
-          expected_result: temp[key].expected_result,
-          actual_result: temp[key].actual_result,
-          tester_comments: temp[key].tester_comments,
-          reviewer_comments: temp[key].reviewer_comments,
-          tester_status: temp[key].tester_status,
-          severity: temp[key].severity,
-          module_name: temp[key].module_name,
-          submodule: temp[key].submodule,
-          // is_disabled: false,
-        });
-      }
-      setExportData(ExportTempData);
-    });
-  }
 
   const handleAutoChange = async (e, type, rowId, nameField) => {
     if (e) {
@@ -368,14 +259,14 @@ const TestCasesReviewerView = ({ match }) => {
             class="form-check-input"
             type="checkbox"
             role="switch"
-            // key={Math.random()}
+            key={Math.random()} 
             name="approved_status"
             id="approved_status"
             defaultChecked={row.approved_status == 2 ? false : true}
             // defaultChecked={row.approved_status == 0 ? true :false}
-            onBlur={(e) => {
-              updateForm(e, row.counter - 1);
-            }}
+            // onBlur={(e) => {
+            //   updateForm(e, row.counter - 1);
+            // }}
             onChange={(e) => {
               handleAutoChange(
                 e,
@@ -383,7 +274,7 @@ const TestCasesReviewerView = ({ match }) => {
                 row.counter - 1,
                 "approved_status"
               );
-              // updateForm(e, row.counter - 1);
+              updateForm(e, row.counter - 1);
 
             }}
           />
@@ -438,75 +329,30 @@ const TestCasesReviewerView = ({ match }) => {
       ),
       // row.testing_type, sortable: true
     },
-
     {
       name: "Function",
-      width: "300px",
+      width: "220px",
       selector: (row) => (
         <div>
-          <select
+          <input
             className="col-md"
+            value={row.function}
             type="text"
             id="function"
-            key={Math.random()}
             name="function"
             style={{ borderStyle: "none" }}
-            disabled={row.approved_status == 2}
-            DataTa
+            readOnly={row.approved_status == 2? true: false}
             onChange={(e) =>
-              {handleAutoChange(
-                e,
-                "TESTINGTYPE",
-                row.counter - 1,
-                "function"
-              );updateForm(e, row.counter - 1);}
+              handleAutoChange(e, "FUNCTION", row.counter - 1, "function")
             }
-            // onBlur={(e) => {
-              
-            // }}
-          >
-            {testCaseFunction &&
-              testCaseFunction.map((d, i) => {
-                return (
-                  <option
-                    value={d.value}
-                    selected={d.value == row.function ? "selected" : ""}
-                  >
-                    {d.label}
-                  </option>
-                );
-              })}
-          </select>
+            onBlur={(e) => {
+              updateForm(e, row.counter - 1);
+            }}
+          />
         </div>
       ),
       // row.testing_type, sortable: true
     },
-
-
-    // {
-    //   name: "Function",
-    //   width: "220px",
-    //   selector: (row) => (
-    //     <div>
-    //       <input
-    //         className="col-md"
-    //         value={row.function}
-    //         type="text"
-    //         id="function"
-    //         name="function"
-    //         style={{ borderStyle: "none" }}
-    //         readOnly={row.approved_status == 2? true: false}
-    //         onChange={(e) =>
-    //           handleAutoChange(e, "FUNCTION", row.counter - 1, "function")
-    //         }
-    //         onBlur={(e) => {
-    //           updateForm(e, row.counter - 1);
-    //         }}
-    //       />
-    //     </div>
-    //   ),
-    //   // row.testing_type, sortable: true
-    // },
     {
       name: "Field",
       width: "220px",
@@ -656,7 +502,6 @@ const TestCasesReviewerView = ({ match }) => {
               updateForm(e, row.counter - 1);
             }}
           />
-
         </div>
       ),
       // row.testing_type, sortable: true
@@ -667,7 +512,8 @@ const TestCasesReviewerView = ({ match }) => {
       width: "220px",
       selector: (row) => (
         <div>
-          <input
+          <textarea
+            rows= "4"
             className="col-md"
             value={row.reviewer_comments}
             type="text"
@@ -799,13 +645,12 @@ const TestCasesReviewerView = ({ match }) => {
     const tempData = [];
 
     await new TestCasesService()
-      .getTestCases(userSessionData.userId, ticketId, taskId, formData)
+      .getTestCases(userSessionData.userId, ticket_id, task_id, formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             let counter = 1;
-            const temp = res.data.data;
-            console.log("res",res.data.data.data)
+            const temp = res.data.data.data;
             for (const key in temp) {
               tempData.push({
                 counter: counter++,
@@ -921,6 +766,7 @@ const TestCasesReviewerView = ({ match }) => {
             modalData: "",
             modalHeader: "",
           });
+          loadData()
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }
@@ -934,16 +780,15 @@ const TestCasesReviewerView = ({ match }) => {
     const form = new FormData(e.target);
     form.append("test_case_id", selectedRowsData);
 
-    await new TestCasesService().addToExistingTestSuite(form).then((res) => {
+    await new TestCasesService().addToExistingTestSuiteFromReviewer(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
+          // setNotify({ type: "success", message: res.data.message });
           history({
             pathname: `/${_base}/TestBank`,
-            state: {
-              alert: { type: "success", message: res.data.message },
-            },
-          });
+         
+          },{ state: { alert: { type: "success", message: res.data.message } }}
+          );
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }
@@ -960,13 +805,12 @@ const TestCasesReviewerView = ({ match }) => {
     await new TestCasesService().addToExistingTestSuite(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
+          // setNotify({ type: "success", message: res.data.message });
           history({
             pathname: `/${_base}/TestBank`,
-            state: {
-              alert: { type: "success", message: res.data.message },
-            },
-          });
+         
+          },{ state: { alert: { type: "success", message: res.data.message } }}
+          );
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }
@@ -1250,19 +1094,6 @@ const TestCasesReviewerView = ({ match }) => {
                   />
                 </div>
 
-
-                <div className="col-sm-3">
-                  <label>
-                    <b>Function:</b>
-                  </label>
-                  <Select
-                    className="form-control form-control-sm"
-                    id="function"
-                    name="function"
-                    options={testCaseFunction}
-                  />
-                </div>
-
                 <div className="col-sm-3">
                   <label>
                     <b>Severity:</b>
@@ -1328,14 +1159,14 @@ const TestCasesReviewerView = ({ match }) => {
                                 type="hidden"
                                 name="ticket_id"
                                 id="ticket_id"
-                                value={ticketId}
+                                value={ticket_id}
                               />
 
                               <input
                                 type="hidden"
                                 name="task_id"
                                 id="task_id"
-                                value={taskId}
+                                value={task_id}
                               />
                               <button
                                 style={{ width: "90%" }}
@@ -1351,7 +1182,21 @@ const TestCasesReviewerView = ({ match }) => {
                           </form>
                         </li>
                         <li>
-                          <form
+
+                        <button
+                              className="btn  btn-warning"
+                              type="button"
+                              onClick={() => {
+                                handleSendtoTestSuiteModal({
+                                  showModal: true,
+                                  modalData: "",
+                                  modalHeader: "Test Suite ",
+                                });
+                              }}
+                            >
+                              Test Suite <i className="icofont-sign-in" />
+                            </button>
+                          {/* <form
                             method="post"
                             onSubmit={sendTestCasesToTestPlan}
                           >
@@ -1369,7 +1214,7 @@ const TestCasesReviewerView = ({ match }) => {
                             >
                               Test Plan <i className="icofont-sign-in" />
                             </button>
-                          </form>
+                          </form> */}
                         </li>
                       </ul>
                     </Dropdown.Menu>
@@ -1384,33 +1229,15 @@ const TestCasesReviewerView = ({ match }) => {
                 </div>
 
                 {data && (
-                  <>
                   <DataTable
                     columns={columns}
                     data={data}
                     selectableRows
                     onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
+                    pagination={true}
                     conditionalRowStyles={conditionalRowStyles}
                     onRowClicked={handleRowClicked}
                   />
-                  <div className="back-to-top pull-right mt-2 mx-2">
-                        <label className="mx-2">
-                            rows per page
-                        </label>
-                        <select onChange={e=>{handlePaginationRowChanged(e,"LIMIT")}} className="mx-2">
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="30">30</option>
-                        <option value="40">40</option>
-
-                        </select>
-                        { paginationData &&
-                        <small>{paginationData.from}-{paginationData.to} of {paginationData.total}</small>
-                        }
-                        <button onClick={e=>{handlePaginationRowChanged(e,"MINUS")}} className="mx-2"><i className="icofont-arrow-left"></i></button>
-                        <button onClick={e=>{handlePaginationRowChanged(e,"PLUS")}}><i className="icofont-arrow-right"></i></button>
-                  </div>
-                  </>
                 )}
               </div>
             </div>

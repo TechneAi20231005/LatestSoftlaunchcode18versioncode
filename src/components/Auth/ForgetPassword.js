@@ -49,8 +49,7 @@ export default function ForgetPassword(){
         if (res.data.status === 1) {
           history({
             pathname:`/${_base}/otp`,
-            state: { email: userData.email },
-          });
+          }, { state: { email: userData.email }});
         } else {
             setNotify();
             setNotify({type: 'danger', message:res.data.message});

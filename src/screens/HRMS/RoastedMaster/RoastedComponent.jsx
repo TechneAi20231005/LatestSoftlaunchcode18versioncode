@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link,useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import PageHeader from "../../../components/Common/PageHeader";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -12,7 +12,9 @@ import { Modal } from "react-bootstrap";
 import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
 import BillPaymentServices from "../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices";
 
-function RoastedComponent({ location }) {
+function RoastedComponent() {
+  const location = useLocation()
+
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
   const [paymentType, setPaymentType] = useState("Weekly");

@@ -487,9 +487,11 @@ const requiredUserRef = useRef();
         if (res.status === 200) {
           if (res.data.status === 1) {
             history({
-              pathname: `/${_base}/billTypeMaster`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+              pathname: `/${_base}/billTypeMaster`
+            },
+            { state: { alert: { type: "success", message: res.data.message } }}
+
+            );
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }

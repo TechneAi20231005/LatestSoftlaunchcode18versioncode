@@ -2547,8 +2547,6 @@ import {
 export default function HrDashboard(props) {
   const history = useNavigate();
   const location = useLocation()
-  console.log(location);
-  console.log(history);
   const data = props.data;
   var v1 = 50;
   var v2 = 50;
@@ -2610,7 +2608,6 @@ export default function HrDashboard(props) {
     const currentTime = new Date().getTime();
 
     if (tokenExpirationTime && currentTime > tokenExpirationTime) {
-      console.log("hii from Dash");
       // Token has expired, log out the user
       localStorage.removeItem("jwt_token");
       localStorage.removeItem("jwt_token_expiration");

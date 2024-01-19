@@ -19,7 +19,6 @@ function AddTaskModalBackup(props) {
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log(form);
 
         // putData(props.modalData[0]._id,form).then(res=>{
         //     console.log(res);

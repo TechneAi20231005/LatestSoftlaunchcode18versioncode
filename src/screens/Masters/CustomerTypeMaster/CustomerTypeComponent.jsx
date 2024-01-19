@@ -13,7 +13,8 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { Spinner } from "react-bootstrap";
 
 function CustomerTypeComponent() {
-    const isActiveRef = useRef()
+    const isActive1Ref = useRef()
+    const isActive0Ref = useRef()
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState();
@@ -208,8 +209,9 @@ function CustomerTypeComponent() {
     });
   };
   const handleIsActive = (e) =>{
-    const value = isActiveRef.current.value
-    if(value === 1) {
+   const  value =e.target.value;
+    
+    if(value == 1) {
         setIsActive(1)
     }else {
         setIsActive(0)
@@ -503,9 +505,9 @@ function CustomerTypeComponent() {
                             name="is_active"
                             onClick={(e)=>{handleIsActive(e)}}
                             id="is_active_1"
-                            ref={isActiveRef}
+                            ref={isActive1Ref}
 
-                            value={1}
+                            value="1"
                             defaultChecked={
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
@@ -529,9 +531,9 @@ function CustomerTypeComponent() {
                             type="radio"
                             name="is_active"
                             id="is_active_0"
-                            onChange={(e)=>{handleIsActive(e)}}
-                            ref={isActiveRef}
-                            value={0}
+                            onClick={(e)=>{handleIsActive(e)}}
+                            ref={isActive0Ref}
+                            value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
                               modal.modalData && modal.modalData.is_active === 0

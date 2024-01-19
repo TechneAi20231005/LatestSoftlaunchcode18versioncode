@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { Modal } from "react-bootstrap";
@@ -25,7 +25,9 @@ import { Spinner } from "react-bootstrap";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
 
-export default function MyTicketComponent({ location }) {
+export default function MyTicketComponent( ) {
+  const location = useLocation()
+
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
@@ -223,6 +225,7 @@ export default function MyTicketComponent({ location }) {
 
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0 &&
+                localStorage.getItem('account_for') === 'SELF' && 
                 data.status_name != "Solved" && (
                   <li>
                     <Link
@@ -339,6 +342,7 @@ export default function MyTicketComponent({ location }) {
 
               {
                 (data.created_by = localStorage.getItem("id") &&
+                localStorage.getItem('account_for') === 'SELF' && 
                   data.basket_configured > 0 && (
                     <li>
                       <Link
@@ -379,7 +383,7 @@ export default function MyTicketComponent({ location }) {
                                             <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
                                                 <i className="icofont-bucket2"></i>Basket</Link></li>
                                         } */}
-
+          { localStorage.getItem('account_for') === 'SELF' && (
             <Link
               to={`/${_base}/Ticket/Task/` + data.id}
               className="btn btn-sm btn-outline-primary"
@@ -387,6 +391,7 @@ export default function MyTicketComponent({ location }) {
             >
               <i className="icofont-tasks"></i> Task
             </Link>
+          )}
           </div>
         );
       }
@@ -439,7 +444,9 @@ export default function MyTicketComponent({ location }) {
               {((data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
-                  data.basket_configured === 0)) && (
+                  data.basket_configured === 0)) && 
+                  localStorage.getItem('account_for') === 'SELF' && 
+                  (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}
@@ -454,7 +461,9 @@ export default function MyTicketComponent({ location }) {
               {((data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
-                  data.basket_configured > 0)) && (
+                  data.basket_configured > 0)) && 
+                  localStorage.getItem('account_for') === 'SELF' && 
+                  (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -482,7 +491,9 @@ export default function MyTicketComponent({ location }) {
             {((data.created_by != localStorage.getItem("id") &&
               data.basket_configured === 0) ||
               (data.assign_to_user_id == localStorage.getItem("id") &&
-                data.basket_configured === 0)) && (
+                data.basket_configured === 0)) &&
+                localStorage.getItem('account_for') === 'SELF' && 
+                (
                 <Link
                   to={`/${_base}/Ticket/Basket/` + data.id}
                   className="btn btn-sm btn-primary text-white"
@@ -507,7 +518,7 @@ export default function MyTicketComponent({ location }) {
             >
               <i className="icofont-external-link "></i> View
             </Link>
-
+                  {   localStorage.getItem('account_for') === 'SELF' && (
             <Link
               to={`/${_base}/Ticket/Task/` + data.id}
               className="btn btn-sm btn-outline-primary"
@@ -515,6 +526,7 @@ export default function MyTicketComponent({ location }) {
             >
               <i className="icofont-tasks"></i> Task
             </Link>
+                  )}
           </div>
         );
       }
@@ -524,7 +536,7 @@ export default function MyTicketComponent({ location }) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
-              drop="up"
+              drop="side"
               as="button"
               variant=""
               id={`${"dropdown-basic_" + data.id}`}
@@ -533,7 +545,7 @@ export default function MyTicketComponent({ location }) {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
 
-            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+            <Dropdown.Menu as="ul" className="border-0 shadow p-1 " >
               {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') &&
                                                 <li><Link to={`/${_base}/Ticket/Edit/` + data.id} className="btn btn-sm btn-warning text-white"
                                                     style={{ width: "100%", zIndex: '100' }}>
@@ -556,7 +568,9 @@ export default function MyTicketComponent({ location }) {
                                             } */}
 
               {data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0 && (
+                data.basket_configured > 0 &&
+                localStorage.getItem('account_for') === 'SELF' && 
+                (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -2448,6 +2462,14 @@ export default function MyTicketComponent({ location }) {
     });
   };
 
+  const customStyles = {
+    rows:{
+      style:{
+        minHeight:"120px"
+      }
+    }
+  }
+ 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
@@ -2472,6 +2494,7 @@ export default function MyTicketComponent({ location }) {
                   }}
                 />
               </div>
+              {localStorage.getItem('account_for') === 'SELF' && (<>
               <div className="col-md-3">
                 <label className="">
                   <b>Select User :</b>
@@ -2500,6 +2523,8 @@ export default function MyTicketComponent({ location }) {
                   />
                 )}
               </div>
+              </>
+              )}
 
               <div className="col-md-3">
                 <label className="">
@@ -2599,6 +2624,8 @@ export default function MyTicketComponent({ location }) {
                 {/* ********************************* */}
 
                 {/* *****************Entry Department,Entry User **************** */}
+                {localStorage.getItem('account_for') === 'SELF' && (
+                  <>
                 <div className="row mt-3">
                   <div className="col-md-6">
                     <label className="">
@@ -2680,11 +2707,13 @@ export default function MyTicketComponent({ location }) {
                   </div>
                   {/* </> : null} */}
                 </div>
+                </>
+                )}
                 {/********************************** ****************************/}
 
                 {/* ***************************Status**************** */}
                 <div className="col-md-12">
-                  <label className="">
+                  <label className="mt-2">
                     <b>Select Status :</b>
                   </label>
                   {statusData && (
@@ -2796,7 +2825,7 @@ export default function MyTicketComponent({ location }) {
                     </div>
                   </Tab>
                 )}
-
+                    {localStorage.getItem('account_for') === 'SELF' && (
                 <Tab eventKey="Assigned_To_Me" title="Assigned To me">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
@@ -2858,9 +2887,11 @@ export default function MyTicketComponent({ location }) {
                     </div>
                   </div>
                 </Tab>
+                    )}
+
                 <Tab eventKey="created_by_me" title="Created By Me">
                   <div className="card mb-3 mt-3">
-                    <div className="card-body">
+                    <div className="card-body" >
                       {createdByMe && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
@@ -2870,6 +2901,7 @@ export default function MyTicketComponent({ location }) {
                       )}
                       {createdByMe && (
                         <DataTable
+                          customStyles={customStyles}
                           columns={createdByMeColumns}
                           data={createdByMe}
                           defaultSortField="title"
@@ -2877,9 +2909,10 @@ export default function MyTicketComponent({ location }) {
                           fixedHeaderScrollHeight={"500px"}
                           selectableRows={false}
                           highlightOnHover={true}
+                          responsive={true}
                         />
                       )}
-                      <div className="back-to-top pull-right mt-2 mx-2">
+                      <div className="back-to-top pull-right mt-6 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
                           onChange={(e) => {
@@ -2917,7 +2950,7 @@ export default function MyTicketComponent({ location }) {
                     </div>
                   </div>
                 </Tab>
-
+  {localStorage.getItem('account_for') === 'SELF' && (
                 <Tab
                   eventKey="departmenyourTaskt"
                   title="Departmentwise Tickets"
@@ -2981,7 +3014,9 @@ export default function MyTicketComponent({ location }) {
                     </div>
                   </div>
                 </Tab>
-
+  )}
+                
+                {localStorage.getItem('account_for') === 'SELF' && (
                 <Tab eventKey="your_task" title="Your Task">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
@@ -3042,6 +3077,8 @@ export default function MyTicketComponent({ location }) {
                     </div>
                   </div>
                 </Tab>
+                )}
+
                 <Tab eventKey="unpassed_columns" title="Unpassed Ticket">
                   <div className="card mb-3 mt-3">
                     {/* <div className="card-body">

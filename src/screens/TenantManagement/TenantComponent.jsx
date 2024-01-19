@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DataTable from "react-data-table-component";
 import PageHeader from "../../components/Common/PageHeader";
 import ErrorLogService from "../../services/ErrorLogService";
@@ -10,7 +10,8 @@ import ManageMenuService from '../../services/MenuManagementService/ManageMenuSe
 import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 
-function TenantComponent({ location }) {
+function TenantComponent() {
+    const location = useLocation()
 
     const [data, setData] = useState(null);
     const [notify, setNotify] = useState(null);

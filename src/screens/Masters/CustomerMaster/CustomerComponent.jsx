@@ -200,7 +200,6 @@ function CustomerComponent() {
     }
   };
   useEffect(() => {
-    console.log(location);
     loadData();
     if (location && location.state) {
       setNotify(location.state);

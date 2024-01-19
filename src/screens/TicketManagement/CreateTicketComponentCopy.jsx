@@ -94,16 +94,17 @@ export default function CreateTicketComponent() {
                 if (res.data.status === 1) {
                     history({
                         pathname: `/${_base}/Ticket`,
-                        state: { alert: { type: 'success', message: res.data.message } }
-                    });
+                 
+                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    );
                 } else {
                     var URL =`${_attachmentUrl}`+res.data.data 
                     window.open(URL, '_blank').focus();
                     // setNotify({ type: 'danger', message: res.data.message });
                     history({
                         pathname: `/${_base}/Ticket`,
-                        state: { alert: { type: 'danger', message: res.data.message } }
-                    });
+                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    );
                 }
             } else {
                 setNotify({ type: 'danger', message: res.message });

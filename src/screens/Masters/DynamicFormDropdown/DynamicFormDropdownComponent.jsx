@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -15,7 +15,8 @@ import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 
-export default function DynamicFormDropdownComponent({ location }) {
+export default function DynamicFormDropdownComponent() {
+    const location = useLocation()
 
     const [data, setData] = useState(null);
     const [dataa, setDataa] = useState(null);

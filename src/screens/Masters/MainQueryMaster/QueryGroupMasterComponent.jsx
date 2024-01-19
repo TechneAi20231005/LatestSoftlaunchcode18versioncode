@@ -578,8 +578,6 @@ function QueryGroupMasterComponent() {
 
                 let counter = 1;
                 const temp = res.data.data;
-                console.log(temp);
-                console.log(temp)
                 for (const key in temp) {
                     data.push({
                         counter: counter++,

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -14,7 +14,8 @@ import { Modal } from "react-bootstrap";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-function ProjectComponent({ location }) {
+function ProjectComponent() {
+  const location = useLocation()
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -230,7 +231,6 @@ function ProjectComponent({ location }) {
 
         let counter = 1;
         const temp = res.data.data
-        console.log(temp);
         for (const key in temp) {
           data.push({
             counter: counter++,

@@ -75,7 +75,6 @@ const PendingTickets = ({ match }) => {
     loadData()
   }, [])
 
-  console.log("data==>",data)
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Pending Tickets"></PageHeader>

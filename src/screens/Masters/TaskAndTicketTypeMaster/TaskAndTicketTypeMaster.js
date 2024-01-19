@@ -248,10 +248,8 @@ function TaskAndTicketTypeMaster(props) {
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
-    console.log(e.target.value);
   };
 
-  console.log("m", modal.modalData);
   const handleForm = (id) => async (e) => {
     e.preventDefault();
 
@@ -288,7 +286,6 @@ function TaskAndTicketTypeMaster(props) {
       });
     } else {
       // console.log("loading" ,loading)
-      console.log("selectValiue", modal?.modalData?.type);
       // setSelectedValue(modal?.modalData?.type);
       await new TaskTicketTypeService()._updateType(id, form).then((res) => {
         if (res.status === 200) {

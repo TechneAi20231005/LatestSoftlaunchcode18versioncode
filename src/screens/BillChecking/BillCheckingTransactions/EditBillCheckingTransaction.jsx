@@ -465,8 +465,11 @@ const {id}=useParams()
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/BillCheckingTransaction`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+              
+            },
+            { state: { alert: { type: "success", message: res.data.message } }}
+
+            );
             setNotify({ type: "success", message: res.data.message });
             loadData();
           } else {

@@ -600,7 +600,7 @@ setLoading(false)
                   </Link>
                 </li>
               }
-              {props && props.isReviewer == 1 &&
+              {props && 
                 <li>
                   <Link
                     to={

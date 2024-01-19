@@ -12,13 +12,14 @@ import {
 import TenantService from '../../services/MastersService/TenantService'
 import Select from 'react-select'
 import Alert from "./Alert";
+import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
 export default function Header () {
 
 
   const [tenantId, setTenantId] = useState()
   const [tenantDropdown, setTenantDropdown] = useState()
-
+  const [showDropdown, setShowDropdown] = useState()
 
   const [notify, setNotify] = useState(null);
 
@@ -109,7 +110,19 @@ export default function Header () {
         )
       }
     })
+    await new ManageMenuService().getRole(sessionStorage.getItem("role_id")).then((res)=>{
+      if(res.status === 200 && res.data.status ===1){
+        const temp = res.data.data.filter(d => d.menu_id === 33);
+        if(temp[0].can_read === 1){
+          setShowDropdown(true)
+        }else{
+          setShowDropdown(false)
+        }
+      }
+    })
   }
+
+
   const handleTenantLogin = async(e) => {
     const form ={ tenant_id:e.value}
     await new TenantService().switchTenant(form).then((res)=>{
@@ -425,7 +438,7 @@ export default function Header () {
               >
                 <div className='card border-0 w280' style={{ zIndex: 5 }}>
                   <div className='p-2' style={{ zIndex: 700 }}>
-                    {tenantDropdown && tenantId && (
+                    {tenantDropdown && tenantId && showDropdown === true &&  (
                       <Select
                         
                         placeholder={<span className='fw-bold '>Switch Tenant... 

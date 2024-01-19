@@ -151,7 +151,6 @@ export default function TaskComponent({ match }) {
             const temp = res.data.data;
             sortingArr = res.data.basket_id_array;
             setIsReviewer(res.data.is_reviewer);
-            console.log(res.data);
             setOwnership(res.data.ownership);
             setBasketIdArray(res.data.basket_id_array);
             // setIsRegularised(res.data.is_regularized)

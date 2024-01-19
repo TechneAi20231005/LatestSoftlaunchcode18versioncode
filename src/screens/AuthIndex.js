@@ -8,33 +8,44 @@ import Signup from '../components/Auth/Signup'
 import ResetPassword from '../components/Auth/ResetPassword'
 import StepAuthentication from '../components/Auth/StepAuthentication'
 import { _base } from '../settings/constants'
+import Sidebar from '../components/Common/Sidebar'
+import MainIndex from './MainIndex'
 
 class AuthIndex extends React.Component {
   render () {
+    const shouldRedirectToMain = sessionStorage.length > 0 || localStorage.length > 0;
+
     return (
+      <>
+      {shouldRedirectToMain ? (
+        <>
+          <Sidebar />
+          <MainIndex />
+        </>
+      ):(<>
       <div className='main p-2 py-3 p-xl-5 '>
         <div className='body d-flex p-0 p-xl-5'>
           <div className='container-xxl'>
             <div className='row g-0'>
+                
+              {/* Render Sidebar and MainIndex if there is data in sessionStorage or localStorage */}
+          
                 <LeftSide/>
               <Routes>
-                {console.log('hii ')}
                 {/* Define routes within AuthIndex */}
                 <Route path='/*' element={<SignIn/>} />
-                {/* <Route path='/signup' element={<Signup />} />
-                <Route path='/forget-password' element={<ForgetPassword />} />
-                <Route path='/reset-password' element={<ResetPassword />} />
-                <Route
-                  path='/step-authentication'
-                  element={<StepAuthentication />}
-                /> */}
+            
                 <Route path='*' element={<Page404 />} />{' '}
                 {/* Catch-all route for 404 */}
               </Routes>
+            
             </div>
           </div>
         </div>
       </div>
+      </>
+      )}
+      </>
     )
   }
 }

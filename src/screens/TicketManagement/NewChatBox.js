@@ -7,7 +7,6 @@ import MyTicketService from '../../services/TicketService/MyTicketService'
 
 const Chatbox = props => {
   const { ticketId, loadComment, commentData } = props
-  console.log(props)
   const [message, setMessage] = useState('')
   const [users, setUsers] = useState([])
   const [mentionId, setMentionId] = useState([])
