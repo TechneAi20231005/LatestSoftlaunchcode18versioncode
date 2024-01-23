@@ -2262,6 +2262,7 @@ export default function MyTicketComponent({ location }) {
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
 
+
             setUnpassedTickets(res.data.data.data);
           }
         }
@@ -2469,7 +2470,7 @@ export default function MyTicketComponent({ location }) {
                   id="ticket_idd"
                   name="ticket_id"
                   onKeyPress={(e) => {
-                    Validation.CharactersNumbersOnly(e);
+                    Validation.CharactersNumbersOnlyWithComma(e);
                   }}
                 />
               </div>
@@ -2785,11 +2786,11 @@ export default function MyTicketComponent({ location }) {
                             columns={searchResultColumns}
                             data={searchResult}
                             defaultSortField="title"
-                            pagination
+                            paginations
                             fixedHeader={true}
                             fixedHeaderScrollHeight={"500px"}
                             selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                             highlightOnHover={true}
                           />
                         )}
@@ -3121,7 +3122,6 @@ export default function MyTicketComponent({ location }) {
                                 typeOf="UnPassed"
                               />
                             )}
-
 
                             {unpassedTickets && (
                               <>
