@@ -11,7 +11,6 @@ import Dashboard from "../../screens/Dashboard/Dashboard";
 
 export default function SignIn() {
   const location = useLocation()
-  console.log("location",location);
   const navigate = useNavigate();
   const [notify, setNotify] = useState(null);
   const [shouldNavigate, setShouldNavigate] = useState(false);
@@ -41,7 +40,12 @@ export default function SignIn() {
           // Set token expiration time
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
-          setShouldNavigate(true);
+          if(localStorage.getItem("account_for") === "CUSTOMER"){
+            window.location.href = `${process.env.PUBLIC_URL}/Ticket`
+          }else{
+
+            setShouldNavigate(true);
+          }
           // window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
           // var returnValue = {
           //   show: true,
@@ -105,9 +109,10 @@ export default function SignIn() {
       sessionStorage.setItem("message", null);
     }
   };
+
+
   useEffect(() => {
     if (shouldNavigate) {
-      console.log(process.env.PUBLIC_URL);
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`
       // navigate("/Dashboard");
       // navigate( `${location.pathname}Dashboard`)

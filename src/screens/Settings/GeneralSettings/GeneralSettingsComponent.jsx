@@ -376,7 +376,7 @@ function GeneralSettings() {
           return (
             <div className="col-auto d-flex w-sm-100">
 
-                <button
+                {/* <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
                     handleModal({
@@ -387,7 +387,7 @@ function GeneralSettings() {
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Setting
-                </button>
+                </button> */}
             </div>
           );
         }}

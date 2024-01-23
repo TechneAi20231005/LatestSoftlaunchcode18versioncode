@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import GoogleImg from "../../assets/images/verify.svg";
 import * as Validation from "../Utilities/Validation";
 import Alert from "../Common/Alert";
@@ -8,7 +8,9 @@ import { postDataa } from "../../services/ForgetPasswordService/OtpService";
 import { postData } from "../../services/ForgetPasswordService/ForgotPasswordService";
 
 
-export default function StepAuthentication({ location }) {
+export default function StepAuthentication( ) {
+  const location = useLocation()
+
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [userData, setUserData] = useState({ email: null });
@@ -31,8 +33,8 @@ export default function StepAuthentication({ location }) {
         if (res.data.status === 1) {
           history({
             pathname: `/${_base}/reset-password`,
-            state: { email: userData.email, otp: userData.otp },
-          });
+      
+          },{      state: { email: userData.email, otp: userData.otp },});
         } else {
           setNotify();
           setNotify({ type: "danger", message: res.data.message });

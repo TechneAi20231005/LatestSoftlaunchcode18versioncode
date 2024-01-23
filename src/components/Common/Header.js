@@ -11,19 +11,24 @@ import {
 } from "../../services/NotificationService/NotificationService";
 import TenantService from '../../services/MastersService/TenantService'
 import Select from 'react-select'
+import Alert from "./Alert";
+import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
-export default function Header () {
+export default function Header() {
+
+
   const [tenantId, setTenantId] = useState()
   const [tenantDropdown, setTenantDropdown] = useState()
+  const [showDropdown, setShowDropdown] = useState()
 
+  const [notify, setNotify] = useState(null);
 
-  
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [notificationHeight, setNotificationHeight] = useState(200);
   const [refreshInterval, setRefreshInterval] = useState(5000 || 0);
   const [show, setShow] = useState(false);
-  const[approvedNotifications,setApprovedNotifications]=useState()
+  const [approvedNotifications, setApprovedNotifications] = useState()
   const userId = userSessionData.userId
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
@@ -33,23 +38,23 @@ export default function Header () {
       if (res.status === 200) {
         setNotifications(null);
         setApprovedNotifications(null)
-        if(res.data.data !== null){
-        if (res.data.data.result) {
-          var length = res.data.data.result.length;
-          var height = 0;
-          setNotifications(res.data.data.result);
-          setApprovedNotifications(res.data.data.for_me)
-          if (parseInt(length) > 0 && parseInt(length) <= 5) {
-            height = 100;
+        if (res.data.data !== null) {
+          if (res.data.data.result) {
+            var length = res.data.data.result.length;
+            var height = 0;
+            setNotifications(res.data.data.result);
+            setApprovedNotifications(res.data.data.for_me)
+            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              height = 100;
+            }
+            if (parseInt(length) > 5) {
+              height = 250;
+            }
+            setNotificationHeight(null);
+            setNotificationHeight(height);
           }
-          if (parseInt(length) > 5) {
-            height = 250;
-          }
-          setNotificationHeight(null);
-          setNotificationHeight(height);
         }
       }
-    }
     });
   };
 
@@ -85,10 +90,11 @@ export default function Header () {
 
   const [data, setData] = useState(null);
   const loadData = async (e) => {
-   
+
     new UserService().getUserById(localStorage.getItem("id")).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
+          setTenantId(res.data.data.tenant_id)
           res.data.data.profile_picture =
             "http://3.108.206.34/TSNewBackend/" +
             res.data.data.profile_picture;
@@ -99,18 +105,32 @@ export default function Header () {
     new TenantService().getTenant().then(res => {
       if (res.status === 200 && res.data.status === 1) {
         const temp = res.data.data.filter(d => d.is_active == 1)
-
         setTenantDropdown(
           temp.map(d => ({ value: d.id, label: d.company_name }))
         )
       }
     })
+    await new ManageMenuService().getRole(sessionStorage.getItem("role_id")).then((res) => {
+      if (res.status === 200 && res.data.status === 1) {
+        const temp = res.data.data.filter(d => d.menu_id === 33);
+        if (temp[0]?.can_read === 1) {
+          setShowDropdown(true)
+        } else {
+          setShowDropdown(false)
+        }
+      }
+    })
   }
-  const handleTenantLogin = async(e) => {
-    const form ={ tenant_id:e.value}
-    await new TenantService().switchTenant(form).then((res)=>{
-      if(res.status === 200 && res.data.status === 1){
-        console.log("success", res.data.data);
+
+
+  const handleTenantLogin = async (e) => {
+    const form = { tenant_id: e.value }
+    await new TenantService().switchTenant(form).then((res) => {
+      if (res.status === 200 && res.data.status === 1) {
+        setNotify({ type: "success", message: res.data.message });
+      } else {
+        setNotify({ type: "danger", message: res.data.message });
+
       }
     })
   }
@@ -129,6 +149,7 @@ export default function Header () {
       <nav className="navbar py-4">
         <div className="container-xxl">
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
+            {notify && <Alert alertData={notify} />}
             <Dropdown className="notifications" style={{ zIndex: -100 }}
               onClick={() => { loadNotifcation() }}
             >
@@ -177,7 +198,7 @@ export default function Header () {
                     </h5>
                   </div>
                   <div className="tab-content card-body">
-                    {showApprovedOnly ?   <div className="tab-pane fade show active">
+                    {showApprovedOnly ? <div className="tab-pane fade show active">
                       <ul
                         className="list-unstyled list mb-0"
                         style={{ height: `${notificationHeight}px` }}
@@ -245,24 +266,24 @@ export default function Header () {
                             );
                           })}
                       </ul>
-                    </div>:
-                    <div className="tab-pane fade show active">
-                      <ul
-                        className="list-unstyled list mb-0"
-                        style={{ height: `${notificationHeight}px` }}
-                      >
-                        {notifications &&
-                          notifications.length > 0 &&
-                          notifications.map((ele, index) => {
-                            const date = ele.created_at.split(" ")[0]
-                            const time = ele.created_at.split(" ")[1]
+                    </div> :
+                      <div className="tab-pane fade show active">
+                        <ul
+                          className="list-unstyled list mb-0"
+                          style={{ height: `${notificationHeight}px` }}
+                        >
+                          {notifications &&
+                            notifications.length > 0 &&
+                            notifications.map((ele, index) => {
+                              const date = ele.created_at.split(" ")[0]
+                              const time = ele.created_at.split(" ")[1]
 
-                            return (
-                              <li
-                                className="py-2 mb-1 border-bottom"
-                                key={index}
-                              >
-                                {/* <a href="#!" className="d-flex">
+                              return (
+                                <li
+                                  className="py-2 mb-1 border-bottom"
+                                  key={index}
+                                >
+                                  {/* <a href="#!" className="d-flex">
                                                                 <img className="avatar rounded-circle" src={Avatar1} alt="" />
                                                                 <div className="flex-fill ms-2">
                                                                     <p className="d-flex justify-content-between mb-0 ">
@@ -273,12 +294,31 @@ export default function Header () {
                                                                     </span>
                                                                 </div>
                                                             </a> */}
-                                <div
-                                  className="flex-fill ms-2"
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  {ele.url && (
-                                    <Link to={`/${_base}/${ele.url}`}>
+                                  <div
+                                    className="flex-fill ms-2"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    {ele.url && (
+                                      <Link to={`/${_base}/${ele.url}`}>
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          onClick={(e) =>
+                                            handleReadNotification(e, ele.id)
+                                          }
+                                        >
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2" >  {`Date : ${date}`}</span>
+                                            <span className="fw-bold badge bg-danger p-2" style={{ marginLeft: '10px' }}>  {`Time : ${time}`}</span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+
+                                        </p>
+
+                                      </Link>
+                                    )}
+
+                                    {!ele.url && (
                                       <p
                                         className="d-flex justify-content-between mb-0"
                                         onClick={(e) =>
@@ -286,35 +326,16 @@ export default function Header () {
                                         }
                                       >
                                         <span className="font-weight-bold">
-                                          <span className="fw-bold badge bg-primary p-2" >  {`Date : ${date}`}</span>
-                                          <span className="fw-bold badge bg-danger p-2" style={{ marginLeft: '10px' }}>  {`Time : ${time}`}</span>
-                                          <br />
-                                          {ele.message}
+                                          {ele.message}{date}
                                         </span>
-
                                       </p>
-
-                                    </Link>
-                                  )}
-
-                                  {!ele.url && (
-                                    <p
-                                      className="d-flex justify-content-between mb-0"
-                                      onClick={(e) =>
-                                        handleReadNotification(e, ele.id)
-                                      }
-                                    >
-                                      <span className="font-weight-bold">
-                                        {ele.message}{date}
-                                      </span>
-                                    </p>
-                                  )}
-                                </div>
-                              </li>
-                            );
-                          })}
-                      </ul>
-                    </div>}
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>}
                   </div>
                   {/* <div className="btn-group">
                     <Link
@@ -350,38 +371,36 @@ export default function Header () {
                     </button>
                   </div> */}
 
-<div className="btn-group" style={{ border: "2px solid #ccc" }}>
-  <Link
-    to={`/${_base}/Notification`}
-    className={`card-footer text-center border-top-0 ${
-      !showApprovedOnly ? "bg-info" : ""
-    }`}
-    onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
-  >
-    View All Notifications
-  </Link>
+                  <div className="btn-group" style={{ border: "2px solid #ccc" }}>
+                    <Link
+                      to={`/${_base}/Notification`}
+                      className={`card-footer text-center border-top-0 ${!showApprovedOnly ? "bg-info" : ""
+                        }`}
+                      onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
+                    >
+                      View All Notifications
+                    </Link>
 
-  <div style={{ borderRight: "1px solid #ccc" }}></div>
+                    <div style={{ borderRight: "1px solid #ccc" }}></div>
 
-  <Link
-    to={`/${_base}/ApprovedNotification`}
-    className={`card-footer text-center border-top-0 ${
-      showApprovedOnly ? "bg-info" : ""
-    }`}
-    onClick={() => setShowApprovedOnly(true)}
-  >
-    Approved Only By Me
-  </Link>
+                    <Link
+                      to={`/${_base}/ApprovedNotification`}
+                      className={`card-footer text-center border-top-0 ${showApprovedOnly ? "bg-info" : ""
+                        }`}
+                      onClick={() => setShowApprovedOnly(true)}
+                    >
+                      Approved Only By Me
+                    </Link>
 
-  <button
-    className="btn btn-light"
-    onClick={(e) => {
-      handleMarkAllNotification(e);
-    }}
-  >
-    Mark All As Read
-  </button>
-</div>
+                    <button
+                      className="btn btn-light"
+                      onClick={(e) => {
+                        handleMarkAllNotification(e);
+                      }}
+                    >
+                      Mark All As Read
+                    </button>
+                  </div>
 
                 </div>
               </Dropdown.Menu>
@@ -417,14 +436,15 @@ export default function Header () {
               >
                 <div className='card border-0 w280' style={{ zIndex: 5 }}>
                   <div className='p-2' style={{ zIndex: 700 }}>
-                    {tenantDropdown && tenantId && (
+                    {tenantDropdown && tenantId && showDropdown === true && (
                       <Select
-                        placeholder={<span className='fw-bold '>Switch Tenant... 
+
+                        placeholder={<span className='fw-bold '>Switch Tenant...
                         </span>}
                         name='tenant_id'
                         options={tenantDropdown}
                         onChange={handleTenantLogin}
-                        defaultValue={tenantDropdown.filter(d=> d.value == tenantId)}
+                        defaultValue={tenantDropdown.filter(d => d.value == tenantId)}
                       />
                     )}
                   </div>

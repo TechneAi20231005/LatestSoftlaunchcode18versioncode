@@ -5,7 +5,8 @@ import {
   _apiUrl,
   userSessionData,
 } from "../../../../settings/constants";
-import { Modal,Spinner } from "react-bootstrap";
+
+import { Modal, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 import TestCasesService from "../../../../services/TicketService/TestCaseService";
@@ -14,7 +15,7 @@ import { Astrick } from "../../../../components/Utilities/Style";
 import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
 import ErrorLogService from "../../../../services/ErrorLogService";
 import Alert from "../../../../components/Common/Alert";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   getAttachment,
   deleteAttachment,
@@ -31,17 +32,12 @@ import ProjectService from "../../../../services/ProjectManagementService/Projec
 import DesignationService from "../../../../services/MastersService/DesignationService";
 import TestingTypeServices from "../../../../services/MastersService/TestingTypeService"
 import { useLocation } from "react-router-dom";
-import ManageMenuService from "../../../../services/MenuManagementService/ManageMenuService";
-
 
 const TestBankComponent = ({ match, props,  }) => {
-  const history = useNavigate();
   const location = useLocation()
-  const {ticketId} = useParams()
-
+  const {id} = useParams();
+  const ticketId = id
   const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState();
-
   const [userTypeData, setUserTypeData] = useState(null);
   const [notify, setNotify] = useState(null);
   const [modal, setModal] = useState({
@@ -59,10 +55,6 @@ const TestBankComponent = ({ match, props,  }) => {
 
   const [subModuleData, setSubModuleData] = useState();
   const [subModuleDropdown, setSubModuleDropdown] = useState();
-
-  const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
-
 
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
@@ -82,6 +74,7 @@ const TestBankComponent = ({ match, props,  }) => {
   const handleUpdateClick = () => {
     setShowInput(true);
   };
+  const [showLoaderModal, setShowLoaderModal] = useState(false)
 
   const [showTestSuite, setTestSuite] = useState(false);
   const handleTestSuite = () => {
@@ -95,9 +88,9 @@ const TestBankComponent = ({ match, props,  }) => {
   });
 
 
-
+  
   const [selectedRowsData, setSelectedRowsData] = useState([]);
-    const handleSendtoTestSuiteModal = (suiteData) => {
+  const handleSendtoTestSuiteModal = (suiteData) => {
     setsendtoTestSuiteModal(suiteData);
   };
   const handleSelectedRowsChange = (e) => {
@@ -172,8 +165,8 @@ const TestBankComponent = ({ match, props,  }) => {
 
     // {
     //   name: "Priority",
-      //   selector: (row) => row.priority,
-      //   sortable: true,
+    //   selector: (row) => row.priority,
+    //   sortable: true,
     // },
 
     // {
@@ -258,7 +251,7 @@ const TestBankComponent = ({ match, props,  }) => {
         </div>
       )
     },
-    {
+   {
       name: 'Tester Comments',
       selector: row => row.tester_comments,
       sortable: true,
@@ -287,31 +280,31 @@ const TestBankComponent = ({ match, props,  }) => {
     },
     // {
     //   name: "Developer Status",
-      //   selector: (row) => row.tester_status,
-      //   sortable: true,
+    //   selector: (row) => row.tester_status,
+    //   sortable: true,
     // },
     // {
     //   name: "BA Status",
-      //   selector: (row) => row.tester_status,
-      //   sortable: true,
+    //   selector: (row) => row.tester_status,
+    //   sortable: true,
     // },
     // {
     //   name: "Developer Comments",
-      //   selector: (row) => row.dev_comments,
-      //   sortable: true,
-      //   width:"280px"
+    //   selector: (row) => row.dev_comments,
+    //   sortable: true,
+    //   width:"280px"
     // },
     // {
     //   name: "BA Comments",
-      //   selector: (row) => row.ba_comments,
-      //   sortable: true,
-      //   width:"280px"
+    //   selector: (row) => row.ba_comments,
+    //   sortable: true,
+    //   width:"280px"
     // },
     // {
     //   name: "Reviewer Comments",
-      //   selector: (row) => row.reviewer_comments,
-      //   sortable: true,
-      //   width:"280px"
+    //   selector: (row) => row.reviewer_comments,
+    //   sortable: true,
+    //   width:"280px"
     // },
     { name: "Severity", selector: (row) => row.severity, sortable: true },
     {
@@ -332,8 +325,6 @@ const TestBankComponent = ({ match, props,  }) => {
 
   const [testSuiteDropdown, setTestSuiteDropdown] = useState();
   const [tester, setTester] = useState();
-  const [testCaseFunction, setTestCaseFunction] = useState();
-
 
   
   const [ticketIdDropdown, setticketIdDropdown] = useState();
@@ -354,7 +345,7 @@ const TestBankComponent = ({ match, props,  }) => {
     await new TestingTypeServices().getAlltestingType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter(d=> d.is_active ==1)
+          const temp = res.data.data.filter(d=> d.is_active == 1)
           
           const  tempo = temp.map((d) => ({
             value: d.id,
@@ -364,31 +355,6 @@ const TestBankComponent = ({ match, props,  }) => {
         }
       }
     });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
-
-
-     // called To show the Function field aptions - Asmita Margaje
-     await new TestCasesService()
-     .getTestcasesFunction()
-     .then((res) => {
-       var temFunction = res.data.data
-
-       setTestCaseFunction(temFunction.map(d => ({
-         value: d.id,
-         label: d.function,
-       })));
-
-     })
-
 
     await new DesignationService().getdesignatedDropdown(ticketId).then((res) => {
       if (res.status === 200) {
@@ -469,8 +435,6 @@ const TestBankComponent = ({ match, props,  }) => {
   const ticketIdRef = useRef()
   const testSuiteRef = useRef()
   const testingTypeRef = useRef()
-  const testingFunctionRef = useRef();
-
 
 
   const clearValue = (name) => {
@@ -626,7 +590,44 @@ const handleModuleChange = (e) => {
 
   const rowDisabledCriteria = (row) => row.is_disabled;
 
- 
+  // Expandable Component to render attachments
+  const ExpandedComponent = ({ data }) => (
+    <pre>
+      <Table style={{ width: "30%" }}>
+        <thead>
+          <tr>
+            <th>Sr</th>
+            <th>Attachment Name</th>
+            <th>Acton</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.attachments &&
+            data.attachments.length > 0 &&
+            data.attachments.map((attachment, key) => {
+              return (
+                <tr>
+                  <td>{key + 1}</td>
+                  <td>{attachment.name}</td>
+                  <td>
+                    <a
+                      href={`${_attachmentUrl}/${attachment.path}`}
+                      target="_blank"
+                      className="btn btn-primary btn-sm p-1"
+                    >
+                      <i
+                        class="icofont-eye"
+                        style={{ fontSize: "15px", height: "15px" }}
+                      ></i>
+                    </a>
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </Table>
+    </pre>
+  );
 
   const [exportData, serExportData] = useState()
   const handleFilter = async (e) => {
@@ -646,11 +647,7 @@ const handleModuleChange = (e) => {
        document.getElementById('tester_status').value != "" ||
        document.getElementById('developer_status').value != "" ||
        document.getElementById('ba_status').value != "" ||
-       testingTypeRef.current.commonProps.hasValue ||
-       testingFunctionRef.current.commonProps.hasValue
-       )  
-       
-       {
+       testingTypeRef.current.commonProps.hasValue ){
       flag =1
     } else{
       alert("please select atleast one value")
@@ -664,7 +661,9 @@ const handleModuleChange = (e) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             let counter = 1;
-            const temp = res.data.data.data;
+            const temp = res.data.data;
+         
+            
             for (const key in temp) {
               tempData.push({
                 counter: counter++,
@@ -783,9 +782,6 @@ const handleModuleChange = (e) => {
   const testerIdRef =useRef()
   const ticketIdsRef =useRef()
   const basketIdRef =useRef()
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-// console.log("loader",showLoaderModal)
-// const [isLoading, setIsLoading] = useState(true);
 
   const sendTestcasesToTesterForExecution = async(e) =>{
     setShowLoaderModal(null)
@@ -807,7 +803,7 @@ const handleModuleChange = (e) => {
       alert("please select basket")
       flag =0
     }
-var s = form.get("task_hours")
+    var s = form.get("task_hours")
     if(s == "00:00"){
       alert('Please enter task hours')
       flag=0
@@ -816,13 +812,10 @@ var s = form.get("task_hours")
     if(flag ===1){
     await new TestCasesService().getAssignTestCasesToTester(form).then((res)=>{
       if(res.status === 200){
-        
         if(res.data.status == 1){
-setShowLoaderModal(false)
+          setShowLoaderModal(false)
           setSendtoModal({showModal:false, modalData:"",modalHeader:""})
           setNotify({ type: "success", message: res.data.message });
-          // setIsLoading(false); // Loading finished
-
         }else{
           setNotify({ type: "danger", message: res.data.message });
 
@@ -836,7 +829,7 @@ setShowLoaderModal(false)
     // e.preventDefault();
     await new TestCasesService().getBasketTasksData(e.value, userSessionData.userId,"BASKET").then((res)=>{
       if(res.status === 200) {
-                if(res.data.status ==1){
+        if(res.data.status ==1){
           var temp = res.data.data
          setBasketDropdown( temp.map(d=> ({value:d.id, label:d.basket_name})))
         }
@@ -880,31 +873,6 @@ setShowLoaderModal(false)
       setNotify(null);
     };
   }, [location.state]);
-
-
-  useEffect(() => {
-    if(checkRole && checkRole[40].can_read === 0){
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
-    }
-  }, [checkRole]);
-
-
-  // function LoaderComponent() {
-  //   return (
-  //     // Container to center-align the spinner and loading text
-  //     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-  //       {/* Spinner element with custom styling */}
-  //       <Spinner animation="border" role="status" style={{ width: '100px', height: '100px', borderWidth: '5px', color: '#484c7f', marginBottom: '10px' }}>
-  //         {/* Visually hidden loading text for accessibility */}
-  //         <span className="visually-hidden">Loading...</span>
-  //       </Spinner>
-  //       {/* Loading text displayed below the spinner */}
-  //       <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>Loading...</div>
-  //     </div>
-  //   );
-  // }
-  
-
 
   return (
     <div>
@@ -1149,8 +1117,6 @@ setShowLoaderModal(false)
                </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          {/* {isLoading == true && <LoaderComponent/> } */}
-         
             <div className="row">
           <div className="col-sm-4">
                 <label>
@@ -1264,6 +1230,7 @@ setShowLoaderModal(false)
                   >
                     Submit
                   </button>
+
                   <button
               type="button"
               className="btn btn-danger text-white"
@@ -1279,10 +1246,8 @@ setShowLoaderModal(false)
             </button>
                 </Modal.Footer>
               </div>
-            
           </Modal.Body>
         </form>
-        {/* {isLoading ? <LoaderComponent /> : null} */}
       </Modal>
       {/* Assign Test case to Tester */}
 
@@ -1381,8 +1346,7 @@ setShowLoaderModal(false)
                     id="priority"
                     name="priority"
                   >
-                          <option value="" selected disabled hidden>Select..</option>
-
+                    <option value="" selected disabled hidden>Select..</option>
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
                     <option value="HIGH">HIGH</option>
@@ -1468,19 +1432,6 @@ setShowLoaderModal(false)
                     name="testing_type"
                     ref={testingTypeRef}
                     options={testingTypeDropdown}
-                  />
-                </div>
-
-                <div className="col-sm-3">
-                  <label>
-                    <b>Function:</b>
-                  </label>
-                  <Select
-                    className="form-control form-control-sm"
-                    id="testing_type"
-                    name="testing_type"
-                    ref={testingFunctionRef}
-                    options={testCaseFunction}
                   />
                 </div>
 
@@ -1592,7 +1543,7 @@ setShowLoaderModal(false)
         </div>
       </div>
     }
-<Modal show={showLoaderModal} centered>
+       <Modal show={showLoaderModal} centered>
           <Modal.Body className='text-center'>
             <Spinner animation='grow' variant='primary' />
             <Spinner animation='grow' variant='secondary' />

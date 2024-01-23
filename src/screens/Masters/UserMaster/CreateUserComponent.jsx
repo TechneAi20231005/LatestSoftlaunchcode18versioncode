@@ -338,11 +338,14 @@ function CreateUserComponent({ match }) {
             if (res.status === 200) {
               if (res.data.status === 1) {
                 history({
-                  pathname: `/${_base}/User`,
-                  state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
-                });
+                  pathname: `/${_base}/User`
+                }
+                ,
+             { state: {
+                type: "success", message: res.data.message ,
+             }
+            } 
+                );
               } else {
                 setNotify({ type: "danger", message: res.data.message });
               }
@@ -499,7 +502,6 @@ function CreateUserComponent({ match }) {
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         // setShowLoaderModal(false);
-        console.log(res.data.data);
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));

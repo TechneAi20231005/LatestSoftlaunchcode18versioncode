@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
 import { _base } from "../../../settings/constants";
@@ -23,7 +23,8 @@ import Table from 'react-bootstrap/Table';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
 
 
-export default function CreateCustomerMappingComponent({ location }) {
+export default function CreateCustomerMappingComponent() {
+  const location = useLocation()
 
   const history = useNavigate();
   const [notify, setNotify] = useState();
@@ -317,8 +318,8 @@ const getDynamicForm = async () =>{
                 if(res.data.status===1){
                     history({
                         pathname:`/${_base}/CustomerMapping`,
-                        state: {alert : {type: 'success', message:res.data.message} }
-                    });
+                     
+                    },{   state: {alert : {type: 'success', message:res.data.message} }});
                 }else{
                     setNotify({type: 'danger', message:res.data.message});
                 }

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import EmailService from "../../../services/ConnectorService/EmailService";
+import { useLocation } from "react-router-dom";
 
-const EmailComponent = ({ location }) => {
+const EmailComponent = () => {
+  const location = useLocation()
+
   const [showAlert, setShowAlert] = useState({
     show: false,
     type: null,

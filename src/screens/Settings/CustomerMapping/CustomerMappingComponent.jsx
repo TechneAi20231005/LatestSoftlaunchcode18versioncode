@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom';
+import { Link,useLocation } from 'react-router-dom';
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService'
 import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -12,7 +12,8 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 
-export default function CustomerMappingComponent({ location }) {
+export default function CustomerMappingComponent() {
+  const location = useLocation()
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);

@@ -10,7 +10,7 @@ import Select from "react-select";
 import Alert from "../../../components/Common/Alert";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { _base, userSessionData } from "../../../settings/constants";
 import BillCheckingService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
@@ -26,7 +26,8 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 
 
 
-function BillCheckingTransaction({ location }) {
+function BillCheckingTransaction() {
+  const location = useLocation()
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);

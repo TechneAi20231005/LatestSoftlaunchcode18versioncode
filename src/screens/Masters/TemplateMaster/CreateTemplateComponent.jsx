@@ -48,12 +48,11 @@ const CreateTemplateComponent = () => {
     ],
   });
   const [userData, setUserData] = useState();
-  
 
   const [stack, setStack] = useState({ SE: "", AB: "" });
   const [data, setData] = useState([]);
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
-const [parent, setParent] = useState();
+  const [parent, setParent] = useState();
   const [error, setError] = useState("");
 
   const loadData = async () => {
@@ -61,7 +60,7 @@ const [parent, setParent] = useState();
       setData(res.data.data);
     });
     // await new TaskTicketTypeService().getAllType().then((res) => {
-//   if (res.status === 200) {
+    //   if (res.status === 200) {
     //     if (res.data.status == 1) {
     //       const temp = res.data.data;
     //       setTaskTypeDropdown(
@@ -88,12 +87,13 @@ const [parent, setParent] = useState();
         }
       }
     });
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data.filter((d) => d.is_active == 1);
-           setUserData(
+          setUserData(
             temp.map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name,
@@ -227,18 +227,24 @@ const [parent, setParent] = useState();
       setNotify(null);
       setNotify({ type: "warning", message: "Add Data" });
     } else {
-      setNotify(null);  new TemplateService().postTemplate(rows)
+      setNotify(null);
+      new TemplateService()
+        .postTemplate(rows)
         .then((res) => {
           if (res.status === 200) {
             const data = res.data;
 
             if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Template`,
-                state: {
-                  notify: { type: "success", message: res.data.message },
+              history(
+                {
+                  pathname: `/${_base}/Template`,
                 },
-              });
+                {
+                  state: {
+                    alert: { type: "success", message: res.data.message },
+                  },
+                }
+              );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -259,14 +265,13 @@ const [parent, setParent] = useState();
     }
   };
 
-  const addTask = (e) => { e.preventDefault();
+  const addTask = (e) => {
+    e.preventDefault();
     var form = new FormData(e.target);
-console.log("form",form);
-    console.log("temp",temp);
     var temp = {
       task_name: form.get("taskName"),
       task_type_id: form.get("task_type_id"),
-parent_id:form.get("parent_id"),
+      parent_id: form.get("parent_id"),
       total_time: form.get("hours"),
       days: form.get("days"),
       start_days: form.get("start_days"),
@@ -320,18 +325,19 @@ parent_id:form.get("parent_id"),
   };
 
   const handleEditTaskData = (e, basketIndex, idx, type, event) => {
-    if(type === "select2"){
+    if (type === "select2") {
       var value = event.value;
-    }else{
-    var value = e.target.value
+    } else {
+      var value = e.target.value;
     }
     setRows((prevRows) => {
       const updatedTemplateData = [...prevRows.template_data];
-if(type === "select2"){
+      if (type === "select2") {
         updatedTemplateData[basketIndex].basket_task[idx][e.name] = value;
-      }else{
-      updatedTemplateData[basketIndex].basket_task[idx][e.target.name] = value;
-}
+      } else {
+        updatedTemplateData[basketIndex].basket_task[idx][e.target.name] =
+          value;
+      }
 
       return {
         ...prevRows,
@@ -571,7 +577,6 @@ if(type === "select2"){
                           {task.task_name}
                         </p>
 
-
                         <p className="p-0 m-0">
                           <b>Parent Task Name : </b>
                           {
@@ -629,7 +634,8 @@ if(type === "select2"){
                           >
                             <Modal.Body>
                               <div className="form-group row">
-{editTaskModal.modalData && JSON.stringify(editTaskModal.modalData)}
+                                {editTaskModal.modalData &&
+                                  JSON.stringify(editTaskModal.modalData)}
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
@@ -669,12 +675,16 @@ if(type === "select2"){
                                       name="parent_id"
                                       ref={typeRef}
                                       className=" form-control-sm mt-2"
-                                      options={
-                                        parent && parent
-                                      }
-                                      onChange={(e,option)=>{handleEditTaskData(    option,
-                                        editTaskModal.basketIndex,
-                                        editTaskModal.taskIndex, "select2",e)}}
+                                      options={parent && parent}
+                                      onChange={(e, option) => {
+                                        handleEditTaskData(
+                                          option,
+                                          editTaskModal.basketIndex,
+                                          editTaskModal.taskIndex,
+                                          "select2",
+                                          e
+                                        );
+                                      }}
                                       defaultValue={
                                         parent &&
                                         parent.filter(
@@ -685,8 +695,6 @@ if(type === "select2"){
                                       }
                                     />
                                   </div>
-
-
 
                                   <div className="col-sm-12 mt-2">
                                     <label>
@@ -699,9 +707,15 @@ if(type === "select2"){
                                       id="task_type_id"
                                       name="task_type_id"
                                       ref={typeRef}
-onChange={(e, option)=>{handleEditTaskData(    option,
-                                        editTaskModal.basketIndex,
-                                        editTaskModal.taskIndex, "select2",e)}}
+                                      onChange={(e, option) => {
+                                        handleEditTaskData(
+                                          option,
+                                          editTaskModal.basketIndex,
+                                          editTaskModal.taskIndex,
+                                          "select2",
+                                          e
+                                        );
+                                      }}
                                       className=" form-control-sm mt-2"
                                       options={
                                         taskTypeDropdown && taskTypeDropdown
@@ -854,7 +868,7 @@ onChange={(e, option)=>{handleEditTaskData(    option,
                                   Parent :<Astrick color="red" size="13px" />
                                 </b>
                               </label>
-<Select
+                              <Select
                                 id="parent_id"
                                 name="parent_id"
                                 onChange={(e) => handleParentchange(e)}
@@ -872,14 +886,14 @@ onChange={(e, option)=>{handleEditTaskData(    option,
                               )}
 
                               {taskTypeDropdown && (
-                              <Select
-                                id="task_type_id"
-                                name="task_type_id"
-                                ref={typeRef}
-                                className=" form-control-sm mb-2"
-                                options={taskTypeDropdown && taskTypeDropdown}
-                              />
-)}
+                                <Select
+                                  id="task_type_id"
+                                  name="task_type_id"
+                                  ref={typeRef}
+                                  className=" form-control-sm mb-2"
+                                  options={taskTypeDropdown && taskTypeDropdown}
+                                />
+                              )}
 
                               <label>
                                 <b>

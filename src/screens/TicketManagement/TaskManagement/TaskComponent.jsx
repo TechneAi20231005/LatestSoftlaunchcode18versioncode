@@ -30,7 +30,8 @@ import { Spinner } from "react-bootstrap";
 
 export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
-  const ticketId = useParams()
+  const {id} = useParams()
+  const ticketId = id
 
   const history = useNavigate();
 
@@ -432,8 +433,8 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    loadData();
     getBasketData();
+    loadData();
     // getTicketData();
     // handleRegularizationRequest();
     // handleTaskRegularizationRequest();
@@ -532,6 +533,7 @@ export default function TaskComponent({ match }) {
                     />
                   </li>
                   <li>
+                    {ownership && JSON.stringify(ownership)}
                     {ownership && 
                       (ownership === "TICKET" || ownership === "PROJECT") && (
                         <button

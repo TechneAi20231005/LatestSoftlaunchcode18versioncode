@@ -14,14 +14,20 @@ import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTy
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
+import { el } from "date-fns/locale";
 
 function TaskAndTicketTypeMaster(props) {
-    const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
-const [parent, setParent] = useState();
+  const [parent, setParent] = useState();
+  const [loading, setLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
+
+  const typeRef = useRef(null);
+  const parentRef = useRef(null);
+  const typeNameRef = useRef(null);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -33,7 +39,7 @@ const [parent, setParent] = useState();
     { value: "TICKET", label: "TICKET" },
     // Add more options as needed
   ];
-const loadData = async () => {
+  const loadData = async () => {
     const exportTempData = [];
 
     await new TaskTicketTypeService().getAllType().then((res) => {
@@ -42,7 +48,7 @@ const loadData = async () => {
           let counter = 1;
           var tempData = [];
           const temp = res.data.data;
-          console.log(temp);
+
           for (const key in temp) {
             tempData.push({
               counter: counter++,
@@ -116,6 +122,7 @@ const loadData = async () => {
               handleModal({
                 showModal: true,
                 modalData: row,
+
                 modalHeader: "Edit Type",
               });
             }}
@@ -137,7 +144,7 @@ const loadData = async () => {
       sortable: true,
       width: "125px",
     },
-{
+    {
       name: "Parent",
       width: "150px",
       cell: (row) => {
@@ -238,31 +245,48 @@ const loadData = async () => {
   const handleModal = (data) => {
     setModal(data);
   };
-  
+
   const handleDropdownChange = (e) => {
-        setSelectedValue(e.target.value);
-console.log(e.target.value);
+    setSelectedValue(e.target.value);
   };
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
+
+    if (!id) {
+      if (selectedValue === "") {
+        alert("Type is required.");
+        return;
+      }
+    }
+    if (id) {
+      if (modal.modalData.type === "") {
+        alert("Type is required.");
+        return;
+      }
+    }
+
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
       await new TaskTicketTypeService().postType(form).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setNotify({ type: "success", message: res.data.message });
             setModal({ showModal: false });
             loadData();
           } else {
+            // setLoading(false);
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
+          // setLoading(false);
           setNotify({ type: "danger", message: res.data.message });
         }
       });
     } else {
+      // console.log("loading" ,loading)
+      // setSelectedValue(modal?.modalData?.type);
       await new TaskTicketTypeService()._updateType(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
@@ -273,10 +297,12 @@ console.log(e.target.value);
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
+          // setLoading(false);
           setNotify({ type: "danger", message: res.data.message });
         }
       });
     }
+    // setLoading(false);
   };
 
   useEffect(() => {
@@ -366,8 +392,9 @@ console.log(e.target.value);
                     Select type: <Astrick color="red" size="13px" />
                   </label>
                   <DropdownComponent
-                    required
+                    required={true}
                     name="type"
+                    ref={typeRef}
                     data={dropdownData}
                     getInputValue={handleDropdownChange}
                     className="form-control form-control-sm"
@@ -384,7 +411,7 @@ console.log(e.target.value);
                         className="form-label font-weight-bold"
                         readOnly={true}
                       >
-                        Parent Task Type
+                        Parent Task Type 
                         <Astrick color="red" size="13px" />
                       </label>
                       <Select
@@ -394,12 +421,12 @@ console.log(e.target.value);
                         required
                         defaultValue={
                           modal.modalData
-                            ? modal.modalData &&
+                            ? (modal.modalData &&
                               parent &&
                               parent.filter(
-                                (d) => d.value ===modal.modalData.parent_id
+                                (d) => d.value == modal.modalData.parent_id
                               )
-                            : parent && parent.filter((d) => d.value[0])
+                            ):( parent && parent.filter((d) => d.value == 0))
                         }
                       />
                     </div>
@@ -426,7 +453,7 @@ console.log(e.target.value);
                               ? modal.modalData &&
                                 parent &&
                                 parent.filter(
-                                  (d) => d.value == -modal.modalData.parent_id
+                                  (d) => d.value == modal.modalData.parent_id
                                 )
                               : parent && parent.filter((d) => d.value[0])
                           }
@@ -450,7 +477,7 @@ console.log(e.target.value);
                         Ticket Type Name :<Astrick color="red" size="13px" />
                       </label>
                     )}
-                  
+
                     {selectedValue === "TASK" ||
                     modal?.modalData?.type === "TASK" ? (
                       <input
@@ -458,25 +485,27 @@ console.log(e.target.value);
                         className="form-control form-control-sm"
                         id="type_name"
                         name="type_name"
+                        ref={typeNameRef}
                         required
                         defaultValue={
                           modal.modalData && modal?.modalData?.type_name
                         }
                       />
-                      ) : (
+                    ) : (
                       <>
                         {selectedValue === "TICKET" ||
                         modal?.modalData?.type === "TICKET" ? (
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="type_name"
-                        name="type_name"
-                        required
-                        defaultValue={
-                          modal.modalData && modal?.modalData?.type_name
-                        }
-/>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id="type_name"
+                            name="type_name"
+                            ref={typeNameRef}
+                            required
+                            defaultValue={
+                              modal.modalData && modal?.modalData?.type_name
+                            }
+                          />
                         ) : (
                           ""
                         )}

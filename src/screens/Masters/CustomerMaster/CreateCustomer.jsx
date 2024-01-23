@@ -39,7 +39,6 @@ export default function CreateCustomer({ match }) {
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
   const handleDependent = (e, name) => {
-    console.log(e);
     setDependent({
       ...dependent,
       [name]: e.value,
@@ -132,10 +131,13 @@ export default function CreateCustomer({ match }) {
               if (res.data.status === 1) {
                 history({
                   pathname: `/${_base}/Customer`,
-                  state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
-                });
+                }
+                ,
+             { state: {
+                type: "success", message: res.data.message ,
+             }
+            } 
+                );
               } else {
                 setNotify({ type: "danger", message: res.data.message });
               }

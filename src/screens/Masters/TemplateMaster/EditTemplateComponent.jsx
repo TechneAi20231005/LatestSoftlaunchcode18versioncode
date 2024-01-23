@@ -190,10 +190,9 @@ const EditTemplateComponent = ({ match, props }) => {
             if (res.data.status === 1) {
               history({
                 pathname: `/${_base}/Template`,
-                state: {
-                  notify: { type: "success", message: res.data.message },
-                },
-              });
+    
+              },{                            state: {alert : {type: 'success', message:res.data.message} }
+            });
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -382,10 +381,9 @@ const EditTemplateComponent = ({ match, props }) => {
         if (res.data.status == 1) {
           history({
             pathname: `/${_base}/Template`,
-            state: {
-              notify: { type: "success", message: res.data.message },
-            },
-          });
+          
+          },{                            state: {alert : {type: 'success', message:res.data.message} }
+        });
         }
       }
     });

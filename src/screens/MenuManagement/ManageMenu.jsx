@@ -148,9 +148,9 @@ const ManageMenu = ({match}) => {
                     loadData();
                     history({
                         pathname:`/${_base}/Role`,
-                        state: {alert : {id: Math.random(), type: 'success', message:res.data.message} }
+                      
                         
-                    });
+                    },{  state: {alert : {id: Math.random(), type: 'success', message:res.data.message} }});
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
                 }

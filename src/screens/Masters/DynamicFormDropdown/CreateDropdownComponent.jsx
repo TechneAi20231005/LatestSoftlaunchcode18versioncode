@@ -51,8 +51,9 @@ export default function CreateDropdownComponent({ match }) {
                 if (res.data.status === 1) {
                     history({
                         pathname: `/${_base}/DynamicFormDropdown`,
-                        state: { alert: { type: 'success', message: res.data.message } }
-                    });
+                       
+                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    );
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
                 }

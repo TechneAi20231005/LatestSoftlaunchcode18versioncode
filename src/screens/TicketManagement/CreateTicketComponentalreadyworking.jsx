@@ -91,11 +91,11 @@ export default function CreateTicketComponent() {
             if (res.status === 200) {
                 if (res.data.status === 1) 
                 {
-                    console.log(res);
                     history({
                         pathname: `/${_base}/Ticket`,
-                        state: { alert: { type: 'success', message: res.data.message } }
-                    });
+                      
+                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    );
                 } else {
                     if(formData.getAll('ticket_uploading')=="REGULAR"){
                         setNotify({ type: 'danger', message: res.data.message });

@@ -90,7 +90,7 @@ import EditCustomerMappingComponent from "./Settings/CustomerMapping/EditCustome
 
 import CreateMenu from "./Settings/MenuManagement/CreateMenu";
 import ModuleSettings from "./Settings/ModuleSettings/ModuleSettings";
-
+import GeneralSettings from "./Settings/GeneralSettings/GeneralSettingsComponent"
 import TenantComponent from "./TenantManagement/TenantComponent";
 import EditTenant from "./TenantManagement/EditTenant";
 import CreateTenant from "./TenantManagement/CreateTenant";
@@ -165,7 +165,6 @@ class MainIndex extends React.Component {
 
   render () {
     // Encryption function (same as mentioned before)
-    console.log("hii from Main index", this.props);
     if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
       for (var a in sessionStorage) {
         localStorage.setItem(a, sessionStorage[a]);
@@ -477,6 +476,11 @@ class MainIndex extends React.Component {
                 exact
                 path={`/${_base}/ModuleSetting`}
                 element={<ModuleSettings/>}
+              />
+                <Route
+                exact
+                path={`/${_base}/GeneralSettings`}
+                element={<GeneralSettings/>}
               />
               {/* Suyash */}
               <Route

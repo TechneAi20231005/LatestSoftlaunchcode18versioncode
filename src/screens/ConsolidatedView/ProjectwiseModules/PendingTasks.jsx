@@ -48,7 +48,6 @@ const loadData = async()=>{
   await new ConsolidatedService().getTaskData(projectId, "PENDING").then((res) => {
   // alert(project_id)
 
-    console.log("res",res)
     if (res.status === 200){
       let counter=1;
       const temp=res.data.data
@@ -75,7 +74,6 @@ useEffect(() => {
  },[])
 
 
- console.log("data===>",data)
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Pending Tasks"></PageHeader>

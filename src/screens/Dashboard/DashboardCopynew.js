@@ -1237,7 +1237,6 @@ export default function HrDashboard(props) {
     await getData(localStorage.getItem("id")).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          console.log("data", res.data.data)
           setCount(res.data.data.count);
 
           setDailyTask(res.data.data.dailyTask);

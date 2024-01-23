@@ -221,7 +221,7 @@
 //         data: JSON.stringify(rows)
 //     }
 
-//     await new DynamicFormService().updateDynamicForm(match.params.id, data).then(res => {
+//     await new DynamicFormService().updateDynamicForm(formId, data).then(res => {
 //         console.log(res)
 //         if (res.status === 200) {
 //             if (res.data.status === 1) {
@@ -252,7 +252,7 @@
 //             }
 //         }
 //     })
-//     await new DynamicFormService().getDynamicFormById(match.params.id).then(res => {
+//     await new DynamicFormService().getDynamicFormById(formId).then(res => {
 //         if (res.status === 200) {
 //             if (res.data.data) {
 //                 setData(res.data.data)
@@ -669,9 +669,9 @@
 
 //     const [dropdown, setDropdown] = useState();
 //     const loadData = async () => {
-//         // match.params.id
-//         if (match.params.id) {
-//             await new DynamicFormService().getDynamicFormById(match.params.id).then(res => {
+//         // formId
+//         if (formId) {
+//             await new DynamicFormService().getDynamicFormById(formId).then(res => {
 //                 if (res.status === 200) {
 //                     if (res.data.data) {
 //                         setData(res.data.data)
@@ -767,9 +767,9 @@
 //             template_name: e.target.template_name.value,
 //             dynamicForm: dynamicForm
 //         }
-//         if (match.params.id) {
-//             // alert(match.params.id);
-//             await new DynamicFormService().updateDynamicForm(match.params.id, data).then(res => {
+//         if (formId) {
+//             // alert(formId);
+//             await new DynamicFormService().updateDynamicForm(formId, data).then(res => {
 //                 if (res.status === 200) {
 //                     if (res.data.status === 1) {
 //                         history({
@@ -1298,7 +1298,7 @@
 // export default EditDynamicForm
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorLogService from "../../../services/ErrorLogService";
 import { Link } from "react-router-dom";
 import { _base } from "../../../settings/constants";
@@ -1321,6 +1321,8 @@ function EditDynamicForm({ match }) {
     type: null,
     message: null,
   });
+  const {id} = useParams()
+  const formId =id
   const history = useNavigate();
   const [data, setData] = useState();
 
@@ -1560,14 +1562,15 @@ function EditDynamicForm({ match }) {
     };
 
     await new DynamicFormService()
-      .updateDynamicForm(match.params.id, data)
+      .updateDynamicForm(formId, data)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/DynamicForm`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+       
+            },{ state: { alert: { type: "success", message: res.data.message } }}
+            );
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }
@@ -1605,7 +1608,7 @@ function EditDynamicForm({ match }) {
       });
 
     await new DynamicFormService()
-      .getDynamicFormById(match.params.id)
+      .getDynamicFormById(formId)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {

@@ -54,7 +54,6 @@ function EditCustomer({ match }) {
       .getCustomerById(customerId)
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data.data);
           if (res.data.status === 1) {
             setData(res.data.data);
           } else {
@@ -225,10 +224,13 @@ function EditCustomer({ match }) {
             if (res.data.status === 1) {
               history({
                 pathname: `/${_base}/Customer`,
-                state: {
-                  alert: { type: "success", message: res.data.message },
-                },
-              });
+             
+              },
+             { state: {
+                type: "success", message: res.data.message ,
+             }
+            } 
+              );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -376,7 +378,7 @@ function EditCustomer({ match }) {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      {customerType && (
+                      {customerType && data.customer_type_id && (
                         <Select
                           options={customerType}
                           name="customer_type_id"
