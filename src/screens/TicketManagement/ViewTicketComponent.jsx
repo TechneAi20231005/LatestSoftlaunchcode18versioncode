@@ -179,6 +179,7 @@ export default function ViewTicketComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
+  
       <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ""}`} />
 
       {notify && <Alert alertData={notify} />}
@@ -233,6 +234,15 @@ export default function ViewTicketComponent({ match }) {
                 iconClass="icofont-user fs-4"
                 iconbg="bg-lightblue"
                 title="Passing Status"
+              />
+            </div>
+            <div className="col-md-4">
+              <StatusCard
+                progress={data ? data.parent_name : ""}
+                progressBg="bg-success"
+                iconClass="icofont-user fs-4"
+                iconbg="bg-lightblue"
+                title="Parent Task Type "
               />
             </div>
 

@@ -953,6 +953,20 @@ export default function EditTicketComponent({ match }) {
                     </div>
                     <div className="col-sm-4">
                       <label className="col-form-label">
+                        <b>Parent : </b>
+                      </label>
+
+                      <input
+                        className="form-control form-control-sm"
+                        type="text"
+                        defaultValue={data && data.parent_name}
+                        readOnly
+                        name="parent_id"
+                      />
+                    </div>
+
+                    <div className="col-sm-4">
+                      <label className="col-form-label">
                         <b>Ticket Type : </b>
                       </label>
 

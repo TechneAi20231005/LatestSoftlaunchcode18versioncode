@@ -528,59 +528,91 @@ const {id}=useParams()
     "application/pdf",
   ];
 
+
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
-      var totalSize = 0; // Initialize total size
-
-      // Calculate the total size of all files in tempSelectedFile
-      for (var i = 0; i < tempSelectedFile?.length; i++) {
-        totalSize += tempSelectedFile[i].file.size;
-      }
-
-      // Check if the total size of all files does not exceed 5MB
-      for (var i = 0; i < e.target.files?.length; i++) {
-        const file = e.target.files[i];
-        const fileType = file.type;
-        const fileSize = file.size; // Get the file size in bytes
-
-        // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-        if (validFileTypes.includes(fileType)) {
-          // Check if the total size of all files is less than or equal to 5MB
-          if (totalSize + fileSize <= 5 * 1024 * 1024) {
+      var tempSelectedFile = [];
+      for (var i = 0; i < e.target.files.length; i++) {
             tempSelectedFile.push({
-              file: file,
-              fileName: file.name,
-              tempUrl: URL.createObjectURL(file),
-            });
-
-            totalSize += fileSize; // Update the total size
-          } else {
-            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-            alert("Total file size exceeds 5MB. Please select smaller files.");
-            break; // Stop processing more files
-          }
-        } else {
-          // Handle the case where an invalid file type is selected (e.g., show an error message)
-          alert(
-            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-          );
-        }
+              file: e.target.files[i],
+              fileName: e.target.files[i].name,
+              tempUrl: URL.createObjectURL(e.target.files[i]),
+        });
       }
-      // Check if the maximum 10 attachments condition is met
-      if (data && data.attachment?.length + tempSelectedFile?.length <= 10) {
-        fileInputRef.current.value = "";
-        setSelectedFiles(tempSelectedFile);
-      } else {
-        alert("You can only upload a maximum of 10 attachments.");
-      }
-    } else if (type === "DELETE") {
+              setSelectedFiles(tempSelectedFile);
+          } else if (type === "DELETE") {
+fileInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-    e.target.value = ""; // Reset the input field
+    };
+
+
+  // const uploadAttachmentHandler = (e, type, id = null) => {
+  //   if (type === "UPLOAD") {
+  //     var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
+  //     var totalSize = 0; // Initialize total size
+
+  //     // Calculate the total size of all files in tempSelectedFile
+  //     for (var i = 0; i < tempSelectedFile.length; i++) {
+  //       totalSize += tempSelectedFile[i].file.size;
+  //     }
+
+  //     // Check if the total size of all files does not exceed 5MB
+  //     for (var i = 0; i < e.target.files.length; i++) {
+  //       const file = e.target.files[i];
+  //       const fileType = file.type;
+  //       const fileSize = file.size; // Get the file size in bytes
+
+  //       // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
+  //       if (validFileTypes.includes(fileType)) {
+  //         // Check if the total size of all files is less than or equal to 5MB
+  //         if (totalSize + fileSize <= 5 * 1024 * 1024) {
+  //           tempSelectedFile.push({
+  //             file: file,
+  //             fileName: file.name,
+  //             tempUrl: URL.createObjectURL(file),
+  //           });
+
+  //           totalSize += fileSize; // Update the total size
+  //         } else {
+  //           // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+  //           alert("Total file size exceeds 5MB. Please select smaller files.");
+  //           break; // Stop processing more files
+  //         }
+  //       } else {
+  //         // Handle the case where an invalid file type is selected (e.g., show an error message)
+  //         alert(
+  //           "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+  //         );
+  //       }
+  //     }
+  //     // Check if the maximum 10 attachments condition is met
+
+  //     if (tempSelectedFile.length <= 10) {
+  //       fileInputRef.current.value = "";
+  //       setSelectedFiles(tempSelectedFile);
+  //     } else {
+  //       alert("You can only upload a maximum of 10 attachments.");
+  //     }
+  //   } else if (type === "DELETE") {
+  //     let filteredFileArray = selectedFiles.filter(
+  //       (item, index) => id !== index
+  //     );
+  //     setSelectedFiles(filteredFileArray);
+  //   }
+  //   e.target.value = ""; // Reset the input field
+  // };
+
+    // maximum length check for attachments
+    const maxLengthCheck = (e) => {
+      if (e.target.files.length > 10) {
+        alert("You Can Upload Only 10 Attachments");
+        document.getElementById("attachment").value = null;
+        setSelectedFiles(null)
+      }
   };
 
   const handleDeleteAttachment = (e, id) => {
@@ -2106,11 +2138,13 @@ required
                             type="file"
                             id="attachment"
                             name="attachment[]"
+className="form-control"
                             ref={fileInputRef}
                             multiple
-                          disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
+maxLengthCheck(e, "UPLOAD")
                             }}
                           />
                         </div>

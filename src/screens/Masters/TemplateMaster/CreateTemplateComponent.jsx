@@ -667,7 +667,7 @@ const CreateTemplateComponent = () => {
                                     <label>
                                       <b>
                                         Parent Task type :
-                                        <Astrick color="red" size="13px" />
+                                        {/* <Astrick color="red" size="13px" /> */}
                                       </b>
                                     </label>
                                     <Select
@@ -699,8 +699,8 @@ const CreateTemplateComponent = () => {
                                   <div className="col-sm-12 mt-2">
                                     <label>
                                       <b>
-                                        Task Type :
-                                        <Astrick color="red" size="13px" />
+                                        Task Type Name:
+                                        {/* <Astrick color="red" size="13px" /> */}
                                       </b>
                                     </label>
                                     <Select
@@ -864,9 +864,7 @@ const CreateTemplateComponent = () => {
                                 required
                               />
                               <label>
-                                <b>
-                                  Parent :<Astrick color="red" size="13px" />
-                                </b>
+                                <b>Parent Task Type</b>
                               </label>
                               <Select
                                 id="parent_id"
@@ -878,10 +876,7 @@ const CreateTemplateComponent = () => {
 
                               {taskTypeDropdown && (
                                 <label>
-                                  <b>
-                                    Task Type :
-                                    <Astrick color="red" size="13px" />
-                                  </b>
+                                  <b>Task Type :</b>
                                 </label>
                               )}
 
