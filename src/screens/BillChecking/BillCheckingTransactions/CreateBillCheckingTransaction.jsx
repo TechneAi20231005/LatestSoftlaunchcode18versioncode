@@ -28,28 +28,18 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [ip, setIp] = useState("");
 
-
-
-
-  const featchData=async()=>{
-    try{
-
-      const res=await axios.get("https://api.ipify.org/?format=json");
-      setIp(res.data.ip)
-
-    }catch(error){
-      console.error("Error fetching data:", error)
-
-
+  const featchData = async () => {
+    try {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      setIp(res.data.ip);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+  };
 
-  }
-
-  useEffect(()=>{
-    featchData()
-
-  },[])
-
+  useEffect(() => {
+    featchData();
+  }, []);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -134,7 +124,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [deta, setDeta] = useState();
   const [showFiles, setShowFiles] = useState();
   const [authority, setAuthority] = useState();
-  const[netPaymentError, setNetPaymentError]=useState()
+  const [netPaymentError, setNetPaymentError] = useState();
 
   const handleTcsApplicable = (e) => {
     if (e) {
@@ -150,8 +140,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     const newValue = e.target.checked ? 1 : 0;
     setIsOriginalBill(newValue);
   };
-
-  
 
   const handleTaxable = (e) => {
     setTaxable(e.target.value);
@@ -443,7 +431,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     const imagesArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
-    
+
     setShowFiles(imagesArray);
   };
   const [igst, setIgst] = useState(0);
@@ -527,6 +515,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+
+
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
   //     var tempSelectedFile = [];
@@ -704,48 +694,23 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      const tempSelectedFile = [...selectedFiles];
-      let totalSize = tempSelectedFile.reduce(
-        (size, file) => size + file.file.size,
-        0
-      );
-
-      for (let i = 0; i < e.target.files.length; i++) {
-        const file = e.target.files[i];
-        const fileType = file.type;
-        const fileSize = file.size;
-
-        if (
-          validFileTypes.includes(fileType) &&
-          totalSize + fileSize <= 5 * 1024 * 1024
-        ) {
-          tempSelectedFile.push({
-            file: file,
-            fileName: file.name,
-            tempUrl: URL.createObjectURL(file),
+      var tempSelectedFile = [];
+      for (var i = 0; i < e.target.files.length; i++) {
+                  tempSelectedFile.push({
+            file: e.target.files[i],
+            fileName: e.target.files[i].name,
+            tempUrl: URL.createObjectURL(e.target.files[i]),
           });
-
-          totalSize += fileSize;
-        } else {
-          alert("Invalid file or total file size exceeds 5MB.");
-          break;
-        }
       }
-
-      if (tempSelectedFile.length <= 10) {
-        fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
-      } else {
-        alert("You can only upload a maximum of 10 attachments.");
-      }
-    } else if (type === "DELETE") {
-      const filteredFileArray = selectedFiles.filter(
+          } else if (type === "DELETE") {
+      fileInputRef.current.value = "";
+      let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-    e.target.value = "";
-  };
+      };
 
   const handleDeleteAttachment = (e, id) => {
     // deleteAttachment(id).then((res) => {
@@ -760,9 +725,10 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // maximum length check for attachments
   const maxLengthCheck = (e) => {
-    if (e.target.files.length > 5) {
-      alert("You Can Upload Only 5 Attachments");
+    if (e.target.files.length > 10) {
+      alert("You Can Upload Only 10 Attachments");
       document.getElementById("attachment").value = null;
+setSelectedFiles(null)
     }
   };
 
@@ -960,10 +926,9 @@ export default function CreateBillCheckingTransaction({ match }) {
       netPayment = netPayment - parseFloat(tdsValue);
       setNetPayment(Math.round(netPayment));
     }
-    if(netPayment < 0){
-      setNetPaymentError("Net bill payment should be positive value")
-    }
-    else {
+    if (netPayment < 0) {
+      setNetPaymentError("Net bill payment should be positive value");
+    } else {
       setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
     }
   }, [
@@ -973,7 +938,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     tdsValue,
     isTcsApplicable, // Add isTcsApplicable to the dependency array if it's not part of the state.
   ]);
-
 
   useEffect(() => {
     if (checkRole && checkRole[45].can_create === 0) {
@@ -1933,10 +1897,15 @@ export default function CreateBillCheckingTransaction({ match }) {
                                             readOnly
                                         /> */}
                   </div>
-                  {netPaymentError && <p  style={{
-                          color: "red",
-                        }}>{netPaymentError}</p>}
-
+                  {netPaymentError && (
+                    <p
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {netPaymentError}
+                    </p>
+                  )}
 
                   {/* <div className=" col-md-3 ">
                                         <label className=" col-form-label">
@@ -2038,29 +2007,109 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         type="file"
                         id="attachment"
-                        name="attachment[]"
+                        name="attachment"
+                        className="form-control"
+                        // ref={fileInputRef}
+                        
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
                         ref={fileInputRef}
+capture="camera"
                         multiple
                         required={
-                          selectedFiles && selectedFiles.length < 0
+                          selectedFiles && selectedFiles.length <= 0
                             ? true
                             : false
                         }
+                        
                         onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+  
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
+                          ) {
+                            // File type is allowed
+                          } else {
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          }
+  
                           uploadAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e);
+                          maxLengthCheck(e, "UPLOAD");
                         }}
+
                       />
                     </div>
                   </div>
-                  {/* <Attachment
-                                            data={attachment}
-                                            refId={id}
-                                            handleAttachment={handleAttachment}
-                                        /> */}
-                </div>
+                                  </div>
                 <div className="d-flex">
+
                   {selectedFiles &&
+selectedFiles.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="justify-content-end"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
+                          <div
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
+                          >
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
+                              src={attachment.tempUrl}
+                              style={{ height: "100%", width: "100%" }}
+                            />{" "}
+                            * */}
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* {selectedFiles &&
                     selectedFiles.map((attachment, index) => {
                       return (
                         <div
@@ -2078,7 +2127,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           >
                             <div className="card-header">
                               <span>{attachment.fileName}</span>
-                              <img
+                                                            <img
                                 src={attachment.tempUrl}
                                 style={{ height: "100%", width: "100%" }}
                               />{" "}
@@ -2111,7 +2160,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </div>
                         </div>
                       );
-                    })}
+                    })} */}
                 </div>
 
                 {/* <div className="col-sm-6 mt-4">
