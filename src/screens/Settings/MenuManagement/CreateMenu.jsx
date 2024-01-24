@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService'
 import { callMultipleURL } from '../../../services/DynamicService/MultipleCallService'
 
@@ -21,7 +21,9 @@ import { DepartmentDropdown } from '../../Masters/DepartmentMaster/DepartmentCom
 import { QueryTypeDropdown } from '../../Masters/QueryTypeMaster/QueryTypeComponent'
 import { DynamicFormDropdown } from '../../Masters/DynamicFormMaster/DynamicFormComponent'
 
-export default function CreateMenu({ location }) {
+export default function CreateMenu( ) {
+    const location = useLocation()
+
     const [dependent, setDependent] = useState({ project_id: null, module_id: null, sub_module_id: null });
 
     const handleDependent = (e, name) => {

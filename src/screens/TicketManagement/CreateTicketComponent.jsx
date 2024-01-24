@@ -1219,7 +1219,6 @@ const [parent, setParent] = useState();
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-
   const ticketTypeRefs = useRef();
 
   const handleForm = async (e) => {
@@ -1267,14 +1266,19 @@ const [parent, setParent] = useState();
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/Ticket`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+        
+            },{ state: { alert: { type: "success", message: res.data.message } }}
+            );
+            setIsSubmitted(false)
           } else {
             if (formData.getAll("ticket_uploading") == "REGULAR") {
               setNotify({ type: "danger", message: res.data.message });
+              setIsSubmitted(false)
+
             } else {
               var URL = `${_attachmentUrl}` + res.data.data;
               window.open(URL, "_blank").focus();
+              setIsSubmitted(false)
 
               setNotify({ type: "danger", message: res.message });
               // history({
@@ -1284,7 +1288,10 @@ const [parent, setParent] = useState();
             }
           }
         } else {
+
           setNotify({ type: "danger", message: res.message });
+          setIsSubmitted(false)
+
           new ErrorLogService().sendErrorLog(
             "Ticket",
             "Create_Ticket",
@@ -1308,7 +1315,6 @@ const [parent, setParent] = useState();
        
       });
     }
-    setIsSubmitted(false);
   };
 
   const queryTypeRef = useRef();
@@ -2254,7 +2260,7 @@ const [parent, setParent] = useState();
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              // disabled={isSubmitted}
+              disabled={isSubmitted == true ? true : false}
             >
               Submit
             </button>

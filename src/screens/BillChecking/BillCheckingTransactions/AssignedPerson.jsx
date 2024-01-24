@@ -97,7 +97,6 @@ const {id}=useParams()
             if (res.status === 200) {
                 let counter = 1;
                 const temp = res.data.data
-                console.log(temp);
                 for (const key in temp) {
                     data.push({
                         counter: counter++,

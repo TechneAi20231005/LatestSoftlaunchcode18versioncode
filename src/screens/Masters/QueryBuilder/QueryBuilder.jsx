@@ -320,7 +320,6 @@ const QueryBuilder = () => {
             axios
                 .post("http://3.108.206.34/TSDDummy/public/api/customReport", form)
                 .then(function (response) {
-                    console.log('yes');
                 })
                 .catch(function (error) {
                     console.log(error);

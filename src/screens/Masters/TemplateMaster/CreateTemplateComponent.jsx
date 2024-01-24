@@ -235,12 +235,16 @@ const CreateTemplateComponent = () => {
             const data = res.data;
 
             if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Template`,
-                state: {
-                  notify: { type: "success", message: res.data.message },
+              history(
+                {
+                  pathname: `/${_base}/Template`,
                 },
-              });
+                {
+                  state: {
+                    alert: { type: "success", message: res.data.message },
+                  },
+                }
+              );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -264,8 +268,6 @@ const CreateTemplateComponent = () => {
   const addTask = (e) => {
     e.preventDefault();
     var form = new FormData(e.target);
-    console.log("form", form);
-    console.log("temp", temp);
     var temp = {
       task_name: form.get("taskName"),
       task_type_id: form.get("task_type_id"),
@@ -632,6 +634,8 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
+                                {editTaskModal.modalData &&
+                                  JSON.stringify(editTaskModal.modalData)}
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">

@@ -1145,7 +1145,6 @@ function VendorMaster({ match }) {
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          console.log(res);
           setNotify({ type: "success", message: res.data.message });
           handleBulkModal({ showModal: false });
           loadData();
@@ -1721,7 +1720,6 @@ function VendorMaster({ match }) {
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -1766,7 +1764,6 @@ function VendorMaster({ match }) {
                       multiple
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
-                        console.log("selectedFile", selectedFile);
 
                         // Check if the file type is one of the allowed types
                         if (
@@ -1833,7 +1830,6 @@ function VendorMaster({ match }) {
                   )}
                 </div> */}
 
-                  {console.log(modal.modalData.pan_no)}
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
@@ -1906,7 +1902,6 @@ function VendorMaster({ match }) {
                           accept="image/jpg,image/jpeg,image/png,application/pdf"
                           onChange={(e) => {
                             const selectedFile = e.target.files[0];
-                            console.log("selectedFile", selectedFile);
 
                             // Check if the file type is one of the allowed types
                             if (
@@ -1955,7 +1950,6 @@ function VendorMaster({ match }) {
                       className="form-control"
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
-                        console.log("selectedFile", selectedFile);
 
                         // Check if the file type is one of the allowed types
                         if (
@@ -2115,7 +2109,6 @@ function VendorMaster({ match }) {
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -2161,7 +2154,6 @@ function VendorMaster({ match }) {
                       ref={gstInputRef}
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
-                        console.log("selectedFile", selectedFile);
 
                         // Check if the file type is one of the allowed types
                         if (
@@ -2416,7 +2408,6 @@ if (msmeNo.length < 19) {
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -2462,7 +2453,6 @@ if (msmeNo.length < 19) {
                       multiple={true}
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
-                        console.log("selectedFile", selectedFile);
 
                         // Check if the file type is one of the allowed types
                         if (
@@ -3072,7 +3062,6 @@ onKeyPress={(e) => {
                           accept="image/jpg,image/jpeg,image/png,application/pdf"
                           onChange={(e) => {
                             const selectedFile = e.target.files[0];
-                            console.log("selectedFile", selectedFile);
 
                             // Check if the file type is one of the allowed types
                             if (
@@ -3129,7 +3118,6 @@ onKeyPress={(e) => {
                        
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -3173,7 +3161,6 @@ onKeyPress={(e) => {
                         ref={passbookInputRef}
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -3278,7 +3265,6 @@ onKeyPress={(e) => {
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -3331,7 +3317,6 @@ onKeyPress={(e) => {
                         className="form-control"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (
@@ -3370,7 +3355,6 @@ onKeyPress={(e) => {
                         multiple={true}
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-                          console.log("selectedFile", selectedFile);
 
                           // Check if the file type is one of the allowed types
                           if (

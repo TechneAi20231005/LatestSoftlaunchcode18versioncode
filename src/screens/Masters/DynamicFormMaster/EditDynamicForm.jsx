@@ -1568,8 +1568,9 @@ function EditDynamicForm({ match }) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/DynamicForm`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+       
+            },{ state: { alert: { type: "success", message: res.data.message } }}
+            );
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }

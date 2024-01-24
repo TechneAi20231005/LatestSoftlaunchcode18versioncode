@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { Modal } from "react-bootstrap";
@@ -19,7 +19,9 @@ import DepartmentDropdown from "../Masters/DepartmentMaster/DepartmentDropdown"
 import StatusDropdown from "../Masters/StatusMaster/StatusDropdown"
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 
-export default function MyTicketComponentCopy({ location }) {
+export default function MyTicketComponentCopy() {
+    const location = useLocation()
+
     const [notify, setNotify] = useState(null);
     const [data, setData] = useState(null);
     const [unpassedTickets, setUnpassedTickets] = useState(null);

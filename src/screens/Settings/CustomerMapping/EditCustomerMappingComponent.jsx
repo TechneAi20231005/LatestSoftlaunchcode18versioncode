@@ -402,8 +402,8 @@ const getDynamicForm = async () =>{
                 if(res.data.status===1){
                     history({
                         pathname:`/${_base}/CustomerMapping`,
-                        state: {alert : {type: 'success', message:res.data.message} }
-                    });
+                       
+                    },{ state: {alert : {type: 'success', message:res.data.message} }});
                 }else{
                     setNotify({type: 'danger', message:res.data.message});
                 }

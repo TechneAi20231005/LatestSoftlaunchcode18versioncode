@@ -75,8 +75,9 @@ export default function EditModuleComponent({ match }) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/Module`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+          
+            },{ state: { alert: { type: "success", message: res.data.message } }}
+            );
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }

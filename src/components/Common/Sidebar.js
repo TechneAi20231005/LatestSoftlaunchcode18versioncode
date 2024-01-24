@@ -67,9 +67,9 @@ class Sidebar extends React.Component {
           const tempMenu = res.data.data;
           this.setState({ menuData: tempMenu });
          } else {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href =`${process.env.PUBLIC_URL}/`;
+        // localStorage.clear();
+        // sessionStorage.clear();
+        // window.location.href =`${process.env.PUBLIC_URL}/`;
       }
     });
     window.document.children[0].setAttribute("data-theme", "light");
@@ -346,7 +346,7 @@ class Sidebar extends React.Component {
 
 export default  Sidebar;
 
-// import React from "react";
+
 // import { Link, useNavigate } from "react-router-dom";
 // import menu from "../Data/menu.json";
 // import menu2 from "../Data/menu2.json";

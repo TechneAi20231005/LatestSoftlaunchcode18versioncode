@@ -165,8 +165,9 @@ function Profile() {
                             window.location.reload(false);
                             history({
                                 pathname: `/${_base}/Profile`,
-                                state: { alert: { type: 'success', message: res.data.message } }
-                            });
+                               
+                            },{ state: { alert: { type: "success", message: res.data.message } }}
+                            );
                         } else {
                             setNotify({ type: 'danger', message: res.data.message })
                         }

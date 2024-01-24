@@ -628,8 +628,8 @@ const validateAmounts = (e, index) => {
           history({
             pathname: `/${_base}/billTypeMaster`,
             message: "once",
-            state: { alert: { type: "success", message: res.data.message } },
-          });
+         
+          },   {state: { alert: { type: "success", message: res.data.message } }});
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }

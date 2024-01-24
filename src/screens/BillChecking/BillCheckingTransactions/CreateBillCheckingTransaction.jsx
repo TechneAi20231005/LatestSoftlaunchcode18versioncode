@@ -394,9 +394,9 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           history({
-            pathname: `/${_base}/BillCheckingTransaction`,
-            state: { alert: { type: "success", message: res.data.message } },
-          });
+            pathname: `/${_base}/BillCheckingTransaction`},
+           { state: { alert: { type: "success", message: res.data.message } }}
+            );
           loadData();
         } else {
           setNotify({ type: "danger", message: res.data.message });

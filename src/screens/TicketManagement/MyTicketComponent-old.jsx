@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { Modal } from "react-bootstrap";
@@ -25,7 +25,9 @@ import { Spinner } from "react-bootstrap";
 import { current } from "@reduxjs/toolkit";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
-export default function MyTicketComponent({ location }) {
+export default function MyTicketComponent() {
+  const location = useLocation()
+
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
@@ -1549,7 +1551,6 @@ export default function MyTicketComponent({ location }) {
     await new MyTicketService().getUserTicketsTest().then((res) => {
       if (res.status === 200) {
         // setShowLoaderModal(false);
-        console.log(res);
         setIsLoading(false)
         setCreatedByMe(
           res.data.createdByMe.filter((d) => d.passed_status !== "REJECT")
@@ -2219,7 +2220,6 @@ export default function MyTicketComponent({ location }) {
   },[checkRole])
 
   const handleAssignedToMeTab = (e) =>{
-    console.log("true");
   }
 
   function LoaderComponent() {

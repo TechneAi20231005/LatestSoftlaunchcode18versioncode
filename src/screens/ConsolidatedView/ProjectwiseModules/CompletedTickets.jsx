@@ -137,7 +137,6 @@ import ConsolidatedService from '../../../services/ProjectManagementService/Cons
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 const CompletedTickets = ({ match }) => {
-  console.log(match);
   const projectId = match.params.projectId
   const [data, setData] = useState(null)
 

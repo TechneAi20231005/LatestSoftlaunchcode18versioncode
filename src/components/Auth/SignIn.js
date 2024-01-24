@@ -40,7 +40,12 @@ export default function SignIn() {
           // Set token expiration time
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
-          setShouldNavigate(true);
+          if(localStorage.getItem("account_for") === "CUSTOMER"){
+            window.location.href = `${process.env.PUBLIC_URL}/Ticket`
+          }else{
+
+            setShouldNavigate(true);
+          }
           // window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
           // var returnValue = {
           //   show: true,
@@ -104,6 +109,8 @@ export default function SignIn() {
       sessionStorage.setItem("message", null);
     }
   };
+
+
   useEffect(() => {
     if (shouldNavigate) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`

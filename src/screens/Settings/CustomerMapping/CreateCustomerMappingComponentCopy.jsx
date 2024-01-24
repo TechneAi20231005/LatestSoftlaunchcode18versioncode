@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {Link,useNavigate} from 'react-router-dom';
+import {Link,useNavigate, useLocation} from 'react-router-dom';
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService'
 import { _base } from '../../../settings/constants'
 
@@ -19,7 +19,8 @@ import { DepartmentDropdown } from '../../Masters/DepartmentMaster/DepartmentCom
 import { QueryTypeDropdown } from '../../Masters/QueryTypeMaster/QueryTypeComponent'
 import { DynamicFormDropdown } from '../../Masters/DynamicFormMaster/DynamicFormComponent'
 
-export default function CreateCustomerMappingComponentCopy({ location }) {
+export default function CreateCustomerMappingComponentCopy() {
+    const location = useLocation()
 
     const history = useNavigate();
     const [notify, setNotify] = useState();
@@ -69,8 +70,8 @@ export default function CreateCustomerMappingComponentCopy({ location }) {
                 if(res.data.status===1){
                     history({
                         pathname:`/${_base}/CustomerMapping`,
-                        state: {alert : {type: 'success', message:res.data.message} }
-                    });
+                       
+                    },{ state: {alert : {type: 'success', message:res.data.message} }});
                 }else{
                     alert(res.data.message);
                     setNotify({type: 'danger', message:res.data.message});

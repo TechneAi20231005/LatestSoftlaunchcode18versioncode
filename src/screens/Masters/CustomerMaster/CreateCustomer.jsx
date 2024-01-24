@@ -39,7 +39,6 @@ export default function CreateCustomer({ match }) {
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
   const handleDependent = (e, name) => {
-    console.log(e);
     setDependent({
       ...dependent,
       [name]: e.value,

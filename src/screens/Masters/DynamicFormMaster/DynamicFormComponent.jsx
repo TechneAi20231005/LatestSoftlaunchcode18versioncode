@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -15,7 +15,9 @@ import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 
 
-function DynamicFormComponent({ location }) {
+function DynamicFormComponent( ) {
+    const location = useLocation()
+
     const [data, setData] = useState(null);
     const [dataa, setDataa] = useState(null);
     const [notify, setNotify] = useState(null);

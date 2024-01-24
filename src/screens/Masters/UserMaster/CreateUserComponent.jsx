@@ -502,7 +502,6 @@ function CreateUserComponent({ match }) {
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         // setShowLoaderModal(false);
-        console.log(res.data.data);
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));

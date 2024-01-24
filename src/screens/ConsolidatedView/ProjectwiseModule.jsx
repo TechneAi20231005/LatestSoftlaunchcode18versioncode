@@ -58,10 +58,7 @@ export default function ProjectwiseModule() {
   const loadData = async () => {
     const userId = sessionStorage.getItem("id");
 
-    // await new ConsolidatedService().getConsolidatedView().then(res => console.log("res project", res.data.data));
-
     await new ConsolidatedService()
-
       .getProjectsModules(projectId, moduleId)
       .then((res) => {
 
@@ -186,6 +183,7 @@ export default function ProjectwiseModule() {
                   module_name: temp[key].module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
+                  sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
                 });
               }
               setDocList(null);
@@ -218,6 +216,7 @@ export default function ProjectwiseModule() {
                   sub_module_name: temp[key].sub_module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
+                  sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
                 });
               }
               setDocList(null);
@@ -472,6 +471,7 @@ export default function ProjectwiseModule() {
     },
     {
       name: "SubModule Name",
+
       selector: (row) => row.sub_module_name,
       sortable: true,
     },
@@ -520,6 +520,7 @@ export default function ProjectwiseModule() {
                 module_name: temp[key].module_name,
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
+                sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
               });
             }
             setDocList(null);

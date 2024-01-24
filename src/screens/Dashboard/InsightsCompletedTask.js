@@ -38,7 +38,6 @@ export default function InsightsCompletedTask() {
     const search = searchRef.current.value;
     if (search.length > 0) {
       const temp1 = completedTask.filter((d) => {
-console.log("app",completedTask)
         return (d.main_ticket_id ? d.main_ticket_id : "")
           .toLowerCase()
           .match(new RegExp(search.toLowerCase(), "g"));

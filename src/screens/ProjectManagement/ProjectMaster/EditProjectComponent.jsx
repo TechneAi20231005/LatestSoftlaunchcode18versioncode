@@ -21,7 +21,6 @@ export default function EditProjectComponent({ match }) {
   const {id} = useParams();
   const projectId = id
 
-  console.log(projectId);
   const [data, setData] = useState(null);
   const [customer, setCustomer] = useState(null);
   const [ba, setBa] = useState(null);
@@ -134,8 +133,9 @@ export default function EditProjectComponent({ match }) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/Project`,
-              state: { alert: { type: "success", message: res.data.message } },
-            });
+             
+            },{ state: { alert: { type: "success", message: res.data.message } }}
+            );
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }

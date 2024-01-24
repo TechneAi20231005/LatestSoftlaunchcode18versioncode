@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { Modal } from "react-bootstrap";
@@ -20,7 +20,9 @@ import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 import *  as Validation from '../../components/Utilities/Validation';
 
-export default function MyTicketComponent({ location }) {
+export default function MyTicketComponent( ) {
+    const location = useLocation()
+
     const [notify, setNotify] = useState(null);
     const [data, setData] = useState(null);
 

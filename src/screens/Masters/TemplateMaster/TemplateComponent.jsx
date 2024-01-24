@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -14,7 +14,8 @@ import { Modal } from "react-bootstrap";
 
 import { Spinner } from 'react-bootstrap';
 
-function TemplateComponent({ location }) {
+function TemplateComponent() {
+  const location = useLocation()
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
