@@ -39,7 +39,7 @@ export default function Header () {
         setNotifications(null);
         setApprovedNotifications(null)
         if(res.data.data !== null){
-        if (res.data.data.result) {
+        if (res?.data?.data?.result) {
           var length = res.data.data.result.length;
           var height = 0;
           setNotifications(res.data.data.result);
@@ -113,7 +113,7 @@ export default function Header () {
     await new ManageMenuService().getRole(sessionStorage.getItem("role_id")).then((res)=>{
       if(res.status === 200 && res.data.status ===1){
         const temp = res.data.data.filter(d => d.menu_id === 33);
-        if(temp[0].can_read === 1){
+        if(temp[0]?.can_read === 1){
           setShowDropdown(true)
         }else{
           setShowDropdown(false)
