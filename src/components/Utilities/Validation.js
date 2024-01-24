@@ -256,6 +256,17 @@ export const CharactersNumbersOnly = (e) => {
   }
 };
 
+
+export const CharactersNumbersOnlyWithComma = (e) => {
+  var regex = new RegExp("^[a-zA-Z 0-9, ]+$");
+  var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+  if (!regex.test(key)) {
+    e.preventDefault();
+    return false;
+  }
+};
+
+
 // const templates = []; // This array will hold all the template names that have been added
 
 // export const CharactersNumbersOnlypri = (e, templateName) => {

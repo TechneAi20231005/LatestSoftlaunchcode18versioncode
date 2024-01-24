@@ -229,12 +229,16 @@ export default function EditTicketComponent({ match }) {
           setShowLoaderModal(false);
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Ticket`,
-              
-              },{  state: {
-                alert: { type: "success", message: res.data.message },
-              },});
+              history(
+                {
+                  pathname: `/${_base}/Ticket`,
+                },
+                {
+                  state: {
+                    alert: { type: "success", message: res.data.message },
+                  },
+                }
+              );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -580,7 +584,7 @@ export default function EditTicketComponent({ match }) {
   const moduleIdRef = useRef();
   const subModuleIdRef = useRef();
   const reviewerIdRef = useRef();
-
+  console.log("module id", moduleIdRef);
   const handleDepartment = (e) => {
     if (e) {
       const select = user

@@ -733,10 +733,10 @@ function QueryTypeComponent() {
       flag = 0;
       alert("Please select Form");
     }
-    if (selectCustomerId.length === 0) {
-      flag = 0;
-      alert("Please select customer");
-    }
+    // if (selectCustomerId.length === 0) {
+    //   flag = 0;
+    //   alert("Please select customer");
+    // }
     if (selectQueryGroup.length === 0) {
       flag = 0;
       alert("Please Select query group");
@@ -1020,7 +1020,7 @@ function QueryTypeComponent() {
                   </div>
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
-                      Select Customer : <Astrick color="red" size="13px" />
+                      Select Customer : 
                     </label>
 
                     <Select

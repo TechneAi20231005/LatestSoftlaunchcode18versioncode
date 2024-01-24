@@ -5,7 +5,7 @@ const _URL=menuUrl;
 
 export function getMenu(){
     const token = localStorage.getItem("jwt_token");
-
+    const role_id =localStorage.getItem("role_id");
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
