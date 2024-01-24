@@ -1939,8 +1939,9 @@ function VendorMaster({ match }) {
                         </a>
                       )}
                     </label>
+                    {console.log(_attachmentUrl)}
                     <input
-                      href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
+                      // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
                       name="pan_attachment"
                       id="pan_attachment"
