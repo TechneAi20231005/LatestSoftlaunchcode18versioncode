@@ -11,7 +11,8 @@ import ConsolidatedService from '../../../services/ProjectManagementService/Cons
 
 const DelayedTasks = ({match}) => {
   // const project_id = match.params.projectId
-  const {project_id} =useParams()
+  const project_id = useParams()
+
   const [data, setData] = useState(null)
 
 

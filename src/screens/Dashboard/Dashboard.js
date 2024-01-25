@@ -2543,6 +2543,7 @@ import {
   postTimerData,
   deleteTask,
 } from "../../services/TicketService/TaskService";
+import { _base } from "../../settings/constants";
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -2926,7 +2927,7 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 {ele.task_name ? (
                                   <h6
                                     className="fw-bold mb-0 small-14"

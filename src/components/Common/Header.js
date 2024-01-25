@@ -39,19 +39,15 @@ export default function Header() {
         setNotifications(null);
         setApprovedNotifications(null)
         if (res.data.data !== null) {
-          if (res.data.data.result) {
+          if (res?.data?.data?.result) {
             var length = res.data.data.result.length;
             var height = 0;
             setNotifications(res.data.data.result);
             setApprovedNotifications(res.data.data.for_me)
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
+
             }
-            if (parseInt(length) > 5) {
-              height = 250;
-            }
-            setNotificationHeight(null);
-            setNotificationHeight(height);
           }
         }
       }
@@ -114,6 +110,7 @@ export default function Header() {
       if (res.status === 200 && res.data.status === 1) {
         const temp = res.data.data.filter(d => d.menu_id === 33);
         if (temp[0]?.can_read === 1) {
+
           setShowDropdown(true)
         } else {
           setShowDropdown(false)

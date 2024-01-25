@@ -14,12 +14,13 @@ import Alert from "../../components/Common/Alert";
 import { Modal, Button } from "react-bootstrap";
 
 export default function ProjectwiseModule() {
-
   const params = useParams();
   const { projectId, moduleId } = params;
+
+  
   const location = useLocation();
   const [data, setData] = useState(null);
-  const [isProjectOwner, setIsProjectOwner] = useState(null)
+  const [isProjectOwner, setIsProjectOwner] = useState(null);
   const [idd, setId] = useState(null);
   const [submoduleData, setSubmoduleData] = useState([]);
   const [subModuleDropdown, setSubModuleDropdown] = useState(null);
@@ -36,8 +37,8 @@ export default function ProjectwiseModule() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedData, setSelectedData] = useState();
   const [checkDelete, setCheckDelete] = useState();
-  const [authorityCheck, setAuthorityCheck] = useState(false)
-  const [isProjectActive, setIsProjectActive] = useState(1)
+  const [authorityCheck, setAuthorityCheck] = useState(false);
+  const [isProjectActive, setIsProjectActive] = useState(1);
   const [isModuleActive, setIsModuleActive] = useState(1);
   const [isSubModuleActive, setIsSubModuleActive] = useState(1);
   const [attachments, setAttachments] = useState([]);
@@ -59,13 +60,12 @@ export default function ProjectwiseModule() {
     await new ConsolidatedService()
       .getProjectsModules(projectId, moduleId)
       .then((res) => {
-
         if (res.status === 200) {
           if (res.data.status === 1) {
             setData(null);
             setData(res.data.data);
             setId(res.data.data.id);
-            setIsProjectActive(res?.data?.data?.is_project_active)
+            setIsProjectActive(res?.data?.data?.is_project_active);
           }
         }
       });
@@ -74,9 +74,11 @@ export default function ProjectwiseModule() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res?.data?.data;
-          // const a = res.data.data.filter((d) => d.module_id);  
+          // const a = res.data.data.filter((d) => d.module_id);
 
-          const findModuleActivity = temp.filter(module => module.id == moduleId);
+          const findModuleActivity = temp.filter(
+            (module) => module.id == moduleId
+          );
           setIsModuleActive(findModuleActivity[0]?.is_active);
 
           setModuleDropdown(
@@ -93,7 +95,9 @@ export default function ProjectwiseModule() {
           const temp = res.data.data;
           // const a = res.data.data.filter((d) => d.module_id);
           setSubmoduleData(res.data.data);
-          const findSubModuleActivity = temp.filter(subModule => subModule.id == subModuleValue);
+          const findSubModuleActivity = temp.filter(
+            (subModule) => subModule.id == subModuleValue
+          );
           // setIsSubModuleActive(findModuleActivity[0]?.is_active);
           setSubModuleDropdown(
             temp
@@ -126,30 +130,33 @@ export default function ProjectwiseModule() {
       });
 
     try {
-      await new GeneralSettingService().getAuthorityCheck(userId, projectId).then(res => {
-        if (res?.status === 200 && res?.data?.status == 1) {
-          const authorityData = res?.data?.data?.result;
-          setIsProjectOwner(res?.data?.data?.is_projectOwner);
-          const checked = authorityData.find(d => d.setting_name === "Show To ALL")
-          const deleteCheck = authorityData.find(d => d.setting_name === "Delete DOC")
-          if (checked) {
-            setAuthorityCheck(true);
-          } else {
-            setAuthorityCheck(false);
+      await new GeneralSettingService()
+        .getAuthorityCheck(userId, projectId)
+        .then((res) => {
+          if (res?.status === 200 && res?.data?.status == 1) {
+            const authorityData = res?.data?.data?.result;
+            setIsProjectOwner(res?.data?.data?.is_projectOwner);
+            const checked = authorityData.find(
+              (d) => d.setting_name === "Show To ALL"
+            );
+            const deleteCheck = authorityData.find(
+              (d) => d.setting_name === "Delete DOC"
+            );
+            if (checked) {
+              setAuthorityCheck(true);
+            } else {
+              setAuthorityCheck(false);
+            }
+            if (deleteCheck) {
+              setCheckDelete(true);
+            } else {
+              setCheckDelete(false);
+            }
           }
-          if (deleteCheck) {
-            setCheckDelete(true)
-          } else {
-            setCheckDelete(false)
-          }
-        }
-
-      })
-
+        });
     } catch (error) {
       console.error("Error fetching authority data:", error);
     }
-
   };
 
   const changeSubModuleHandle = async (e, type) => {
@@ -160,10 +167,12 @@ export default function ProjectwiseModule() {
     if (type === "SUBMODULE") {
       setSubModuleValue(value);
       if (moduleRef.current) {
-        moduleRef.current.clearValue()
+        moduleRef.current.clearValue();
       }
-      const findSubModuleActivity = submoduleData.filter(subModule => subModule.id == value);
-      setIsSubModuleActive(findSubModuleActivity[0].is_active)
+      const findSubModuleActivity = submoduleData.filter(
+        (subModule) => subModule.id == value
+      );
+      setIsSubModuleActive(findSubModuleActivity[0].is_active);
       await new SubModuleService()
         .getSubModuleDocuments(projectId, moduleId, "ACTIVE", value)
         .then((res) => {
@@ -181,26 +190,28 @@ export default function ProjectwiseModule() {
                   module_name: temp[key].module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
-                  sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
+                  sub_module_name: temp[key].sub_module_name
+                    ? temp[key].sub_module_name
+                    : "No Sub Module",
+
                 });
               }
               setDocList(null);
-              setToggleRadio(true)
+              setToggleRadio(true);
               setDocList(tempData);
             }
           }
         });
     } else if (type === "MODULE") {
       if (submoduleRef.current) {
-        submoduleRef.current.clearValue()
-        setSubModuleValue(0)
+        submoduleRef.current.clearValue();
+        setSubModuleValue(0);
       }
       await new SubModuleService()
         .getSubModuleDocuments(projectId, moduleId, "ACTIVE", 0)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
-
               var tempData = [];
               var temp = res.data.data;
               let counter = 1;
@@ -214,17 +225,17 @@ export default function ProjectwiseModule() {
                   sub_module_name: temp[key].sub_module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
+
                   sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
                 });
               }
               setDocList(null);
-              setToggleRadio(true)
+              setToggleRadio(true);
               setDocList(tempData);
             }
           }
         });
     }
-
   };
 
   const uploadDocHandler = async (e) => {
@@ -235,12 +246,10 @@ export default function ProjectwiseModule() {
     setIsLoading(true);
     setNotify(null);
 
-
     const form = new FormData(e.target);
     form.append("submodule_id", subModuleValue ? subModuleValue : 0);
     form.append("show_to_all", 1);
     await new SubModuleService().postSubModuleDocument(form).then((res) => {
-
       if (res?.data?.status === 1) {
         setNotify({ type: "success", message: res?.data?.message });
         handleModal({ showModal: false, modalData: "", modalHeader: "" });
@@ -270,19 +279,25 @@ export default function ProjectwiseModule() {
 
   const fetchData = async (e) => {
     await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, "ACTIVE", subModuleValue ? subModuleValue : 0).then(res => {
+      .getSubModuleDocuments(
+        projectId,
+        moduleId,
+        "ACTIVE",
+        subModuleValue ? subModuleValue : 0
+      )
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             let count = 1;
             let temp = res.data.data;
             for (let i = 0; i < temp.length; i++) {
-              temp[i].counter = count++
+              temp[i].counter = count++;
             }
-            setDocList(temp)
+            setDocList(temp);
           }
         }
       });
-  }
+  };
 
   const deleteRestoreDoc = async () => {
     try {
@@ -299,13 +314,12 @@ export default function ProjectwiseModule() {
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
         payload.is_active = 0;
-        setToggleRadio(false)
-        deleteAndFetch("DEACTIVE")
-
+        setToggleRadio(false);
+        deleteAndFetch("DEACTIVE");
       } else {
         payload.is_active = 1;
-        deleteAndFetch("ACTIVE")
-        setToggleRadio(false)
+        deleteAndFetch("ACTIVE");
+        setToggleRadio(false);
       }
 
       async function deleteAndFetch(status) {
@@ -315,11 +329,11 @@ export default function ProjectwiseModule() {
             if (res?.data?.status === 1) {
               if (status === "ACTIVE") {
                 setToggleRadio(true);
-                setSelectedRows([])
+                setSelectedRows([]);
                 // setShowbtn(true)
               } else if (status === "DEACTIVE") {
                 setToggleRadio(false);
-                setSelectedRows([])
+                setSelectedRows([]);
 
                 // setShowbtn(false)
               }
@@ -352,6 +366,9 @@ export default function ProjectwiseModule() {
                     module_name: temp[key].module_name,
                     is_active: temp[key].is_active,
                     document_attachment: temp[key].document_attachment,
+                    sub_module_name: temp[key].sub_module_name
+                      ? temp[key].sub_module_name
+                      : "No Sub Module",
                   });
                 }
                 setDocList(null);
@@ -369,20 +386,22 @@ export default function ProjectwiseModule() {
   };
 
   const dontShowToAll = async (e, row) => {
-    let value = e.target.checked
+    let value = e.target.checked;
     let sendVal;
     if (value === true) {
-      sendVal = 1
+      sendVal = 1;
     } else {
-      sendVal = 0
+      sendVal = 0;
     }
-    const form = { "show_to_all": sendVal }
-    await new SubModuleService().updateProjectDocument(row.id, form).then((res) => {
-      if (res.status === 200 && res.data.status == 1) {
-        fetchData()
-      }
-    })
-  }
+    const form = { show_to_all: sendVal };
+    await new SubModuleService()
+      .updateProjectDocument(row.id, form)
+      .then((res) => {
+        if (res.status === 200 && res.data.status == 1) {
+          fetchData();
+        }
+      });
+  };
 
   const columns = [
     {
@@ -398,7 +417,16 @@ export default function ProjectwiseModule() {
       cell: (row) => {
         return (
           <>
-            <input type="checkbox" onChange={(e) => { dontShowToAll(e, row) }} disabled={!authorityCheck && isProjectOwner === 0} defaultChecked={row.show_to_all == 1 || isProjectOwner === 1 ? true : false} />
+            <input
+              type="checkbox"
+              onChange={(e) => {
+                dontShowToAll(e, row);
+              }}
+              disabled={!authorityCheck && isProjectOwner === 0}
+              defaultChecked={
+                row.show_to_all == 1 || isProjectOwner === 1 ? true : false
+              }
+            />
           </>
         );
       },
@@ -411,12 +439,15 @@ export default function ProjectwiseModule() {
       cell: (row) => (
         <>
           <div className="d-flex align-items-center justify-content-center">
-            <p className="mb-0"
+            <p
+              className="mb-0"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
               title="History"
             >
-              <Link to={`/${_base}/ConsolidatedView/ProjectwiseModule/${projectId}/${moduleId}/${row.id}`}>
+              <Link
+                to={`/${_base}/ConsolidatedView/ProjectwiseModule/${projectId}/${moduleId}/${row.id}`}
+              >
                 <i className="icofont-history btn btn-sm btn-info text-white"></i>
               </Link>
             </p>
@@ -446,8 +477,7 @@ export default function ProjectwiseModule() {
     },
     {
       name: "File Name",
-      selector: (row) => row.document_attachment
-      ,
+      selector: (row) => row.document_attachment,
       sortable: true,
       width: "20%",
       cell: (row) => {
@@ -469,8 +499,9 @@ export default function ProjectwiseModule() {
     },
     {
       name: "SubModule Name",
+      selector: (row) =>
+        row.sub_module_name ? row.sub_module_name : "No sub module ",
 
-      selector: (row) => row.sub_module_name,
       sortable: true,
     },
   ];
@@ -495,16 +526,21 @@ export default function ProjectwiseModule() {
 
   const handleDataShow = async (type) => {
     await new SubModuleService()
-      .getSubModuleDocuments(projectId, moduleId, type, subModuleValue ? subModuleValue : 0)
+      .getSubModuleDocuments(
+        projectId,
+        moduleId,
+        type,
+        subModuleValue ? subModuleValue : 0
+      )
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             if (type === "ACTIVE") {
               setShowbtn(true);
-              setToggleRadio(true)
+              setToggleRadio(true);
             } else if (type === "DEACTIVE") {
               setShowbtn(false);
-              setToggleRadio(false)
+              setToggleRadio(false);
             }
             var tempData = [];
             var temp = res.data.data;
@@ -518,6 +554,7 @@ export default function ProjectwiseModule() {
                 module_name: temp[key].module_name,
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
+
                 sub_module_name: temp[key].sub_module_name ? temp[key].sub_module_name : "No Sub Module"
               });
             }
@@ -536,15 +573,14 @@ export default function ProjectwiseModule() {
 
   const selectedDOC = (e) => {
     if (!toggleRadio) {
-      setShowbtn(false)
+      setShowbtn(false);
     } else {
-      setShowbtn(true)
+      setShowbtn(true);
     }
     setSelectedData(e.selectedRows);
     const idArray = e.selectedRows.map((d) => d.id);
     setSelectedRows(idArray);
   };
-
 
   const uploadAttachmentHandler = (event) => {
     const files = event.target.files;
@@ -552,10 +588,8 @@ export default function ProjectwiseModule() {
     setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
   };
 
-
   useEffect(() => {
     loadData();
-
   }, []);
 
   return (
@@ -649,7 +683,9 @@ export default function ProjectwiseModule() {
                       className="w-100"
                       options={moduleDropdown}
                       ref={moduleRef}
-                      onChange={(e) => { changeSubModuleHandle(e, "MODULE") }}
+                      onChange={(e) => {
+                        changeSubModuleHandle(e, "MODULE");
+                      }}
                       name="submodule_id"
                     />
                   )}
@@ -663,10 +699,11 @@ export default function ProjectwiseModule() {
                       className="w-100"
                       options={subModuleDropdown}
                       ref={submoduleRef}
-                      onChange={(e) => { changeSubModuleHandle(e, "SUBMODULE") }}
+                      onChange={(e) => {
+                        changeSubModuleHandle(e, "SUBMODULE");
+                      }}
                       name="submodule_id"
                     />
-
                   </div>
                 )}
               </div>
@@ -692,10 +729,7 @@ export default function ProjectwiseModule() {
                         }}
                         defaultChecked={true}
                       />
-                      <label
-                        className="form-check-label"
-                        htmlFor="is_active_1"
-                      >
+                      <label className="form-check-label" htmlFor="is_active_1">
                         Active
                       </label>
                     </div>
@@ -715,10 +749,7 @@ export default function ProjectwiseModule() {
                         value="0"
                         readOnly={modal.modalData ? false : true}
                       />
-                      <label
-                        className="form-check-label"
-                        htmlFor="is_active_0"
-                      >
+                      <label className="form-check-label" htmlFor="is_active_0">
                         Deactive
                       </label>
                     </div>
@@ -726,16 +757,32 @@ export default function ProjectwiseModule() {
                 </div>
               </div>
 
-              <div className={isProjectActive === 1 ? "d-block col-4 text-center" : "d-none col-4 text-center"}>
+              <div
+                className={
+                  isProjectActive === 1
+                    ? "d-block col-4 text-center"
+                    : "d-none col-4 text-center"
+                }
+              >
                 {showbtn === true && docList && selectedRows?.length > 0 && (
-                  <button type="button" disabled={(isProjectOwner !== 1 && !checkDelete) ? true : false} className="btn btn-danger" onClick={deleteRestoreDoc}>
+                  <button
+                    type="button"
+                    disabled={
+                      isProjectOwner !== 1 && !checkDelete ? true : false
+                    }
+                    className="btn btn-danger"
+                    onClick={deleteRestoreDoc}
+                  >
                     Delete Files
                   </button>
                 )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
-                    disabled={(isProjectOwner !== 1 && !checkDelete) ? true : false} className="btn btn-success"
+                    disabled={
+                      isProjectOwner !== 1 && !checkDelete ? true : false
+                    }
+                    className="btn btn-success"
                     onClick={deleteRestoreDoc}
                   >
                     Restore
@@ -744,7 +791,9 @@ export default function ProjectwiseModule() {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  disabled={!isProjectActive || !isModuleActive || !isSubModuleActive}
+                  disabled={
+                    !isProjectActive || !isModuleActive || !isSubModuleActive
+                  }
                   onClick={() => {
                     handleModal({
                       showModal: true,
@@ -774,7 +823,6 @@ export default function ProjectwiseModule() {
             method="post"
             onSubmit={uploadDocHandler}
             encType="multipart/form-data"
-
           >
             <Modal.Header closeButton>
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -786,7 +834,9 @@ export default function ProjectwiseModule() {
                 <div className="row g-3 mb-3 mt-2">
                   <input
                     type="file"
-                    onChange={(e) => { uploadAttachmentHandler(e) }}
+                    onChange={(e) => {
+                      uploadAttachmentHandler(e);
+                    }}
                     name="document_attachment[]"
                     id="document_attachment[]"
                     multiple="multiple"
@@ -824,26 +874,60 @@ export default function ProjectwiseModule() {
           </form>
         </Modal>
         <div className="col">
-          {docList && (<>
-            <span style={{ fontStyle: "italic", color: "blue", fontWeight: "bold" }}>Note:</span>
-            <br />
-            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>1) Please Select Documents for Delete and Restore</span>
-            <br />
-            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>2) Please Select Deactive To Check Deleted Documents</span>
-            <br />
-            <span style={{ fontStyle: "italic", color: "red", fontWeight: "bold" }}>3) Please Select Module or Submodule to Filter The Documents</span>
-            <DataTable
-              columns={columns}
-              data={docList}
-              defaultSortField="title"
-              conditionalRowStyles={conditionalRowStyles}
-              pagination
-              selectableRows={true}
-              onSelectedRowsChange={selectedDOC}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          </>)}
+          {docList && (
+            <>
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "blue",
+                  fontWeight: "bold",
+                }}
+              >
+                Note:
+              </span>
+              <br />
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "red",
+                  fontWeight: "bold",
+                }}
+              >
+                1) Please Select Documents for Delete and Restore
+              </span>
+              <br />
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "red",
+                  fontWeight: "bold",
+                }}
+              >
+                2) Please Select Deactive To Check Deleted Documents
+              </span>
+              <br />
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "red",
+                  fontWeight: "bold",
+                }}
+              >
+                3) Please Select Module or Submodule to Filter The Documents
+              </span>
+              <DataTable
+                columns={columns}
+                data={docList}
+                defaultSortField="title"
+                conditionalRowStyles={conditionalRowStyles}
+                pagination
+                selectableRows={true}
+                onSelectedRowsChange={selectedDOC}
+                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                highlightOnHover={true}
+              />
+            </>
+          )}
         </div>
       </div>
     </>

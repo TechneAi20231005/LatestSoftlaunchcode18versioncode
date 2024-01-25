@@ -53,7 +53,7 @@ export default function SignIn() {
           //   message: "Logged In !!!",
           // };
           // console.log(process.env.PUBLIC_URL);
-          // history({
+          // navigate({
           //   pathname: `${process.env.PUBLIC_URL}/Dashboard`,
           //   state: { alert: { type: "success", message: res.data.message } },
           // });

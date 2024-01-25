@@ -18,10 +18,9 @@ export default function EditTenant({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
-
-
-  const {id} = useParams()
- const  tenanatId=id
+  const [toggleRadio, setToggleRadio] = useState(false);
+  const { id } = useParams();
+  const tenanatId = id;
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
     { label: "Public limited company", value: "Public limited company" },
@@ -100,6 +99,11 @@ export default function EditTenant({ match }) {
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
+          if (res?.data?.data?.is_active === 1) {
+            setToggleRadio(true);
+          } else {
+            setToggleRadio(false);
+          }
           setData(res.data.data);
         }
       }
@@ -118,35 +122,42 @@ export default function EditTenant({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    formData.append("is_active", toggleRadio ? 1 : 0);
     setNotify(null);
-    await new TenantService()
-      .updateTenant(tenanatId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history({
+    await new TenantService().updateTenant(tenanatId, formData).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
               pathname: `/${_base}/TenantMaster`,
-            },{ state: { alert: { type: "success", message: res.data.message } }}
-            );
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
+            },
+            { state: { alert: { type: "success", message: res.data.message } } }
+          );
+        } else {
+          setNotify({ type: "danger", message: res.data.message });
         }
-      });
+      }
+    });
+  };
+  const handleRadios = (e) => {
+    if (e === "active") {
+      setToggleRadio(true);
+    } else {
+      setToggleRadio(false);
+    }
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-
-  useEffect(()=>{
-    if(checkRole && checkRole[32].can_update === 0){
+  useEffect(() => {
+    if (checkRole && checkRole[32].can_update === 0) {
       // alert("Rushi")
-  
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Tenant" />
@@ -342,6 +353,35 @@ export default function EditTenant({ match }) {
                       onChange={(e) => handleDependentChange(e, "CITY")}
                     />
                   )}
+                </div>
+              </div>
+              <div className="d-flex mt-3">
+                <div className="col-sm-2">
+                  <b>Status :</b>
+                </div>
+                <div className="me-5">
+                  <input
+                    type="radio"
+                    checked={toggleRadio}
+                    className="me-4"
+                    value="active"
+                    onChange={(e) => handleRadios(e.target.value)}
+                  />
+                  <label>
+                    <b>Active</b>
+                  </label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    checked={!toggleRadio}
+                    className="me-4"
+                    value="deactive"
+                    onChange={(e) => handleRadios(e.target.value)}
+                  />
+                  <label>
+                    <b>Deactive</b>
+                  </label>
                 </div>
               </div>
             </div>
