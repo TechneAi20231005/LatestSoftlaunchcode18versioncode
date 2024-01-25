@@ -196,6 +196,11 @@ export default function MyTicketComponent( ) {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
+            {console.log("s",searchResult)}
+            {console.log("dac",data)}
+
+            {console.log("dac",localStorage.getItem("id"))}
+
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
@@ -1764,7 +1769,7 @@ export default function MyTicketComponent( ) {
           // window.location.reload(false)
           loadData();
           setSelectedRows([])
-          setSelectedRowss([])
+          setSelectedRowss([])  
 
           setNotify({ type: "success", message });
         } else {
@@ -1847,6 +1852,7 @@ export default function MyTicketComponent( ) {
               setSearchResult(null);
               setSearchResult(res.data.data);
               const temp = res.data.data;
+              console.log("t",temp)
               var counter = 1;
               var searchResultExport = [];
               for (const key in temp) {
