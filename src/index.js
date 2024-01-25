@@ -1,17 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { BrowserRouter  } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import './assetsNew/css/my-task.style.min.css';
 import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import { store } from './redux/store/store'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const renderApp = () => {
   root.render(
-    <BrowserRouter >
-    <App />
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter >
+        <App />
+      </BrowserRouter>
+    </Provider>
   );
 };
 
