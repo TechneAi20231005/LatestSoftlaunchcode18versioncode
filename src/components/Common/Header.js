@@ -50,8 +50,9 @@ export default function Header() {
           }
         }
       }
+    }
     });
-  };
+  }
 
   const handleReadNotification = (e, id) => {
     markedReadNotification(id).then((res) => {
