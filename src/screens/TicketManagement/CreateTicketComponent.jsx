@@ -127,13 +127,11 @@ export default function CreateTicketComponent() {
 
     setNotify(null);
     if (flag == 1) {
-      console.log("1")
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              console.log("2")
               history({
                 pathname: `/${_base}/Ticket`,
               }
@@ -147,13 +145,10 @@ export default function CreateTicketComponent() {
               // window.location.reload(false)
               setIsSubmitted(false);
             } else {
-              console.log("3")
               if (formData.getAll("ticket_uploading") == "REGULAR") {
-                console.log("4")
                 setNotify({ type: "danger", message: res.data.message });
                 setIsSubmitted(false);
               } else {
-                console.log("5")
                 var URL = `${_attachmentUrl}` + res.data.data;
                 window.open(URL, "_blank").focus();
                 setIsSubmitted(false);
@@ -163,7 +158,6 @@ export default function CreateTicketComponent() {
               }
             }
           } else {
-            console.log("6")
             setNotify({ type: "danger", message: res.message });
             setIsSubmitted(false);
 
@@ -176,7 +170,6 @@ export default function CreateTicketComponent() {
           }
         })
         .catch((error) => {
-          console.log("7")
           if (error.response) {
             const { response } = error;
             const { request, ...errorObject } = response;

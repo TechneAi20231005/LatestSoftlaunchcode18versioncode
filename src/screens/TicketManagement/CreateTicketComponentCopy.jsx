@@ -76,8 +76,7 @@ export default function CreateTicketComponent() {
     // }
 
     const handleForm = async (e) => {
-        if ()
-            e.preventDefault();
+        e.preventDefault();
         const formData = new FormData(e.target);
         var flag = 1
         var a = JSON.stringify(Object.fromEntries(formData))
