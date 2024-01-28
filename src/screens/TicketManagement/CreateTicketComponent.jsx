@@ -33,11 +33,10 @@ export default function CreateTicketComponent() {
   const departmentRef = useRef();
   const current = new Date();
 
-  const todayDate = `${current.getFullYear()}-${
-    current.getMonth() + 1 < 10
-      ? "0" + current.getMonth() + 1
-      : current.getMonth() + 1
-  }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
+    ? "0" + current.getMonth() + 1
+    : current.getMonth() + 1
+    }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
@@ -86,7 +85,7 @@ export default function CreateTicketComponent() {
   const [parentName, setParentName] = useState();
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false)
   const [userDepartments, setUserDepartments] = useState();
   const [user, setUser] = useState("");
 
@@ -97,11 +96,15 @@ export default function CreateTicketComponent() {
   const ticketTypeRefs = useRef();
 
   const handleForm = async (e) => {
-    setIsSubmitted(true);
     e.preventDefault();
+    if (isSubmitted) {
+      return
+    }
+    setIsSubmitted(true);
+
     const formData = new FormData(e.target);
     var flag = 1;
-    var a = JSON.stringify(Object.fromEntries(formData));
+    // var a = JSON.stringify(Object.fromEntries(formData));
 
     // formData.append("dynamicForm", JSON.stringify(rows))
     var selectCountry = formData.getAll("customer_id");
@@ -124,36 +127,43 @@ export default function CreateTicketComponent() {
 
     setNotify(null);
     if (flag == 1) {
+      console.log("1")
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              console.log("2")
               history({
                 pathname: `/${_base}/Ticket`,
               }
-              ,
-           { state: {
-              type: "success", message: res.data.message ,
-           }
-          } 
+                ,
+                {
+                  state: {
+                    type: "success", message: res.data.message,
+                  }
+                }
               );
-          window.location.reload(false)
+              // window.location.reload(false)
               setIsSubmitted(false);
             } else {
+              console.log("3")
               if (formData.getAll("ticket_uploading") == "REGULAR") {
+                console.log("4")
                 setNotify({ type: "danger", message: res.data.message });
                 setIsSubmitted(false);
               } else {
+                console.log("5")
                 var URL = `${_attachmentUrl}` + res.data.data;
                 window.open(URL, "_blank").focus();
                 setIsSubmitted(false);
 
                 setNotify({ type: "danger", message: res.message });
-              
+
               }
             }
           } else {
+            console.log("6")
             setNotify({ type: "danger", message: res.message });
             setIsSubmitted(false);
 
@@ -166,9 +176,11 @@ export default function CreateTicketComponent() {
           }
         })
         .catch((error) => {
+          console.log("7")
           if (error.response) {
             const { response } = error;
             const { request, ...errorObject } = response;
+            setIsSubmitted(false)
             setNotify({ type: "danger", message: "Request Error !!!" });
             new ErrorLogService().sendErrorLog(
               "Ticket",
@@ -255,7 +267,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => {});
+          .catch((err) => { });
         setRows(dynamicForm);
       }
     }
@@ -293,7 +305,7 @@ export default function CreateTicketComponent() {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-            currentData[0].inputAddOn.inputDataSource
+          currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -944,47 +956,47 @@ export default function CreateTicketComponent() {
 
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="radio"
-                                />
-                                <label for={d.value}>{d.label}</label>
-                              </div>
-                            );
-                          })
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                name={data.inputName}
+                                className="mx-2"
+                                type="radio"
+                              />
+                              <label for={d.value}>{d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
 
                       {data.inputType == "checkbox" &&
-                      data.inputAddOn.inputCheckbox
+                        data.inputAddOn.inputCheckbox
                         ? data.inputAddOn.inputCheckbox.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="checkbox"
-                                />
-                                <label for={d.value}> {d.label}</label>
-                              </div>
-                            );
-                          })
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                name={data.inputName}
+                                className="mx-2"
+                                type="checkbox"
+                              />
+                              <label for={d.value}> {d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
                       {data.inputType === "number" && (
                         <input
