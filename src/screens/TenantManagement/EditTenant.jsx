@@ -183,7 +183,7 @@ export default function EditTenant({ match }) {
                   required
                   defaultValue={data && data.company_name}
                   onKeyPress={(e) => {
-                    Validation.CharactersOnly(e);
+                    Validation.CharacterWithSpace(e);
                   }}
                 />
               </div>
