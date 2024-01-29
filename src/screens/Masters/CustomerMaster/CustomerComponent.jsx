@@ -17,14 +17,14 @@ function CustomerComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
-  const [customer , setCustomer]=useState()
+  const [customer, setCustomer] = useState()
   const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const roleId = sessionStorage.getItem("role_id")
   const [checkRole, setCheckRole] = useState(null)
+  const [historyState, setHistoryState] = useState()
   const searchRef = useRef();
-  const location  = useLocation()
-
+  const location = useLocation();
 
 
   function SearchInputData(data, search) {
@@ -107,7 +107,7 @@ function CustomerComponent() {
         setDataa(res.data.data)
         let counter = 1;
         const temp = res.data.data;
-        
+
         for (const key in temp) {
           data.push({
             counter: counter++,
@@ -154,20 +154,20 @@ function CustomerComponent() {
       }
     })
       .catch((error) => {
-        if(error.message){
+        if (error.message) {
           const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Customer Master",
-          "Get_Customer",
-          "INSERT",
-          errorObject.data.message
-        );
+          const { request, ...errorObject } = response;
+          new ErrorLogService().sendErrorLog(
+            "Customer Master",
+            "Get_Customer",
+            "INSERT",
+            errorObject.data.message
+          );
 
-        } else{
+        } else {
           console.log(error)
         }
-        
+
       });
 
     await new ManageMenuService().getRole(roleId).then((res) => {
@@ -204,23 +204,22 @@ function CustomerComponent() {
     if (location && location.state) {
       setNotify(location.state);
     }
-    return () =>{
+    return () => {
       setNotify(null)
     }
 
   }, []);
 
 
-  useEffect(()=>{
-    if(checkRole && checkRole[3].can_read === 0){
-
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+  useEffect(() => {
+    if (checkRole && checkRole[3].can_read === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole])
 
   return (
     <div className="container-xxl">
-      { notify && <Alert alertData={notify} />}
+      {notify && <Alert alertData={notify} />}
 
       <PageHeader
         headerTitle="Customer Master"
@@ -293,15 +292,15 @@ function CustomerComponent() {
               )}
             </div>
             <Modal show={showLoaderModal} centered>
-                <Modal.Body className="text-center">
-                    <Spinner animation="grow" variant="primary" />
-                    <Spinner animation="grow" variant="secondary" />
-                    <Spinner animation="grow" variant="success" />
-                    <Spinner animation="grow" variant="danger" />
-                    <Spinner animation="grow" variant="warning" />
-                    <Spinner animation="grow" variant="info" />
-                    <Spinner animation="grow" variant="dark" />
-                </Modal.Body>
+              <Modal.Body className="text-center">
+                <Spinner animation="grow" variant="primary" />
+                <Spinner animation="grow" variant="secondary" />
+                <Spinner animation="grow" variant="success" />
+                <Spinner animation="grow" variant="danger" />
+                <Spinner animation="grow" variant="warning" />
+                <Spinner animation="grow" variant="info" />
+                <Spinner animation="grow" variant="dark" />
+              </Modal.Body>
             </Modal>
           </div>
         </div>

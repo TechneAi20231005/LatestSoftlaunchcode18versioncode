@@ -332,7 +332,7 @@ function CreateUserComponent({ match }) {
       pincodeValid == false
     ) {
       if (flag === 1) {
-       await new UserService()
+        await new UserService()
           .postUser(form)
           .then((res) => {
             if (res.status === 200) {
@@ -340,11 +340,12 @@ function CreateUserComponent({ match }) {
                 history({
                   pathname: `/${_base}/User`
                 }
-                ,
-             { state: {
-                type: "success", message: res.data.message ,
-             }
-            } 
+                  ,
+                  {
+                    state: {
+                      type: "success", message: res.data.message,
+                    }
+                  }
                 );
               } else {
                 setNotify({ type: "danger", message: res.data.message });
@@ -374,7 +375,7 @@ function CreateUserComponent({ match }) {
               console.error("Error:", error.message);
             }
           });
-          
+
       }
     }
   };
@@ -452,7 +453,15 @@ function CreateUserComponent({ match }) {
     await new RoleService().getRole().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const cc = res.data.data
+          const filteredAsAccountFor = res.data.data.filter(filterData => {
+            if (accountFor === "SELF") {
+              return filterData.role.toLowerCase() !== 'user'
+            } else if (accountFor === "CUSTOMER") {
+              return filterData.role.toLowerCase() === 'user'
+            }
+          })
+
+          const response = filteredAsAccountFor
 
             .filter((d) => d.is_active === 1)
 
@@ -460,7 +469,7 @@ function CreateUserComponent({ match }) {
               value: d.id,
               label: d.role,
             }));
-          const aa = cc.sort(function (a, b) {
+          const aa = response.sort(function (a, b) {
             return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
           });
           setRoleDropdown(aa);
@@ -556,6 +565,38 @@ function CreateUserComponent({ match }) {
     }
   };
 
+  const accountForChange = async (account_for) => {
+    setAccountFor(account_for)
+    const accountFor = account_for;
+    await new RoleService().getRole().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          const filteredAsAccountFor = res.data.data.filter(filterData => {
+            if (accountFor === "SELF") {
+              return filterData.role.toLowerCase() !== 'user'
+            } else if (accountFor === "CUSTOMER") {
+              return filterData.role.toLowerCase() === 'user'
+            }
+          })
+          const response = filteredAsAccountFor
+
+            .filter((d) => d.is_active === 1)
+
+            .map((d) => ({
+              value: d.id,
+              label: d.role,
+            }));
+          const aa = response.sort(function (a, b) {
+            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+          });
+
+          setRoleDropdown(aa);
+        }
+      }
+    });
+
+  }
+
   const handleRemoveSpecificRow = (idx) => () => {
     if (idx > 0) {
       setRows(rows.filter((_, i) => i !== idx));
@@ -605,12 +646,13 @@ function CreateUserComponent({ match }) {
           e.target.checked == true ? 1 : 0;
       } else if (type == "IS_DEFAULT") {
         temp_element.is_default = e.target.checked == true ? 1 : 0;
-        temp_state.forEach((d, i) => {
-          temp_state[i].is_default = 0;
-        });
+        // temp_state.forEach((d, i) => {
+        //   temp_state[i].is_default = 0;
+        // });
       }
       temp_state[actualIndex] = temp_element;
       setRows(temp_state);
+
     }
   };
 
@@ -673,14 +715,17 @@ function CreateUserComponent({ match }) {
   }
   useEffect(() => {
     loadData();
+
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[2].can_create === 0) {
       // alert("Rushi")
 
+
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
 
   return (
     <div className="container-xxl">
@@ -717,7 +762,7 @@ function CreateUserComponent({ match }) {
                             // value={accountFor? accountFor :""}
                             readOnly={false}
                             required
-                            onChange={(e) => setAccountFor(e.target.value)}
+                            onChange={(e) => accountForChange(e.target.value)}
                           >
                             <option value="SELF">SELF</option>
                             <option value="CUSTOMER">CUSTOMER</option>
@@ -885,9 +930,9 @@ function CreateUserComponent({ match }) {
                             }
                           }}
                           placeholder="Please enter valid email address"
-                          // onKeyPress={(e) => {
-                          //   handleEmail(e);
-                          // }}
+                        // onKeyPress={(e) => {
+                        //   handleEmail(e);
+                        // }}
                         />
 
                         {inputState && (
@@ -1238,8 +1283,8 @@ function CreateUserComponent({ match }) {
                           placeholder="Enter maximum 250 character"
                           rows="4"
                           maxLength={250}
-                          // onKeyPress={(e) => {
-                          //   Validation.addressFieldOnly(e);}}
+                        // onKeyPress={(e) => {
+                        //   Validation.addressFieldOnly(e);}}
                         />
                       </div>
                     </div>
@@ -1313,8 +1358,8 @@ function CreateUserComponent({ match }) {
                           id="state_id"
                           onChange={(e) => handleDependentChange(e, "STATE")}
                           defaultValue={stateName ? stateName : ""}
-                          // key={Math.random()}
-                          // value={stateName ? state : ""}
+                        // key={Math.random()}
+                        // value={stateName ? state : ""}
                         />
                       </div>
 
@@ -1336,8 +1381,8 @@ function CreateUserComponent({ match }) {
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                          // key={Math.random()}
-                          // value={ cityName? cityName : ""}
+                        // key={Math.random()}
+                        // value={ cityName? cityName : ""}
                         />
                       </div>
                     </div>
@@ -1437,8 +1482,8 @@ function CreateUserComponent({ match }) {
                             <input
                               type="hidden"
                               name="is_default[]"
-                              // value={item.is_default ? item.is_default :""}
-                              // key={Math.random()}
+                              value={item.is_default ? item.is_default : ""}
+                            // key={Math.random()}
                             />
                             <input
                               type="checkbox"
