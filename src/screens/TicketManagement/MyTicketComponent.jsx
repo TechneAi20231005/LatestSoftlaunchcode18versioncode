@@ -243,6 +243,11 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
+            {console.log("s",searchResult)}
+            {console.log("dac",data)}
+
+            {console.log("dac",localStorage.getItem("id"))}
+
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
@@ -1800,6 +1805,7 @@ export default function MyTicketComponent() {
               setSearchResult(null);
               setSearchResult(res.data.data);
               const temp = res.data.data;
+              console.log("t",temp)
               var counter = 1;
               var searchResultExport = [];
               for (const key in temp) {
@@ -2123,6 +2129,7 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
+
 
             setUnpassedTickets(res.data.data.data);
           }
@@ -2695,11 +2702,11 @@ export default function MyTicketComponent() {
                             columns={searchResultColumns}
                             data={searchResult}
                             defaultSortField="title"
-                            pagination
+                            paginations
                             fixedHeader={true}
                             fixedHeaderScrollHeight={"500px"}
                             selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                             highlightOnHover={true}
                           />
                         )}

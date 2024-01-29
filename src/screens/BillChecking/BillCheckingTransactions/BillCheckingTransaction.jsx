@@ -163,7 +163,6 @@ function BillCheckingTransaction() {
                     </Link>
                   </li>
                 )}
-
             
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
@@ -785,7 +784,7 @@ function BillCheckingTransaction() {
             "Assign To": temp[key].assign_to_name,
             is_assign_to: temp[key].is_assign_to,
             level: temp[key].level,
-            total_level: temp[key].level + 1,
+            total_level: temp[key].level ,
             last_approved_by: temp[key].last_approved_by,
             approvedBy: temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
