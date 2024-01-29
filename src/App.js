@@ -18,8 +18,8 @@ const App = () => {
   const onlineStatus = useOnlineStatus();
   const [checkUrl, setCheckUrl] = useState(false)
   const checkBaseUrl = () => {
-    let base = `/${_base}/`;
-    if (base == window.location.pathname) {
+    let base = `/${_base}`;
+    if (base === window.location.pathname) {
       localStorage.clear();
       sessionStorage.clear();
       setToken(null)
