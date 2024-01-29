@@ -15,10 +15,10 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-function RoleComponent({location}) {
-    const [data, setData] = useState(null);
-    const [dataa, setDataa] = useState(null)
-    const [notify, setNotify] = useState();
+function RoleComponent({ location }) {
+  const [data, setData] = useState(null);
+  const [dataa, setDataa] = useState(null)
+  const [notify, setNotify] = useState();
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -66,12 +66,12 @@ function RoleComponent({location}) {
   };
 
 
-  
+
 
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "15%",
       cell: (row) => (
@@ -119,7 +119,7 @@ function RoleComponent({location}) {
       name: "Role",
       id: "role_id",
       sortable: true,
-      selector: (row) => {},
+      selector: (row) => { },
       cell: (row) => (
         <div>
           <OverlayTrigger overlay={<Tooltip>{row.role} </Tooltip>}>
@@ -182,46 +182,57 @@ function RoleComponent({location}) {
     },
   ];
 
-    const loadData = async () => {
-        const data = [];
-        const exportTempData = [];
-        await new RoleService().getRole().then(res => {
-            if (res.status === 200) {
-                let counter = 1;
-                const temp = res.data.data
-                for (const key in temp) {
-                    data.push({
-                        counter: counter++,
-                        id: temp[key].id,
-                        role: temp[key].role,
-                        is_active: temp[key].is_active,
-                        remark: temp[key].remark,
-                        created_at: temp[key].created_at,
-                        created_by: temp[key].created_by,
-                        updated_at: temp[key].updated_at,
-                        updated_by: temp[key].updated_by
-                    })
-                }
-                setData(null);
-                setData(data);
-                setDataa(data)
-                for (const i in data) {
-                    exportTempData.push({
-                        Sr: data[i].counter,
-                        Role: data[i].role,
-                        Status: data[i].is_active ? 'Active' : 'Deactive',
-                        Remark:data[i].remark,
-                        created_at: data[i].created_at,
-                        created_by: data[i].created_by,
-                        updated_at: data[i].updated_at,
-                        updated_by: data[i].updated_by,
-                    })
-                }
+  const loadData = async () => {
+    const data = [];
+    const exportTempData = [];
+    const role_name = localStorage.getItem("role_name");
 
-          setExportData(null);
-          setExportData(exportTempData);
+    await new RoleService().getRole().then(res => {
+      if (res.status === 200) {
+
+        let counter = 1;
+        const temp = res.data.data
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            role: temp[key].role,
+            is_active: temp[key].is_active,
+            remark: temp[key].remark,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: temp[key].updated_at,
+            updated_by: temp[key].updated_by
+          })
         }
-      })
+        if (role_name === "MasterAdmin" || role_name === "SuperAdmin") {
+          setData(null);
+          setData(data);
+          setDataa(data);
+        } else {
+          const filterUserRow = data.filter(role => role.role !== "User");
+          setData(null);
+          setData(filterUserRow);
+          setDataa(data);
+        }
+
+        for (const i in data) {
+          exportTempData.push({
+            Sr: data[i].counter,
+            Role: data[i].role,
+            Status: data[i].is_active ? 'Active' : 'Deactive',
+            Remark: data[i].remark,
+            created_at: data[i].created_at,
+            created_by: data[i].created_by,
+            updated_at: data[i].updated_at,
+            updated_by: data[i].updated_by,
+          })
+        }
+
+        setExportData(null);
+        setExportData(exportTempData);
+      }
+    })
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
@@ -233,66 +244,66 @@ function RoleComponent({location}) {
         );
       });
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
-
-      
-
-    }
-
-    const handleForm = id => async (e) => {
-        e.preventDefault();
-        setNotify(null);
-        const form = new FormData(e.target);
-        if (!id) {
-            await new RoleService().postRole(form).then(res => {
-                if (res.status === 200) {
-                    if (res.data.status === 1) {
-                        setNotify({ type: 'success', message: res.data.message });
-                        setModal({ showModal: false, modalData: "", modalHeader: "" });
-                        loadData();
-                    } else {
-                        setNotify({ type: 'danger', message: res.data.message });
-                    }
-                } else {
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog("Role", "Create_Role", "INSERT", res.message);
-                }
-            }).catch(error => {
-                const { response } = error;
-                const { request, ...errorObject } = response;
-                setNotify({ type: 'danger', message: "Request Error !!!" });
-                new ErrorLogService().sendErrorLog("Role", "Create_Role", "INSERT", errorObject.data.message);
-            })
-        } else {
-            await new RoleService().updateRole(id, form).then(res => {
-                if (res.status === 200) {
-                    if (res.data.status === 1) {
-                        setNotify({ type: 'success', message: res.data.message });
-                        setModal({ showModal: false, modalData: "", modalHeader: "" });
-                        loadData();
-                    } else {
-                        setNotify({ type: 'danger', message: res.data.message });
-                    }
-                } else {
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog("Role", "Edit_Role", "INSERT", res.message);
-                }
-            }).catch(error => {
-                const { response } = error;
-                const { request, ...errorObject } = response;
-                setNotify({ type: 'danger', message: "Request Error !!!" });
-                new ErrorLogService().sendErrorLog("Role", "Edit_Role", "INSERT", errorObject.data.message);
-            })
+    await new ManageMenuService().getRole(roleId).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const getRoleId = sessionStorage.getItem("role_id");
+          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
         }
+      }
+    })
+
+
+
+  }
+
+  const handleForm = id => async (e) => {
+    e.preventDefault();
+    setNotify(null);
+    const form = new FormData(e.target);
+    if (!id) {
+      await new RoleService().postRole(form).then(res => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setNotify({ type: 'success', message: res.data.message });
+            setModal({ showModal: false, modalData: "", modalHeader: "" });
+            loadData();
+          } else {
+            setNotify({ type: 'danger', message: res.data.message });
+          }
+        } else {
+          setNotify({ type: 'danger', message: res.message });
+          new ErrorLogService().sendErrorLog("Role", "Create_Role", "INSERT", res.message);
+        }
+      }).catch(error => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        setNotify({ type: 'danger', message: "Request Error !!!" });
+        new ErrorLogService().sendErrorLog("Role", "Create_Role", "INSERT", errorObject.data.message);
+      })
+    } else {
+      await new RoleService().updateRole(id, form).then(res => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setNotify({ type: 'success', message: res.data.message });
+            setModal({ showModal: false, modalData: "", modalHeader: "" });
+            loadData();
+          } else {
+            setNotify({ type: 'danger', message: res.data.message });
+          }
+        } else {
+          setNotify({ type: 'danger', message: res.message });
+          new ErrorLogService().sendErrorLog("Role", "Edit_Role", "INSERT", res.message);
+        }
+      }).catch(error => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        setNotify({ type: 'danger', message: "Request Error !!!" });
+        new ErrorLogService().sendErrorLog("Role", "Edit_Role", "INSERT", errorObject.data.message);
+      })
     }
-  
+  }
+
 
   // //Search As Enter key press
   // useEffect(() => {
@@ -322,7 +333,7 @@ function RoleComponent({location}) {
     //   window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     // }
     loadData();
-    
+
 
     const storedAlert = localStorage.getItem("alert");
     if (storedAlert) {
@@ -336,7 +347,7 @@ function RoleComponent({location}) {
   }, [location]);
 
   return (
-    
+
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
       <PageHeader
@@ -421,104 +432,104 @@ function RoleComponent({location}) {
         </div>
       </div>
 
-            <Modal centered show={modal.showModal}
-                onHide={(e) => {
-                    handleModal({
-                        showModal: false,
-                        modalData: "",
-                        modalHeader: ""
-                    })
-                }}>
-                <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+      <Modal centered show={modal.showModal}
+        onHide={(e) => {
+          handleModal({
+            showModal: false,
+            modalData: "",
+            modalHeader: ""
+          })
+        }}>
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
 
-                    <Modal.Header closeButton>
-                        <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
+          <Modal.Header closeButton>
+            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
 
-                        <div className="deadline-form">
-                            <div className="row g-3 mb-3">
-                                <div className="col-sm-12">
-                                    <label className="form-label font-weight-bold">Role Name :<Astrick color="red" size="13px" /></label>
-                                    <input type="text"
-                                        className="form-control form-control-sm"
-                                        id="role"
-                                        name="role"
-                                        maxLength={25}
-                                        required
-                                        defaultValue={modal.modalData ? modal.modalData.role : ""}
-                                        onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
-                                        onPaste={(e) => {
-                                            e.preventDefault()
-                                            return false;
-                                        }} onCopy={(e) => {
-                                            e.preventDefault()
-                                            return false;
-                                        }}
-                                    />
-                                </div>
-                                <div className="col-sm-12">
-                                    <label className="form-label font-weight-bold">Remark :</label>
-                                    <input type="text"
-                                        className="form-control form-control-sm"
-                                        id="remark"
-                                        name="remark"
-                                        maxLength={50}
-                                        defaultValue={modal.modalData ? modal.modalData.remark : ""}
-                                    />
-                                </div>
-                                {
-                                    modal.modalData &&
-                                    <div className="col-sm-12">
-                                        <label className="form-label font-weight-bold">Status :<Astrick color="red" size="13px" /></label>
-                                        <div className="row">
-                                            <div className="col-md-2">
-                                                <div className="form-check">
-                                                    <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
-                                                        value="1"
-                                                        defaultChecked={(modal.modalData && modal.modalData.is_active === 1) ? true : ((!modal.modalData) ? true : false)}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="is_active_1">
-                                                        Active
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-1">
-                                                <div className="form-check">
-                                                    <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
-                                                        readOnly={(modal.modalData) ? false : true}
-                                                        defaultChecked={(modal.modalData && modal.modalData.is_active === 0) ? true : false}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="is_active_0">
-                                                        Deactive
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+            <div className="deadline-form">
+              <div className="row g-3 mb-3">
+                <div className="col-sm-12">
+                  <label className="form-label font-weight-bold">Role Name :<Astrick color="red" size="13px" /></label>
+                  <input type="text"
+                    className="form-control form-control-sm"
+                    id="role"
+                    name="role"
+                    maxLength={25}
+                    required
+                    defaultValue={modal.modalData ? modal.modalData.role : ""}
+                    onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
+                    onPaste={(e) => {
+                      e.preventDefault()
+                      return false;
+                    }} onCopy={(e) => {
+                      e.preventDefault()
+                      return false;
+                    }}
+                  />
+                </div>
+                <div className="col-sm-12">
+                  <label className="form-label font-weight-bold">Remark :</label>
+                  <input type="text"
+                    className="form-control form-control-sm"
+                    id="remark"
+                    name="remark"
+                    maxLength={50}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                  />
+                </div>
+                {
+                  modal.modalData &&
+                  <div className="col-sm-12">
+                    <label className="form-label font-weight-bold">Status :<Astrick color="red" size="13px" /></label>
+                    <div className="row">
+                      <div className="col-md-2">
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
+                            value="1"
+                            defaultChecked={(modal.modalData && modal.modalData.is_active === 1) ? true : ((!modal.modalData) ? true : false)}
+                          />
+                          <label className="form-check-label" htmlFor="is_active_1">
+                            Active
+                          </label>
                         </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        {!modal.modalData && <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px" }}>
-                            Add
-                        </button>
-                        }
-                        {modal.modalData && checkRole && checkRole[10].can_update === 1 ? <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F" }}  >
-                            Update
-                        </button> : ""}
-                        <button type="button" className="btn btn-danger text-white"
-                            onClick={() => { handleModal({ showModal: false, modalData: "", modalHeader: "" }) }} >
-                            Cancel
-                        </button>
-                    </Modal.Footer>
-                </form>
-            </Modal>
+                      </div>
+                      <div className="col-md-1">
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
+                            readOnly={(modal.modalData) ? false : true}
+                            defaultChecked={(modal.modalData && modal.modalData.is_active === 0) ? true : false}
+                          />
+                          <label className="form-check-label" htmlFor="is_active_0">
+                            Deactive
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            {!modal.modalData && <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F", width: '80px', padding: "8px" }}>
+              Add
+            </button>
+            }
+            {modal.modalData && checkRole && checkRole[10].can_update === 1 ? <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F" }}  >
+              Update
+            </button> : ""}
+            <button type="button" className="btn btn-danger text-white"
+              onClick={() => { handleModal({ showModal: false, modalData: "", modalHeader: "" }) }} >
+              Cancel
+            </button>
+          </Modal.Footer>
+        </form>
+      </Modal>
 
-        </div>
+    </div>
 
-    )
+  )
 }
 
 function RoleDropdown(props) {

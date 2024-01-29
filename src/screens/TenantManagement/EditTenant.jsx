@@ -5,7 +5,6 @@ import { _base } from "../../settings/constants";
 import PageHeader from "../../components/Common/PageHeader";
 
 import TenantService from "../../services/MastersService/TenantService";
-
 import { Astrick } from "../../components/Utilities/Style";
 import * as Validation from "../../components/Utilities/Validation";
 import Select from "react-select";
@@ -13,6 +12,7 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
+import Alert from "../../components/Common/Alert";
 
 export default function EditTenant({ match }) {
   const history = useNavigate();
@@ -126,7 +126,7 @@ export default function EditTenant({ match }) {
     setNotify(null);
     await new TenantService().updateTenant(tenanatId, formData).then((res) => {
       if (res.status === 200) {
-        if (res.data.status === 1) {
+        if (res.data.status == 1) {
           history(
             {
               pathname: `/${_base}/TenantMaster`,
@@ -134,6 +134,7 @@ export default function EditTenant({ match }) {
             { state: { alert: { type: "success", message: res.data.message } } }
           );
         } else {
+
           setNotify({ type: "danger", message: res.data.message });
         }
       }
@@ -160,6 +161,8 @@ export default function EditTenant({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
+
+      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
         <form onSubmit={handleForm}>
