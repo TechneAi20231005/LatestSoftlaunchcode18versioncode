@@ -10,15 +10,24 @@ import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import { Modal } from "react-bootstrap";
 import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
+import { subModuleMaster } from "./SubModuleMasterAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { submoduleSlice } from "./SubModuleMasterSlice";
 
 function SubModuleComponent() {
+    const dispatch=useDispatch()
+    const subModuleMasterdata=useSelector(submoduleSlice=>submoduleSlice.subModuleMaster.subModuleMaster)
+    const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22));
+    console.log(subModuleMasterdata);
+
     const location = useLocation()
 
     const [notify, setNotify] = useState(null);
     const [data, setData] = useState(null);
 
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
 
@@ -85,49 +94,51 @@ function SubModuleComponent() {
     ];
 
     const loadData = async () => {
-        setShowLoaderModal(null);
-        setShowLoaderModal(true);
-        const data = [];
-        await new SubModuleService().getSubModule().then(res => {
-            if (res.status === 200) {
-        setShowLoaderModal(false);
+        dispatch(subModuleMaster())
+        dispatch(getRoles())
+        // setShowLoaderModal(null);
+        // setShowLoaderModal(true);
+        // const data = [];
+        // await new SubModuleService().getSubModule().then(res => {
+        //     if (res.status === 200) {
+        // setShowLoaderModal(false);
 
-                let counter = 1;
-                const temp = res.data.data
-                for (const key in temp) {
-                    data.push({
-                        counter: counter++,
-                        id: temp[key].id,
-                        sub_module_name: temp[key].sub_module_name,
-                        module_name: temp[key].module_name,
-                        project_name: temp[key].project_name,
-                        is_active: temp[key].is_active,
-                        remark: temp[key].remark,
-                        updated_at: temp[key].updated_at,
-                        updated_by: temp[key].updated_by
-                    })
-                }
-                setData(null);
-                setData(data);
-            } else {
-                new ErrorLogService().sendErrorLog("SubModule Master", "Get_SubModule", "INSERT", res.message);
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("SubModule Master", "Get_SubModule", "INSERT", errorObject.data.message);
-        })
+        //         let counter = 1;
+        //         const temp = res.data.data
+        //         for (const key in temp) {
+        //             data.push({
+        //                 counter: counter++,
+        //                 id: temp[key].id,
+        //                 sub_module_name: temp[key].sub_module_name,
+        //                 module_name: temp[key].module_name,
+        //                 project_name: temp[key].project_name,
+        //                 is_active: temp[key].is_active,
+        //                 remark: temp[key].remark,
+        //                 updated_at: temp[key].updated_at,
+        //                 updated_by: temp[key].updated_by
+        //             })
+        //         }
+        //         setData(null);
+        //         setData(data);
+        //     } else {
+        //         new ErrorLogService().sendErrorLog("SubModule Master", "Get_SubModule", "INSERT", res.message);
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("SubModule Master", "Get_SubModule", "INSERT", errorObject.data.message);
+        // })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-        setShowLoaderModal(false);
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        // setShowLoaderModal(false);
 
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
     }
 
     useEffect(() => {
@@ -138,7 +149,7 @@ function SubModuleComponent() {
     }, [])
 
     useEffect(()=>{
-        if(checkRole && checkRole[21].can_read === 0){
+        if(checkRole && checkRole[0]?.can_read === 0){
           // alert("Rushi")
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
@@ -151,7 +162,7 @@ function SubModuleComponent() {
 
             <PageHeader headerTitle="Sub-Module Master" renderRight={() => {
                 return <div className="col-auto d-flex w-sm-100">
-                    {checkRole && checkRole[21].can_create === 1 ?
+                    {checkRole && checkRole[0]?.can_create === 1 ?
                         <Link to={`/${_base}/SubModule/Create`} className="btn btn-dark btn-set-task w-sm-100">
                             <i className="icofont-plus-circle me-2 fs-6"></i>Add Sub-Module
                         </Link> : ""}
@@ -182,9 +193,9 @@ function SubModuleComponent() {
 
             <div className="row clearfix g-3">
                 <div className="col-sm-12">
-                    {data && <DataTable
+                    {subModuleMasterdata && <DataTable
                         columns={columns}
-                        data={data}
+                        data={subModuleMasterdata}
                         defaultSortField="title"
                         pagination
                         selectableRows={false}

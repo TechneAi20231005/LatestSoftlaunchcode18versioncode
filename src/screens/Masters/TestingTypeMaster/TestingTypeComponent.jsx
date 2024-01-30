@@ -13,8 +13,16 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import TestingTypeServices from "../../../services/MastersService/TestingTypeService";
+import { useDispatch, useSelector } from "react-redux";
+import { testingData } from "./TestingTypeComponentAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import TestingTypeComponentSlices from "./TestingTypeComponentSlices";
 
 function TestingTypeComponent() {
+  const dispatch=useDispatch()
+  const testingtypeData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.testingData)
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49));
+
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const [modal, setModal] = useState({
@@ -23,11 +31,10 @@ function TestingTypeComponent() {
     modalHeader: "",
   });
 
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+
   const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [type, setType] = useState(null);
 
   const handleModal = (data) => {
@@ -153,56 +160,58 @@ function TestingTypeComponent() {
   ];
 
   const loadData = async () => {
-    const data = [];
-    const exportTempData = [];
-    await new TestingTypeServices()
-      .getAlltestingType()
-      .then((res) => {
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              testing_type: temp[key].testing_type,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setType(data);
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              testing_type: temp[i].testing_type,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              Remark:data[i].remark,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "State",
-          "Get_State",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    dispatch(testingData())
+    dispatch(getRoles())
+    // const data = [];
+    // const exportTempData = [];
+    // await new TestingTypeServices()
+    //   .getAlltestingType()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           testing_type: temp[key].testing_type,
+    //           is_active: temp[key].is_active,
+    //           remark: temp[key].remark,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(data);
+    //       setType(data);
+    //       for (const i in data) {
+    //         exportTempData.push({
+    //           Sr: data[i].counter,
+    //           testing_type: temp[i].testing_type,
+    //           Status: data[i].is_active ? "Active" : "Deactive",
+    //           Remark:data[i].remark,
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: data[i].updated_at,
+    //           updated_by: data[i].updated_by,
+    //         });
+    //       }
+    //       setExportData(null);
+    //       setExportData(exportTempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "State",
+    //       "Get_State",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
     // await new CountryService().getCountrySort().then((res) => {
     //   if (res.status === 200) {
@@ -217,14 +226,14 @@ function TestingTypeComponent() {
     //   }
     // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleForm = (id) => async (e) => {
@@ -311,7 +320,7 @@ function TestingTypeComponent() {
   }, []);
 
   useEffect(()=>{
-    if(checkRole && checkRole[39].can_read === 0){
+    if(checkRole && checkRole[0]?.can_read === 0){
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
@@ -326,7 +335,7 @@ function TestingTypeComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[5].can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -388,10 +397,10 @@ function TestingTypeComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {testingtypeData && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={testingtypeData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -524,7 +533,7 @@ function TestingTypeComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[5].can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"

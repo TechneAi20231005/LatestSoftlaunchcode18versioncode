@@ -2544,13 +2544,22 @@ import {
   deleteTask,
 } from "../../services/TicketService/TaskService";
 import { _base } from "../../settings/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "./DashboardAction";
+import DashboardSlice from "./DashboardSlice";
+
+
 
 export default function HrDashboard(props) {
   const history = useNavigate();
-  const location = useLocation()
+  const dispatch = useDispatch();
+  const getRolesData=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles)
+  console.log(getRolesData.filter((d)=>d.menu_id==10));
+
+
+  const location = useLocation();
   const data = props.data;
-  var v1 = 50;
-  var v2 = 50;
+
   const [count, setCount] = useState();
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
@@ -2660,9 +2669,18 @@ export default function HrDashboard(props) {
       }
     });
   };
+  const loadData=()=>{
+    dispatch(getRoles())
+
+
+  }
+
+ 
 
   useEffect(() => {
     get();
+    loadData()
+
   }, []);
 
   return (
@@ -2927,7 +2945,9 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                              <Link
+                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                              >
                                 {ele.task_name ? (
                                   <h6
                                     className="fw-bold mb-0 small-14"
@@ -3454,112 +3474,6 @@ export default function HrDashboard(props) {
                   upcomingTask.map((ele, index) => {
                     if (ele.time_status == "START") {
                       return (
-                        // <div
-                        //   className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                        //   style={{ backgroundColor: "#EBF5FB" }}
-                        // >
-                        //   <div className="d-flex align-items-center flex-fill">
-                        //     <div className="d-flex flex-column ps-3">
-                        //       <Link to={`Ticket/Task/${ele.ticket_id}`}>
-                        //         <h6 className="fw-bold mb-0 small-14">
-                        //           {index + 1}. {ele.main_ticket_id}-
-                        //           {ele.task_name.length < 20
-                        //             ? ele.task_name
-                        //             : ele.task_name.substring(0, 20) + "...."}
-                        //         </h6>
-                        //       </Link>
-                        //     </div>
-                        //   </div>
-                        //   {ele.status != "COMPLETED" && (
-                        //     <button
-                        //       type="button"
-                        //       style={{
-                        //         border: "none",
-                        //         borderRadius: "25%",
-                        //         height: "35px",
-                        //         width: "35px",
-                        //         textAlign: "center",
-                        //         margin: "0px",
-                        //         padding: "0px",
-                        //       }}
-                        //       title="Start Task"
-                        //       onClick={(e) =>
-                        //         handleTimer(e, ele.ticket_id, ele.id, "START")
-                        //       }
-                        //     >
-                        //       <i
-                        //         className="icofont-ui-play"
-                        //         style={{
-                        //           fontSize: "20px",
-                        //           color: "#1ABC9C",
-                        //           margin: "auto",
-                        //         }}
-                        //       ></i>
-                        //     </button>
-                        //   )}
-                        //   {ele && ele && ele.status == "TO_DO" ? (
-                        //     <span
-                        //       style={{ width: "80px", marginRight: "5px" }}
-                        //       className="badge bg-danger p-2"
-                        //     >
-                        //       {ele.status}
-                        //     </span>
-                        //   ) : ele.status == "IN_PROGRESS" ? (
-                        //     <span
-                        //       style={{ width: "80px", marginRight: "5px" }}
-                        //       className="badge bg-warning p-2"
-                        //     >
-                        //       {ele.status}
-                        //     </span>
-                        //   ) : (
-                        //     <span
-                        //       style={{ width: "80px", marginRight: "5px" }}
-                        //       className="badge bg-success p-2"
-                        //     >
-                        //       {ele.status}
-                        //     </span>
-                        //   )}
-                        //   <span
-                        //     className="badge bg-primary p-2"
-                        //     style={{ width: "100px", marginRight: "5px" }}
-                        //   >
-                        //     {ele.end_date}
-                        //   </span>
-                        //   <div className="time-block text-truncate">
-                        //     {ele.priority === "Very High" && (
-                        //       <span
-                        //         className="badge bg-danger p-2"
-                        //         style={{ width: "100px" }}
-                        //       >
-                        //         {ele.priority}
-                        //       </span>
-                        //     )}
-                        //     {ele.priority === "High" && (
-                        //       <span
-                        //         className="badge bg-danger p-2"
-                        //         style={{ width: "100px" }}
-                        //       >
-                        //         {ele.priority}
-                        //       </span>
-                        //     )}
-                        //     {ele.priority === "Medium" && (
-                        //       <span
-                        //         className="badge bg-info p-2"
-                        //         style={{ width: "100px" }}
-                        //       >
-                        //         {ele.priority}
-                        //       </span>
-                        //     )}
-                        //     {ele.priority === "Low" && (
-                        //       <span
-                        //         className="badge bg-success p-2"
-                        //         style={{ width: "100px" }}
-                        //       >
-                        //         {ele.priority}
-                        //       </span>
-                        //     )}
-                        //   </div>
-                        // </div>
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
                           style={{ backgroundColor: "#EBF5FB" }}

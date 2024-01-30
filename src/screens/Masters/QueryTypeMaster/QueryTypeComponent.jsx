@@ -23,11 +23,26 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
+import { useDispatch, useSelector } from "react-redux";
+import { queryTypeSlice } from "./QueryTypeComponetSlice";
+import { queryTypeData } from "./QueryTypeComponetAction";
+import { queryType } from "./QueryTypeComponetAction";
 
 function QueryTypeComponent() {
+  const dispatch = useDispatch();
+  const querygroupdata = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData
+  );
+  const queryTypedata = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
+  );
+
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
+
   const [isActive, setIsActive] = useState(1);
 
   const [modal, setModal] = useState({
@@ -45,7 +60,6 @@ function QueryTypeComponent() {
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -211,7 +225,7 @@ function QueryTypeComponent() {
     },
     {
       name: "Form Name",
-      selector: (row) => row.form_name,
+      selector: (row) => row.form_id_name,
       sortable: true,
       cell: (row) => (
         <div
@@ -219,14 +233,14 @@ function QueryTypeComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.form_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.form_name} </Tooltip>}>
+          {row.form_id_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.form_id_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.form_name && row.form_name.length < 10
-                    ? row.form_name
-                    : row.form_name.substring(0, 10) + "...."}
+                  {row.form_id_name && row.form_id_name.length < 10
+                    ? row.form_id_name
+                    : row.form_id_name.substring(0, 10) + "...."}
                 </span>
               </div>
             </OverlayTrigger>
@@ -450,70 +464,71 @@ function QueryTypeComponent() {
   ];
 
   const loadDataEditPopup = async () => {
-    const data = [];
-    const exportTempQueryGroupData = [];
-    await new QueryTypeService()
-      .getAllQueryGroup()
-      .then((res) => {
-        if (res.data.status == 1) {
-          setQueryGroupDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.group_name }))
-          );
-        }
+    dispatch(queryTypeData());
+    // const data = [];
+    // const exportTempQueryGroupData = [];
+    // await new QueryTypeService()
+    //   .getAllQueryGroup()
+    //   .then((res) => {
+    //     if (res.data.status == 1) {
+    //       setQueryGroupDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.group_name }))
+    //       );
+    //     }
 
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              group_name: temp[key].group_name,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setQueryGroupData(data);
+    //     if (res.status === 200) {
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           group_name: temp[key].group_name,
+    //           is_active: temp[key].is_active,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setQueryGroupData(data);
 
-          for (const i in data) {
-            exportTempQueryGroupData.push({
-              Sr: data[i].counter,
-              group_name: data[i].group_name,
-              is_active: data[i].is_active,
-              created_at: data[i].created_at,
-              created_by: data[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-              // Query_Type_Name: data[i].query_type_name,
-              // Status: data[i].is_active ? 'Active' : 'Deactive',
-              // created_at: data[i].created_at,
-              // created_by: data[i].created_by,
-              // updated_at: data[i].updated_at,
-              // updated_by: data[i].updated_by,
-              // query_group_data: temp[i].query_group_data,
-            });
-          }
+    //       for (const i in data) {
+    //         exportTempQueryGroupData.push({
+    //           Sr: data[i].counter,
+    //           group_name: data[i].group_name,
+    //           is_active: data[i].is_active,
+    //           created_at: data[i].created_at,
+    //           created_by: data[i].created_by,
+    //           updated_at: data[i].updated_at,
+    //           updated_by: data[i].updated_by,
+    //           // Query_Type_Name: data[i].query_type_name,
+    //           // Status: data[i].is_active ? 'Active' : 'Deactive',
+    //           // created_at: data[i].created_at,
+    //           // created_by: data[i].created_by,
+    //           // updated_at: data[i].updated_at,
+    //           // updated_by: data[i].updated_by,
+    //           // query_group_data: temp[i].query_group_data,
+    //         });
+    //       }
 
-          setExportQueryGroupData(null);
-          setExportQueryGroupData(exportTempQueryGroupData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "QueryType",
-          "Get_QueryType",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //       setExportQueryGroupData(null);
+    //       setExportQueryGroupData(exportTempQueryGroupData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "QueryType",
+    //       "Get_QueryType",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   // ************************************ End Edit & View Popup **********************************
@@ -610,70 +625,71 @@ function QueryTypeComponent() {
   }
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    const data = [];
-    const exportTempData = [];
-    await new QueryTypeService()
-      .getQueryType()
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
+    dispatch(queryType());
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
+    // const data = [];
+    // const exportTempData = [];
+    // await new QueryTypeService()
+    //   .getQueryType()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setShowLoaderModal(false);
 
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              query_type_name: temp[key].query_type_name,
-              form_id: temp[key].form_id,
-              customer_id: temp[key].customer_id,
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           query_type_name: temp[key].query_type_name,
+    //           form_id: temp[key].form_id,
+    //           customer_id: temp[key].customer_id,
 
-              form_name: temp[key].form_id_name,
-              query_group_name: temp[key].query_group_name,
-              query_group: temp[key].query_group,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-              query_group_data: temp[key].query_group_data,
-            });
-          }
-          setData(null);
-          setData(data);
-          setDataa(data);
+    //           form_name: temp[key].form_id_name,
+    //           query_group_name: temp[key].query_group_name,
+    //           query_group: temp[key].query_group,
+    //           is_active: temp[key].is_active,
+    //           remark: temp[key].remark,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //           query_group_data: temp[key].query_group_data,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(data);
+    //       setDataa(data);
 
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              Query_Type_Name: data[i].query_type_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              Remark: data[i].remark,
-              created_at: data[i].created_at,
-              created_by: data[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-              query_group_data: temp[i].query_group_data,
-            });
-          }
+    //       for (const i in data) {
+    //         exportTempData.push({
+    //           Sr: data[i].counter,
+    //           Query_Type_Name: data[i].query_type_name,
+    //           Status: data[i].is_active ? "Active" : "Deactive",
+    //           Remark: data[i].remark,
+    //           created_at: data[i].created_at,
+    //           created_by: data[i].created_by,
+    //           updated_at: data[i].updated_at,
+    //           updated_by: data[i].updated_by,
+    //           query_group_data: temp[i].query_group_data,
+    //         });
+    //       }
 
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "QueryType",
-          "Get_QueryType",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //       setExportData(null);
+    //       setExportData(exportTempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "QueryType",
+    //       "Get_QueryType",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
       if (res.data.status == 1) {
@@ -699,16 +715,16 @@ function QueryTypeComponent() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleClearData = (e) => {
@@ -847,7 +863,7 @@ function QueryTypeComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[13].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -865,7 +881,7 @@ function QueryTypeComponent() {
           renderRight={() => {
             return (
               <div className="col-auto d-flex w-sm-100">
-                {checkRole && checkRole[13].can_create === 1 ? (
+                {checkRole && checkRole[0]?.can_create === 1 ? (
                   <button
                     className="btn btn-dark btn-set-task w-sm-100"
                     onClick={() => {
@@ -929,10 +945,10 @@ function QueryTypeComponent() {
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {data && (
+                {queryTypedata && (
                   <DataTable
                     columns={columns}
-                    data={data}
+                    data={queryTypedata}
                     defaultSortField="title"
                     pagination
                     selectableRows={false}
@@ -1020,7 +1036,7 @@ function QueryTypeComponent() {
                   </div>
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
-                      Select Customer : 
+                      Select Customer :
                     </label>
 
                     <Select
@@ -1042,9 +1058,9 @@ function QueryTypeComponent() {
                         Query Group : <Astrick color="red" size="13px" />
                       </label>
 
-                      {queryGroupDropdown && (
+                      {querygroupdata && (
                         <Select
-                          options={queryGroupDropdown}
+                          options={querygroupdata}
                           id="query_group_data"
                           name="query_group_data[]"
                           isMulti={true}
@@ -1215,7 +1231,7 @@ function QueryTypeComponent() {
               )}
               {modal.modalData &&
               checkRole &&
-              checkRole[13].can_update === 1 ? (
+              checkRole[0]?.can_update === 1 ? (
                 <button
                   type="submit"
                   className="btn btn-primary text-white"

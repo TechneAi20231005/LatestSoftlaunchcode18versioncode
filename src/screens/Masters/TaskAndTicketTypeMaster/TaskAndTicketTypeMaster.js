@@ -15,8 +15,17 @@ import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 import { el } from "date-fns/locale";
+import { taskAndTicketMaster } from "./TaskAndTicketTypeMasterAction";
+import { useDispatch, useSelector } from "react-redux";
+import TaskAndTicketTypeMasterSlice from "./TaskAndTicketTypeMasterSlice";
 
 function TaskAndTicketTypeMaster(props) {
+  const dispatch=useDispatch()
+  const tasktype=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.taskAndTicketMaster)
+  const checkRole = useSelector((DashboardSlice) =>
+  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+);
+  console.log("tasktype",tasktype);
   const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
@@ -40,58 +49,60 @@ function TaskAndTicketTypeMaster(props) {
     // Add more options as needed
   ];
   const loadData = async () => {
-    const exportTempData = [];
+    dispatch(taskAndTicketMaster())
+    
+    // const exportTempData = [];
 
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          let counter = 1;
-          var tempData = [];
-          const temp = res.data.data;
+    // await new TaskTicketTypeService().getAllType().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       let counter = 1;
+    //       var tempData = [];
+    //       const temp = res.data.data;
 
-          for (const key in temp) {
-            tempData.push({
-              counter: counter++,
-              id: temp[key].id,
-              type: temp[key].type,
-              parent_id: temp[key].parent_id,
+    //       for (const key in temp) {
+    //         tempData.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           type: temp[key].type,
+    //           parent_id: temp[key].parent_id,
 
-              type_name: temp[key].type_name,
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(tempData);
+    //           type_name: temp[key].type_name,
+    //           remark: temp[key].remark,
+    //           is_active: temp[key].is_active,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(tempData);
 
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
+    //       for (const i in temp) {
+    //         exportTempData.push({
+    //           SrNo: exportTempData.length + 1,
 
-              id: temp[i].id,
-              type: temp[i].type,
+    //           id: temp[i].id,
+    //           type: temp[i].type,
 
-              parent_name: temp[i].parent_name,
-              type_name: temp[i].type_name,
-              remark: temp[i].remark,
-              is_active: temp[i].is_active,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
+    //           parent_name: temp[i].parent_name,
+    //           type_name: temp[i].type_name,
+    //           remark: temp[i].remark,
+    //           is_active: temp[i].is_active,
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: temp[i].updated_at,
+    //           updated_by: temp[i].updated_by,
+    //         });
+    //       }
 
-          setExportData(null);
+    //       setExportData(null);
 
-          setExportData(exportTempData);
-        }
-      }
-    });
+    //       setExportData(exportTempData);
+    //     }
+    //   }
+    // });
 
     await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
@@ -605,10 +616,10 @@ function TaskAndTicketTypeMaster(props) {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {tasktype && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={tasktype}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

@@ -19,13 +19,28 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import PaymentTemplateMasterSlice from "./BillTypeMaster/PaymentTemplateMasterSlice";
+import { paymentTemplate } from "./BillTypeMaster/PaymentTemplateMasterAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function PaymentTemplateMaster() {
+  const dispatch = useDispatch();
+  const paymentdata = useSelector(
+    (PaymentTemplateMasterSlice) =>
+      PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 45)
+  );
+
+  console.log("paymentdata", checkRole);
+
   const [paymentType, setPaymentType] = useState("Weekly");
 
-  const paymentModeRef= useRef(null)
+  const paymentModeRef = useRef(null);
 
-  const [days,setDays]=useState()
+  const [days, setDays] = useState();
 
   const options = [
     { value: "01", label: "1" },
@@ -59,10 +74,6 @@ function PaymentTemplateMaster() {
     { value: "29", label: "29" },
     { value: "30", label: "30" },
     { value: "31", label: "31" },
-   
-    
-
-
   ];
 
   const weeks = [
@@ -109,8 +120,7 @@ function PaymentTemplateMaster() {
     });
   }
 
-  const billDayRef =useRef(null)
-
+  const billDayRef = useRef(null);
 
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
@@ -124,11 +134,9 @@ function PaymentTemplateMaster() {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
-  const fileInputRef = useRef(null);
-  const [dropdowns, setDropdowns] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const columns = [
     {
@@ -247,11 +255,7 @@ function PaymentTemplateMaster() {
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.bill_day && row.bill_day.length } 
-                    
-                    
-                    
-                    
+                  {row.bill_day && row.bill_day.length}
                 </span>
               </div>
             </OverlayTrigger>
@@ -356,37 +360,40 @@ function PaymentTemplateMaster() {
   };
 
   const loadData = async () => {
-    const data = [];
-    await new PaymentTemplateService().getPaymentTemplate().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            id: temp[key].id,
-            counter: counter++,
-            bill_type: temp[key].bill_type,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by,
-            template_name: temp[key].template_name,
-            payment_type: temp[key].payment_type,
-            payment_weekly: temp[key].payment_weekly,
-            bill_day: temp[key].bill_day,
-            min_days: temp[key].min_days,
-            payment_type_name: temp[key].payment_type_name,
-            bill_type_name: temp[key].bill_type_name,
-            payment_weekly_name: temp[key].payment_weekly_name,
-          });
-        }
-        setData(null);
-        setData(data);
-        setPaymentType("Weekly");
-      }
-    });
+    dispatch(paymentTemplate());
+    dispatch(getRoles());
+
+    // const data = [];
+    // await new PaymentTemplateService().getPaymentTemplate().then((res) => {
+    //   if (res.status === 200) {
+    //     let counter = 1;
+    //     const temp = res.data.data;
+    //     for (const key in temp) {
+    //       data.push({
+    //         id: temp[key].id,
+    //         counter: counter++,
+    //         bill_type: temp[key].bill_type,
+    //         is_active: temp[key].is_active,
+    //         remark: temp[key].remark,
+    //         created_at: temp[key].created_at,
+    //         created_by: temp[key].created_by,
+    //         updated_at: temp[key].updated_at,
+    //         updated_by: temp[key].updated_by,
+    //         template_name: temp[key].template_name,
+    //         payment_type: temp[key].payment_type,
+    //         payment_weekly: temp[key].payment_weekly,
+    //         bill_day: temp[key].bill_day,
+    //         min_days: temp[key].min_days,
+    //         payment_type_name: temp[key].payment_type_name,
+    //         bill_type_name: temp[key].bill_type_name,
+    //         payment_weekly_name: temp[key].payment_weekly_name,
+    //       });
+    //     }
+    //     setData(null);
+    //     setData(data);
+    //     setPaymentType("Weekly");
+    //   }
+    // });
 
     await new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
@@ -400,14 +407,14 @@ function PaymentTemplateMaster() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
@@ -447,14 +454,19 @@ function PaymentTemplateMaster() {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    setNotify(null);  
-    if(  paymentModeRef&& paymentModeRef.current.value == "Monthly" &&billDayRef.current && billDayRef.current.commonProps.hasValue === false){
-      alert("please select  bill days")
-      e.preventDefault()
-      billDayRef.current.clearValue()
-      return
+    setNotify(null);
+    if (
+      paymentModeRef &&
+      paymentModeRef.current.value == "Monthly" &&
+      billDayRef.current &&
+      billDayRef.current.commonProps.hasValue === false
+    ) {
+      alert("please select  bill days");
+      e.preventDefault();
+      billDayRef.current.clearValue();
+      return;
     }
-    
+
     if (!id) {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
@@ -535,7 +547,7 @@ function PaymentTemplateMaster() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[49].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -604,10 +616,10 @@ function PaymentTemplateMaster() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {paymentdata && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={paymentdata}
                   defaultSortFieldId="id"
                   pagination
                   selectableRows={false}
@@ -733,8 +745,6 @@ function PaymentTemplateMaster() {
                       Payment Weekly :<Astrick color="red" size="13px" />
                     </label>
                     <Select
-                     
-                     
                       options={weeks.map((d) => ({ label: d, value: d }))}
                       id="payment_weekly"
                       name="payment_weekly[]"
@@ -784,15 +794,15 @@ function PaymentTemplateMaster() {
                       //   }
                       // />
 
-                    <Select
-                       options={options}
-                       id="bill_day"
-                       name="bill_day"
-                       isSearchable 
-                       ref={billDayRef}
-                       isMulti
-                       isClearable
-                        />
+                      <Select
+                        options={options}
+                        id="bill_day"
+                        name="bill_day"
+                        isSearchable
+                        ref={billDayRef}
+                        isMulti
+                        isClearable
+                      />
                     )}
                     {!modal.modalData && (
                       // <input
@@ -806,15 +816,14 @@ function PaymentTemplateMaster() {
                       //   }
                       // />
 
-                      <Select 
-                       options ={options}
-                       id="days" 
-                       name="days"
-                       isSearchable 
-                       isMulti
-                       isClearable
-                       ref={billDayRef}
-
+                      <Select
+                        options={options}
+                        id="days"
+                        name="days"
+                        isSearchable
+                        isMulti
+                        isClearable
+                        ref={billDayRef}
                       />
                     )}
                   </div>
