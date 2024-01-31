@@ -16,8 +16,12 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { dashboardSlice } from "../../Dashboard/DashbordSlice";
+
 
 import { Spinner } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { getCityData } from "../../Dashboard/DashboardAction";
 function CityComponent() {
   const [data, setData] = useState(null);
 
@@ -48,7 +52,10 @@ function CityComponent() {
   });
 
   const [exportData, setExportData] = useState(null);
-
+  const dispatch = useDispatch();
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
   const searchRef = useRef();
 
   function SearchInputData(data, search) {
@@ -188,6 +195,8 @@ function CityComponent() {
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
+    dispatch(getCityData());
+
     // Load data and update state.
     const data = [];
     const exportTempData = [];
@@ -523,10 +532,10 @@ function CityComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {cityData && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={cityData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
