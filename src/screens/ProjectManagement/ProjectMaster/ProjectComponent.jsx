@@ -371,9 +371,9 @@ function ProjectComponent() {
 
 function ProjectDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new ProjectService().getProject().then(res => {
+     new ProjectService().getProject().then(res => {
       if (res.status === 200) {
         let counter = 1;
         var data = res.data.data;

@@ -68,7 +68,7 @@ const [checkUrl, setCheckUrl] = useState(false)
   return (
     <>
       <div id="mytask-layout" className="theme-indigo">
-        {!token && localStorage.length == 0 && checkUrl == false && (
+        {!token  && (
           <AuthIndex/>
           )}
     
