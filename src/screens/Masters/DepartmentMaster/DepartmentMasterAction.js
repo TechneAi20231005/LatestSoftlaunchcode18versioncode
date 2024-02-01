@@ -12,3 +12,29 @@ export const departmentData = createAsyncThunk(
     }
   }
 );
+
+export const postdepartment = createAsyncThunk(
+  "postdepartment",
+  async (config, thunkapi) => {
+    try {
+      const service = new DepartmentService();
+      const response = await service.postDepartment(config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+export const updateDepartment = createAsyncThunk(
+  "updateDepartment",
+  async (config, thunkapi) => {
+    try {
+      const service = new DepartmentService();
+      const response = await service.updateDepartment(config.id, config.payload);
+      console.log("updateDepartment",response);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);

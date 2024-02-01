@@ -67,8 +67,6 @@ function CityComponent() {
     });
   }
 
-  
-
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
     const result = SearchInputData(data, SearchValue);

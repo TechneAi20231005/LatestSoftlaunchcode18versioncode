@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getRoleData, postRole, updatedRole } from "./RoleMasterAction";
+import {
+  getDesignationData,
+  postDesignationData,
+  updatedDesignationData,
+} from "./DesignationAction";
 
 const initialState = {
   status: "",
@@ -10,13 +14,13 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
-  exportRoleData:[],
 
-  getRoleData: [],
+  getDesignationData: [],
+  exportDesignation: [],
 };
 
-export const rolemasterSlice = createSlice({
-  name: "rolemasterSlice",
+export const desegnationSlice = createSlice({
+  name: "desegnationSlice",
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -31,91 +35,93 @@ export const rolemasterSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getRoleData.pending, (state) => {
+    builder.addCase(getDesignationData.pending, (state) => {
       state.status = "loading";
     });
-    builder.addCase(getRoleData.fulfilled, (state, action) => {
+    builder.addCase(getDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
+      console.log(payload);
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getRoleData = payload.data.data;
+        let getDesignationData = payload.data.data;
+
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
-        for (let i = 0; i < getRoleData.length; i++) {
-          getRoleData[i].counter = count++;
+        for (let i = 0; i < getDesignationData.length; i++) {
+          getDesignationData[i].counter = count++;
         }
-        state.getRoleData = [...getRoleData];
-        let exportRoleData = [];
-        for (const i in getRoleData) {
-          exportRoleData.push({
-            Sr: getRoleData[i].counter,
-            Role: getRoleData[i].role,
-            Status: getRoleData[i].is_active ? "Active" : "Deactive",
-            Remark: getRoleData[i].remark,
-            created_at: getRoleData[i].created_at,
-            created_by: getRoleData[i].created_by,
-            updated_at: getRoleData[i].updated_at,
-            updated_by: getRoleData[i].updated_by,
+        state.getDesignationData = [...getDesignationData];
+        let exportDesignation = [];
+        for (const i in getDesignationData) {
+          exportDesignation.push({
+            Sr: getDesignationData[i].counter,
+            Role: getDesignationData[i].role,
+            Status: getDesignationData[i].is_active ? "Active" : "Deactive",
+            Remark: getDesignationData[i].remark,
+            created_at: getDesignationData[i].created_at,
+            created_by: getDesignationData[i].created_by,
+            updated_at: getDesignationData[i].updated_at,
+            updated_by: getDesignationData[i].updated_by,
           });
         }
-        state.exportRoleData=exportRoleData
+        state.exportDesignation = exportDesignation;
       }
     });
-    builder.addCase(getRoleData.rejected, (state) => {
+    builder.addCase(getDesignationData.rejected, (state) => {
       state.status = "rejected";
     });
 
     //__________________________PostRole________________________________
-    builder.addCase(postRole.pending, (state) => {
+    builder.addCase(postDesignationData.pending, (state) => {
       state.status = "loading";
     });
-    builder.addCase(postRole.fulfilled, (state, action) => {
+    builder.addCase(postDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
-        let postRole = payload.data.data;
-        console.log(postRole);
+        let postDesignationData = payload.data.data;
+        console.log(postDesignationData);
         state.status = "succeded";
         state.showLoaderModal = false;
-        state.postRole = postRole;
+        state.postDesignationData = postDesignationData;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }
     });
-    builder.addCase(postRole.rejected, (state) => {
+    builder.addCase(postDesignationData.rejected, (state) => {
       state.status = "rejected";
     });
 
     //___________________________________________UpdateRole_________________________________
 
-    builder.addCase(updatedRole.pending, (state) => {
+    builder.addCase(updatedDesignationData.pending, (state) => {
       state.status = "loading";
     });
-    builder.addCase(updatedRole.fulfilled, (state, action) => {
+    builder.addCase(updatedDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
-        let updatedRole = payload.data.data;
-        console.log(updatedRole);
+        let updatedDesignationData = payload.data.data;
+       
         state.status = "succeded";
         state.showLoaderModal = false;
-        state.updatedRole = updatedRole;
+        state.updatedDesignationData = updatedDesignationData;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }
     });
-    builder.addCase(updatedRole.rejected, (state) => {
+    builder.addCase(updatedDesignationData.rejected, (state) => {
       state.status = "rejected";
     });
   },
 });
 
-export const { handleModalOpen, handleModalClose } = rolemasterSlice.actions;
-export default rolemasterSlice.reducer;
+export const { handleModalOpen, handleModalClose } = desegnationSlice.actions;
+export default desegnationSlice.reducer;

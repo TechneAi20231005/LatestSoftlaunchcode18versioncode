@@ -16,8 +16,10 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import RoleMasterSlice from "./RoleMasterSlice";
-import { getRoleData } from "./RoleMasterAction";
+import { getRoleData, updatedRole } from "./RoleMasterAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import { postRole } from "./RoleMasterAction";
+import { handleModalOpen, handleModalClose } from "./RoleMasterSlice";
 import DashboardSlice from "../../Dashboard/DashboardSlice";
 
 function RoleComponent({ location }) {
@@ -25,23 +27,31 @@ function RoleComponent({ location }) {
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10));
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  );
+
+  const Notify = useSelector( (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify);
+  const modal = useSelector((RoleMasterSlice) => RoleMasterSlice.rolemaster.modal);
+  const exportData = useSelector((RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData);
+
+  console.log("moadal", exportData);
 
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState();
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
 
-  const [exportData, setExportData] = useState(null);
+  // const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -84,11 +94,13 @@ function RoleComponent({ location }) {
               data-bs-toggle="modal"
               data-bs-target="#edit"
               onClick={(e) => {
-                handleModal({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: "Edit Role",
-                });
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row,
+                    modalHeader: "Edit Role",
+                  })
+                );
               }}
             >
               <i className="icofont-edit text-success"></i>
@@ -251,72 +263,75 @@ function RoleComponent({ location }) {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
+
     if (!id) {
-      await new RoleService()
-        .postRole(form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Role",
-              "Create_Role",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Role",
-            "Create_Role",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(postRole(form));
+      loadData();
+      // await new RoleService().postRole(form).then((res) => {
+      //   console.log("res",res);
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Role",
+      //         "Create_Role",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Role",
+      //       "Create_Role",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     } else {
-      await new RoleService()
-        .updateRole(id, form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Role",
-              "Edit_Role",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Role",
-            "Edit_Role",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(updatedRole({ id: id, payload: form }));
+      loadData();
+      // await new RoleService().updateRole(id, form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Role",
+      //         "Edit_Role",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Role",
+      //       "Edit_Role",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
@@ -362,7 +377,7 @@ function RoleComponent({ location }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
       <PageHeader
         headerTitle="Role Master"
         renderRight={() => {
@@ -372,11 +387,13 @@ function RoleComponent({ location }) {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Role",
-                    });
+                    dispatch(
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Role",
+                      })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Role
@@ -448,19 +465,30 @@ function RoleComponent({ location }) {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -582,6 +610,7 @@ function RoleComponent({ location }) {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: "#484C7F" }}
+               
               >
                 Update
               </button>
@@ -592,11 +621,13 @@ function RoleComponent({ location }) {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel

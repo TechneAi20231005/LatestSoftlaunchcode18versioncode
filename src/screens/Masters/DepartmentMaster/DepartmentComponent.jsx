@@ -11,37 +11,49 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { useDispatch, useSelector } from "react-redux";
-import { departmentData } from "./DepartmentMasterAction";
+import {
+  departmentData,
+  postdepartment,
+  updateDepartment,
+} from "./DepartmentMasterAction";
 import DepartmentMasterSlice from "./DepartmentMasterSlice";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import { handleModalClose, handleModalOpen } from "./DepartmentMasterSlice";
 
 function DepartmentComponent() {
-  const dispatch=useDispatch()
-  const department=useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.departmentData)
-  const checkRole=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles.filter((d)=>d.menu_id==9))
-
-
-  console.log("department",department);
+  const dispatch = useDispatch();
+  const department = useSelector(
+    (DepartmentMasterSlice) => DepartmentMasterSlice.department.departmentData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 9)
+  );
+  const modal = useSelector(
+    (DashboardSlice) => DashboardSlice.department.modal
+  );
+  const Notify = useSelector( (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify);
+  const exportData=useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.exportDepartmentData
+    )
+  console.log("exportData",exportData);
+;
 
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
-  const [exportData, setExportData] = useState(null);
-  
+  // const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
 
   const searchRef = useRef();
 
@@ -81,11 +93,12 @@ function DepartmentComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
+              dispatch(
+              handleModalOpen({
                 showModal: true,
                 modalData: row,
                 modalHeader: "Edit Department",
-              });
+              }));
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -151,8 +164,8 @@ function DepartmentComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(departmentData())
-    dispatch(getRoles())
+    dispatch(departmentData());
+    dispatch(getRoles());
     // const data = [];
     // const exportTempData = [];
     // await new DepartmentService().getDepartment().then(res => {
@@ -210,71 +223,75 @@ function DepartmentComponent() {
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      await new DepartmentService()
-        .postDepartment(form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-            new ErrorLogService().sendErrorLog(
-              "Department",
-              "Create_Department",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Department",
-            "Create_Department",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(postdepartment(form));
+      loadData();
+      // await new DepartmentService()
+      //   .postDepartment(form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.data.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Department",
+      //         "Create_Department",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Department",
+      //       "Create_Department",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     } else {
-      await new DepartmentService()
-        .updateDepartment(id, form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Department",
-              "Edit_Department",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Department",
-            "Edit_Department",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(updateDepartment({ id: id, payload: form }));
+      loadData();
+      // await new DepartmentService()
+      //   .updateDepartment(id, form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status == 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Department",
+      //         "Edit_Department",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Department",
+      //       "Edit_Department",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
@@ -305,7 +322,7 @@ function DepartmentComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
 
       <PageHeader
         headerTitle="Department Master"
@@ -316,11 +333,14 @@ function DepartmentComponent() {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
+                    dispatch(
+
+                   
+                    handleModalOpen({
                       showModal: true,
                       modalData: null,
                       modalHeader: "Add Department",
-                    });
+                    }) );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add
@@ -394,19 +414,30 @@ function DepartmentComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -540,11 +571,13 @@ function DepartmentComponent() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel

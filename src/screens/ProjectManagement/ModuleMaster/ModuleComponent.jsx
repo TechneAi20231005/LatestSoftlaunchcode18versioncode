@@ -23,7 +23,6 @@ function ModuleComponent() {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21)
   );
-  console.log("moduleData", moduleData);
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);

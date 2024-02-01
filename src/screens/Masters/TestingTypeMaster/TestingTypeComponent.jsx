@@ -14,32 +14,37 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import TestingTypeServices from "../../../services/MastersService/TestingTypeService";
 import { useDispatch, useSelector } from "react-redux";
-import { testingData } from "./TestingTypeComponentAction";
+import { postTesting, testingData, updateTesting } from "./TestingTypeComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import { handleModalOpen,handleModalClose } from "./TestingTypeComponentSlices";
+
 import TestingTypeComponentSlices from "./TestingTypeComponentSlices";
 
 function TestingTypeComponent() {
   const dispatch=useDispatch()
-  const testingtypeData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.testingData)
+  const testingtypeData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.testingData);
+  const exportData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.exportTestingData)
+  const modal=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.modal)
   const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49));
+  console.log(modal);
 
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
 
-  const [exportData, setExportData] = useState(null);
+  // const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const [type, setType] = useState(null);
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
@@ -82,11 +87,13 @@ function TestingTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
+              dispatch(
+              handleModalOpen({
                 showModal: true,
                 modalData: row,
                 modalHeader: "Edit Testing Type",
-              });
+              })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -241,71 +248,75 @@ function TestingTypeComponent() {
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      await new TestingTypeServices()
-        .postTestingType(form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "State",
-              "Create_State",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "State",
-            "Create_State",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(postTesting(form))
+      loadData()
+      // await new TestingTypeServices()
+      //   .postTestingType(form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "State",
+      //         "Create_State",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "State",
+      //       "Create_State",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     } else {
-      await new TestingTypeServices()
-        .updateTestingType(id, form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "State",
-              "Edit_State",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "State",
-            "Edit_State",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(updateTesting({id:id,payload:form}))
+      loadData()
+      // await new TestingTypeServices()
+      //   .updateTestingType(id, form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "State",
+      //         "Edit_State",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "State",
+      //       "Edit_State",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
@@ -339,11 +350,13 @@ function TestingTypeComponent() {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
+                    dispatch(
+                    handleModalOpen({
                       showModal: true,
                       modalData: null,
                       modalHeader: "Add Testing Type",
-                    });
+                    })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add
@@ -416,19 +429,33 @@ function TestingTypeComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   dispatch(
+        //   handleModalClose({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   })
+        //   );
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header closeButton 
+           onClick={() => {
+            dispatch(
+            handleModalClose({
+              showModal: false,
+              modalData: "",
+              modalHeader: "",
+            })
+            );
+          }}
+
+          
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -548,11 +575,13 @@ function TestingTypeComponent() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
+                dispatch(
+                handleModalClose({
                   showModal: false,
                   modalData: "",
                   modalHeader: "",
-                });
+                })
+                );
               }}
             >
               Cancel

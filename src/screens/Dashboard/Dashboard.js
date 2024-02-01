@@ -2547,15 +2547,16 @@ import { _base } from "../../settings/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "./DashboardAction";
 import DashboardSlice from "./DashboardSlice";
-
-
+import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
 
 export default function HrDashboard(props) {
   const history = useNavigate();
   const dispatch = useDispatch();
-  const getRolesData=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles)
-  console.log(getRolesData.filter((d)=>d.menu_id==10));
+  const getRolesData = useSelector(
+    (DashboardSlice) => DashboardSlice.dashboard.getRoles
+  );
 
+  console.log(getRolesData.filter((d) => d.menu_id == 10));
 
   const location = useLocation();
   const data = props.data;
@@ -2669,18 +2670,14 @@ export default function HrDashboard(props) {
       }
     });
   };
-  const loadData=()=>{
-    dispatch(getRoles())
-
-
-  }
-
- 
+  const loadData = () => {
+    dispatch(getRoles());
+    dispatch(getDesignationData());
+  };
 
   useEffect(() => {
     get();
-    loadData()
-
+    loadData();
   }, []);
 
   return (

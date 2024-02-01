@@ -1,10 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { departmentData } from "./DepartmentMasterAction";
+import {
+  departmentData,
+  postdepartment,
+  updateDepartment,
+} from "./DepartmentMasterAction";
 
 const initialState = {
   status: "",
   err: "",
   departmentData: [],
+  exportDepartmentData:[],
+  modal: {
+    showModal: false,
+    modalData: "",
+    modalHeader: "",
+  },
 };
 
 export const departmentMasterSlice = createSlice({
@@ -15,6 +25,12 @@ export const departmentMasterSlice = createSlice({
       state.showLoaderModal = action.payload;
       console.log("action of modal", action.payload);
     },
+    handleModalOpen: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleModalClose: (state, action) => {
+      state.modal = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(departmentData.pending, (state) => {
@@ -22,7 +38,7 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(departmentData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload",payload);
+      console.log("payload", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let departmentData = payload.data.data;
         state.status = "succeded";
@@ -32,12 +48,83 @@ export const departmentMasterSlice = createSlice({
           departmentData[i].counter = count++;
         }
         state.departmentData = [...departmentData];
+        let exportDepartmentData = [];
+
+        for (const i in departmentData) {
+          exportDepartmentData.push({
+            Sr: departmentData[i].counter,
+            Department: departmentData[i].department,
+            Status: departmentData[i].is_active ? "Active" : "Deactive",
+            Remark: departmentData[i].remark,
+            created_at: departmentData[i].created_at,
+            created_by: departmentData[i].created_by,
+            updated_at: departmentData[i].updated_at,
+            updated_by: departmentData[i].updated_by,
+          });
+        }
+        state.exportDepartmentData=exportDepartmentData
+
+
+
+
       }
     });
     builder.addCase(departmentData.rejected, (state) => {
       state.status = "rejected";
     });
+
+    //__________________________post____________________________
+
+    builder.addCase(postdepartment.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(postdepartment.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let postdepartment = payload.data.data;
+        console.log(postdepartment);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.postdepartment = postdepartment;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(postdepartment.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //_____________________________updateData______________________________
+    builder.addCase(updateDepartment.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(updateDepartment.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let updateDepartment = payload.data.data;
+        console.log(updateDepartment);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.updateDepartment = updateDepartment;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(updateDepartment.rejected, (state) => {
+      state.status = "rejected";
+    });
   },
 });
+
+export const { handleModalOpen, handleModalClose } =
+  departmentMasterSlice.actions;
 
 export default departmentMasterSlice.reducer;

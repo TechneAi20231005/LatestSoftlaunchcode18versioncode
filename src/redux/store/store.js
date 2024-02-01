@@ -13,6 +13,7 @@ import ModuleSlice from "../../screens/ProjectManagement/ModuleMaster/ModuleSlic
 import submoduleSlice from "../../screens/ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
 import TemplateComponetSlice from "../../screens/Masters/TemplateMaster/TemplateComponetSlice";
 import QueryTypeComponetSlice from "../../screens/Masters/QueryTypeMaster/QueryTypeComponetSlice";
+import DesignationSlice from "../../screens/Masters/DesignationMaster/DesignationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -23,9 +24,10 @@ export const store = configureStore({
     paymentmaster: PaymentTemplateMasterSlice,
     testingData: TestingTypeComponentSlices,
     moduleMaster: ModuleSlice,
-    subModuleMaster:submoduleSlice,
-    tempateMaster:TemplateComponetSlice,
-    queryTypeMaster:QueryTypeComponetSlice,
+    subModuleMaster: submoduleSlice,
+    tempateMaster: TemplateComponetSlice,
+    queryTypeMaster: QueryTypeComponetSlice,
+    designationMaster: DesignationSlice,
 
     consolidatedData: ConsolidatedSlice,
   },
