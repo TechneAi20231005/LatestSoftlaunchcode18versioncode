@@ -47,7 +47,7 @@ function TenantComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -86,12 +86,12 @@ function TenantComponent() {
     },
     {
       name: "Updated At",
-      selector: (row) => (row.updated_at ? row.updated_at : "not updated"),
+      selector: (row) => (row.updated_at),
       sortable: true,
     },
     {
       name: "Updated By",
-      selector: (row) => (row.updated_by ? row.updated_by : "not updated"),
+      selector: (row) => (row.updated_by),
       sortable: true,
     },
   ];

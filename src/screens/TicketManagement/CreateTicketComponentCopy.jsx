@@ -64,7 +64,9 @@ export default function CreateTicketComponent() {
     const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
     const [isFileGenerated, setIsFileGenerated] = useState(null);
-    const [alldepartmentData, setAllDepartmentData]=useState()
+    const [alldepartmentData, setAllDepartmentData] = useState();
+
+    const [loading, isLoading] = useState(false);
 
     // const handleDependent = (e, name) => {
     //     setData({
@@ -85,25 +87,22 @@ export default function CreateTicketComponent() {
             //   alert('Please Select Customer')
             //setNotify({ type: 'danger', message: 'Please Select Country' })
         }
-
         setNotify(null);
-        // setShowLoaderModal(true);
-
         await new MyTicketService().postTicket(formData).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
                     history({
                         pathname: `/${_base}/Ticket`,
-                 
-                    },{ state: { alert: { type: "success", message: res.data.message } }}
+
+                    }, { state: { alert: { type: "success", message: res.data.message } } }
                     );
                 } else {
-                    var URL =`${_attachmentUrl}`+res.data.data 
+                    var URL = `${_attachmentUrl}` + res.data.data
                     window.open(URL, '_blank').focus();
                     // setNotify({ type: 'danger', message: res.data.message });
                     history({
                         pathname: `/${_base}/Ticket`,
-                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    }, { state: { alert: { type: "success", message: res.data.message } } }
                     );
                 }
             } else {
@@ -121,7 +120,7 @@ export default function CreateTicketComponent() {
     const handleGetQueryTypeForm = async (e) => {
         var data = customerMapping.filter((val) => val.query_type_id == e.target.value);
         setRows(null);
-        if(data && data.length == 0){
+        if (data && data.length == 0) {
             alert("Dynamic Form is not mapped against this Query Type, Please Map Form first")
             e.preventDefault();
         }
@@ -166,11 +165,11 @@ export default function CreateTicketComponent() {
                         }
                     });
 
-                     new DepartmentService().getDepartment().then((res)=>{
-                        if(res.status === 200){
-                            if(res.data.status ==1){
-                             const temp = res.data.data
-                             setAllDepartmentData(temp.filter(d=> d.id).map(d=>({value:d.id, label:d.department})))
+                    new DepartmentService().getDepartment().then((res) => {
+                        if (res.status === 200) {
+                            if (res.data.status == 1) {
+                                const temp = res.data.data
+                                setAllDepartmentData(temp.filter(d => d.id).map(d => ({ value: d.id, label: d.department })))
                             }
                         }
                     })
@@ -197,19 +196,19 @@ export default function CreateTicketComponent() {
     }
 
 
-    const [ticketUploadType,setTicketUploadType]=useState("REGULAR");
-    const handleTicketUploadType = (type)=>{
+    const [ticketUploadType, setTicketUploadType] = useState("REGULAR");
+    const handleTicketUploadType = (type) => {
         // const a = departmentRef.current.props.value.map((d,i)=>{
         //     setTempDepartment(d.value)
         // })
-        if(selectedCustomerMapping && tempDepartment){    
+        if (selectedCustomerMapping && tempDepartment) {
             setTicketUploadType(type);
         } else {
             alert("Select Department and Query Type");
 
-            setTicketUploadType(prev=>prev);
-        }   
-    } 
+            setTicketUploadType(prev => prev);
+        }
+    }
     const departmentRef = useRef()
 
 
@@ -221,7 +220,7 @@ export default function CreateTicketComponent() {
             await new MyTicketService().getBulkFormat(formData).then(res => {
                 if (res.status === 200) {
                     if (res.data.status === 1) {
-                        URL =`${_attachmentUrl}`+res.data.data 
+                        URL = `${_attachmentUrl}` + res.data.data
                         window.open(URL, '_blank').focus();
 
                         setIsFileGenerated(res.data.data);
@@ -273,7 +272,7 @@ export default function CreateTicketComponent() {
                                     />
                                 }
                             </div>
-                                {/* {department && JSON.stringify(department)} */}
+                            {/* {department && JSON.stringify(department)} */}
                             <div className="col-sm-3">
                                 <label className="col-form-label">
                                     <b>Ticket Uploading<Astrick color="red" /> : </b>
@@ -305,7 +304,7 @@ export default function CreateTicketComponent() {
                             </div>
 
 
-                            {ticketUploadType === "BULK_UPLOADING" && 
+                            {ticketUploadType === "BULK_UPLOADING" &&
                                 <div className="col-sm-3">
                                     <button type="button" className="btn btn-danger mt-4 text-white"
                                         onClick={handleDownloadFormat}
