@@ -68,12 +68,16 @@ const App = () => {
   return (
     <>
       <div id="mytask-layout" className="theme-indigo">
-        {!token && <AuthIndex />}
 
-        {token &&
-          onlineStatus &&
-          checkUrl === true &&
-          sessionStorage.length > 6 && (
+      {/* && localStorage.length == 0 && checkUrl == false  */}
+        {!token && (
+          <AuthIndex/>
+          )}
+    
+        
+        {token && onlineStatus && checkUrl === true && sessionStorage.length > 6 && (
+            
+
             <>
               <Sidebar />
               <MainIndex />

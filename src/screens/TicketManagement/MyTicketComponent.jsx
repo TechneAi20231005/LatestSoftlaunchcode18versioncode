@@ -1,5 +1,904 @@
+// import React, { useEffect, useState } from "react";
+// import { Link, useNavigate,useParams } from "react-router-dom";
+// import { Dropdown, Modal } from "react-bootstrap";
+// import PageHeader from "../../components/Common/PageHeader";
+// import { _attachmentUrl, userSessionData } from "../../settings/constants";
+// import Alert from "../../components/Common/Alert";
+// import ErrorLogService from "../../services/ErrorLogService";
+// import MyTicketService from "../../services/TicketService/MyTicketService";
+// import BasketService from "../../services/TicketService/BasketService";
+// import {
+//   getTaskData,
+//   getTaskPlanner,
+//   getRegularizationTime,
+//   getTaskHistory,
+//   getTaskRegularizationTime,
+// } from "../../services/TicketService/TaskService";
+// import { getAttachment } from "../../services/OtherService/AttachmentService";
+// import BasketDetails from "./TaskManagement/components/BasketDetails";
+// import TaskData from "./TaskManagement/components/TaskData";
+// import TaskModal from "./TaskManagement/components/TaskModal";
+// import ApproveRequestModal from "./TaskManagement/components/ApproveRequestModal";
+// import ApproveTaskRequestModal from "./TaskManagement/components/ApproveTaskRequestModal";
+// import ModuleSetting from "../../services/SettingService/ModuleSetting";
+// import { _base } from "../../settings/constants";
+// import TestCasesService from "../../services/TicketService/TestCaseService";
+// import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
+// import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+// import Tooltip from "react-bootstrap/Tooltip";
+// import { Spinner } from "react-bootstrap";
+// import { useDispatch,useSelector } from "react-redux";
+// import { getAllTaskData, getBasketTaskData } from "./TaskManagement/TaskComponentAction";
+
+
+
+
+
+
+
+
+
+// export default function TaskComponent({ match }) {
+//   const [notify, setNotify] = useState(null);
+//   const {id} = useParams()
+//   const ticketId = id
+
+//   const history = useNavigate();
+
+//   const [moduleSetting, setModuleSetting] = useState();
+//   //Ticket Related
+//   const [ticketData, setTicketData] = useState();
+//   const [attachment, setAttachment] = useState();
+//   const [expectedSolveDate, setExpectedSolveDate] = useState();
+//   const [ticketStartDate, setTicketStartDate] = useState();
+
+//   const dispatch = useDispatch();
+//   const BasketData = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
+//   const OwnerShip = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.ownership)
+//   console.log("OwnerShip",OwnerShip)
+//   console.log("basketData",BasketData)
+
+
+//   const getTicketData = async () => {
+//     await new MyTicketService()
+//       .getTicketById(ticketId)
+//       .then((res) => {
+//         if (res.status === 200) {
+//           if (res.data.status === 1) {
+//             setTicketData(res.data.data);
+//             setTicketStartDate(res.data.data.ticket_date);
+//             setExpectedSolveDate(res.data.data.expected_solve_date);
+//             getAttachment(res.data.data.id, "TICKET").then((resp) => {
+//               if (resp.status === 200) {
+//                 setAttachment(resp.data.data);
+//               }
+//             });
+//           }
+//         }
+//       })
+//       .catch((error) => {
+//         const { response } = error;
+
+//         const { request, ...errorObject } = response;
+//         new ErrorLogService().sendErrorLog(
+//           "Task",
+//           "Get_Ticket",
+//           "INSERT",
+//           errorObject.data.message
+//         );
+//       });
+//   };
+
+//   //Basket Modal Related
+//   const [basketModal, setBasketModal] = useState(false);
+
+//   const [basketData, setBasketData] = useState(null);
+//   const [showBasketModal, setShowBasketModal] = useState(false);
+
+//   const handleCloseBasketModal = () => {
+//     setShowBasketModal(false);
+//   };
+
+//   const handleShowBasketModal = async (id) => {
+//     setBasketData(null);
+//     if (id) {
+//       await new BasketService()
+//         .getBasketById(id)
+//         .then((res) => {
+//           if (res.status === 200) {
+//             if (res.data.status === 1) {
+//               setBasketData(null);
+//               var temp = res.data.data;
+//               setBasketData(temp);
+//             }
+//           }
+//         })
+//         .catch((error) => {
+//           const { response } = error;
+//           const { request, ...errorObject } = response;
+//           new ErrorLogService().sendErrorLog(
+//             "Task",
+//             "Get_Basket",
+//             "INSERT",
+//             errorObject.data.message
+//           );
+//         });
+//     } else {
+//       setBasketData(null);
+//     }
+//     setShowBasketModal(true);
+//   };
+
+//   var sortingArr;
+//   function sortFunc(a, b) {
+//     return sortingArr.indexOf(a.id) - sortingArr.indexOf(b.id);
+//   }
+
+//   //Basket & Task Data
+//   const [ownership, setOwnership] = useState([]);
+//   const [data, setData] = useState();
+//   const [basketIdArray, setBasketIdArray] = useState();
+//   const [isReviewer, setIsReviewer] = useState(null);
+//   const [taskHistory, setTaskHistory] = useState();
+//   const [tasksData, setTasksData] = useState();
+//   const [allTaskList, setAllTaskList] = useState([]); //Defined as empty array
+//   // const [isRegularised, setIsRegularised] = useState([]);
+//   const [showLoaderModal, setShowLoaderModal] = useState(false);
+
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getBasketData = async () => {
+//     const tempAllTaskList = [];
+//     const taskDataa = [];
+//     const tasksDataa = [];
+//     setIsLoading(true);
+
+//     await new BasketService()
+
+//       .getBasketTaskData(ticketId)
+
+//       .then((res) => {
+//         if (res.status === 200) {
+//           setShowLoaderModal(false);
+//           setIsLoading(false);
+
+//           if (res.data.status === 1) {
+//             setIsLoading(false);
+
+            
+//             const temp = res.data.data;
+//             sortingArr = res.data.basket_id_array;
+//             setIsReviewer(res.data.is_reviewer);
+//             console.log(res.data);
+//             setOwnership(res.data.ownership);
+//             setBasketIdArray(res.data.basket_id_array);
+//             // setIsRegularised(res.data.is_regularized)
+//             setData(null);
+//             res.data.data.sort(sortFunc);
+//             setData(res.data.data);
+
+//             res.data.data.map((tasks, index) => {
+//               tasks.taskData.forEach((d, i) => {
+//                 let taskOwnerNames = d.taskOwners
+//                   .map((owner) => owner.taskOwnerName)
+//                   .join(", ");
+//                 tasksDataa.push({
+//                   ticket_id_name: d.ticket_id_name,
+//                   Task_Names: d.task_name,
+//                   Task_Hours: d.task_hours,
+//                   Start_Date: d.start_date,
+//                   End_Date: d.end_date,
+//                   Status: d.status,
+//                   Priority: d.priority,
+//                   Total_Worked: d.total_worked,
+//                   Basket_Name: tasks.basket_name,
+//                   taskOwnerNames: taskOwnerNames,
+//                 });
+//               });
+//             });
+
+//             setTasksData(tasksDataa);
+//             res.data.data.forEach((dataa) => {
+//               dataa.taskData.forEach((task) => {
+//                 tempAllTaskList.push({ value: task.id, label: task.task_name });
+//               });
+//             });
+//             setAllTaskList([]);
+//             setAllTaskList(tempAllTaskList);
+
+//             setIsLoading(false); // Loading finished
+//           }
+//         }
+//       })
+//       .catch((error) => {
+//         const { response } = error;
+//         const { request, ...errorObject } = response;
+//         new ErrorLogService().sendErrorLog(
+//           "Task",
+//           "Get_Basket_Data",
+//           "INSERT",
+//           errorObject.data.message
+//         );
+//         setIsLoading(false);
+//       });
+//   };
+
+//   //Task Related
+//   const [showTaskModal, setShowTaskModal] = useState(false);
+//   const [taskModalData, setTaskModalData] = useState(null);
+//   const handleShowTaskModal = async (ticket_id, ticket_basket_id, id) => {
+//     var temp = {
+//       id: null,
+//       ticket_basket_id: ticket_basket_id,
+//       ticket_id: ticket_id,
+//       task_name: null,
+//       task_hours: null,
+//       priority: null,
+//       description: null,
+//       status: "TO_DO",
+//       assign_to_user_id: null,
+//       total_time: null,
+//       attachment: null,
+//     };
+//     if (id) {
+//       await getTaskData(id).then((res) => {
+
+//         if (res.status === 200) {
+//           if (res.data.status === 1) {
+//             temp = res.data.data;
+//             setTaskModalData(temp);
+//           }
+//         }
+//       });
+
+//       await getTaskHistory(id).then((res) => {
+//         if (res.status === 200) {
+//           if (res.data.status === 1) {
+//             setTaskHistory(res.data.data);
+//           }
+//         }
+//       });
+//     } else {
+//       setTaskModalData(temp);
+//     }
+//     setShowTaskModal(true);
+//   };
+//   const handleCloseTaskModal = () => {
+//     setShowTaskModal(false);
+//   };
+
+//   /*  ********************************* PLANNER ************************************** */
+//   const [showPlannerModal, setShowPlannerModal] = useState(false);
+//   // const [plannerData, setPlannerData] = useState(null);
+//   // const handleShowPlannerModal = async (
+//   //   taskId,
+//   //   ticket_basket_id,
+//   //   ticket_id
+//   // ) => {
+//   //   if (taskId) {
+//   //     await getTaskPlanner(taskId).then((res) => {
+//   //       if (res.status === 200) {
+//   //         setPlannerData(null);
+//   //         setPlannerData({
+//   //           taskId: taskId,
+//   //           ticket_basket_id: ticket_basket_id,
+//   //           ticket_id: ticket_id,
+//   //           data: res.data.data,
+//   //         });
+//   //       }
+//   //     });
+//   //   }
+//   //   setShowPlannerModal(true);`
+//   // };
+
+//   const handleClosePlannerModal = () => {
+//     setShowPlannerModal(false);
+//   };
+
+//   /*  ********************************* Group Activity ************************************** */
+//   //Suyash 30/5/22
+//   const [groupActivityModal, setGroupActivityModal] = useState(false);
+//   const [groupActivityModalData, setGroupActivityModalData] = useState();
+
+//   const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
+//     setGroupActivityModal(true);
+//     setGroupActivityModalData(null);
+
+//     const temp = [];
+
+//     taskOwners.forEach((user) => {
+//       let t = user;
+//       t = { ...t, status: null };
+//       temp.push(t);
+//     });
+//     const data = { taskOwners: temp, taskId: taskId, all: dataa };
+//     setGroupActivityModalData(data);
+//   };
+
+//   const hideGroupActivityModal = () => {
+//     // setGroupActivityModalData([]);
+//     setGroupActivityModal(false);
+//   };
+
+//   /*  ********************************* Approval Request ************************************** */
+//   //Suyash 31/5/22
+//   const [approvalRequest, setApprovalRequest] = useState({});
+
+//   const handleRequestSubmit = (id, taskId) => {};
+
+//   const [regularizationRequest, setRegularizationRequest] = useState(0);
+//   const [taskRegularizationRequest, setTaskRegularizationRequest] = useState(0);
+
+//   const handleRegularizationRequest = () => {
+//     new getRegularizationTime(ticketId).then((res) => {
+//       setRegularizationRequest(res.data.data);
+//     });
+//   };
+
+//   const handleTaskRegularizationRequest = () => {
+//     new getTaskRegularizationTime().then((res) => {
+//       setTaskRegularizationRequest(res.data.data);
+//     });
+//   };
+//   const [approveRequestModal, setApproveRequestModal] = useState({
+//     show: false,
+//     data: null,
+//   });
+
+//   const handleShowApproveRequestModal = () => {
+//     const data = null;
+//     setApproveRequestModal({ show: true, data: data });
+//   };
+//   const handleShowApproveTaskRequestModal = () => {
+//     const data = null;
+//     setApproveTaskRequestModal({ show: true, data: data });
+//   };
+//   const handleCloseApproveRequestModal = () => {
+//     const data = null;
+//     setApproveRequestModal({ show: false, data: data });
+//   };
+//   const handleCloseApproveTaskRequestModal = () => {
+//     const data = null;
+//     setApproveTaskRequestModal({ show: false, data: data });
+//   };
+
+//   const [approveTaskRequestModal, setApproveTaskRequestModal] = useState({
+//     show: false,
+//     data: null,
+//   });
+
+//   const [taskDropdown, setTaskDropdown] = useState();
+
+//   const loadData = async () => {
+
+//     dispatch(getBasketTaskData(ticketId))
+//     dispatch(getAllTaskData(id))
+//     await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
+//       if (res.status == 200) {
+//         if (res.data.status == 1) {
+//           setModuleSetting(res.data.data);
+//         }
+//       }
+//     });
+//     await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
+//       if (res.status === 200) {
+//         if (res.data.status == 1) {
+//           const temp = res.data.data;
+//           setTaskDropdown(
+//             temp.map((d) => ({ value: d.id, label: d.task_name }))
+//           );
+//         }
+//       }
+//     });
+//   };
+
+//   const [buttonType, setButtontype] = useState();
+//   const [basketList, setBasketList] = useState(null);
+//   const pushForward = async (e) => {
+//     var sendArray = {
+//       user_id: parseInt(userSessionData.userId),
+//       ticket_id: parseInt(ticketId),
+//       basket_id_array: basketIdArray,
+//     };
+
+//     await new BasketService().pushForward(sendArray).then((res) => {
+//       // loadData();
+//       // getBasketData();
+//       // getTicketData();
+//       // handleRegularizationRequest();
+//     });
+//   };
+
+//   var dragId;
+//   var dropId;
+//   var basketIdArray1;
+//   var basketIdArray2;
+//   const dragStartHandler = (e, card) => {
+//     dragId = card.id;
+//   };
+
+//   const dragEndhandler = async (e, card) => {
+//     e.preventDefault();
+//   };
+
+//   const dragOverHandler = (e) => {
+//     e.preventDefault();
+//   };
+
+//   const dropHandler = async (e, card) => {
+//     e.preventDefault();
+//     dropId = card.id;
+
+//     basketIdArray1 = basketIdArray;
+//     var drag = basketIdArray1.indexOf(dragId);
+//     var drop = basketIdArray1.indexOf(dropId);
+//     if (drag > -1) {
+//       basketIdArray1.splice(drag, 1);
+//     }
+//     basketIdArray1.splice(drop, 0, dragId);
+//     basketIdArray2 = basketIdArray1.join();
+//     setBasketIdArray(basketIdArray2);
+//     pushForward();
+//   };
+//   const [showDetails, setShowDetails] = useState(false);
+//   const detailsHandler = () => {
+//     setShowDetails((prev) => !prev);
+//   };
+
+//   const date = new Date();
+
+//   let day = date.getDate();
+//   let month = date.getMonth() + 1;
+//   let year = date.getFullYear();
+
+//   // This arrangement can be altered based on how we want the date's format to appear.
+//   let currentDate = `${day}-${month}-${year}`;
+
+//   useEffect(() => {
+//     getBasketData();
+//     loadData();
+//     // getTicketData();
+//     // handleRegularizationRequest();
+//     // handleTaskRegularizationRequest();
+//   }, []);
+
+//   // created by Asmita Margaje
+//   // Define a functional component named LoaderComponent
+//   function LoaderComponent() {
+//     return (
+//       // Container to center-align the spinner and loading text
+//       <div style={{ textAlign: "center", marginTop: "50px" }}>
+//         {/* Spinner element with custom styling */}
+//         <Spinner
+//           animation="border"
+//           role="status"
+//           style={{
+//             width: "100px",
+//             height: "100px",
+//             borderWidth: "5px",
+//             color: "#484c7f",
+//             marginBottom: "10px",
+//           }}
+//         >
+//           {/* Visually hidden loading text for accessibility */}
+//           <span className="visually-hidden">Loading...</span>
+//         </Spinner>
+//         {/* Loading text displayed below the spinner */}
+//         <div style={{ color: "#484c7f", fontSize: "16px", fontWeight: "bold" }}>
+//           Loading...
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="container-xxl">
+//       <PageHeader headerTitle="Manage Task" />
+//       {notify && <Alert alertData={notify} />}
+
+//       <div className="card mt-2">
+//         <div className="card-body">
+//           {/* {ticketData && ( */}
+//           <div>
+//             <div className="d-flex align-items-center justify-content-between">
+//               <h5>
+//                 <strong>
+//                   {/* Ticket - {ticketData && ticketData.ticket_id} {' '} */}
+//                   Ticket -{" "}
+//                   {tasksData &&
+//                     tasksData.length > 0 &&
+//                     tasksData[0].ticket_id_name}
+//                   <i onClick={detailsHandler} style={{ cursor: "pointer" }}>
+//                     {showDetails ? (
+//                       <OverlayTrigger
+//                         placement="right"
+//                         overlay={<Tooltip>Hide Details</Tooltip>}
+//                       >
+//                         <i
+//                           className="icofont-eye"
+//                           style={{ fontSize: "27px" }}
+//                         ></i>
+//                       </OverlayTrigger>
+//                     ) : (
+//                       <OverlayTrigger
+//                         placement="right"
+//                         overlay={<Tooltip>Show Details</Tooltip>}
+//                       >
+//                         <i
+//                           className="icofont-eye-blocked"
+//                           style={{ fontSize: "27px" }}
+//                         ></i>
+//                       </OverlayTrigger>
+//                     )}
+//                   </i>
+//                 </strong>
+//               </h5>
+
+//               <Dropdown className="d-inline-flex m-1" style={{ alignSelf: 'flex-end' }} onClick={handleRegularizationRequest}>
+//                 <Dropdown.Toggle
+//                   as="button"
+//                   variant=""
+//                   className="btn btn-outline-primary p-1"
+//                 >
+//                   <i className="icofont-navigation-menu"></i>
+//                 </Dropdown.Toggle>
+//                 <Dropdown.Menu
+//                   as="ul"
+//                   className="border-0 shadow p-2 dropdown-menu-columns"
+//                 >
+//                   <li>
+//                     <ExportToExcel
+//                       className="btn btn-sm btn-danger btn-custom  w-100"
+//                       buttonTitle="Export All Task Data"
+//                       fileName="Task Data"
+//                       apiData={tasksData}
+//                     />
+//                   </li>
+//                   <li>
+//                     {ownership && JSON.stringify(ownership)}
+//                     {ownership && 
+//                       (ownership === "TICKET" || ownership === "PROJECT") && (
+//                         <button
+//                           className="btn btn-sm btn-primary text-white btn-custom w-100"
+//                           onClick={(e) => {
+//                             handleShowBasketModal(null);
+//                           }}
+//                         >
+//                           Create Basket
+//                         </button>
+//                       )}
+//                   </li>
+//                   <li>
+//                     <Link to={`/${_base}/getAllTestCases/` + ticketId}>
+//                       <button className="btn btn-sm btn-info text-white btn-custom w-100">
+//                         All Test Cases
+//                       </button>
+//                     </Link>
+//                   </li>
+                
+//                   <li>
+//                     {ownership && ownership !== "TASK" && (
+//                       <button
+//                         // className="btn btn-sm btn-danger text-white"
+//                         className="btn btn-sm text-white" style={{ backgroundColor: "#d63384" }}
+
+//                         onClick={(e) => {
+//                           handleShowApproveRequestModal();
+//                           handleRegularizationRequest();
+//                         }}
+//                       >
+//                         Time Regularization Rquest
+//                         {regularizationRequest && (
+//                           <span className="badge bg-primary p-2">
+//                             {regularizationRequest.length}
+//                           </span>
+//                         )}
+//                       </button>
+//                     )}
+//                   </li>
+//                   <li>
+//                     <button
+//                       className="btn btn-sm btn-warning  text-white"
+//                       onClick={(e) => {
+//                         handleShowApproveTaskRequestModal();
+//                         handleTaskRegularizationRequest();
+//                       }}
+//                     >
+//                       Task Regularization Request
+//                       {taskRegularizationRequest && (
+//                         <span className="badge bg-warning p-2">
+//                           {taskRegularizationRequest.length}
+//                         </span>
+//                       )}
+//                     </button>
+//                     {/* )} */}
+//                   </li>
+//                 </Dropdown.Menu>
+//               </Dropdown>
+//             </div>
+//             <div div className="d-flex flex-column">
+//               {showDetails && (
+//                 <div class="p-0 m-0">
+//                   <p className="p-0 m-0">
+//                     <strong>Details :</strong>
+//                   </p>
+//                   <p>{ticketData && ticketData.description}</p>
+
+//                   <div className="d-flex">
+//                     {ticketData &&
+//                       ticketData.attachment &&
+//                       ticketData.attachment.map((attachment, index) => {
+//                         return (
+//                           <div
+//                             key={index}
+//                             className="justify-content-start"
+//                             style={{
+//                               marginRight: "20px",
+//                               padding: "5px",
+//                               maxWidth: "250px",
+//                             }}
+//                           >
+//                             <div
+//                               className="card"
+//                               style={{ backgroundColor: "#EBF5FB" }}
+//                             >
+//                               <div className="card-header">
+//                                 {attachment.name}
+//                                 <div className="d-flex justify-content-center p-0 mt-1">
+//                                   <a
+//                                     href={`${_attachmentUrl}/${attachment.path}`}
+//                                     target="_blank"
+//                                     className="btn btn-primary btn-sm p-1"
+//                                   >
+//                                     View
+//                                   </a>
+//                                 </div>
+//                               </div>
+//                             </div>
+//                           </div>
+//                         );
+//                       })}
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//           {/* // )} */}
+//         </div>
+//       </div>
+// {console.log("aa",approvalRequest)}
+//       {/* <div className="row col-12">
+//         {approvalRequest.data &&
+//           approvalRequest.data.map((item, i) => {
+//             return (
+//               <div className="col-2">
+//                 <div
+//                   className="col-3"
+//                   style={{ marginRight: "5px", padding: "0px", width: "250px" }}
+//                 >
+//                   <div className="card" style={{ backgroundColor: "#EBF5FB" }}>
+//                     <div className="card-header">
+//                       <p style={{ fontSize: "12px" }}>
+//                         <p>
+//                           User : {item.first_name} {item.last_name}
+//                         </p>
+//                         <p>Date : {item.date}</p>
+//                         <p>From : {item.from_time}</p>
+//                         <p>To : {item.to_time}</p>
+//                       </p>
+//                       <div className="d-flex justify-content-end p-0">
+//                         <button
+//                           className="btn btn-danger text-white btn-sm p-0 px-1"
+//                           type="button"
+//                           onClick={(e) => {
+//                             handleRequestSubmit(item.id, item.ticket_task_id);
+//                           }}
+//                         >
+//                           <i
+//                             className="icofont-ui-check"
+//                             style={{ fontSize: "12px" }}
+//                           ></i>
+//                         </button>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             );
+//           })}
+//       </div> */}
+//       <div>
+//         {isLoading == true ? (
+//           <LoaderComponent />
+//         ) : (
+//           <>
+//             <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">
+//               {BasketData &&
+//                 BasketData.map((ele, index) => {
+//                   return (
+//                     <div
+//                       draggable={true}
+//                       onDragStart={(e) => dragStartHandler(e, ele)}
+//                       onDragLeave={(e) => dragEndhandler(e)}
+//                       onDragEnd={(e) => dragEndhandler(e, ele)}
+//                       onDragOver={(e) => dragOverHandler(e)}
+//                       onDrop={(e) => dropHandler(e, ele)}
+//                       id={`basket_${index}`}
+//                       key={`basket_${index}`}
+//                       className="col-lg-4 col-md-4 col-sm-4 col-4"
+//                     >
+//                       <div className="p-0 m-0 d-flex justify-content-between">
+//                         <h5>
+//                           <strong> {ele.basket_name}</strong>
+//                         </h5>
+//                         <span
+//                           className="badge bg-success text-end mt-2 p-1 px-3"
+//                           style={{ fontSize: "14px" }}
+//                         >
+//                           {ele.total_worked ? ele.total_worked : 0}/
+//                           {ele.total_hours}
+//                         </span>
+//                       </div>
+
+//                       <div className="p-0 m-0 d-flex justify-content-between mt-1">
+//                         {OwnerShip &&  (OwnerShip === "TICKET" || OwnerShip === "BASKET" || OwnerShip === "PROJECT" )
+//                           // ownership.some(
+//                           //   (i) =>
+//                           //     i.ownership === "TICKET" ||
+//                           //     i.ownership === "BASKET" ||
+//                           //     i.ownership === "PROJECT"
+//                           // ) 
+                          
+//                           && (
+//                             <button
+//                               type="button"
+//                               key={`newTaskBtn_${index}`}
+//                               className="btn btn-danger btn-sm text-white"
+//                               style={{ padding: "10px 10px" }}
+//                               name="newTaskButton"
+//                               onClick={(e) => {
+//                                 handleShowTaskModal(
+//                                   ele.ticket_id,
+//                                   ele.id,
+//                                   null
+//                                 );
+//                               }}
+//                             >
+//                               <i
+//                                 className="icofont-plus"
+//                                 style={{ fontSize: "10px", marginRight: "4px" }}
+//                               ></i>
+//                               New Task
+//                             </button>
+//                           )}
+
+//                         <form
+//                           method="post"
+//                           onSubmit={(e) => {
+//                             pushForward(e);
+//                           }}
+//                           encType="multipart/form-data"
+//                         >
+//                           <div>
+//                             <input
+//                               type="hidden"
+//                               id="basket_id"
+//                               name="basket_id"
+//                               value={ele.id}
+//                             />
+//                             <input
+//                               type="hidden"
+//                               id="basket_id_array"
+//                               name="basket_id_array"
+//                               value={basketIdArray}
+//                             />
+//                           </div>
+//                         </form>
+
+//                         {OwnerShip && ( OwnerShip === "TICKET" || OwnerShip === "BASKET" || OwnerShip === "PROJECT")
+//                            && (
+//                             <button
+//                               type="button"
+//                               className="btn btn-primary text-white btn-sm"
+//                               style={{ padding: "10px 10px" }}
+//                               onClick={(e) => {
+//                                 getTicketData();
+
+//                                 // Handle the click event here
+//                                 handleShowBasketModal(ele.id);
+//                               }}
+//                             >
+//                               <i
+//                                 className="icofont-ui-edit"
+//                                 style={{ fontSize: "13px", marginRight: "4px" }}
+//                               ></i>
+//                               Edit Basket
+//                             </button>
+//                           )}
+//                       </div>
+
+//                       <div className="ticket-container" key={ele.id}>
+//                         <div className="ticket">
+//                           {ele.taskData &&
+//                             ele.taskData.map((task) => {
+//                               return (
+//                                 <TaskData
+//                                   key={task.id.toString()}
+//                                   data={task}
+//                                   loadBasket={getBasketData}
+//                                   // ownership={ownership}
+//                                   onShowTaskModal={handleShowTaskModal}
+//                                 // onCloseTaskModal={handleCloseTaskModal}
+//                                 // openPlannerModal={handleShowPlannerModal}
+//                                 // openGroupModal={handleShowGroupModal}
+//                                 // moduleSetting={moduleSetting}
+//                                 isReviewer={isReviewer}
+//                                 // expectedSolveDate={expectedSolveDate}
+//                                 // ticketStartDate={ticketStartDate}
+//                                 />
+//                               );
+//                             })}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   );
+//                 })}
+
+//               {showTaskModal && (
+//                 <TaskModal
+//                   data={taskModalData}
+//                   show={showTaskModal}
+//                   ownership={OwnerShip }
+//                   loadBasket={getBasketData}
+//                   allTaskList={allTaskList}
+//                   taskDropdown={taskDropdown}
+//                   close={handleCloseTaskModal}
+//                   moduleSetting={moduleSetting}
+//                   expectedSolveDate={expectedSolveDate}
+//                   ticketStartDate={ticketStartDate}
+//                 />
+//               )}
+
+//               {ticketData && (
+//                 <BasketDetails
+//                   ticketId={ticketId}
+//                   show={showBasketModal}
+//                   hide={handleCloseBasketModal}
+//                   data={basketData}
+//                   loadData={getBasketData}
+//                 />
+//               )}
+
+//               {approveRequestModal && (
+//                 <ApproveRequestModal
+//                   show={approveRequestModal.show}
+//                   hide={handleCloseApproveRequestModal}
+//                   data={regularizationRequest && regularizationRequest}
+//                   ticketId={ticketId}
+//                 />
+//               )}
+
+//               {taskRegularizationRequest && (
+//                 <ApproveTaskRequestModal
+//                   show={approveTaskRequestModal.show}
+//                   hide={handleCloseApproveTaskRequestModal}
+//                   data={taskRegularizationRequest}
+//                 />
+//               )}
+//             </div>
+//           </>
+//         )}
+//       </div>
+//       <div></div>
+//     </div>
+//   );
+// }
+
+
+
+
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { Modal } from "react-bootstrap";
@@ -24,9 +923,11 @@ import "./custome.css";
 import { Spinner } from "react-bootstrap";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
-
-export default function MyTicketComponent() {
-  const location = useLocation();
+import { useDispatch, useSelector } from "react-redux";
+import MyTicketComponentSlice from "./MyTicketComponentSlice";
+import { getStatusData, getUserForMyTicketsData, getUserTicketsTest } from "./MyTicketComponentAction";
+import { dashboardSlice } from "../Dashboard/DashbordSlice";
+export default function MyTicketComponent({ location }) {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
@@ -67,6 +968,25 @@ export default function MyTicketComponent() {
   const [userDepartment, setUserDepartment] = useState();
 
   const [exportData, setExportData] = useState(null);
+
+  const dispatch = useDispatch();
+  const MyTicketComponentData = useSelector(
+    (MyTicketComponentSlice) => MyTicketComponentSlice
+  );
+  const assignToMeData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
+  );
+  const gelAllStatusData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.statusData
+
+  );
+
+const UserForMyTicketData = useSelector(myTicketComponent=>myTicketComponent.myTicketComponent.getUserForMyTicket)
+const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myTicketComponent.getAssignedUserData)
+
+  
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -94,67 +1014,18 @@ export default function MyTicketComponent() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [todate, setTodate] = useState([]);
+  const [fromdate, setFromdate] = useState([]);
+
+  const [todateformat, setTodateformat] = useState("");
+  const [fromdateformat, setFromdateformat] = useState("");
+
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
-  const [createdByMeData, setCreatedByMeData] = useState();
-  const [departmentWiseData, setDepartmentWiseData] = useState();
-  const [yourTaskData, setYourTaskData] = useState();
-  const [unpassedData, setUnpassedData] = useState();
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectedRowss, setSelectedRowss] = useState([]);
-  const [statusValue, setStatusValue] = useState("");
-  const [assignedUser, setAssignedUser] = useState("");
-  const [entryUser, setEntryUser] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [ticket, setTicket] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [assignedDepartmentValue, setAssignedDepartment] = useState("");
-  const [entryDepartment, setEntryDepartment] = useState();
-  const [key, setKey] = useState("Assigned_To_Me");
-  const selectInputRef = useRef();
-  const selectAssignUserRef = useRef();
-  const selectEntryDeptRef = useRef();
-  const selectUserRef = useRef();
-  const selectStatusRef = useRef();
-  const selectFromDateRef = useRef();
-  const selectToDateRef = useRef();
-  const selectTicketRef = useRef();
-  const currentDate = new Date();
-  const formattedDate = `${currentDate.getFullYear()}-${(
-    currentDate.getMonth() + 1
-  )
-    .toString()
-    .padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`;
-  const timeString = `${currentDate
-    .getHours()
-    .toString()
-    .padStart(2, "0")}${currentDate
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
-  const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
-    2,
-    4
-  )}:${timeString.slice(4, 6)}`;
-  const handleDepartment = (e) => {
-    const deptUser = [];
-    for (var i = 0; i < e.length; i++) {
-      const select = user
-        .filter((d) => d.department_id == e[i].value)
-        .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name }));
-      for (var j = 0; j < select.length; j++) {
-        deptUser.push(select[j]);
-      }
-    }
-    setUserDropdown(deptUser);
-    setUserName(null);
-
-    setEntryDepartment(e);
-  };
 
   const handleSelectAllNamesChange = () => {
     // Toggle the state of 'selectAllNames'
@@ -271,7 +1142,6 @@ export default function MyTicketComponent() {
 
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0 &&
-                localStorage.getItem("account_for") === "SELF" &&
                 data.status_name != "Solved" && (
                   <li>
                     <Link
@@ -345,8 +1215,8 @@ export default function MyTicketComponent() {
       }
     }
 
-    if (type === "YOUR_TASK") {
-      if (yourTask && yourTask.length > 0) {
+    if (type === "your_task") {
+      if (assignToMeData && assignToMeData.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
@@ -358,7 +1228,8 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
+              {
+              // data.created_by == localStorage.getItem("id") ||
                 (data.assign_to_user_id == localStorage.getItem("id") && (
                   <li>
                     <Link
@@ -385,11 +1256,9 @@ export default function MyTicketComponent() {
                                             <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
                                                 <i className="icofont-bucket2"></i>Basket</Link></li>
                                         } */}
-
               {
-                (data.created_by = localStorage.getItem("id") &&
-                  localStorage.getItem("account_for") === "SELF" &&
-                  data.basket_configured > 0 && (
+                // (data.created_by = localStorage.getItem("id") &&
+                //   data.basket_configured > 0 && (
                     <li>
                       <Link
                         to={`/${_base}/Ticket/Task/` + data.id}
@@ -399,7 +1268,7 @@ export default function MyTicketComponent() {
                         <i className="icofont-tasks"></i> Task
                       </Link>
                     </li>
-                  ))
+                  // ))
               }
             </Dropdown.Menu>
           </Dropdown>
@@ -429,21 +1298,20 @@ export default function MyTicketComponent() {
                                             <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
                                                 <i className="icofont-bucket2"></i>Basket</Link></li>
                                         } */}
-            {localStorage.getItem("account_for") === "SELF" && (
-              <Link
-                to={`/${_base}/Ticket/Task/` + data.id}
-                className="btn btn-sm btn-outline-primary"
-                style={{ width: "90px" }}
-              >
-                <i className="icofont-tasks"></i> Task
-              </Link>
-            )}
+
+            <Link
+              to={`/${_base}/Ticket/Task/` + data.id}
+              className="btn btn-sm btn-outline-primary"
+              style={{ width: "90px" }}
+            >
+              <i className="icofont-tasks"></i> Task
+            </Link>
           </div>
         );
       }
     }
     if (type === "ASSIGNED_TO_ME") {
-      if (assignedToMe && assignedToMe.length > 0) {
+      if (assignToMeData && assignToMeData.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1" align>
             <Dropdown.Toggle
@@ -490,34 +1358,32 @@ export default function MyTicketComponent() {
               {((data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
-                  data.basket_configured === 0)) &&
-                localStorage.getItem("account_for") === "SELF" && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Basket/` + data.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-bucket2"></i>Basket
-                    </Link>
-                  </li>
-                )}
+                  data.basket_configured === 0)) && (
+                <li>
+                  <Link
+                    to={`/${_base}/Ticket/Basket/` + data.id}
+                    className="btn btn-sm btn-primary text-white"
+                    style={{ width: "100%", zIndex: 100 }}
+                  >
+                    <i className="icofont-bucket2"></i>Basket
+                  </Link>
+                </li>
+              )}
 
               {((data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0) ||
                 (data.assign_to_user_id == localStorage.getItem("id") &&
-                  data.basket_configured > 0)) &&
-                localStorage.getItem("account_for") === "SELF" && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Task/` + data.id}
-                      className="btn btn-sm btn-outline-primary"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-tasks"></i> Task
-                    </Link>
-                  </li>
-                )}
+                  data.basket_configured > 0)) && (
+                <li>
+                  <Link
+                    to={`/${_base}/Ticket/Task/` + data.id}
+                    className="btn btn-sm btn-outline-primary"
+                    style={{ width: "100%", zIndex: 100 }}
+                  >
+                    <i className="icofont-tasks"></i> Task
+                  </Link>
+                </li>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -535,16 +1401,15 @@ export default function MyTicketComponent() {
             {((data.created_by != localStorage.getItem("id") &&
               data.basket_configured === 0) ||
               (data.assign_to_user_id == localStorage.getItem("id") &&
-                data.basket_configured === 0)) &&
-              localStorage.getItem("account_for") === "SELF" && (
-                <Link
-                  to={`/${_base}/Ticket/Basket/` + data.id}
-                  className="btn btn-sm btn-primary text-white"
-                  style={{ width: "90px" }}
-                >
-                  <i className="icofont-bucket2"></i>Basket
-                </Link>
-              )}
+                data.basket_configured === 0)) && (
+              <Link
+                to={`/${_base}/Ticket/Basket/` + data.id}
+                className="btn btn-sm btn-primary text-white"
+                style={{ width: "90px" }}
+              >
+                <i className="icofont-bucket2"></i>Basket
+              </Link>
+            )}
 
             <Link
               to={`/${_base}/Ticket/Edit/` + data.id}
@@ -561,25 +1426,24 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-external-link "></i> View
             </Link>
-            {localStorage.getItem("account_for") === "SELF" && (
-              <Link
-                to={`/${_base}/Ticket/Task/` + data.id}
-                className="btn btn-sm btn-outline-primary"
-                style={{ width: "90px" }}
-              >
-                <i className="icofont-tasks"></i> Task
-              </Link>
-            )}
+
+            <Link
+              to={`/${_base}/Ticket/Task/` + data.id}
+              className="btn btn-sm btn-outline-primary"
+              style={{ width: "90px" }}
+            >
+              <i className="icofont-tasks"></i> Task
+            </Link>
           </div>
         );
       }
     }
     if (type === "ADDED_BY_ME") {
-      if (createdByMe && createdByMe.length > 0) {
+      if (assignToMeData && assignToMeData.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
-              drop="side"
+              drop="up"
               as="button"
               variant=""
               id={`${"dropdown-basic_" + data.id}`}
@@ -588,7 +1452,7 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
 
-            <Dropdown.Menu as="ul" className="border-0 shadow p-1 ">
+            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') &&
                                                 <li><Link to={`/${_base}/Ticket/Edit/` + data.id} className="btn btn-sm btn-warning text-white"
                                                     style={{ width: "100%", zIndex: '100' }}>
@@ -611,8 +1475,7 @@ export default function MyTicketComponent() {
                                             } */}
 
               {data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0 &&
-                localStorage.getItem("account_for") === "SELF" && (
+                data.basket_configured > 0 && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -681,7 +1544,7 @@ export default function MyTicketComponent() {
     }
 
     if (type === "UNPASSED_TICKET") {
-      if (unpassedTickets && unpassedTickets.length > 0) {
+      if (assignToMeData && assignToMeData.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
@@ -791,7 +1654,7 @@ export default function MyTicketComponent() {
     }
 
     if (type === "DEPARTMENTWISE_TICKET") {
-      if (departmentwiseTicket && departmentwiseTicket.length > 0) {
+      if (assignToMeData && assignToMeData.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
@@ -827,6 +1690,14 @@ export default function MyTicketComponent() {
           </Dropdown>
         );
       }
+      // } else {
+
+      //     return <div className="d-flex justify-content-between" style={{ width: "100%" }}>
+      //         <Link to={`/${_base}/Ticket/View/` + data.id} className="btn btn-sm btn-info text-white" >
+      //             <i className="icofont-external-link "></i> View</Link>
+
+      //     </div>
+      // }
     }
   };
 
@@ -949,9 +1820,9 @@ export default function MyTicketComponent() {
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
-        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
+        assignToMeData ? (assignToMeData.length > 0 ? "4rem" : "20.625rem") : "auto"
       }`,
-      cell: (row) => actionComponent(row, "YOUR_TASK"),
+      cell: (row) => actionComponent(row, "your_task"),
     },
     {
       name: "Sr",
@@ -1061,7 +1932,7 @@ export default function MyTicketComponent() {
       button: true,
 
       width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
+        assignToMeData ? (assignToMeData.length > 0 ? "4rem" : "30rem") : "auto"
       }`,
       cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
     },
@@ -1168,7 +2039,7 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       width: `${
-        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
+        assignToMeData ? (assignToMeData.length > 0 ? "4rem" : "20.625rem") : "auto"
       }`,
       cell: (row) => actionComponent(row, "ADDED_BY_ME"),
     },
@@ -1276,6 +2147,25 @@ export default function MyTicketComponent() {
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
   ];
 
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowss, setSelectedRowss] = useState([]);
+
+  // const handleCheckboxChange = (row) => {
+  //   const isSelected = selectedRows.includes(row);
+  //   setSelectedRows((prevSelectedRows) =>
+  //     isSelected
+  //       ? prevSelectedRows.filter((selectedRow) => selectedRow !== row)
+  //       : [...prevSelectedRows, row]
+  //   );
+  // };
+  const handleCheckboxChange = (row) => {
+    setSelectedRows((prevSelectedRows) =>
+      prevSelectedRows.includes(row.id)
+        ? prevSelectedRows.filter((selectedRow) => selectedRow !== row.id)
+        : [...prevSelectedRows, row.id]
+    );
+  };
+
   const handleCheckboxChangee = (row) => {
     setSelectedRowss((prevSelectedRows) => {
       if (prevSelectedRows.includes(row.id)) {
@@ -1293,8 +2183,8 @@ export default function MyTicketComponent() {
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
-        unpassedTickets
-          ? unpassedTickets.length > 0
+        assignToMeData
+          ? assignToMeData.length > 0
             ? "4rem"
             : "20.625rem"
           : "auto"
@@ -1462,8 +2352,8 @@ export default function MyTicketComponent() {
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
-        departmentwiseTicket
-          ? departmentwiseTicket.length > 0
+        assignToMeData
+          ? assignToMeData.length > 0
             ? "4rem"
             : "20.625rem"
           : "auto"
@@ -1575,9 +2465,13 @@ export default function MyTicketComponent() {
   const loadData = async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    setIsLoading(true);
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
+    dispatch(getStatusData());
+    dispatch(getUserTicketsTest());
+    dispatch(getUserForMyTicketsData(inputRequired))
+    setIsLoading(true);
+    
 
     await new UserService()
       .getUserForMyTickets(inputRequired)
@@ -1658,6 +2552,7 @@ export default function MyTicketComponent() {
         }
         setStatusData(null);
         setStatusData(tempData);
+
       }
     });
 
@@ -1690,59 +2585,61 @@ export default function MyTicketComponent() {
         }
       });
 
-    await new MyTicketService().getUserTicketsTest().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setAssignedToMeData(res.data.data);
-          setAssignedToMe(
-            res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-          );
-          const dataAssignToMe = res.data.data.data;
-          var counter = 1;
-          var tempAssignToMeExport = [];
-          for (const key in dataAssignToMe) {
-            tempAssignToMeExport.push({
-              Sr: counter++,
-              TICKET_ID: dataAssignToMe[key].ticket_id,
-              TICKET_DATE: dataAssignToMe[key].ticket_date,
-              EXPECTED_SOLVE_DATE: dataAssignToMe[key].expected_solve_date,
-              ASSIGN_TO_DEPARTMENT: dataAssignToMe[key].assign_to_department,
-              ASSIGN_TO_USER: dataAssignToMe[key].assign_to_user,
-              QUERY_TYPE_NAME: dataAssignToMe[key].query_type_name,
-              PRIORITY: dataAssignToMe[key].priority,
-              STATUS: dataAssignToMe[key].status_name,
-              DESCRIPTION: dataAssignToMe[key].description,
-              CREATED_BY: dataAssignToMe[key].created_by_name,
-              solve_date:dataAssignToMe[key].dataAssignToMe,
 
-              Basket_Configured: dataAssignToMe[key].basket_configured,
-              Confirmation_Required: dataAssignToMe[key].confirmation_required
-                ? "YES"
-                : "NO",
-              Ref_id: dataAssignToMe[key].cuid,
-              from_department_name: dataAssignToMe[key].from_department_name,
-              id: dataAssignToMe[key].id,
-              Status: dataAssignToMe[key].is_active ? "Active" : "Deactive",
-              module_name: dataAssignToMe[key].module_name,
-              Passed_Status: dataAssignToMe[key].passed_status,
-              Passed_Status_Changed_At:
-                dataAssignToMe[key].passed_status_changed_at,
-              Passed_Status_Changed_By_Name:
-                dataAssignToMe[key].passed_status_changed_by_name,
-              Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
-              project_name: dataAssignToMe[key].project_name,
-              // query_type_name: dataCreatedByMe[key].query_type_name,
-              Status_name: dataAssignToMe[key].status_name,
-              sub_module_name: dataAssignToMe[key].sub_module_name,
-              Template_id: dataAssignToMe[key].template_id,
-              Tenant_id: dataAssignToMe[key].tenant_id,
-            });
-          }
+    // await new MyTicketService().getUserTicketsTest().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setAssignedToMeData(res.data.data);
+    //       setAssignedToMe(
+    //         res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //       );
+    //       console.log("aa",assignedToMe)
+    //       const dataAssignToMe = res.data.data.data;
+    //       var counter = 1;
+    //       var tempAssignToMeExport = [];
+    //       for (const key in dataAssignToMe) {
+    //         tempAssignToMeExport.push({
+    //           Sr: counter++,
+    //           TICKET_ID: dataAssignToMe[key].ticket_id,
+    //           TICKET_DATE: dataAssignToMe[key].ticket_date,
+    //           EXPECTED_SOLVE_DATE: dataAssignToMe[key].expected_solve_date,
+    //           ASSIGN_TO_DEPARTMENT: dataAssignToMe[key].assign_to_department,
+    //           ASSIGN_TO_USER: dataAssignToMe[key].assign_to_user,
+    //           QUERY_TYPE_NAME: dataAssignToMe[key].query_type_name,
+    //           PRIORITY: dataAssignToMe[key].priority,
+    //           STATUS: dataAssignToMe[key].status_name,
+    //           DESCRIPTION: dataAssignToMe[key].description,
+    //           CREATED_BY: dataAssignToMe[key].created_by_name,
 
-          setAssignedToMeExport(tempAssignToMeExport);
-        }
-      }
-    });
+    //           Basket_Configured: dataAssignToMe[key].basket_configured,
+    //           Confirmation_Required: dataAssignToMe[key].confirmation_required
+    //             ? "YES"
+    //             : "NO",
+    //           Ref_id: dataAssignToMe[key].cuid,
+    //           from_department_name: dataAssignToMe[key].from_department_name,
+    //           id: dataAssignToMe[key].id,
+    //           Status: dataAssignToMe[key].is_active ? "Active" : "Deactive",
+    //           module_name: dataAssignToMe[key].module_name,
+    //           Passed_Status: dataAssignToMe[key].passed_status,
+    //           Passed_Status_Changed_At:
+    //             dataAssignToMe[key].passed_status_changed_at,
+    //           Passed_Status_Changed_By_Name:
+    //             dataAssignToMe[key].passed_status_changed_by_name,
+    //           Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
+    //           project_name: dataAssignToMe[key].project_name,
+    //           // query_type_name: dataCreatedByMe[key].query_type_name,
+    //           Status_name: dataAssignToMe[key].status_name,
+    //           sub_module_name: dataAssignToMe[key].sub_module_name,
+    //           Template_id: dataAssignToMe[key].template_id,
+    //           Tenant_id: dataAssignToMe[key].tenant_id,
+    //         });
+    //       }
+
+    //       setAssignedToMeExport(tempAssignToMeExport);
+    //     }
+    //   }
+    // });
+
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -1753,7 +2650,25 @@ export default function MyTicketComponent() {
     });
   };
 
+  // const handlePassTicketForm = async (e) => {
+  //   setNotify(null);
+  //   e.preventDefault();
 
+  //   const formData = new FormData(e.target);
+  //   await new MyTicketService().passTicket(formData).then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status == 1) {
+  //         setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+  //         loadData();
+  //         setNotify({ type: "success", message: res.data.message });
+  //       } else {
+  //         setNotify({ type: "danger", message: res.data.message });
+  //       }
+  //     } else {
+  //       setNotify({ type: "danger", message: "Request Error !!!" });
+  //     }
+  //   });
+  // };
 
   const handlePassTicketForm = async (e) => {
     try {
@@ -1789,7 +2704,53 @@ export default function MyTicketComponent() {
     }
   };
 
- 
+  // bluk ticket pass api calling
+  // console.log("selectedRowss",selectedRowss)
+
+  // const handleBulkPassTicketForm = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setNotify(null);
+
+  //     const formData = new FormData(e.target);
+
+  //      // Append selected IDs to the formData
+  //     //  selectedRowss.forEach((id) => {
+  //     //   formData.append('id', id);
+  //     // })
+
+  //     {selectAllNames === true ?
+  //      // Append selected IDs to the formData
+  //      formData.append('id[]', String(selectedRowss))
+  //     :
+  //     // Append selected IDs to the formData
+  //     selectedRows.forEach((id) => {
+  //       formData.append('id', id);
+  //     });
+  //   }
+  //     const response = await new MyTicketService().passBulkTicket(formData);
+  //     if (response.status === 200) {
+  //       const { status, message } = response.data;
+  //       if (status === 1) {
+  //         setBulkRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+  //         // window.location.reload(false)
+  //         loadData();
+  //         setSelectedRows([])
+
+  //         setNotify({ type: "success", message });
+  //       } else {
+  //         setNotify({ type: "danger", message });
+  //       }
+  //     } else {
+  //       setNotify({ type: "danger", message: "Request Error !!!" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error handling passTicket form:", error);
+  //     setNotify({ type: "danger", message: "An error occurred." });
+  //   }
+  // };
+
+  // console.log("remarkModal", remarkModal)
 
   const handleForm = async (e) => {
     // e.preventDefault();
@@ -1879,7 +2840,9 @@ export default function MyTicketComponent() {
     }
   };
 
-
+  const [statusValue, setStatusValue] = useState("");
+  const [assignedUser, setAssignedUser] = useState("");
+  const [entryUser, setEntryUser] = useState("");
 
   const handleChangeStatus = (e) => {
     setStatusValue(e);
@@ -1891,7 +2854,25 @@ export default function MyTicketComponent() {
     setEntryUser(e);
   };
 
+  const disableDate = () => {
+    const date = new Date();
+    const result = date.toLocaleDateString("es-CL", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    var listString = result.split("-").reverse();
+    return Array.from(listString).join("-");
+  };
 
+  const selectInputRef = useRef();
+  const selectAssignUserRef = useRef();
+  const selectEntryDeptRef = useRef();
+  const selectUserRef = useRef();
+  const selectStatusRef = useRef();
+  const selectFromDateRef = useRef();
+  const selectToDateRef = useRef();
+  const selectTicketRef = useRef();
 
   const handleClearData = (e) => {
     if (selectInputRef.current.commonProps.hasValue != null) {
@@ -1913,7 +2894,11 @@ export default function MyTicketComponent() {
       document.getElementById("ticket_id").value = "";
     }
   };
-  
+  const [startDate, setStartDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [ticket, setTicket] = useState("");
+  const [value, setValue] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleFromDate = (e) => {
     setStartDate(e.target.value);
@@ -2037,7 +3022,31 @@ export default function MyTicketComponent() {
         });
     }
   };
+  const formRef = useRef();
 
+  const handleRef = (e) => {
+    formRef.current.reset();
+  };
+
+  const [entryDepartment, setEntryDepartment] = useState();
+
+  const handleDepartment = (e) => {
+    const deptUser = [];
+    for (var i = 0; i < e.length; i++) {
+      const select = user
+        .filter((d) => d.department_id == e[i].value)
+        .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name }));
+      for (var j = 0; j < select.length; j++) {
+        deptUser.push(select[j]);
+      }
+    }
+    setUserDropdown(deptUser);
+    setUserName(null);
+
+    setEntryDepartment(e);
+  };
+
+  const [assignedDepartmentValue, setAssignedDepartment] = useState("");
 
   const handleAssignedDepartment = (e) => {
     const deptAssignedUser = [];
@@ -2056,89 +3065,158 @@ export default function MyTicketComponent() {
     setAssignedDepartment(e);
   };
 
- 
+  useEffect(() => {
+    const listener = (event) => {
+      if (event.code === "Enter") {
+        // callMyFunction();
+        handleForm();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, []);
+
+  const [key, setKey] = useState("Assigned_To_Me");
+  useEffect(() => {
+    loadData();
+    if (location && location.state) {
+      setNotify(location.state.alert);
+    }
+  }, []);
+
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getFullYear()}-${(
+    currentDate.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`;
+  const timeString = `${currentDate
+    .getHours()
+    .toString()
+    .padStart(2, "0")}${currentDate
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+  const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
+    2,
+    4
+  )}:${timeString.slice(4, 6)}`;
+
+  useEffect(() => {
+    if (checkRole && checkRole[15].can_read === 0) {
+      // alert("Rushi")
+
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  }, [checkRole]);
+  const [createdByMeData, setCreatedByMeData] = useState();
+  const [departmentWiseData, setDepartmentWiseData] = useState();
+  const [yourTaskData, setYourTaskData] = useState();
+  const [unpassedData, setUnpassedData] = useState();
+
   const handleAssignedToMeTab = async (k, e) => {
     e.preventDefault();
     var form;
-    if (k == "Assigned_To_Me") {
-      form = {
-        limit: 10,
-        typeOf: "Assigned_To_Me",
-        page: 1,
-      };
-      await new MyTicketService().getUserTicketsTest(form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setAssignedToMe(
-              res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-            );
-          }
-        }
-      });
-    } else if (k == "created_by_me") {
-      const forms = {
-        limit: 10,
-        typeOf: "CreatedByMe",
-        page: 1,
-      };
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          setCreatedByMeData(res.data.data);
-          setCreatedByMe(
-            res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-          );
-        }
-      });
-    } else if (k == "departmenyourTaskt") {
-      const forms = {
-        limit: 10,
-        typeOf: "DepartmentWise",
-        page: 1,
-      };
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setDepartmentWiseData(res.data.data);
-            setDepartmentwiseTicket(
-              res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-            );
-          }
-        }
-      });
-    } else if (k == "your_task") {
-      const forms = {
-        limit: 10,
-        typeOf: "YouTask",
-        page: 1,
-      };
+    let form1 = {};
+    // var form;
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setYourTaskData(res.data.data);
-            setYourTask(
-              res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-            );
-          }
-        }
-      });
-    } else if (k == "unpassed_columns") {
-      const forms = {
-        limit: 10,
-        typeOf: "UnPassed",
-        page: 1,
-      };
+    form1.limit = 10;
+    form1.typeOf = k;
+    form1.page = 1;
+    dispatch(getUserTicketsTest(form1));
+    // await new MyTicketService().getUserTicketsTest(form1).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       // setAssignedToMe(
+    //       //   res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //       // );
+    //       console.log("res.data.data.data",res.data.data.data)
+    //     }
+    //   }
+    // });
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setUnpassedData(res.data.data);
+    // if (k == "Assigned_To_Me") {
+    //   form = {
+    //     limit: 10,
+    //     typeOf: "Assigned_To_Me",
+    //     page: 1,
+    //   };
+    //   await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setAssignedToMe(
+    //           res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //         );
+    //       }
+    //     }
+    //   });
+    // } else if (k == "created_by_me") {
+    //   const forms = {
+    //     limit: 10,
+    //     typeOf: "CreatedByMe",
+    //     page: 1,
+    //   };
+    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+    //     if (res.status === 200) {
+    //       setCreatedByMeData(res.data.data);
+    //       console.log("r", res.data.data);
+    //       setCreatedByMe(
+    //         res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //       );
+    //     }
+    //   });
+    // } else if (k == "departmenyourTaskt") {
+    //   const forms = {
+    //     limit: 10,
+    //     typeOf: "DepartmentWise",
+    //     page: 1,
+    //   };
+    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setDepartmentWiseData(res.data.data);
+    //         setDepartmentwiseTicket(
+    //           res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //         );
+    //       }
+    //     }
+    //   });
+    // } else if (k == "your_task") {
+    //   const forms = {
+    //     limit: 10,
+    //     typeOf: "YouTask",
+    //     page: 1,
+    //   };
 
-            setUnpassedTickets(res.data.data.data);
-          }
-        }
-      });
-    }
+    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setYourTaskData(res.data.data);
+    //         setYourTask(
+    //           res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //         );
+    //       }
+    //     }
+    //   });
+    // } else if (k == "unpassed_columns") {
+    //   const forms = {
+    //     limit: 10,
+    //     typeOf: "UnPassed",
+    //     page: 1,
+    //   };
+
+    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setUnpassedData(res.data.data);
+
+    //         setUnpassedTickets(res.data.data.data);
+    //       }
+    //     }
+    //   });
+    // }
   };
 
   const handleAssignedToMeRowChanged = async (e, type) => {
@@ -2168,18 +3246,19 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          var newSr = res.data.data.from;
-          setAssignedToMe(
-            res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-          );
-        }
-      }
-    });
+    // await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       var newSr = res.data.data.from;
+    //       setAssignedToMe(
+    //         res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+    //       );
+    //     }
+    //   }
+    // });
   };
-
+  {
+  }
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
@@ -2321,47 +3400,6 @@ export default function MyTicketComponent() {
     });
   };
 
-  const customStyles = {
-    rows: {
-      style: {
-        minHeight: "120px",
-      },
-    },
-  };
-
-  useEffect(() => {
-    const listener = (event) => {
-      if (event.code === "Enter") {
-        // callMyFunction();
-        handleForm();
-      }
-    };
-    document.addEventListener("keydown", listener);
-    return () => {
-      document.removeEventListener("keydown", listener);
-    };
-  }, []);
-
-  useEffect(() => {
-    loadData();
-    if (location && location.state) {
-      setNotify(location.state);
-    }
-    return () =>{
-      setNotify(null)
-    }
-  }, []);
-
-  
-
-  useEffect(() => {
-    if (checkRole && checkRole[15].can_read === 0) {
-      // alert("Rushi")
-
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    }
-  }, [checkRole]);
-
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
@@ -2382,50 +3420,47 @@ export default function MyTicketComponent() {
                   id="ticket_idd"
                   name="ticket_id"
                   onKeyPress={(e) => {
-                    Validation.CharactersNumbersOnlyWithComma(e);
+                    Validation.CharactersNumbersOnly(e);
                   }}
                 />
               </div>
-              {localStorage.getItem("account_for") === "SELF" && (
-                <>
-                  <div className="col-md-3">
-                    <label className="">
-                      <b>Select User :</b>
-                    </label>
-                    {/* <UserDropdown id="assign_to_user_id" name="assign_to_user_id"/> */}
-                    {userData && (
-                      <Select
-                        options={userData}
-                        isMulti={true}
-                        id="assign_to_user_id[]"
-                        name="assign_to_user_id[]"
-                      />
-                    )}
-                  </div>
+              <div className="col-md-3">
+                <label className="">
+                  <b>Select User :</b>
+                </label>
+                {/* <UserDropdown id="assign_to_user_id" name="assign_to_user_id"/> */}
+                {UserForMyTicketData && (
+                  <Select
+                    options={UserForMyTicketData}
+                    isMulti={true}
+                    id="assign_to_user_id[]"
+                    name="assign_to_user_id[]"
+                  />
+                )}
+              </div>
 
-                  <div className="col-md-3">
-                    <label className="">
-                      <b>Select Department :</b>
-                    </label>
-                    {departmentData && (
-                      <Select
-                        options={departmentData}
-                        isMulti={true}
-                        id="assign_to_department_id[]"
-                        name="assign_to_department_id[]"
-                      />
-                    )}
-                  </div>
-                </>
-              )}
+              <div className="col-md-3">
+                <label className="">
+                  <b>Select Department :</b>
+                </label>
+                {departmentData && (
+                  <Select
+                    options={departmentData}
+                    isMulti={true}
+                    id="assign_to_department_id[]"
+                    name="assign_to_department_id[]"
+                  />
+                )}
+              </div>
+
 
               <div className="col-md-3">
                 <label className="">
                   <b>Select Status :</b>
                 </label>
-                {statusData && (
+                {gelAllStatusData && (
                   <Select
-                    options={statusData}
+                    options={gelAllStatusData}
                     isMulti={true}
                     id="status_id[]"
                     name="status_id[]"
@@ -2473,6 +3508,7 @@ export default function MyTicketComponent() {
           onSubmit={(e) => {
             handleFilterForm(e);
           }}
+          ref={formRef}
         >
           <Modal.Body>
             <div className="card mt-2" style={{ zIndex: 10 }}>
@@ -2516,101 +3552,97 @@ export default function MyTicketComponent() {
                 {/* ********************************* */}
 
                 {/* *****************Entry Department,Entry User **************** */}
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <>
-                    <div className="row mt-3">
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Assigned Department :</b>
-                        </label>
-                        {departmentData && (
-                          <Select
-                            options={departmentData}
-                            // value={deptAssignedUser}
+                <div className="row mt-3">
+                  <div className="col-md-6">
+                    <label className="">
+                      <b>Assigned Department :</b>
+                    </label>
+                    {departmentData && (
+                      <Select
+                        options={departmentData}
+                        // value={deptAssignedUser}
 
-                            // ref={selectInputRef}
-                            isMulti={true}
-                            ref={selectInputRef}
-                            id="assign_to_department_id[]"
-                            name="assign_to_department_id[]"
-                            onChange={handleAssignedDepartment}
-                            defaultValue={assignedDepartmentValue}
-                          />
-                        )}
-                      </div>
-                      {/* {assignUserDropdown && assignUserDropdown.length > 0 ? <> */}
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Assigned User :</b>
-                        </label>
-                        {/* {assignUserDropdown && */}
-                        <Select
-                          options={assignUserDropdown}
-                          isMulti={true}
-                          id="assign_to_user_id[]"
-                          name="assign_to_user_id[]"
-                          ref={selectAssignUserRef}
-                          onChange={handleChangeAssignedUser}
-                          defaultValue={assignedUser}
-                        />
-                        {/* } */}
-                      </div>
+                        // ref={selectInputRef}
+                        isMulti={true}
+                        ref={selectInputRef}
+                        id="assign_to_department_id[]"
+                        name="assign_to_department_id[]"
+                        onChange={handleAssignedDepartment}
+                        defaultValue={assignedDepartmentValue}
+                      />
+                    )}
+                  </div>
+                  {/* {assignUserDropdown && assignUserDropdown.length > 0 ? <> */}
+                  <div className="col-md-6">
+                    <label className="">
+                      <b>Assigned User :</b>
+                    </label>
+                    {/* {assignUserDropdown && */}
+                    <Select
+                      options={getAssignedUserData}
+                      isMulti={true}
+                      id="assign_to_user_id[]"
+                      name="assign_to_user_id[]"
+                      ref={selectAssignUserRef}
+                      onChange={handleChangeAssignedUser}
+                      defaultValue={assignedUser}
+                    />
+                    {/* } */}
+                  </div>
 
-                      {/* </> : null} */}
-                    </div>
-                    {/* ********************************* **************** */}
+                  {/* </> : null} */}
+                </div>
+                {/* ********************************* **************** */}
 
-                    {/* *****************Entry Department,Entry User **************** */}
-                    <div className="row mt-3">
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Entry Department :</b>
-                        </label>
-                        {departmentData && (
-                          <Select
-                            options={departmentData}
-                            isMulti={true}
-                            id="department_id[]"
-                            name="department_id[]"
-                            onChange={handleDepartment}
-                            defaultValue={entryDepartment}
-                            ref={selectEntryDeptRef}
-                          />
-                        )}
-                      </div>
+                {/* *****************Entry Department,Entry User **************** */}
+                <div className="row mt-3">
+                  <div className="col-md-6">
+                    <label className="">
+                      <b>Entry Department :</b>
+                    </label>
+                    {departmentData && (
+                      <Select
+                        options={departmentData}
+                        isMulti={true}
+                        id="department_id[]"
+                        name="department_id[]"
+                        onChange={handleDepartment}
+                        defaultValue={entryDepartment}
+                        ref={selectEntryDeptRef}
+                      />
+                    )}
+                  </div>
 
-                      {/* {userDropdown && userDropdown.length > 0 ? <> */}
+                  {/* {userDropdown && userDropdown.length > 0 ? <> */}
 
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Entry User :</b>
-                        </label>
-                        {/* {userDropdown && */}
-                        <Select
-                          options={userDropdown}
-                          isMulti={true}
-                          ref={selectUserRef}
-                          id="user_id[]"
-                          name="user_id[]"
-                          onChange={handleChangeEntryUser}
-                          defaultValue={entryUser}
-                        />
-                        {/* } */}
-                      </div>
-                      {/* </> : null} */}
-                    </div>
-                  </>
-                )}
+                  <div className="col-md-6">
+                    <label className="">
+                      <b>Entry User :</b>
+                    </label>
+                    {/* {userDropdown && */}
+                    <Select
+                      options={getAssignedUserData}
+                      isMulti={true}
+                      ref={selectUserRef}
+                      id="user_id[]"
+                      name="user_id[]"
+                      onChange={handleChangeEntryUser}
+                      defaultValue={entryUser}
+                    />
+                    {/* } */}
+                  </div>
+                  {/* </> : null} */}
+                </div>
                 {/********************************** ****************************/}
 
                 {/* ***************************Status**************** */}
                 <div className="col-md-12">
-                  <label className="mt-2">
+                  <label className="">
                     <b>Select Status :</b>
                   </label>
-                  {statusData && (
+                  {gelAllStatusData && (
                     <Select
-                      options={statusData}
+                      options={gelAllStatusData}
                       isMulti={true}
                       id="status_id[]"
                       name="status_id[]"
@@ -2717,94 +3749,90 @@ export default function MyTicketComponent() {
                     </div>
                   </Tab>
                 )}
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <Tab eventKey="Assigned_To_Me" title="Assigned To me">
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {assignedToMe && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Assign To Me"
-                            typeOf="AssignToMe"
-                          />
-                        )}
 
-                        {assignedToMe && (
-                          <DataTable
-                            columns={assignedToMeColumns}
-                            data={assignedToMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"700px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleAssignedToMeRowChanged(e, "LIMIT");
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {assignedToMeData && (
-                            <small>
-                              {assignedToMeData.from}-{assignedToMeData.to} of{" "}
-                              {assignedToMeData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, "MINUS");
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, "PLUS");
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </Tab>
-                )}
-
-                <Tab eventKey="created_by_me" title="Created By Me">
+                <Tab eventKey="Assigned_To_Me" title="Assigned To me">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
-                      {createdByMe && (
+                      {assignedToMe && (
+                        <ExportAllTicketsToExcel
+                          className="btn btn-sm btn-danger mt-3"
+                          fileName="Assign To Me"
+                          typeOf="AssignToMe"
+                        />
+                      )}
+
+                      {assignToMeData && (
+                        <DataTable
+                          columns={assignedToMeColumns}
+                          data={assignToMeData}
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={"700px"}
+                          selectableRows={false}
+                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                          highlightOnHover={true}
+                        />
+                      )}
+                      <div className="back-to-top pull-right mt-2 mx-2">
+                        <label className="mx-2">rows per page</label>
+                        <select
+                          onChange={(e) => {
+                            handleAssignedToMeRowChanged(e, "LIMIT");
+                          }}
+                          className="mx-2"
+                        >
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="40">40</option>
+                        </select>
+                        {assignedToMeData && (
+                          <small>
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
+                          </small>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            handleAssignedToMeRowChanged(e, "MINUS");
+                          }}
+                          className="mx-2"
+                        >
+                          <i className="icofont-arrow-left"></i>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            handleAssignedToMeRowChanged(e, "PLUS");
+                          }}
+                        >
+                          <i className="icofont-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+                <Tab eventKey="CreatedByMe" title="Created By Me">
+                  <div className="card mb-3 mt-3">
+                    <div className="card-body">
+                      {assignToMeData && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
                           typeOf="CreatedByMe"
                         />
                       )}
-                      {createdByMe && (
+                      {assignToMeData && (
                         <DataTable
-                          customStyles={customStyles}
                           columns={createdByMeColumns}
-                          data={createdByMe}
+                          data={assignToMeData}
                           defaultSortField="title"
                           fixedHeader={true}
                           fixedHeaderScrollHeight={"500px"}
                           selectableRows={false}
                           highlightOnHover={true}
-                          responsive={true}
                         />
                       )}
-                      <div className="back-to-top pull-right mt-6 mx-2">
+                      <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
                           onChange={(e) => {
@@ -2842,136 +3870,132 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <Tab
-                    eventKey="departmenyourTaskt"
-                    title="Departmentwise Tickets"
-                  >
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {departmentwiseTicket && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Departmentwise Ticket"
-                            typeOf="DepartmentWise"
-                          />
+
+                <Tab
+                  eventKey="DepartmentWise"
+                  title="Departmentwise Tickets"
+                >
+                  <div className="card mb-3 mt-3">
+                    <div className="card-body">
+                      {departmentwiseTicket && (
+                        <ExportAllTicketsToExcel
+                          className="btn btn-sm btn-danger mt-3"
+                          fileName="Departmentwise Ticket"
+                          typeOf="DepartmentWise"
+                        />
+                      )}
+                      {assignToMeData && (
+                        <DataTable
+                          columns={departmentwisetTicketColumns}
+                          data={assignToMeData }
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={"500px"}
+                          selectableRows={false}
+                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                          highlightOnHover={true}
+                        />
+                      )}
+                      <div className="back-to-top pull-right mt-2 mx-2">
+                        <label className="mx-2">rows per page</label>
+                        <select
+                          onChange={(e) => {
+                            handleDepartmentWiseRowChanged(e, "LIMIT");
+                          }}
+                          className="mx-2"
+                        >
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="40">40</option>
+                        </select>
+                        {departmentWiseData && (
+                          <small>
+                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
+                            {departmentWiseData.total}
+                          </small>
                         )}
-                        {departmentwiseTicket && (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"500px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleDepartmentWiseRowChanged(e, "LIMIT");
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {departmentWiseData && (
-                            <small>
-                              {departmentWiseData.from}-{departmentWiseData.to}{" "}
-                              of {departmentWiseData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "MINUS");
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "PLUS");
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            handleDepartmentWiseRowChanged(e, "MINUS");
+                          }}
+                          className="mx-2"
+                        >
+                          <i className="icofont-arrow-left"></i>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            handleDepartmentWiseRowChanged(e, "PLUS");
+                          }}
+                        >
+                          <i className="icofont-arrow-right"></i>
+                        </button>
                       </div>
                     </div>
-                  </Tab>
-                )}
+                  </div>
+                </Tab>
 
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <Tab eventKey="your_task" title="Your Task">
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {yourTask && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Your Task"
-                            typeOf="YouTask"
-                          />
+                <Tab eventKey="YouTask" title="Your Task">
+                  <div className="card mb-3 mt-3">
+                    <div className="card-body">
+                      {yourTask && (
+                        <ExportAllTicketsToExcel
+                          className="btn btn-sm btn-danger mt-3"
+                          fileName="Your Task"
+                          typeOf="YouTask"
+                        />
+                      )}
+                      {assignToMeData && (
+                        <DataTable
+                          columns={yourTaskColumns}
+                          data={assignToMeData}
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={"500px"}
+                          selectableRows={false}
+                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                          highlightOnHover={true}
+                        />
+                      )}
+                      <div className="back-to-top pull-right mt-2 mx-2">
+                        <label className="mx-2">rows per page</label>
+                        <select
+                          onChange={(e) => {
+                            handleYourTaskRowChanged(e, "LIMIT");
+                          }}
+                          className="mx-2"
+                        >
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="40">40</option>
+                        </select>
+                        {yourTaskData && (
+                          <small>
+                            {yourTaskData.from}-{yourTaskData.to} of{" "}
+                            {yourTaskData.total}
+                          </small>
                         )}
-                        {yourTask && (
-                          <DataTable
-                            columns={yourTaskColumns}
-                            data={yourTask}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"500px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleYourTaskRowChanged(e, "LIMIT");
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {yourTaskData && (
-                            <small>
-                              {yourTaskData.from}-{yourTaskData.to} of{" "}
-                              {yourTaskData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, "MINUS");
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, "PLUS");
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            handleYourTaskRowChanged(e, "MINUS");
+                          }}
+                          className="mx-2"
+                        >
+                          <i className="icofont-arrow-left"></i>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            handleYourTaskRowChanged(e, "PLUS");
+                          }}
+                        >
+                          <i className="icofont-arrow-right"></i>
+                        </button>
                       </div>
                     </div>
-                  </Tab>
-                )}
-
-                <Tab eventKey="unpassed_columns" title="Unpassed Ticket">
+                  </div>
+                </Tab>
+                <Tab eventKey="UnPassed" title="Unpassed Ticket">
                   <div className="card mb-3 mt-3">
                     {/* <div className="card-body">
                       {unpassedTickets && (
@@ -3158,10 +4182,10 @@ export default function MyTicketComponent() {
                         </div>
                       </div>
 
-                      {unpassedTickets && (
+                      {assignToMeData && (
                         <DataTable
                           columns={unpassedColumns}
-                          data={unpassedTickets}
+                          data={assignToMeData}
                           defaultSortField="title"
                           fixedHeader={true}
                           fixedHeaderScrollHeight={"500px"}
