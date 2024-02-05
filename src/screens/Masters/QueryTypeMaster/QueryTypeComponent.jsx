@@ -9,9 +9,9 @@ import Select from "react-select";
 import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
 import QueryTypeService from "../../../services/MastersService/QueryTypeService";
-import DynamicFormService from "../../../services/MastersService/DynamicFormService";
+
 import Alert from "../../../components/Common/Alert";
-import DynamicFormDropdown from "../DynamicFormMaster/DynamicFormDropdown";
+
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
@@ -28,6 +28,7 @@ import { queryTypeSlice } from "./QueryTypeComponetSlice";
 import {
   QueryGroupForm,
   QueryGroupFormUpdate,
+  postqueryTypeForm,
   queryTypeData,
 } from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
@@ -36,9 +37,7 @@ import DashboardSlice from "../../Dashboard/DashboardSlice";
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
-  const querygroupdata = useSelector(
-    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData
-  );
+  const querygroupdata = useSelector((queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData);
   const queryTypedata = useSelector((queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType);
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
   const dynamicFormDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData);
@@ -776,27 +775,28 @@ function QueryTypeComponent() {
         if (!id) {
           form.delete("is_active");
           form.append("is_active", 1);
-          const res = await new QueryTypeService().postQueryType(form);
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            if (res.data.status === 1) {
-              setShowLoaderModal(false);
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              setNotify({ type: "success", message: res.data.message });
-              loadData();
-              setIsActive(1);
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Create_QueryType",
-              "INSERT",
-              res.message
-            );
-          }
+          dispatch(postqueryTypeForm(form))
+          // const res = await new QueryTypeService().postQueryType(form);
+          // if (res.status === 200) {
+          //   setShowLoaderModal(false);
+          //   if (res.data.status === 1) {
+          //     setShowLoaderModal(false);
+          //     setModal({ showModal: false, modalData: "", modalHeader: "" });
+          //     setNotify({ type: "success", message: res.data.message });
+          //     loadData();
+          //     setIsActive(1);
+          //   } else {
+          //     setNotify({ type: "danger", message: res.data.message });
+          //   }
+          // } else {
+          //   setNotify({ type: "danger", message: res.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     "QueryType",
+          //     "Create_QueryType",
+          //     "INSERT",
+          //     res.message
+          //   );
+          // }
         } else {
           form.delete("is_active");
           form.append("is_active", isActive);

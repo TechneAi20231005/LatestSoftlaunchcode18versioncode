@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { QueryGroupForm, QueryGroupFormUpdate, queryTypeData } from "./QueryTypeComponetAction";
+import { QueryGroupForm, QueryGroupFormUpdate, postqueryTypeForm, queryTypeData } from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
 
 const initialState = {
@@ -120,6 +120,32 @@ export const queryTypeSlice = createSlice({
       }
     });
     builder.addCase(QueryGroupFormUpdate.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //___________________________postqueryType____________________
+
+
+    builder.addCase(postqueryTypeForm.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(postqueryTypeForm.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let postqueryTypeForm = payload.data.data;
+        console.log(postqueryTypeForm);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.postqueryTypeForm = postqueryTypeForm;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(postqueryTypeForm.rejected, (state) => {
       state.status = "rejected";
     });
 

@@ -935,6 +935,12 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solve Date",
+      maxWidth: "auto",
+      selector: (row) => row.solve_date,
+      sortable: true,
+    },
   ];
   const yourTaskColumns = [
     {
@@ -1707,6 +1713,7 @@ export default function MyTicketComponent() {
               STATUS: dataAssignToMe[key].status_name,
               DESCRIPTION: dataAssignToMe[key].description,
               CREATED_BY: dataAssignToMe[key].created_by_name,
+              solve_date:dataAssignToMe[key].dataAssignToMe,
 
               Basket_Configured: dataAssignToMe[key].basket_configured,
               Confirmation_Required: dataAssignToMe[key].confirmation_required
@@ -1815,6 +1822,7 @@ export default function MyTicketComponent() {
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
+                  solve_date: temp[key].solve_date,
 
                   Basket_Configured: temp[key].basket_configured,
                   Confirmation_Required: temp[key].confirmation_required
@@ -1959,6 +1967,7 @@ export default function MyTicketComponent() {
                   ASSIGN_TO_USER: temp[key].assign_to_user,
                   TYPE: temp[key].type_id,
                   PRIORITY: temp[key].priority,
+                  solve_date: temp[key].solve_date,
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
@@ -1980,6 +1989,7 @@ export default function MyTicketComponent() {
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
+                  solve_date:temp[key].solve_date,
 
                   Basket_Configured: temp[key].basket_configured,
                   Confirmation_Required: temp[key].confirmation_required
