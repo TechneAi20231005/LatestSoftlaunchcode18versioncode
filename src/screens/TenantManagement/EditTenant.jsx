@@ -18,6 +18,7 @@ export default function EditTenant({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
+  console.log("data",data);
   const [toggleRadio, setToggleRadio] = useState(false);
   const { id } = useParams();
   const tenanatId = id;
@@ -39,6 +40,9 @@ export default function EditTenant({ match }) {
   ];
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
+  console.log("countryDropdown",   
+  countryDropdown &&
+  countryDropdown.filter((d) => d.value ));
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
@@ -307,7 +311,7 @@ export default function EditTenant({ match }) {
                       defaultValue={
                         data &&
                         countryDropdown &&
-                        countryDropdown.filter((d) => d.value == data.country)
+                        countryDropdown.filter((d) => d.value == data.country_id)
                       }
                       onChange={(e) => handleDependentChange(e, "COUNTRY")}
                     />
@@ -328,7 +332,7 @@ export default function EditTenant({ match }) {
                       defaultValue={
                         data &&
                         stateDropdown &&
-                        stateDropdown.filter((d) => d.value == data.state)
+                        stateDropdown.filter((d) => d.value == data.state_id)
                       }
                       onChange={(e) => handleDependentChange(e, "STATE")}
                     />
@@ -351,7 +355,7 @@ export default function EditTenant({ match }) {
                       defaultValue={
                         data &&
                         cityDropdown &&
-                        cityDropdown.filter((d) => d.value == data.city)
+                        cityDropdown.filter((d) => d.value == data.city_id)
                       }
                       onChange={(e) => handleDependentChange(e, "CITY")}
                     />

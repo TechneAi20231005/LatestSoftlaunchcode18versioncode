@@ -940,6 +940,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
   const yourTaskColumns = [
     {
@@ -1968,6 +1980,8 @@ export default function MyTicketComponent() {
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
+                  ticket_solved_date:temp[key].ticket_solved_date,
+                  ticket_solved_by:temp[key].ticket_solved_by
                 });
               }
               setKey("Search_Result");
