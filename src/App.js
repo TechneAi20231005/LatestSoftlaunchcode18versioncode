@@ -1,7 +1,7 @@
 // Importing required dependencies and components
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, } from "react-router-dom";
-import {_base} from './settings/constants'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { _base } from "./settings/constants";
 import Sidebar from "./components/Common/Sidebar";
 import AuthIndex from "./screens/AuthIndex";
 import MainIndex from "./screens/MainIndex";
@@ -16,28 +16,28 @@ const App = () => {
   // State to manage the token (password) using useState hook
   const [token, setToken] = useState(sessionStorage.getItem("password"));
   const onlineStatus = useOnlineStatus();
-const [checkUrl, setCheckUrl] = useState(false)
-  const checkBaseUrl = ()=>{
-    let base =`/${_base}/`;
-    if( base == window.location.pathname){
+  const [checkUrl, setCheckUrl] = useState(false);
+  const checkBaseUrl = () => {
+    let base = `/${_base}/`;
+    if (base == window.location.pathname) {
       localStorage.clear();
       sessionStorage.clear();
-      setToken(null)
-      setCheckUrl(false)
-    }else if(base !== window.location.pathname && localStorage.length === 6){
+      setToken(null);
+      setCheckUrl(false);
+    } else if (base !== window.location.pathname && localStorage.length === 6) {
       localStorage.clear();
       sessionStorage.clear();
-      setToken(null)
-      setCheckUrl(null)  
-      setCheckUrl(false)  
+      setToken(null);
+      setCheckUrl(null);
+      setCheckUrl(false);
       window.location.href = `${process.env.PUBLIC_URL}/`;
-      } else{
-        setCheckUrl(true)
-      }  
-  }
+    } else {
+      setCheckUrl(true);
+    }
+  };
   // useEffect hook to check token expiration on component mount
   useEffect(() => {
-    checkBaseUrl()
+    checkBaseUrl();
     // Function to check token expiration
     const checkTokenExpiration = () => {
       const tokenExpirationTime = localStorage.getItem("jwt_token_expiration");
@@ -68,6 +68,7 @@ const [checkUrl, setCheckUrl] = useState(false)
   return (
     <>
       <div id="mytask-layout" className="theme-indigo">
+
       {/* && localStorage.length == 0 && checkUrl == false  */}
         {!token && (
           <AuthIndex/>
@@ -76,20 +77,21 @@ const [checkUrl, setCheckUrl] = useState(false)
         
         {token && onlineStatus && checkUrl === true && sessionStorage.length > 6 && (
             
+
             <>
-            <Sidebar/>
-            <MainIndex />
-          </>
-        )
-        
-      }
-        {token && onlineStatus === false && 
-        
-        
-        <h1 className="mt-4"> Looks like you're offline 🔴🔴🔴 Please check your internet connection </h1>
-      }
+              <Sidebar />
+              <MainIndex />
+            </>
+          )}
+        {token && onlineStatus === false && (
+          <h1 className="mt-4">
+            {" "}
+            Looks like you're offline 🔴🔴🔴 Please check your internet
+            connection{" "}
+          </h1>
+        )}
       </div>
-{/* 
+      {/* 
         {token && onlineStatus && (
           <>
             <Sidebar />
@@ -103,7 +105,6 @@ const [checkUrl, setCheckUrl] = useState(false)
             connection{" "}
           </h1>
         )} */}
-     
     </>
   );
 };

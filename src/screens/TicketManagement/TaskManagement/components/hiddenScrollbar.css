@@ -1,0 +1,44 @@
+/* YourComponent.css */
+
+.custom-dropdown-menu {
+    position: relative;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .child-box {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none;
+  }
+  
+  .custom-dropdown-menu .show .child-box {
+    display: block;
+  }
+  
+  .expand-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 16px;
+    color: #007bff; /* Change the color as needed */
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar {
+    width: 0 !important;
+    display: none !important;
+  }
+  
+  .custom-dropdown-menu {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar {
+    width: 0; /* Safari */
+    display: none;
+  }
+  

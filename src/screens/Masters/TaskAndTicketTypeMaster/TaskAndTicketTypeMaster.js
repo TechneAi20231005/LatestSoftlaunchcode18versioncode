@@ -15,10 +15,24 @@ import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 import { el } from "date-fns/locale";
+import { handleModalClose,handleModalOpe, handleModalOpen } from "./TaskAndTicketTypeMasterSlice"
+import { getParentDropdown, postTaskandTicket, taskAndTicketMaster, updateTaskAndTicketType } from "./TaskAndTicketTypeMasterAction";
+import { useDispatch, useSelector } from "react-redux";
+
+import TaskAndTicketTypeMasterSlice from "./TaskAndTicketTypeMasterSlice";
 
 function TaskAndTicketTypeMaster(props) {
+  const dispatch=useDispatch()
+  const tasktype=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.taskAndTicketMaster)
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10));
+  const parentDropDown=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.getParentDropdown)
+  const modal=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.modal)
+  const notify=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.notify)
+
+  console.log("parentDropDown",parentDropDown);
+  console.log("tasktype",tasktype);
   const [selectedValue, setSelectedValue] = useState("");
-  const [notify, setNotify] = useState();
+  // const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [parent, setParent] = useState();
   const [loading, setLoading] = useState(false);
@@ -29,81 +43,84 @@ function TaskAndTicketTypeMaster(props) {
   const parentRef = useRef(null);
   const typeNameRef = useRef(null);
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
   const dropdownData = [
     { value: "TASK", label: "TASK" },
     { value: "TICKET", label: "TICKET" },
     // Add more options as needed
   ];
   const loadData = async () => {
-    const exportTempData = [];
+    dispatch(taskAndTicketMaster())
+    dispatch(getParentDropdown())
+    
+    // const exportTempData = [];
 
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          let counter = 1;
-          var tempData = [];
-          const temp = res.data.data;
+    // await new TaskTicketTypeService().getAllType().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       let counter = 1;
+    //       var tempData = [];
+    //       const temp = res.data.data;
 
-          for (const key in temp) {
-            tempData.push({
-              counter: counter++,
-              id: temp[key].id,
-              type: temp[key].type,
-              parent_id: temp[key].parent_id,
+    //       for (const key in temp) {
+    //         tempData.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           type: temp[key].type,
+    //           parent_id: temp[key].parent_id,
 
-              type_name: temp[key].type_name,
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(tempData);
+    //           type_name: temp[key].type_name,
+    //           remark: temp[key].remark,
+    //           is_active: temp[key].is_active,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(tempData);
 
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
+    //       for (const i in temp) {
+    //         exportTempData.push({
+    //           SrNo: exportTempData.length + 1,
 
-              id: temp[i].id,
-              type: temp[i].type,
+    //           id: temp[i].id,
+    //           type: temp[i].type,
 
-              parent_name: temp[i].parent_name,
-              type_name: temp[i].type_name,
-              remark: temp[i].remark,
-              is_active: temp[i].is_active,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
+    //           parent_name: temp[i].parent_name,
+    //           type_name: temp[i].type_name,
+    //           remark: temp[i].remark,
+    //           is_active: temp[i].is_active,
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: temp[i].updated_at,
+    //           updated_by: temp[i].updated_by,
+    //         });
+    //       }
 
-          setExportData(null);
+    //       setExportData(null);
 
-          setExportData(exportTempData);
-        }
-      }
-    });
+    //       setExportData(exportTempData);
+    //     }
+    //   }
+    // });
 
-    await new TaskTicketTypeService().getParent().then((res) => {
-      if (res.status === 200) {
-        const mappedData = res.data.data.map((d) => ({
-          value: d.id,
-          label: d.type_name,
-        }));
-        setParent(mappedData);
-      } else {
-        console.error("error", res.status);
-      }
-    });
+    // await new TaskTicketTypeService().getParent().then((res) => {
+    //   if (res.status === 200) {
+    //     const mappedData = res.data.data.map((d) => ({
+    //       value: d.id,
+    //       label: d.type_name,
+    //     }));
+    //     setParent(mappedData);
+    //   } else {
+    //     console.error("error", res.status);
+    //   }
+    // });
   };
   const columns = [
     // Columns definition..
@@ -119,12 +136,13 @@ function TaskAndTicketTypeMaster(props) {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
+              dispatch(
+              handleModalOpen({
                 showModal: true,
                 modalData: row,
 
                 modalHeader: "Edit Type",
-              });
+              }));
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -239,12 +257,12 @@ function TaskAndTicketTypeMaster(props) {
     }
   };
   const handleButtonClick = (e) => {
-    setModal({ showModal: false });
+    // setModal({ showModal: false });
   };
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
@@ -266,43 +284,45 @@ function TaskAndTicketTypeMaster(props) {
       }
     }
 
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      await new TaskTicketTypeService().postType(form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            loadData();
-          } else {
-            // setLoading(false);
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          // setLoading(false);
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
+      dispatch(postTaskandTicket(form))
+      // await new TaskTicketTypeService().postType(form).then((res) => {
+      //   if (res.status === 200) {
+      //     if (res.data.status === 1) {
+      //       setNotify({ type: "success", message: res.data.message });
+      //       setModal({ showModal: false });
+      //       loadData();
+      //     } else {
+      //       // setLoading(false);
+      //       setNotify({ type: "danger", message: res.data.message });
+      //     }
+      //   } else {
+      //     // setLoading(false);
+      //     setNotify({ type: "danger", message: res.data.message });
+      //   }
+      // });
     } else {
-      // console.log("loading" ,loading)
-      // setSelectedValue(modal?.modalData?.type);
-      await new TaskTicketTypeService()._updateType(id, form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            loadData();
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          // setLoading(false);
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
+
+      dispatch(updateTaskAndTicketType({id:id,payload:form}))
+   
+      // await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+      //   if (res.status === 200) {
+      //     if (res.data.status == 1) {
+      //       setNotify({ type: "success", message: res.data.message });
+      //       setModal({ showModal: false });
+      //       loadData();
+      //     } else {
+      //       setNotify({ type: "danger", message: res.data.message });
+      //     }
+      //   } else {
+      //     // setLoading(false);
+      //     setNotify({ type: "danger", message: res.data.message });
+      //   }
+      // });
     }
-    // setLoading(false);
+   
   };
 
   useEffect(() => {
@@ -325,11 +345,12 @@ function TaskAndTicketTypeMaster(props) {
               <button
                 className="btn btn-dark btn-set-task w-sm-100"
                 onClick={() => {
-                  handleModal({
+                  dispatch(
+                  handleModalOpen({
                     showModal: true,
                     modalData: "",
                     modalHeader: "Add Task/Ticket Type",
-                  });
+                  }));
                   setSelectedValue("");
                 }}
               >
@@ -366,13 +387,13 @@ function TaskAndTicketTypeMaster(props) {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   ({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -415,18 +436,18 @@ function TaskAndTicketTypeMaster(props) {
                         <Astrick color="red" size="13px" />
                       </label>
                       <Select
-                        options={parent}
+                        options={parentDropDown}
                         id="parent_id"
                         name="parent_id"
                         required
                         defaultValue={
                           modal.modalData
                             ? (modal.modalData &&
-                              parent &&
-                              parent.filter(
+                              parentDropDown &&
+                              parentDropDown.filter(
                                 (d) => d.value == modal.modalData.parent_id
                               )
-                            ):( parent && parent.filter((d) => d.value == 0))
+                            ):( parentDropDown && parentDropDown.filter((d) => d.value == 0))
                         }
                       />
                     </div>
@@ -444,18 +465,18 @@ function TaskAndTicketTypeMaster(props) {
                           <Astrick color="red" size="13px" />
                         </label>
                         <Select
-                          options={parent}
+                          options={parentDropDown}
                           id="parent_id"
                           name="parent_id"
                           required
                           defaultValue={
                             modal.modalData
                               ? modal.modalData &&
-                                parent &&
-                                parent.filter(
+                              parentDropDown &&
+                              parentDropDown.filter(
                                   (d) => d.value == modal.modalData.parent_id
                                 )
-                              : parent && parent.filter((d) => d.value[0])
+                              : parentDropDown && parentDropDown.filter((d) => d.value[0])
                           }
                         />
                       </div>
@@ -605,10 +626,10 @@ function TaskAndTicketTypeMaster(props) {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {tasktype && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={tasktype}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

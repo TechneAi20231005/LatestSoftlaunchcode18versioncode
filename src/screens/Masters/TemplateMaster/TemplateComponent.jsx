@@ -13,9 +13,18 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import { Modal } from "react-bootstrap";
 
 import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
+import { templateData } from "./TemplateComponetAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import TemplateComponetSlice from "./TemplateComponetSlice";
 
 function TemplateComponent() {
   const location = useLocation()
+  const  dispatch=useDispatch()
+  const templatedata=useSelector(TemplateComponetSlice=>TemplateComponetSlice.tempateMaster.templateData)
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15));
+
+
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -26,7 +35,7 @@ function TemplateComponent() {
   const [exportData, setExportData] = useState(null)
 
   const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  // const [checkRole, setCheckRole] = useState(null)
 
 
   const handleModal = (data) => {
@@ -91,64 +100,66 @@ function TemplateComponent() {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    const data = [];
-    const exportTempData = []
-    await new TemplateService().getTemplate().then(res => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    dispatch(templateData())
+    dispatch(getRoles())
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
+    // const data = [];
+    // const exportTempData = []
+    // await new TemplateService().getTemplate().then(res => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        let counter = 1;
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            template_name: temp[key].template_name,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by,
-          })
-        }
-        setData(null);
-        setData(data);
-        setDataa(data);
+    //     let counter = 1;
+    //     const temp = res.data.data;
+    //     for (const key in temp) {
+    //       data.push({
+    //         counter: counter++,
+    //         id: temp[key].id,
+    //         template_name: temp[key].template_name,
+    //         is_active: temp[key].is_active,
+    //         remark: temp[key].remark,
+    //         created_at: temp[key].created_at,
+    //         created_by: temp[key].created_by,
+    //         updated_at: temp[key].updated_at,
+    //         updated_by: temp[key].updated_by,
+    //       })
+    //     }
+    //     setData(null);
+    //     setData(data);
+    //     setDataa(data);
 
-        for (const key in data) {
-          exportTempData.push({
-            Sr: data[key].counter,
-            template_name: data[key].template_name,
-            Status: data[key].is_active ? 'Active' : 'Deactive',
-            created_at: data[key].created_at,
-            created_by: data[key].created_by,
-            updated_at: data[key].updated_at,
-            updated_by: data[key].updated_by,
-          })
-        }
+    //     for (const key in data) {
+    //       exportTempData.push({
+    //         Sr: data[key].counter,
+    //         template_name: data[key].template_name,
+    //         Status: data[key].is_active ? 'Active' : 'Deactive',
+    //         created_at: data[key].created_at,
+    //         created_by: data[key].created_by,
+    //         updated_at: data[key].updated_at,
+    //         updated_by: data[key].updated_by,
+    //       })
+    //     }
 
-        setExportData(null)
-        setExportData(exportTempData)
-      }
-    }).catch(error => {
-      const { response } = error;
-      const { request, ...errorObject } = response;
-      new ErrorLogService().sendErrorLog("Template Master", "Get_TemplateMaster", "INSERT", errorObject.data.message);
-    })
+    //     setExportData(null)
+    //     setExportData(exportTempData)
+    //   }
+    // }).catch(error => {
+    //   const { response } = error;
+    //   const { request, ...errorObject } = response;
+    //   new ErrorLogService().sendErrorLog("Template Master", "Get_TemplateMaster", "INSERT", errorObject.data.message);
+    // })
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //     }
+    //   }
+    // })
 
   }
 
@@ -181,7 +192,7 @@ function TemplateComponent() {
   }, [])
 
   useEffect(()=>{
-    if(checkRole && checkRole[14].can_read === 0){
+    if(checkRole && checkRole[0]?.can_read === 0){
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
@@ -193,7 +204,7 @@ function TemplateComponent() {
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Template Master" renderRight={() => {
         return <div className="col-auto d-flex w-sm-100">
-          {checkRole && checkRole[14].can_create === 1 ?
+          {checkRole && checkRole[0]?.can_create === 1 ?
             <Link to={`/${_base + "/Template/Create"}`} className="btn btn-dark btn-set-task w-sm-100">
               <i className="icofont-plus-circle me-2 fs-6"></i>Add Template
             </Link> : ""}
@@ -241,9 +252,9 @@ function TemplateComponent() {
         <div className='card-body'>
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && <DataTable
+              {templatedata && <DataTable
                 columns={columns}
-                data={data}
+                data={templatedata}
                 defaultSortField="title"
                 pagination
                 selectableRows={false}

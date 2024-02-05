@@ -1806,6 +1806,12 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solve Date",
+      maxWidth: "auto",
+      selector: (row) => row.solve_date,
+      sortable: true,
+    },
   ];
   const yourTaskColumns = [
     {
@@ -2579,6 +2585,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
         }
       });
 
+
     // await new MyTicketService().getUserTicketsTest().then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -2632,6 +2639,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
     //     }
     //   }
     // });
+
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -2775,6 +2783,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
+                  solve_date: temp[key].solve_date,
 
                   Basket_Configured: temp[key].basket_configured,
                   Confirmation_Required: temp[key].confirmation_required
@@ -2943,6 +2952,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                   ASSIGN_TO_USER: temp[key].assign_to_user,
                   TYPE: temp[key].type_id,
                   PRIORITY: temp[key].priority,
+                  solve_date: temp[key].solve_date,
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
@@ -2964,6 +2974,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
+                  solve_date:temp[key].solve_date,
 
                   Basket_Configured: temp[key].basket_configured,
                   Confirmation_Required: temp[key].confirmation_required
