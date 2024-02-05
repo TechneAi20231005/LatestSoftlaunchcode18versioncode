@@ -10,65 +10,82 @@ import Alert from "../../../components/Common/Alert";
 import PageHeader from "../../../components/Common/PageHeader";
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
+import { UseSelector, useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import {
+  getSubModuleById,
+  updatesubModuleMaster,
+} from "./SubModuleMasterAction";
+import { filterModuleAccordingToProject } from "../ModuleMaster/ModuleSlice";
+import SubModuleMasterSlice, { submoduleSlice } from "./SubModuleMasterSlice";
+import ModuleSlice, { moduleSlice } from "../ModuleMaster/ModuleSlice";
+import { moduleMaster } from "../ModuleMaster/ModuleAction";
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
+  const navigate = useNavigate();
+  const data = useSelector( (SubModuleMasterSlice) =>SubModuleMasterSlice.subModuleMaster.getSubModuleById );
+
+  const filteredModule = useSelector( (moduleSlice) => moduleSlice.moduleMaster.filteredModuleAccordingToProject);
+
+
+  const dispatch = useDispatch();
+
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const subModuleId = id;
 
-  const [data, setData] = useState(null);
+  // const [data, setData] = useState(null);
 
   const [project, setProject] = useState(null);
   const [Projectdropdown, setProjectdropdown] = useState(null);
 
   const [modules, setModules] = useState(null);
-  const [modulesDropdown, setModulesDropdown] = useState(null);
+  // const [modulesDropdown, setModulesDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22)
+  );
 
   const handleChangevalue = (e) => {
-    setModulesDropdown(
-      modules &&
-        modules
-          .filter((d) => d.project_id == e.value)
-          .map((d) => ({ value: d.id, label: d.module_name }))
-    );
+
+    dispatch(filterModuleAccordingToProject(e));
   };
 
   const loadData = async () => {
-    const data = [];
-    await new SubModuleService()
-      .getSubModuleById(subModuleId)
-      .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          if (data) {
-            setData(null);
-            setData(data);
-          }
-        } else {
-          new ErrorLogService().sendErrorLog(
-            "SubModule",
-            "Get_SubModule",
-            "INSERT",
-            res.message
-          );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "SubModule",
-          "Get_SubModule",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    dispatch(getSubModuleById({ id: subModuleId }));
+
+    // const data = [];
+    // await new SubModuleService().getSubModuleById(subModuleId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const data = res.data.data;
+    //       if (data) {
+    //         setData(null);
+    //         setData(data);
+    //       }
+    //     } else {
+    //       new ErrorLogService().sendErrorLog(
+    //         "SubModule",
+    //         "Get_SubModule",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "SubModule",
+    //       "Get_SubModule",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
@@ -83,87 +100,95 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-    await new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
-          setModulesDropdown(
-            res.data.data &&
-              res.data.data
-                .filter((d) => d.is_active === 1)
-                .map((d) => ({ value: d.id, label: d.module_name }))
-          );
-          //setProjectdropdown(res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.project_name })));
-        }
-      }
-    });
+    dispatch(moduleMaster());
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ModuleService().getModule().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setModules(res.data.data.filter((d) => d.is_active === 1));
+    //       setModulesDropdown(
+    //         res.data.data &&
+    //           res.data.data
+    //             .filter((d) => d.is_active === 1)
+    //             .map((d) => ({ value: d.id, label: d.module_name }))
+    //       );
+    //     }
+    //   }
+    // });
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    setNotify(null);
+    // setNotify(null);
+    dispatch(
+      updatesubModuleMaster({ id: subModuleId, payload: formData })
+    ).then((res) => {
+      if (res.payload.data.status == 1 && res.payload.status == 200) {
+        navigate(`/${_base}/SubModule`);
+      }
+    });
 
-    await new SubModuleService()
-      .updateSubModule(subModuleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/SubModule`,
-              },
-              {
-                state: {
-                  alert: { type: "success", message: res.data.message },
-                },
-              }
-            );
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.message });
-          new ErrorLogService().sendErrorLog(
-            "SubModule",
-            "Create_SubModule",
-            "INSERT",
-            res.message
-          );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          "SubModule",
-          "Create_SubModule",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    // await new SubModuleService()
+    //   .updateSubModule(subModuleId, formData)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         history(
+    //           {
+    //             pathname: `/${_base}/SubModule`,
+    //           },
+    //           {
+    //             state: {
+    //               alert: { type: "success", message: res.data.message },
+    //             },
+    //           }
+    //         );
+    //       } else {
+    //         setNotify({ type: "danger", message: res.data.message });
+    //       }
+    //     } else {
+    //       setNotify({ type: "danger", message: res.message });
+    //       new ErrorLogService().sendErrorLog(
+    //         "SubModule",
+    //         "Create_SubModule",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     setNotify({ type: "danger", message: errorObject.data.message });
+    //     new ErrorLogService().sendErrorLog(
+    //       "SubModule",
+    //       "Create_SubModule",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   useState(() => {
     loadData();
 
     return () => {
-      console.log("");
+   
     };
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[21].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -225,16 +250,16 @@ export default function EditModuleComponent({ match }) {
                                                 defaultValue={data.module_id}
                                                 onChange={handleDependent}
                                             /> */}
-                      {modulesDropdown && (
+                      {filteredModule && (
                         <Select
-                          options={modulesDropdown}
+                          options={filteredModule}
                           id="module_id"
                           name="module_id"
                           required
                           defaultValue={
                             data &&
-                            modulesDropdown &&
-                            modulesDropdown.filter(
+                            filteredModule &&
+                            filteredModule.filter(
                               (d) => d.value === data.module_id
                             )
                           }
@@ -355,7 +380,7 @@ export default function EditModuleComponent({ match }) {
               {/* CARD */}
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[21].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
                   </button>

@@ -15,3 +15,46 @@ export const taskAndTicketMaster = createAsyncThunk(
       }
     }
   );
+
+  export const getParentDropdown = createAsyncThunk(
+    "getParentDropdown",
+    async (config, thunkapi) => {
+      try {
+        const service = new TaskTicketTypeService();
+        const response = await service.getParent();
+        console.log("resss", response);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
+  export const postTaskandTicket = createAsyncThunk(
+    "postTaskandTicket",
+    async (config, thunkapi) => {
+      try {
+        const service = new TaskTicketTypeService();
+        const response = await service.postType(config);
+        console.log("resss", response);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
+  
+  export const updateTaskAndTicketType = createAsyncThunk(
+    "updateTaskAndTicketType",
+    async (config, thunkapi) => {
+      try {
+        const service = new TaskTicketTypeService();
+        const response = await service._updateType(config.id,config.payload);
+        console.log("resss", response);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );

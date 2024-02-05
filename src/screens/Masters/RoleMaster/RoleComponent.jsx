@@ -27,8 +27,7 @@ function RoleComponent({ location }) {
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
   );
 
   const Notify = useSelector( (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify);

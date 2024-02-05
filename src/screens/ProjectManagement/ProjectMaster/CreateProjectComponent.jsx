@@ -1,65 +1,77 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import ProjectService from '../../../services/ProjectManagementService/ProjectService'
-import CustomerService from '../../../services/MastersService/CustomerService'
-import { _base } from '../../../settings/constants'
-import ErrorLogService from '../../../services/ErrorLogService'
-import Alert from '../../../components/Common/Alert'
-import PageHeader from '../../../components/Common/PageHeader'
-import { CustomerDropdown } from '../../Masters/CustomerMaster/CustomerComponent'
-import { UserDropdown } from '../../Masters/UserMaster/UserComponent'
-import { Astrick } from '../../../components/Utilities/Style'
-import * as Validation from '../../../components/Utilities/Validation'
-import Select from 'react-select';
-import DesignationService from '../../../services/MastersService/DesignationService'
-import { useRef } from 'react'
-import UserService from '../../../services/MastersService/UserService'
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import ProjectService from "../../../services/ProjectManagementService/ProjectService";
+import CustomerService from "../../../services/MastersService/CustomerService";
+import { _base } from "../../../settings/constants";
+import ErrorLogService from "../../../services/ErrorLogService";
+import Alert from "../../../components/Common/Alert";
+import PageHeader from "../../../components/Common/PageHeader";
+import { CustomerDropdown } from "../../Masters/CustomerMaster/CustomerComponent";
+import { UserDropdown } from "../../Masters/UserMaster/UserComponent";
+import { Astrick } from "../../../components/Utilities/Style";
+import * as Validation from "../../../components/Utilities/Validation";
+import Select from "react-select";
+import DesignationService from "../../../services/MastersService/DesignationService";
+import { useRef } from "react";
+import UserService from "../../../services/MastersService/UserService";
+import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import DashboardSlice from "../../Dashboard/DashboardSlice";
+import ProjectMasterSlice from "./ProjectMasterSlice";
+import { postprojectData } from "./ProjectMasterAction";
 
 // import BaseSelect from "react-select";
 // import {FixRequiredSelect} from '../../../components/Common/RequiredSelect';
 
 export default function CreateProjectComponent({ match }) {
-  const history = useNavigate()
-  const [notify, setNotify] = useState(null)
-  const [customer, setCustomer] = useState(null)
-  const customerRef = useRef("")
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 11)
+  );
+  const notify = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.notify);
+  console.log("projectData", notify);
+
+  console.log(checkRole);
+  // const [notify, setNotify] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const customerRef = useRef("");
   const fileInputRef = useRef(null);
 
-  const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  const roleId = sessionStorage.getItem("role_id");
+  // const [checkRole, setCheckRole] = useState(null)
   const handleForm = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    // setNotify(null);
+    var flag = 1;
+    var a = JSON.stringify(Object.fromEntries(formData));
 
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    setNotify(null)
-    var flag = 1
-    var a = JSON.stringify(Object.fromEntries(formData))
-
-    var selectCustomer = formData.getAll('customer_id')
-    var selectOwner = formData.getAll('project_owner[]')
-    if (selectCustomer == '') {
-      flag = 0
+    var selectCustomer = formData.getAll("customer_id");
+    var selectOwner = formData.getAll("project_owner[]");
+    if (selectCustomer == "") {
+      flag = 0;
       //setNotify(null);
-      alert('Please Select Customer')
+      alert("Please Select Customer");
       e.preventDefault();
       //setNotify({ type: 'danger', message: 'Please Select Country' })
     }
     if (selectOwner == "") {
-      flag = 0
-      alert("Please Select Owner")
+      flag = 0;
+      alert("Please Select Owner");
     }
 
     e.preventDefault();
     const image = e.target.logo.value;
     if (!image) {
-      setError('image is required');
+      setError("image is required");
       // return false;
     } else {
       // setError(null)
     }
     if (!image.match(/\.(jpg|jpeg|png|gif)$/)) {
-      setError('select valid image format.');
+      setError("select valid image format.");
       // return false;
     } else {
       // setError(true)
@@ -68,49 +80,56 @@ export default function CreateProjectComponent({ match }) {
     }
 
     if (flag === 1) {
-      await new ProjectService().postProject(formData).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/Project`,
+      dispatch(postprojectData(formData)).then((res) => {
+        console.log("res", res);
+        if (res?.payload?.data?.status == 1 && res?.payload?.status == 200) {
+          navigate(`/${_base}/Project`);
+        }
+        loadData()
+      });
 
-            },{              state: { alert: { type: 'success', message: res.data.message } }});
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Project",
-              "Create_Project",
-              "INSERT",
-              res.message
-            );
-          }
-    }})
+      //   await new ProjectService().postProject(formData).then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         history({
+      //           pathname: `/${_base}/Project`,
+
+      //         },{              state: { alert: { type: 'success', message: res.data.message } }});
+      //       } else {
+      //         setNotify({ type: "danger", message: res.message });
+      //         new ErrorLogService().sendErrorLog(
+      //           "Project",
+      //           "Create_Project",
+      //           "INSERT",
+      //           res.message
+      //         );
+      //       }
+      // }})
     }
-  }
+  };
 
-// const handleChange =(e)=>{
-//   console.log("e==>",e)
-//   e.preventDefault();
-//   const image = e.target.logo.value;
-//   if (!image) {
-//     setError('image is required');
-//     return false;
-//   } else {
-//     setError(null)
-//   }
-//   if (!image.match(/\.(jpg|jpeg|png|gif)$/)) {
-//     setError('select valid image format.');
-//     return false;
-//   } else {
-//     setError(null)
-//   }
-//
+  // const handleChange =(e)=>{
+  //   console.log("e==>",e)
+  //   e.preventDefault();
+  //   const image = e.target.logo.value;
+  //   if (!image) {
+  //     setError('image is required');
+  //     return false;
+  //   } else {
+  //     setError(null)
+  //   }
+  //   if (!image.match(/\.(jpg|jpeg|png|gif)$/)) {
+  //     setError('select valid image format.');
+  //     return false;
+  //   } else {
+  //     setError(null)
+  //   }
+  //
 
-
-  const [ba, setBa] = useState(null)
-  const [dev, setDev] = useState(null)
-  const [tester, setTester] = useState(null)
-  const [users, setUsers] = useState(null)
+  const [ba, setBa] = useState(null);
+  const [dev, setDev] = useState(null);
+  const [tester, setTester] = useState(null);
+  const [users, setUsers] = useState(null);
 
   const loadData = async () => {
     await new CustomerService().getCustomer().then((res) => {
@@ -129,16 +148,17 @@ export default function CreateProjectComponent({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
+    dispatch(getRoles());
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //     }
+    //   }
+    // })
 
     // await new DesignationService().getdesignatedDropdown().then((res) => {
     //   if (res.status === 200) {
@@ -154,15 +174,27 @@ export default function CreateProjectComponent({ match }) {
     await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const user = res.data.data.filter(d => d.is_active == 1)
-          setBa( res.data.data.filter(d=> d.is_active == 1 && d.account_for == "SELF" ).map(d=> ({value:d.id, label:d.first_name + " " + d.last_name})))
+          const user = res.data.data.filter((d) => d.is_active == 1);
+          setBa(
+            res.data.data
+              .filter((d) => d.is_active == 1 && d.account_for == "SELF")
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + " " + d.last_name,
+              }))
+          );
           user.sort((a, b) => {
             if (a.first_name && b.first_name) {
               return a.first_name.localeCompare(b.first_name);
             }
             return 0;
-          });  
-          setUsers(user.map(d => ({ value: d.id, label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")" })))
+          });
+          setUsers(
+            user.map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+            }))
+          );
         }
       }
     });
@@ -178,25 +210,23 @@ export default function CreateProjectComponent({ match }) {
   // const handleFocus = (e)=>{
   //   if(customerRef.current.props.value === null){
   //   alert("please select customer")
-  //   }    
+  //   }
   // }
-
 
   useEffect(() => {
     loadData();
     // console.log(customerRef.current.props.value);
   }, []);
 
-
-  useEffect(()=>{
-    if(checkRole && checkRole[19].can_create === 0){
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
-  
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
-    }
-  },[checkRole])
 
-  const [error, setError] = useState( false)
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  }, [checkRole]);
+
+  const [error, setError] = useState(false);
 
   return (
     <div className="container-xxl">
@@ -222,9 +252,8 @@ export default function CreateProjectComponent({ match }) {
                       id="customer_id"
                       name="customer_id"
                       ref={customerRef}
-                    // onBlur={handleFocus}
+                      // onBlur={handleFocus}
                     />
-
                   </div>
 
                   <label
@@ -243,7 +272,7 @@ export default function CreateProjectComponent({ match }) {
                       name="project_name"
                       required={true}
                       onKeyPress={(e) => {
-                        Validation.addressFieldOnly(e)
+                        Validation.addressFieldOnly(e);
                       }}
                     />
                   </div>
@@ -256,7 +285,7 @@ export default function CreateProjectComponent({ match }) {
                     </b>
                   </label>
                   <div className="col-sm-4">
-                    {users &&
+                    {users && (
                       <Select
                         options={users}
                         id="project_owner"
@@ -265,7 +294,7 @@ export default function CreateProjectComponent({ match }) {
                         required={true}
                         isMulti={true}
                       />
-                    }
+                    )}
                   </div>
 
                   <label
@@ -275,20 +304,26 @@ export default function CreateProjectComponent({ match }) {
                     <b>Project Logo : </b>
                   </label>
                   <div className="col-sm-4">
-                    <input type="file" className="form-control form-control-sm"
-                      id="logo" name="logo"
+                    <input
+                      type="file"
+                      className="form-control form-control-sm"
+                      id="logo"
+                      name="logo"
                       //  accept="image/*"
                       ref={fileInputRef}
                       // onChange={handleChange}
-               
                     />
-                    <small style={{color:'#2167d2'}}>Please upload only .png/.jpeg/.jpg image format</small>
-                    {
-                      error && error ? <p style={{ color: 'red' }} className='text-error'>{error}</p>:""
-                    }
+                    <small style={{ color: "#2167d2" }}>
+                      Please upload only .png/.jpeg/.jpg image format
+                    </small>
+                    {error && error ? (
+                      <p style={{ color: "red" }} className="text-error">
+                        {error}
+                      </p>
+                    ) : (
+                      ""
+                    )}
                   </div>
-               
-
                 </div>
 
                 <div className="form-group row mt-2">
@@ -297,11 +332,12 @@ export default function CreateProjectComponent({ match }) {
                   </label>
                   {ba && (
                     <div className="col-sm-4">
-                      <Select id="project_reviewer" name="project_reviewer[]"
+                      <Select
+                        id="project_reviewer"
+                        name="project_reviewer[]"
                         options={ba}
                         isMulti
                       />
-
                     </div>
                   )}
                 </div>
@@ -445,7 +481,7 @@ export default function CreateProjectComponent({ match }) {
             </div>
             {/* CARD */}
 
-            <div className="mt-3" style={{ textAlign: 'right' }}>
+            <div className="mt-3" style={{ textAlign: "right" }}>
               <button type="submit" className="btn btn-sm btn-primary">
                 Submit
               </button>
@@ -462,4 +498,3 @@ export default function CreateProjectComponent({ match }) {
     </div>
   );
 }
-

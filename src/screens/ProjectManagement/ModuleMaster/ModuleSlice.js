@@ -15,6 +15,8 @@ const initialState = {
   notify: "",
   updateModuleMaster: [],
   postmoduleMaster: [],
+  modulesortedData:[],
+  filteredModuleAccordingToProject:[]
 };
 
 export const moduleSlice = createSlice({
@@ -23,7 +25,10 @@ export const moduleSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+
+    },
+    filterModuleAccordingToProject:(state,action)=>{
+       state.filteredModuleAccordingToProject = state.moduleMaster.filter(modules =>modules.project_id === action.payload.value && modules.is_active===1).map(moduleLabel => ({ value: moduleLabel.id, label: moduleLabel.module_name }))
     },
 
     handleModalOpen: (state, action) => {
@@ -49,6 +54,11 @@ export const moduleSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let moduleMaster = payload.data.data;
+        // let modulesortedData=payload.data.data;
+        let modulesortedData=payload.data.data.filter((d)=>d.is_active).map((d) => ({ value: d.id, label: d.module_name }))
+        state.modulesortedData= modulesortedData
+      
+    
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -120,12 +130,12 @@ export const moduleSlice = createSlice({
     });
     builder.addCase(postmoduleMaster.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+    
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
 
         let postmoduleMaster = payload.data.data;
-        console.log(postmoduleMaster);
+       
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postmoduleMaster = postmoduleMaster;
@@ -140,6 +150,6 @@ export const moduleSlice = createSlice({
   },
 });
 
-export const { handleModalOpen, handleModalClose,navigateToModule } = moduleSlice.actions;
+export const { handleModalOpen, handleModalClose,navigateToModule ,filterModuleAccordingToProject} = moduleSlice.actions;
 
 export default moduleSlice.reducer;

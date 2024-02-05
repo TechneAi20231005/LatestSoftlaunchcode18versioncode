@@ -21,9 +21,7 @@ export default function CreateModuleComponent({ match }) {
   // const [notify, setNotify] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null)
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21)
-  );
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21));
   const notify = useSelector((ModuleSlice) => ModuleSlice.moduleMaster.notify);
   const navigateFlag = useSelector(
     (ModuleSlice) => ModuleSlice.moduleMaster.navigationModule

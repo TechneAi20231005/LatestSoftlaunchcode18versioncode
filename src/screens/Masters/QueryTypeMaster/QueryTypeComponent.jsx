@@ -25,20 +25,25 @@ import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
 import { queryTypeSlice } from "./QueryTypeComponetSlice";
-import { queryTypeData } from "./QueryTypeComponetAction";
+import {
+  QueryGroupForm,
+  QueryGroupFormUpdate,
+  queryTypeData,
+} from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
+import { getCustomerData, getDynamiucFormData } from "../../Dashboard/DashboardAction";
+import DashboardSlice from "../../Dashboard/DashboardSlice";
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
   const querygroupdata = useSelector(
     (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData
   );
-  const queryTypedata = useSelector(
-    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType
-  );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
-  );
+  const queryTypedata = useSelector((queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType);
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+  const dynamicFormDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData);
+  const customerDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getCustomerData);
+  console.log("getCustomerData",customerDropdown );
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -57,7 +62,7 @@ function QueryTypeComponent() {
 
   const [dynamicForm, setDynamicForm] = useState(null);
 
-  const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
+  // const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -70,7 +75,7 @@ function QueryTypeComponent() {
     modalDataEditPopup: "",
     modalHeaderEditPopup: "",
   });
-  const [customerDropdown, setCustomerDropdown] = useState();
+  // const [customerDropdown, setCustomerDropdown] = useState();
   const [selectedcustomer, setSelectedCustomer] = useState();
   const handleModalEditPopup = (editData) => {
     setModalEditPopup(editData);
@@ -548,73 +553,79 @@ function QueryTypeComponent() {
     setNotify(null);
     setNotifyy(null);
     if (!id) {
-      await new QueryTypeService()
-        .postQueryGroup(form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setModalQueryGroup({
-                showModalQueryGroup: false,
-                modalDataQueryGroup: "",
-                modalHeaderQueryGroup: "",
-              });
+      dispatch(QueryGroupForm(form));
+      loadData();
+      loadDataEditPopup();
+      // await new QueryTypeService()
+      //   .postQueryGroup(form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setModalQueryGroup({
+      //           showModalQueryGroup: false,
+      //           modalDataQueryGroup: "",
+      //           modalHeaderQueryGroup: "",
+      //         });
 
-              setNotify({ type: "success", message: res.data.message });
-              loadData();
-              loadDataEditPopup();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Create_QueryType",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          setNotify({ type: "danger", message: "Connection Error !!!" });
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Remark Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "QueryType",
-            "Create_QueryType",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      //         setNotify({ type: "success", message: res.data.message });
+      //         loadData();
+      //         loadDataEditPopup();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "QueryType",
+      //         "Create_QueryType",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     setNotify({ type: "danger", message: "Connection Error !!!" });
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Remark Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "QueryType",
+      //       "Create_QueryType",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     } else {
-      form.delete("is_active");
-      form.append("is_active", isActive);
-      await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotifyy({ type: "success", message: res.data.message });
-            setModalQueryGroup({
-              showModalQueryGroup: false,
-              modalDataQueryGroup: "",
-              modalHeaderQueryGroup: "",
-            });
-            loadData();
-            loadDataEditPopup();
-            // alert("Record Updated")
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-          new ErrorLogService().sendErrorLog(
-            "QueryType",
-            "Update_QueryType",
-            "UPDATE",
-            res.message
-          );
-        }
-      });
+      // form.delete("is_active");
+      // form.append("is_active", isActive);
+      // await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
+      //   if (res.status === 200) {
+      //     if (res.data.status === 1) {
+      //       setNotifyy({ type: "success", message: res.data.message });
+      //       setModalQueryGroup({
+      //         showModalQueryGroup: false,
+      //         modalDataQueryGroup: "",
+      //         modalHeaderQueryGroup: "",
+      //       });
+      //       loadData();
+      //       loadDataEditPopup();
+      //       // alert("Record Updated")
+      //     } else {
+      //       setNotify({ type: "danger", message: res.data.message });
+      //     }
+      //   } else {
+      //     setNotify({ type: "danger", message: res.data.message });
+      //     new ErrorLogService().sendErrorLog(
+      //       "QueryType",
+      //       "Update_QueryType",
+      //       "UPDATE",
+      //       res.message
+      //     );
+      //   }
+      // });
+      dispatch(QueryGroupFormUpdate({ id: id, payload: form }));
+      loadDataEditPopup();
+      loadData();
     }
   };
 
@@ -691,29 +702,31 @@ function QueryTypeComponent() {
     //     );
     //   });
 
-    await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.data.status == 1) {
-        setShowLoaderModal(false);
+    // await new DynamicFormService().getDynamicForm().then((res) => {
+    //   if (res.data.status == 1) {
+    //     setShowLoaderModal(false);
 
-        setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
-        setDynamicFormDropdown(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.template_name }))
-        );
-      }
-    });
+    //     setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
+    //     setDynamicFormDropdown(
+    //       res.data.data
+    //         .filter((d) => d.is_active == 1)
+    //         .map((d) => ({ value: d.id, label: d.template_name }))
+    //     );
+    //   }
+    // });
 
-    await new CustomerService().getCustomer().then((res) => {
-      if (res.data.status == 1) {
-        setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
-        setCustomerDropdown(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.name }))
-        );
-      }
-    });
+    dispatch(getDynamiucFormData());
+    dispatch(getCustomerData())
+    // await new CustomerService().getCustomer().then((res) => {
+    //   if (res.data.status == 1) {
+    //     setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
+    //     setCustomerDropdown(
+    //       res.data.data
+    //         .filter((d) => d.is_active == 1)
+    //         .map((d) => ({ value: d.id, label: d.name }))
+    //     );
+    //   }
+    // });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {

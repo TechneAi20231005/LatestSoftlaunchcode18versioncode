@@ -6,7 +6,7 @@ import ConsolidatedSlice from "../../screens/ConsolidatedView/ConsolidatedSlice"
 import dashboardSlice from "../../screens/Dashboard/DashboardSlice";
 import DepartmentMasterSlice from "../../screens/Masters/DepartmentMaster/DepartmentMasterSlice";
 import TaskAndTicketTypeMasterSlice from "../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice";
-import TaskAndTicketTypeMaster from "../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster";
+
 import PaymentTemplateMasterSlice from "../../screens/BillChecking/Masters/BillTypeMaster/PaymentTemplateMasterSlice";
 import TestingTypeComponentSlices from "../../screens/Masters/TestingTypeMaster/TestingTypeComponentSlices";
 import ModuleSlice from "../../screens/ProjectManagement/ModuleMaster/ModuleSlice";
@@ -14,6 +14,8 @@ import submoduleSlice from "../../screens/ProjectManagement/SubModuleMaster/SubM
 import TemplateComponetSlice from "../../screens/Masters/TemplateMaster/TemplateComponetSlice";
 import QueryTypeComponetSlice from "../../screens/Masters/QueryTypeMaster/QueryTypeComponetSlice";
 import DesignationSlice from "../../screens/Masters/DesignationMaster/DesignationSlice";
+import statusMasterSlice from "../../screens/Masters/StatusMaster/StatusComponentSlice";
+import ProjectMasterSlice from "../../screens/ProjectManagement/ProjectMaster/ProjectMasterSlice";
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +30,9 @@ export const store = configureStore({
     tempateMaster: TemplateComponetSlice,
     queryTypeMaster: QueryTypeComponetSlice,
     designationMaster: DesignationSlice,
+    statusMaster: statusMasterSlice,
+    projectMaster:ProjectMasterSlice,
+
 
     consolidatedData: ConsolidatedSlice,
   },
