@@ -85,26 +85,26 @@ export const BillCheckingTransactionSlice = createSlice({
   extraReducers: (builder) => {    
 
     // get general setting
-//     builder.addCase(getGeneralSettingData.pending, (state) => {
-//       state.status = "loading";
+    builder.addCase(getGeneralSettingData.pending, (state) => {
+      state.status = "loading";
 
-//     });
-//     builder.addCase(getGeneralSettingData.fulfilled, (state, action) => {
-//       const { payload } = action;
-//       if (payload?.status === 200 && payload?.data?.status === 1) {
-//         let getAllgeneralSettingData = payload.data.data;
-//         state.status = "succeded";
-//         state.showLoaderModal = false;
-//         let count = 1;
-//         for (let i = 0; i < getAllgeneralSettingData.length; i++) {
-//             getAllgeneralSettingData[i].counter = count++;
-//         }
-//         state.getAllgeneralSettingData = [...getAllgeneralSettingData];
-//       }
-//     });
-//     builder.addCase(getGeneralSettingData.rejected, (state) => {
-//       state.status = "rejected";
-//     });
+    });
+    builder.addCase(getGeneralSettingData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getAllgeneralSettingData = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        let count = 1;
+        for (let i = 0; i < getAllgeneralSettingData.length; i++) {
+            getAllgeneralSettingData[i].counter = count++;
+        }
+        state.getAllgeneralSettingData = [...getAllgeneralSettingData];
+      }
+    });
+    builder.addCase(getGeneralSettingData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
 //   // post general setting
 

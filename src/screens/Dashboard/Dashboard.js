@@ -6240,8 +6240,7 @@ import { dashboardSlice } from "./DashbordSlice";
 import { getRoles } from "./DashboardAction";
 import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
 
-export default function HrDashboard(props) {
- 
+
 
 
 
@@ -6259,7 +6258,7 @@ export default function HrDashboard(props) {
 
   console.log(getRolesData.filter((d) => d.menu_id == 10));
 
-  const location = useLocation();
+
 
   const data = props.data;
 
@@ -6269,7 +6268,7 @@ export default function HrDashboard(props) {
   const [previousTask, setPreviousTask] = useState();
 
 
-  const dispatch = useDispatch()
+ 
 
   const PreviousTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.previousTask)
   const TotalTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.totalTask)
@@ -6387,10 +6386,7 @@ export default function HrDashboard(props) {
       }
     });
   };
-  const loadData = () => {
-    dispatch(getRoles());
-    dispatch(getDesignationData());
-  };
+ 
 
 const loadData=()=>{
 dispatch(getCityData())
@@ -6399,6 +6395,8 @@ dispatch(getStateData())
 dispatch(getEmployeeData())
 dispatch(getNotifications())
 dispatch(getAllDashboardData())
+dispatch(getRoles());
+    dispatch(getDesignationData());
 }
 
   useEffect(() => {
