@@ -50,10 +50,8 @@ export default function Header() {
           }
         }
       }
-    })
-  
-  
     
+    });
   }
 
   const handleReadNotification = (e, id) => {

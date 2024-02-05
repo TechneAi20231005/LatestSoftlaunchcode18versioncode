@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Dropdown, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -19,20 +18,17 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import UserService from "../../../services/MastersService/UserService";
 // import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 // import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
-
-
 function BillCheckingTransaction() {
-  const location = useLocation()
+  const location = useLocation();
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -51,28 +47,28 @@ function BillCheckingTransaction() {
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data&& data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
+    return (
+      data &&
+      data.filter((d) => {
+        for (const key in d) {
+          if (
+            typeof d[key] === "string" &&
+            d[key].toLowerCase().includes(lowercaseSearch)
+          ) {
+            return true;
+          }
         }
-      }
-      return false;
-    });
+        return false;
+      })
+    );
   }
 
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     const result = searchInData(data, searchValue);
 
-
     setData(result);
   };
-
-
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -111,14 +107,14 @@ function BillCheckingTransaction() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-      
               {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities && 
-                    authorities.All_Update_Bill === true && row.is_assign_to != 1) ||
+                  (authorities &&
+                    authorities.All_Update_Bill === true &&
+                    row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
                     row.is_approver == 1)) && (
                   <li>
@@ -147,12 +143,11 @@ function BillCheckingTransaction() {
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities && 
-                    authorities.All_Update_Bill === true && row.is_assign_to != 1) ||
+                  (authorities &&
+                    authorities.All_Update_Bill === true &&
+                    row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
                     row.is_approver == 1)) && (
-
-             
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -163,7 +158,6 @@ function BillCheckingTransaction() {
                     </Link>
                   </li>
                 )}
-            
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>
@@ -197,19 +191,21 @@ function BillCheckingTransaction() {
                   </li>
                 </>
               )}
-              {authorities && authorities.Is_Cancle_Bill === true && (row.is_rejected == 0) && (
-                <li>
-                  <button
-                    className="btn btn-sm btn-danger text-white"
-                    onClick={(e) => {
-                      handleCancelBill(e, row.id);
-                    }}
-                    style={{ width: "100%", zIndex: 100 }}
-                  >
-                    <i class="icofont-ui-close"></i> Cancel{" "}
-                  </button>
-                </li>
-              )}
+              {authorities &&
+                authorities.Is_Cancle_Bill === true &&
+                row.is_rejected == 0 && (
+                  <li>
+                    <button
+                      className="btn btn-sm btn-danger text-white"
+                      onClick={(e) => {
+                        handleCancelBill(e, row.id);
+                      }}
+                      style={{ width: "100%", zIndex: 100 }}
+                    >
+                      <i class="icofont-ui-close"></i> Cancel{" "}
+                    </button>
+                  </li>
+                )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -259,20 +255,21 @@ function BillCheckingTransaction() {
       name: "Actual Payment Date.",
       selector: (row) => row["Actual Payment Date"],
       sortable: true,
-    cell: (row) => (
+      cell: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
-          style={{width:"100%",}}
+          style={{ width: "100%" }}
         >
           {row["Actual Payment Date"] && (
-            <OverlayTrigger overlay={<Tooltip>{row["Actual Payment Date"]} </Tooltip>}>
+            <OverlayTrigger
+              overlay={<Tooltip>{row["Actual Payment Date"]} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row["Actual Payment Date"].substring(0,10)+"..."}
-                  
+                  {row["Actual Payment Date"].substring(0, 10) + "..."}
                 </span>
               </div>
             </OverlayTrigger>
@@ -280,8 +277,6 @@ function BillCheckingTransaction() {
         </div>
       ),
     },
-
-
 
     {
       name: "Bill Amount",
@@ -324,7 +319,7 @@ function BillCheckingTransaction() {
         </div>
       ),
     },
-  
+
     {
       name: "Assign From",
       selector: (row) => row["Assign From"],
@@ -338,11 +333,7 @@ function BillCheckingTransaction() {
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.created_by }
-                  
-                </span>
+                <span className="ms-1"> {row.created_by}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -355,7 +346,6 @@ function BillCheckingTransaction() {
       selector: (row) => row["Assign To"],
       sortable: true,
     },
-   
 
     // {
     //   name: "Levels Of Approval",
@@ -394,7 +384,7 @@ function BillCheckingTransaction() {
     //   sortable: true,
     //   cell: (row) => (
     //     <div className="btn-group" role="group" aria-label="Basic outlined example">
-     
+
     //         <OverlayTrigger overlay={<Tooltip>{row.total_level}</Tooltip>}>
     //           <div>
     //             <span className="ms-1">
@@ -404,11 +394,10 @@ function BillCheckingTransaction() {
     //             </span>
     //           </div>
     //         </OverlayTrigger>
-        
+
     //     </div>
     //   ),
     // },
-    
 
     {
       name: "Approved By",
@@ -436,7 +425,6 @@ function BillCheckingTransaction() {
       ),
     },
 
- 
     {
       name: "Pending From",
       selector: (row) => row["Pending From"],
@@ -467,7 +455,6 @@ function BillCheckingTransaction() {
       name: "Rejected By",
       selector: (row) => row["Rejected By"],
       sortable: true,
-     
     },
 
     {
@@ -486,8 +473,6 @@ function BillCheckingTransaction() {
       selector: (row) => row["Is Original Bill"],
       sortable: true,
     },
-
-   
 
     {
       name: "Internal Audit",
@@ -514,8 +499,6 @@ function BillCheckingTransaction() {
         </div>
       ),
     },
-
-    
 
     {
       name: "External Audit",
@@ -568,7 +551,6 @@ function BillCheckingTransaction() {
 
       selector: (row) => row["Is Canceled"],
 
-
       sortable: true,
 
       cell: (row) => (
@@ -596,8 +578,6 @@ function BillCheckingTransaction() {
       ),
     },
 
-    
-
     {
       name: "Created At",
       selector: (row) => row["Created At"],
@@ -624,8 +604,6 @@ function BillCheckingTransaction() {
       ),
     },
 
- 
-
     {
       name: "Created By",
       selector: (row) => row["Created By"],
@@ -639,19 +617,13 @@ function BillCheckingTransaction() {
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {
-                     row.created_by
-                  }
-                </span>
+                <span className="ms-1"> {row.created_by}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
       ),
     },
-    
 
     {
       name: "Updated At",
@@ -692,47 +664,39 @@ function BillCheckingTransaction() {
           {row.updated_by && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.updated_by }
-                </span>
+                <span className="ms-1"> {row.updated_by}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
       ),
     },
-   
   ];
 
   const handleCancelBill = async (e, id) => {
     // Display a confirmation dialog
     var response = window.confirm("Are you sure you want to Cancel this Bill?");
-    setNotify(null)
+    setNotify(null);
     if (response) {
       try {
         // Assuming 'cancelBill' returns a promise
-        await new BillCheckingService().cancelBill(id).then((res)=>{
-          if(res.status === 200){
-            if(res.data.status == 1 ){
-
-              setNotify({ type: "success", message:res.data.message});
+        await new BillCheckingService().cancelBill(id).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setNotify({ type: "success", message: res.data.message });
               // Bill canceled successfully, update data
               loadData();
-            }
-            else{
+            } else {
               setNotify({ type: "danger", message: res.data.message });
             }
           }
-
-        })
+        });
       } catch (error) {
         // Handle any potential errors during cancellation
         console.error("Error during bill cancellation:", error);
       }
     }
   };
-
 
   const loadData = async (e) => {
     const data = [];
@@ -741,7 +705,7 @@ function BillCheckingTransaction() {
 
     await new BillCheckingService().getBillCheckData().then((res) => {
       if (res.status === 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         let counter = 1;
 
@@ -784,7 +748,7 @@ function BillCheckingTransaction() {
             "Assign To": temp[key].assign_to_name,
             is_assign_to: temp[key].is_assign_to,
             level: temp[key].level,
-            total_level: temp[key].level ,
+            total_level: temp[key].level,
             last_approved_by: temp[key].last_approved_by,
             approvedBy: temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
@@ -796,9 +760,7 @@ function BillCheckingTransaction() {
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
             is_rejected: temp[key].is_rejected,
-"Is cancelled": temp[key].cancelled,
-
-          
+            "Is cancelled": temp[key].cancelled,
           });
         }
         for (const key in temp) {
@@ -814,7 +776,7 @@ function BillCheckingTransaction() {
             "Net Amount": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
             "Is TCS applicable": temp[key].is_tcs_applicable,
-       
+
             bill_type_name: temp[key].bill_type_name,
 
             "Taxable Amount": temp[key].taxable_amount,
@@ -864,10 +826,10 @@ function BillCheckingTransaction() {
     const inputRequired = "id,employee_id,first_name,last_name,middle_name";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         if (res.data.status == 1) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           const temp = res.data.data.filter((d) => d.is_active == 1);
           setUserDropdown(
@@ -884,7 +846,7 @@ function BillCheckingTransaction() {
       .getUpdatedAuthorities()
       .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           if (res.data.status == 1) {
             SetAuthorities(res.data.data);
@@ -895,7 +857,7 @@ function BillCheckingTransaction() {
       ._getBillTypeDataDropdown()
       .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           if (res.data.status == 1) {
             setBillTypeDropdown(
@@ -909,10 +871,10 @@ function BillCheckingTransaction() {
       .getVendorsDropdown()
       .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           if (res.data.status == 1) {
-          setIsLoading(false)
+            setIsLoading(false);
 
             setVendorDropdown(
               res.data.data.map((d) => ({
@@ -926,10 +888,10 @@ function BillCheckingTransaction() {
 
     await new DropdownService().getMappedEmp().then((res) => {
       if (res.status === 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         if (res.data.status == 1) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           setAssignToDropdown(
             res.data.data.map((d) => ({
@@ -1001,7 +963,7 @@ function BillCheckingTransaction() {
   };
 
   const handleFilter = async (e) => {
-    setNotify(null)
+    setNotify(null);
     e.preventDefault();
     const formData = new FormData(e.target);
     await new BillCheckingTransactionService()
@@ -1011,7 +973,6 @@ function BillCheckingTransaction() {
           const tempData = [];
           let counter = 1;
           const temp = res.data.data;
-
 
           for (const key in temp) {
             tempData.push({
@@ -1033,7 +994,7 @@ function BillCheckingTransaction() {
               "Assign To": temp[key].assign_to_name,
               "Levels of approval": temp[key].levels_of_approval,
               approvedBy: temp[key].approvedBy,
-"Pending From": temp[key].level_approver,
+              "Pending From": temp[key].level_approver,
               // rejectedBy:temp[key].rejectedBy,
 
               // "Approve By": temp[key].approved_by,
@@ -1043,7 +1004,8 @@ function BillCheckingTransaction() {
               "Taxable Amount": temp[key].taxable_amount,
               "Debit Advance": temp[key].debit_advance,
               // "is original Bill": temp[key].is_original_bill_needed,
-              "Is Original Bill": temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
+              "Is Original Bill":
+                temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
               // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
               // audit_remark: temp[key].audit_remark,
@@ -1053,7 +1015,8 @@ function BillCheckingTransaction() {
               "Hold Amount": temp[key].hold_amount,
               "Paid Amount": temp[key].actual_paid,
               "Is cancelled": temp[key].cancelled,
-              "Is TCS applicable": temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
+              "Is TCS applicable":
+                temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
 
@@ -1079,8 +1042,7 @@ function BillCheckingTransaction() {
           setExportData(null);
           setExportData(tempData);
           setData(tempData);
-        }
-        else {
+        } else {
           setNotify({ type: "danger", message: res.data.message });
         }
       });
@@ -1135,7 +1097,6 @@ function BillCheckingTransaction() {
     loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
-      
     }
   }, []);
   const handleKeyDown = (event) => {
@@ -1151,20 +1112,31 @@ function BillCheckingTransaction() {
     }
   }, [checkRole]);
 
-
-  // created by Asmita Margaje 
+  // created by Asmita Margaje
   // Define a functional component named LoaderComponent
   function LoaderComponent() {
     return (
       // Container to center-align the spinner and loading text
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
         {/* Spinner element with custom styling */}
-        <Spinner animation="border" role="status" style={{ width: '100px', height: '100px', borderWidth: '5px', color: '#484c7f', marginBottom: '10px' }}>
+        <Spinner
+          animation="border"
+          role="status"
+          style={{
+            width: "100px",
+            height: "100px",
+            borderWidth: "5px",
+            color: "#484c7f",
+            marginBottom: "10px",
+          }}
+        >
           {/* Visually hidden loading text for accessibility */}
           <span className="visually-hidden">Loading...</span>
         </Spinner>
         {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>Loading...</div>
+        <div style={{ color: "#484c7f", fontSize: "16px", fontWeight: "bold" }}>
+          Loading...
+        </div>
       </div>
     );
   }
@@ -1288,8 +1260,6 @@ function BillCheckingTransaction() {
                     )}
                   </div>
 
-             
-
                   <div className="col-sm-2 ">
                     <label>
                       <b>Assigned To:</b>
@@ -1372,7 +1342,7 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="to_received_date"
                       id="to_received_date"
-min={receivedate}
+                      min={receivedate}
                       required={isReceivedDate}
                     />
                   </div>
@@ -1619,8 +1589,6 @@ min={receivedate}
                     />
                   </div>
 
-            
-
                   <div className="col-md-2 mt-4">
                     <button
                       className="btn btn-sm btn-warning text-white"
@@ -1689,24 +1657,26 @@ min={receivedate}
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
-            {isLoading == true ? <LoaderComponent /> :
-              <div className="col-sm-12">
-                {data && (
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    // defaultSortFieldId="billId"
-                    pagination
-                    selectableRows={false}
-                    defaultSortAsc={false}
-                    fixedHeader={true}
-                    fixedHeaderScrollHeight="900px"
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                )}
-              </div>
-}
+              {isLoading == true ? (
+                <LoaderComponent />
+              ) : (
+                <div className="col-sm-12">
+                  {data && (
+                    <DataTable
+                      columns={columns}
+                      data={data}
+                      // defaultSortFieldId="billId"
+                      pagination
+                      selectableRows={false}
+                      defaultSortAsc={false}
+                      fixedHeader={true}
+                      fixedHeaderScrollHeight="900px"
+                      className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                      highlightOnHover={true}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

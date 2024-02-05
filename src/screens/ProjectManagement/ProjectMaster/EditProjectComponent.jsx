@@ -13,20 +13,31 @@ import Select from "react-select";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import UserService from "../../../services/MastersService/UserService";
+import { useDispatch, useSelector } from "react-redux";
+import { getprojectByID, updateprojectMaster } from "./ProjectMasterAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { ProjectMasterSlice } from "./ProjectMasterSlice";
 
 export default function EditProjectComponent({ match }) {
-  const history = useNavigate();
-  const [notify, setNotify] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22));
+  const getproject = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.getprojectByID);
+  const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
 
-  const {id} = useParams();
-  const projectId = id
+
+  console.log("notify",notify);
+  // const [notify, setNotify] = useState(null);
+
+  const { id } = useParams();
+  const projectId = id;
 
   const [data, setData] = useState(null);
   const [customer, setCustomer] = useState(null);
   const [ba, setBa] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [users, setUsers] = useState(null);
   const [projectOwners, setProjectOwners] = useState(null);
 
@@ -72,94 +83,105 @@ export default function EditProjectComponent({ match }) {
         }
       }
     });
-    await new ProjectService()
-      .getProjectById(projectId)
-      .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          if(data && data.projectOwners){
-          const a = res.data.data.projectOwners.map((d) => ({
-            value: d.user_id,
-            label: d.employee_name,
-          }));
-          setProjectOwners(a);
-          if (data) {
-            setData(null);
-            setData(data);
-          }
-        }
-      }
-      })
-      .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-      
-          // Continue handling the error as needed
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error("Error object does not contain expected 'response' property:", error);
-      
-          // Handle cases where 'response' is not available
-          // You may want to log or handle this case accordingly
-        }
-      });
-      
+    // await new ProjectService()
+    //   .getProjectById(projectId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const data = res.data.data;
+    //       if(data && data.projectOwners){
+    //       const a = res.data.data.projectOwners.map((d) => ({
+    //         value: d.user_id,
+    //         label: d.employee_name,
+    //       }));
+    //       setProjectOwners(a);
+    //       if (data) {
+    //         setData(null);
+    //         setData(data);
+    //       }
+    //     }
+    //   }
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       const { response } = error;
+    //       const { request, ...errorObject } = response;
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //       // Continue handling the error as needed
+    //       setNotify({ type: 'danger', message: errorObject.data.message });
+    //       new ErrorLogService().sendErrorLog(
+    //         'Project',
+    //         'Edit_Project',
+    //         'INSERT',
+    //         errorObject.data.message
+    //       );
+    //     } else {
+    //       console.error("Error object does not contain expected 'response' property:", error);
+
+    //       // Handle cases where 'response' is not available
+    //       // You may want to log or handle this case accordingly
+    //     }
+    //   });
+
+    dispatch(getprojectByID({ id: projectId }));
+
+    dispatch(getRoles());
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res)=>{
+      if(res.payload.data.status==1&&res.payload.status==200){
+        navigate(`/${_base}/Project`)
+      }
+      loadData()
 
-    await new ProjectService()
-      .updateProject(projectId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/Project`,
-             
-            },{ state: { alert: { type: "success", message: res.data.message } }}
-            );
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.message });
-          new ErrorLogService().sendErrorLog(
-            "Project",
-            "Edit_Project",
-            "INSERT",
-            res.message
-          );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          "Project",
-          "Edit_Project",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+
+    })
+
+    // await new ProjectService()
+    //   .updateProject(projectId, formData)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         history({
+    //           pathname: `/${_base}/Project`,
+
+    //         },{ state: { alert: { type: "success", message: res.data.message } }}
+    //         );
+    //       } else {
+    //         setNotify({ type: "danger", message: res.data.message });
+    //       }
+    //     } else {
+    //       setNotify({ type: "danger", message: res.message });
+    //       new ErrorLogService().sendErrorLog(
+    //         "Project",
+    //         "Edit_Project",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     setNotify({ type: "danger", message: errorObject.data.message });
+    //     new ErrorLogService().sendErrorLog(
+    //       "Project",
+    //       "Edit_Project",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   const handleShowLogo = (e) => {
@@ -174,7 +196,7 @@ export default function EditProjectComponent({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[19].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -186,7 +208,7 @@ export default function EditProjectComponent({ match }) {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {getproject && (
             <form onSubmit={handleForm}>
               <div className="card mt-2">
                 <div className="card-body">
@@ -203,11 +225,11 @@ export default function EditProjectComponent({ match }) {
                         required={true}
                         options={customer}
                         defaultValue={
-                          data
+                          getproject 
                             ? customer.filter(
-                                (d) => d.value == data.customer_id
+                                (d) => d.value == getproject.customer_id
                               )
-                            : ""
+                            : []
                         }
                       />
                     </div>
@@ -226,7 +248,7 @@ export default function EditProjectComponent({ match }) {
                         className="form-control form-control-sm"
                         id="project_name"
                         name="project_name"
-                        defaultValue={data ? data.project_name : null}
+                        defaultValue={getproject ? getproject.project_name : null}
                         required={true}
                         onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
@@ -248,7 +270,7 @@ export default function EditProjectComponent({ match }) {
                           name="project_owner[]"
                           isMulti={true}
                           required={true}
-                          defaultValue={data.projectOwners.map((d) => ({
+                          defaultValue={getproject.projectOwners.map((d) => ({
                             value: d.user_id,
                             label: d.employee_name,
                           }))}
@@ -269,7 +291,7 @@ export default function EditProjectComponent({ match }) {
                         name="logo"
                         accept="image/*"
                       />
-                      {data && data.logo != "" && (
+                      {getproject && getproject.logo != "" && (
                         <i
                           onClick={handleShowLogo}
                           className="icofont-eye-alt"
@@ -299,7 +321,7 @@ export default function EditProjectComponent({ match }) {
                           name="project_reviewer[]"
                           options={ba}
                           isMulti={true}
-                          defaultValue={data.projectReviewer.map((d) => ({
+                          defaultValue={getproject.projectReviewer.map((d) => ({
                             value: d.user_id,
                             label: d.employee_name,
                           }))}
@@ -320,7 +342,7 @@ export default function EditProjectComponent({ match }) {
                         id="description"
                         name="description"
                         rows="6"
-                        defaultValue={data ? data.description : null}
+                        defaultValue={getproject ? getproject.description : null}
                         required={true}
                         onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
@@ -339,7 +361,7 @@ export default function EditProjectComponent({ match }) {
                         className="form-control form-control-sm"
                         id="git_url"
                         name="git_url"
-                        defaultValue={data ? data.git_url : null}
+                        defaultValue={getproject ? getproject.git_url : null}
                       />
                     </div>
                   </div>
@@ -354,7 +376,7 @@ export default function EditProjectComponent({ match }) {
                         className="form-control form-control-sm"
                         id="api_document_link"
                         name="api_document_link"
-                        defaultValue={data ? data.api_document_link : null}
+                        defaultValue={getproject ? getproject.api_document_link : null}
                       />
                     </div>
                   </div>
@@ -369,7 +391,7 @@ export default function EditProjectComponent({ match }) {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        defaultValue={data ? data.remark : null}
+                        defaultValue={getproject ? getproject.remark : null}
                       />
                     </div>
                   </div>
@@ -389,7 +411,7 @@ export default function EditProjectComponent({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1 ? true : false
+                                getproject && getproject.is_active == 1 ? true : false
                               }
                             />
                             <label
@@ -409,7 +431,7 @@ export default function EditProjectComponent({ match }) {
                               id="is_active_0"
                               value="0"
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                getproject && getproject.is_active == 0 ? true : false
                               }
                             />
                             <label
@@ -427,7 +449,7 @@ export default function EditProjectComponent({ match }) {
               </div>
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[19].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
                   </button>

@@ -9,99 +9,133 @@ import { ProjectDropdown } from "../ProjectMaster/ProjectComponent";
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { getmoduleById } from "./ModuleAction";
+import { updateModuleMaster } from "./ModuleAction";
+import ModuleSlice from "./ModuleSlice";
 
 export default function EditModuleComponent({ match }) {
+  const dispatch = useDispatch();
   const history = useNavigate();
+  const navigate = useNavigate();
+
   const [notify, setNotify] = useState(null);
-  
+
   const { id } = useParams();
   const moduleId = id;
 
   const [data, setData] = useState(null);
+  console.log(data);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21)
+  );
+  const moduleById = useSelector(
+    (ModuleSlice) => ModuleSlice.moduleMaster.getmoduleById
+  );
+  const modal = useSelector((ModuleSlice) => ModuleSlice);
+  const notifys = useSelector((ModuleSlice) => ModuleSlice);
+  console.log("notifys", notifys);
+  console.log("object", modal);
+
+  console.log("moduleById", moduleById);
 
   const loadData = async () => {
-    const data = [];
+    dispatch(getRoles());
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
-    await new ModuleService()
-      .getModuleById(moduleId)
-      .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          if (data) {
-            setData(null);
-            setData(data);
-          }
-        } else {
-          new ErrorLogService().sendErrorLog(
-            "Module",
-            "Get_Module",
-            "INSERT",
-            res.message
-          );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Module",
-          "Get_Module",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    // const data = [];
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getmoduleById({ id: moduleId }));
+    // await new ModuleService()
+    //   .getModuleById(moduleId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const data = res.data.data;
+    //       if (data) {
+    //         setData(null);
+    //         setData(data);
+    //       }
+    //     } else {
+    //       new ErrorLogService().sendErrorLog(
+    //         "Module",
+    //         "Get_Module",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "Module",
+    //       "Get_Module",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    setNotify(null);
-
-    await new ModuleService()
-      .updateModule(moduleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/Module`,
-          
-            },{ state: { alert: { type: "success", message: res.data.message } }}
-            );
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.message });
-          new ErrorLogService().sendErrorLog(
-            "Module",
-            "Edit_Module",
-            "INSERT",
-            res.message
-          );
+    dispatch(updateModuleMaster({ id: moduleId, payload: formData })).then(
+      (res) => {
+        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          navigate(`/${_base}/Module`);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          "Module",
-          "Edit_Module",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+      }
+    );
+
+    // await new ModuleService()
+    //   .updateModule(moduleId, formData)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         history(
+    //           {
+    //             pathname: `/${_base}/Module`,
+    //           },
+    //           {
+    //             state: {
+    //               alert: { type: "success", message: res.data.message },
+    //             },
+    //           }
+    //         );
+    //       } else {
+    //         setNotify({ type: "danger", message: res.data.message });
+    //       }
+    //     } else {
+    //       setNotify({ type: "danger", message: res.message });
+    //       new ErrorLogService().sendErrorLog(
+    //         "Module",
+    //         "Edit_Module",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     setNotify({ type: "danger", message: errorObject.data.message });
+    //     new ErrorLogService().sendErrorLog(
+    //       "Module",
+    //       "Edit_Module",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   useEffect(() => {
@@ -109,7 +143,7 @@ export default function EditModuleComponent({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[20].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -124,7 +158,7 @@ export default function EditModuleComponent({ match }) {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {moduleById && (
             <form onSubmit={handleForm}>
               <div className="card mt-2">
                 <div className="card-body">
@@ -138,7 +172,7 @@ export default function EditModuleComponent({ match }) {
                       <ProjectDropdown
                         id="project_id"
                         name="project_id"
-                        defaultValue={data.project_id}
+                        defaultValue={moduleById.project_id}
                         required={true}
                       />
                     </div>
@@ -157,7 +191,7 @@ export default function EditModuleComponent({ match }) {
                         id="module_name"
                         name="module_name"
                         required={true}
-                        defaultValue={data.module_name}
+                        defaultValue={moduleById.module_name}
                         onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
                         }}
@@ -178,7 +212,7 @@ export default function EditModuleComponent({ match }) {
                         name="description"
                         rows="6"
                         required={true}
-                        defaultValue={data.description}
+                        defaultValue={moduleById.description}
                         onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
                         }}
@@ -196,7 +230,7 @@ export default function EditModuleComponent({ match }) {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        defaultValue={data.remark}
+                        defaultValue={moduleById.remark}
                       />
                     </div>
                   </div>
@@ -216,7 +250,9 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1 ? true : false
+                                moduleById && moduleById.is_active == 1
+                                  ? true
+                                  : false
                               }
                             />
                             <label
@@ -236,7 +272,9 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_0"
                               value="0"
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                moduleById && moduleById.is_active == 0
+                                  ? true
+                                  : false
                               }
                             />
                             <label
@@ -255,7 +293,7 @@ export default function EditModuleComponent({ match }) {
               </div>
               {/* CARD */}
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[20].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
                   </button>

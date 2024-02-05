@@ -11,22 +11,38 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel'
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
 import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
+import { getStatusData, postStatusData, updateStatusData } from "./StatusComponentAction";
+import { statusMasterSlice } from "./StatusComponentSlice";
+import DashboardSlice from "../../Dashboard/DashboardSlice";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { handleModalClose ,handleModalOpen} from "./StatusComponentSlice";
 
 function StatusComponent() {
+    const dispatch =useDispatch()
+    const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.getStatusData)
+    const exportData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.exportStatusData)
+    const checkRole=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
+    const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
+    const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
+ 
+    
+ 
+
     const [data, setData] = useState(null);
     const [dataa, setDataa] = useState(null)
-    const [notify, setNotify] = useState();
+    // const [notify, setNotify] = useState();
     const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-    const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-    const handleModal = (data) => {
-        setModal(data);
-    }
+    // const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
+    // const handleModal = (data) => {
+    //     setModal(data);
+    // }
 
-    const [exportData, setExportData] = useState(null)
+    // const [exportData, setExportData] = useState(null)
 
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
 
     const searchRef = useRef();
 
@@ -66,7 +82,8 @@ function StatusComponent() {
                 <div className="btn-group" role="group" >
                     <button type="button" className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#edit"
                         onClick={(e) => {
-                            handleModal({ showModal: true, modalData: row, modalHeader: 'Edit Designation' })
+                            dispatch(
+                            handleModalOpen({ showModal: true, modalData: row, modalHeader: 'Edit Designation' }))
                         }}
                     ><i className="icofont-edit text-success"></i>
                     </button>
@@ -88,114 +105,120 @@ function StatusComponent() {
     ];
 
     const loadData = async () => {
-        setShowLoaderModal(null);
+        // setShowLoaderModal(null);
+        dispatch(getStatusData())
+        dispatch(getRoles())
         // setShowLoaderModal(true);
-        const data = [];
-        const exportTempData = [];
-        await new StatusService().getStatus().then(res => {
-            if (res.status === 200) {
-                setShowLoaderModal(false);
+        // const data = [];
+        // const exportTempData = [];
+        // await new StatusService().getStatus().then(res => {
+        //     if (res.status === 200) {
+        //         setShowLoaderModal(false);
 
-                let counter = 1;
-                const temp = res.data.data
-                for (const key in temp) {
-                    data.push({
-                        counter: counter++,
-                        id: temp[key].id,
-                        status: temp[key].status,
-                        is_default: temp[key].is_default,
-                        is_active: temp[key].is_active,
-                        remark: temp[key].remark,
-                        created_at: temp[key].created_at,
-                        created_by: temp[key].created_by,
-                        updated_at: temp[key].updated_at,
-                        updated_by: temp[key].updated_by,
-                    })
-                }
-                setData(null);
-                setData(data);
-                setDataa(data)
-                for (const i in data) {
-                    exportTempData.push({
-                        Sr: data[i].counter,
-                        status_Name: data[i].status,
-                        Status: data[i].is_active ? 'Active' : 'Deactive',
-                        Remark:data[i].remark,
-                        created_at: temp[i].created_at,
-                        created_by: temp[i].created_by,
-                        updated_at: data[i].updated_at,
-                        updated_by: data[i].updated_by,
-                    })
-                }
+        //         let counter = 1;
+        //         const temp = res.data.data
+        //         for (const key in temp) {
+        //             data.push({
+        //                 counter: counter++,
+        //                 id: temp[key].id,
+        //                 status: temp[key].status,
+        //                 is_default: temp[key].is_default,
+        //                 is_active: temp[key].is_active,
+        //                 remark: temp[key].remark,
+        //                 created_at: temp[key].created_at,
+        //                 created_by: temp[key].created_by,
+        //                 updated_at: temp[key].updated_at,
+        //                 updated_by: temp[key].updated_by,
+        //             })
+        //         }
+        //         setData(null);
+        //         setData(data);
+        //         setDataa(data)
+        //         for (const i in data) {
+        //             exportTempData.push({
+        //                 Sr: data[i].counter,
+        //                 status_Name: data[i].status,
+        //                 Status: data[i].is_active ? 'Active' : 'Deactive',
+        //                 Remark:data[i].remark,
+        //                 created_at: temp[i].created_at,
+        //                 created_by: temp[i].created_by,
+        //                 updated_at: data[i].updated_at,
+        //                 updated_by: data[i].updated_by,
+        //             })
+        //         }
 
-                setExportData(null)
-                setExportData(exportTempData)
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
-        })
+        //         setExportData(null)
+        //         setExportData(exportTempData)
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
+        // })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-                setShowLoaderModal(false);
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //         setShowLoaderModal(false);
 
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
     }
 
     const handleForm = id => async (e) => {
         e.preventDefault();
-        setNotify(null);
+        // setNotify(null);
         const form = new FormData(e.target);
         if (!id) {
-            await new StatusService().postStatus(form).then(res => {
-                if (res.status === 200) {
-                setShowLoaderModal(false);
+            dispatch(postStatusData(form))
+            loadData()
+            // await new StatusService().postStatus(form).then(res => {
+            //     if (res.status === 200) {
+            //     setShowLoaderModal(false);
 
-                    if (res.data.status === 1) {
-                        setNotify({ type: 'success', message: res.data.message });
-                        setModal({ showModal: false, modalData: "", modalHeader: "" });
-                        loadData();
-                    } else {
-                        setNotify({ type: 'danger', message: res.data.message });
-                    }
-                } else {
-                    setNotify({ type: 'danger', message: res.data.message });
-                    new ErrorLogService().sendErrorLog("Status", "Create_Status", "INSERT", res.message);
-                }
-            }).catch(error => {
-                const { response } = error;
-                const { request, ...errorObject } = response;
-                setNotify({ type: 'danger', message: "Request Error !!!" });
-                new ErrorLogService().sendErrorLog("Status", "Create_Status", "INSERT", errorObject.data.message);
-            })
+            //         if (res.data.status === 1) {
+            //             setNotify({ type: 'success', message: res.data.message });
+            //             setModal({ showModal: false, modalData: "", modalHeader: "" });
+            //             loadData();
+            //         } else {
+            //             setNotify({ type: 'danger', message: res.data.message });
+            //         }
+            //     } else {
+            //         setNotify({ type: 'danger', message: res.data.message });
+            //         new ErrorLogService().sendErrorLog("Status", "Create_Status", "INSERT", res.message);
+            //     }
+            // }).catch(error => {
+            //     const { response } = error;
+            //     const { request, ...errorObject } = response;
+            //     setNotify({ type: 'danger', message: "Request Error !!!" });
+            //     new ErrorLogService().sendErrorLog("Status", "Create_Status", "INSERT", errorObject.data.message);
+            // })
         } else {
-            await new StatusService().updateStatus(id, form).then(res => {
-                if (res.status === 200) {
-                setShowLoaderModal(false);
+            dispatch(updateStatusData({id:id,payload:form}))
+            loadData()
+            // await new StatusService().updateStatus(id, form).then(res => {
+            //     if (res.status === 200) {
+            //     setShowLoaderModal(false);
 
-                    if (res.data.status === 1) {
-                        setModal({ showModal: false, modalData: "", modalHeader: "" });
-                        loadData();
-                    } else {
-                        setNotify({ type: 'danger', message: res.data.message });
-                    }
-                } else {
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog("Status", "Edit_Status", "INSERT", res.message);
-                }
-            }).catch(error => {
-                const { response } = error;
-                const { request, ...errorObject } = response;
-                setNotify({ type: 'danger', message: "Request Error !!!" });
-                new ErrorLogService().sendErrorLog("Status", "Edit_Status", "INSERT", errorObject.data.message);
-            })
+            //         if (res.data.status === 1) {
+            //             setModal({ showModal: false, modalData: "", modalHeader: "" });
+            //             loadData();
+            //         } else {
+            //             setNotify({ type: 'danger', message: res.data.message });
+            //         }
+            //     } else {
+            //         setNotify({ type: 'danger', message: res.message });
+            //         new ErrorLogService().sendErrorLog("Status", "Edit_Status", "INSERT", res.message);
+            //     }
+            // }).catch(error => {
+            //     const { response } = error;
+            //     const { request, ...errorObject } = response;
+            //     setNotify({ type: 'danger', message: "Request Error !!!" });
+            //     new ErrorLogService().sendErrorLog("Status", "Edit_Status", "INSERT", errorObject.data.message);
+            // })
         }
     }
 
@@ -222,7 +245,7 @@ function StatusComponent() {
 
 
     useEffect(() => {
-        if(checkRole && checkRole[10].can_read === 0){
+        if(checkRole && checkRole[0]?.can_read === 0){
             // alert("Rushi")
       
             window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
@@ -239,8 +262,10 @@ function StatusComponent() {
             {notify && <Alert alertData={notify} />}
             <PageHeader headerTitle="Status Master" renderRight={() => {
                 return <div className="col-auto d-flex w-sm-100">
-                    {checkRole && checkRole[10].can_create === 1 ?
-                        <button className="btn btn-dark btn-set-task w-sm-100" onClick={() => { handleModal({ showModal: true, modalData: null, modalHeader: 'Add Status' }) }}>
+                    {checkRole && checkRole[0]?.can_create === 1 ?
+                        <button className="btn btn-dark btn-set-task w-sm-100" 
+                        
+                        onClick={() => { dispatch(handleModalOpen({ showModal: true, modalData: null, modalHeader: 'Add Status' })) }}>
                             <i className="icofont-plus-circle me-2 fs-6"></i>Add Status
                         </button> : ""}
                 </div>
@@ -288,9 +313,9 @@ function StatusComponent() {
                 <div className='card-body'>
                     <div className="row clearfix g-3">
                         <div className="col-sm-12">
-                            {data && <DataTable
+                            {statusData && <DataTable
                                 columns={columns}
-                                data={data}
+                                data={statusData}
                                 defaultSortField="title"
                                 pagination
                                 selectableRows={false}
@@ -317,11 +342,12 @@ function StatusComponent() {
 
             <Modal centered show={modal.showModal}
                 onHide={(e) => {
-                    handleModal({
+                    dispatch(
+                    handleModalClose({
                         showModal: false,
                         modalData: "",
                         modalHeader: ""
-                    })
+                    }))
                 }}>
                 <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
 
@@ -399,11 +425,11 @@ function StatusComponent() {
                             Add
                         </button>
                         }
-                        {modal.modalData && checkRole && checkRole[10].can_update === 1 ? <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F" }}  >
+                        {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? <button type="submit" className="btn btn-primary text-white" style={{ backgroundColor: "#484C7F" }}  >
                             Update
                         </button> : ''}
                         <button type="button" className="btn btn-danger text-white"
-                            onClick={() => { handleModal({ showModal: false, modalData: "", modalHeader: "" }) }} >
+                            onClick={() => {dispatch( handleModalClose({ showModal: false, modalData: "", modalHeader: "" })) }} >
                             Cancel
                         </button>
                     </Modal.Footer>
@@ -416,9 +442,9 @@ function StatusComponent() {
 
 function StatusDropdown(props) {
     const [data, setData] = useState(null);
-    useEffect(async () => {
+    useEffect( () => {
         const tempData = [];
-        await new StatusService().getStatus().then(res => {
+         new StatusService().getStatus().then(res => {
             if (res.status == 200) {
                 const data = res.data.data
                 let counter = 1;
