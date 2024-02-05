@@ -447,7 +447,6 @@ setLoading(false)
               </div>
             )
         }
-
         {props.data.type == 'GROUP_ACTIVITY' &&
           props.data.status !== 'COMPLETED' && (
             // props.data.canStartStop == 1 &&

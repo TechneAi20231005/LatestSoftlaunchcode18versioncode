@@ -931,8 +931,6 @@ export default function TaskComponent({ match }) {
   const dispatch = useDispatch();
   const BasketData = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
   const OwnerShip = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.ownership)
-  console.log("OwnerShip",OwnerShip)
-  console.log("basketData",BasketData)
 
 
   const getTicketData = async () => {
