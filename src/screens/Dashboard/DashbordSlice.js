@@ -15,11 +15,10 @@
 //   notificationData:[],
 //   allDashboardData:[],
 
-  
 // };
 
 // export const dashboardSlice = createSlice({
-    
+
 //   name: "dashboradSlice",
 //   initialState,
 //   reducers: {
@@ -28,7 +27,7 @@
 //         console.log("action of modal",action.payload)
 //     }
 //   },
-//   extraReducers: (builder) => {    
+//   extraReducers: (builder) => {
 
 //     builder.addCase(getCityData.pending, (state) => {
 //       state.status = "loading";
@@ -53,7 +52,7 @@
 
 //     builder.addCase(getCountryData.pending, (state) => {
 //         state.status = "loading";
-  
+
 //       });
 //       builder.addCase(getCountryData.fulfilled, (state, action) => {
 //         const { payload } = action;
@@ -73,9 +72,9 @@
 //       });
 //       builder.addCase(getStateData.pending, (state) => {
 //         state.status = "loading";
-  
+
 //       });
-      
+
 //       builder.addCase(getStateData.fulfilled, (state, action) => {
 //         const { payload } = action;
 //         if (payload?.status === 200 && payload?.data?.status === 1) {
@@ -92,12 +91,12 @@
 //       builder.addCase(getStateData.rejected, (state) => {
 //         state.status = "rejected";
 //       });
-     
+
 //       builder.addCase(getEmployeeData.pending, (state) => {
 //         state.status = "loading";
-  
+
 //       });
-      
+
 //       builder.addCase(getEmployeeData.fulfilled, (state, action) => {
 //         const { payload } = action;
 //         if (payload?.status === 200 && payload?.data?.status === 1) {
@@ -122,14 +121,11 @@
 //         state.status = "rejected";
 //       });
 
-
-
-
 //       builder.addCase(getNotifications.pending, (state) => {
 //         state.status = "loading";
-  
+
 //       });
-      
+
 //       builder.addCase(getNotifications.fulfilled, (state, action) => {
 //         const { payload } = action;
 //         if (payload?.status === 200 && payload?.data?.status === 1) {
@@ -145,18 +141,16 @@
 //         state.status = "rejected";
 //       });
 
-
-
 //       builder.addCase(getAllDashboardData.pending, (state) => {
 //         state.status = "loading";
-  
+
 //       });
-      
+
 //       builder.addCase(getAllDashboardData.fulfilled, (state, action) => {
 //         const { payload } = action;
 //         if (payload?.status === 200 && payload?.data?.status === 1) {
 //           let allDashboardData = payload.data.data;
-         
+
 //           state.status = "succeded";
 //           state.showLoaderModal = false;
 //           state.allDashboardData = allDashboardData
@@ -167,17 +161,11 @@
 //         state.status = "rejected";
 //       });
 
-
 //   },
-
-
-  
-
 
 // });
 
 // export default dashboardSlice.reducer;
-
 
 import { createSlice } from "@reduxjs/toolkit";
 import {
@@ -197,6 +185,9 @@ import {
   updateCountryData,
   postUserData,
   updateUserData,
+  getRoles,
+  getDynamiucFormData,
+  getCustomerData,
 } from "./DashboardAction";
 import { all } from "axios";
 
@@ -206,7 +197,7 @@ const initialState = {
   cityUserDetail: {},
   cityData: [],
   countryData: [],
-  sortedCityData:[],
+  sortedCityData: [],
   stateData: [],
   employeeData: [],
   showLoaderModal: false,
@@ -221,13 +212,14 @@ const initialState = {
   filteredCountryData: [],
   states: [],
   updateState: [],
-  exportCityData:[],
-  exportCountryData:[],
-  postCountry:[],
-  updateCountry:[],
-  postUSer:[],
-  updateUser:[],
-  exportUserData:[],
+  exportCityData: [],
+  exportCountryData: [],
+  postCountry: [],
+  updateCountry: [],
+  postUSer: [],
+  updateUser: [],
+  getRoles: [],
+  exportUserData: [],
 
   notify: {},
   modal: {
@@ -264,14 +256,14 @@ export const dashboardSlice = createSlice({
         let cityData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;
-        let sortedCityData =  payload.data.data
-        .filter((d) => d.is_active === 1)
-        .map((d) => ({
-          value: d.id,
-          label: d.city,
-        }))
+        let sortedCityData = payload.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({
+            value: d.id,
+            label: d.city,
+          }));
 
-        state.sortedCityData=sortedCityData
+        state.sortedCityData = sortedCityData;
         let count = 1;
         for (let i = 0; i < cityData.length; i++) {
           cityData[i].counter = count++;
@@ -281,15 +273,15 @@ export const dashboardSlice = createSlice({
         for (const i in cityData) {
           exportCityData.push({
             Sr: cityData[i].counter,
-                      City: cityData[i].city,
-                      State: cityData[i].state,
-                      Country: cityData[i].country,
-                      Status: cityData[i].is_active ? "Active" : "Deactive",
-                      Remark: cityData[i].remark,
-                      created_at: cityData[i].created_at,
-                      created_by: cityData[i].created_by,
-                      updated_at: cityData[i].updated_at,
-                      updated_by: cityData[i].updated_by,
+            City: cityData[i].city,
+            State: cityData[i].state,
+            Country: cityData[i].country,
+            Status: cityData[i].is_active ? "Active" : "Deactive",
+            Remark: cityData[i].remark,
+            created_at: cityData[i].created_at,
+            created_by: cityData[i].created_by,
+            updated_at: cityData[i].updated_at,
+            updated_by: cityData[i].updated_by,
           });
         }
         state.exportCityData = exportCityData;
@@ -377,14 +369,14 @@ export const dashboardSlice = createSlice({
         for (const key in countryData) {
           exportCountryData.push({
             Sr: countryData[key].counter,
-                      Country: countryData[key].country,
-                      Status: countryData[key].is_active ? "Active" : "Deactive",
-                      Remark:countryData[key].remark,
-        
-                      created_at: countryData[key].created_at,
-                      created_by: countryData[key].created_by,
-                      updated_at: countryData[key].updated_at,
-                      updated_by: countryData[key].updated_by,
+            Country: countryData[key].country,
+            Status: countryData[key].is_active ? "Active" : "Deactive",
+            Remark: countryData[key].remark,
+
+            created_at: countryData[key].created_at,
+            created_by: countryData[key].created_by,
+            updated_at: countryData[key].updated_at,
+            updated_by: countryData[key].updated_by,
           });
         }
         state.exportCountryData = exportCountryData;
@@ -417,66 +409,61 @@ export const dashboardSlice = createSlice({
       state.status = "rejected";
     });
 
+    // Post Country Data
+    builder.addCase(postCountryData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
+    builder.addCase(postCountryData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let postCountry = payload.data.data;
+        state.status = "succeeded";
 
-// Post Country Data 
-builder.addCase(postCountryData.pending, (state) => {
-  state.status = "loading";
-  state.notify = null;
-});
+        state.showLoaderModal = false;
+        state.postCountry = postCountry;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(postCountryData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
-builder.addCase(postCountryData.fulfilled, (state, action) => {
-  const { payload } = action;
-  if (payload?.status === 200 && payload?.data?.status === 1) {
-    let postCountry = payload.data.data;
-    state.status = "succeeded";
+    // update country data
 
-    state.showLoaderModal = false;
-    state.postCountry = postCountry;
-    state.notify = null;
-    state.notify = { type: "success", message: payload.data.message };
-    let modal = { showModal: false, modalData: "", modalHeader: "" };
-    state.modal = modal;
-  } else {
-    let notify = { type: "danger", message: payload.data.message };
-    state.notify = null;
-    state.notify = notify;
-  }
-});
-builder.addCase(postCountryData.rejected, (state) => {
-  state.status = "rejected";
-});
+    builder.addCase(updateCountryData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
+    builder.addCase(updateCountryData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let updateCountry = payload.data.data;
+        state.status = "succeeded";
+        // state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        state.showLoaderModal = false;
 
+        state.updateCountry = updateCountry;
 
-// update country data
-
-builder.addCase(updateCountryData.pending, (state) => {
-  state.status = "loading";
-  state.notify = null;
-});
-
-builder.addCase(updateCountryData.fulfilled, (state, action) => {
-  const { payload } = action;
-  if (payload?.status === 200 && payload?.data?.status === 1) {
-    let updateCountry = payload.data.data;
-    state.status = "succeeded";
-    // state.notify = null;
-    state.notify = { type: "success", message: payload.data.message };
-    state.showLoaderModal = false;
-
-    state.updateCountry = updateCountry;
-
-    let modal = { showModal: false, modalData: "", modalHeader: "" };
-    state.modal = modal;
-  } else {
-    state.notify = { type: "danger", message: payload.data.message };
-  }
-});
-builder.addCase(updateCountryData.rejected, (state) => {
-  state.status = "rejected";
-});
-
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(updateCountryData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
     //fetch state data
 
@@ -626,7 +613,7 @@ builder.addCase(updateCountryData.rejected, (state) => {
         }
 
         state.employeeData = [...employeeData];
-let exportUserData = []
+        let exportUserData = [];
         for (const i in employeeData) {
           exportUserData.push({
             SrNo: employeeData.length + 1,
@@ -634,7 +621,7 @@ let exportUserData = []
             Account_for: employeeData[i].account_for,
             customer_name: employeeData[i].customer,
             Name:
-            employeeData[i].first_name +
+              employeeData[i].first_name +
               " " +
               employeeData[i].middle_name +
               " " +
@@ -665,16 +652,14 @@ let exportUserData = []
             updated_by: employeeData[i].updated_by,
           });
         }
-state.exportUserData = exportUserData
+        state.exportUserData = exportUserData;
       }
     });
     builder.addCase(getEmployeeData.rejected, (state) => {
       state.status = "rejected";
     });
 
-
     // post user data
-
 
     builder.addCase(postUserData.pending, (state) => {
       state.status = "loading";
@@ -699,8 +684,6 @@ state.exportUserData = exportUserData
     builder.addCase(postUserData.rejected, (state) => {
       state.status = "rejected";
     });
-
-
 
     // update user data
 
@@ -729,9 +712,6 @@ state.exportUserData = exportUserData
     builder.addCase(updateUserData.rejected, (state) => {
       state.status = "rejected";
     });
-
-
-
 
     //fetch Notification data
 
@@ -770,10 +750,74 @@ state.exportUserData = exportUserData
     builder.addCase(getAllDashboardData.rejected, (state) => {
       state.status = "rejected";
     });
+
+    builder.addCase(getRoles.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getRoles.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log(payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getRoles = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        let count = 1;
+        for (let i = 0; i < getRoles.length; i++) {
+          getRoles[i].counter = count++;
+        }
+        state.getRoles = [...getRoles];
+      }
+    });
+    builder.addCase(getRoles.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //__________getDynamicForm________________
+
+    builder.addCase(getDynamiucFormData.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getDynamiucFormData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log(payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getDynamiucFormData = payload.data.data
+          .filter((d) => d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.template_name }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        state.getDynamiucFormData = [...getDynamiucFormData];
+      }
+    });
+    builder.addCase(getDynamiucFormData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //____________________getCustomer______________________
+
+    builder.addCase(getCustomerData.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getCustomerData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log(payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getCustomerData = payload.data.data
+          .filter((d) => d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.name }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        state.getCustomerData = [...getCustomerData];
+      }
+    });
+    builder.addCase(getCustomerData.rejected, (state) => {
+      state.status = "rejected";
+    });
   },
 });
 
 export const { handleModalInStore, handleModalClose, loaderModal } =
   dashboardSlice.actions;
 export default dashboardSlice.reducer;
-

@@ -25,9 +25,7 @@ function DesignationComponent() {
 
   const dispatch = useDispatch();
   // const getDesignation = useSelector( (DashboardSlice) => DashboardSlice.dashboard.getDesignationData);
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
-  );
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8));
   const designationData = useSelector((DesignationSlice) => DesignationSlice.designationMaster.getDesignationData);
   const exportData=useSelector(DesignationSlice=>DesignationSlice.designationMaster.exportDesignation)
   const modal=useSelector(DesignationSlice=>DesignationSlice.designationMaster.modal)
