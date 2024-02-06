@@ -47,7 +47,7 @@ import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
 
 export default function EditTicketComponent({ match }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
@@ -183,6 +183,9 @@ export default function EditTicketComponent({ match }) {
             setProceed(true);
             setConfirmationModal(false);
             setNotify({ type: "success", message: res.data.message });
+            setTimeout(() => {
+              navigate(`/${_base}/Ticket`);
+            }, 1000);
           } else {
             setNotify({ type: "danger", message: res.data.message });
             setProceed(false);
@@ -229,15 +232,19 @@ export default function EditTicketComponent({ match }) {
           setShowLoaderModal(false);
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/Ticket`,
-                },
-                {
-                  state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
-                }
+              navigate(
+                `/${_base}/Ticket`
+                // {
+                //   alert: { type: "success", message: res.data.message },
+                // }
+                // {
+                //   pathname: `/${_base}/Ticket`,
+                // },
+                // {
+                //   state: {
+                //     alert: { type: "success", message: res.data.message },
+                //   },
+                // }
               );
             } else {
               setNotify({ type: "danger", message: res.data.message });

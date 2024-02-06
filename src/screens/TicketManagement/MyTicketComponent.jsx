@@ -1062,6 +1062,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const assignedToMeColumns = [
@@ -1169,6 +1181,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const createdByMeColumns = [
@@ -1283,6 +1307,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const handleCheckboxChangee = (row) => {
@@ -1461,6 +1497,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const departmentwisetTicketColumns = [
@@ -1579,6 +1627,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const loadData = async () => {
@@ -1641,6 +1701,7 @@ export default function MyTicketComponent() {
             tempData.push({
               value: temp[key].id,
               label: temp[key].department,
+              
             });
           }
         }
@@ -1662,6 +1723,8 @@ export default function MyTicketComponent() {
             tempData.push({
               value: temp[key].id,
               label: temp[key].status,
+              ticket_solved_date:temp[key].ticket_solved_date,
+              ticket_solved_by:temp[key].ticket_solved_by
             });
           }
         }
@@ -1744,6 +1807,8 @@ export default function MyTicketComponent() {
               sub_module_name: dataAssignToMe[key].sub_module_name,
               Template_id: dataAssignToMe[key].template_id,
               Tenant_id: dataAssignToMe[key].tenant_id,
+              ticket_solved_date:dataAssignToMe[key].ticket_solved_date,
+              ticket_solved_by:dataAssignToMe[key].ticket_solved_by
             });
           }
 
@@ -1852,6 +1917,8 @@ export default function MyTicketComponent() {
                   sub_module_name: temp[key].sub_module_name,
                   Template_id: temp[key].template_id,
                   Tenant_id: temp[key].tenant_id,
+                  ticket_solved_date:temp[key].ticket_solved_date,
+                  ticket_solved_by:temp[key].ticket_solved_by
                 });
               }
               setKey("Search_Result");
