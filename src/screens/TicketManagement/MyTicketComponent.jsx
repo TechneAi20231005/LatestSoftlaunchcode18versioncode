@@ -2020,6 +2020,8 @@ export default function MyTicketComponent() {
                   Status_name: temp[key].status_name,
                   sub_module_name: temp[key].sub_module_name,
                   Template_id: temp[key].template_id,
+                  ticket_solved_date:temp[key].ticket_solved_date,
+                  ticket_solved_by:temp[key].ticket_solved_by,
                   Tenant_id: temp[key].tenant_id,
                 });
               }
