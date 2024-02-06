@@ -6278,7 +6278,6 @@ export default function HrDashboard(props) {
  const Count = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.count)
 
 
-  console.log("dataD",Count);
 
   const [chartData, setChartData] = useState({
     series: [50, 59, 40],

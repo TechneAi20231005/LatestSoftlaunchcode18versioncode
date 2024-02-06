@@ -25,10 +25,16 @@ import {
   ReactSelectComponent,
 } from "../../../components/Utilities/Button/Button";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { UpdateBillCheckingTransaction } from "../Slices/BillCheckingTransactionAction";
 
 const secretKey = "rushikesh"; 
 
 export default function CreateBillCheckingTransaction({ match }) {
+
+  const navigate = useNavigate();
+
+const dispatch =useDispatch()
   
   var section = 0;
 const {id}=useParams()
@@ -49,7 +55,6 @@ const {id}=useParams()
         setIp(res.data.ip);
       } catch (error) {
         // Handle errors if needed
-        console.error("Error fetching data:", error);
       }
     };
   
@@ -435,7 +440,6 @@ const {id}=useParams()
       }
     }
 
-    // console.log("isigst",document.getElementById('is_igst_applicable').value)
     if (document.getElementById('is_igst_applicable').checked) {
       form.append("is_igst_applicable", 1)
     } else {
@@ -458,44 +462,51 @@ const {id}=useParams()
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
     // form.append("is_tcs_applicable", isTcsApplicable === true ? 1 : 0);
 
-    await new BillTransactionService()
-      .updateBillChecking(id, form)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/BillCheckingTransaction`,
-              
-            },
-            { state: { alert: { type: "success", message: res.data.message } }}
 
-            );
-            setNotify({ type: "success", message: res.data.message });
-            loadData();
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-          new ErrorLogService().sendErrorLog(
-            "Payment_template",
-            "Create_Payment_template",
-            "INSERT",
-            res.message
-          );
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Request Error !!!" });
-        new ErrorLogService().sendErrorLog(
-          "Payment_template",
-          "Create_Payment_template",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    
+dispatch(UpdateBillCheckingTransaction({id:id,form:form})).then((res)=>{
+  if(res.payload.data.status===1 && res.payload.status === 200){
+    navigate(`/${_base}/BillCheckingTransaction`)
+  }
+})
+    // await new BillTransactionService()
+    //   .updateBillChecking(id, form)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         history({
+    //           pathname: `/${_base}/BillCheckingTransaction`,
+              
+    //         },
+    //         { state: { alert: { type: "success", message: res.data.message } }}
+
+    //         );
+    //         setNotify({ type: "success", message: res.data.message });
+    //         loadData();
+    //       } else {
+    //         setNotify({ type: "danger", message: res.data.message });
+    //       }
+    //     } else {
+    //       setNotify({ type: "danger", message: res.data.message });
+    //       new ErrorLogService().sendErrorLog(
+    //         "Payment_template",
+    //         "Create_Payment_template",
+    //         "INSERT",
+    //         res.message
+    //       );
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     setNotify({ type: "danger", message: "Request Error !!!" });
+    //     new ErrorLogService().sendErrorLog(
+    //       "Payment_template",
+    //       "Create_Payment_template",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
   };
 
   const fileInputRef = useRef(null);
@@ -1246,7 +1257,6 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                   </div>
 
 
-{/* {console.log("a",data && data.map((i)=>i.approvers_id))} */}
                   <div className=" form-group row mt-3">
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">

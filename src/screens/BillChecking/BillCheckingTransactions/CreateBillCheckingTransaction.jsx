@@ -22,6 +22,11 @@ import UserService from "../../../services/MastersService/UserService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getUpdatedAuthoritiesData, getcreateAuthoritiesData, postBillcheckingData } from "../Slices/BillCheckingTransactionAction";
+import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
+import VendorMasterSlice from "../Slices/VendorMasterSlice";
+import { getVendorMasterData } from "../Slices/VendorMasterAction";
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -33,21 +38,34 @@ export default function CreateBillCheckingTransaction({ match }) {
       const res = await axios.get("https://api.ipify.org/?format=json");
       setIp(res.data.ip);
     } catch (error) {
-      console.error("Error fetching data:", error);
     }
   };
+
+
+  const dispatch = useDispatch()
+
+
+  const notify = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.notify)
+  const vendorDropdown = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
+  const authorities = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData) //update
+  const authority = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authorityData) //create
+  
+
 
   useEffect(() => {
     featchData();
   }, []);
+
+
+
 
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
     modalHeader: "",
   });
-  const history = useNavigate();
-  const [notify, setNotify] = useState(null);
+  const navigate = useNavigate();
+  // const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const [dependent, setDependent] = useState({
@@ -58,7 +76,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [billType, setBillType] = useState(null);
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
   const [vendor, setVendor] = useState(null);
-  const [vendorDropdown, setVendorDropdown] = useState(null);
+  // const [vendorDropdown, setVendorDropdown] = useState(null);
   const [department, setDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
   const [cityDropdown, setCityDropdown] = useState(null);
@@ -78,7 +96,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [tdsData, setTdsData] = useState(null);
 
-  const [authorities, SetAuthorities] = useState();
+  // const [authorities, SetAuthorities] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
@@ -123,7 +141,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [tdsPercent, setTdsPercent] = useState();
   const [deta, setDeta] = useState();
   const [showFiles, setShowFiles] = useState();
-  const [authority, setAuthority] = useState();
+  // const [authority, setAuthority] = useState();
   const [netPaymentError, setNetPaymentError] = useState();
 
   const handleTcsApplicable = (e) => {
@@ -238,6 +256,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const loadData = async () => {
+
+    dispatch(getVendorMasterData())
     await new BillCheckingTransactionService()
       ._getBillTypeDataDropdown()
       .then((res) => {
@@ -253,25 +273,28 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       });
 
-    await new BillCheckingTransactionService()
-      .getBillCreateAuthority()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setAuthority(res.data.access);
-          }
-        }
-      });
+    // await new BillCheckingTransactionService()
+    //   .getBillCreateAuthority()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setAuthority(res.data.access);
+    //       }
+    //     }
+    //   });
+    dispatch(getcreateAuthoritiesData())
 
-    await new BillCheckingTransactionService()
-      .getUpdatedAuthorities()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            SetAuthorities(res.data.data);
-          }
-        }
-      });
+      dispatch(getUpdatedAuthoritiesData())
+    // await new BillCheckingTransactionService()
+    //   .getUpdatedAuthorities()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         SetAuthorities(res.data.data);
+    //         console.log("")
+    //       }
+    //     }
+    //   });
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -300,46 +323,46 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       });
 
-    await new BillCheckingTransactionService()
-      .getVendorsDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = res.data.data.filter((d) => d.is_active == 1);
-            setVendor(res.data.data);
-            setVendorDropdown(
-              temp.map((d) => ({
-                value: d.id,
-                label: d.vendor_name,
-              }))
-            );
-          }
-        }
-      });
+    // await new BillCheckingTransactionService()
+    //   .getVendorsDropdown()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         const temp = res.data.data.filter((d) => d.is_active == 1);
+    //         setVendor(res.data.data);
+    //         setVendorDropdown(
+    //           temp.map((d) => ({
+    //             value: d.id,
+    //             label: d.vendor_name,
+    //           }))
+    //         );
+    //       }
+    //     }
+    //   });
 
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setDepartment(res.data.data);
-          setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
-          );
-        }
-      }
-    });
+    // await new DepartmentService().getDepartment().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setDepartment(res.data.data);
+    //       setDepartmentDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.department }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUser(res.data.data);
-          setUserDropdown(
-            temp.map((d) => ({ value: d.id, label: d.user_name }))
-          );
-        }
-      }
-    });
+    // const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    //       setUser(res.data.data);
+    //       setUserDropdown(
+    //         temp.map((d) => ({ value: d.id, label: d.user_name }))
+    //       );
+    //     }
+    //   }
+    // });
   };
 
   const handleModal = (data) => {
@@ -353,7 +376,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     e.preventDefault();
 
     const form = new FormData(e.target);
-    setNotify(null);
+    // setNotify(null);
     form.delete("attachment[]");
     form.append("client_ip_address", ip);
 
@@ -381,46 +404,52 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("is_original_bill_needed", 0);
     }
 
-    console.log(selectedFiles);
     if (selectedFiles) {
       selectedFiles.forEach((file, index) => {
         form.append(`attachment[${index}]`, file.file, file.file.name);
       });
     }
 
-    try {
-      const res = await new BillCheckingTransactionService().createData(form);
 
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/BillCheckingTransaction`},
-           { state: { alert: { type: "success", message: res.data.message } }}
-            );
-          loadData();
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      } else {
-        setNotify({ type: "danger", message: res.data.message });
-        new ErrorLogService().sendErrorLog(
-          "BillCheckingTransaction",
-          "BillCheckingTransaction",
-          "INSERT",
-          res.message
-        );
+    dispatch(postBillcheckingData(form)).then((res)=>{
+      if(res.payload.data.status===1 && res.payload.status === 200){
+        navigate(`/${_base}/BillCheckingTransaction`)
       }
-    } catch (error) {
-      const { response } = error;
-      const { request, ...errorObject } = response;
-      setNotify({ type: "danger", message: "Request Error !!!" });
-      new ErrorLogService().sendErrorLog(
-        "BillCheckingTransaction",
-        "BillCheckingTransaction",
-        "INSERT",
-        errorObject.data.message
-      );
-    }
+    })
+
+    // try {
+    //   const res = await new BillCheckingTransactionService().createData(form);
+
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       history({
+    //         pathname: `/${_base}/BillCheckingTransaction`},
+    //        { state: { alert: { type: "success", message: res.data.message } }}
+    //         );
+    //       loadData();
+    //     } else {
+    //       setNotify({ type: "danger", message: res.data.message });
+    //     }
+    //   } else {
+    //     setNotify({ type: "danger", message: res.data.message });
+    //     new ErrorLogService().sendErrorLog(
+    //       "BillCheckingTransaction",
+    //       "BillCheckingTransaction",
+    //       "INSERT",
+    //       res.message
+    //     );
+    //   }
+    // } catch (error) {
+    //   const { response } = error;
+    //   const { request, ...errorObject } = response;
+    //   setNotify({ type: "danger", message: "Request Error !!!" });
+    //   new ErrorLogService().sendErrorLog(
+    //     "BillCheckingTransaction",
+    //     "BillCheckingTransaction",
+    //     "INSERT",
+    //     errorObject.data.message
+    //   );
+    // }
   };
 
   const fileInputRef = useRef(null);
@@ -471,7 +500,6 @@ export default function CreateBillCheckingTransaction({ match }) {
         setIp(response.data.ip);
       } catch (error) {
         // Handle errors here
-        console.error("Error fetching IP:", error);
       }
     };
 
@@ -501,7 +529,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   }, [taxable, gst, roundOff, tcs, billAmount, tdsPercentage]);
 
   const loadAttachment = async () => {
-    setNotify(null);
+    // setNotify(null);
     if (id) {
       await getAttachment(id, "BILL_CHECK").then((res) => {
         if (res.status === 200) {

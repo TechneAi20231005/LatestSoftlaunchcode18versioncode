@@ -1,25 +1,53 @@
-// import { createAsyncThunk } from "@reduxjs/toolkit";
-// import GeneralSettingService from "../../services/SettingService/GeneralSettingService";
-
-// export const getGeneralSettingData = createAsyncThunk("getGeneralSettingData",async(config,thunkapi)=>{
-//     try{
-//         const service = new GeneralSettingService();
-//         const response = await service.getGeneralSetting()
-//         console.log("reGeneral",response)
-//         return (response)
-//     }catch (error){
-//         throw(error)
-//     }
-// })
-
-
-
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-
-export const getGeneralSettingData = createAsyncThunk("getBillcheckinData",async(config,thunkapi)=>{
+import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService"
+export const getBillcheckingData = createAsyncThunk("getBillcheckingData",async(config,thunkapi)=>{
     try{
-        const response = await BillCheckingTransactionService.getBillCheckData()
+        const service = new BillCheckingTransactionService()
+        const response = await service.getBillCheckData()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+
+export const postBillcheckingData = createAsyncThunk("postBillcheckingData",async(payload,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.createData(payload)
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+
+export const getUpdatedAuthoritiesData = createAsyncThunk("getUpdatedAuthoritiesData",async(payload,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.getUpdatedAuthorities()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+
+export const UpdateBillCheckingTransaction = createAsyncThunk("UpdateBillCheckingTransaction",async(payload,thunkapi)=>{
+    try{
+        const service = new BillTransactionService()
+        const response = await service.updateBillChecking(payload.id,payload.form)
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+export const getcreateAuthoritiesData = createAsyncThunk("getcreateAuthoritiesData",async(payload,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.getBillCreateAuthority()
         return (response)
     }catch (error){
         throw(error)

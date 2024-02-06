@@ -22,12 +22,15 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { UseDispatch,useDispatch,useSelector } from "react-redux";
+import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
+import { getBillcheckingData } from "../Slices/BillCheckingTransactionAction";
 
 function BillCheckingTransaction() {
   const location = useLocation();
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
-  const [exportData, setExportData] = useState(null);
+  // const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [modal, setModal] = useState({
@@ -38,6 +41,11 @@ function BillCheckingTransaction() {
 
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
+
+
+  const dispatch=useDispatch()
+const AllBillCheckingData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.sortedBillCheckingData)
+const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
 
   const handleModal = (data) => {
     setModal(data);
@@ -693,7 +701,6 @@ function BillCheckingTransaction() {
         });
       } catch (error) {
         // Handle any potential errors during cancellation
-        console.error("Error during bill cancellation:", error);
       }
     }
   };
@@ -815,8 +822,8 @@ function BillCheckingTransaction() {
             "Updated At": temp[key].updated_at,
             "Updated By": temp[key].updated_by,
           });
-          setExportData(null);
-          setExportData(tempData);
+          // setExportData(null);
+          // setExportData(tempData);
         }
         setData(null);
         setData(data);
@@ -1039,8 +1046,8 @@ function BillCheckingTransaction() {
           }
           setData(null);
 
-          setExportData(null);
-          setExportData(tempData);
+          // setExportData(null);
+          // setExportData(tempData);
           setData(tempData);
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -1095,6 +1102,7 @@ function BillCheckingTransaction() {
 
   useEffect(() => {
     loadData();
+    dispatch(getBillcheckingData())
     if (location && location.state) {
       setNotify(location.state.alert);
     }
@@ -1661,10 +1669,11 @@ function BillCheckingTransaction() {
                 <LoaderComponent />
               ) : (
                 <div className="col-sm-12">
-                  {data && (
+                  {AllBillCheckingData && (
                     <DataTable
                       columns={columns}
-                      data={data}
+                      // data={data}
+                      data={AllBillCheckingData}
                       // defaultSortFieldId="billId"
                       pagination
                       selectableRows={false}

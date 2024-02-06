@@ -28,6 +28,8 @@ import QueryTypeComponetSlice from "../../screens/Masters/QueryTypeMaster/QueryT
 import DesignationSlice from "../../screens/Masters/DesignationMaster/DesignationSlice";
 import statusMasterSlice from "../../screens/Masters/StatusMaster/StatusComponentSlice";
 import ProjectMasterSlice from "../../screens/ProjectManagement/ProjectMaster/ProjectMasterSlice";
+import BillCheckingTransactionSlice from "../../screens/BillChecking/Slices/BillCheckingTransactionSlice";
+import VendorMasterSlice from "../../screens/BillChecking/Slices/VendorMasterSlice";
 
 export const store = configureStore({
   reducer: {
@@ -54,7 +56,8 @@ export const store = configureStore({
     designationMaster: DesignationSlice,
     statusMaster: statusMasterSlice,
     projectMaster:ProjectMasterSlice,
-
+    billChecking:BillCheckingTransactionSlice,
+    vendorMaster:VendorMasterSlice,
 
     consolidatedData: ConsolidatedSlice,
   },
