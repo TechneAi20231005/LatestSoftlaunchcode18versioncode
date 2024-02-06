@@ -103,6 +103,7 @@ export default function MyTicketComponent() {
   const [departmentWiseData, setDepartmentWiseData] = useState();
   const [yourTaskData, setYourTaskData] = useState();
   const [unpassedData, setUnpassedData] = useState();
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowss, setSelectedRowss] = useState([]);
   const [statusValue, setStatusValue] = useState("");
@@ -243,10 +244,7 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-            {console.log("s",searchResult)}
-            {console.log("dac",data)}
-
-            {console.log("dac",localStorage.getItem("id"))}
+            
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
@@ -1817,7 +1815,7 @@ export default function MyTicketComponent() {
               setSearchResult(null);
               setSearchResult(res.data.data);
               const temp = res.data.data;
-              console.log("t",temp)
+            
               var counter = 1;
               var searchResultExport = [];
               for (const key in temp) {
@@ -2145,6 +2143,7 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
+   
 
 
             setUnpassedTickets(res.data.data.data);
@@ -2188,6 +2187,7 @@ export default function MyTicketComponent() {
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setAssignedToMe({ ...assignedToMeData, current_page: res.data.data.current_page });
         }
       }
     });
@@ -2223,6 +2223,7 @@ export default function MyTicketComponent() {
           setCreatedByMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setCreatedByMe({ ...createdByMeData, current_page: res.data.data.current_page });
         }
       }
     });
@@ -2259,6 +2260,7 @@ export default function MyTicketComponent() {
           setDepartmentwiseTicket(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setDepartmentwiseTicket({ ...departmentWiseData, current_page: res.data.data.current_page });
         }
       }
     });
@@ -2294,7 +2296,9 @@ export default function MyTicketComponent() {
         if (res.data.status == 1) {
           setYourTask(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+        
           );
+          setYourTask({ ...yourTaskData, current_page: res.data.data.current_page });
         }
       }
     });
@@ -2313,22 +2317,28 @@ export default function MyTicketComponent() {
     } else if (type == "MINUS") {
       // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
+    
         typeOf: "UnPassed",
         page: unpassedData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
+     
         typeOf: "UnPassed",
         page: unpassedData.current_page + 1,
-      };
+      }
+    } else{
+      return
     }
 
+
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
+  
       if (res.status === 200) {
         if (res.data.status == 1) {
           setUnpassedTickets(res.data.data.data);
+          setUnpassedData({ ...unpassedData, current_page: res.data.data.current_page });
         }
       }
     });
