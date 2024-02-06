@@ -99,6 +99,7 @@ export default class VendorMasterService {
           'Content-Type': 'multipart/form-data',
                 },
       };
+      
         payload.append('tenant_id',userSessionData.tenantId);
         payload.append('created_by',userSessionData.userId);
         payload.append('created_at',getDateTime());  
