@@ -14,28 +14,41 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import TestingTypeServices from "../../../services/MastersService/TestingTypeService";
 import { useDispatch, useSelector } from "react-redux";
-import { postTesting, testingData, updateTesting } from "./TestingTypeComponentAction";
+import {
+  postTesting,
+  testingData,
+  updateTesting,
+} from "./TestingTypeComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalOpen,handleModalClose } from "./TestingTypeComponentSlices";
+import {
+  handleModalOpen,
+  handleModalClose,
+} from "./TestingTypeComponentSlices";
 
 import TestingTypeComponentSlices from "./TestingTypeComponentSlices";
 
 function TestingTypeComponent() {
-  const dispatch=useDispatch()
-  const testingtypeData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.testingData);
-  const exportData=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.exportTestingData)
-  const modal=useSelector(TestingTypeComponentSlices=>TestingTypeComponentSlices.testingData.modal)
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49));
+  const dispatch = useDispatch();
+  const testingtypeData = useSelector(
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.testingData
+  );
+  const exportData = useSelector(
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.exportTestingData
+  );
+  const modal = useSelector((TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal);
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49));
+  const notify = useSelector((TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.notify);
   console.log(modal);
 
   const [data, setData] = useState(null);
-  const [notify, setNotify] = useState();
+  // const [notify, setNotify] = useState();
   // const [modal, setModal] = useState({
   //   showModal: false,
   //   modalData: "",
   //   modalHeader: "",
   // });
-
 
   // const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
@@ -63,16 +76,11 @@ function TestingTypeComponent() {
     });
   }
 
-
-
-
-
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
     const result = SearchInputData(data, SearchValue);
     setData(result);
   };
-
 
   const columns = [
     {
@@ -88,11 +96,11 @@ function TestingTypeComponent() {
             data-bs-target="#edit"
             onClick={(e) => {
               dispatch(
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Testing Type",
-              })
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Testing Type",
+                })
               );
             }}
           >
@@ -167,8 +175,6 @@ function TestingTypeComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(testingData())
-    dispatch(getRoles())
     // const data = [];
     // const exportTempData = [];
     // await new TestingTypeServices()
@@ -219,7 +225,6 @@ function TestingTypeComponent() {
     //       errorObject.data.message
     //     );
     //   });
-
     // await new CountryService().getCountrySort().then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -232,7 +237,6 @@ function TestingTypeComponent() {
     //     }
     //   }
     // });
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -245,11 +249,11 @@ function TestingTypeComponent() {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postTesting(form))
-      loadData()
+      dispatch(postTesting(form));
+      dispatch(testingData());
       // await new TestingTypeServices()
       //   .postTestingType(form)
       //   .then((res) => {
@@ -283,8 +287,8 @@ function TestingTypeComponent() {
       //     );
       //   });
     } else {
-      dispatch(updateTesting({id:id,payload:form}))
-      loadData()
+      dispatch(updateTesting({ id: id, payload: form }));
+      dispatch(testingData());
       // await new TestingTypeServices()
       //   .updateTestingType(id, form)
       //   .then((res) => {
@@ -328,15 +332,20 @@ function TestingTypeComponent() {
 
   useEffect(() => {
     loadData();
+
+    if (!testingtypeData.length) {
+      dispatch(testingData());
+      dispatch(getRoles());
+    }
   }, []);
 
-  useEffect(()=>{
-    if(checkRole && checkRole[0]?.can_read === 0){
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
@@ -351,11 +360,11 @@ function TestingTypeComponent() {
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
                     dispatch(
-                    handleModalOpen({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Testing Type",
-                    })
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Testing Type",
+                      })
                     );
                   }}
                 >
@@ -443,18 +452,17 @@ function TestingTypeComponent() {
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton 
-           onClick={() => {
-            dispatch(
-            handleModalClose({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            })
-            );
-          }}
-
-          
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
           >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
@@ -555,7 +563,11 @@ function TestingTypeComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px"  }}
+                style={{
+                  backgroundColor: "#484C7F",
+                  width: "80px",
+                  padding: "8px",
+                }}
               >
                 Add
               </button>
@@ -576,11 +588,11 @@ function TestingTypeComponent() {
               className="btn btn-danger text-white"
               onClick={() => {
                 dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                })
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
                 );
               }}
             >

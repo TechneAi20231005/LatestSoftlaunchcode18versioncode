@@ -15,8 +15,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import DashboardSlice from "../../Dashboard/DashboardSlice";
 import DesignationSlice from "./DesignationSlice";
-import { getDesignationData, postDesignationData, updatedDesignationData } from "./DesignationAction";
-import { handleModalClose,handleModalOpen } from "./DesignationSlice";
+import {
+  getDesignationData,
+  postDesignationData,
+  updatedDesignationData,
+} from "./DesignationAction";
+import { handleModalClose, handleModalOpen } from "./DesignationSlice";
 
 function DesignationComponent() {
   const [data, setData] = useState(null);
@@ -25,13 +29,21 @@ function DesignationComponent() {
 
   const dispatch = useDispatch();
   // const getDesignation = useSelector( (DashboardSlice) => DashboardSlice.dashboard.getDesignationData);
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8));
-  const designationData = useSelector((DesignationSlice) => DesignationSlice.designationMaster.getDesignationData);
-  const exportData=useSelector(DesignationSlice=>DesignationSlice.designationMaster.exportDesignation)
-  const modal=useSelector(DesignationSlice=>DesignationSlice.designationMaster.modal)
-  const Notify=useSelector(DesignationSlice=>DesignationSlice.designationMaster.modal)
-
-
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
+  );
+  const designationData = useSelector(
+    (DesignationSlice) => DesignationSlice.designationMaster.getDesignationData
+  );
+  const exportData = useSelector(
+    (DesignationSlice) => DesignationSlice.designationMaster.exportDesignation
+  );
+  const modal = useSelector(
+    (DesignationSlice) => DesignationSlice.designationMaster.modal
+  );
+  const notify = useSelector(
+    (DesignationSlice) => DesignationSlice.designationMaster.notify
+  );
 
   // const [notify, setNotify] = useState(null);
   // const [modal, setModal] = useState({
@@ -88,11 +100,11 @@ function DesignationComponent() {
             data-bs-target="#edit"
             onClick={(e) => {
               dispatch(
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Designation",
-              })
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Designation",
+                })
               );
             }}
           >
@@ -159,9 +171,6 @@ function DesignationComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(getDesignationData());
-
-    dispatch(getRoles());
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
     // const data = [];
@@ -201,7 +210,6 @@ function DesignationComponent() {
     //           updated_by: data[i].updated_by,
     //         });
     //       }
-
     //       setExportData(null);
     //       setExportData(exportTempData);
     //     }
@@ -216,7 +224,6 @@ function DesignationComponent() {
     //       errorObject.data.message
     //     );
     //   });
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
@@ -234,7 +241,8 @@ function DesignationComponent() {
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postDesignationData(form));
-      loadData()
+      dispatch(getDesignationData());
+
       // await new DesignationService()
       //   .postDesignation(form)
       //   .then((res) => {
@@ -269,8 +277,8 @@ function DesignationComponent() {
       //     );
       //   });
     } else {
-      dispatch(updatedDesignationData({id:id,payload:form}))
-      loadData()
+      dispatch(updatedDesignationData({ id: id, payload: form }));
+      dispatch(getDesignationData());
       // await new DesignationService()
       //   .updateDesignation(id, form)
       //   .then((res) => {
@@ -334,13 +342,21 @@ function DesignationComponent() {
     }
   }, [checkRole]);
 
+
+
   useEffect(() => {
     loadData();
+
+    if (!designationData.length) {
+      dispatch(getDesignationData());
+
+      dispatch(getRoles());
+    }
   }, []);
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
+      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Designation Master"
         renderRight={() => {
@@ -351,11 +367,11 @@ function DesignationComponent() {
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
                     dispatch(
-                    handleModalOpen({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Designation",
-                    })
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Designation",
+                      })
                     );
                   }}
                 >
@@ -454,7 +470,18 @@ function DesignationComponent() {
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+            closeButton
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -589,11 +616,12 @@ function DesignationComponent() {
               className="btn btn-danger text-white"
               onClick={() => {
                 dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                }));
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel

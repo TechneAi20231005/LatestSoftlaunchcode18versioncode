@@ -31,6 +31,10 @@ import ProjectMasterSlice from "../../screens/ProjectManagement/ProjectMaster/Pr
 import BillCheckingTransactionSlice from "../../screens/BillChecking/Slices/BillCheckingTransactionSlice";
 import VendorMasterSlice from "../../screens/BillChecking/Slices/VendorMasterSlice";
 
+import TenantComponentSlice from "../../screens/TenantManagement/TenantComponentSlice";
+import CustomerTypeComponentSlice from "../../screens/Masters/CustomerTypeMaster/CustomerTypeComponentSlice";
+
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -58,6 +62,9 @@ export const store = configureStore({
     projectMaster:ProjectMasterSlice,
     billChecking:BillCheckingTransactionSlice,
     vendorMaster:VendorMasterSlice,
+    tenantMaster:TenantComponentSlice,
+customerTypeMaster:CustomerTypeComponentSlice,
+
 
     consolidatedData: ConsolidatedSlice,
   },

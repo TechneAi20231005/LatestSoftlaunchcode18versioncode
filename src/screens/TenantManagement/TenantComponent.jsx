@@ -9,16 +9,31 @@ import Alert from "../../components/Common/Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { Spinner } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTenant } from "./TenantConponentAction";
+import TenantComponentSlice, { tenantmasterSlice } from "./TenantComponentSlice";
+import { getRoles } from "../Dashboard/DashboardAction";
+import DashbordSlice from "../Dashboard/DashbordSlice";
+
 
 function TenantComponent() {
   const location = useLocation();
+  const dispatch =useDispatch()
+  const getAllTenantData=useSelector(TenantComponentSlice=>TenantComponentSlice.tenantMaster.getAllTenant)
+  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
+
+  
+
+
+
+
 
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
   const isMasterAdmin = localStorage.getItem("role_name");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const searchRef = useRef();
@@ -97,56 +112,62 @@ function TenantComponent() {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    const data = [];
-    await new TenantService()
-      .getTenant()
-      .then((res) => {
-        const tempData = [];
-        if (res.status === 200) {
-          setShowLoaderModal(false);
+    dispatch(getAllTenant())
 
-          let counter = 1;
-          const data = res.data.data;
-          for (const key in data) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              is_active: data[key].is_active,
-              company_name: data[key].company_name,
-              company_type: data[key].company_type,
-              remark: data[key].remark,
-              updated_at: data[key].updated_at,
-              updated_by: data[key].updated_by,
-            });
-          }
+    
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
+    // const data = [];
+    // await new TenantService()
+    //   .getTenant()
+    //   .then((res) => {
+    //     const tempData = [];
+    //     if (res.status === 200) {
+    //       setShowLoaderModal(false);
 
-          setData(null);
-          setData(tempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Tenant",
-          "Get_Tenant",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //       let counter = 1;
+    //       const data = res.data.data;
+    //       for (const key in data) {
+    //         tempData.push({
+    //           counter: counter++,
+    //           id: data[key].id,
+    //           is_active: data[key].is_active,
+    //           company_name: data[key].company_name,
+    //           company_type: data[key].company_type,
+    //           remark: data[key].remark,
+    //           updated_at: data[key].updated_at,
+    //           updated_by: data[key].updated_by,
+    //         });
+    //       }
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    //       setData(null);
+    //       setData(tempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "Tenant",
+    //       "Get_Tenant",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
+   
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+
+    dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -157,7 +178,7 @@ function TenantComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[32].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -178,7 +199,7 @@ function TenantComponent() {
                   : "d-none"
               }
             >
-              {checkRole && checkRole[32].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base + "/TenantMaster/Create"}`}
                   className="btn btn-dark btn-set-task w-sm-100"
@@ -226,10 +247,10 @@ function TenantComponent() {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {getAllTenantData && (
             <DataTable
               columns={columns}
-              data={data}
+              data={getAllTenantData}
               defaultSortField="title"
               pagination
               selectableRows={false}

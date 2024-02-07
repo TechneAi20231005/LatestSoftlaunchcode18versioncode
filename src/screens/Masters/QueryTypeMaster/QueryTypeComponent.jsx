@@ -32,17 +32,26 @@ import {
   queryTypeData,
 } from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
-import { getCustomerData, getDynamiucFormData } from "../../Dashboard/DashboardAction";
+import {
+  getCustomerData,
+  getDynamiucFormData,
+  getRoles,
+} from "../../Dashboard/DashboardAction";
+
 import DashboardSlice from "../../Dashboard/DashboardSlice";
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
-  const querygroupdata = useSelector((queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData);
-  const queryTypedata = useSelector((queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType);
+  const querygroupdata = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData
+  );
+  const queryTypedata = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType
+  );
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+
   const dynamicFormDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData);
   const customerDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getCustomerData);
-  console.log("getCustomerData",customerDropdown );
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -94,7 +103,7 @@ function QueryTypeComponent() {
   // ***************************** End Edit & View Popup*************************************
 
   // *********************************Add Query Group ***********************
-  const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
+
 
   const [modalQueryGroup, setModalQueryGroup] = useState({
     showModalQueryGroup: false,
@@ -715,7 +724,8 @@ function QueryTypeComponent() {
     // });
 
     dispatch(getDynamiucFormData());
-    dispatch(getCustomerData())
+    dispatch(getCustomerData());
+    dispatch(getRoles());
     // await new CustomerService().getCustomer().then((res) => {
     //   if (res.data.status == 1) {
     //     setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
@@ -775,7 +785,7 @@ function QueryTypeComponent() {
         if (!id) {
           form.delete("is_active");
           form.append("is_active", 1);
-          dispatch(postqueryTypeForm(form))
+          dispatch(postqueryTypeForm(form));
           // const res = await new QueryTypeService().postQueryType(form);
           // if (res.status === 200) {
           //   setShowLoaderModal(false);

@@ -106,8 +106,7 @@ function StatusComponent() {
 
     const loadData = async () => {
         // setShowLoaderModal(null);
-        dispatch(getStatusData())
-        dispatch(getRoles())
+      
         // setShowLoaderModal(true);
         // const data = [];
         // const exportTempData = [];
@@ -174,7 +173,7 @@ function StatusComponent() {
         const form = new FormData(e.target);
         if (!id) {
             dispatch(postStatusData(form))
-            loadData()
+            dispatch(getStatusData())
             // await new StatusService().postStatus(form).then(res => {
             //     if (res.status === 200) {
             //     setShowLoaderModal(false);
@@ -198,7 +197,7 @@ function StatusComponent() {
             // })
         } else {
             dispatch(updateStatusData({id:id,payload:form}))
-            loadData()
+            dispatch(getStatusData())
             // await new StatusService().updateStatus(id, form).then(res => {
             //     if (res.status === 200) {
             //     setShowLoaderModal(false);
@@ -252,10 +251,14 @@ function StatusComponent() {
           }
     }, [checkRole])
 
-    useEffect(()=>{
+    useEffect(() => {
         loadData();
-
-    },[])
+    
+        if (!statusData.length) {
+            dispatch(getStatusData())
+            dispatch(getRoles())
+        }
+      }, []);
 
     return (
         <div className="container-xxl">
