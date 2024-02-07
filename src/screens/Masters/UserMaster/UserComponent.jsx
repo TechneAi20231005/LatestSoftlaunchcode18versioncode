@@ -528,7 +528,7 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { Spinner } from "react-bootstrap";
 import {useDispatch,useSelector} from "react-redux"
 import { dashboardSlice } from "../../Dashboard/DashbordSlice";
-import { getEmployeeData } from "../../Dashboard/DashboardAction";
+import { getEmployeeData, getRoles } from "../../Dashboard/DashboardAction";
 
 function UserComponent( ) {
   const location = useLocation()
@@ -536,8 +536,8 @@ function UserComponent( ) {
   const dispatch = useDispatch()
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [countryDropdown, setCountryDropdown] = useState(null);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -547,7 +547,9 @@ function UserComponent( ) {
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3));
+
 
   const employeeData = useSelector(dashboardSlice=>dashboardSlice.dashboard.employeeData);
   const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportUserData)
@@ -681,8 +683,8 @@ function UserComponent( ) {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
     try {
       dispatch(getEmployeeData())
     } catch (error) {
@@ -691,128 +693,128 @@ function UserComponent( ) {
     const data = [];
     const exportTempData = [];
     //  **************************Country load data**************************************
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          //setCountry(res.data.data.filter(d => d.is_active === 1));
-          setCountryDropdown(res.data.data.filter((d) => d.is_active == 1));
-        }
-      }
-    });
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       //setCountry(res.data.data.filter(d => d.is_active === 1));
+    //       setCountryDropdown(res.data.data.filter((d) => d.is_active == 1));
+    //     }
+    //   }
+    // });
 
-    await new UserService()
-      .getUser()
-      .then((res) => {
-        setShowLoaderModal(false);
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              account_for: temp[key].account_for,
-              customer: temp[key].customer,
-              name:
-                temp[key].first_name +
-                " " +
-                temp[key].middle_name +
-                " " +
-                temp[key].last_name,
-              email: temp[key].email_id,
-              contact_no: temp[key].contact_no,
-              WhatsappNo: temp[key].whats_app_contact_no,
-              username: temp[key].user_name,
-              Role: temp[key].role,
-              Designation: temp[key].designation,
-              Address: temp[key].address,
-              Pincode: temp[key].pincode,
-              country_id: temp[key].country,
-              state_id: temp[key].state,
-              city_id: temp[key].city,
-              Department: temp[key].department,
-              Ticket_Show_Type: temp[key].ticket_show_type,
-              Ticket_Passing_Authority: temp[key].ticket_passing_authority,
-              Make_Default: temp[key].is_default,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setDataa(data);
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
+    // await new UserService()
+    //   .getUser()
+    //   .then((res) => {
+    //     setShowLoaderModal(false);
+    //     if (res.status === 200) {
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           account_for: temp[key].account_for,
+    //           customer: temp[key].customer,
+    //           name:
+    //             temp[key].first_name +
+    //             " " +
+    //             temp[key].middle_name +
+    //             " " +
+    //             temp[key].last_name,
+    //           email: temp[key].email_id,
+    //           contact_no: temp[key].contact_no,
+    //           WhatsappNo: temp[key].whats_app_contact_no,
+    //           username: temp[key].user_name,
+    //           Role: temp[key].role,
+    //           Designation: temp[key].designation,
+    //           Address: temp[key].address,
+    //           Pincode: temp[key].pincode,
+    //           country_id: temp[key].country,
+    //           state_id: temp[key].state,
+    //           city_id: temp[key].city,
+    //           Department: temp[key].department,
+    //           Ticket_Show_Type: temp[key].ticket_show_type,
+    //           Ticket_Passing_Authority: temp[key].ticket_passing_authority,
+    //           Make_Default: temp[key].is_default,
+    //           is_active: temp[key].is_active,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(data);
+    //       setDataa(data);
+    //       for (const i in temp) {
+    //         exportTempData.push({
+    //           SrNo: exportTempData.length + 1,
 
-              Account_for: temp[i].account_for,
-              customer_name: temp[i].customer,
-              Name:
-                temp[i].first_name +
-                " " +
-                temp[i].middle_name +
-                " " +
-                temp[i].last_name,
-              Email: temp[i].email_id,
-              ContactNo: temp[i].contact_no,
-              WhatsappNo: temp[i].whats_app_contact_no,
-              User_Name: temp[i].user_name,
-              Role: temp[i].role,
-              Designation: temp[i].designation,
-              Address: temp[i].address,
-              Pincode: temp[i].pincode,
-              Country: temp[i].country,
-              State: temp[i].state,
-              City: temp[i].city,
-              Department: temp[i].department,
-              Ticket_Show_Type: temp[i].ticket_show_type,
-              all_department: temp[i].all_department,
-              Ticket_Passing_Authority: temp[i].ticket_passing_authority
-                ? "Yes"
-                : "No",
-              Make_Default: temp[i].is_default ? "yes" : "No",
-              Status: temp[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
+    //           Account_for: temp[i].account_for,
+    //           customer_name: temp[i].customer,
+    //           Name:
+    //             temp[i].first_name +
+    //             " " +
+    //             temp[i].middle_name +
+    //             " " +
+    //             temp[i].last_name,
+    //           Email: temp[i].email_id,
+    //           ContactNo: temp[i].contact_no,
+    //           WhatsappNo: temp[i].whats_app_contact_no,
+    //           User_Name: temp[i].user_name,
+    //           Role: temp[i].role,
+    //           Designation: temp[i].designation,
+    //           Address: temp[i].address,
+    //           Pincode: temp[i].pincode,
+    //           Country: temp[i].country,
+    //           State: temp[i].state,
+    //           City: temp[i].city,
+    //           Department: temp[i].department,
+    //           Ticket_Show_Type: temp[i].ticket_show_type,
+    //           all_department: temp[i].all_department,
+    //           Ticket_Passing_Authority: temp[i].ticket_passing_authority
+    //             ? "Yes"
+    //             : "No",
+    //           Make_Default: temp[i].is_default ? "yes" : "No",
+    //           Status: temp[i].is_active ? "Active" : "Deactive",
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: temp[i].updated_at,
 
-              updated_by: temp[i].updated_by,
-            });
-          }
+    //           updated_by: temp[i].updated_by,
+    //         });
+    //       }
 
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          const { request, ...errorObject } = error.response;
-          new ErrorLogService().sendErrorLog(
-            "Status",
-            "Get_Status",
-            "INSERT",
-            errorObject.data.message
-          );
-        } else {
-          console.error(error);
-        }
+    //       setExportData(null);
+    //       setExportData(exportTempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       const { request, ...errorObject } = error.response;
+    //       new ErrorLogService().sendErrorLog(
+    //         "Status",
+    //         "Get_Status",
+    //         "INSERT",
+    //         errorObject.data.message
+    //       );
+    //     } else {
+    //       console.error(error);
+    //     }
         
-        });
+    //     });
 
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     //   await new ManageMenuService().getRole(roleId).then((res) => {
     //     console.log("res===>",res)
@@ -839,6 +841,11 @@ function UserComponent( ) {
   var flag = 1;
 useEffect(()=>{
   loadData();
+  if(!employeeData.length  || !checkRole.length){
+   dispatch(getEmployeeData())
+   dispatch(getRoles())
+
+  }
 
 },[])
 useEffect(() => {
@@ -851,7 +858,7 @@ useEffect(() => {
 }, [location.state]);
 
   useEffect(() => {
-    if (checkRole && checkRole[2].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -868,7 +875,7 @@ useEffect(() => {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[3].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base + "/User/Create"}`}
                   className="btn btn-dark btn-set-task w-sm-100"
@@ -951,7 +958,7 @@ useEffect(() => {
                 </DataTableExtensions>
               )} */}
             </div>
-
+{/* 
             <Modal show={showLoaderModal} centered>
               <Modal.Body className="text-center">
                 <Spinner animation="grow" variant="primary" />
@@ -962,7 +969,7 @@ useEffect(() => {
                 <Spinner animation="grow" variant="info" />
                 <Spinner animation="grow" variant="dark" />
               </Modal.Body>
-            </Modal>
+            </Modal> */}
           </div>
         </div>
       </div>

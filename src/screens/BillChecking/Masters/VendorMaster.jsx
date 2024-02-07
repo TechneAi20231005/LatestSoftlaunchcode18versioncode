@@ -677,6 +677,7 @@ dispatch(PaymentDropDown())
   const handleErp = (e) => {
     var erpValue = document.getElementById("vendor_name");
     document.getElementById("acme_account_name").value = erpValue.value;
+    
   };
 
   useEffect(() => {
@@ -1195,6 +1196,9 @@ dispatch(PaymentDropDown())
     // });
   };
 
+
+  
+
   return (
     <>
 
@@ -1337,7 +1341,7 @@ dispatch(PaymentDropDown())
                       id="vendor_name"
                       name="vendor_name"
                       maxLength={50}
-                      minLength={3}
+                      // minLength={3}
                       onKeyUp={(e) => {
                         handleErp(e);
                       }}
@@ -1373,6 +1377,7 @@ dispatch(PaymentDropDown())
                       // }}
                       required={true}
                     />
+                      
                     {/* {inputState.VendorNameErr && (
                       <small style={{ color: "red" }}>
                         {inputState.VendorNameErr}

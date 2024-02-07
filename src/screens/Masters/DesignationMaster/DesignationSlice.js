@@ -17,6 +17,7 @@ const initialState = {
 
   getDesignationData: [],
   exportDesignation: [],
+  sortedDesignationData:[]
 };
 
 export const desegnationSlice = createSlice({
@@ -65,6 +66,15 @@ export const desegnationSlice = createSlice({
             updated_by: getDesignationData[i].updated_by,
           });
         }
+
+        const sortedDesignationData= payload.data?.data?.filter((d) => d.is_active === 1)
+        .map((d) => ({
+          value: d.id,
+          label: d.designation,
+        }))
+
+        state.sortedDesignationData=sortedDesignationData
+
         state.exportDesignation = exportDesignation;
       }
     });

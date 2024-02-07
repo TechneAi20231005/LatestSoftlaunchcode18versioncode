@@ -488,7 +488,7 @@ if (formData.get("id")) {
               <input
                 type="hidden"
                 name="id"
-                defaultValue={props.data[0].id}
+                defaultValue={props.data[0]?.id}
                 required
               />
             )}
@@ -504,7 +504,7 @@ if (formData.get("id")) {
                   id="basket_name"
                   name={`${props.data ? "basket_name" : "basket_name[]"}`}
                   className="form-control form-control-sm"
-                  defaultValue={props.data[0] ? props.data[0].basket_name : null}
+                  defaultValue={props.data ? props.data?.basket_name : null}
                   onKeyPress={(e) => {
                     Validation.CharactersNumbersSpeicalOnly(e);
                   }}
@@ -512,7 +512,7 @@ if (formData.get("id")) {
                 />
               </div>  
             </div>
-{console.log("data",props.data)}
+{console.log("data",props.data.basket_name)}
             <div className="form-group row">
               <div className="col-sm-12">
                 <label className="col-form-label">
@@ -527,8 +527,8 @@ if (formData.get("id")) {
                     options={user}
                     defaultValue={
                       props.data &&
-                      props.data[0].basket_owner &&
-                      user.filter((d) => d.value === props.data[0].basket_owner)
+                      props.data?.basket_owner &&
+                      user.filter((d) => d.value === props.data?.basket_owner)
                     }
                   />
                 )}
@@ -548,9 +548,9 @@ if (formData.get("id")) {
                   className="form-control form-control-sm"
                   onChange={handleFromDate}
                   required
-                  readOnly={props.data && props.data[0].start_date ? true : false}
+                  readOnly={props.data && props.data?.start_date ? true : false}
                   min={ticketData && ticketData.ticket_date}
-                  value={props.data ? props.data[0].start_date : null}
+                  value={props.data ? props.data?.start_date : null}
                 />
               </div>
               <div className="col-sm-6">
@@ -567,8 +567,8 @@ if (formData.get("id")) {
                   required
                   // max={ticketData && ticketData.expected_solve_date}
                   min={todate}
-                  readOnly={props.data && props.data[0].end_date ? true : false}
-                  value={props.data ? props.data.end_date : null}
+                  readOnly={props.data && props.data?.end_date ? true : false}
+                  value={props.data ? props.data?.end_date : null}
                 />
               </div>
             </div>

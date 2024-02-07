@@ -6328,7 +6328,6 @@ export default function HrDashboard(props) {
     // },
   });
 
-  console.log("c",chartData)
   const checkTokenExpiration = () => {
     const tokenExpirationTime = localStorage.getItem("jwt_token_expiration");
     const currentTime = new Date().getTime();
