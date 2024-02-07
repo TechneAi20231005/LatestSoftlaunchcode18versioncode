@@ -41,8 +41,8 @@ function DesignationComponent() {
   const modal = useSelector(
     (DesignationSlice) => DesignationSlice.designationMaster.modal
   );
-  const Notify = useSelector(
-    (DesignationSlice) => DesignationSlice.designationMaster.modal
+  const notify = useSelector(
+    (DesignationSlice) => DesignationSlice.designationMaster.notify
   );
 
   // const [notify, setNotify] = useState(null);
@@ -356,7 +356,7 @@ function DesignationComponent() {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
+      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Designation Master"
         renderRight={() => {

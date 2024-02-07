@@ -18,6 +18,18 @@ export const queryTypeSlice = createSlice({
       state.showLoaderModal = action.payload;
       console.log("action of modal", action.payload);
     },
+
+    handleModalOpen: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleModalClose: (state, action) => {
+      state.modal = action.payload;
+    },
+
+
+
+
+
   },
   extraReducers: (builder) => {
     builder.addCase(queryTypeData.pending, (state) => {
