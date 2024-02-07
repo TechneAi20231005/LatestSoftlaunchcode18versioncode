@@ -27,13 +27,17 @@ function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
+  const [options, setOptions] = useState([
+    { value: "MY_TICKETS", label: "My Tickets" },
+    {
+      value: "DEPARTMENT_TICKETS",
+      label: "Department Tickets",
+    },
+  ]);
 
-  
+  const { id } = useParams();
+  const userId = parseInt(id);
 
-  const {id}=useParams()
-  const userId=parseInt(id)
-
-  
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
   const [country, setCountry] = useState(null);
@@ -52,10 +56,6 @@ function EditUserComponent({ match }) {
 
   const [dataa, setDataa] = useState({ employee_id: null, departments: null });
 
-  const options = [
-    { value: "MY_TICKETS", label: "My Tickets" },
-    { value: "DEPARTMENT_TICKETS", label: "Department Tickets" },
-  ];
   const mappingData = {
     department_id: null,
     ticket_passing_authority: null,
@@ -298,12 +298,12 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              
-              history({
-                pathname: `/${_base}/User`,
-              },   
-                  {state: {type:"success", message: res.data.message}},
-                     );
+              history(
+                {
+                  pathname: `/${_base}/User`,
+                },
+                { state: { type: "success", message: res.data.message } }
+              );
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -318,7 +318,6 @@ function EditUserComponent({ match }) {
           }
         })
         .catch((error) => {
-
           if (error.response) {
             const { request, ...errorObject } = error.response;
             new ErrorLogService().sendErrorLog(
@@ -330,9 +329,6 @@ function EditUserComponent({ match }) {
           } else {
             console.error(error);
           }
-          
-          
-          
         });
       // }
     }
@@ -608,6 +604,49 @@ function EditUserComponent({ match }) {
     }
   };
 
+  const accountForChange = async (account_for) => {
+    setAccountFor(account_for);
+    const ticketTypeShow = options.filter((d) => d.value === "MY_TICKETS");
+
+    account_for === "CUSTOMER"
+      ? setOptions(ticketTypeShow)
+      : setOptions([
+          { value: "MY_TICKETS", label: "My Tickets" },
+          {
+            value: "DEPARTMENT_TICKETS",
+            label: "Department Tickets",
+          },
+        ]);
+
+    const accountFor = account_for;
+    await new RoleService().getRole().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const filteredAsAccountFor = res.data.data.filter((filterData) => {
+            if (accountFor === "SELF") {
+              return filterData.role.toLowerCase() !== "user";
+            } else if (accountFor === "CUSTOMER") {
+              return filterData.role.toLowerCase() === "user";
+            }
+          });
+          const response = filteredAsAccountFor
+
+            .filter((d) => d.is_active === 1)
+
+            .map((d) => ({
+              value: d.id,
+              label: d.role,
+            }));
+          const aa = response.sort(function (a, b) {
+            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+          });
+
+          setRoleDropdown(aa);
+        }
+      }
+    });
+  };
+
   const [value, setValue] = useState("");
   const onPaste = (e) => {
     const paste = e.clipboardData.getData("text/plain");
@@ -737,7 +776,7 @@ function EditUserComponent({ match }) {
                             name="account_for"
                             value={accountFor ? accountFor : ""}
                             onChange={(e) => {
-                              setAccountFor(e.target.value);
+                              accountForChange(e.target.value);
                             }}
                           >
                             {/* <option value="SELF" selected>{data.accountFor}</option> */}
@@ -987,22 +1026,21 @@ function EditUserComponent({ match }) {
                         {/* <label className="col-sm-2 col-form-label">
                           <b>Same as Contact No. :</b>
                         </label> */}
-                         <label className="col-sm-3 col-form-label text-end ">
-                        <b className="mx-3">Same as Contact No. or</b>
-                        <br/>
-                        <b className="mx-3">Whats App Contact Number :</b>
-                       {/* <label className="col-sm-3 col-form-label text-end "> */}
-                        {/* </label> */}
-                        <input
-                          type="checkbox"
-                          name="check1"
-                          defaultChecked={data.check1 == 1}
-
-                          onChange={copyTextValue}
-                          style={{ position: "absolute", top: "32%" }}
-                        />
-                        {/* <b>Whats App Number :</b> */}
-                      </label>
+                        <label className="col-sm-3 col-form-label text-end ">
+                          <b className="mx-3">Same as Contact No. or</b>
+                          <br />
+                          <b className="mx-3">Whats App Contact Number :</b>
+                          {/* <label className="col-sm-3 col-form-label text-end "> */}
+                          {/* </label> */}
+                          <input
+                            type="checkbox"
+                            name="check1"
+                            defaultChecked={data.check1 == 1}
+                            onChange={copyTextValue}
+                            style={{ position: "absolute", top: "32%" }}
+                          />
+                          {/* <b>Whats App Number :</b> */}
+                        </label>
                         {/* <div className="col-sm-1">
                           <input
                             defaultChecked={data.check1 == 1}
@@ -1586,105 +1624,103 @@ function EditUserComponent({ match }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {rows && rows?.map((item, idx) => (
-                          <tr key={idx}>
-                            <td className="text-center">{idx + 1}</td>
-                            <td>
-                              
-                              {departmentDropdown && item.department_id &&
-                              <Select
-                                options={departmentDropdown}
-                                id={`department_id_` + idx}
-                                name="department_id[]"
-                                // onChange={e => departmentHandler(idx, e)}
-                                defaultValue={
-                                  departmentDropdown?.filter(
-                                    (d) => d.value == item.department_id
-                                  )
-                                }
-                              />
-                            }
-                            </td>
-                            <td>
-                              {options && item.ticket_show_type &&
-                              <Select
-                                options={options}
-                                id={`ticket_show_type_id_` + idx}
-                                name="ticket_show_type[]"
-                                // onChange={e => ticketShowHandler(idx, e)}
-                                defaultValue={
-                                  rows &&
-                                  item.ticket_show_type &&
-                                  options.filter(
-                                    (d) => d.value == item.ticket_show_type
-                                  )
-                                }
-                              />
-                              }
-                            </td>
+                        {rows &&
+                          rows?.map((item, idx) => (
+                            <tr key={idx}>
+                              <td className="text-center">{idx + 1}</td>
+                              <td>
+                                {departmentDropdown && item.department_id && (
+                                  <Select
+                                    options={departmentDropdown}
+                                    id={`department_id_` + idx}
+                                    name="department_id[]"
+                                    // onChange={e => departmentHandler(idx, e)}
+                                    defaultValue={departmentDropdown?.filter(
+                                      (d) => d.value == item.department_id
+                                    )}
+                                  />
+                                )}
+                              </td>
+                              <td>
+                                {options && item.ticket_show_type && (
+                                  <Select
+                                    options={options}
+                                    id={`ticket_show_type_id_` + idx}
+                                    name="ticket_show_type[]"
+                                    // onChange={e => ticketShowHandler(idx, e)}
+                                    defaultValue={
+                                      rows &&
+                                      item.ticket_show_type &&
+                                      options.filter(
+                                        (d) => d.value == item.ticket_show_type
+                                      )
+                                    }
+                                  />
+                                )}
+                              </td>
 
-                            <td className="text-center">
-                              <input
-                                type="hidden"
-                                name="ticket_passing_authority[]"
-                                value={
-                                  item.ticket_passing_authority
-                                    ? item.ticket_passing_authority
-                                    : 0
-                                }
-                              />
+                              <td className="text-center">
+                                <input
+                                  type="hidden"
+                                  name="ticket_passing_authority[]"
+                                  value={
+                                    item.ticket_passing_authority
+                                      ? item.ticket_passing_authority
+                                      : 0
+                                  }
+                                />
 
-                              <input
-                                type="checkbox"
-                                id={`ticket_passing_authority_` + idx}
-                                checked={item.ticket_passing_authority == 1}
-                                onChange={(e) =>
-                                  handleCheckInput(
-                                    e,
-                                    idx,
-                                    "TICKET_PASSING_AUTHORITY"
-                                  )
-                                }
-                              />
-                            </td>
-                            <td className="text-center">
-                              <input
-                                type="hidden"
-                                name="is_default[]"
-                                value={item.is_default ? item.is_default : ""}
-                              />
-                              <input
-                                type="checkbox"
-                                id={`is_default_` + idx}
-                                checked={item.is_default == 1}
-                                onChange={(e) =>
-                                  handleCheckInput(e, idx, "IS_DEFAULT")
-                                }
-                              />
-                            </td>
+                                <input
+                                  type="checkbox"
+                                  id={`ticket_passing_authority_` + idx}
+                                  checked={item.ticket_passing_authority == 1}
+                                  onChange={(e) =>
+                                    handleCheckInput(
+                                      e,
+                                      idx,
+                                      "TICKET_PASSING_AUTHORITY"
+                                    )
+                                  }
+                                />
+                              </td>
+                              <td className="text-center">
+                                <input
+                                  type="hidden"
+                                  name="is_default[]"
+                                  value={item.is_default ? item.is_default : ""}
+                                />
+                                <input
+                                  type="checkbox"
+                                  id={`is_default_` + idx}
+                                  checked={item.is_default == 1}
+                                  onChange={(e) =>
+                                    handleCheckInput(e, idx, "IS_DEFAULT")
+                                  }
+                                />
+                              </td>
 
-                            <td>
-                              {idx == 0 && (
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-outline-primary pull-left"
-                                  onClick={handleAddRow}
-                                >
-                                  <i className="icofont-plus-circle"></i>
-                                </button>
-                              )}
-                              {rows.length == idx + 1 && idx != 0 && (
-                                <button
-                                  type="button"
-                                  className="btn btn-outline-danger btn-sm"
-                                  onClick={handleRemoveSpecificRow(idx)}
-                                >
-                                  <i className="icofont-ui-delete"></i>
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
+                              <td>
+                                {idx == 0 && (
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary pull-left"
+                                    onClick={handleAddRow}
+                                  >
+                                    <i className="icofont-plus-circle"></i>
+                                  </button>
+                                )}
+                                {rows.length == idx + 1 && idx != 0 && (
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-danger btn-sm"
+                                    onClick={handleRemoveSpecificRow(idx)}
+                                  >
+                                    <i className="icofont-ui-delete"></i>
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
                       </tbody>
                     </table>
                   </div>

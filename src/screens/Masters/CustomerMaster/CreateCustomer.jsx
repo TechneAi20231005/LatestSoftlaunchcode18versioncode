@@ -294,12 +294,15 @@ export default function CreateCustomer({ match }) {
     }
   };
 
+  useEffect(()=>{
+    loadData();
+
+  },[])
   useEffect(() => {
     if(checkRole && checkRole[3].can_create === 0){
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     }
-    loadData();
   }, [checkRole]);
 
   return (
