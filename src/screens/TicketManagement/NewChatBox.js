@@ -11,7 +11,6 @@ const Chatbox = props => {
   const [users, setUsers] = useState([])
   const [mentionId, setMentionId] = useState("")
   const handleMentionAdd = e => {
-    console.log('e mention Id', e)
     setMentionId([...mentionId, e])
   }
   const handleComment = async e => {
