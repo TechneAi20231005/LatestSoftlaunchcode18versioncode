@@ -24,12 +24,15 @@ import Button from "react-bootstrap/Button";
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
+import { handleModalClose, handleModalOpen } from "./QueryTypeComponetSlice";
+
 import { queryTypeSlice } from "./QueryTypeComponetSlice";
 import {
   QueryGroupForm,
   QueryGroupFormUpdate,
   postqueryTypeForm,
   queryTypeData,
+  updateQueryTypeData,
 } from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
 import {
@@ -48,21 +51,34 @@ function QueryTypeComponent() {
   const queryTypedata = useSelector(
     (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryType
   );
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+  const notify = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.notify
+  );
+  const modal = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.modal
+  );
 
-  const dynamicFormDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData);
-  const customerDropdown = useSelector((DashboardSlice) => DashboardSlice.dashboard.getCustomerData);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
+  );
 
-  const [notify, setNotify] = useState(null);
+  const dynamicFormDropdown = useSelector(
+    (DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData
+  );
+  const customerDropdown = useSelector(
+    (DashboardSlice) => DashboardSlice.dashboard.getCustomerData
+  );
+
+  // const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
 
   const [isActive, setIsActive] = useState(1);
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [exportData, setExportData] = useState(null);
@@ -103,7 +119,6 @@ function QueryTypeComponent() {
   // ***************************** End Edit & View Popup*************************************
 
   // *********************************Add Query Group ***********************
-
 
   const [modalQueryGroup, setModalQueryGroup] = useState({
     showModalQueryGroup: false,
@@ -174,7 +189,7 @@ function QueryTypeComponent() {
   const [queryGroups, setQueryGroups] = useState();
 
   const handleModal = (data) => {
-    setModal(data);
+    // setModal(data);
     //    const tempo = data && data.modalData.query_group
     // setQueryGroups(tempo)
   };
@@ -193,11 +208,13 @@ function QueryTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Query Type",
-              });
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Query Type",
+                })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -558,7 +575,7 @@ function QueryTypeComponent() {
   const handleFormQueryGroup = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    setNotify(null);
+    // setNotify(null);
     setNotifyy(null);
     if (!id) {
       dispatch(QueryGroupForm(form));
@@ -759,10 +776,10 @@ function QueryTypeComponent() {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
-    setNotify(null);
+    // setNotify(null);
     var selectFormId = form.getAll("form_id");
     var selectCustomerId = form.getAll("customer_id");
     var selectQueryGroup = form.getAll("query_group_data[]");
@@ -786,6 +803,7 @@ function QueryTypeComponent() {
           form.delete("is_active");
           form.append("is_active", 1);
           dispatch(postqueryTypeForm(form));
+          loadData()
           // const res = await new QueryTypeService().postQueryType(form);
           // if (res.status === 200) {
           //   setShowLoaderModal(false);
@@ -808,33 +826,34 @@ function QueryTypeComponent() {
           //   );
           // }
         } else {
-          form.delete("is_active");
-          form.append("is_active", isActive);
-          const res = await new QueryTypeService().updateQueryType(id, form);
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            if (res.data.status === 1) {
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              setNotify({ type: "success", message: res.data.message });
-              loadData();
-              setIsActive(1);
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Edit_QueryType",
-              "INSERT",
-              res.message
-            );
-          }
+          dispatch(updateQueryTypeData({id:id,payload:form}))
+          // form.delete("is_active");
+          // form.append("is_active", isActive);
+          // const res = await new QueryTypeService().updateQueryType(id, form);
+          // if (res.status === 200) {
+          //   setShowLoaderModal(false);
+          //   if (res.data.status === 1) {
+          //     setModal({ showModal: false, modalData: "", modalHeader: "" });
+          //     setNotify({ type: "success", message: res.data.message });
+          //     loadData();
+          //     setIsActive(1);
+          //   } else {
+          //     setNotify({ type: "danger", message: res.data.message });
+          //   }
+          // } else {
+          //   setNotify({ type: "danger", message: res.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     "QueryType",
+          //     "Edit_QueryType",
+          //     "INSERT",
+          //     res.message
+          //   );
+          // }
         }
       } catch (error) {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Remark Error !!!" });
+        // setNotify({ type: "danger", message: "Remark Error !!!" });
         new ErrorLogService().sendErrorLog(
           "QueryType",
           "Create_QueryType",
@@ -882,7 +901,7 @@ function QueryTypeComponent() {
   useEffect(() => {
     loadData();
     loadDataEditPopup();
-    setNotify(null);
+    // setNotify(null);
   }, []);
 
   useEffect(() => {
@@ -908,11 +927,13 @@ function QueryTypeComponent() {
                   <button
                     className="btn btn-dark btn-set-task w-sm-100"
                     onClick={() => {
-                      handleModal({
-                        showModal: true,
-                        modalData: null,
-                        modalHeader: "Add Query Type",
-                      });
+                      dispatch(
+                        handleModalOpen({
+                          showModal: true,
+                          modalData: null,
+                          modalHeader: "Add Query Type",
+                        })
+                      );
                     }}
                   >
                     <i className="icofont-plus-circle me-2 fs-6"></i>Add Query
@@ -999,19 +1020,30 @@ function QueryTypeComponent() {
         <Modal
           centered
           show={modal.showModal}
-          onHide={(e) => {
-            handleModal({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            });
-          }}
+          // onHide={(e) => {
+          //   handleModal({
+          //     showModal: false,
+          //     modalData: "",
+          //     modalHeader: "",
+          //   });
+          // }}
         >
           <form
             method="post"
             onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
           >
-            <Modal.Header closeButton>
+            <Modal.Header
+              onClick={() => {
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
+              }}
+              closeButton
+            >
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -1269,11 +1301,13 @@ function QueryTypeComponent() {
                 type="button"
                 className="btn btn-danger text-white"
                 onClick={() => {
-                  handleModal({
-                    showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  });
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: "",
+                      modalHeader: "",
+                    })
+                  );
                 }}
               >
                 Cancel
@@ -1573,9 +1607,9 @@ function QueryTypeComponent() {
 
 function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new QueryTypeService().getQueryType().then((res) => {
+    new QueryTypeService().getQueryType().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

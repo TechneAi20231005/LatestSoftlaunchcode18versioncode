@@ -58,6 +58,21 @@ export const queryTypeData = createAsyncThunk(
       }
     }
   );
+  // ________________updateQueryType______________________
+
+  export const updateQueryTypeData = createAsyncThunk(
+    "updateQueryTypeData",
+    async (config, thunkapi) => {
+      try {
+        const service = new QueryTypeService();
+        const response = await service.updateQueryType(config.id,config.payload);
+        console.log("resss", response);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
   //_______________postqueryType_______________
 
 

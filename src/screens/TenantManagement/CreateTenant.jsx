@@ -15,20 +15,30 @@ import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
-import { getCountryDataSort } from "../Dashboard/DashboardAction";
+import {
+  getCityData,
+  getCountryDataSort,
+  getRoles,
+  getStateDataSort,
+} from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
-
+import { posttenantData } from "./TenantConponentAction";
 
 export default function CreateTenant({ match }) {
-  const history = useNavigate();
-  const dispatch =useDispatch()
-  const dddd=useSelector(DashbordSlice=>DashbordSlice)
-  console.log("dddd",dddd);
+  
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
+  const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
+
+
 
   const [notify, setNotify] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const isMasterAdmin = localStorage.getItem("role_name");
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
@@ -69,6 +79,7 @@ export default function CreateTenant({ match }) {
       );
     }
   };
+
   const loadData = async () => {
     // await new CountryService().getCountry().then((res) => {
     //   if (res.status === 200) {
@@ -80,58 +91,69 @@ export default function CreateTenant({ match }) {
     //     }
     //   }
     // });
-    dispatch(getCountryDataSort())
+    dispatch(getCountryDataSort());
+    dispatch(getRoles());
+    dispatch(getStateDataSort());
+    dispatch(getCityData());
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data);
-          setStateDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.state }))
-          );
-        }
-      }
-    });
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data);
-          setCityDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.city }))
-          );
-        }
-      }
-    });
+    // await new StateService().getState().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data);
+    //       setStateDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.state }))
+    //       );
+    //     }
+    //   }
+    // });
+    //   await new CityService().getCity().then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setCity(res.data.data);
+    //         setCityDropdown(
+    //           res.data.data.map((d) => ({ value: d.id, label: d.city }))
+    //         );
+    //       }
+    //     }
+    //   });
+    // };
   };
-
   const handleForm = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
-    setNotify(null);
-    await new TenantService().postTenant(formData).then((res) => {
-      if (res.status === 200) {
-        console.log("tenant");
-        if (res.data.status == 1) {
-          console.log("tenant1");
-          history(
-            {
-              pathname: `/${_base}/TenantMaster`,
-            },
-            { state: { alert: { type: "success", message: res.data.message } } }
-          );
-        } else {
-          console.log("tenant2", res);
-          setNotify({ type: "danger", message: res?.data?.message });
-        }
+    // setNotify(null);
+    // await new TenantService().postTenant(formData).then((res) => {
+    //   if (res.status === 200) {
+    //     console.log("tenant");
+    //     if (res.data.status == 1) {
+    //       console.log("tenant1");
+    //       history(
+    //         {
+    //           pathname: `/${_base}/TenantMaster`,
+    //         },
+    //         { state: { alert: { type: "success", message: res.data.message } } }
+    //       );
+    //     } else {
+    //       console.log("tenant2", res);
+    //       setNotify({ type: "danger", message: res?.data?.message });
+    //     }
+    //   }
+    // });
+
+    dispatch(posttenantData(formData)).then((res) => {
+      console.log("object", res);
+      if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+        navigate(`/${_base}/TenantMaster`);
       }
     });
   };
@@ -144,7 +166,7 @@ export default function CreateTenant({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[32].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

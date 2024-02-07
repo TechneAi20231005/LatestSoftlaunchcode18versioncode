@@ -48,15 +48,7 @@ export default function CreateModuleComponent({ match }) {
 
   const handleChangevalue = (e) => {
     dispatch(filterModuleAccordingToProject(e))
-  
-
-    // setModulesDropdown(
-    //   modules &&
-    //     modules
-    //       .filter((d) => d.project_id == e.value)
-    //       .map((d) => ({ value: d.id, label: d.module_name }))
-    // );
-  };
+   };
 
   const handleForm = async (e) => {
     e.preventDefault();

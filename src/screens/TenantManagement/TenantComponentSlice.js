@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getAllTenant } from "./TenantConponentAction";
+import { getAllTenant, posttenantData } from "./TenantConponentAction";
 
 const initialState = {
   status: "",
@@ -36,6 +36,7 @@ export const tenantmasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getAllTenant.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
@@ -70,29 +71,30 @@ export const tenantmasterSlice = createSlice({
       state.status = "rejected";
     });
 
-    //__________________________PostRole________________________________
-    // builder.addCase(postRole.pending, (state) => {
-    //   state.status = "loading";
-    // });
-    // builder.addCase(postRole.fulfilled, (state, action) => {
-    //   const { payload } = action;
-    //   console.log("payload Role", payload);
-    //   if (payload?.status === 200 && payload?.data?.status === 1) {
-    //     state.notify = { type: "success", message: payload.data.message };
-    //     state.modal = { showModal: false, modalData: null, modalHeader: "" };
+    //__________________________PostTenant________________________________
+    builder.addCase(posttenantData.pending, (state) => {
+      state.status = "loading";     
+      state.notify = null
+    });
+    builder.addCase(posttenantData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
-    //     let postRole = payload.data.data;
-    //     console.log(postRole);
-    //     state.status = "succeded";
-    //     state.showLoaderModal = false;
-    //     state.postRole = postRole;
-    //   } else {
-    //     state.notify = { type: "danger", message: payload.data.message };
-    //   }
-    // });
-    // builder.addCase(postRole.rejected, (state) => {
-    //   state.status = "rejected";
-    // });
+        let posttenantData = payload.data.data;
+        console.log("posttenantData",posttenantData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.posttenantData = posttenantData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(posttenantData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
     //___________________________________________UpdateRole_________________________________
 

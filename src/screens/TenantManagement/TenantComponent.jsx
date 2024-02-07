@@ -11,22 +11,21 @@ import { Spinner } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTenant } from "./TenantConponentAction";
-import TenantComponentSlice, { tenantmasterSlice } from "./TenantComponentSlice";
+import TenantComponentSlice, {
+  tenantmasterSlice,
+} from "./TenantComponentSlice";
 import { getRoles } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
 
-
 function TenantComponent() {
   const location = useLocation();
-  const dispatch =useDispatch()
-  const getAllTenantData=useSelector(TenantComponentSlice=>TenantComponentSlice.tenantMaster.getAllTenant)
-  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
-
-  
-
-
-
-
+  const dispatch = useDispatch();
+  const getAllTenantData = useSelector(
+    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.getAllTenant
+  );
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33)
+  );
 
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
@@ -62,7 +61,7 @@ function TenantComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -101,20 +100,17 @@ function TenantComponent() {
     },
     {
       name: "Updated At",
-      selector: (row) => (row.updated_at),
+      selector: (row) => row.updated_at,
       sortable: true,
     },
     {
       name: "Updated By",
-      selector: (row) => (row.updated_by),
+      selector: (row) => row.updated_by,
       sortable: true,
     },
   ];
 
   const loadData = async () => {
-    dispatch(getAllTenant())
-
-    
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
     // const data = [];
@@ -124,7 +120,6 @@ function TenantComponent() {
     //     const tempData = [];
     //     if (res.status === 200) {
     //       setShowLoaderModal(false);
-
     //       let counter = 1;
     //       const data = res.data.data;
     //       for (const key in data) {
@@ -139,7 +134,6 @@ function TenantComponent() {
     //           updated_by: data[key].updated_by,
     //         });
     //       }
-
     //       setData(null);
     //       setData(tempData);
     //     }
@@ -154,14 +148,9 @@ function TenantComponent() {
     //       errorObject.data.message
     //     );
     //   });
-   
-
-
-    dispatch(getRoles())
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
-
     //     if (res.data.status == 1) {
     //       const getRoleId = sessionStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
@@ -174,6 +163,15 @@ function TenantComponent() {
     loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+
+    if (!getAllTenantData.length) {
+      dispatch(getAllTenant());
+      dispatch(getRoles());
     }
   }, []);
 

@@ -259,9 +259,9 @@ function SubModuleComponent() {
 
 function SubModuleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new SubModuleService().getSubModule().then((res) => {
+     new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

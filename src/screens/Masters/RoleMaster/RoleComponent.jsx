@@ -650,9 +650,9 @@ function RoleComponent({ location }) {
 
 function RoleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new RoleService().getRole().then((res) => {
+     new RoleService().getRole().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;

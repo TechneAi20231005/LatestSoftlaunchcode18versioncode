@@ -13,9 +13,18 @@ import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import Alert from "../../components/Common/Alert";
+import {  useDispatch, useSelector } from "react-redux"
+import { getCityData, getCountryDataSort, getStateDataSort } from "../Dashboard/DashboardAction";
+import { getRoles } from "../Dashboard/DashboardAction";
+import { updatetenantData } from "./TenantConponentAction";
 
 export default function EditTenant({ match }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
+  const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [toggleRadio, setToggleRadio] = useState(false);
@@ -45,7 +54,7 @@ export default function EditTenant({ match }) {
   const [cityDropdown, setCityDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
@@ -64,37 +73,42 @@ export default function EditTenant({ match }) {
     }
   };
   const loadData = async () => {
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data);
-          setCountryDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
 
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data);
-          setStateDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.state }))
-          );
-        }
-      }
-    });
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data);
-          setCityDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.city }))
-          );
-        }
-      }
-    });
+    dispatch(getCountryDataSort());
+    dispatch(getRoles());
+    dispatch(getStateDataSort());
+    dispatch(getCityData());
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data);
+    //       setCountryDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
+
+    // await new StateService().getState().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data);
+    //       setStateDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.state }))
+    //       );
+    //     }
+    //   }
+    // });
+    // await new CityService().getCity().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCity(res.data.data);
+    //       setCityDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.city }))
+    //       );
+    //     }
+    //   }
+    // });
 
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
@@ -109,14 +123,14 @@ export default function EditTenant({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleForm = async (e) => {
@@ -124,21 +138,28 @@ export default function EditTenant({ match }) {
     const formData = new FormData(e.target);
     formData.append("is_active", toggleRadio ? 1 : 0);
     setNotify(null);
-    await new TenantService().updateTenant(tenanatId, formData).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          history(
-            {
-              pathname: `/${_base}/TenantMaster`,
-            },
-            { state: { alert: { type: "success", message: res.data.message } } }
-          );
-        } else {
+    dispatch(updatetenantData({id:tenanatId,payload:formData})).then((res)=>{
+   if(res.payload.data.status===1 &&res.payload.status===200){
+    navigate(`/${_base}/TenantMaster`)
+    
+   }
+    })
 
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      }
-    });
+    // await new TenantService().updateTenant(tenanatId, formData).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       history(
+    //         {
+    //           pathname: `/${_base}/TenantMaster`,
+    //         },
+    //         { state: { alert: { type: "success", message: res.data.message } } }
+    //       );
+    //     } else {
+
+    //       setNotify({ type: "danger", message: res.data.message });
+    //     }
+    //   }
+    // });
   };
   const handleRadios = (e) => {
     if (e === "active") {
@@ -153,7 +174,7 @@ export default function EditTenant({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[32].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -391,7 +412,7 @@ export default function EditTenant({ match }) {
             {/* CARD BODY*/}
 
             <div className="mt-3" style={{ textAlign: "right" }}>
-              {checkRole && checkRole[32].can_update === 1 ? (
+              {checkRole && checkRole[0]?.can_update === 1 ? (
                 <button type="submit" className="btn btn-primary">
                   Update
                 </button>

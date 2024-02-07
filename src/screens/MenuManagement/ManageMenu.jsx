@@ -33,6 +33,7 @@ const ManageMenu = ({match}) => {
         //1. CAll ROLE API
         await new RoleService().getRole().then(res => {
             if (res.status === 200) {
+                console.log(res);
                 setRoleDropdown(res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.role })))
             }
         }).catch(error => {
@@ -122,28 +123,15 @@ const ManageMenu = ({match}) => {
         // })
     }
 
-    // handle input change
-    const handleInputChange = (e, index) => {
-        // const { name, value } = e.target;
-        // const list = [...inputList];
-        // list[index][name] = value;
-        // setInputList(list);
-    };
-
+ 
     const handleForm = async (e) => {
         e.preventDefault();
-        // const form=new FormData(e.target);
-
-        // var formObj = {};
-        // for (var pair of form.entries()) {
-        // formObj[pair[0]] = pair[1]
-        // }
+    
         await new ManageMenuService().postData(menus).then(res => {
             setNotify(null);
             if (res.status === 200) {
                 if (res.data.status == 1) {
-                    // setMenus(prev => ({ ...prev, 'role_id': roleId }));
-                    // setNotify({ type: 'success', message: res.data.message });
+               
                     document.getElementById("MenuMangementForm").reset();
                     loadData();
                     history({
