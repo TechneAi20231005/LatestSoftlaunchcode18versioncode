@@ -656,7 +656,7 @@ import DataTableExtensions from "react-data-table-component-extensions";
 import { Spinner } from "react-bootstrap";
 import {useDispatch,useSelector} from "react-redux"
 import { dashboardSlice } from "../../Dashboard/DashbordSlice";
-import { getCountryData, postCountryData, updateCountryData } from "../../Dashboard/DashboardAction";
+import { getCountryData, getRoles, postCountryData, updateCountryData } from "../../Dashboard/DashboardAction";
 import { handleModalInStore,handleModalClose,loaderModal } from "../../Dashboard/DashbordSlice";
 
 function CountryComponent() {
@@ -673,7 +673,7 @@ function CountryComponent() {
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   // const handleModal = (data) => {
   //   setModal(data);
@@ -685,6 +685,7 @@ const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify)
 const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
 const showLoadermodal = useSelector((dashboardSlice) => dashboardSlice.dashboard.showLoaderModal);
 const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCountryData)
+const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5));
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -807,7 +808,7 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
 
   const loadData = async () => {
     // setShowLoaderModal(null);
-    dispatch(getCountryData())
+    // dispatch(getCountryData())
     // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
@@ -864,14 +865,14 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
     //     );
     //   });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+  //   await new ManageMenuService().getRole(roleId).then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status == 1) {
+  //         const getRoleId = sessionStorage.getItem("role_id");
+  //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+  //       }
+  //     }
+  //   });
   };
 
   const handleForm = (id) => async (e) => {
@@ -880,6 +881,8 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
     setNotify(null);
     if (!id) {
       dispatch(postCountryData(form))
+    dispatch(getCountryData())
+
       // await new CountryService()
       //   .postCountry(form)
       //   .then((res) => {
@@ -964,7 +967,7 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
   };
 
   useEffect(() => {
-    if (checkRole && checkRole[4].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
     
@@ -974,7 +977,11 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
   useEffect(()=>{
     loadData()
 
-  },[])
+if(!countryData.length){
+  dispatch(getCountryData())
+dispatch(getRoles())
+
+  }},[])
 
   return (
     <div className="container-xxl">
@@ -984,7 +991,7 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[4].can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -1219,7 +1226,7 @@ const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.export
             )}
            
 
-            {modal.modalData && checkRole && checkRole[4].can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
                
               <button
                 type="submit"

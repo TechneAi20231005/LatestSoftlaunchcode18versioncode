@@ -848,6 +848,7 @@ import {loaderModal} from "../../Dashboard/DashbordSlice"
 import { Spinner } from "react-bootstrap";
 import { dashboardSlice } from "../../Dashboard/DashbordSlice";
 import { getCityData, getCountryData, getCountryDataSort, getStateData, getStateDataSort, postCityData, updateCityData } from "../../Dashboard/DashboardAction";
+import { getRoles } from "../../Dashboard/DashboardAction"
 function CityComponent() {
   const [data, setData] = useState(null);
 
@@ -872,6 +873,9 @@ function CityComponent() {
   //   modalHeader: "",
   // });
 
+
+
+
   const [dependent, setDependent] = useState({
     country_id: null,
     state_id: null,
@@ -888,12 +892,13 @@ function CityComponent() {
   const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
   const StateData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredStateData)
-  const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
+  const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard?.filteredCountryData)
   const States = useSelector((dashboardSlice)=>dashboardSlice.dashboard)
 
   const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCityData)
 
-
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7));
+console.log("ci",checkRole)
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -918,7 +923,7 @@ function CityComponent() {
   };
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   // const handleModal = (data) => {
   //   if (data.modalData !== "" && data.modalData !== null) {
@@ -1037,15 +1042,10 @@ function CityComponent() {
     },
   ];
   const loadData = async () => {
-    dispatch(getCityData());
    
-    dispatch(getStateData())
-    dispatch(getCountryData())
-    dispatch(getStateDataSort())
-    dispatch(getCountryDataSort())
-    setShowLoaderModal(null);
+    // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    dispatch(loaderModal(true))
+    // dispatch(loaderModal(true))
     // Load data and update state.
     const data = [];
     const exportTempData = [];
@@ -1066,15 +1066,15 @@ function CityComponent() {
     //   }
     // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     // await new StateService().getStateSort().then((res) => {
     //   if (res.status === 200) {
@@ -1183,7 +1183,14 @@ function CityComponent() {
     if (flag === 1) {
       if (!id) {
         dispatch(postCityData(form));
-        loadData()
+      dispatch(getCityData());
+      // dispatch(getCountryDataSort())
+      // dispatch(getStateDataSort())
+      // dispatch(getStateData())
+
+      // dispatch(getCountryDataSort())
+
+        // loadData()
 
         // await new CityService()
         //   .postCity(form)
@@ -1222,7 +1229,15 @@ function CityComponent() {
 
         dispatch(updateCityData({ id:id,
           payload: form}))
-          loadData()
+      dispatch(getCityData());
+      // dispatch(getCountryDataSort())
+      // dispatch(getStateDataSort())
+      // dispatch(getStateData())
+
+      // dispatch(getCountryDataSort())
+
+
+          // loadData()
         // await new CityService()
         //   .updateCity(id, form)
         //   .then((res) => {
@@ -1264,8 +1279,8 @@ function CityComponent() {
 
   const handleCountryChange = (e) => {
     setStateDropdown(
-     state
-        .filter((d) => d.country_id == e.value)
+      StateData
+        ?.filter((d) => d.country_id == e.value)
         .map((d) => ({ value: d.id, label: d.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
@@ -1279,8 +1294,20 @@ function CityComponent() {
     }
   };
 
+
+  
   useEffect(() => {
-    loadData();
+    // loadData();
+
+    if(!cityData.length){
+      dispatch(getCityData());
+       dispatch(getRoles())
+       dispatch(getCountryData())
+      dispatch(getStateDataSort())
+      dispatch(getCountryDataSort())
+     
+    }
+    
   }, []);
 
   useEffect(() => {
@@ -1300,14 +1327,14 @@ function CityComponent() {
   }, [dependent]);
 
   useEffect(() => {
-    if (checkRole && checkRole[6].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
         setStateName(
-          stateDropdown.filter((d) => modal.modalData.state_id == d.value)
+          stateDropdown?.filter((d) => modal.modalData.state_id == d.value)
         );
       }
     }
@@ -1326,7 +1353,7 @@ function CityComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[6].can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -1459,14 +1486,14 @@ function CityComponent() {
                   </label>
                   <Select
                     // options={countryDropdown}
-                    options={CountryData}
+                    options={CountryData&& CountryData}
                     id="country_id"
                     name="country_id"
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? CountryData.filter(
-                            (d) => modal.modalData.country_id == d.value
+                        ? CountryData?.filter(
+                            (d) => modal?.modalData?.country_id == d.value
                           )
                         : ""
                     }
@@ -1474,6 +1501,8 @@ function CityComponent() {
                   />
                 </div>
 
+
+{console.log("c",StateData)}
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
                     Select State :<Astrick color="red" size="13px" />
@@ -1483,7 +1512,7 @@ function CityComponent() {
                     options={StateData}
                     id="state_id"
                     name="state_id"
-                    // onChange={handleCountryChange}
+                    onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
                         ? StateData.filter(
@@ -1605,7 +1634,7 @@ function CityComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[6].can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"

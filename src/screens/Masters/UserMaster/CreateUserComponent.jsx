@@ -344,7 +344,7 @@
 //              { state: {
 //                 type: "success", message: res.data.message ,
 //              }
-//             } 
+//             }
 //                 );
 //               } else {
 //                 setNotify({ type: "danger", message: res.data.message });
@@ -374,7 +374,7 @@
 //               console.error("Error:", error.message);
 //             }
 //           });
-          
+
 //       }
 //     }
 //   };
@@ -1566,7 +1566,6 @@
 
 // export default CreateUserComponent;
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { _base } from "../../../settings/constants";
@@ -1592,41 +1591,70 @@ import CityService from "../../../services/MastersService/CityService";
 
 import InputGroup from "react-bootstrap/InputGroup";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import {useDispatch,useSelector} from "react-redux"
-import { getCityData, getCountryDataSort, postUserData } from "../../Dashboard/DashboardAction";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllRoles,
+  getCityData,
+  getCountryDataSort,
+  getRoles,
+  getStateData,
+  getStateDataSort,
+  postUserData,
+} from "../../Dashboard/DashboardAction";
+import DesignationSlice from "../DesignationMaster/DesignationSlice";
+import { getDesignationData } from "../DesignationMaster/DesignationAction";
+import RoleMasterSlice from "../RoleMaster/RoleMasterSlice";
 
 function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
+  const roleDropdown = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllRoles
+  );
+  const [filteredRoles, setFilteredRoles] = useState([]);
 
   const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+  // const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
   const [cityDropdown, setCityDropdown] = useState(null);
 
   const [accountFor, setAccountFor] = useState("SELF");
 
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
-  const [roleDropdown, setRoleDropdown] = useState(null);
-  const [designationDropdown, setDesignationDropdown] = useState(null);
+  // const [roleDropdown, setRoleDropdown] = useState(null);
+  // const [designationDropdown, setDesignationDropdown] = useState(null);
   const [CustomerDrp, setCustomerDrp] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
+  const dispatch = useDispatch();
 
-const dispatch = useDispatch()
-
-
-const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
-const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
-const cityData = useSelector(
-  (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
-);
-
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
+  const designationDropdown = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
+  const stateDropdown = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.stateData
+  );
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
     {
@@ -1786,7 +1814,7 @@ const cityData = useSelector(
       setContactValid(true);
     }
 
-    if (contactValidation.length < 11) {
+    if (contactValidation.length < 10) {
       setContactNumber(contactValidation);
     }
   };
@@ -1816,6 +1844,10 @@ const cityData = useSelector(
 
   const [passwordError, setPasswordError] = useState(null);
   const [passwordValid, setPasswordValid] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
+
+
 
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
@@ -1914,92 +1946,92 @@ const cityData = useSelector(
       pincodeValid == false
     ) {
       if (flag === 1) {
-
-        dispatch(postUserData(form))
-      //  await new UserService()
-      //     .postUser(form)
-      //     .then((res) => {
-      //       if (res.status === 200) {
-      //         if (res.data.status === 1) {
-      //           history({
-      //             pathname: `/${_base}/User`
-      //           }
-      //           ,
-      //        { state: {
-      //           type: "success", message: res.data.message ,
-      //        }
-      //       } 
-      //           );
-      //         } else {
-      //           setNotify({ type: "danger", message: res.data.message });
-      //         }
-      //       } else {
-      //         setNotify({ type: "danger", message: res.message });
-      //         new ErrorLogService().sendErrorLog(
-      //           "User",
-      //           "Create_User",
-      //           "INSERT",
-      //           res.message
-      //         );
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       if (error.response) {
-      //         const { request, ...errorObject } = error.response;
-      //         new ErrorLogService().sendErrorLog(
-      //           "User",
-      //           "Create_User",
-      //           "INSERT",
-      //           errorObject.data.message
-      //         );
-      //       } else if (error.request) {
-      //         console.error("Error response is undefined:", error.request);
-      //       } else {
-      //         console.error("Error:", error.message);
-      //       }
-      //     });
-          
+        dispatch(postUserData(form));
+        //  await new UserService()
+        //     .postUser(form)
+        //     .then((res) => {
+        //       if (res.status === 200) {
+        //         if (res.data.status === 1) {
+        //           history({
+        //             pathname: `/${_base}/User`
+        //           }
+        //           ,
+        //        { state: {
+        //           type: "success", message: res.data.message ,
+        //        }
+        //       }
+        //           );
+        //         } else {
+        //           setNotify({ type: "danger", message: res.data.message });
+        //         }
+        //       } else {
+        //         setNotify({ type: "danger", message: res.message });
+        //         new ErrorLogService().sendErrorLog(
+        //           "User",
+        //           "Create_User",
+        //           "INSERT",
+        //           res.message
+        //         );
+        //       }
+        //     })
+        //     .catch((error) => {
+        //       if (error.response) {
+        //         const { request, ...errorObject } = error.response;
+        //         new ErrorLogService().sendErrorLog(
+        //           "User",
+        //           "Create_User",
+        //           "INSERT",
+        //           errorObject.data.message
+        //         );
+        //       } else if (error.request) {
+        //         console.error("Error response is undefined:", error.request);
+        //       } else {
+        //         console.error("Error:", error.message);
+        //       }
+        //     });
       }
     }
   };
 
   const loadData = async () => {
     setRows([mappingData]);
-    dispatch(getCountryDataSort())
-    dispatch(getCityData())
+    dispatch(getCountryDataSort());
+    dispatch(getCityData());
 
     //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.country,
-              }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountrySort().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
+    //       setCountryDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.country,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** State load data**************************************
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-              }))
-          );
-        }
-      }
-    });
+    // await new StateService().getStateSort().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data.filter((d) => d.is_active === 1));
+    //       console.log("ss",res.data.data)
+    //       setStateDropdown(
+    //         res.data.data
+
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.state,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** city load data**************************************
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
@@ -2035,48 +2067,48 @@ const cityData = useSelector(
       }
     });
 
-    await new RoleService().getRole().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const filteredAsAccountFor = res.data.data.filter(filterData => {
-            if (accountFor === "SELF") {
-              return filterData.role.toLowerCase() !== 'user'
-            } else if (accountFor === "CUSTOMER") {
-              return filterData.role.toLowerCase() === 'user'
-            }
-          })
+    // await new RoleService().getRole().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const filteredAsAccountFor = res.data.data.filter(filterData => {
+    //         if (accountFor === "SELF") {
+    //           return filterData.role.toLowerCase() !== 'user'
+    //         } else if (accountFor === "CUSTOMER") {
+    //           return filterData.role.toLowerCase() === 'user'
+    //         }
+    //       })
 
-          const response = filteredAsAccountFor
+    //       const response = filteredAsAccountFor
 
-            .filter((d) => d.is_active === 1)
+    //         .filter((d) => d.is_active === 1)
 
-            .map((d) => ({
-              value: d.id,
-              label: d.role,
-            }));
-          const aa = response.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-          setRoleDropdown(aa);
-        }
-      }
-    });
+    //         .map((d) => ({
+    //           value: d.id,
+    //           label: d.role,
+    //         }));
+    //       const aa = response.sort(function (a, b) {
+    //         return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    //       });
+    //       setRoleDropdown(aa);
+    //     }
+    //   }
+    // });
 
-    await new DesignationService().getDesignation().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          // setDesignationDropdown(res.data.data.map(d => ({ value: d.id, label: d.designation })));
-          setDesignationDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.designation,
-              }))
-          );
-        }
-      }
-    });
+    // await new DesignationService().getDesignation().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       // setDesignationDropdown(res.data.data.map(d => ({ value: d.id, label: d.designation })));
+    //       setDesignationDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.designation,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
     await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
@@ -2093,41 +2125,47 @@ const cityData = useSelector(
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
+
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
       // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
-      const newStatus = { ...updateStatus, statedrp: 1 };
-      setUpdateStatus(newStatus);
-      setStateName(null);
-      setCityName(null);
-    }
-    if (type == "STATE") {
-      // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
-      const newStatus = { ...updateStatus, citydrp: 1 };
-      setUpdateStatus(newStatus);
-      setStateName(e);
-      setCityName(null);
+      // setStateDropdown(
+      //   state
+      //     .filter((d) => d.country_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.state }))
+      // );
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+    //  console.log("city11",AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+     
+      // console.log("state dropdown" , stateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state }))))
+      //   const newStatus = { ...updateStatus, statedrp: 1 };
+      //   setUpdateStatus(newStatus);
+      //   setStateName(null);
+      //   setCityName(null);
+      // }
+      // if (type == "STATE") {
+      //   // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
+      //   setCityDropdown(
+      //     city
+      //       .filter((d) => d.state_id == e.value)
+      //       .map((d) => ({ value: d.id, label: d.city }))
+      //   );
+      //   const newStatus = { ...updateStatus, citydrp: 1 };
+      //   setUpdateStatus(newStatus);
+      //   setStateName(e);
+      // setCityName(null);
     }
   };
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
@@ -2151,36 +2189,54 @@ const cityData = useSelector(
   };
 
   const accountForChange = async (account_for) => {
-    setAccountFor(account_for)
+    setAccountFor(account_for);
     const accountFor = account_for;
-    await new RoleService().getRole().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const filteredAsAccountFor = res.data.data.filter(filterData => {
-            if (accountFor === "SELF") {
-              return filterData.role.toLowerCase() !== 'user'
-            } else if (accountFor === "CUSTOMER") {
-              return filterData.role.toLowerCase() === 'user'
-            }
-          })
-          const response = filteredAsAccountFor
-
-            .filter((d) => d.is_active === 1)
-
-            .map((d) => ({
-              value: d.id,
-              label: d.role,
-            }));
-          const aa = response.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-
-          setRoleDropdown(aa);
-        }
+    const filteredAsAccountFor = roleDropdown.filter((filterData) => {
+      if (accountFor === "SELF") {
+        return filterData.role.toLowerCase() !== "user";
+      } else if (accountFor === "CUSTOMER") {
+        return filterData.role.toLowerCase() === "user";
       }
     });
 
-  }
+    const response = filteredAsAccountFor
+      .filter((d) => d.is_active === 1)
+      .map((d) => ({
+        value: d.id,
+        label: d.role,
+      }));
+    const aa = response.sort(function (a, b) {
+      return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    });
+    setFilteredRoles(aa);
+
+    // await new RoleService().getRole().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const filteredAsAccountFor = res.data.data.filter((filterData) => {
+    //         if (accountFor === "SELF") {
+    //           return filterData.role.toLowerCase() !== "user";
+    //         } else if (accountFor === "CUSTOMER") {
+    //           return filterData.role.toLowerCase() === "user";
+    //         }
+    //       });
+    //       const response = filteredAsAccountFor
+
+    //         .filter((d) => d.is_active === 1)
+
+    //         .map((d) => ({
+    //           value: d.id,
+    //           label: d.role,
+    //         }));
+    //       const aa = response.sort(function (a, b) {
+    //         return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    //       });
+
+    //       // setRoleDropdown(aa);
+    //     }
+    //   }
+    // });
+  };
 
   const handleRemoveSpecificRow = (idx) => () => {
     if (idx > 0) {
@@ -2237,7 +2293,6 @@ const cityData = useSelector(
       }
       temp_state[actualIndex] = temp_element;
       setRows(temp_state);
-
     }
   };
 
@@ -2300,17 +2355,19 @@ const cityData = useSelector(
   }
   useEffect(() => {
     loadData();
-
+    dispatch(getRoles());
+    dispatch(getDesignationData());
+    dispatch(getStateDataSort());
+    dispatch(getAllRoles());
+    dispatch(getStateData());
   }, []);
   useEffect(() => {
-    if (checkRole && checkRole[2].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
-
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
 
   return (
     <div className="container-xxl">
@@ -2515,9 +2572,9 @@ const cityData = useSelector(
                             }
                           }}
                           placeholder="Please enter valid email address"
-                        // onKeyPress={(e) => {
-                        //   handleEmail(e);
-                        // }}
+                          // onKeyPress={(e) => {
+                          //   handleEmail(e);
+                          // }}
                         />
 
                         {inputState && (
@@ -2588,8 +2645,8 @@ const cityData = useSelector(
                           placeholder="Contact Number"
                           // value={contactNumber? contactNumber :""}
                           // key={Math.random()}
-                          max="10"
-                          min="10"
+                          maxLength="10"
+                          minLength="10"
                           onKeyPress={(e) => {
                             Validation.mobileNumbersOnly(e);
                           }}
@@ -2785,7 +2842,8 @@ const cityData = useSelector(
                         <Select
                           id="role_id"
                           name="role_id"
-                          options={roleDropdown}
+                          defaultValue={filteredRoles}
+                          options={filteredRoles}
                           onChange={(e) => {
                             if (e.value === "") {
                               setInputState({
@@ -2868,8 +2926,8 @@ const cityData = useSelector(
                           placeholder="Enter maximum 250 character"
                           rows="4"
                           maxLength={250}
-                        // onKeyPress={(e) => {
-                        //   Validation.addressFieldOnly(e);}}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);}}
                         />
                       </div>
                     </div>
@@ -2927,24 +2985,25 @@ const cityData = useSelector(
                         />
                       </div>
                     </div>
-
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>State :</b>
                       </label>
                       <div className="col-sm-4">
                         <Select
-                          options={
-                            updateStatus.statedrp !== undefined
-                              ? stateDropdown
-                              : []
-                          }
+                          // options={
+                          //   updateStatus.statedrp !== undefined
+                          //     ? stateDropdown
+                          //     : []
+                          // }
+
+                          options={stateDropdownData}
                           name="state_id"
                           id="state_id"
                           onChange={(e) => handleDependentChange(e, "STATE")}
                           defaultValue={stateName ? stateName : ""}
-                        // key={Math.random()}
-                        // value={stateName ? state : ""}
+                          // key={Math.random()}
+                          // value={stateName ? state : ""}
                         />
                       </div>
 
@@ -2962,13 +3021,13 @@ const cityData = useSelector(
                           //     ? cityData
                           //     : []
                           // }
-                          options={cityData}
+                          options={cityDropdownData}
                           name="city_id"
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                        // key={Math.random()}
-                        // value={ cityName? cityName : ""}
+                          // key={Math.random()}
+                          // value={ cityName? cityName : ""}
                         />
                       </div>
                     </div>
@@ -3069,7 +3128,7 @@ const cityData = useSelector(
                               type="hidden"
                               name="is_default[]"
                               value={item.is_default ? item.is_default : ""}
-                            // key={Math.random()}
+                              // key={Math.random()}
                             />
                             <input
                               type="checkbox"
@@ -3196,4 +3255,3 @@ const cityData = useSelector(
 }
 
 export default CreateUserComponent;
-

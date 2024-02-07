@@ -13,6 +13,7 @@ const initialState = {
   exportRoleData:[],
 
   getRoleData: [],
+  roleDropDown:[]
 };
 
 export const rolemasterSlice = createSlice({
@@ -60,6 +61,10 @@ export const rolemasterSlice = createSlice({
           });
         }
         state.exportRoleData=exportRoleData
+
+
+
+        
       }
     });
     builder.addCase(getRoleData.rejected, (state) => {

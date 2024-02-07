@@ -84,6 +84,7 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import DesignationService from "../../services/MastersService/DesignationService";
 import DynamicFormService from "../../services/MastersService/DynamicFormService";
 import CustomerService from "../../services/MastersService/CustomerService";
+import RoleService from "../../services/MastersService/RoleService";
 
 export const getCityData = createAsyncThunk("getCityData",async(config,thunkapi)=>{
     try{
@@ -276,7 +277,6 @@ export const getRoles = createAsyncThunk(
       const roleId = sessionStorage.getItem("role_id");
       const service = new ManageMenuService();
       const response = await service.getRole(roleId);
-      console.log("responserole", response);
 
       return response;
     } catch (error) {
@@ -285,13 +285,29 @@ export const getRoles = createAsyncThunk(
   }
 );
 
+
+export const getAllRoles = createAsyncThunk(
+    "getAllRoles",
+    async (config, thunkapi) => {
+      try {
+        const roleId = sessionStorage.getItem("role_id");
+        const service = new RoleService();
+        const response = await service.getRole(roleId);
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+  
+
 export const getDesignationData = createAsyncThunk(
   "getDesignationData",
   async (config, thunkapi) => {
     try {
       const service = new DesignationService();
       const response = await service.getDesignation();
-      console.log("responserole", response);
 
       return response;
     } catch (error) {
@@ -306,7 +322,6 @@ export const getDynamiucFormData = createAsyncThunk(
     try {
       const service = new DynamicFormService();
       const response = await service.getDynamicForm();
-      console.log("responserole", response);
 
       return response;
     } catch (error) {
@@ -321,7 +336,6 @@ export const getCustomerData = createAsyncThunk(
     try {
       const service = new CustomerService();
       const response = await service.getCustomer();
-      console.log("responserole", response);
 
       return response;
     } catch (error) {

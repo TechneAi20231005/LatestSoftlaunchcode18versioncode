@@ -188,6 +188,7 @@ import {
   getRoles,
   getDynamiucFormData,
   getCustomerData,
+  getAllRoles,
 } from "./DashboardAction";
 
 import { all } from "axios";
@@ -222,7 +223,7 @@ const initialState = {
   getRoles: [],
   exportUserData: [],
 
-  notify: {},
+  notify: null,
   modal: {
     showModal: false,
     modalData: "",
@@ -353,6 +354,8 @@ export const dashboardSlice = createSlice({
     // fetch country data
     builder.addCase(getCountryData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
+
     });
     builder.addCase(getCountryData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -540,11 +543,12 @@ export const dashboardSlice = createSlice({
 
     builder.addCase(postStateData.pending, (state) => {
       state.status = "loading";
+      state.notify=null
     });
 
     builder.addCase(postStateData.fulfilled, (state, action) => {
       const { payload } = action;
-      if (payload?.status === 200 && payload?.data?.status === 1) {
+      if (payload?.data?.status === 1) {
         let postState = payload.data.data;
         state.status = "succeded";
         state.postState = postState;
@@ -553,9 +557,9 @@ export const dashboardSlice = createSlice({
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
       } else {
-        let notify = { type: "danger", message: payload.data.message };
+        // let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
-        state.notify = notify;
+        state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(postStateData.rejected, (state) => {
@@ -757,7 +761,6 @@ export const dashboardSlice = createSlice({
     });
     builder.addCase(getRoles.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log(payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoles = payload.data.data;
         state.status = "succeded";
@@ -773,6 +776,29 @@ export const dashboardSlice = createSlice({
       state.status = "rejected";
     });
 
+
+
+
+    builder.addCase(getAllRoles.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getAllRoles.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getAllRoles = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        // let count = 1;.
+        // for (let i = 0; i < getRoles.length; i++) {
+        //   getRoles[i].counter = count++;
+        // }
+        state.getAllRoles = [...getAllRoles];
+      }
+    });
+    builder.addCase(getAllRoles.rejected, (state) => {
+      state.status = "rejected";
+    });
+
     //__________getDynamicForm________________
 
     builder.addCase(getDynamiucFormData.pending, (state) => {
@@ -780,7 +806,6 @@ export const dashboardSlice = createSlice({
     });
     builder.addCase(getDynamiucFormData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log(payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getDynamiucFormData = payload.data.data
           .filter((d) => d.is_active == 1)
@@ -802,7 +827,6 @@ export const dashboardSlice = createSlice({
     });
     builder.addCase(getCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log(payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getCustomerData = payload.data.data
           .filter((d) => d.is_active == 1)
