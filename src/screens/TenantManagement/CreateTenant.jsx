@@ -14,9 +14,17 @@ import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import { getCountryDataSort } from "../Dashboard/DashboardAction";
+import DashbordSlice from "../Dashboard/DashbordSlice";
+
 
 export default function CreateTenant({ match }) {
   const history = useNavigate();
+  const dispatch =useDispatch()
+  const dddd=useSelector(DashbordSlice=>DashbordSlice)
+  console.log("dddd",dddd);
+
   const [notify, setNotify] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
@@ -62,16 +70,17 @@ export default function CreateTenant({ match }) {
     }
   };
   const loadData = async () => {
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data);
-          setCountryDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data);
+    //       setCountryDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
+    dispatch(getCountryDataSort())
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {

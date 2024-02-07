@@ -9,6 +9,7 @@ const initialState = {
   status: "",
   err: "",
   testingData: [],
+  notify:'',
   exportTestingData: [],
   modal: {
     showModal: false,
@@ -35,6 +36,7 @@ export const testingtypeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(testingData.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
 
     builder.addCase(testingData.fulfilled, (state, action) => {
@@ -74,6 +76,7 @@ export const testingtypeSlice = createSlice({
 
     builder.addCase(postTesting.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
     builder.addCase(postTesting.fulfilled, (state, action) => {
       const { payload } = action;
@@ -99,6 +102,7 @@ export const testingtypeSlice = createSlice({
 
     builder.addCase(updateTesting.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
     builder.addCase(updateTesting.fulfilled, (state, action) => {
       const { payload } = action;

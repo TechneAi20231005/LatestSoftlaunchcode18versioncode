@@ -27,12 +27,19 @@ function RoleComponent({ location }) {
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
   );
 
-  const Notify = useSelector( (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify);
-  const modal = useSelector((RoleMasterSlice) => RoleMasterSlice.rolemaster.modal);
-  const exportData = useSelector((RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData);
+  const Notify = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify
+  );
+  const modal = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.modal
+  );
+  const exportData = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
+  );
 
   console.log("moadal", exportData);
 
@@ -81,7 +88,7 @@ function RoleComponent({ location }) {
   const columns = [
     {
       name: "Action",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       width: "15%",
       cell: (row) => (
@@ -131,7 +138,7 @@ function RoleComponent({ location }) {
       name: "Role",
       id: "role_id",
       sortable: true,
-      selector: (row) => { },
+      selector: (row) => {},
       cell: (row) => (
         <div>
           <OverlayTrigger overlay={<Tooltip>{row.role} </Tooltip>}>
@@ -195,9 +202,6 @@ function RoleComponent({ location }) {
   ];
 
   const loadData = async () => {
-    dispatch(getRoleData());
-    dispatch(getRoles());
-
     //   const data = [];
     //   const exportTempData = [];
     //   await new RoleService().getRole().then(res => {
@@ -232,7 +236,6 @@ function RoleComponent({ location }) {
     //                   updated_by: data[i].updated_by,
     //               })
     //           }
-
     //     setExportData(null);
     //     setExportData(exportTempData);
     //   }
@@ -247,7 +250,6 @@ function RoleComponent({ location }) {
     //     errorObject.data.message
     //   );
     // });
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -265,7 +267,7 @@ function RoleComponent({ location }) {
 
     if (!id) {
       dispatch(postRole(form));
-      loadData();
+      dispatch(getRoleData());
       // await new RoleService().postRole(form).then((res) => {
       //   console.log("res",res);
       //     if (res.status === 200) {
@@ -299,7 +301,7 @@ function RoleComponent({ location }) {
       //   });
     } else {
       dispatch(updatedRole({ id: id, payload: form }));
-      loadData();
+      dispatch(getRoleData());
       // await new RoleService().updateRole(id, form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -373,6 +375,15 @@ function RoleComponent({ location }) {
       localStorage.setItem("alert", location.state.alert);
     }
   }, [location]);
+
+  useEffect(() => {
+    loadData();
+
+    if (!RoleMasterData.length) {
+      dispatch(getRoleData());
+      dispatch(getRoles());
+    }
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -609,7 +620,6 @@ function RoleComponent({ location }) {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: "#484C7F" }}
-               
               >
                 Update
               </button>

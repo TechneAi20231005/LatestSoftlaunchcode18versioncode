@@ -31,12 +31,14 @@ function DepartmentComponent() {
   const modal = useSelector(
     (DashboardSlice) => DashboardSlice.department.modal
   );
-  const Notify = useSelector( (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify);
-  const exportData=useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.exportDepartmentData
-    )
-  console.log("exportData",exportData);
-;
-
+  const Notify = useSelector(
+    (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify
+  );
+  const exportData = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.exportDepartmentData
+  );
+  console.log("exportData", exportData);
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
@@ -94,11 +96,12 @@ function DepartmentComponent() {
             data-bs-target="#edit"
             onClick={(e) => {
               dispatch(
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Department",
-              }));
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Department",
+                })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -164,8 +167,6 @@ function DepartmentComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(departmentData());
-    dispatch(getRoles());
     // const data = [];
     // const exportTempData = [];
     // await new DepartmentService().getDepartment().then(res => {
@@ -224,7 +225,7 @@ function DepartmentComponent() {
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postdepartment(form));
-      loadData();
+      dispatch(departmentData());
       // await new DepartmentService()
       //   .postDepartment(form)
       //   .then((res) => {
@@ -259,7 +260,7 @@ function DepartmentComponent() {
       //   });
     } else {
       dispatch(updateDepartment({ id: id, payload: form }));
-      loadData();
+      dispatch(departmentData());
       // await new DepartmentService()
       //   .updateDepartment(id, form)
       //   .then((res) => {
@@ -318,6 +319,11 @@ function DepartmentComponent() {
 
   useEffect(() => {
     loadData();
+
+    if (!department.length) {
+      dispatch(departmentData());
+      dispatch(getRoles());
+    }
   }, []);
 
   return (
@@ -334,13 +340,12 @@ function DepartmentComponent() {
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
                     dispatch(
-
-                   
-                    handleModalOpen({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Department",
-                    }) );
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Department",
+                      })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add
