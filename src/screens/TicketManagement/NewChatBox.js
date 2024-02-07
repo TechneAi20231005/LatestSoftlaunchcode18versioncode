@@ -9,22 +9,28 @@ const Chatbox = props => {
   const { ticketId, loadComment, commentData } = props
   const [message, setMessage] = useState('')
   const [users, setUsers] = useState([])
-  const [mentionId, setMentionId] = useState([])
+  const [mentionId, setMentionId] = useState("")
   const handleMentionAdd = e => {
+    console.log('e mention Id', e)
     setMentionId([...mentionId, e])
   }
   const handleComment = async e => {
     e.preventDefault()
     setMessage('')
+    const newMessage = message.replace(/\[|\]/g, '');
     await new MyTicketService()
       .postComment({
         ticket_id: ticketId,
-        comment: message,
+        comment: newMessage,
         mentions_id: mentionId
       })
       .then(res => {
         loadComment()
       })
+  }
+
+  const typedMessage = (e) => {
+    setMessage(e)
   }
 
   useEffect(() => {
@@ -62,7 +68,7 @@ const Chatbox = props => {
                   className='mentions'
                   classNames={classNames}
                   value={message}
-                  onChange={e => setMessage(e.target.value)}
+                  onChange={e => typedMessage(e.target.value)}
                 >
                   <Mention
                     trigger='@'
@@ -86,16 +92,16 @@ const Chatbox = props => {
               {commentData?.comments?.map((comment, index) => (
                 <ListGroup.Item key={index}>
                   <div>
-                 <p className='fw-bold'> {highlightMentions(comment.cmt)}</p>
+                    <p className='fw-bold'> {highlightMentions(comment.cmt)}</p>
                   </div>
-            
+
                   <div className='d-flex justify-content-between mt-4'>
-                     <p>
+                    <p>
                       {comment.user_id}
-                      </p>
-                      <p>
-                     {comment.time}
-                      </p>
+                    </p>
+                    <p>
+                      {comment.time}
+                    </p>
                   </div>
                 </ListGroup.Item>
               ))}
@@ -127,7 +133,7 @@ const highlightMentions = comment => {
     parts.push(
       <span
         key={match.index}
-        style={{  color: '#15198f' }}
+        style={{ color: '#15198f' }}
       >{`@${userName}`}</span>
     )
 
