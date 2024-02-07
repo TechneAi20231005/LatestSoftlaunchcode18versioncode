@@ -2239,10 +2239,10 @@ export default function MyTicketComponent() {
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setAssignedToMe({
-            ...assignedToMeData,
-            current_page: res.data.data.current_page,
-          });
+          // setAssignedToMe({
+          //   ...assignedToMeData,
+          //   current_page: res.data.data.current_page,
+          // });
         }
       }
     });
@@ -2265,6 +2265,7 @@ export default function MyTicketComponent() {
         typeOf: "CreatedByMe",
         page: createdByMeData.current_page - 1,
       };
+      console.log("createdByMeData",createdByMeData.current_page)
     } else if (type == "PLUS") {
       form = {
         // limit: limit,
@@ -2278,10 +2279,10 @@ export default function MyTicketComponent() {
           setCreatedByMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setCreatedByMe({
-            ...createdByMeData,
-            current_page: res.data.data.current_page,
-          });
+          // setCreatedByMe({
+          //   ...createdByMeData,
+          //   current_page: res.data.data.current_page,
+          // });
         }
       }
     });
@@ -2318,10 +2319,10 @@ export default function MyTicketComponent() {
           setDepartmentwiseTicket(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setDepartmentwiseTicket({
-            ...departmentWiseData,
-            current_page: res.data.data.current_page,
-          });
+          // setDepartmentwiseTicket({
+          //   ...departmentWiseData,
+          //   current_page: res.data.data.current_page,
+          // });
         }
       }
     });
@@ -2358,10 +2359,10 @@ export default function MyTicketComponent() {
           setYourTask(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setYourTask({
-            ...yourTaskData,
-            current_page: res.data.data.current_page,
-          });
+          // setYourTask({
+          //   ...yourTaskData,
+          //   current_page: res.data.data.current_page,
+          // });
         }
       }
     });
@@ -2392,6 +2393,7 @@ export default function MyTicketComponent() {
       return;
     }
 
+    console.log(unpassedData.current_page)
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
