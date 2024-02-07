@@ -694,7 +694,6 @@ import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import StateService from "../../../services/MastersService/StateService";
-import CountryService from "../../../services/MastersService/CountryService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Select from "react-select";
 
@@ -735,6 +734,7 @@ function StateComponent() {
   const stateData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.stateData
   );
+  console.log('stateData', stateData)
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
   const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
   const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
@@ -860,8 +860,7 @@ function StateComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(getStateData());
-    dispatch(getCountryDataSort())
+   
     setShowLoaderModal(null);
     // setShowLoaderModal(true);
     const data = [];
@@ -1049,7 +1048,15 @@ function StateComponent() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
+if(!stateData.length ){
+  dispatch(getStateData());
+  dispatch(getCountryDataSort())
+}
+
+  }, [stateData,dispatch]);
+
+
 
   return (
     <div className="container-xxl">

@@ -25,6 +25,9 @@ import { Link } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import { Table } from "react-bootstrap";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import { BulkUploadVendorData, PaymentDropDown, downloadFormatData, getVendorData, postVendor } from "../Slices/VendorMasterAction";
+import VendorMasterSlice from "../Slices/VendorMasterSlice";
 
 function VendorMaster({ match }) {
   const [data, setData] = useState(null);
@@ -37,7 +40,16 @@ function VendorMaster({ match }) {
   const [succes, setSucces] = useState();
   const [error, setError] = useState();
 
-  const [notify, setNotify] = useState();
+
+
+  const dispatch = useDispatch()
+  const notify = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.notify)
+  const VendorData = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.getVendorAllData)
+  const paymentDropdown = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.paymentDropDownData)
+
+
+  
+  // const [notify, setNotify] = useState();
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -98,7 +110,7 @@ function VendorMaster({ match }) {
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
   const [payment, setPayment] = useState();
-  const [paymentDropdown, setPaymentDropdown] = useState();
+  // const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
   const fileInputRef = useRef(null);
   const gstInputRef = useRef(null);
@@ -274,6 +286,7 @@ function VendorMaster({ match }) {
   ];
 
   const loadData = async () => {
+    dispatch(getVendorData())
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
       if (res.status === 200) {
@@ -399,21 +412,21 @@ function VendorMaster({ match }) {
           
       }
     });
+dispatch(PaymentDropDown())
 
+    // await new VendorMasterService().getActivePaymentTemplate().then((res) => {
+    //   if (res.status === 200) {
+    //     setPayment(res.data.data);
+    //     setPaymentDropdown(
+    //       res.data.data
+    //         .filter((d) => d.is_active === 1)
+    //         .map((i) => ({ value: i.id, label: i.template_name }))
 
-    await new VendorMasterService().getActivePaymentTemplate().then((res) => {
-      if (res.status === 200) {
-        setPayment(res.data.data);
-        setPaymentDropdown(
-          res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((i) => ({ value: i.id, label: i.template_name }))
-
-          //  res.data.data.filter((d) => d.is_active == 1).map((i)=> ({ value: i.id, label: i.template_name }))
-          // res.data.data.map((d) =>
-        );
-      }
-    });
+    //       //  res.data.data.filter((d) => d.is_active == 1).map((i)=> ({ value: i.id, label: i.template_name }))
+    //       // res.data.data.map((d) =>
+    //     );
+    //   }
+    // });
   };
   const considerInRef = useRef();
   const countryRef = useRef();
@@ -453,7 +466,7 @@ function VendorMaster({ match }) {
     e.preventDefault();
     const form = new FormData(e.target);
     setError(null);
-    setNotify(null);
+    // setNotify(null);
     var flag = 1;
     var msg = "";
 
@@ -557,41 +570,42 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag == 1) {
-        await new VendorMasterService()
-          .createVendor(form)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
-                loadData();
-              } else {
-                setError({ type: "danger", message: res.data.message });
-                setModal({ showModal: true, modalData: "", modalHeader: "" });
-              }
-            } else {
-              setError({ type: "danger", message: res.data.message });
-              setModal({ showModal: true, modalData: "", modalHeader: "" });
+      dispatch(postVendor(form))
+        // await new VendorMasterService()
+        //   .createVendor(form)
+        //   .then((res) => {
+        //     if (res.status === 200) {
+        //       if (res.data.status === 1) {
+        //         setNotify({ type: "success", message: res.data.message });
+        //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+        //         loadData();
+        //       } else {
+        //         setError({ type: "danger", message: res.data.message });
+        //         setModal({ showModal: true, modalData: "", modalHeader: "" });
+        //       }
+        //     } else {
+        //       setError({ type: "danger", message: res.data.message });
+        //       setModal({ showModal: true, modalData: "", modalHeader: "" });
 
-              new ErrorLogService().sendErrorLog(
-                "Vendor",
-                "Create_Vendor",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setError({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "Vendor",
-              "Create_Vendor",
-              "INSERT",
-              errorObject.data.message
-            );
-          });
+        //       new ErrorLogService().sendErrorLog(
+        //         "Vendor",
+        //         "Create_Vendor",
+        //         "INSERT",
+        //         res.message
+        //       );
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     setError({ type: "danger", message: "Request Error !!!" });
+        //     new ErrorLogService().sendErrorLog(
+        //       "Vendor",
+        //       "Create_Vendor",
+        //       "INSERT",
+        //       errorObject.data.message
+        //     );
+        //   });
       }
     } else {
       if (
@@ -621,13 +635,13 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag === 1) {
-        setNotify(null)
+        // setNotify(null)
         await new VendorMasterService()
           .updateVendor(id, form)
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
+                // setNotify({ type: "success", message: res.data.message });
                 setModal({ showModal: false, modalData: "", modalHeader: "" });
                 loadData();
               } else {
@@ -1127,39 +1141,62 @@ function VendorMaster({ match }) {
   );
 
   const downloadFormat = async (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
+  
     // const form = new FormData(e.target);
-    await new VendorMasterService().downloadBulkFormat().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+    dispatch(downloadFormatData()).then((res) => {
+      if (res.payload.status === 200) {
+        if (res.payload.data.status == 1) {
+          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.payload.data.data;
           window.open(URL, "_blank").focus();
         }
       }
     });
+    // await new VendorMasterService().downloadBulkFormat().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+    //       window.open(URL, "_blank").focus();
+    //     }
+    //   }
+    // });
   };
   const handleBulkUpload = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     setError(null);
-    await new VendorMasterService().bulkUploadVendor(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
+    dispatch(BulkUploadVendorData(form)).then((res) => {
+      if (res.payload.status === 200) {
+        if (res.payload.data.status == 1) {
+          // setNotify({ type: "success", message: res.data.message });
           handleBulkModal({ showModal: false });
           loadData();
         } else {
-          setError({ type: "danger", message: res.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          setError({ type: "danger", message: res.payload.data.message });
+          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.payload.data.data;
           window.open(URL, "_blank").focus();
         }
       }
     });
+    // await new VendorMasterService().bulkUploadVendor(form).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       // setNotify({ type: "success", message: res.data.message });
+    //       handleBulkModal({ showModal: false });
+    //       loadData();
+    //     } else {
+    //       setError({ type: "danger", message: res.data.message });
+    //       URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+    //       window.open(URL, "_blank").focus();
+    //     }
+    //   }
+    // });
   };
 
   return (
     <>
-      {notify && <Alert alertData={notify} />}
 
       <div className="container-xxl">
         <PageHeader
@@ -1247,7 +1284,8 @@ function VendorMaster({ match }) {
                 {data && (
                   <DataTable
                     columns={columns}
-                    data={data}
+                    // data={data}
+                    data={VendorData}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination
@@ -1275,6 +1313,8 @@ function VendorMaster({ match }) {
             });
           }}
         >
+      {notify && <Alert alertData={notify} />}
+
           <form
             method="post"
             onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}

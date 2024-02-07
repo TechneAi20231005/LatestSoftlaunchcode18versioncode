@@ -1049,22 +1049,22 @@ function CityComponent() {
     // Load data and update state.
     const data = [];
     const exportTempData = [];
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.country,
-              }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountrySort().then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
+    //       setCountryDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.country,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -1076,37 +1076,37 @@ function CityComponent() {
       }
     });
 
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          // setStateDropdown(
-          //   res.data.data
-          //     .filter((d) => d.is_active === 1)
-          //     .map((d) => ({ value: d.id, label: d.state })),
-          // )
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-                country_id: d.country_id,
-              }))
-          );
+    // await new StateService().getStateSort().then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data.filter((d) => d.is_active === 1));
+    //       // setStateDropdown(
+    //       //   res.data.data
+    //       //     .filter((d) => d.is_active === 1)
+    //       //     .map((d) => ({ value: d.id, label: d.state })),
+    //       // )
+    //       setStateDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.state,
+    //             country_id: d.country_id,
+    //           }))
+    //       );
 
-          setStateDropdownNew(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-              }))
-          );
-        }
-      }
-    });
+    //       setStateDropdownNew(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.state,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
     // await new CityService()
     //   .getCity()
     //   .then((res) => {
