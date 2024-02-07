@@ -12,40 +12,57 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { getCustomerTypeData, postCustomerData, updateCustomerData } from "./CustomerTypeComponentAction";
+import {
+  getCustomerTypeData,
+  postCustomerData,
+  updateCustomerData,
+} from "./CustomerTypeComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import CustomerTypeComponentSlice, { customerMasterSlice } from "./CustomerTypeComponentSlice";
+import {
+  handleModalClose,
+  handleModalOpen,
+} from "./CustomerTypeComponentSlice";
+import CustomerTypeComponentSlice, {
+  customerMasterSlice,
+} from "./CustomerTypeComponentSlice";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
 
 function CustomerTypeComponent() {
-    const isActive1Ref = useRef()
-    const dispatch =useDispatch()
-    const customerData=useSelector(CustomerTypeComponentSlice=>CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData)
-    const modals=useSelector(customerMasterSlice=>customerMasterSlice.customerTypeMaster.modal)
-    console.log("modal",modals);
-    const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles)
+  const isActive1Ref = useRef();
+  const dispatch = useDispatch();
+  const customerData = useSelector(
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
+  );
+  const modal = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
+  );
+  const notify = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
+  );
 
-    
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
+  );
 
-
-    const isActive0Ref = useRef()
+  const isActive0Ref = useRef();
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
-  const [notify, setNotify] = useState();
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [notify, setNotify] = useState();
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [isActive, setIsActive] = useState(1)
+  const [isActive, setIsActive] = useState(1);
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
   const handleModal = (data) => {
-    setModal(data);
+    // setModal(data);
   };
   const searchRef = useRef();
 
@@ -85,11 +102,13 @@ function CustomerTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Customer Type",
-              });
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Customer Type",
+                })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -212,7 +231,6 @@ function CustomerTypeComponent() {
     //     );
     //   });
 
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
@@ -224,23 +242,23 @@ function CustomerTypeComponent() {
     //   }
     // });
   };
-  const handleIsActive = (e) =>{
-   const  value =e.target.value;
-    
-    if(value == 1) {
-        setIsActive(1)
-    }else {
-        setIsActive(0)
+  const handleIsActive = (e) => {
+    const value = e.target.value;
+
+    if (value == 1) {
+      setIsActive(1);
+    } else {
+      setIsActive(0);
     }
-  }
+  };
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postCustomerData(form))
-      dispatch(getCustomerTypeData())
-      
+      dispatch(postCustomerData(form));
+      dispatch(getCustomerTypeData());
+
       // await new CustomerType()
       //   .postCustomerType(form)
       //   .then((res) => {
@@ -276,8 +294,8 @@ function CustomerTypeComponent() {
       //     );
       //   });
     } else {
-      dispatch(updateCustomerData({id:id,payload:form}))
-      dispatch(getCustomerTypeData())
+      dispatch(updateCustomerData({ id: id, payload: form }));
+      dispatch(getCustomerTypeData());
       //   form.delete('is_active')
       //   form.append('is_active', isActive)
       // await new CustomerType()
@@ -351,11 +369,10 @@ function CustomerTypeComponent() {
     loadData();
 
     if (!customerData.length) {
-      dispatch(getCustomerTypeData())
-      dispatch(getRoles())
+      dispatch(getCustomerTypeData());
+      dispatch(getRoles());
     }
   }, []);
-
 
   return (
     <div className="container-xxl">
@@ -369,11 +386,13 @@ function CustomerTypeComponent() {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Customer Type",
-                    });
+                    dispatch(
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Customer Type",
+                      })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Customer
@@ -459,19 +478,30 @@ function CustomerTypeComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -517,7 +547,7 @@ function CustomerTypeComponent() {
                     defaultValue={modal.modalData ? modal.modalData.remark : ""}
                   />
                 </div>
-            
+
                 {modal.modalData && (
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
@@ -530,10 +560,11 @@ function CustomerTypeComponent() {
                             className="form-check-input"
                             type="radio"
                             name="is_active"
-                            onClick={(e)=>{handleIsActive(e)}}
+                            onClick={(e) => {
+                              handleIsActive(e);
+                            }}
                             id="is_active_1"
                             ref={isActive1Ref}
-
                             value="1"
                             defaultChecked={
                               modal.modalData && modal.modalData.is_active === 1
@@ -558,7 +589,9 @@ function CustomerTypeComponent() {
                             type="radio"
                             name="is_active"
                             id="is_active_0"
-                            onClick={(e)=>{handleIsActive(e)}}
+                            onClick={(e) => {
+                              handleIsActive(e);
+                            }}
                             ref={isActive0Ref}
                             value="0"
                             readOnly={modal.modalData ? false : true}
@@ -611,11 +644,13 @@ function CustomerTypeComponent() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel
@@ -629,9 +664,9 @@ function CustomerTypeComponent() {
 
 function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new CustomerType().getCustomerType().then((res) => {
+    new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
