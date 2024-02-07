@@ -18,14 +18,7 @@ import DynamicFormDropdownMasterService from "../../services/MastersService/Dyna
 import UserService from "../../services/MastersService/UserService";
 import PageHeader from "../../components/Common/PageHeader";
 import Select from "react-select";
-import { getCurrentDate } from "../../components/Utilities/Functions";
-import { UserDropdown } from "../Masters/UserMaster/UserComponent";
-import { DepartmentDropdown } from "../Masters/DepartmentMaster/DepartmentComponent";
-import { StatusDropdown } from "../Masters/StatusMaster/StatusComponent";
-import { QueryTypeDropdown } from "../Masters/QueryTypeMaster/QueryTypeComponent";
-import { ProjectDropdown } from "../ProjectManagement/ProjectMaster/ProjectComponent";
-import { ModuleDropdown } from "../ProjectManagement/ModuleMaster/ModuleComponent";
-import { SubModuleDropdown } from "../ProjectManagement/SubModuleMaster/SubModuleComponent";
+
 import { Astrick } from "../../components/Utilities/Style";
 import { userSessionData as user } from "../../settings/constants";
 import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
@@ -108,11 +101,10 @@ export default function EditTicketComponent({ match }) {
   const [tester, setTester] = useState(null);
   const [ticketStatus, setTicketStatus] = useState();
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const [confirmationModalDetails, setConfirmationModalDetails] =
-    useState(false);
+  const [confirmationModalDetails, setConfirmationModalDetails] =useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-  const [updateStatus, setUpdateStatus] = useState({});
+
   const [dateErr, setDateErr] = useState(null);
 
   const [proceed, setProceed] = useState(true);

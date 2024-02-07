@@ -10,7 +10,7 @@ class TicketChat extends React.Component{
                 <div className="card-body card-body-height py-4">
                     <div className="row">
                         <div className="col-lg-12 col-md-12">
-                            <h6 className="mb-0 fw-bold mb-3">Ticket Chat</h6>
+                            <h6 className="mb-0 fw-bold mb-3">Ticketaaa Chat</h6>
                             <div className="card mb-2">
                                 <div className="card-body">
                                     <div className="post">
