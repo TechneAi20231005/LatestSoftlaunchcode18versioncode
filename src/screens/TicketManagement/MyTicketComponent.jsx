@@ -2210,43 +2210,41 @@ export default function MyTicketComponent() {
     var form;
     if (type == "LIMIT") {
       const limit = parseInt(e.target.value);
-      const typeOf = type;
-      // const currentPage = limit <
       form = {
         limit: limit,
         typeOf: "AssignToMe",
-        page: 1,
+        page: 1, // Resetting to the first page when limit changes
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "AssignToMe",
         page: assignedToMeData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "AssignToMe",
         page: assignedToMeData.current_page + 1,
       };
     }
 
+
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var newSr = res.data.data.from;
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          // setAssignedToMe({
-          //   ...assignedToMeData,
-          //   current_page: res.data.data.current_page,
-          // });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setAssignedToMeData({
+              ...assignedToMeData,
+              current_page: assignedToMeData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2259,34 +2257,34 @@ export default function MyTicketComponent() {
         page: createdByMeData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "CreatedByMe",
         page: createdByMeData.current_page - 1,
       };
-      console.log("createdByMeData",createdByMeData.current_page)
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "CreatedByMe",
         page: createdByMeData.current_page + 1,
       };
     }
+
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setCreatedByMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          // setCreatedByMe({
-          //   ...createdByMeData,
-          //   current_page: res.data.data.current_page,
-          // });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setCreatedByMeData({
+              ...createdByMeData,
+              current_page: createdByMeData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2313,20 +2311,23 @@ export default function MyTicketComponent() {
       };
     }
 
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setDepartmentwiseTicket(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          // setDepartmentwiseTicket({
-          //   ...departmentWiseData,
-          //   current_page: res.data.data.current_page,
-          // });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setDepartmentWiseData({
+              ...departmentWiseData,
+              current_page: departmentWiseData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+}
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2339,19 +2340,17 @@ export default function MyTicketComponent() {
         page: yourTaskData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "YouTask",
         page: yourTaskData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "YouTask",
         page: yourTaskData.current_page + 1,
       };
     }
+
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
@@ -2359,14 +2358,16 @@ export default function MyTicketComponent() {
           setYourTask(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          // setYourTask({
-          //   ...yourTaskData,
-          //   current_page: res.data.data.current_page,
-          // });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setYourTaskData({
+              ...yourTaskData,
+              current_page: yourTaskData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2393,7 +2394,7 @@ export default function MyTicketComponent() {
       return;
     }
 
-    console.log(unpassedData.current_page)
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
