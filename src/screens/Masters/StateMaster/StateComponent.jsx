@@ -1079,14 +1079,14 @@ function StateComponent() {
     }
   }, []);
 
-  useEffect(() => {
-    if (Notify) {
-      const timer = setTimeout(() => {
-        dispatch(hideNotification());
-      }, 1500); // Adjust the timeout duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [Notify, dispatch]);
+  // useEffect(() => {
+  //   if (Notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 1500); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [Notify, dispatch]);
 
 
   return (

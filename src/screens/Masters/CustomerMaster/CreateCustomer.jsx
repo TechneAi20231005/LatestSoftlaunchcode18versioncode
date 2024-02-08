@@ -351,14 +351,14 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
 
   },[])
 
-  useEffect(() => {
-    if (Notify) {
-      const timer = setTimeout(() => {
-        dispatch(hideNotification());
-      }, 1500); // Adjust the timeout duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [Notify, dispatch]);
+  // useEffect(() => {
+  //   if (Notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 1500); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [Notify, dispatch]);
 
   useEffect(() => {
     if(checkRole && checkRole[0]?.can_create === 0){
