@@ -611,12 +611,12 @@ function EditUserComponent({ match }) {
     account_for === "CUSTOMER"
       ? setOptions(ticketTypeShow)
       : setOptions([
-          { value: "MY_TICKETS", label: "My Tickets" },
-          {
-            value: "DEPARTMENT_TICKETS",
-            label: "Department Tickets",
-          },
-        ]);
+        { value: "MY_TICKETS", label: "My Tickets" },
+        {
+          value: "DEPARTMENT_TICKETS",
+          label: "Department Tickets",
+        },
+      ]);
 
     const accountFor = account_for;
     await new RoleService().getRole().then((res) => {
@@ -661,6 +661,7 @@ function EditUserComponent({ match }) {
   //   }
   // },[checkRole])
   useEffect(() => {
+
     loadData();
   }, []);
   // useEffect(() => {
@@ -690,8 +691,8 @@ function EditUserComponent({ match }) {
       setUpdateStatus(newStatus);
       setStateName(
         data &&
-          stateDropdown &&
-          stateDropdown.filter((d) => d.value == data.state_id)
+        stateDropdown &&
+        stateDropdown.filter((d) => d.value == data.state_id)
       );
     }
   }, [data, stateDropdown]);
@@ -728,13 +729,24 @@ function EditUserComponent({ match }) {
           cityDropdown &&
           cityDropdown.filter((d) => d.value == data.city_id)
           ? data &&
-              cityDropdown &&
-              cityDropdown.filter((d) => d.value == data.city_id)
+          cityDropdown &&
+          cityDropdown.filter((d) => d.value == data.city_id)
           : cityName
       );
     }
   }, [data, cityDropdown]);
 
+  useEffect(() => {
+    if (accountFor === 'SELF') {
+      setRoleDropdown(prevState => {
+        return prevState?.filter(filterRole => filterRole.label.toLowerCase() !== 'user')
+      })
+    } else {
+      setRoleDropdown(prevState => {
+        return prevState?.filter(filterRole => filterRole.label.toLowerCase() === 'user')
+      })
+    }
+  }, [accountFor])
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
@@ -935,7 +947,7 @@ function EditUserComponent({ match }) {
                             placeholder="Email Address"
                             defaultValue={data.email_id ? data.email_id : ""}
                             onChange={handleEmail}
-                            //onKeyPress={e => { Validation.password(e) }}
+                          //onKeyPress={e => { Validation.password(e) }}
                           />
                           {inputState && (
                             <small
@@ -1510,7 +1522,7 @@ function EditUserComponent({ match }) {
                             onChange={(e) =>
                               handleDependentChange(e, "COUNTRY")
                             }
-                            //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
+                          //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
                           />
                         </div>
                       </div>
@@ -1531,7 +1543,7 @@ function EditUserComponent({ match }) {
                             // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
                             defaultValue={stateName ? stateName : ""}
                             onChange={(e) => handleDependentChange(e, "STATE")}
-                            // value={stateName ? stateName : ""}
+                          // value={stateName ? stateName : ""}
                           />
                         </div>
 
@@ -1555,7 +1567,7 @@ function EditUserComponent({ match }) {
                               // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
                               defaultValue={cityName ? cityName : ""}
                               onChange={(e) => setCityName(e)}
-                              // value={cityName ? cityName : ""}
+                            // value={cityName ? cityName : ""}
                             />
                           </div>
                         )}
