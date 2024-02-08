@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { templateData,getParentData, getAllTypeData } from "./TemplateComponetAction";
-
+import {
+  templateData,
+  getParentData,
+  getAllTypeData,
+  postTemplateData,
+} from "./TemplateComponetAction";
 
 const initialState = {
   status: "",
   err: "",
   templateData: [],
-  getParentData:[],
-  
-
-
+  getParentData: [],
+  getAllTypeData: [],
+  postTemplateData:[]
 };
 
 export const templateSlice = createSlice({
@@ -22,43 +25,44 @@ export const templateSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-  
     builder.addCase(templateData.pending, (state) => {
-        state.status = "loading";
-      });
-  
-      builder.addCase(templateData.fulfilled, (state, action) => {
-        const { payload } = action;
-  
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          let templateData = payload.data.data;
-  
-          state.status = "succeded";
-          state.showLoaderModal = false;
-          let count = 1;
-          for (let i = 0; i < templateData.length; i++) {
-            templateData[i].counter = count++;
-          }
-          state.templateData = [...templateData];
+      state.status = "loading";
+    });
+
+    builder.addCase(templateData.fulfilled, (state, action) => {
+      const { payload } = action;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let templateData = payload.data.data;
+
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        let count = 1;
+        for (let i = 0; i < templateData.length; i++) {
+          templateData[i].counter = count++;
         }
-      });
-      builder.addCase(templateData.rejected, (state) => {
-        state.status = "rejected";
-      });
+        state.templateData = [...templateData];
+      }
+    });
+    builder.addCase(templateData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
-      //__________________________getParentData_________________
+    //__________________________getParentData_________________
 
-
-      
     builder.addCase(getParentData.pending, (state) => {
       state.status = "loading";
     });
 
     builder.addCase(getParentData.fulfilled, (state, action) => {
       const { payload } = action;
+      console.log("payloadparent", payload);
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getParentData = payload.data.data.map((d)=>({value:d.id,label:d.type_name}))
+        let getParentData = payload.data.data.map((d) => ({
+          value: d.id,
+          label: d.type_name,
+        }));
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -74,18 +78,18 @@ export const templateSlice = createSlice({
     });
     //__________________________getAllType________________________
 
-
-       
     builder.addCase(getAllTypeData.pending, (state) => {
       state.status = "loading";
     });
 
     builder.addCase(getAllTypeData.fulfilled, (state, action) => {
       const { payload } = action;
+      console.log("typeData", payload);
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllTypeData = payload.data.data.filter((d) => d.type === "TICKET" && d.is_active == 1)
-        .map((d) => ({ value: d.id, label: d.type_name }))
+        let getAllTypeData = payload.data.data
+          .filter((d) => d.type === "TICKET" && d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.type_name }));
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -100,8 +104,39 @@ export const templateSlice = createSlice({
       state.status = "rejected";
     });
 
+    //____________________postTemplateComponent______________
 
-  
+    builder.addCase(postTemplateData.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(postTemplateData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let postTemplateData = payload.data.data;
+        console.log(postTemplateData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.postTemplateData = postTemplateData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(postTemplateData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+
+
+
+
+
+
+
   },
 });
 

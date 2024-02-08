@@ -16,20 +16,36 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { name } from "platform";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import { useDispatch, useSelector } from "react-redux";
-import { getParentData } from "./TemplateComponetAction";
+import {
+  getAllTypeData,
+  getParentData,
+  postTemplateData,
+} from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import TemplateComponetSlice from "./TemplateComponetSlice";
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import MyTicketComponentSlice from "../../TicketManagement/MyTicketComponentSlice";
 
 const CreateTemplateComponent = () => {
-  const history = useNavigate();
-  const dispatch=useDispatch()
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15));
-  const parents=useSelector(TemplateComponetSlice=>TemplateComponetSlice.tempateMaster)
-  console.log("parents",parents);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+  );
+  const parent = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
+  );
+  const taskTypeDropdown = useSelector(
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.getAllTypeData
+  );
+  const userData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+  );
 
   const [notify, setNotify] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   // const [checkRole, setCheckRole] = useState(null);
 
@@ -56,12 +72,12 @@ const CreateTemplateComponent = () => {
       },
     ],
   });
-  const [userData, setUserData] = useState();
+  // const [userData, setUserData] = useState();
 
   const [stack, setStack] = useState({ SE: "", AB: "" });
   const [data, setData] = useState([]);
-  const [taskTypeDropdown, setTaskTypeDropdown] = useState();
-  const [parent, setParent] = useState();
+  // const [taskTypeDropdown, setTaskTypeDropdown] = useState();
+  // const [parent, setParent] = useState();
   const [error, setError] = useState("");
 
   const loadData = async () => {
@@ -69,8 +85,8 @@ const CreateTemplateComponent = () => {
       setData(res.data.data);
     });
 
-    dispatch(getParentData())
-  
+    dispatch(getParentData());
+
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status === 1) {
@@ -90,20 +106,21 @@ const CreateTemplateComponent = () => {
 
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUserData(
-            temp.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
-          );
-        }
-      }
-    });
-    dispatch(getRoles())
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    //       setUserData(
+    //         temp.map((d) => ({
+    //           value: d.id,
+    //           label: d.first_name + " " + d.last_name,
+    //         }))
+    //       );
+    //     }
+    //   }
+    // });
+    dispatch(getUserForMyTicketsData(inputRequired));
+    dispatch(getRoles());
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
@@ -120,19 +137,20 @@ const CreateTemplateComponent = () => {
     if (typeRef.current) {
       typeRef.current.clearValue();
     }
+    dispatch(getAllTypeData());
 
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setTaskTypeDropdown(
-            temp
-              .filter((d) => d.type === "TICKET" && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
-      }
-    });
+    // await new TaskTicketTypeService().getAllType().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       const temp = res.data.data;
+    //       setTaskTypeDropdown(
+    //         temp
+    //           .filter((d) => d.type === "TICKET" && d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.type_name }))
+    //       );
+    //     }
+    //   }
+    // });
   };
 
   const handleCheckInput = (e, idx) => {
@@ -231,40 +249,45 @@ const CreateTemplateComponent = () => {
       setNotify({ type: "warning", message: "Add Data" });
     } else {
       setNotify(null);
-      new TemplateService()
-        .postTemplate(rows)
-        .then((res) => {
-          if (res.status === 200) {
-            const data = res.data;
+      dispatch(postTemplateData(rows)).then((res) => {
+        if (res?.payload?.data?.status && res?.payload?.status == 200) {
+          navigate(`/${_base}/Template`);
+        }
+      });
 
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/Template`,
-                },
-                {
-                  state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
-                }
-              );
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "TemplateMaster",
-            "Create_TemplateMaster",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      // new TemplateService().postTemplate(rows)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       const data = res.data;
+
+      //       if (res.data.status === 1) {
+      //         history(
+      //           {
+      //             pathname: `/${_base}/Template`,
+      //           },
+      //           {
+      //             state: {
+      //               alert: { type: "success", message: res.data.message },
+      //             },
+      //           }
+      //         );
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     new ErrorLogService().sendErrorLog(
+      //       "TemplateMaster",
+      //       "Create_TemplateMaster",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
