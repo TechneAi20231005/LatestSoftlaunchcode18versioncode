@@ -14,7 +14,7 @@ import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import Alert from "../../components/Common/Alert";
 import {  useDispatch, useSelector } from "react-redux"
-import { getCityData, getCountryDataSort, getStateDataSort } from "../Dashboard/DashboardAction";
+import { getCityData, getCountryDataSort, getStateData, getStateDataSort } from "../Dashboard/DashboardAction";
 import { getRoles } from "../Dashboard/DashboardAction";
 import { updatetenantData } from "./TenantConponentAction";
 
@@ -29,6 +29,19 @@ export default function EditTenant({ match }) {
   const [data, setData] = useState();
   const [toggleRadio, setToggleRadio] = useState(false);
   const { id } = useParams();
+
+  const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
   const tenanatId = id;
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
@@ -49,34 +62,44 @@ export default function EditTenant({ match }) {
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
+  // const [cityDropdown, setCityDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
+      // setStateDropdown(
+      //   state
+      //     .filter((d) => d.country_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.state }))
+      // );
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+
     }
     if (type == "STATE") {
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
+      // setCityDropdown(
+      //   city
+      //     .filter((d) => d.state_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.city }))
+      // );
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
     }
   };
   const loadData = async () => {
 
     dispatch(getCountryDataSort());
     dispatch(getRoles());
-    dispatch(getStateDataSort());
+    dispatch(getStateDataSort())
+    if(!stateDropdown){
+      dispatch(getStateData());
+    
+    }
+  
+
     dispatch(getCityData());
     // await new CountryService().getCountry().then((res) => {
     //   if (res.status === 200) {
@@ -109,7 +132,7 @@ export default function EditTenant({ match }) {
     //     }
     //   }
     // });
-
+  
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -320,15 +343,15 @@ export default function EditTenant({ match }) {
                   <b>Country : </b>
                 </label>
                 <div className="col-sm-4">
-                  {countryDropdown && data && (
+                  {CountryData && data && (
                     <Select
-                      options={countryDropdown}
+                      options={CountryData}
                       id="country_id"
                       name="country_id"
                       defaultValue={
                         data &&
-                        countryDropdown &&
-                        countryDropdown.filter((d) => d.value == data.country)
+                        CountryData &&
+                        CountryData.filter((d) => d.value == data.country)
                       }
                       onChange={(e) => handleDependentChange(e, "COUNTRY")}
                     />

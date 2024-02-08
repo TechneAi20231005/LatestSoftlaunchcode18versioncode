@@ -977,6 +977,7 @@ export default function MyTicketComponent({ location }) {
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
   );
+  
   const gelAllStatusData = useSelector(
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.statusData

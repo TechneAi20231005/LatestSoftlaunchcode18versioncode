@@ -258,8 +258,8 @@ export default function SignIn() {
     const data = new FormData(e.target);
     dispatch(postLoginUser(data))
       .then((success) => {
-      
-        if (success.payload.status === 1) {
+      console.log("su",success)
+        if (success.payload?.status === 1) {
           const token = localStorage.getItem("jwt_token")
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
@@ -267,7 +267,7 @@ export default function SignIn() {
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
         } else {
           setIsLoading(false)
-          setNotify({ type: "danger", message: success.payload.status });
+          setNotify({ type: "danger", message: success.payload?.status });
         }
       });
     // postData(data).then((res) => {

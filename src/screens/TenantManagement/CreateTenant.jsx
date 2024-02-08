@@ -19,6 +19,7 @@ import {
   getCityData,
   getCountryDataSort,
   getRoles,
+  getStateData,
   getStateDataSort,
 } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
@@ -28,12 +29,17 @@ export default function CreateTenant({ match }) {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
-  const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
-  const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
   const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
 
-
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
 
   const [notify, setNotify] = useState();
 
@@ -57,28 +63,36 @@ export default function CreateTenant({ match }) {
     },
   ];
   const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+  // const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
+  // const [cityDropdown, setCityDropdown] = useState(null);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
+      // setStateDropdown(
+      //   state
+      //     .filter((d) => d.country_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.state }))
+      // );
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      console.log("s",stateDropdown.filter((filterState) => filterState))
     }
     if (type == "STATE") {
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
+      // setCityDropdown(
+      //   city
+      //     .filter((d) => d.state_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.city }))
+      // );
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
     }
   };
+
+  console.log("c",cityDropdownData)
 
   const loadData = async () => {
     // await new CountryService().getCountry().then((res) => {
@@ -95,6 +109,11 @@ export default function CreateTenant({ match }) {
     dispatch(getRoles());
     dispatch(getStateDataSort());
     dispatch(getCityData());
+    if(!stateDropdown){
+      dispatch(getStateData());
+    
+    }
+    
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -305,9 +324,9 @@ export default function CreateTenant({ match }) {
                 <b>Country : </b>
               </label>
               <div className="col-sm-4">
-                {countryDropdown && (
+                {CountryData && (
                   <Select
-                    options={countryDropdown}
+                    options={CountryData}
                     id="country_id"
                     name="country_id"
                     onChange={(e) => handleDependentChange(e, "COUNTRY")}
