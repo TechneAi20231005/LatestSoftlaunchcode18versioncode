@@ -1,19 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getRoleData, postRole, updatedRole } from "./RoleMasterAction";
+import { getAllMenu, getRoleData, postMenuData, postRole, updatedRole } from "./RoleMasterAction";
 
 const initialState = {
   status: "",
   err: "",
   notify: "",
+  menuData: [],
   modal: {
     showModal: false,
     modalData: "",
     modalHeader: "",
   },
-  exportRoleData:[],
+  exportRoleData: [],
+  filterRoleData:[],
 
   getRoleData: [],
-  roleDropDown:[]
+  roleDropDown: [],
+  postMenuData:[]
 };
 
 export const rolemasterSlice = createSlice({
@@ -40,6 +43,9 @@ export const rolemasterSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoleData = payload.data.data;
+        let filterRoleData=payload.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.role }))
+        console.log("filterRoleData",filterRoleData);
+        state.filterRoleData=filterRoleData
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -60,11 +66,7 @@ export const rolemasterSlice = createSlice({
             updated_by: getRoleData[i].updated_by,
           });
         }
-        state.exportRoleData=exportRoleData
-
-
-
-        
+        state.exportRoleData = exportRoleData;
       }
     });
     builder.addCase(getRoleData.rejected, (state) => {
@@ -119,6 +121,56 @@ export const rolemasterSlice = createSlice({
     builder.addCase(updatedRole.rejected, (state) => {
       state.status = "rejected";
     });
+
+    //_____________________getAllMenu________________________
+
+    builder.addCase(getAllMenu.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getAllMenu.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.menuData = payload.data.data.map((d) => ({
+          id: d.id,
+          name: d.name,
+          can_read: 0,
+          can_create: 0,
+          can_update: 0,
+        }));
+        state.status = "succeeded";
+      }
+    });
+    builder.addCase(getAllMenu.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //______________________postMenuMange_______________________________
+
+    builder.addCase(postMenuData.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(postMenuData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let postMenuData = payload.data.data;
+        console.log("postMenuData",postMenuData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.postMenuData = postMenuData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(postMenuData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+
   },
 });
 

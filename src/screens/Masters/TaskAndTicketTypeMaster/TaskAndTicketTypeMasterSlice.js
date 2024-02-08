@@ -39,6 +39,7 @@ export const taskandticketTypeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(taskAndTicketMaster.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
 
     builder.addCase(taskAndTicketMaster.fulfilled, (state, action) => {
@@ -64,6 +65,7 @@ export const taskandticketTypeSlice = createSlice({
 
     builder.addCase(getParentDropdown.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
 
     builder.addCase(getParentDropdown.fulfilled, (state, action) => {
@@ -92,6 +94,7 @@ export const taskandticketTypeSlice = createSlice({
 
     builder.addCase(postTaskandTicket.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
 
     builder.addCase(postTaskandTicket.fulfilled, (state, action) => {
@@ -118,6 +121,7 @@ export const taskandticketTypeSlice = createSlice({
 
     builder.addCase(updateTaskAndTicketType.pending, (state) => {
       state.status = "loading";
+      state.notify = null
     });
 
     builder.addCase(updateTaskAndTicketType.fulfilled, (state, action) => {

@@ -15,14 +15,23 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 
 import { name } from "platform";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+import { useDispatch, useSelector } from "react-redux";
+import { getParentData } from "./TemplateComponetAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import TemplateComponetSlice from "./TemplateComponetSlice";
 
 const CreateTemplateComponent = () => {
   const history = useNavigate();
+  const dispatch=useDispatch()
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15));
+  const parents=useSelector(TemplateComponetSlice=>TemplateComponetSlice.tempateMaster)
+  console.log("parents",parents);
+
   const [notify, setNotify] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const mainJson = {
     template_name: null,
@@ -59,34 +68,26 @@ const CreateTemplateComponent = () => {
     await new TemplateService().getTemplate().then((res) => {
       setData(res.data.data);
     });
-    // await new TaskTicketTypeService().getAllType().then((res) => {
+
+    dispatch(getParentData())
+  
+    // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data;
-    //       setTaskTypeDropdown(
-    //         temp
-    //           .filter((d) => d.type === "TASK" && d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.type_name }))
-    //       );
+    //     if (res.data.status === 1) {
+    //       if (res.status === 200) {
+    //         const mappedData = res.data.data.map((d) => ({
+    //           value: d.id,
+    //           label: d.type_name,
+    //         }));
+
+    //         setParent(mappedData);
+    //       } else {
+    //         console.error("error", res.status);
+    //       }
     //     }
     //   }
     // });
-    await new TaskTicketTypeService().getParent().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          if (res.status === 200) {
-            const mappedData = res.data.data.map((d) => ({
-              value: d.id,
-              label: d.type_name,
-            }));
 
-            setParent(mappedData);
-          } else {
-            console.error("error", res.status);
-          }
-        }
-      }
-    });
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
@@ -102,22 +103,24 @@ const CreateTemplateComponent = () => {
         }
       }
     });
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleParentchange = async (e) => {
     if (typeRef.current) {
       typeRef.current.clearValue();
     }
+
     await new TaskTicketTypeService().getAllType().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -350,7 +353,7 @@ const CreateTemplateComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[14].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

@@ -12,13 +12,21 @@ import RoleService from "../../services/MastersService/RoleService";
 
 import { CustomerDropdown } from '../Masters/CustomerMaster/CustomerComponent';
 import { RoleDropdown } from '../Masters/RoleMaster/RoleComponent';
+import { useDispatch, useSelector } from "react-redux";
+import { getAllMenu, getRoleData, postMenuData } from "../Masters/RoleMaster/RoleMasterAction";
+import RoleMasterSlice from "../Masters/RoleMaster/RoleMasterSlice";
 
 
 const ManageMenu = ({match}) => {
 
+    const filterData=useSelector(RoleMasterSlice=>RoleMasterSlice.rolemaster)
+
+   
+
     const {id} =useParams()
+    const dispatch=useDispatch()
     const roleId =id
-    const history = useNavigate();
+    const navigate = useNavigate();
     const [notify, setNotify] = useState(null);
     const [accountFor, setAccountFor] = useState();
 
@@ -31,17 +39,21 @@ const ManageMenu = ({match}) => {
     const loadData = async () => {
 
         //1. CAll ROLE API
-        await new RoleService().getRole().then(res => {
-            if (res.status === 200) {
-                console.log(res);
-                setRoleDropdown(res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.role })))
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("Department", "Get_Department", "INSERT", errorObject.data.message);
-        })
+        // dispatch(getRoleData())
 
+        
+        // await new RoleService().getRole().then(res => {
+        //     if (res.status === 200) {
+        //         console.log(res);
+        //         setRoleDropdown(res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.role })))
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("Department", "Get_Department", "INSERT", errorObject.data.message);
+        // })
+
+        dispatch(getAllMenu())
         await new ManageMenuService().getAllMenu().then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
@@ -49,11 +61,11 @@ const ManageMenu = ({match}) => {
                     let menu = [];
                     data.forEach(d => {
                         menu.push({ 'id': d.id, 'name': d.name, 'can_read': 0, 'can_create': 0, 'can_update': 0, 
-                        // 'can_delete': 0 
+                    
                     });
                     })
                  new ManageMenuService().getRole(roleId).then(res1 => {
-                        // console.log(e.value)
+                   
                         if (res1.status === 200) {
                             if (res1.data.status == 1) 
                             {
@@ -65,11 +77,11 @@ const ManageMenu = ({match}) => {
                                             menu[i2].can_read = d.can_read;
                                             menu[i2].can_create = d.can_create;
                                             menu[i2].can_update = d.can_update;
-                                            // menu[i2].can_delete = d.can_delete;
+                                            
                                         }
                                     })
                                 })
-//                                setMenus(prev => ({ ...prev, 'menu': null }));
+//                               
                                 setMenus(prev => ({ ...prev, 'menu': menu }));
                             } else {
                                                     setMenus(prev => ({ ...prev, 'menu': menu }));
@@ -126,31 +138,41 @@ const ManageMenu = ({match}) => {
  
     const handleForm = async (e) => {
         e.preventDefault();
+
+
+        dispatch(postMenuData(menus)).then((res)=>{
+            if(res.payload.data.status==1&&res.payload.status==200){
+                navigate(`/${_base}/Role`)
+
+            }
+          
+        })
+
     
-        await new ManageMenuService().postData(menus).then(res => {
-            setNotify(null);
-            if (res.status === 200) {
-                if (res.data.status == 1) {
+        // await new ManageMenuService().postData(menus).then(res => {
+        //     setNotify(null);
+        //     if (res.status === 200) {
+        //         if (res.data.status == 1) {
                
-                    document.getElementById("MenuMangementForm").reset();
-                    loadData();
-                    history({
-                        pathname:`/${_base}/Role`,
+        //             document.getElementById("MenuMangementForm").reset();
+        //             loadData();
+        //             history({
+        //                 pathname:`/${_base}/Role`,
                       
                         
-                    },{  state: {alert : {id: Math.random(), type: 'success', message:res.data.message} }});
-                } else {
-                    setNotify({ type: 'danger', message: res.data.message });
-                }
-            } else {
-                setNotify({ type: 'danger', message: res.message });
-                new ErrorLogService().sendErrorLog("Menu_Management", "Create_Menu", "INSERT", res.message);
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("Menu_Management", "Create_Menu", "INSERT", errorObject.data.message);
-        })
+        //             },{  state: {alert : {id: Math.random(), type: 'success', message:res.data.message} }});
+        //         } else {
+        //             setNotify({ type: 'danger', message: res.data.message });
+        //         }
+        //     } else {
+        //         setNotify({ type: 'danger', message: res.message });
+        //         new ErrorLogService().sendErrorLog("Menu_Management", "Create_Menu", "INSERT", res.message);
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("Menu_Management", "Create_Menu", "INSERT", errorObject.data.message);
+        // })
     }
 
     // const checkRole = async (e) => {
