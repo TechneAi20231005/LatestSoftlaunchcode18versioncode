@@ -189,6 +189,11 @@ import {
   getDynamiucFormData,
   getCustomerData,
   getAllRoles,
+  getCustomerType,
+  getCustomerByIdData,
+  postCustomerData,
+  updateCustomerData,
+  getAllUserById,
 } from "./DashboardAction";
 
 import { all } from "axios";
@@ -221,14 +226,19 @@ const initialState = {
   postUSer: [],
   updateUser: [],
   getRoles: [],
+  getAllCustomerData:[],
+  getAllUser:[],
   exportUserData: [],
-
   notify: null,
+  exportCustomerData:[],
+  customerByIdData:[],
+  updateCustomer:[],
   modal: {
     showModal: false,
     modalData: "",
     modalHeader: "",
   },
+  customerTypeData:[]
 };
 
 export const dashboardSlice = createSlice({
@@ -244,6 +254,9 @@ export const dashboardSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
+    hideNotification(state) {
+      state.notify = false;
+    },
   },
   extraReducers: (builder) => {
     // Fetch city data
@@ -251,11 +264,18 @@ export const dashboardSlice = createSlice({
     builder.addCase(getCityData.pending, (state) => {
       state.status = "loading";
       state.showLoaderModal = true;
+      state.notify = null;
+
+      
+
+
     });
     builder.addCase(getCityData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let cityData = payload.data.data;
+
+
         state.status = "succeded";
         state.showLoaderModal = false;
         let sortedCityData = payload.data.data
@@ -292,6 +312,8 @@ export const dashboardSlice = createSlice({
     });
     builder.addCase(getCityData.rejected, (state) => {
       state.status = "rejected";
+      state.notify = null;
+
     });
 
     // Post city data
@@ -303,6 +325,7 @@ export const dashboardSlice = createSlice({
 
     builder.addCase(postCityData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postCity = payload.data.data;
         state.status = "succeeded";
@@ -332,10 +355,11 @@ export const dashboardSlice = createSlice({
 
     builder.addCase(updateCityData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCity = payload.data.data;
         state.status = "succeeded";
-        // state.notify = null;
+        state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
 
@@ -473,10 +497,12 @@ export const dashboardSlice = createSlice({
 
     builder.addCase(getStateData.pending, (state) => {
       state.status = "loading";
+
     });
 
     builder.addCase(getStateData.fulfilled, (state, action) => {
       const { payload } = action;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let stateData = payload.data.data;
 
@@ -578,9 +604,10 @@ export const dashboardSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateState = payload.data.data;
         state.status = "succeeded";
-        // state.notify = null;
+        state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
+        console.log("no",state.notify)
 
         state.updateState = updateState;
 
@@ -593,6 +620,19 @@ export const dashboardSlice = createSlice({
     builder.addCase(updateStateData.rejected, (state) => {
       state.status = "rejected";
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //fetch User data
 
@@ -824,25 +864,232 @@ export const dashboardSlice = createSlice({
 
     builder.addCase(getCustomerData.pending, (state) => {
       state.status = "loading";
+      // state.notify=null
+
     });
     builder.addCase(getCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getAllCustomerData =payload.data.data
         let getCustomerData = payload.data.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.name }));
         state.status = "succeded";
         state.showLoaderModal = false;
-
+        let count = 1;
+        for (let i = 0; i < getAllCustomerData.length; i++) {
+          getAllCustomerData[i].counter = count++;
+state.getAllCustomerData=[...getAllCustomerData]
         state.getCustomerData = [...getCustomerData];
       }
+    }
+    let temp = payload.data.data
+let exportCustomerData =[]
+for (const i in temp) {
+  exportCustomerData.push({
+    counter: temp[i].counter,
+    Name: temp[i].name,
+    Customer_Type: temp[i].type_name,
+    Email: temp[i].email_id,
+    Contact_Number: temp[i].contact_no,
+    Address: temp[i].address,
+    Pincode: temp[i].pincode,
+    Country: temp[i].country,
+    State: temp[i].state,
+    City: temp[i].city,
+    Status: temp[i].is_active ? "Active" : "Deactive",
+    created_at: temp[i].created_at,
+    created_by: temp[i].created_by,
+    updated_at: temp[i].updated_at,
+    updated_by: temp[i].updated_by,
+  });
+
+}
+state.exportCustomerData = exportCustomerData
+
     });
     builder.addCase(getCustomerData.rejected, (state) => {
       state.status = "rejected";
     });
+
+
+
+
+
+
+
+    
+    builder.addCase(getCustomerType.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+    builder.addCase(getCustomerType.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let customerTypeData = payload.data.data.filter((d) => d.is_active == 1)
+        .map((d) => ({ label: d.type_name, value: d.id }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        // let count = 1;.
+        // for (let i = 0; i < getRoles.length; i++) {
+        //   getRoles[i].counter = count++;
+        // }
+        state.customerTypeData = [...customerTypeData];
+      }
+    });
+    builder.addCase(getCustomerType.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+
+    // builder.addCase(postCustomerData.pending, (state) => {
+    //   state.status = "loading";
+    //   state.notify=null
+    // });
+
+
+    // builder.addCase(postCustomerData.fulfilled, (state, action) => {
+    //   const { payload } = action;
+    //   if (payload?.data?.status === 1) {
+    //     state.status = "succeded";
+    //     state.notify = null;
+    //     state.notify = { type: "success", message: payload.data.message };
+    //     let modal = { showModal: false, modalData: "", modalHeader: "" };
+    //     state.modal = modal;
+    //   } else {
+    //     // let notify = { type: "danger", message: payload.data.message };
+    //     state.notify = null;
+    //     state.notify = { type: "danger", message: payload.data.message };
+    //   }
+    // });
+    // builder.addCase(postCustomerData.rejected, (state) => {
+    //   state.status = "rejected";
+    // });
+
+
+
+
+   
+
+
+    builder.addCase(getCustomerByIdData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+
+    builder.addCase(getCustomerByIdData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.data?.status === 1) {
+        const customerByIdData = payload.data.data
+        state.status = "succeded";
+        state.notify = null;
+        // state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+        state.customerByIdData=customerByIdData
+        console.log("c",customerByIdData)
+      } else {
+        // let notify = { type: "danger", message: payload.data.message };
+        // state.notify = null;
+        // state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(getCustomerByIdData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+    builder.addCase(postCustomerData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+
+    builder.addCase(postCustomerData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.data?.status === 1) {
+        state.status = "succeded";
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+      } else {
+        // let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(postCustomerData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+
+
+    
+
+
+
+    builder.addCase(updateCustomerData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+
+    builder.addCase(updateCustomerData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let updateCustomer = payload.data.data;
+        state.status = "succeeded";
+        // state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        state.showLoaderModal = false;
+
+        state.updateCustomer = updateCustomer;
+
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(updateCustomerData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+    builder.addCase(getAllUserById.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+
+    builder.addCase(getAllUserById.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload",payload)
+        state.notify = null;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getAllUser = payload.data.data;
+        state.status = "succeeded";
+        state.notify = null;
+        // state.notify = { type: "success", message: payload.data.message };
+        state.showLoaderModal = false;
+
+        state.getAllUser = getAllUser;
+
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(getAllUserById.rejected, (state) => {
+      state.status = "rejected";
+    });
+
   },
 });
 
-export const { handleModalInStore, handleModalClose, loaderModal } =
+export const { handleModalInStore, handleModalClose, loaderModal,hideNotification } =
   dashboardSlice.actions;
 export default dashboardSlice.reducer;

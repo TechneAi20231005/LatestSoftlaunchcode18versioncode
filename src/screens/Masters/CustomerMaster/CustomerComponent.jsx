@@ -11,19 +11,32 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import "react-data-table-component-extensions/dist/index.css";
 import { Spinner } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
+import { UseDispatch,useDispatch,useSelector } from "react-redux";
+import { dashboardSlice } from "../../Dashboard/DashbordSlice";
+import { getCustomerData, getRoles } from "../../Dashboard/DashboardAction";
+
 
 function CustomerComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [customer, setCustomer] = useState();
-  const [exportData, setExportData] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [exportData, setExportData] = useState(null);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [historyState, setHistoryState] = useState();
   const searchRef = useRef();
   const location = useLocation();
+
+
+
+
+  const dispatch = useDispatch()
+  const getallCustomer = useSelector(dashboardSlice=>dashboardSlice.dashboard.getAllCustomerData)
+  const exportData = useSelector(dashboardSlice=>dashboardSlice.dashboard.exportCustomerData)
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -76,7 +89,7 @@ function CustomerComponent() {
       sortable: true,
       width: "150px",
     },
-    { name: "Type", selector: (row) => row.type, sortable: true },
+    { name: "Type", selector: (row) => row.type_name, sortable: true },
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -126,88 +139,88 @@ function CustomerComponent() {
     data,
   };
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    const data = [];
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
+    // const data = [];
     const exportTempData = [];
-    await new CustomerService()
-      .getCustomer()
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-          setDataa(res.data.data);
-          let counter = 1;
-          const temp = res.data.data;
+    // await new CustomerService()
+    //   .getCustomer()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setShowLoaderModal(false);
+    //       setDataa(res.data.data);
+    //       let counter = 1;
+    //       const temp = res.data.data;
 
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              name: temp[key].name,
-              type: temp[key].type_name,
-              email_id: temp[key].email_id,
-              contact_no: temp[key].contact_no,
-              address: temp[key].address,
-              pincode: temp[key].pincode,
-              country: temp[key].country,
-              state: temp[key].state,
-              City: temp[key].city,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          for (const i in temp) {
-            exportTempData.push({
-              counter: counter++,
-              Name: temp[i].name,
-              Customer_Type: temp[i].type_name,
-              Email: temp[i].email_id,
-              Contact_Number: temp[i].contact_no,
-              Address: temp[i].address,
-              Pincode: temp[i].pincode,
-              Country: temp[i].country,
-              State: temp[i].state,
-              City: temp[i].city,
-              Status: temp[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        if (error.message) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "Customer Master",
-            "Get_Customer",
-            "INSERT",
-            errorObject.data.message
-          );
-        } else {
-          console.log(error);
-        }
-      });
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           name: temp[key].name,
+    //           type: temp[key].type_name,
+    //           email_id: temp[key].email_id,
+    //           contact_no: temp[key].contact_no,
+    //           address: temp[key].address,
+    //           pincode: temp[key].pincode,
+    //           country: temp[key].country,
+    //           state: temp[key].state,
+    //           City: temp[key].city,
+    //           is_active: temp[key].is_active,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(data);
+    //       for (const i in temp) {
+    //         exportTempData.push({
+    //           counter: counter++,
+    //           Name: temp[i].name,
+    //           Customer_Type: temp[i].type_name,
+    //           Email: temp[i].email_id,
+    //           Contact_Number: temp[i].contact_no,
+    //           Address: temp[i].address,
+    //           Pincode: temp[i].pincode,
+    //           Country: temp[i].country,
+    //           State: temp[i].state,
+    //           City: temp[i].city,
+    //           Status: temp[i].is_active ? "Active" : "Deactive",
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: temp[i].updated_at,
+    //           updated_by: temp[i].updated_by,
+    //         });
+    //       }
+    //       setExportData(null);
+    //       setExportData(exportTempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     if (error.message) {
+    //       const { response } = error;
+    //       const { request, ...errorObject } = response;
+    //       new ErrorLogService().sendErrorLog(
+    //         "Customer Master",
+    //         "Get_Customer",
+    //         "INSERT",
+    //         errorObject.data.message
+    //       );
+    //     } else {
+    //       console.log(error);
+    //     }
+    //   });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
   // useEffect(() => {
   //   const listener = event => {
@@ -230,6 +243,14 @@ function CustomerComponent() {
   };
   useEffect(() => {
     loadData();
+
+    if(!getallCustomer.length){
+      dispatch(getCustomerData())
+    }
+    if(!checkRole.length){
+      dispatch(getRoles())
+
+    }
     if (location && location.state) {
       setNotify(location.state);
     }
@@ -239,7 +260,7 @@ function CustomerComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[3].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -253,7 +274,7 @@ function CustomerComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[3].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Customer/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
@@ -308,10 +329,10 @@ function CustomerComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {getallCustomer && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={getallCustomer}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -321,7 +342,7 @@ function CustomerComponent() {
                 />
               )}
             </div>
-            <Modal show={showLoaderModal} centered>
+            {/* <Modal show={showLoaderModal} centered>
               <Modal.Body className="text-center">
                 <Spinner animation="grow" variant="primary" />
                 <Spinner animation="grow" variant="secondary" />
@@ -331,7 +352,7 @@ function CustomerComponent() {
                 <Spinner animation="grow" variant="info" />
                 <Spinner animation="grow" variant="dark" />
               </Modal.Body>
-            </Modal>
+            </Modal> */}
           </div>
         </div>
       </div>

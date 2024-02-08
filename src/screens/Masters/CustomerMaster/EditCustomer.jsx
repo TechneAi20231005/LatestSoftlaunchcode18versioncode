@@ -13,6 +13,9 @@ import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
+import { UseDispatch,useDispatch,useSelector } from "react-redux"
+import { dashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
+import { getCityData, getCountryDataSort, getCustomerByIdData, getCustomerData, getCustomerType, getRoles, getStateData, updateCustomerData } from "../../Dashboard/DashboardAction";
 
 function EditCustomer({ match }) {
   const history = useNavigate();
@@ -21,13 +24,13 @@ function EditCustomer({ match }) {
   const { id } = useParams();
   const customerId = id;
 
-  const [data, setData] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  // const [data, setData] = useState(null);
+  // const [customerType, setCustomerType] = useState(null);
 
   const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+  // const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
   const [cityDropdown, setCityDropdown] = useState(null);
 
@@ -37,116 +40,138 @@ function EditCustomer({ match }) {
   const [cityName, setCityName] = useState(null);
 
   const stateRef = useRef(null);
+  const navigate = useNavigate();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
 
-  const handleDependent = (e, name) => {
-    setData({
-      ...data,
-      [name]: e.value,
-    });
-  };
+  const dispatch = useDispatch()
+  const data = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerByIdData)
+const customerType = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerTypeData)
+const countryDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.filteredCountryData)
+const stateDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.stateData)
+const AllcityDropDownData = useSelector(
+  (dashboardSlice) => dashboardSlice.dashboard.cityData
+);
 
+const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+
+const Notify = useSelector(
+  (dashboardSlice) => dashboardSlice.dashboard.notify
+);
+
+console.log("d",Notify)
+  // const handleDependent = (e, name) => {
+  //   setData({
+  //     ...data,
+  //     [name]: e.value,
+  //   });
+  // };
+console.log("dddd",data)
   const loadData = async () => {
-    const data = [];
-    await new CustomerService()
-      .getCustomerById(customerId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setData(res.data.data);
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
-        } else {
-          setNotify({ type: "danger", message: res.message });
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Customer",
-          "Get_Customer",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    // const data = [];
+    // await new CustomerService()
+    //   .getCustomerById(customerId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         setData(res.data.data);
+    //       } else {
+    //         setNotify({ type: "danger", message: res.data.message });
+    //       }
+    //     } else {
+    //       setNotify({ type: "danger", message: res.message });
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "Customer",
+    //       "Get_Customer",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
-    await new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        setCustomerType(
-          data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ label: d.type_name, value: d.id }))
-        );
-      }
-    });
+    // await new CustomerType().getCustomerType().then((res) => {
+    //   if (res.status === 200) {
+    //     let counter = 1;
+    //     const data = res.data.data;
+    //     setCustomerType(
+    //       data
+    //         .filter((d) => d.is_active == 1)
+    //         .map((d) => ({ label: d.type_name, value: d.id }))
+    //     );
+    //   }
+    // });
 
     //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountrySort().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
+    //       setCountryDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** State load data**************************************
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-                country_id: d.country_id,
-              }))
-          );
-        }
-      }
-    });
+    // await new StateService().getStateSort().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data.filter((d) => d.is_active === 1));
+    //       setStateDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.state,
+    //             country_id: d.country_id,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.city,
-                state_id: d.state_id,
-              }))
-          );
-        }
-      }
-    });
+    // await new CityService().getCity().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCity(res.data.data.filter((d) => d.is_active === 1));
+    //       setCityDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.city,
+    //             state_id: d.state_id,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
+
+
+
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
     setContactNumber(contactNumber);
@@ -217,53 +242,62 @@ function EditCustomer({ match }) {
 
     if (flag == 1) {
       setNotify(null);
-      await new CustomerService()
-        .updateCustomer(customerId, formData)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Customer`,
+      dispatch(updateCustomerData({id:customerId, payload:formData}))
+      // .then((res)=>{
+      //   if(res.payload.data.status===1 && res.payload.status === 200){
+      //     navigate(`/${_base}/Customer`)
+      //   }
+      // })
+      dispatch(getCustomerData())
+      // await new CustomerService()
+      //   .updateCustomer(customerId, formData)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         history({
+      //           pathname: `/${_base}/Customer`,
              
-              },
-             { state: {
-                type: "success", message: res.data.message ,
-             }
-            } 
-              );
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Customer",
-              "Create_Customer",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Customer",
-            "Create_Customer",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      //         },
+      //        { state: {
+      //           type: "success", message: res.data.message ,
+      //        }
+      //       } 
+      //         );
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Customer",
+      //         "Create_Customer",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Customer",
+      //       "Create_Customer",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
   const handleCountryChange = (e) => {
-    setStateDropdown(
-      state
-        .filter((d) => d.country_id == e.value)
-        .map((d) => ({ value: d.id, label: d.state }))
-    );
+    // setStateDropdown(
+    //   state
+    //     .filter((d) => d.country_id == e.value)
+    //     .map((d) => ({ value: d.id, label: d.state }))
+    // );
+    setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
@@ -272,11 +306,14 @@ function EditCustomer({ match }) {
   };
 
   const handleStateChange = (e) => {
-    setCityDropdown(
-      city
-        .filter((d) => d.state_id == e.value)
-        .map((d) => ({ value: d.id, label: d.city }))
-    );
+    // setCityDropdown(
+    //   city
+    //     .filter((d) => d.state_id == e.value)
+    //     .map((d) => ({ value: d.id, label: d.city }))
+    // 
+    setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
+    
     const newStatus = { ...updateStatus, citydrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(e);
@@ -284,8 +321,41 @@ function EditCustomer({ match }) {
   };
 
   useEffect(() => {
-    loadData();
+    if (Notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 5000); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [Notify, dispatch]);
+
+  useEffect(() => {
+    if(!data.length){
+    dispatch(getCustomerByIdData(customerId))}
+    if(!customerType.length){
+      dispatch(getCustomerType())}
+      if( !countryDropdown.length){
+        dispatch(getCountryDataSort())
+  
+      }
+      if(!stateDropdown.length){
+        dispatch(getStateData());
+    
+        }
+        
+        if(!checkRole.length){
+          dispatch(getRoles())
+    
+        }
+
+        if(!AllcityDropDownData.length){
+          dispatch(getCityData())
+    
+        }
+
   }, []);
+
+  console.log("dataqq",data)
 
   useEffect(() => {
     if (
@@ -293,9 +363,9 @@ function EditCustomer({ match }) {
       stateDropdown !== null &&
       updateStatus.statedrp === undefined
     ) {
-      setStateDropdown((prev) =>
-        prev.filter((stateItem) => stateItem.country_id === data.country_id)
-      );
+      // setStateDropdownData((prev) =>
+      //   prev?.filter((stateItem) => stateItem.country_id === data.country_id)
+      // );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
       setStateName(
@@ -327,14 +397,14 @@ function EditCustomer({ match }) {
           : cityName
       );
     }
-    if (checkRole && checkRole[3].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [data, cityDropdown, checkRole]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
 
       <PageHeader headerTitle="Edit Customer" />
 
@@ -608,9 +678,9 @@ function EditCustomer({ match }) {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      {stateDropdown && data && (
+                      {stateDropdownData && data && (
                         <Select
-                          options={stateDropdown}
+                          options={stateDropdownData}
                           id="state_id"
                           name="state_id"
                           // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
@@ -631,9 +701,9 @@ function EditCustomer({ match }) {
                     </label>
 
                     <div className="col-sm-4">
-                      {cityDropdown && data && (
+                      {cityDropdownData && data && (
                         <Select
-                          options={cityDropdown}
+                          options={cityDropdownData}
                           id="city_id"
                           name="city_id"
                           // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
@@ -650,7 +720,7 @@ function EditCustomer({ match }) {
               {/* CARD */}
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[3].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-primary">
                     Update
                   </button>

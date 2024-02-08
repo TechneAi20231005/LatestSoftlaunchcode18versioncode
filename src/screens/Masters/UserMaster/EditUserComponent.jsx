@@ -1761,7 +1761,9 @@ import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import {useDispatch,useSelector} from "react-redux"
-import { updateUserData } from "../../Dashboard/DashboardAction";
+import { getAllRoles, getAllUserById, getCityData, getCountryDataSort, getRoles, getStateData, getStateDataSort, updateUserData } from "../../Dashboard/DashboardAction";
+import DashbordSlice, { hideNotification } from "../../Dashboard/DashbordSlice";
+import { getDesignationData } from "../DesignationMaster/DesignationAction";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -1773,27 +1775,31 @@ function EditUserComponent({ match }) {
   const userId=parseInt(id)
 
   
-  const [data, setData] = useState(null);
-  const [accountFor, setAccountFor] = useState(null);
+  // const [data, setData] = useState(null);
+  const [accountFor, setAccountFor] = useState("SELF");
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
+  // const [cityDropdown, setCityDropdown] = useState(null);
 
   const [userDepartment, setUserDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
   const [defaultDepartment, setDefaultDepartment] = useState();
 
-  const [roleDropdown, setRoleDropdown] = useState(null);
+  // const [roleDropdown, setRoleDropdown] = useState(null);
 
   const [dataa, setDataa] = useState({ employee_id: null, departments: null });
 
 
 
   const dispatch = useDispatch()
+
+
+  const data = useSelector(DashbordSlice=>DashbordSlice.dashboard.getAllUser)
+  console.log("ddd",data)
 
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
@@ -1807,7 +1813,7 @@ function EditUserComponent({ match }) {
   };
   const [rows, setRows] = useState([mappingData]);
 
-  const [designationDropdown, setDesignationDropdown] = useState(null);
+  // const [designationDropdown, setDesignationDropdown] = useState(null);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -1828,7 +1834,7 @@ function EditUserComponent({ match }) {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();
@@ -1838,7 +1844,28 @@ function EditUserComponent({ match }) {
 
 
   const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
-
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const roleDropdown = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllRoles
+  );
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
+  const designationDropdown = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
+  const stateDropdown = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.stateData
+  );
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
       setInputState({ ...state, passwordErr: "Please enter Password" });
@@ -1944,6 +1971,8 @@ function EditUserComponent({ match }) {
 
   const [emailError, setEmailError] = useState(null);
   const [mailError, setMailError] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
 
   const handleEmail = (e) => {
     if (e.target.value === "") {
@@ -1993,6 +2022,7 @@ function EditUserComponent({ match }) {
   };
 
   const [whatsappNumber, setWhatsappNumber] = useState(null);
+  const [filteredRoles, setFilteredRoles] = useState([]);
 
   const [whatsappValid, setWhatsappValid] = useState(false);
   const handleWhatsappValidation = (e) => {
@@ -2015,12 +2045,12 @@ function EditUserComponent({ match }) {
     }
   };
 
-  const handleDependent = (e, name) => {
-    setData({
-      ...data,
-      [name]: e.value,
-    });
-  };
+  // const handleDependent = (e, name) => {
+  //   setData({
+  //     ...data,
+  //     [name]: e.value,
+  //   });
+  // };
 
   const handleChangeAccountFor = (e) => {
     setAccountFor(e.target.value);
@@ -2087,190 +2117,195 @@ function EditUserComponent({ match }) {
 
   const loadData = async () => {
     //  **************************Country load data**************************************
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
+    //       setCountryDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** State load data**************************************
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
+    // await new StateService().getState().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data.filter((d) => d.is_active === 1));
 
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-                country_id: d.country_id,
-              }))
-          );
-        }
-      }
-    });
+    //       setStateDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.state,
+    //             country_id: d.country_id,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
     //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.city,
-                state_id: d.state_id,
-              }))
-          );
-        }
-      }
-    });
+    // await new CityService().getCity().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCity(res.data.data.filter((d) => d.is_active === 1));
+    //       setCityDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.city,
+    //             state_id: d.state_id,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        const temp = [];
-        if (res.data.status == 1) {
-          setDepartmentDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.department }))
-          );
-        }
-      }
-    });
+    // await new DepartmentService().getDepartment().then((res) => {
+    //   if (res.status == 200) {
+    //     const temp = [];
+    //     if (res.data.status == 1) {
+    //       setDepartmentDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({ value: d.id, label: d.department }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new RoleService().getRole().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          setRoleDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.role }))
-          );
-        }
-      }
-    });
+    // await new RoleService().getRole().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const data = res.data.data.filter((d) => d.is_active == 1);
+    //       setRoleDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({ value: d.id, label: d.role }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new DesignationService().getDesignation().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          setDesignationDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.designation }))
-          );
-        }
-      }
-    });
+    // await new DesignationService().getDesignation().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const data = res.data.data.filter((d) => d.is_active == 1);
+    //       setDesignationDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({ value: d.id, label: d.designation }))
+    //       );
+    //     }
+    //   }
+    // });
+  // }
+    // const data = [];
+    // await new UserService()
+    //   .getUserById(userId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         const temp = res.data.data;
+    //         setAccountFor(temp.account_for);
+    //         const tempDept = temp.department.map((d) => ({
+    //           value: d.department_id,
+    //           label: d.department_name,
+    //         }));
+    //         setDefaultDepartmentDropdown(tempDept);
+    //         const tempUserDept = temp.department.map((d) => ({
+    //           value: d.department_id,
+    //           label: d.department_name,
+    //         }));
+    //         setUserDepartment(tempUserDept);
+    //         const tempDefaultDept = temp.department
+    //           .filter((d) => d.is_default == 1)
+    //           .map((d) => ({
+    //             value: d.department_id,
+    //             label: d.department_name,
+    //           }));
+    //         setDefaultDepartment(tempDefaultDept);
+    //         setData(null);
+    //         setData(temp);
+    //       } else {
+    //       }
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "Status",
+    //       "Get_Status",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
-    const data = [];
-    await new UserService()
-      .getUserById(userId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = res.data.data;
-            setAccountFor(temp.account_for);
-            const tempDept = temp.department.map((d) => ({
-              value: d.department_id,
-              label: d.department_name,
-            }));
-            setDefaultDepartmentDropdown(tempDept);
-            const tempUserDept = temp.department.map((d) => ({
-              value: d.department_id,
-              label: d.department_name,
-            }));
-            setUserDepartment(tempUserDept);
-            const tempDefaultDept = temp.department
-              .filter((d) => d.is_default == 1)
-              .map((d) => ({
-                value: d.department_id,
-                label: d.department_name,
-              }));
-            setDefaultDepartment(tempDefaultDept);
-            setData(null);
-            setData(temp);
-          } else {
-          }
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    // await new DepartmentMappingService()
+    //   .getDepartmentMappingByEmployeeId(userId)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         const temp = [];
+    //         res.data.data.forEach((d) => {
+    //           temp.push({
+    //             department_id: d.department_id,
+    //             ticket_passing_authority: d.ticket_passing_authority,
+    //             ticket_show_type: d.ticket_show_type,
+    //             is_default: d.is_default,
+    //           });
+    //         });
+    //         setRows(null);
+    //         setRows(temp);
+    //       } else {
+    //         setRows([mappingData]);
+    //       }
+    //     } else {
+    //       setRows([mappingData]);
+    //     }
+    //   });
 
-    await new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(userId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = [];
-            res.data.data.forEach((d) => {
-              temp.push({
-                department_id: d.department_id,
-                ticket_passing_authority: d.ticket_passing_authority,
-                ticket_show_type: d.ticket_show_type,
-                is_default: d.is_default,
-              });
-            });
-            setRows(null);
-            setRows(temp);
-          } else {
-            setRows([mappingData]);
-          }
-        } else {
-          setRows([mappingData]);
-        }
-      });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-          // setRoleMenu(res.data.data.map((menu)=>{ menu.menu_id}))
-        }
-      }
-    });
+  //   await new ManageMenuService().getRole(roleId).then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status == 1) {
+  //         const getRoleId = sessionStorage.getItem("role_id");
+  //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+  //         // setRoleMenu(res.data.data.map((menu)=>{ menu.menu_id}))
+  //       }
+  //     }
+  //   });
   };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
       //setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
+      // setStateDropdown(
+      //   state
+      //     .filter((d) => d.country_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.state }))
+      // );
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
       setStateName(null);
       setCityName(null);
-      setCityDropdown(null);
+      setCityDropdownData(null);
+
     }
     if (type == "STATE") {
       //setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
+      // setCityDropdownData(
+      //   city
+      //     .filter((d) => d.state_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.city }))
+      // );
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
       setStateName(e);
@@ -2343,6 +2378,31 @@ function EditUserComponent({ match }) {
     }
   };
 
+
+
+  const accountForChange = async (account_for) => {
+    setAccountFor(account_for);
+    const accountFor = account_for;
+    const filteredAsAccountFor = roleDropdown.filter((filterData) => {
+      if (accountFor === "SELF") {
+        return filterData.role.toLowerCase() !== "user";
+      } else if (accountFor === "CUSTOMER") {
+        return filterData.role.toLowerCase() === "user";
+      }
+    });
+
+    const response = filteredAsAccountFor
+      ?.filter((d) => d.is_active === 1)
+      .map((d) => ({
+        value: d.id,
+        label: d.role,
+      }));
+    const aa = response.sort(function (a, b) {
+      return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    });
+    setFilteredRoles(aa);
+  }
+
   const handleDeparmentChange = (e) => {
     setDefaultDepartmentDropdown(e);
   };
@@ -2361,15 +2421,53 @@ function EditUserComponent({ match }) {
     if (paste.match(/[-\.]/)) return;
     setValue(paste);
   };
-  // useEffect(()=>{
-  //   if(checkRole && checkRole[2].can_update === 0){
-  //     // alert("Rushi")
+  useEffect(()=>{
+    if(checkRole && checkRole[0]?.can_update === 0){
+      // alert("Rushi")
 
-  //     window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-  //   }
-  // },[checkRole])
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  },[checkRole])
+
   useEffect(() => {
-    loadData();
+    if (Notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 5000); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [Notify, dispatch]);
+  useEffect(() => {
+    // loadData();
+
+    if(!data.length){
+
+      dispatch(getAllUserById(userId))
+    }
+    if(!CountryData.length){
+    dispatch(getCountryDataSort())}
+    if(!stateDropdown){
+      dispatch(getStateDataSort());
+    
+    }
+    if(!stateDropdown){
+      dispatch(getStateData());
+    
+    }
+    if(!AllcityDropDownData.length){
+dispatch(getCityData())
+    }
+    if(!designationDropdown.length){
+      dispatch(getDesignationData())
+    }
+    if(!checkRole.length){
+    dispatch(getRoles());
+    }
+
+    dispatch(getAllRoles())
+
+    // if(!data){
+    // }
   }, []);
   // useEffect(() => {
 
@@ -2391,9 +2489,9 @@ function EditUserComponent({ match }) {
       stateDropdown !== null &&
       updateStatus.statedrp === undefined
     ) {
-      setStateDropdown((prev) =>
-        prev.filter((stateItem) => stateItem.country_id === data.country_id)
-      );
+      // setStateDropdown((prev) =>
+      //   prev.filter((stateItem) => stateItem.country_id === data.country_id)
+      // );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
       setStateName(
@@ -2409,6 +2507,7 @@ function EditUserComponent({ match }) {
   const [isReadOnly, setIsReadOnly] = useState(false);
   function copyTextValue(e) {
     if (e.target.checked) {
+      console.log("e",e.target.checked)
       setIsReadOnly(true);
     } else {
       setIsReadOnly(false);
@@ -2423,25 +2522,25 @@ function EditUserComponent({ match }) {
   useEffect(() => {
     if (
       data !== null &&
-      cityDropdown !== null &&
+      cityDropdownData !== null &&
       updateStatus.citydrp === undefined
     ) {
-      setCityDropdown((prev) =>
-        prev.filter((stateItem) => stateItem.state_id === data.state_id)
-      );
+      // setCityDropdownData((prev) =>
+      //   prev.filter((stateItem) => stateItem.state_id === data.state_id)
+      // );
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
       setCityName(
         data &&
-          cityDropdown &&
-          cityDropdown.filter((d) => d.value == data.city_id)
+          cityDropdownData &&
+          cityDropdownData.filter((d) => d.value == data.city_id)
           ? data &&
-              cityDropdown &&
-              cityDropdown.filter((d) => d.value == data.city_id)
+          cityDropdownData &&
+          cityDropdownData.filter((d) => d.value == data.city_id)
           : cityName
       );
     }
-  }, [data, cityDropdown]);
+  }, [data, cityDropdownData]);
 
   return (
     <div className="container-xxl">
@@ -2471,6 +2570,7 @@ function EditUserComponent({ match }) {
                                   <h5>User Details</h5>
                               </div> */}
                     <div className="card-body">
+                    {localStorage.getItem("account_for") == "SELF" && (
                       <div className="form-group row">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -2483,9 +2583,10 @@ function EditUserComponent({ match }) {
                             id="account_for"
                             name="account_for"
                             value={accountFor ? accountFor : ""}
-                            onChange={(e) => {
-                              setAccountFor(e.target.value);
-                            }}
+                            // onChange={(e) => {
+                            //   setAccountFor(e.target.value);
+                            // }}
+                            onChange={(e) => accountForChange(e.target.value)}
                           >
                             {/* <option value="SELF" selected>{data.accountFor}</option> */}
                             <option value="SELF">SELF</option>
@@ -2493,6 +2594,7 @@ function EditUserComponent({ match }) {
                           </select>
                         </div>
                       </div>
+                    )}
 
                       {accountFor && accountFor === "CUSTOMER" && (
                         <div className="form-group row mt-3">
@@ -2509,6 +2611,7 @@ function EditUserComponent({ match }) {
                               defaultValue={
                                 data.customer_id ? data.customer_id : ""
                               }
+                              
                               readOnly={true}
                               required={true}
                             />
@@ -2763,6 +2866,7 @@ function EditUserComponent({ match }) {
                         <label className="col-sm-2 col-form-label">
                           <b>Whats App Number :</b>
                         </label> */}
+                        {console.log("data**",data)}
                         <div className="col-sm-3">
                           <input
                             type="text"
@@ -3028,15 +3132,15 @@ function EditUserComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          {roleDropdown && (
+                          {filteredRoles && (
                             <Select
                               id="role_id"
                               name="role_id"
-                              options={roleDropdown}
+                              options={filteredRoles}
                               defaultValue={
                                 data &&
-                                roleDropdown &&
-                                roleDropdown.filter(
+                                filteredRoles &&
+                                filteredRoles.filter(
                                   (d) => d.value == data.role_id
                                 )
                               }
@@ -3206,13 +3310,13 @@ function EditUserComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
-                            options={countryDropdown}
+                            options={CountryData}
                             id="country_id"
                             name="country_id"
                             defaultValue={
                               data &&
-                              countryDropdown &&
-                              countryDropdown.filter(
+                              CountryData &&
+                              CountryData.filter(
                                 (d) => d.value == data.country_id
                               )
                             }
@@ -3232,7 +3336,7 @@ function EditUserComponent({ match }) {
                           <Select
                             options={
                               updateStatus.statedrp !== undefined
-                                ? stateDropdown
+                                ? stateDropdownData
                                 : []
                             }
                             id="state_id"
@@ -3251,12 +3355,13 @@ function EditUserComponent({ match }) {
                           <b>City : </b>
                         </label>
 
-                        {cityDropdown && (
+                        {cityDropdownData && (
                           <div className="col-sm-4">
                             <Select
                               options={
                                 updateStatus.citydrp !== undefined
-                                  ? cityDropdown
+                                  ? cityDropdownData
+
                                   : []
                               }
                               id="city_id"

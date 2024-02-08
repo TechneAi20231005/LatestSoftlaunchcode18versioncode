@@ -2033,39 +2033,39 @@ function CreateUserComponent({ match }) {
     //   }
     // });
     //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.city,
-              }))
-          );
-        }
-      }
-    });
+    // await new CityService().getCity().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCity(res.data.data.filter((d) => d.is_active === 1));
+    //       setCityDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.city,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        const temp = [];
+    // await new DepartmentService().getDepartment().then((res) => {
+    //   if (res.status == 200) {
+    //     const temp = [];
 
-        if (res.data.status == 1) {
-          // setDepartment(res.data.data.filter(d => d.is_active === 1));
-          setDepartmentDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.department,
-              }))
-          );
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       // setDepartment(res.data.data.filter(d => d.is_active === 1));
+    //       setDepartmentDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.department,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
     // await new RoleService().getRole().then((res) => {
     //   if (res.status == 200) {
@@ -2110,20 +2110,20 @@ function CreateUserComponent({ match }) {
     //   }
     // });
 
-    await new CustomerService().getCustomer().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setCustomerDrp(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.name,
-              }))
-          );
-        }
-      }
-    });
+    // await new CustomerService().getCustomer().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       setCustomerDrp(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.name,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -2354,12 +2354,24 @@ function CreateUserComponent({ match }) {
     });
   }
   useEffect(() => {
-    loadData();
-    dispatch(getRoles());
-    dispatch(getDesignationData());
-    dispatch(getStateDataSort());
-    dispatch(getAllRoles());
-    dispatch(getStateData());
+    // loadData();
+    if(!checkRole.length){
+
+      dispatch(getRoles());
+    }
+if(!designationDropdown.length){
+  dispatch(getDesignationData());
+
+}
+if(!stateDropdown){
+  dispatch(getStateDataSort());
+
+}
+
+if(!stateDropdown){
+  dispatch(getStateData());
+
+}
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
