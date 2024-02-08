@@ -244,7 +244,6 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-            
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
@@ -1062,18 +1061,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    {
-      name: "Solved Date",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_date,
-      sortable: true,
-    },
-    {
-      name: "Solved By",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+    // {
+    //   name: "Solved Date",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_date,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Solved By",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_by,
+    //   sortable: true,
+    // },
   ];
 
   const assignedToMeColumns = [
@@ -1181,18 +1180,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    {
-      name: "Solved Date",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_date,
-      sortable: true,
-    },
-    {
-      name: "Solved By",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+    // {
+    //   name: "Solved Date",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_date,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Solved By",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_by,
+    //   sortable: true,
+    // },
   ];
 
   const createdByMeColumns = [
@@ -1307,18 +1306,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    {
-      name: "Solved Date",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_date,
-      sortable: true,
-    },
-    {
-      name: "Solved By",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+    // {
+    //   name: "Solved Date",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_date,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Solved By",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_by,
+    //   sortable: true,
+    // },
   ];
 
   const handleCheckboxChangee = (row) => {
@@ -1497,18 +1496,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    {
-      name: "Solved Date",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_date,
-      sortable: true,
-    },
-    {
-      name: "Solved By",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+    // {
+    //   name: "Solved Date",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_date,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Solved By",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_by,
+    //   sortable: true,
+    // },
   ];
 
   const departmentwisetTicketColumns = [
@@ -1627,18 +1626,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    {
-      name: "Solved Date",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_date,
-      sortable: true,
-    },
-    {
-      name: "Solved By",
-      maxWidth: "auto",
-      selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+    // {
+    //   name: "Solved Date",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_date,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Solved By",
+    //   maxWidth: "auto",
+    //   selector: (row) => row.ticket_solved_by,
+    //   sortable: true,
+    // },
   ];
 
   const loadData = async () => {
@@ -1701,7 +1700,6 @@ export default function MyTicketComponent() {
             tempData.push({
               value: temp[key].id,
               label: temp[key].department,
-              
             });
           }
         }
@@ -1723,8 +1721,8 @@ export default function MyTicketComponent() {
             tempData.push({
               value: temp[key].id,
               label: temp[key].status,
-              ticket_solved_date:temp[key].ticket_solved_date,
-              ticket_solved_by:temp[key].ticket_solved_by
+              ticket_solved_date: temp[key].ticket_solved_date,
+              ticket_solved_by: temp[key].ticket_solved_by,
             });
           }
         }
@@ -1807,8 +1805,8 @@ export default function MyTicketComponent() {
               sub_module_name: dataAssignToMe[key].sub_module_name,
               Template_id: dataAssignToMe[key].template_id,
               Tenant_id: dataAssignToMe[key].tenant_id,
-              ticket_solved_date:dataAssignToMe[key].ticket_solved_date,
-              ticket_solved_by:dataAssignToMe[key].ticket_solved_by
+              ticket_solved_date: dataAssignToMe[key].ticket_solved_date,
+              ticket_solved_by: dataAssignToMe[key].ticket_solved_by,
             });
           }
 
@@ -1825,8 +1823,6 @@ export default function MyTicketComponent() {
       }
     });
   };
-
-
 
   const handlePassTicketForm = async (e) => {
     try {
@@ -1862,8 +1858,6 @@ export default function MyTicketComponent() {
     }
   };
 
- 
-
   const handleForm = async (e) => {
     // e.preventDefault();
     // const formData = new FormData(e.target);
@@ -1880,7 +1874,7 @@ export default function MyTicketComponent() {
               setSearchResult(null);
               setSearchResult(res.data.data);
               const temp = res.data.data;
-            
+
               var counter = 1;
               var searchResultExport = [];
               for (const key in temp) {
@@ -1917,8 +1911,8 @@ export default function MyTicketComponent() {
                   sub_module_name: temp[key].sub_module_name,
                   Template_id: temp[key].template_id,
                   Tenant_id: temp[key].tenant_id,
-                  ticket_solved_date:temp[key].ticket_solved_date,
-                  ticket_solved_by:temp[key].ticket_solved_by
+                  ticket_solved_date: temp[key].ticket_solved_date,
+                  ticket_solved_by: temp[key].ticket_solved_by,
                 });
               }
               setKey("Search_Result");
@@ -1954,8 +1948,6 @@ export default function MyTicketComponent() {
     }
   };
 
-
-
   const handleChangeStatus = (e) => {
     setStatusValue(e);
   };
@@ -1965,8 +1957,6 @@ export default function MyTicketComponent() {
   const handleChangeEntryUser = (e) => {
     setEntryUser(e);
   };
-
-
 
   const handleClearData = (e) => {
     if (selectInputRef.current.commonProps.hasValue != null) {
@@ -1988,7 +1978,6 @@ export default function MyTicketComponent() {
       document.getElementById("ticket_id").value = "";
     }
   };
-  
 
   const handleFromDate = (e) => {
     setStartDate(e.target.value);
@@ -2045,8 +2034,8 @@ export default function MyTicketComponent() {
                   STATUS: temp[key].status_name,
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
-                  ticket_solved_date:temp[key].ticket_solved_date,
-                  ticket_solved_by:temp[key].ticket_solved_by
+                  ticket_solved_date: temp[key].ticket_solved_date,
+                  ticket_solved_by: temp[key].ticket_solved_by,
                 });
               }
               setKey("Search_Result");
@@ -2085,8 +2074,8 @@ export default function MyTicketComponent() {
                   Status_name: temp[key].status_name,
                   sub_module_name: temp[key].sub_module_name,
                   Template_id: temp[key].template_id,
-                  ticket_solved_date:temp[key].ticket_solved_date,
-                  ticket_solved_by:temp[key].ticket_solved_by,
+                  ticket_solved_date: temp[key].ticket_solved_date,
+                  ticket_solved_by: temp[key].ticket_solved_by,
                   Tenant_id: temp[key].tenant_id,
                 });
               }
@@ -2115,7 +2104,6 @@ export default function MyTicketComponent() {
     }
   };
 
-
   const handleAssignedDepartment = (e) => {
     const deptAssignedUser = [];
     for (var i = 0; i < e.length; i++) {
@@ -2133,7 +2121,6 @@ export default function MyTicketComponent() {
     setAssignedDepartment(e);
   };
 
- 
   const handleAssignedToMeTab = async (k, e) => {
     e.preventDefault();
     var form;
@@ -2210,8 +2197,6 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
-   
-
 
             setUnpassedTickets(res.data.data.data);
           }
@@ -2225,40 +2210,41 @@ export default function MyTicketComponent() {
     var form;
     if (type == "LIMIT") {
       const limit = parseInt(e.target.value);
-      const typeOf = type;
-      // const currentPage = limit <
       form = {
         limit: limit,
         typeOf: "AssignToMe",
-        page: 1,
+        page: 1, // Resetting to the first page when limit changes
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "AssignToMe",
         page: assignedToMeData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "AssignToMe",
         page: assignedToMeData.current_page + 1,
       };
     }
 
+
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var newSr = res.data.data.from;
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setAssignedToMe({ ...assignedToMeData, current_page: res.data.data.current_page });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setAssignedToMeData({
+              ...assignedToMeData,
+              current_page: assignedToMeData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2271,30 +2257,34 @@ export default function MyTicketComponent() {
         page: createdByMeData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "CreatedByMe",
         page: createdByMeData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "CreatedByMe",
         page: createdByMeData.current_page + 1,
       };
     }
+
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setCreatedByMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setCreatedByMe({ ...createdByMeData, current_page: res.data.data.current_page });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setCreatedByMeData({
+              ...createdByMeData,
+              current_page: createdByMeData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2321,17 +2311,23 @@ export default function MyTicketComponent() {
       };
     }
 
+
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setDepartmentwiseTicket(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
-          setDepartmentwiseTicket({ ...departmentWiseData, current_page: res.data.data.current_page });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setDepartmentWiseData({
+              ...departmentWiseData,
+              current_page: departmentWiseData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+}
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2344,32 +2340,34 @@ export default function MyTicketComponent() {
         page: yourTaskData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "YouTask",
         page: yourTaskData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "YouTask",
         page: yourTaskData.current_page + 1,
       };
     }
+
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setYourTask(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-        
           );
-          setYourTask({ ...yourTaskData, current_page: res.data.data.current_page });
+          if (type == "PLUS" && res.data.data.data.length > 0) {
+            setYourTaskData({
+              ...yourTaskData,
+              current_page: yourTaskData.current_page + 1,
+            });
+          }
         }
       }
     });
-  };
+};
 
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2384,28 +2382,27 @@ export default function MyTicketComponent() {
     } else if (type == "MINUS") {
       // const limit = parseInt(e.target.value)
       form = {
-    
         typeOf: "UnPassed",
         page: unpassedData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-     
         typeOf: "UnPassed",
         page: unpassedData.current_page + 1,
-      }
-    } else{
-      return
+      };
+    } else {
+      return;
     }
 
 
-
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
-  
       if (res.status === 200) {
         if (res.data.status == 1) {
           setUnpassedTickets(res.data.data.data);
-          setUnpassedData({ ...unpassedData, current_page: res.data.data.current_page });
+          setUnpassedData({
+            ...unpassedData,
+            current_page: res.data.data.current_page,
+          });
         }
       }
     });
@@ -2437,12 +2434,10 @@ export default function MyTicketComponent() {
     if (location && location.state) {
       setNotify(location.state);
     }
-    return () =>{
-      setNotify(null)
-    }
+    return () => {
+      setNotify(null);
+    };
   }, []);
-
-  
 
   useEffect(() => {
     if (checkRole && checkRole[15].can_read === 0) {

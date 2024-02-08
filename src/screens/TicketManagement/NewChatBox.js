@@ -16,12 +16,12 @@ const Chatbox = props => {
   const handleComment = async e => {
     e.preventDefault()
     setMessage('')
-    const newMessage = message.replace(/\[|\]/g, '');
+      const mentionsString=mentionId.join(',')
     await new MyTicketService()
       .postComment({
         ticket_id: ticketId,
-        comment: newMessage,
-        mentions_id: mentionId
+        comment: message,
+        mentions_id: mentionsString
       })
       .then(res => {
         loadComment()
