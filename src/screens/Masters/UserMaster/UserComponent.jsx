@@ -685,10 +685,9 @@ function UserComponent( ) {
   const loadData = async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    try {
-      dispatch(getEmployeeData())
-    } catch (error) {
-    }
+    // try {
+    // } catch (error) {
+    // }
    
     const data = [];
     const exportTempData = [];

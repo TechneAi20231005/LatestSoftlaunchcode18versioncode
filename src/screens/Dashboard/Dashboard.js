@@ -6235,7 +6235,7 @@ import {
 
 import {useSelector,useDispatch} from "react-redux"
 import { _base } from "../../settings/constants";
-import { getAllDashboardData, getCityData, getCountryData, getEmployeeData, getNotifications, getStateData } from "./DashboardAction";
+import { getAllDashboardData, getAllUserById, getCityData, getCountryData, getCountryDataSort, getCustomerData, getCustomerType, getEmployeeData, getNotifications, getStateData, getStateDataSort } from "./DashboardAction";
 import { dashboardSlice } from "./DashbordSlice";
 import { getRoles } from "./DashboardAction";
 import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
@@ -6394,6 +6394,12 @@ dispatch(getNotifications())
 dispatch(getAllDashboardData())
 dispatch(getRoles());
     dispatch(getDesignationData());
+    dispatch(getCountryData())
+   dispatch(getStateDataSort())
+   dispatch(getCountryDataSort())
+   dispatch(getCustomerData())
+   dispatch(getCustomerType())
+   dispatch(getAllUserById())
 }
 
   useEffect(() => {

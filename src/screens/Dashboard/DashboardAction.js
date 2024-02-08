@@ -85,6 +85,7 @@ import DesignationService from "../../services/MastersService/DesignationService
 import DynamicFormService from "../../services/MastersService/DynamicFormService";
 import CustomerService from "../../services/MastersService/CustomerService";
 import RoleService from "../../services/MastersService/RoleService";
+import CustomerTypeService from "../../services/MastersService/CustomerTypeService";
 
 export const getCityData = createAsyncThunk("getCityData",async(config,thunkapi)=>{
     try{
@@ -226,6 +227,9 @@ export const getEmployeeData = createAsyncThunk("getEmployeeData",async(config,t
 
 
 
+
+
+
 export const postUserData = createAsyncThunk("postUserData",async(config,thunkapi)=>{
     try{
         const service = new UserService();
@@ -342,3 +346,73 @@ export const getCustomerData = createAsyncThunk(
       throw error;
     }
   })
+
+
+  export const getCustomerType = createAsyncThunk(
+    "getCustomerType",
+    async (config, thunkapi) => {
+      try {
+        const service = new CustomerTypeService();
+        const response = await service.getCustomerType();
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    })
+
+
+    export const postCustomerData = createAsyncThunk(
+        "postCustomerData",
+        async (config, thunkapi) => {
+          try {
+            const service = new CustomerService();
+            const response = await service.postCustomer(config);
+      
+            return response;
+          } catch (error) {
+            throw error;
+          }
+        })
+
+        export const getCustomerByIdData = createAsyncThunk(
+            "getCustomerByIdData",
+            async (config, thunkapi) => {
+              try {
+                const service = new CustomerService();
+                const response = await service.getCustomerById(config);
+          
+                return response;
+              } catch (error) {
+                throw error;
+              }
+            })
+
+            export const updateCustomerData = createAsyncThunk(
+                "updateCustomerData",
+                async (config, thunkapi) => {
+                  try {
+                    const service = new CustomerService();
+                    const response = await service.updateCustomer(config.id,config.payload);
+                    return response;
+                  } catch (error) {
+                    throw error;
+                  }
+                })
+
+
+                export const getAllUserById = createAsyncThunk(
+                    "getAllUserById",
+                    async (config, thunkapi) => {
+                        console.log("res",config)
+                      try {
+                        const service = new UserService();
+                        const response = await service.getUserById(config);
+                        console.log("r",response)
+                        return response;
+                      } catch (error) {
+                        throw error;
+                      }
+                    })
+        
+    

@@ -701,6 +701,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   dashboardSlice,
   handleModalClose,
+  hideNotification,
 } from "../../Dashboard/DashbordSlice";
 import {
   getCountryDataSort,
@@ -738,12 +739,16 @@ function StateComponent() {
   const stateData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.stateData
   );
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6));
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
+  );
 
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
+
+  console.log("n", Notify);
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -974,8 +979,7 @@ function StateComponent() {
         dispatch(postStateData(form)).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getStateData());
-          }else{
-            
+          } else {
           }
         });
 
@@ -1014,7 +1018,7 @@ function StateComponent() {
         //   });
       } else {
         dispatch(updateStateData({ id: id, payload: form }));
-      dispatch(getStateData());
+        dispatch(getStateData());
 
         // await new StateService()
         //   .updateState(id, form)
@@ -1068,12 +1072,22 @@ function StateComponent() {
   useEffect(() => {
     loadData();
     // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
-    if (!stateData.length) {
+    if (!stateData.length || !checkRole.length) {
       dispatch(getStateData());
       // dispatch(getCountryDataSort());
-      dispatch(getRoles())
+      dispatch(getRoles());
     }
   }, []);
+
+  useEffect(() => {
+    if (Notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 1500); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [Notify, dispatch]);
+
 
   return (
     <div className="container-xxl">
@@ -1343,7 +1357,7 @@ function StateComponent() {
               </button>
             )}
 
-            {console.log("c==",checkRole)}
+            {console.log("c==", checkRole)}
             {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"

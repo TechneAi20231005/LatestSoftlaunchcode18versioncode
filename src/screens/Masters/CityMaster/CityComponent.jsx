@@ -843,7 +843,7 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { handleModalInStore,handleModalClose } from "../../Dashboard/DashbordSlice";
+import { handleModalInStore,handleModalClose, hideNotification } from "../../Dashboard/DashbordSlice";
 import {loaderModal} from "../../Dashboard/DashbordSlice"
 import { Spinner } from "react-bootstrap";
 import { dashboardSlice } from "../../Dashboard/DashbordSlice";
@@ -893,12 +893,10 @@ function CityComponent() {
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
   const StateData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredStateData)
   const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard?.filteredCountryData)
-  const States = useSelector((dashboardSlice)=>dashboardSlice.dashboard)
 
   const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCityData)
 
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7));
-console.log("ci",checkRole)
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -1299,7 +1297,7 @@ console.log("ci",checkRole)
   useEffect(() => {
     // loadData();
 
-    if(!cityData.length){
+    if(!cityData.length || !checkRole.length || !StateData.length || !CountryData.length){
       dispatch(getCityData());
        dispatch(getRoles())
        dispatch(getCountryData())
@@ -1339,6 +1337,16 @@ console.log("ci",checkRole)
       }
     }
   }, [modal.showModal, checkRole]);
+
+
+  useEffect(() => {
+    if (Notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 1500); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [Notify, dispatch]);
 
   return (
     <div className="container-xxl">

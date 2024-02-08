@@ -655,7 +655,7 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import DataTableExtensions from "react-data-table-component-extensions";
 import { Spinner } from "react-bootstrap";
 import {useDispatch,useSelector} from "react-redux"
-import { dashboardSlice } from "../../Dashboard/DashbordSlice";
+import { dashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
 import { getCountryData, getRoles, postCountryData, updateCountryData } from "../../Dashboard/DashboardAction";
 import { handleModalInStore,handleModalClose,loaderModal } from "../../Dashboard/DashbordSlice";
 
@@ -919,6 +919,8 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
       //   });
     } else {
       dispatch(updateCountryData({id:id,payload:form}))
+  dispatch(getCountryData())
+
       // await new CountryService()
       //   .updateCountry(id, form)
       //   .then((res) => {
@@ -977,11 +979,20 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   useEffect(()=>{
     loadData()
 
-if(!countryData.length){
+if(!countryData.length || !checkRole.length){
   dispatch(getCountryData())
 dispatch(getRoles())
 
   }},[])
+
+  useEffect(() => {
+    if (Notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 1500); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [Notify, dispatch]);
 
   return (
     <div className="container-xxl">
