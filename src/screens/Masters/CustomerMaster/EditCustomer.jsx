@@ -320,14 +320,14 @@ console.log("dddd",data)
     setCityName(null);
   };
 
-  useEffect(() => {
-    if (Notify) {
-      const timer = setTimeout(() => {
-        dispatch(hideNotification());
-      }, 5000); // Adjust the timeout duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [Notify, dispatch]);
+  // useEffect(() => {
+  //   if (Notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 5000); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [Notify, dispatch]);
 
   useEffect(() => {
     if(!data.length){
