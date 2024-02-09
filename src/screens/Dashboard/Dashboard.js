@@ -6239,6 +6239,13 @@ import { getAllDashboardData, getAllUserById, getCityData, getCountryData, getCo
 import { dashboardSlice } from "./DashbordSlice";
 import { getRoles } from "./DashboardAction";
 import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
+import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
+import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
+import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
+import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
+import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
+import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
+import { getParentDropdown, taskAndTicketMaster } from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
 
 
 
@@ -6400,6 +6407,15 @@ dispatch(getRoles());
    dispatch(getCustomerData())
    dispatch(getCustomerType())
    dispatch(getAllUserById())
+   dispatch(departmentData());
+   dispatch(getRoleData());
+   dispatch(getStatusData())
+   dispatch(getCustomerTypeData())
+   dispatch(templateData())
+   dispatch(testingData());
+   dispatch(taskAndTicketMaster ())
+   dispatch(getParentDropdown())
+
 }
 
   useEffect(() => {

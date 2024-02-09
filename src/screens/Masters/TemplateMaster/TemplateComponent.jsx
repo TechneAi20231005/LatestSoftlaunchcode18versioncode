@@ -100,8 +100,7 @@ function TemplateComponent() {
   ];
 
   const loadData = async () => {
-    dispatch(templateData())
-    dispatch(getRoles())
+  
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
     // const data = [];
@@ -186,6 +185,11 @@ function TemplateComponent() {
 
   useEffect(() => {
     loadData();
+
+    if(!templatedata.length){
+      dispatch(templateData())
+      dispatch(getRoles())
+    }
     if (location && location.state) {
       setNotify(location.state.notify);
     }

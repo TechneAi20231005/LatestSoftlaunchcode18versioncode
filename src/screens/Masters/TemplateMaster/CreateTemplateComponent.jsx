@@ -22,29 +22,22 @@ import {
   postTemplateData,
 } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import TemplateComponetSlice from "./TemplateComponetSlice";
+import { handleModalClose,handleModalOpen } from "./TemplateComponetSlice"
+
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-import MyTicketComponentSlice from "../../TicketManagement/MyTicketComponentSlice";
+
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
-  );
-  const parent = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
-  );
-  const taskTypeDropdown = useSelector(
-    (TemplateComponetSlice) =>
-      TemplateComponetSlice.tempateMaster.getAllTypeData
-  );
-  const userData = useSelector(
-    (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
-  );
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15) );
+  const parent = useSelector((TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData);
+  const taskTypeDropdown = useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.getAllTypeData);
+  const userData = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
+  const notify=useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.notify);
+  const editTaskModal=useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.modal);
 
-  const [notify, setNotify] = useState(null);
+
   const roleId = sessionStorage.getItem("role_id");
 
   // const [checkRole, setCheckRole] = useState(null);
@@ -85,8 +78,6 @@ const CreateTemplateComponent = () => {
       setData(res.data.data);
     });
 
-    dispatch(getParentData());
-
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status === 1) {
@@ -104,8 +95,6 @@ const CreateTemplateComponent = () => {
     //   }
     // });
 
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
     // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -119,8 +108,7 @@ const CreateTemplateComponent = () => {
     //     }
     //   }
     // });
-    dispatch(getUserForMyTicketsData(inputRequired));
-    dispatch(getRoles());
+
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
@@ -236,7 +224,7 @@ const CreateTemplateComponent = () => {
     }
   };
   const submitHandler = (e) => {
-    setNotify(null);
+    // setNotify(null);
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -245,10 +233,10 @@ const CreateTemplateComponent = () => {
       }
     });
     if (a > 0) {
-      setNotify(null);
-      setNotify({ type: "warning", message: "Add Data" });
+      // setNotify(null);
+      // setNotify({ type: "warning", message: "Add Data" });
     } else {
-      setNotify(null);
+      // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
           navigate(`/${_base}/Template`);
@@ -333,18 +321,18 @@ const CreateTemplateComponent = () => {
     }
     setShow(false);
   };
-  const [editTaskModal, setEditTaskModal] = useState({
-    showModal: false,
-    modalData: "",
-    basketIndex: "",
-    taskIndex: "",
-    modalHeader: "",
-  });
+  // const [editTaskModal, setEditTaskModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   basketIndex: "",
+  //   taskIndex: "",
+  //   modalHeader: "",
+  // });
 
   // {({showModal:true, modalData:task}, i, index)}
-  const handleEditTask = (data, basketIndex, idx) => {
-    setEditTaskModal(data);
-  };
+  // const handleEditTask = (data, basketIndex, idx) => {
+  //   setEditTaskModal(data);
+  // };
 
   const handleCancelTask = (e) => {
     setShow(false);
@@ -372,7 +360,17 @@ const CreateTemplateComponent = () => {
     });
   };
   useEffect(() => {
-    loadData();
+    if (!parent.length) {
+      dispatch(getParentData());
+    }
+    if (!userData.length) {
+      const inputRequired =
+        "id,employee_id,first_name,last_name,middle_name,is_active";
+      dispatch(getUserForMyTicketsData(inputRequired));
+    }
+    if (!checkRole.length) {
+      dispatch(getRoles());
+    }
   }, []);
 
   useEffect(() => {
@@ -587,12 +585,13 @@ const CreateTemplateComponent = () => {
                             style={{ width: "50px" }}
                             className="btn btn-sm btn-info"
                             onClick={(e) => {
-                              handleEditTask({
+                              dispatch(
+                              handleModalOpen({
                                 showModal: true,
                                 modalData: task,
                                 basketIndex: basketIndex,
                                 taskIndex: idx,
-                              });
+                              }));
                             }}
                           >
                             <i className="icofont-ui-edit"></i>
@@ -651,11 +650,12 @@ const CreateTemplateComponent = () => {
                             centered
                             show={editTaskModal.showModal}
                             onHide={(e) => {
-                              handleEditTask({
+                              dispatch(
+                              handleModalClose({
                                 showModal: false,
                                 modalData: "",
                                 modalHeader: "",
-                              });
+                              }));
                             }}
                           >
                             <Modal.Body>
@@ -683,7 +683,8 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                       defaultValue={
-                                        editTaskModal.modalData.task_name
+                                        editTaskModal
+                                        ?.modalData?.task_name
                                       }
                                       className="form-control form-control-sm"
                                     />
@@ -716,7 +717,7 @@ const CreateTemplateComponent = () => {
                                         parent.filter(
                                           (d) =>
                                             d.value ==
-                                            editTaskModal.modalData.parent_id
+                                            editTaskModal?.modalData?.parent_id
                                         )
                                       }
                                     />
@@ -751,7 +752,7 @@ const CreateTemplateComponent = () => {
                                         taskTypeDropdown.filter(
                                           (d) =>
                                             d.value ==
-                                            editTaskModal.modalData.task_type_id
+                                            editTaskModal?.modalData?.task_type_id
                                         )
                                       }
                                     />
@@ -775,7 +776,7 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                       defaultValue={
-                                        editTaskModal.modalData.days
+                                        editTaskModal?.modalData?.days
                                       }
                                       className="form-control form-control-sm"
                                     />
@@ -800,7 +801,7 @@ const CreateTemplateComponent = () => {
                                       }
                                       className="form-control form-control-sm"
                                       defaultValue={
-                                        editTaskModal.modalData.total_time
+                                        editTaskModal?.modalData?.total_time
                                       }
                                     />
                                   </div>
@@ -823,7 +824,7 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                       defaultValue={
-                                        editTaskModal.modalData.start_days
+                                        editTaskModal?.modalData?.start_days
                                       }
                                       className="form-control form-control-sm"
                                     />
@@ -838,11 +839,12 @@ const CreateTemplateComponent = () => {
                                   <button
                                     type="button"
                                     onClick={(e) =>
-                                      handleEditTask({
+                                      dispatch(
+                                      handleModalClose({
                                         showModal: false,
                                         modalData: "",
                                         modalHeader: "",
-                                      })
+                                      }))
                                     }
                                     className="btn btn-sm btn-primary"
                                     style={{ backgroundColor: "#484C7F" }}
@@ -854,11 +856,12 @@ const CreateTemplateComponent = () => {
                                     type="button"
                                     className="btn btn-sm btn-danger"
                                     onClick={(e) =>
-                                      handleEditTask({
+                                      dispatch(
+                                      handleModalClose({
                                         showModal: false,
                                         modalData: "",
                                         modalHeader: "",
-                                      })
+                                      }))
                                     }
                                   >
                                     Cancel
