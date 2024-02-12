@@ -55,12 +55,8 @@ const EditTemplateComponent = ({ match, props }) => {
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.addBasketModal
   );
-  const addTaskModal = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal
-  );
-  const basketId = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId
-  );
+  const addTaskModal = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal);
+  const basketId = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId );
 
   // const [notify, setNotify] = useState(null);
 
