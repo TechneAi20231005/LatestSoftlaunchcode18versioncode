@@ -16,6 +16,10 @@ import DatePicker from 'react-date-picker';
 import *  as Validation from '../../../components/Utilities/Validation';
 import NavbarCollapse from 'react-bootstrap/esm/NavbarCollapse';
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { UseDispatch,useDispatch,useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import DynamicFormDropDownSlice from '../DynamicFormDropdown/Slices/DynamicFormDropDownSlice';
+import { getAllDropDownData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
 
 
 function CreateDynamicForm() {
@@ -44,6 +48,12 @@ function CreateDynamicForm() {
         }
     };
 
+const dispatch = useDispatch()
+
+    const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
+    const dropdown=useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.dropDownData)
+
+
     const [rows, setRows] = useState([mainJson]);
     const [labelNames, setLabelNames] = useState([]);
 
@@ -51,11 +61,11 @@ function CreateDynamicForm() {
 
     const [index, setIndex] = useState({ index: 0 });
 
-    const [dropdown, setDropdown] = useState({ index: 0 });
+    // const [dropdown, setDropdown] = useState({ index: 0 });
 
     const [inputDataSource, setInputDataSource] = useState();
     const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+//   const [checkRole, setCheckRole] = useState(null);
     const [radioSelect, setRadioSelect] = useState()
     const [checkboxSelect, setCheckboxSelect] = useState()
 
@@ -320,29 +330,29 @@ function CreateDynamicForm() {
     }
 
     const loadData = async () => {
-        await new DynamicFormDropdownMasterService().getAllDropdown().then((res) => {
-            if (res.status == 200) {
-                if (res.data.status == 1) {
-                    // const temp=[];
-                    // res.data.data.forEach(d=>{
-                    //     temp.push({'label':d.dropdown_name,'value':d.id});
-                    // })
-                    // setDropdown(temp);
+        // await new DynamicFormDropdownMasterService().getAllDropdown().then((res) => {
+        //     if (res.status == 200) {
+        //         if (res.data.status == 1) {
+        //             // const temp=[];
+        //             // res.data.data.forEach(d=>{
+        //             //     temp.push({'label':d.dropdown_name,'value':d.id});
+        //             // })
+        //             // setDropdown(temp);
 
-                    setDropdown(res.data.data.map((d) => ({ label: d.dropdown_name, value: d.id })))
-                }
-            }
-        })
+        //             setDropdown(res.data.data.map((d) => ({ label: d.dropdown_name, value: d.id })))
+        //         }
+        //     }
+        // })
         
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-            //   setShowLoaderModal(false);
-              if (res.data.status == 1) {
-                const getRoleId = sessionStorage.getItem("role_id");
-                setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-              }
-            }
-          });
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //     //   setShowLoaderModal(false);
+        //       if (res.data.status == 1) {
+        //         const getRoleId = sessionStorage.getItem("role_id");
+        //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+        //       }
+        //     }
+        //   });
 
     }
 
@@ -354,11 +364,19 @@ function CreateDynamicForm() {
 
     useEffect(() => {
         loadData();
+
+        if(!checkRole.length){
+            dispatch(getRoles())
+          }
+
+          if(!dropdown.length){
+            dispatch(getAllDropDownData())
+          }
     }, [rows])
 
 
     useEffect(() => {
-        if(checkRole && checkRole[13].can_create === 0){
+        if(checkRole && checkRole[0]?.can_create === 0){
             // alert("Rushi")
 
             window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  

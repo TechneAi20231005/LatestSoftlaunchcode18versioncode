@@ -21,6 +21,7 @@ const initialState = {
   postprojectData: "",
   updateprojectMaster: [],
   getprojectData: [],
+  projectDropDownData:[]
 };
 
 export const ProjectMasterSlice = createSlice({
@@ -67,6 +68,9 @@ export const ProjectMasterSlice = createSlice({
           getproject[i].counter = count++;
         }
         state.getproject = [...getproject];
+
+        let projectDropDownData = payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.project_name }))
+        state.projectDropDownData = projectDropDownData
       }
     });
     builder.addCase(getprojectData.rejected, (state) => {

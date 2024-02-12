@@ -348,6 +348,8 @@ import "react-data-table-component-extensions/dist/index.css";
 import { Astrick } from "../../../components/Utilities/Style";
 import *  as Validation from '../../../components/Utilities/Validation';
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import {useDispatch,useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditDropdownComponent({ match }) {
 
@@ -357,8 +359,12 @@ export default function EditDropdownComponent({ match }) {
     const [data, setData] = useState([{ id: null, label: null, value: null }]);
     const [notify, setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
+const dispatch=useDispatch()
+
+const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35));
+
 
     const handleChange = idx => e => {
 
@@ -387,16 +393,16 @@ export default function EditDropdownComponent({ match }) {
             // new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
         })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-              // setShowLoaderModal(false);
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //       // setShowLoaderModal(false);
       
-              if (res.data.status == 1) {
-                const getRoleId = sessionStorage.getItem("role_id");
-                setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-              }
-            }
-          })
+        //       if (res.data.status == 1) {
+        //         const getRoleId = sessionStorage.getItem("role_id");
+        //         setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //       }
+        //     }
+        //   })
     }
 
 
@@ -454,10 +460,13 @@ export default function EditDropdownComponent({ match }) {
 
     useEffect(() => {
         loadData();
+        if(!checkRole.length){
+            dispatch(getRoles())
+          }
     }, [])
 
     useEffect(()=>{
-        if(checkRole && checkRole[36].can_update === 0){
+        if(checkRole && checkRole[0]?.can_update === 0){
           // alert("Rushi")
     
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  

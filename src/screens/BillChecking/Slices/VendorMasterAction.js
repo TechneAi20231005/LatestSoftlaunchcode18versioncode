@@ -62,6 +62,15 @@ export const downloadFormatData = createAsyncThunk("downloadFormat",async(payloa
         throw(error)
     }
 })
+export const getAllActiveState = createAsyncThunk("getAllActiveState",async(payload,thunkapi)=>{
+    try{
+        const service = new VendorMasterService()
+        const response = await service.getActiveState()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
 
 
 

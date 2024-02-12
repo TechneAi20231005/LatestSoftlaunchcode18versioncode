@@ -241,8 +241,8 @@ const initialState = {
   customerTypeData:[]
 };
 
-export const dashboardSlice = createSlice({
-  name: "dashboradSlice",
+export const DashbordSlice = createSlice({
+  name: "DashboradSlice",
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -803,6 +803,7 @@ export const dashboardSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoles = payload.data.data;
+        console.log("get",getRoles)
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -1091,5 +1092,5 @@ state.exportCustomerData = exportCustomerData
 });
 
 export const { handleModalInStore, handleModalClose, loaderModal,hideNotification } =
-  dashboardSlice.actions;
-export default dashboardSlice.reducer;
+  DashbordSlice.actions;
+export default DashbordSlice.reducer;

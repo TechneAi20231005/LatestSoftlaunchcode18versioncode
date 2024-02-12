@@ -918,7 +918,7 @@ export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const {id} = useParams()
   const ticketId = id
-
+console.log("t",ticketId)
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
@@ -1365,6 +1365,7 @@ export default function TaskComponent({ match }) {
     );
   }
 
+  {console.log("task",tasksData)}
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Manage Task" />

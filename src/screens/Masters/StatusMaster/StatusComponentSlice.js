@@ -13,6 +13,8 @@ const initialState = {
   exportStatusData:[],
 
   getStatusData: [],
+  sortStatusData:[],
+  filterStatus:[]
 };
 
 export const statusMasterSlice = createSlice({
@@ -46,6 +48,21 @@ export const statusMasterSlice = createSlice({
             getStatusData[i].counter = count++;
         }
         state.getStatusData = [...getStatusData];
+
+        let sortStatusData=[]
+        for (const key in getStatusData) {
+          // if (temp[key].is_active == 1) {
+          if (getStatusData[key].id) {
+            sortStatusData.push({
+              value: getStatusData[key].id,
+              label: getStatusData[key].status,
+            });
+          }
+        }
+
+        let filerStatus=payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.status }))
+state.filterStatus=filerStatus
+        state.sortStatusData=sortStatusData
         let exportStatusData = [];
         for (const i in getStatusData) {
             exportStatusData.push({

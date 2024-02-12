@@ -1314,6 +1314,10 @@ import { Astrick } from "../../../components/Utilities/Style";
 import Select from "react-select";
 import DatePicker from "react-date-picker";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { UseDispatch,useDispatch,useSelector } from 'react-redux';
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { getAllDropDownData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+
 
 function EditDynamicForm({ match }) {
   const [showAlert, setShowAlert] = useState({
@@ -1325,9 +1329,15 @@ function EditDynamicForm({ match }) {
   const formId =id
   const history = useNavigate();
   const [data, setData] = useState();
+  const dispatch = useDispatch()
+
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
+  const dropdown=useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.dropDownData)
+
+
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const [notify, setNotify] = useState(null);
   const mainJson = {
@@ -1351,7 +1361,7 @@ function EditDynamicForm({ match }) {
 
   const [index, setIndex] = useState({ index: 0 });
 
-  const [dropdown, setDropdown] = useState({ index: 0 });
+  // const [dropdown, setDropdown] = useState({ index: 0 });
 
   const [inputDataSource, setInputDataSource] = useState();
 
@@ -1587,25 +1597,25 @@ function EditDynamicForm({ match }) {
   };
 
   const loadData = async () => {
-    await new DynamicFormDropdownMasterService()
-      .getAllDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            // const temp=[];
-            // res.data.data.forEach(d=>{
-            //     temp.push({'label':d.dropdown_name,'value':d.id});
-            // })
-            // setDropdown(temp);
-            setDropdown(
-              res.data.data.map((d) => ({
-                label: d.dropdown_name,
-                value: d.id,
-              }))
-            );
-          }
-        }
-      });
+    // await new DynamicFormDropdownMasterService()
+    //   .getAllDropdown()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status === 1) {
+    //         // const temp=[];
+    //         // res.data.data.forEach(d=>{
+    //         //     temp.push({'label':d.dropdown_name,'value':d.id});
+    //         // })
+    //         // setDropdown(temp);
+    //         setDropdown(
+    //           res.data.data.map((d) => ({
+    //             label: d.dropdown_name,
+    //             value: d.id,
+    //           }))
+    //         );
+    //       }
+    //     }
+    //   });
 
     await new DynamicFormService()
       .getDynamicFormById(formId)
@@ -1618,15 +1628,15 @@ function EditDynamicForm({ match }) {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId)
-          );
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId)
+    //       );
+    //     }
+    //   }
+    // });
   };
 
   const [dateValue, setDateValue] = useState(new Date());
@@ -1636,10 +1646,17 @@ function EditDynamicForm({ match }) {
 
   useEffect(()=>{
     loadData();
+    if(!checkRole.length){
+      dispatch(getRoles())
+    }
+    
+    if(!dropdown.length){
+      dispatch(getAllDropDownData())
+    }
 
   },[])
   useEffect(() => {
-    if(checkRole && checkRole[13].can_update === 0){
+    if(checkRole && checkRole[0]?.can_update === 0){
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  

@@ -11,19 +11,32 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
 import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
-
+import { UseDispatch,useDispatch,useSelector } from 'react-redux';
+import CustomerMappingSlice from './Slices/CustomerMappingSlice';
+import { getCustomerMappingData } from './Slices/CustomerMappingAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import DashbordSlice from '../../Dashboard/DashbordSlice';
 export default function CustomerMappingComponent() {
+
+  const dispatch=useDispatch()
+  const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
+  const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.exportTempData)
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 29));
+
+
+console.log("c",checkRole)
+
   const location = useLocation()
 
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
+  // const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
 
-  const [exportData, setExportData] = useState(null)
+  // const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  // const [checkRole, setCheckRole] = useState(null)
 
 
   const searchRef = useRef()
@@ -50,7 +63,7 @@ export default function CustomerMappingComponent() {
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
     const result = SearchInputData(data, SearchValue);
-    setData(result);
+    // setData(result);
   };
 
 
@@ -111,63 +124,63 @@ export default function CustomerMappingComponent() {
   }
   const loadData = async () => {
     setShowLoaderModal(null);
-    setShowLoaderModal(true);
+    // setShowLoaderModal(true);
     const tempData = [];
     const exportTempData = [];
-    await new CustomerMappingService().getCustomerMapping().then(res => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    // await new CustomerMappingService().getCustomerMapping().then(res => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        let counter = 1;
-        const data = res.data.data;
-        for (const key in data) {
-          tempData.push({
-            counter: counter++,
-            id: data[key].id,
-            query_type_name: data[key].query_type_name,
-            template_name: data[key].template_name,
-            dynamic_form_name: data[key].dynamic_form_name,
-            project_name: data[key].project_name,
-            module_name: data[key].module_name,
-            sub_module_name: data[key].sub_module_name,
-            department_name: data[key].department_name,
-            priority: data[key].priority,
-            approach: data[key].approach,
-            is_default: data[key].is_default,
-            is_active: data[key].is_active,
-            created_at: data[key].created_at,
-            created_by: data[key].created_by,
-            updated_at: data[key].updated_at,
-            updated_by: data[key].updated_by,
-          })
-        }
-        setData(tempData);
-        setDataa(tempData);
+    //     let counter = 1;
+    //     const data = res.data.data;
+    //     for (const key in data) {
+    //       tempData.push({
+    //         counter: counter++,
+    //         id: data[key].id,
+    //         query_type_name: data[key].query_type_name,
+    //         template_name: data[key].template_name,
+    //         dynamic_form_name: data[key].dynamic_form_name,
+    //         project_name: data[key].project_name,
+    //         module_name: data[key].module_name,
+    //         sub_module_name: data[key].sub_module_name,
+    //         department_name: data[key].department_name,
+    //         priority: data[key].priority,
+    //         approach: data[key].approach,
+    //         is_default: data[key].is_default,
+    //         is_active: data[key].is_active,
+    //         created_at: data[key].created_at,
+    //         created_by: data[key].created_by,
+    //         updated_at: data[key].updated_at,
+    //         updated_by: data[key].updated_by,
+    //       })
+    //     }
+    //     setData(tempData);
+    //     setDataa(tempData);
 
-        for (const i in data) {
-          exportTempData.push({
-            Sr: counter++,
-            Query: data[i].query_type_name,
-            Template: data[i].template_name,
-            Department: data[i].department_name,
-            Priority: data[i].priority,
-            Approach: data[i].approach,
-          })
-        }
+    //     for (const i in data) {
+    //       exportTempData.push({
+    //         Sr: counter++,
+    //         Query: data[i].query_type_name,
+    //         Template: data[i].template_name,
+    //         Department: data[i].department_name,
+    //         Priority: data[i].priority,
+    //         Approach: data[i].approach,
+    //       })
+    //     }
 
-        setExportData(null)
-        setExportData(exportTempData)
-      }
-    });
+    //     setExportData(null)
+    //     setExportData(exportTempData)
+    //   }
+    // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setCheckRole(res.data.data.filter(d => d.role_id == roleId))
-        }
-      }
-    })
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       setCheckRole(res.data.data.filter(d => d.role_id == roleId))
+    //     }
+    //   }
+    // })
   }
 
   const handleKeyDown = (event) => {
@@ -179,13 +192,20 @@ export default function CustomerMappingComponent() {
 
   useEffect(() => {
     loadData();
+    if(!data.length){
+      dispatch(getCustomerMappingData())
+    }
+    if(!checkRole.length){
+      dispatch(getRoles())
+    }
     if (location && location.state) {
       setNotify(location.state.alert);
     }
   }, [])
 
+
   useEffect(()=>{
-    if(checkRole && checkRole[31].can_read === 0){
+    if(checkRole && checkRole[0]?.can_read === 0){
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     }
   },[checkRole])
@@ -196,7 +216,7 @@ export default function CustomerMappingComponent() {
 
       <PageHeader headerTitle="Customer Mapping" renderRight={() => {
         return <div className="col-auto d-flex w-sm-100">
-          {checkRole && checkRole[31].can_create === 1 ?
+          {checkRole && checkRole[0]?.can_create === 1 ?
             <Link to={`/${_base}/CustomerMapping/Create`} className="btn btn-dark btn-set-task w-sm-100">
               <i className="icofont-plus-circle me-2 fs-6"></i>Create Mapping Setting
             </Link> : ""}
@@ -255,7 +275,7 @@ export default function CustomerMappingComponent() {
 
       </div>
 
-      <Modal show={showLoaderModal} centered>
+      {/* <Modal show={showLoaderModal} centered>
                 <Modal.Body className="text-center">
                     <Spinner animation="grow" variant="primary" />
                     <Spinner animation="grow" variant="secondary" />
@@ -265,7 +285,7 @@ export default function CustomerMappingComponent() {
                     <Spinner animation="grow" variant="info" />
                     <Spinner animation="grow" variant="dark" />
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
     </div>
   )
 }

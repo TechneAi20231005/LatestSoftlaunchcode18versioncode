@@ -7,6 +7,7 @@ const initialState = {
   subModuleMaster: [],
   postSubModuleMaster: "",
   getSubModuleById:[],
+  sortSubModuleData:[]
 };
 
 export const submoduleSlice = createSlice({
@@ -35,6 +36,10 @@ export const submoduleSlice = createSlice({
         for (let i = 0; i < subModuleMaster.length; i++) {
           subModuleMaster[i].counter = count++;
         }
+
+        let sortSubModuleData =payload.data.data.filter((d) => d.is_active == 1)
+        state.sortSubModuleData=sortSubModuleData
+        
         state.subModuleMaster = [...subModuleMaster];
       }
     });

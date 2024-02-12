@@ -16,7 +16,8 @@ const initialState = {
   updateModuleMaster: [],
   postmoduleMaster: [],
   modulesortedData:[],
-  filteredModuleAccordingToProject:[]
+  filteredModuleAccordingToProject:[],
+  sortModuleData:[]
 };
 
 export const moduleSlice = createSlice({
@@ -57,8 +58,8 @@ export const moduleSlice = createSlice({
         // let modulesortedData=payload.data.data;
         let modulesortedData=payload.data.data.filter((d)=>d.is_active).map((d) => ({ value: d.id, label: d.module_name }))
         state.modulesortedData= modulesortedData
-      
-    
+      let sortModuleData=payload.data.data.filter((d)=>d.is_active==1)
+state.sortModuleData=sortModuleData
 
         state.status = "succeded";
         state.showLoaderModal = false;

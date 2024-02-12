@@ -107,9 +107,10 @@ export default function Header() {
       }
     })
     await new ManageMenuService().getRole(sessionStorage.getItem("role_id")).then((res) => {
+      console.log("menu_id",res)
       if (res.status === 200 && res.data.status === 1) {
-
         const temp = res.data.data.filter(d => d.menu_id === 33);
+
         if (temp[0]?.can_read === 1) {
 
           setShowDropdown(true)
@@ -440,6 +441,11 @@ export default function Header() {
               >
                 <div className='card border-0 w280' style={{ zIndex: 5 }}>
                   <div className='p-2' style={{ zIndex: 700 }}>
+                    {console.log("tenantDropdown",tenantDropdown)}
+                    {console.log("tenantId",tenantId)}
+                    {console.log("showDropdown",showDropdown)}
+
+
 
                     {tenantDropdown && tenantId && showDropdown === true && (
                       <Select

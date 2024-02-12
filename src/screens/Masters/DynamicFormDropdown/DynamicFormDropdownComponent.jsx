@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useDebugValue } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
@@ -14,20 +14,37 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import {useDispatch,useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import DynamicFormDropDownSlice from "./Slices/DynamicFormDropDownSlice";
+import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
 
 export default function DynamicFormDropdownComponent() {
     const location = useLocation()
 
-    const [data, setData] = useState(null);
+    // const [data, setData] = useState(null);
     const [dataa, setDataa] = useState(null);
     const [notify, setNotify] = useState(null);
     const [showLoaderModal, setShowLoaderModal] = useState(false);
 
     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
 
-    const [exportData, setExportData] = useState(null)
+    // const [exportData, setExportData] = useState(null)
     const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+//   const [checkRole, setCheckRole] = useState(null)
+
+
+const dispatch=useDispatch()
+const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35));
+const  data = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData)
+const  exportData = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormDropDownData)
+
+
+
+
+
+
+
 
     const searchRef = useRef()
     function SearchInputData(data, search) {
@@ -53,7 +70,7 @@ export default function DynamicFormDropdownComponent() {
       const handleSearch = () => {
         const SearchValue = searchRef.current.value;
         const result = SearchInputData(data, SearchValue);
-        setData(result);
+        // setData(result);
       };
     
 
@@ -88,60 +105,60 @@ export default function DynamicFormDropdownComponent() {
     ];
 
     const loadData = async () => {
-        setShowLoaderModal(null);
-        setShowLoaderModal(true);
+        // setShowLoaderModal(null);
+        // setShowLoaderModal(true);
         const data = [];
         const exportTempData = [];
-        await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
-            if (res.status === 200) {
-        setShowLoaderModal(false);
+        // await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
+        //     if (res.status === 200) {
+        // setShowLoaderModal(false);
 
-                let counter = 1;
-                const temp = res.data.data
-                for (const key in temp) {
-                    data.push({
-                        counter: counter++,
-                        id: temp[key].id,
-                        dropdown_name: temp[key].dropdown_name,
-                        is_active: temp[key].is_active,
-                        updated_at: temp[key].updated_at,
-                        updated_by: temp[key].updated_by,
-                    })
+        //         let counter = 1;
+        //         const temp = res.data.data
+        //         for (const key in temp) {
+        //             data.push({
+        //                 counter: counter++,
+        //                 id: temp[key].id,
+        //                 dropdown_name: temp[key].dropdown_name,
+        //                 is_active: temp[key].is_active,
+        //                 updated_at: temp[key].updated_at,
+        //                 updated_by: temp[key].updated_by,
+        //             })
 
-                }
-                setData(null);
-                setData(data);
-                setDataa(data);
+        //         }
+        //         setData(null);
+        //         setData(data);
+        //         setDataa(data);
 
-                for (const key in data) {
-                    exportTempData.push({
-                        Sr: data[key].counter,
-                        Dropdown: data[key].dropdown_name,
-                        Status: data[key].is_active ? 'Active' : 'Deactive',
-                        updated_at: data[key].updated_at,
-                        updated_by: data[key].updated_by,
-                    })
-                }
+        //         for (const key in data) {
+        //             exportTempData.push({
+        //                 Sr: data[key].counter,
+        //                 Dropdown: data[key].dropdown_name,
+        //                 Status: data[key].is_active ? 'Active' : 'Deactive',
+        //                 updated_at: data[key].updated_at,
+        //                 updated_by: data[key].updated_by,
+        //             })
+        //         }
 
-                setExportData(null)
-                setExportData(exportTempData)
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
-        })
+        //         setExportData(null)
+        //         setExportData(exportTempData)
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
+        // })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-              // setShowLoaderModal(false);
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //       // setShowLoaderModal(false);
       
-              if (res.data.status == 1) {
-                const getRoleId = sessionStorage.getItem("role_id");
-                setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-              }
-            }
-          })
+        //       if (res.data.status == 1) {
+        //         const getRoleId = sessionStorage.getItem("role_id");
+        //         setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //       }
+        //     }
+        //   })
       
     }
 
@@ -170,9 +187,15 @@ export default function DynamicFormDropdownComponent() {
         if (location && location.state) {
             setNotify(location.state.alert);
         }
+        if(!checkRole.length){
+            dispatch(getRoles())
+          }
+          if(!data.length){
+            dispatch(dynamicFormDropDownData())
+          }
     }, [])
     useEffect(()=>{
-        if(checkRole && checkRole[36].can_read === 0){
+        if(checkRole && checkRole[0]?.can_read === 0){
           // alert("Rushi")
     
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
@@ -248,7 +271,7 @@ export default function DynamicFormDropdownComponent() {
                 </div>
             </div>
 
-            <Modal show={showLoaderModal} centered>
+            {/* <Modal show={showLoaderModal} centered>
                 <Modal.Body className="text-center">
                     <Spinner animation="grow" variant="primary" />
                     <Spinner animation="grow" variant="secondary" />
@@ -258,7 +281,7 @@ export default function DynamicFormDropdownComponent() {
                     <Spinner animation="grow" variant="info" />
                     <Spinner animation="grow" variant="dark" />
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
         </div>
     )
 }

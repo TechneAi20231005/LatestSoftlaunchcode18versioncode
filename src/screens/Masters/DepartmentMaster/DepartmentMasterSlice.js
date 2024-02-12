@@ -10,6 +10,7 @@ const initialState = {
   err: "",
   departmentData: [],
   exportDepartmentData:[],
+  sortDepartmentData:[],
   modal: {
     showModal: false,
     modalData: "",
@@ -49,6 +50,19 @@ export const departmentMasterSlice = createSlice({
         }
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
+
+let filterdata=payload.data.data.filter((d) => d.is_active == 1)
+        let sortDepartmentData=[]
+        for (const key in filterdata) {
+          if (filterdata[key].department) {
+            sortDepartmentData.push({
+              value: filterdata[key].id,
+              label: filterdata[key].department,
+            });
+          }
+        }
+
+        state.sortDepartmentData=sortDepartmentData
 
         for (const i in departmentData) {
           exportDepartmentData.push({

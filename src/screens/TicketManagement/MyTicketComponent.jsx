@@ -927,11 +927,15 @@ import { useDispatch, useSelector } from "react-redux";
 import MyTicketComponentSlice from "./MyTicketComponentSlice";
 import { getStatusData, getUserForMyTicketsData, getUserTicketsTest } from "./MyTicketComponentAction";
 import { dashboardSlice } from "../Dashboard/DashbordSlice";
+import DepartmentMasterSlice from "../Masters/DepartmentMaster/DepartmentMasterSlice";
+import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
+import { statusMasterSlice } from "../Masters/StatusMaster/StatusComponentSlice";
+import { getRoles } from "../Dashboard/DashboardAction";
 export default function MyTicketComponent({ location }) {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
   // const [type, setType] = useState(null);
@@ -939,9 +943,9 @@ export default function MyTicketComponent({ location }) {
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState("");
 
-  const [statusData, setStatusData] = useState(null);
+  // const [statusData, setStatusData] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [departmentData, setDepartmentData] = useState(null);
+  // const [departmentData, setDepartmentData] = useState(null);
 
   const [searchResult, setSearchResult] = useState();
   const [searchResultExport, setSearchResultExport] = useState();
@@ -978,15 +982,20 @@ export default function MyTicketComponent({ location }) {
       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
   );
   
-  const gelAllStatusData = useSelector(
-    (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.statusData
+  const statusData = useSelector(
+    (statusMasterSlice) =>
+    statusMasterSlice.statusMaster.sortStatusData
 
   );
 
-const UserForMyTicketData = useSelector(myTicketComponent=>myTicketComponent.myTicketComponent.getUserForMyTicket)
-const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myTicketComponent.getAssignedUserData)
 
+
+const UserForMyTicketData = useSelector(myTicketComponentSlice=>myTicketComponentSlice.myTicketComponent.getUserForMyTicket)
+const getAssignedUserData = useSelector(myTicketComponentSlice=>myTicketComponentSlice.myTicketComponent.getAssignedUserData)
+const departsmentData = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
+const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+
+console.log("d",UserForMyTicketData)
   
   const [modal, setModal] = useState({
     showModal: false,
@@ -1168,7 +1177,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                     </Link>
                   </li>
                 )}
-
+{console.log("iii",data.id)}
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
@@ -2466,125 +2475,121 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
   const loadData = async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
-    dispatch(getStatusData());
-    dispatch(getUserTicketsTest());
-    dispatch(getUserForMyTicketsData(inputRequired))
-    setIsLoading(true);
+   
+    // setIsLoading(true);
     
 
-    await new UserService()
-      .getUserForMyTickets(inputRequired)
-      .then((res) => {
-        if (res.status === 200) {
-          const tempData = [];
-          const temp = res.data.data;
-          if (res.data.status == 1) {
-            const data = res.data.data.filter((d) => d.is_active == 1);
-            setUser(temp);
-          }
-          for (const key in temp) {
-            tempData.push({
-              value: temp[key].id,
-              label: temp[key].first_name + " " + temp[key].last_name,
-            });
-          }
-          const select = res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }));
+    // await new UserService()
+    //   .getUserForMyTickets(inputRequired)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       const tempData = [];
+    //       const temp = res.data.data;
+    //       if (res.data.status == 1) {
+    //         const data = res.data.data.filter((d) => d.is_active == 1);
+    //         setUser(temp);
+    //       }
+    //       for (const key in temp) {
+    //         tempData.push({
+    //           value: temp[key].id,
+    //           label: temp[key].first_name + " " + temp[key].last_name,
+    //         });
+    //       }
+    //       const select = res.data.data
+    //         .filter((d) => d.is_active == 1)
+    //         .map((d) => ({
+    //           value: d.id,
+    //           label: d.first_name + " " + d.last_name,
+    //         }));
 
-          setUserData(null);
-          const aa = tempData.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-          setUserData(aa);
-          setAssignUserDropdown(select);
-          setUserDropdown(select);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //       setUserData(null);
+    //       const aa = tempData.sort(function (a, b) {
+    //         return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    //       });
+    //       setUserData(aa);
+    //       setAssignUserDropdown(select);
+    //       setUserDropdown(select);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "Status",
+    //       "Get_Status",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-        const tempData = [];
-        const temp = res.data.data;
-        for (const key in temp) {
-          if (temp[key].department) {
-            tempData.push({
-              value: temp[key].id,
-              label: temp[key].department,
-            });
-          }
-        }
-        setDepartmentData(null);
-        setDepartmentData(tempData);
-      }
-    });
+    // await new DepartmentService().getDepartment().then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
+    //     const tempData = [];
+    //     const temp = res.data.data;
+    //     for (const key in temp) {
+    //       if (temp[key].department) {
+    //         tempData.push({
+    //           value: temp[key].id,
+    //           label: temp[key].department,
+    //         });
+    //       }
+    //     }
+    //     setDepartmentData(null);
+    //     setDepartmentData(tempData);
+    //   }
+    // });
 
-    await new StatusService().getStatus().then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
+    // await new StatusService().getStatus().then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
 
-        const tempData = [];
-        const temp = res.data.data;
+    //     const tempData = [];
+    //     const temp = res.data.data;
 
-        for (const key in temp) {
-          // if (temp[key].is_active == 1) {
-          if (temp[key].id) {
-            tempData.push({
-              value: temp[key].id,
-              label: temp[key].status,
-            });
-          }
-        }
-        setStatusData(null);
-        setStatusData(tempData);
+    //     for (const key in temp) {
+    //       // if (temp[key].is_active == 1) {
+    //       if (temp[key].id) {
+    //         tempData.push({
+    //           value: temp[key].id,
+    //           label: temp[key].status,
+    //         });
+    //       }
+    //     }
+    //     setStatusData(null);
+    //     setStatusData(tempData);
 
-      }
-    });
+    //   }
+    // });
 
-    await new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(localStorage.getItem("id"))
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
+    // await new DepartmentMappingService()
+    //   .getDepartmentMappingByEmployeeId(localStorage.getItem("id"))
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setIsLoading(false);
 
-          if (res.data.status == 1) {
-            if (res.status === 200) {
-              if (res.data.status == 1) {
-                setUserDepartment(res.data.data);
-              }
-            }
-          }
-        }
-        if (res.status === 200) {
-          setIsLoading(false);
+    //       if (res.data.status == 1) {
+    //         if (res.status === 200) {
+    //           if (res.data.status == 1) {
+    //             setUserDepartment(res.data.data);
+    //           }
+    //         }
+    //       }
+    //     }
+    //     if (res.status === 200) {
+    //       setIsLoading(false);
 
-          const tempData = [];
-          const temp = res.data.data;
-          for (const key in temp) {
-            if (temp[key].is_active == 1) {
-              tempData.push([temp[key].ticket_show_type]);
-            }
-          }
-          setTicketShowType(null);
-          setTicketShowType(tempData);
-        }
-      });
+    //       const tempData = [];
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         if (temp[key].is_active == 1) {
+    //           tempData.push([temp[key].ticket_show_type]);
+    //         }
+    //       }
+    //       setTicketShowType(null);
+    //       setTicketShowType(tempData);
+    //     }
+    //   });
 
 
     // await new MyTicketService().getUserTicketsTest().then((res) => {
@@ -2641,14 +2646,14 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
     //   }
     // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   // const handlePassTicketForm = async (e) => {
@@ -3082,8 +3087,23 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
   const [key, setKey] = useState("Assigned_To_Me");
   useEffect(() => {
     loadData();
+    const inputRequired =
+    "id,employee_id,first_name,last_name,middle_name,is_active";
+    if(!statusData.length){
+  dispatch(getStatusData());
+      
+    }
+    if(!assignToMeData.length){
+  dispatch(getUserTicketsTest());}
+  if(!UserForMyTicketData.length){
+  dispatch(getUserForMyTicketsData(inputRequired))}
+    if(!departsmentData.length){
+    dispatch(departmentData())}
     if (location && location.state) {
       setNotify(location.state.alert);
+    }
+    if(!checkRole.length){
+      dispatch(getRoles())
     }
   }, []);
 
@@ -3106,7 +3126,7 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
   )}:${timeString.slice(4, 6)}`;
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -3444,9 +3464,9 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                 <label className="">
                   <b>Select Department :</b>
                 </label>
-                {departmentData && (
+                {departsmentData && (
                   <Select
-                    options={departmentData}
+                    options={departsmentData}
                     isMulti={true}
                     id="assign_to_department_id[]"
                     name="assign_to_department_id[]"
@@ -3459,9 +3479,9 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                 <label className="">
                   <b>Select Status :</b>
                 </label>
-                {gelAllStatusData && (
+                {statusData && (
                   <Select
-                    options={gelAllStatusData}
+                    options={statusData}
                     isMulti={true}
                     id="status_id[]"
                     name="status_id[]"
@@ -3558,9 +3578,9 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                     <label className="">
                       <b>Assigned Department :</b>
                     </label>
-                    {departmentData && (
+                    {departsmentData && (
                       <Select
-                        options={departmentData}
+                        options={departsmentData}
                         // value={deptAssignedUser}
 
                         // ref={selectInputRef}
@@ -3601,9 +3621,9 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                     <label className="">
                       <b>Entry Department :</b>
                     </label>
-                    {departmentData && (
+                    {departsmentData && (
                       <Select
-                        options={departmentData}
+                        options={departsmentData}
                         isMulti={true}
                         id="department_id[]"
                         name="department_id[]"
@@ -3641,9 +3661,9 @@ const getAssignedUserData = useSelector(myTicketComponent=>myTicketComponent.myT
                   <label className="">
                     <b>Select Status :</b>
                   </label>
-                  {gelAllStatusData && (
+                  {statusData && (
                     <Select
-                      options={gelAllStatusData}
+                      options={statusData}
                       isMulti={true}
                       id="status_id[]"
                       name="status_id[]"

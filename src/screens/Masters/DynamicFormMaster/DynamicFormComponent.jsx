@@ -13,21 +13,34 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
 import { Spinner } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { dynamicFormData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+import DynamicFormDropDownSlice from "../DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
 
 
 function DynamicFormComponent( ) {
     const location = useLocation()
 
-    const [data, setData] = useState(null);
-    const [dataa, setDataa] = useState(null);
+    // const [data, setData] = useState(null);
+    // const [dataa, setDataa] = useState(null);
     const [notify, setNotify] = useState(null);
-    const [exportData, setExportData] = useState(null)
+    // const [exportData, setExportData] = useState(null)
     const [showLoaderModal, setShowLoaderModal] = useState(false);
 
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
 
     const searchRef = useRef();
+    const dispatch=useDispatch()
+
+
+    const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
+
+    const  data = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData)
+const  exportData = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData)
+
+
    
     function SearchInputData(data, search) {
         const lowercaseSearch = search.toLowerCase();
@@ -52,7 +65,7 @@ function DynamicFormComponent( ) {
       const handleSearch = () => {
         const SearchValue = searchRef.current.value;
         const result = SearchInputData(data, SearchValue);
-        setData(result);
+        // setData(result);
       };
     
 
@@ -87,60 +100,60 @@ function DynamicFormComponent( ) {
         // setShowLoaderModal(true);
         const data = [];
         const exportTempData = [];
-        await new DynamicFormService().getDynamicForm().then(res => {
-            if (res.status === 200) {
-                setShowLoaderModal(false);
+        // await new DynamicFormService().getDynamicForm().then(res => {
+        //     if (res.status === 200) {
+        //         setShowLoaderModal(false);
 
-                let counter = 1;
-                const temp = res.data.data
-                for (const key in temp) {
-                    data.push({
-                        counter: counter++,
-                        id: temp[key].id,
-                        template_name: temp[key].template_name,
-                        is_active: temp[key].is_active,
-                        remark: temp[key].remark,
-                        created_at: temp[key].created_at,
-                        created_by: temp[key].created_by,
-                        updated_at: temp[key].updated_at,
-                        updated_by: temp[key].updated_by
-                    })
-                }
-                setData(null);
-                setData(data);
-                setDataa(data);
+        //         let counter = 1;
+        //         const temp = res.data.data
+        //         for (const key in temp) {
+        //             data.push({
+        //                 counter: counter++,
+        //                 id: temp[key].id,
+        //                 template_name: temp[key].template_name,
+        //                 is_active: temp[key].is_active,
+        //                 remark: temp[key].remark,
+        //                 created_at: temp[key].created_at,
+        //                 created_by: temp[key].created_by,
+        //                 updated_at: temp[key].updated_at,
+        //                 updated_by: temp[key].updated_by
+        //             })
+        //         }
+        //         setData(null);
+        //         setData(data);
+        //         setDataa(data);
 
-                for (const i in data) {
-                    exportTempData.push({
-                        Sr: data[i].counter,
-                        form_Name: data[i].template_name,
-                        Status: data[i].is_active ? 'Active' : 'Deactive',
-                        created_at: temp[i].created_at,
-                        created_by: temp[i].created_by,
-                        updated_at: data[i].updated_at,
-                        updated_by: data[i].updated_by,
-                    })
-                }
+        //         for (const i in data) {
+        //             exportTempData.push({
+        //                 Sr: data[i].counter,
+        //                 form_Name: data[i].template_name,
+        //                 Status: data[i].is_active ? 'Active' : 'Deactive',
+        //                 created_at: temp[i].created_at,
+        //                 created_by: temp[i].created_by,
+        //                 updated_at: data[i].updated_at,
+        //                 updated_by: data[i].updated_by,
+        //             })
+        //         }
 
-                setExportData(null)
-                setExportData(exportTempData)
-            }
-        }).catch(error => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog("DynamicForm", "Get_DynamicForm", "INSERT", errorObject.data.message);
-        })
+        //         setExportData(null)
+        //         setExportData(exportTempData)
+        //     }
+        // }).catch(error => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     new ErrorLogService().sendErrorLog("DynamicForm", "Get_DynamicForm", "INSERT", errorObject.data.message);
+        // })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-                setShowLoaderModal(false);
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //         setShowLoaderModal(false);
 
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
     }
 
     //Search As Enter key press
@@ -163,10 +176,16 @@ function DynamicFormComponent( ) {
         if (location && location.state) {
             setNotify(location.state.alert);
         }
+        if(!checkRole.length){
+            dispatch(getRoles())
+          }
+          if(!data.length){
+            dispatch(dynamicFormData())
+          }
     },[])
 
     useEffect(() => {
-        if (checkRole && checkRole[13].can_read === 0) {
+        if (checkRole && checkRole[0]?.can_read === 0) {
             // alert("Rushi")
 
             window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -182,7 +201,7 @@ function DynamicFormComponent( ) {
 
             <PageHeader headerTitle="Dynamic Form Master" renderRight={() => {
                 return <div className="col-auto d-flex w-sm-100">
-                    {checkRole && checkRole[13].can_create === 1 ?
+                    {checkRole && checkRole[0]?.can_create === 1 ?
                         <Link to={`/${_base + "/DynamicForm/Create"}`} className="btn btn-dark btn-set-task w-sm-100">
                             <i className="icofont-plus-circle me-2 fs-6"></i>Add Form
                         </Link> : ""}

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { BulkUploadVendorData, PaymentDropDown, downloadFormat, downloadFormatData, getVendorData, getVendorMasterData, paymentDropDown, postVendor } from "./VendorMasterAction";
+import { BulkUploadVendorData, PaymentDropDown, downloadFormat, downloadFormatData, getAllActiveState, getVendorData, getVendorMasterData, paymentDropDown, postVendor } from "./VendorMasterAction";
 
 const initialState = {
   status: "",
@@ -10,7 +10,8 @@ const initialState = {
   exportData:[],
   vendorMasterDropDown:[],
   getVendorAllData:[],
-  paymentDropDownData:[]
+  paymentDropDownData:[],
+  state:[]
 };
 
 export const VendorMasterSlice = createSlice({
@@ -233,6 +234,28 @@ export const VendorMasterSlice = createSlice({
       
     });
     builder.addCase(BulkUploadVendorData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    builder.addCase(getAllActiveState.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getAllActiveState.fulfilled, (state, action) => {
+      const { payload } = action;
+      state.notify=null
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state= payload.data.data
+        state.state= state
+        state.status = "succeded";
+    
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+      
+    });
+    builder.addCase(getAllActiveState.rejected, (state) => {
       state.status = "rejected";
     });
 

@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import loginReducer from "../../components/Auth/AuthSices/loginSlice";
-import DashboardSlice from "../../screens/Dashboard/DashbordSlice";
 import MyTicketComponentSlice from "../../screens/TicketManagement/MyTicketComponentSlice";
 import  TaskcomponentSlice from "../../screens/TicketManagement/TaskManagement/TaskComponentSlice";
 import SettingSlice from "../../screens/Settings/SettingSlice";
@@ -15,7 +14,6 @@ import TimeRegularizationSlice from "../../screens/TicketManagement/BasketManage
 import rolemasterSlice from "../../screens/Masters/RoleMaster/RoleMasterSlice";
 
 import ConsolidatedSlice from "../../screens/ConsolidatedView/ConsolidatedSlice";
-import dashboardSlice from "../../screens/Dashboard/DashboardSlice";
 import DepartmentMasterSlice from "../../screens/Masters/DepartmentMaster/DepartmentMasterSlice";
 import TaskAndTicketTypeMasterSlice from "../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice";
 
@@ -33,12 +31,16 @@ import VendorMasterSlice from "../../screens/BillChecking/Slices/VendorMasterSli
 
 import TenantComponentSlice from "../../screens/TenantManagement/TenantComponentSlice";
 import CustomerTypeComponentSlice from "../../screens/Masters/CustomerTypeMaster/CustomerTypeComponentSlice";
+import TicketSlices from "../../screens/TicketManagement/Slices/TicketSlices";
+import CustomerMappingSlice from "../../screens/Settings/CustomerMapping/Slices/CustomerMappingSlice";
+import  DashbordSlice  from "../../screens/Dashboard/DashbordSlice";
+import DynamicFormDropDownSlice from "../../screens/Masters/DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
 
 
 export const store = configureStore({
   reducer: {
     login: loginReducer,
-    dashboard: DashboardSlice,
+    dashboard: DashbordSlice,
     myTicketComponent: MyTicketComponentSlice,
     taskComponent: TaskcomponentSlice,
     generalSetting: SettingSlice,
@@ -64,7 +66,9 @@ export const store = configureStore({
     vendorMaster:VendorMasterSlice,
     tenantMaster:TenantComponentSlice,
 customerTypeMaster:CustomerTypeComponentSlice,
-
+ticket:TicketSlices,
+customerMaster:CustomerMappingSlice,
+dynamicFormDropDown:DynamicFormDropDownSlice,
 
     consolidatedData: ConsolidatedSlice,
   },

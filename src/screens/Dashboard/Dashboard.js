@@ -18,6 +18,16 @@ import { getAllDashboardData, getAllUserById, getCityData, getCountryData, getCo
 import { dashboardSlice } from "./DashbordSlice";
 import { getRoles } from "./DashboardAction";
 import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
+import { getUserForMyTicketsData, getUserTicketsTest } from "../TicketManagement/MyTicketComponentAction";
+import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
+import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
+import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
+import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
+import { getSubModuleById, subModuleMaster } from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
+import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
+import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
+import { getCustomerMappingData, getQueryTypeData, getTemplateData, getcustomerTypeData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
+import { dynamicFormData, dynamicFormDropDownData, getAllDropDownData } from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 
 
 
@@ -165,6 +175,8 @@ export default function HrDashboard(props) {
  
 
 const loadData=()=>{
+  const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
 dispatch(getCityData())
 dispatch(getCountryData())
 dispatch(getStateData())
@@ -178,7 +190,35 @@ dispatch(getRoles());
    dispatch(getCountryDataSort())
    dispatch(getCustomerData())
    dispatch(getCustomerType())
-   dispatch(getAllUserById())
+   dispatch(getAllUserById(localStorage.getItem("id")))
+   dispatch(getUserTicketsTest())
+   dispatch(getUserForMyTicketsData(inputRequired))
+   dispatch(getStatusData());
+   dispatch(departmentData())
+   dispatch(getprojectData())
+   dispatch(moduleMaster())
+  //  dispatch(getSubModuleById())
+   dispatch(subModuleMaster())
+   dispatch(queryType())
+   dispatch(getCustomerMappingData())
+dispatch(getcustomerTypeData())
+dispatch(getQueryTypeData())
+dispatch(getTemplateData())
+dispatch(dynamicFormDropDownData())
+dispatch(dynamicFormData())
+dispatch(getAllDropDownData())
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
   useEffect(() => {
@@ -577,6 +617,7 @@ dispatch(getRoles());
                 {PreviousTask &&
                   PreviousTask.length > 0 &&
                   PreviousTask.map((ele, index) => {
+
                     if (ele.time_status == "STOP") {
                       return (
                         <div
@@ -585,7 +626,12 @@ dispatch(getRoles());
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                              {/* <Link to={`Ticket/Task/${ele.ticket_id}`}> */}
+                              <Link 
+                              // to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                              to={`/${_base}/Ticket/Task/` + ele.ticket_id}
+                              >
+                                
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -725,7 +771,11 @@ dispatch(getRoles());
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                              <Link
+                              //  to={`Ticket/Task/${ele.ticket_id}`}
+                              to={`/${_base}/Ticket/Task/` + ele.ticket_id}
+
+                               >
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}

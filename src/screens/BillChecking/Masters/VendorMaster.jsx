@@ -677,7 +677,6 @@ dispatch(PaymentDropDown())
   const handleErp = (e) => {
     var erpValue = document.getElementById("vendor_name");
     document.getElementById("acme_account_name").value = erpValue.value;
-    
   };
 
   useEffect(() => {
@@ -1196,9 +1195,6 @@ dispatch(PaymentDropDown())
     // });
   };
 
-
-  
-
   return (
     <>
 
@@ -1377,7 +1373,6 @@ dispatch(PaymentDropDown())
                       // }}
                       required={true}
                     />
-                      
                     {/* {inputState.VendorNameErr && (
                       <small style={{ color: "red" }}>
                         {inputState.VendorNameErr}

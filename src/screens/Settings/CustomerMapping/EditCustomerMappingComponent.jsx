@@ -17,8 +17,11 @@ import QueryTypeService from "../../../services/MastersService/QueryTypeService"
 import TemplateService from "../../../services/MastersService/TemplateService";
 import DynamicFormService from "../../../services/MastersService/DynamicFormService";
 import UserService from "../../../services/MastersService/UserService";
+import { UseDispatch,useDispatch,useSelector } from "react-redux";
 
 import Table from 'react-bootstrap/Table';
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { getQueryTypeData, getTemplateData, getcustomerTypeData } from "./Slices/CustomerMappingAction";
 
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
@@ -27,12 +30,20 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const mappingId = id
   const [notify, setNotify] = useState();
 
+const dispatch = useDispatch()
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 29));
+const customerTypeDropdown=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerTypeData)
+const queryType=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.queryTypeData)
+const queryTypeDropdown=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.queryTypeDropDownData)
+const templateDropdown =useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.templateDropDownData)
+
+
 
   const [customerType, setCustomerType] = useState();
-  const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
+  // const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
 
-  const [queryType, setQueryType] = useState();
-  const [queryTypeDropdown, setQueryTypeDropdown] = useState();
+  // const [queryType, setQueryType] = useState();
+  // const [queryTypeDropdown, setQueryTypeDropdown] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
@@ -40,7 +51,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
 
   const [template, setTemplate] = useState();
-  const [templateDropdown, setTemplateDropdown] = useState();
+  // const [templateDropdown, setTemplateDropdown] = useState();
 
   const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
@@ -53,7 +64,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratioTotal,setRatioTotal] = useState(0);
 
   const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  // const [checkRole, setCheckRole] = useState(null)
 
   const [data, setData] = useState({
     approach: null,
@@ -123,61 +134,61 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
 
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //     }
+    //   }
+    // })
 
-    await new CustomerTypeService().getCustomerType().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.type_name }));
-          setCustomerType(data);
-          setCustomerTypeDropdown(select);
-        }
-      }
-    });
+    // await new CustomerTypeService().getCustomerType().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const data = res.data.data.filter((d) => d.is_active == 1);
+    //       const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.type_name }));
+    //       setCustomerType(data);
+    //       setCustomerTypeDropdown(select);
+    //     }
+    //   }
+    // });
 
-    await new CustomerMappingService().getPriorityDropdown().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.label }));
+    // await new CustomerMappingService().getPriorityDropdown().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.label }));
 
-        }
-      }
-    });
+    //     }
+    //   }
+    // });
 
-    await new QueryTypeService().getQueryType().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.map((d) => ({value: d.id,label: d.query_type_name}));
-          setQueryType(data);
-          setQueryTypeDropdown(res.data.data.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.query_type_name }))
-          );
-        }
-      }
-    });
+    // await new QueryTypeService().getQueryType().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const data = res.data.data.filter((d) => d.is_active == 1);
+    //       const select = res.data.data.map((d) => ({value: d.id,label: d.query_type_name}));
+    //       setQueryType(data);
+    //       setQueryTypeDropdown(res.data.data.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.query_type_name }))
+    //       );
+    //     }
+    //   }
+    // });
 
     await getDynamicForm();
 
-    await new TemplateService().getTemplate().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.map((d) => ({value: d.id, label: d.template_name }));
-          setTemplate(data);
-          setTemplateDropdown(select);
-        }
-      }
-    });
+    // await new TemplateService().getTemplate().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       const data = res.data.data.filter((d) => d.is_active == 1);
+    //       const select = res.data.data.map((d) => ({value: d.id, label: d.template_name }));
+    //       setTemplate(data);
+    //       setTemplateDropdown(select);
+    //     }
+    //   }
+    // });
     await getDepartment();
     
     setUserDropdown(null);
@@ -424,9 +435,22 @@ const getDynamicForm = async () =>{
 
   useEffect(() => {
     loadData();
+    if(!checkRole.length){
+      dispatch(getRoles())
+    }
+    if(!customerTypeDropdown.length){
+      dispatch(getcustomerTypeData())
+    }
+    if(!queryType.length || !queryTypeDropdown.length){
+      dispatch(getQueryTypeData())
+    }
+    if(!templateDropdown.length){
+      dispatch(getTemplateData())
+    }
+   
   },[]);
   useEffect(()=>{
-    if(checkRole && checkRole[31].can_update === 0){
+    if(checkRole && checkRole[0]?.can_update === 0){
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  

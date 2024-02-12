@@ -7,6 +7,7 @@ const initialState = {
   err: "",
   queryTypeData: [],
   queryType: [],
+  queryTypeData:[],
   QueryGroupForm: [],
   notify:'',
   modal: {
@@ -87,6 +88,19 @@ export const queryTypeSlice = createSlice({
         }
         state.queryType = [...queryType];
       }
+
+
+      let queryTypeData =[]
+      payload.data.data.forEach((q) => {
+        if (q.query_type_name) {
+          queryTypeData.push({ value: q.id, label: q.query_type_name });
+        }
+      });
+
+      state.queryTypeData= queryTypeData
+
+
+
     });
     builder.addCase(queryType.rejected, (state) => {
       state.status = "rejected";
