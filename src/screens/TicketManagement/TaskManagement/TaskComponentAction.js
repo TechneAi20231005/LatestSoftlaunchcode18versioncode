@@ -37,7 +37,14 @@ import {
   updateTask,
 } from "../../../services/TicketService/TaskService";
 import SubtaskService from "../../../services/TicketService/SubtaskService";
+import ModuleSetting from "../../../services/SettingService/ModuleSetting";
+import axios from "axios";
+import { settingMasterUrl } from "../../../settings/constants";
+
+
 export const getBasketTaskData = createAsyncThunk(
+
+
   "getBasketTaskData",
   async (config, thunkapi) => {
     try {
@@ -131,3 +138,75 @@ export const postSubTask = createAsyncThunk(
     }
   }
 );
+
+
+export const getBasketByIdData = createAsyncThunk(
+  "getBasketByIdData",
+  async (config, thunkapi) => {
+    try {
+      const service = new BasketService();
+      const response = await service.getBasketById(config);
+      console.log("reSub", response);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+
+// export const getmoduleSetting = createAsyncThunk(
+//   "getmoduleSetting",
+//   async (module_name,submodule_name, thunkapi) => {
+//     try {
+//       const service = new ModuleSetting();
+      
+//       const response = await service.getSettingByName(module_name.module_name,submodule_name.submodule_name);
+
+//       console.log("response===", response);
+//       return response;
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+// );
+
+// export const getmoduleSetting = createAsyncThunk(
+//   "getmoduleSetting",
+//   async ({ module_name, submodule_name }, thunkAPI) => {
+//     try {
+//       const service = new ModuleSetting();
+//       const response = await service.getSettingByName();
+//       console.log("response ===", response);
+//       return response.data; // Assuming you want to return only the data from the response
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+// );
+
+// const _URL=settingMasterUrl.moduleSetting;
+// const _getSettingByName=_URL+"/getSettingByName";
+
+
+
+// export const getmoduleSetting = createAsyncThunk(
+//   "moduleSettings/getmoduleSetting",
+//   async ({ module_name, submodule_name }, thunkAPI) => {
+//     try {
+//       const token = localStorage.getItem("jwt_token");
+
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: "application/json",
+//           "Content-Type": "application/json",
+//         },
+//       };
+//       const response=await axios.get(_getSettingByName+"/"+module_name+"/"+submodule_name,config);
+//       return response.data; // Assuming you want to return only the data from the response
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
+// );

@@ -1762,7 +1762,7 @@ import CityService from "../../../services/MastersService/CityService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import {useDispatch,useSelector} from "react-redux"
 import { getAllRoles, getAllUserById, getCityData, getCountryDataSort, getRoles, getStateData, getStateDataSort, updateUserData } from "../../Dashboard/DashboardAction";
-import DashbordSlice, { hideNotification } from "../../Dashboard/DashbordSlice";
+import DashbordSlice from "../../Dashboard/DashbordSlice";
 import { getDesignationData } from "../DesignationMaster/DesignationAction";
 function EditUserComponent({ match }) {
   const history = useNavigate();
@@ -1848,7 +1848,7 @@ function EditUserComponent({ match }) {
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
   const roleDropdown = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getAllRoles
+    (DashboardSlice) => DashboardSlice.dashboard.getAllRoles
   );
   const cityData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
@@ -2377,6 +2377,30 @@ function EditUserComponent({ match }) {
       setRows(temp_state);
     }
   };
+
+
+
+
+  const sortSlefRole= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() !== "user"; })
+const filterSelfRole = sortSlefRole?.filter((d) => d.is_active === 1)
+.map((d) => ({
+  value: d.id,
+  label: d.role,
+}));
+const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+});
+
+
+const customerSort= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() === "user"; })
+const filterCutomerRole = customerSort?.filter((d) => d.is_active === 1)
+.map((d) => ({
+  value: d.id,
+  label: d.role,
+}));
+const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
+  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+});
 
 
 
@@ -3136,7 +3160,9 @@ dispatch(getCityData())
                             <Select
                               id="role_id"
                               name="role_id"
-                              options={filteredRoles}
+                              // options={filteredRoles}
+                          options={accountFor === "SELF" ? orderedSelfRoleData : orderedCustomerRoleData}
+
                               defaultValue={
                                 data &&
                                 filteredRoles &&

@@ -1568,7 +1568,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { _base } from "../../../settings/constants";
+import { _base, dashboardUrl } from "../../../settings/constants";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -1604,15 +1604,23 @@ import {
 import DesignationSlice from "../DesignationMaster/DesignationSlice";
 import { getDesignationData } from "../DesignationMaster/DesignationAction";
 import RoleMasterSlice from "../RoleMaster/RoleMasterSlice";
+import DashbordSlice from "../../Dashboard/DashbordSlice";
+import DepartmentMasterSlice from "../DepartmentMaster/DepartmentMasterSlice";
+import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
 
 function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
   const roleDropdown = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getAllRoles
+    (DashbordSlice) => DashbordSlice.dashboard.getAllRoles
   );
+<<<<<<< HEAD
   console.log("roleDropdown",roleDropdown);
+=======
+  const departmentDropdown = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
+
+>>>>>>> ab5be5709c18285f89913213052cb78ba71e9e3a
   const [filteredRoles, setFilteredRoles] = useState([]);
 
   const [country, setCountry] = useState(null);
@@ -1624,7 +1632,7 @@ function CreateUserComponent({ match }) {
 
   const [accountFor, setAccountFor] = useState("SELF");
 
-  const [departmentDropdown, setDepartmentDropdown] = useState(null);
+  // const [departmentDropdown, setDepartmentDropdown] = useState(null);
   // const [roleDropdown, setRoleDropdown] = useState(null);
   // const [designationDropdown, setDesignationDropdown] = useState(null);
   const [CustomerDrp, setCustomerDrp] = useState(null);
@@ -1663,6 +1671,8 @@ function CreateUserComponent({ match }) {
       label: "Department Tickets",
     },
   ];
+
+
   const mappingData = {
     department_id: null,
     ticket_show_type: null,
@@ -2189,10 +2199,58 @@ function CreateUserComponent({ match }) {
     }
   };
 
+
+  const [s,setS]=useState()
+
+//   const handleData=()=>{
+//     console.log("r",roleDropdown)
+//     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
+//       if (accountFor === "SELF") {
+//         return filterData.role.toLowerCase() !== "user";
+//       } else if (accountFor === "CUSTOMER") {
+//         return filterData.role.toLowerCase() === "user";
+//       }
+//     });
+
+//     const response = filteredAsAccountFor?.filter((d) => d.is_active === 1)
+//       .map((d) => ({
+//         value: d.id,
+//         label: d.role,
+//       }));
+//       console.log("r22",response)
+//     const aa = response.sort(function (a, b) {
+//       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+//     });
+//     setS(aa);
+//   }
+// console.log("s",s)
+
+
+const sortSlefRole= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() !== "user"; })
+const filterSelfRole = sortSlefRole?.filter((d) => d.is_active === 1)
+.map((d) => ({
+  value: d.id,
+  label: d.role,
+}));
+const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+});
+
+
+const customerSort= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() === "user"; })
+const filterCutomerRole = customerSort?.filter((d) => d.is_active === 1)
+.map((d) => ({
+  value: d.id,
+  label: d.role,
+}));
+const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
+  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+});
+
   const accountForChange = async (account_for) => {
     setAccountFor(account_for);
     const accountFor = account_for;
-    const filteredAsAccountFor = roleDropdown.filter((filterData) => {
+    const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
       if (accountFor === "SELF") {
         return filterData.role.toLowerCase() !== "user";
       } else if (accountFor === "CUSTOMER") {
@@ -2373,7 +2431,11 @@ if(!stateDropdown){
   dispatch(getStateData());
 
 }
+// handleData()
+dispatch(getAllRoles())
+dispatch(departmentData())
   }, []);
+
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
@@ -2841,7 +2903,6 @@ if(!stateDropdown){
                         </span>
                       )}
                     </div>
-
                     <div
                       className="form-group row mt-4"
                       style={{ position: "relative", display: "flex" }}
@@ -2856,7 +2917,8 @@ if(!stateDropdown){
                           id="role_id"
                           name="role_id"
                           defaultValue={filteredRoles}
-                          options={filteredRoles}
+                          // options={filteredRoles}
+                          options={accountFor === "SELF" ? orderedSelfRoleData : orderedCustomerRoleData}
                           onChange={(e) => {
                             if (e.value === "") {
                               setInputState({
