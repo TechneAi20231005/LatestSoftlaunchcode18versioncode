@@ -24,7 +24,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { UseDispatch,useDispatch,useSelector } from "react-redux";
 import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
-import { billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
+import { BillcheckingpostData, billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, postBillcheckingData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { getVendorMasterData } from "../Slices/VendorMasterAction";
@@ -1017,86 +1017,87 @@ console.log("AllBillCheckingDatadd",AllBillCheckingData)
     setNotify(null);
     e.preventDefault();
     const formData = new FormData(e.target);
-    await new BillCheckingTransactionService()
-      .filterBillCheckingData(formData)
-      .then((res) => {
-        if (res.data.status === 1) {
-          const tempData = [];
-          let counter = 1;
-          const temp = res.data.data;
+    dispatch(BillcheckingpostData(formData))
+    // await new BillCheckingTransactionService()
+    //   .filterBillCheckingData(formData)
+    //   .then((res) => {
+    //     if (res.data.status === 1) {
+    //       const tempData = [];
+    //       let counter = 1;
+    //       const temp = res.data.data;
 
-          for (const key in temp) {
-            tempData.push({
-              "Sr No": counter++,
-              id: temp[key].id,
-              // bc_id: temp[key].bc_id,
-              "Bill ID": temp[key].bc_id,
-              "Vendor Name": temp[key].vendor_id_name,
-              "Payment Date": temp[key].payment_date,
-              "Bill No": temp[key].vendor_bill_no,
-              "Actual Payment Date": temp[key].payment_date,
-              "Bill Amount": temp[key].bill_amount,
-              "Net Amount": temp[key].net_payment,
-              // "Bill Status": temp[key].bill_status,
-              "Bill Status": temp[key].payment_status,
+    //       for (const key in temp) {
+    //         tempData.push({
+    //           "Sr No": counter++,
+    //           id: temp[key].id,
+    //           // bc_id: temp[key].bc_id,
+    //           "Bill ID": temp[key].bc_id,
+    //           "Vendor Name": temp[key].vendor_id_name,
+    //           "Payment Date": temp[key].payment_date,
+    //           "Bill No": temp[key].vendor_bill_no,
+    //           "Actual Payment Date": temp[key].payment_date,
+    //           "Bill Amount": temp[key].bill_amount,
+    //           "Net Amount": temp[key].net_payment,
+    //           // "Bill Status": temp[key].bill_status,
+    //           "Bill Status": temp[key].payment_status,
 
-              bill_type_name: temp[key].bill_type_name,
-              "Assign From": temp[key].created_by,
-              "Assign To": temp[key].assign_to_name,
-              "Levels of approval": temp[key].levels_of_approval,
-              approvedBy: temp[key].approvedBy,
-              "Pending From": temp[key].level_approver,
-              // rejectedBy:temp[key].rejectedBy,
+    //           bill_type_name: temp[key].bill_type_name,
+    //           "Assign From": temp[key].created_by,
+    //           "Assign To": temp[key].assign_to_name,
+    //           "Levels of approval": temp[key].levels_of_approval,
+    //           approvedBy: temp[key].approvedBy,
+    //           "Pending From": temp[key].level_approver,
+    //           // rejectedBy:temp[key].rejectedBy,
 
-              // "Approve By": temp[key].approved_by,
+    //           // "Approve By": temp[key].approved_by,
 
-              // "Rejected By": temp[key].rejectedBy,
-              // rejectedBy: temp[key].rejectedBy,
-              "Taxable Amount": temp[key].taxable_amount,
-              "Debit Advance": temp[key].debit_advance,
-              // "is original Bill": temp[key].is_original_bill_needed,
-              "Is Original Bill":
-                temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
+    //           // "Rejected By": temp[key].rejectedBy,
+    //           // rejectedBy: temp[key].rejectedBy,
+    //           "Taxable Amount": temp[key].taxable_amount,
+    //           "Debit Advance": temp[key].debit_advance,
+    //           // "is original Bill": temp[key].is_original_bill_needed,
+    //           "Is Original Bill":
+    //             temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
-              // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
-              // audit_remark: temp[key].audit_remark,
-              // external_audit_remark: temp[key].external_audit_remark,
-              "Bill date": temp[key].bill_date,
-              "Recieved Date": temp[key].received_date,
-              "Hold Amount": temp[key].hold_amount,
-              "Paid Amount": temp[key].actual_paid,
-              "Is cancelled": temp[key].cancelled,
-              "Is TCS applicable":
-                temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
+    //           // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
+    //           // audit_remark: temp[key].audit_remark,
+    //           // external_audit_remark: temp[key].external_audit_remark,
+    //           "Bill date": temp[key].bill_date,
+    //           "Recieved Date": temp[key].received_date,
+    //           "Hold Amount": temp[key].hold_amount,
+    //           "Paid Amount": temp[key].actual_paid,
+    //           "Is cancelled": temp[key].cancelled,
+    //           "Is TCS applicable":
+    //             temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
 
-              // created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-              // is_editable_for_creator: temp[key].is_editable_for_creator,
-              // bill_type_name: temp[key].bill_type_name,
-              // "Assign From": temp[key].created_by,
-              // assign_to_name: temp[key].assign_to_name,
-              // is_assign_to: temp[key].assign_to_name,
-              // "Assign To": temp[key].assign_to_name,
-              // "Approve By": temp[key].approved_by,
-              // "Pending From": temp[key].level_approver,
+    //           // created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //           // is_editable_for_creator: temp[key].is_editable_for_creator,
+    //           // bill_type_name: temp[key].bill_type_name,
+    //           // "Assign From": temp[key].created_by,
+    //           // assign_to_name: temp[key].assign_to_name,
+    //           // is_assign_to: temp[key].assign_to_name,
+    //           // "Assign To": temp[key].assign_to_name,
+    //           // "Approve By": temp[key].approved_by,
+    //           // "Pending From": temp[key].level_approver,
 
-              // level_approver: temp[key].level_approver,
-              // level: temp[key].level,
-              // total_level: temp[key].total_level,
-            });
-          }
-          setData(null);
+    //           // level_approver: temp[key].level_approver,
+    //           // level: temp[key].level,
+    //           // total_level: temp[key].total_level,
+    //         });
+    //       }
+    //       setData(null);
 
-          // setExportData(null);
-          // setExportData(tempData);
-          setData(tempData);
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
+    //       // setExportData(null);
+    //       // setExportData(tempData);
+    //       setData(tempData);
+    //     } else {
+    //       setNotify({ type: "danger", message: res.data.message });
+    //     }
+    //   });
   };
 
   const [importModal, setImportModal] = useState({

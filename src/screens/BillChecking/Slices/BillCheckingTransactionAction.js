@@ -88,6 +88,16 @@ export const mappEmployed = createAsyncThunk("mappEmployed",async(config,thunkap
     }
 })
 
+export const BillcheckingpostData = createAsyncThunk("BillcheckingpostData",async(config,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.filterBillCheckingData(config)
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
 
 
 
