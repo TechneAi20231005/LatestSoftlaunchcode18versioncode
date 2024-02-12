@@ -982,6 +982,7 @@ export default function MyTicketComponent({ location }) {
       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
   );
   
+  console.log("a",assignToMeData);
   const statusData = useSelector(
     (statusMasterSlice) =>
     statusMasterSlice.statusMaster.sortStatusData
@@ -995,7 +996,7 @@ const getAssignedUserData = useSelector(myTicketComponentSlice=>myTicketComponen
 const departsmentData = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
 const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
 
-console.log("d",UserForMyTicketData)
+
   
   const [modal, setModal] = useState({
     showModal: false,
@@ -1177,7 +1178,7 @@ console.log("d",UserForMyTicketData)
                     </Link>
                   </li>
                 )}
-{console.log("iii",data.id)}
+
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
@@ -3093,16 +3094,16 @@ console.log("d",UserForMyTicketData)
   dispatch(getStatusData());
       
     }
-    if(!assignToMeData.length){
+    if(!assignToMeData?.length){
   dispatch(getUserTicketsTest());}
-  if(!UserForMyTicketData.length){
+  if(!UserForMyTicketData?.length){
   dispatch(getUserForMyTicketsData(inputRequired))}
-    if(!departsmentData.length){
+    if(!departsmentData?.length){
     dispatch(departmentData())}
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-    if(!checkRole.length){
+    if(!checkRole?.length){
       dispatch(getRoles())
     }
   }, []);
@@ -3794,6 +3795,7 @@ console.log("d",UserForMyTicketData)
                           highlightOnHover={true}
                         />
                       )}
+                      
                       <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
@@ -3807,12 +3809,13 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignedToMeData && (
+                        {assignToMeData  && (
                           <small>
-                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
-                            {assignedToMeData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
+                        {console.log("assignedToMeData",assignedToMeData)}
                         <button
                           onClick={(e) => {
                             handleAssignedToMeRowChanged(e, "MINUS");
@@ -3866,10 +3869,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {createdByMeData && (
+                        {assignToMeData && (
                           <small>
-                            {createdByMeData.from}-{createdByMeData.to} of{" "}
-                            {createdByMeData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
                         <button
@@ -3930,10 +3933,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {departmentWiseData && (
+                        {assignToMeData && (
                           <small>
-                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
-                            {departmentWiseData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
                         <button
@@ -3991,10 +3994,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {yourTaskData && (
+                        {assignToMeData && (
                           <small>
-                            {yourTaskData.from}-{yourTaskData.to} of{" "}
-                            {yourTaskData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
                         <button
@@ -4203,6 +4206,8 @@ console.log("d",UserForMyTicketData)
                         </div>
                       </div>
 
+  
+
                       {assignToMeData && (
                         <DataTable
                           columns={unpassedColumns}
@@ -4228,12 +4233,13 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {unpassedData && (
+                        {assignToMeData && (
                           <small>
-                            {unpassedData.from}-{unpassedData.to} of{" "}
-                            {unpassedData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
+         
                         <button
                           onClick={(e) => {
                             handleUnpassedRowChanged(e, "MINUS");

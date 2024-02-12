@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService"
+import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
 export const getBillcheckingData = createAsyncThunk("getBillcheckingData",async(config,thunkapi)=>{
     try{
         const service = new BillCheckingTransactionService()
@@ -23,10 +24,12 @@ export const postBillcheckingData = createAsyncThunk("postBillcheckingData",asyn
 })
 
 
-export const getUpdatedAuthoritiesData = createAsyncThunk("getUpdatedAuthoritiesData",async(payload,thunkapi)=>{
+export const getUpdatedAuthoritiesData = createAsyncThunk("getUpdatedAuthoritiesData",async(config,thunkapi)=>{
     try{
         const service = new BillCheckingTransactionService()
         const response = await service.getUpdatedAuthorities()
+  
+
         return (response)
     }catch (error){
         throw(error)
@@ -44,7 +47,7 @@ export const UpdateBillCheckingTransaction = createAsyncThunk("UpdateBillCheckin
     }
 })
 
-export const getcreateAuthoritiesData = createAsyncThunk("getcreateAuthoritiesData",async(payload,thunkapi)=>{
+export const getcreateAuthoritiesData = createAsyncThunk("getcreateAuthoritiesData",async(config,thunkapi)=>{
     try{
         const service = new BillCheckingTransactionService()
         const response = await service.getBillCreateAuthority()
@@ -53,4 +56,39 @@ export const getcreateAuthoritiesData = createAsyncThunk("getcreateAuthoritiesDa
         throw(error)
     }
 })
+
+export const billTypeDataDropDowm = createAsyncThunk("billTypeDataDropDowm",async(config,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service._getBillTypeDataDropdown()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+export const statusDropDownData = createAsyncThunk("statusDropDownData",async(config,thunkapi)=>{
+    try{
+        const service = new DropdownService()
+        const response = await service.getBillCheckingStatus()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+
+export const mappEmployed = createAsyncThunk("mappEmployed",async(config,thunkapi)=>{
+    try{
+        const service = new DropdownService()
+        const response = await service.getMappedEmp()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+
+
+
 

@@ -24,11 +24,16 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { UseDispatch,useDispatch,useSelector } from "react-redux";
 import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
-import { getBillcheckingData } from "../Slices/BillCheckingTransactionAction";
+import { billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { getVendorMasterData } from "../Slices/VendorMasterAction";
+import VendorMasterSlice from "../Slices/VendorMasterSlice";
 
 function BillCheckingTransaction() {
   const location = useLocation();
   const [data, setData] = useState(null);
+
   const [notify, setNotify] = useState();
   // const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,12 +45,25 @@ function BillCheckingTransaction() {
   });
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
 
   const dispatch=useDispatch()
-const AllBillCheckingData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.sortedBillCheckingData)
-const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
+  const AllBillCheckingData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.sortedBillCheckingData)
+  const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
+  const authorities=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData)
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41));
+  const billTypeDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm)
+  const vendorDropdown=useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
+  const statusDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.statusDropDownData)
+  const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
+
+console.log("AllBillCheckingDatadd",AllBillCheckingData)
+
+
+
+  
+
 
   const handleModal = (data) => {
     setModal(data);
@@ -86,12 +104,15 @@ const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransac
   const [cityDropdown, setCityDropdown] = useState();
   const fileInputRef = useRef(null);
   const [id, setId] = useState();
-  const [billTypeDropdown, setBillTypeDropdown] = useState(null);
-  const [vendorDropdown, setVendorDropdown] = useState(null);
+  // const [billTypeDropdown, setBillTypeDropdown] = useState(null);
+
+  // const [vendorDropdown, setVendorDropdown] = useState(null);
   const [assignToDropdown, setAssignToDropdown] = useState();
-  const [statusDropdown, setStatusDropdown] = useState();
-  const [userDropdown, setUserDropdown] = useState();
-  const [authorities, SetAuthorities] = useState();
+  // const [statusDropdown, setStatusDropdown] = useState();
+ 
+  // const [userDropdown, setUserDropdown] = useState();
+  // const [authorities, SetAuthorities] = useState();
+
 
   const columns = [
     {
@@ -710,191 +731,210 @@ const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransac
     var temprory = [];
     setIsLoading(true);
 
-    await new BillCheckingService().getBillCheckData().then((res) => {
-      if (res.status === 200) {
-        setIsLoading(false);
+    dispatch(getBillcheckingData())
 
-        let counter = 1;
+    // await new BillCheckingService().getBillCheckData().then((res) => {
+    //   console.log(res)
+    //   if (res.status === 200) {
+    //     setIsLoading(false);
 
-        const temp = res.data.data;
-        var tempData = [];
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            "Bill ID": temp[key].bc_id,
-            "Vendor Name": temp[key].vendor_id_name,
-            template_name: temp[key].template_name,
-            employee_name: temp[key].employee_name,
+    //     let counter = 1;
 
-            "Payment Date": temp[key].payment_date,
-            "Bill No": temp[key].vendor_bill_no,
-            "Actual Payment Date": temp[key].actual_payment_date,
-            "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
-            is_active: temp[key].is_active,
-            "Is TCS applicable": temp[key].is_tcs_applicable,
-            bill_type_name: temp[key].bill_type_name,
-            assign_to_name: temp[key].assign_to_name,
-            "Taxable Amount": temp[key].taxable_amount,
-            "Debit Advance": temp[key].debit_advance,
-            "Bill date": temp[key].bill_date,
-            "Bill Status": temp[key].payment_status,
-            "Is Original Bill": temp[key].is_original_bill_needed,
-            "Recieved Date": temp[key].received_date,
-            "Hold Amount": temp[key].hold_amount,
-            "Paid Amount": temp[key].actual_paid,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
+    //     const temp = res.data.data;
+    //     var tempData = [];
+    //     for (const key in temp) {
+    //       data.push({
+    //         counter: counter++,
+    //         id: temp[key].id,
+    //         "Bill ID": temp[key].bc_id,
+    //         "Vendor Name": temp[key].vendor_id_name,
+    //         template_name: temp[key].template_name,
+    //         employee_name: temp[key].employee_name,
 
-            updated_by: temp[key].updated_by,
-            "Rejected By": temp[key].rejectedBy,
+    //         "Payment Date": temp[key].payment_date,
+    //         "Bill No": temp[key].vendor_bill_no,
+    //         "Actual Payment Date": temp[key].actual_payment_date,
+    //         "Bill Amount": temp[key].bill_amount,
+    //         "Net Amount": temp[key].net_payment,
+    //         is_active: temp[key].is_active,
+    //         "Is TCS applicable": temp[key].is_tcs_applicable,
+    //         bill_type_name: temp[key].bill_type_name,
+    //         assign_to_name: temp[key].assign_to_name,
+    //         "Taxable Amount": temp[key].taxable_amount,
+    //         "Debit Advance": temp[key].debit_advance,
+    //         "Bill date": temp[key].bill_date,
+    //         "Bill Status": temp[key].payment_status,
+    //         "Is Original Bill": temp[key].is_original_bill_needed,
+    //         "Recieved Date": temp[key].received_date,
+    //         "Hold Amount": temp[key].hold_amount,
+    //         "Paid Amount": temp[key].actual_paid,
+    //         created_at: temp[key].created_at,
+    //         created_by: temp[key].created_by,
+    //         updated_at: temp[key].updated_at,
 
-            is_approver: temp[key].is_approver,
-            "Assign To": temp[key].assign_to_name,
-            is_assign_to: temp[key].is_assign_to,
-            level: temp[key].level,
-            total_level: temp[key].level,
-            last_approved_by: temp[key].last_approved_by,
-            approvedBy: temp[key].approvedBy,
-            "Pending From": temp[key].level_approver,
-            audit_remark: temp[key].audit_remark,
-            external_audit_remark: temp[key].external_audit_remark,
+    //         updated_by: temp[key].updated_by,
+    //         "Rejected By": temp[key].rejectedBy,
 
-            levels_of_approval: temp[key].levels_of_approval,
+    //         is_approver: temp[key].is_approver,
+    //         "Assign To": temp[key].assign_to_name,
+    //         is_assign_to: temp[key].is_assign_to,
+    //         level: temp[key].level,
+    //         total_level: temp[key].level,
+    //         last_approved_by: temp[key].last_approved_by,
+    //         approvedBy: temp[key].approvedBy,
+    //         "Pending From": temp[key].level_approver,
+    //         audit_remark: temp[key].audit_remark,
+    //         external_audit_remark: temp[key].external_audit_remark,
 
-            level_approver: temp[key].level_approver,
-            is_editable_for_creator: temp[key].is_editable_for_creator,
-            is_rejected: temp[key].is_rejected,
-            "Is cancelled": temp[key].cancelled,
-          });
-        }
-        for (const key in temp) {
-          tempData.push({
-            // counter: counter++,
-            SrNo: tempData.length + 1,
-            "Bill ID": temp[key].bc_id,
-            "Vendor Name": temp[key].vendor_id_name,
-            "Payment Date": temp[key].payment_date,
-            "Bill No": temp[key].vendor_bill_no,
-            "Actual Payment Date": temp[key].actual_payment_date,
-            "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
-            "Rejected By": temp[key].rejectedBy,
-            "Is TCS applicable": temp[key].is_tcs_applicable,
+    //         levels_of_approval: temp[key].levels_of_approval,
 
-            bill_type_name: temp[key].bill_type_name,
+    //         level_approver: temp[key].level_approver,
+    //         is_editable_for_creator: temp[key].is_editable_for_creator,
+    //         is_rejected: temp[key].is_rejected,
+    //         "Is cancelled": temp[key].cancelled,
+    //       });
+    //     }
+    //     for (const key in temp) {
+    //       tempData.push({
+    //         // counter: counter++,
+    //         SrNo: tempData.length + 1,
+    //         "Bill ID": temp[key].bc_id,
+    //         "Vendor Name": temp[key].vendor_id_name,
+    //         "Payment Date": temp[key].payment_date,
+    //         "Bill No": temp[key].vendor_bill_no,
+    //         "Actual Payment Date": temp[key].actual_payment_date,
+    //         "Bill Amount": temp[key].bill_amount,
+    //         "Net Amount": temp[key].net_payment,
+    //         "Rejected By": temp[key].rejectedBy,
+    //         "Is TCS applicable": temp[key].is_tcs_applicable,
 
-            "Taxable Amount": temp[key].taxable_amount,
-            "Debit Advance": temp[key].debit_advance,
-            "Bill date": temp[key].bill_date,
-            "Rejected By": temp[key].rejectedBy,
+    //         bill_type_name: temp[key].bill_type_name,
 
-            // "Bill Status": temp[key].bill_status,
-            "Bill Status": temp[key].payment_status,
+    //         "Taxable Amount": temp[key].taxable_amount,
+    //         "Debit Advance": temp[key].debit_advance,
+    //         "Bill date": temp[key].bill_date,
+    //         "Rejected By": temp[key].rejectedBy,
 
-            "Recieved Date": temp[key].received_date,
-            total_level: temp[key].total_level,
-            last_approved_by: temp[key].last_approved_by,
-            is_editable_for_creator: temp[key].is_editable_for_creator,
+    //         // "Bill Status": temp[key].bill_status,
+    //         "Bill Status": temp[key].payment_status,
 
-            "Levels of approval": temp[key].levels_of_approval,
-            "Approve By": temp[key].approved_by,
-            "Pending From": temp[key].level_approver,
+    //         "Recieved Date": temp[key].received_date,
+    //         total_level: temp[key].total_level,
+    //         last_approved_by: temp[key].last_approved_by,
+    //         is_editable_for_creator: temp[key].is_editable_for_creator,
 
-            "Assign From": temp[key].created_by,
-            "Assign To": temp[key].assign_to_name,
-            is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
+    //         "Levels of approval": temp[key].levels_of_approval,
+    //         "Approve By": temp[key].approved_by,
+    //         "Pending From": temp[key].level_approver,
 
-            approvedBy: temp[key].approvedBy,
-            "Is Original Bill": temp[key].is_original_bill_needed,
+    //         "Assign From": temp[key].created_by,
+    //         "Assign To": temp[key].assign_to_name,
+    //         is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
-            // "is original Bill": temp[key].is_original_bill_needed,
-            "Internal Audit": temp[key].audit_remark,
-            "External Audit": temp[key].external_audit_remark,
-            "Hold Amount": temp[key].hold_amount,
-            "Paid Amount": temp[key].actual_paid,
-            "Is cancelled": temp[key].cancelled,
+    //         approvedBy: temp[key].approvedBy,
+    //         "Is Original Bill": temp[key].is_original_bill_needed,
 
-            "Created at": temp[key].created_at,
-            "Created by": temp[key].created_by,
-            "Updated At": temp[key].updated_at,
-            "Updated By": temp[key].updated_by,
-          });
-          // setExportData(null);
-          // setExportData(tempData);
-        }
-        setData(null);
-        setData(data);
-        res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
-      }
-    });
+    //         // "is original Bill": temp[key].is_original_bill_needed,
+    //         "Internal Audit": temp[key].audit_remark,
+    //         "External Audit": temp[key].external_audit_remark,
+    //         "Hold Amount": temp[key].hold_amount,
+    //         "Paid Amount": temp[key].actual_paid,
+    //         "Is cancelled": temp[key].cancelled,
+
+    //         "Created at": temp[key].created_at,
+    //         "Created by": temp[key].created_by,
+    //         "Updated At": temp[key].updated_at,
+    //         "Updated By": temp[key].updated_by,
+    //       });
+    //       // setExportData(null);
+    //       // setExportData(tempData);
+    //     }
+    //     setData(null);
+    //     setData(data);
+    //     res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
+    //   }
+    // });
+
+
+
+
     const inputRequired = "id,employee_id,first_name,last_name,middle_name";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status == 200) {
-        setIsLoading(false);
+    dispatch(getUserForMyTicketsData(inputRequired));
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status == 200) {
+    //     setIsLoading(false);
 
-        if (res.data.status == 1) {
-          setIsLoading(false);
+    //     if (res.data.status == 1) {
+    //       setIsLoading(false);
 
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUserDropdown(
-            temp.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
-          );
-        }
-      }
-    });
+    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    //       setUserDropdown(
+    //         temp.map((d) => ({
+    //           value: d.id,
+    //           label: d.first_name + " " + d.last_name,
+    //         }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new BillCheckingTransactionService()
-      .getUpdatedAuthorities()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
 
-          if (res.data.status == 1) {
-            SetAuthorities(res.data.data);
-          }
-        }
-      });
-    await new BillCheckingTransactionService()
-      ._getBillTypeDataDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
+    
+    // await new BillCheckingTransactionService()
+    //   .getUpdatedAuthorities()
+    //   .then((res) => {
+     
+    //     if (res.status === 200) {
+    //       setIsLoading(false);
 
-          if (res.data.status == 1) {
-            setBillTypeDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
-            );
-          }
-        }
-      });
+    //       if (res.data.status == 1) {
+    //         SetAuthorities(res.data.data);
+    //       }
+    //     }
+    //   });
+      dispatch(getUpdatedAuthoritiesData())
+      dispatch(billTypeDataDropDowm())
 
-    await new BillCheckingTransactionService()
-      .getVendorsDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
 
-          if (res.data.status == 1) {
-            setIsLoading(false);
+    // await new BillCheckingTransactionService()
+    //   ._getBillTypeDataDropdown()
+    //   .then((res) => {
+        
+    //     if (res.status === 200) {
+    //       setIsLoading(false);
 
-            setVendorDropdown(
-              res.data.data.map((d) => ({
-                value: d.id,
-                label: d.vendor_name,
-              }))
-            );
-          }
-        }
-      });
+    //       if (res.data.status == 1) {
+    //         setBillTypeDropdown(
+    //           res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
+    //         );
+    //       }
+    //     }
+    //   });
+    dispatch(getVendorMasterData())
+
+    // await new BillCheckingTransactionService()
+    //   .getVendorsDropdown()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setIsLoading(false);
+
+    //       if (res.data.status == 1) {
+    //         setIsLoading(false);
+
+    //         setVendorDropdown(
+    //           res.data.data.map((d) => ({
+    //             value: d.id,
+    //             label: d.vendor_name,
+    //           }))
+    //         );
+    //       }
+    //     }
+    //   });
 
     await new DropdownService().getMappedEmp().then((res) => {
+      console.log("restau",res);
       if (res.status === 200) {
+        
         setIsLoading(false);
 
         if (res.data.status == 1) {
@@ -910,18 +950,20 @@ const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransac
       }
     });
 
-    await new DropdownService().getBillCheckingStatus().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setStatusDropdown(
-            res.data.data.map((d) => ({
-              value: d.id,
-              label: d.convention_name,
-            }))
-          );
-        }
-      }
-    });
+
+    dispatch(statusDropDownData())
+    // await new DropdownService().getBillCheckingStatus().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setStatusDropdown(
+    //         res.data.data.map((d) => ({
+    //           value: d.id,
+    //           label: d.convention_name,
+    //         }))
+    //       );
+    //     }
+    //   }
+    // });
 
     await new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
@@ -959,14 +1001,16 @@ const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransac
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+  dispatch(getRoles())
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleFilter = async (e) => {
@@ -1113,7 +1157,7 @@ const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransac
     }
   };
   useEffect(() => {
-    if (checkRole && checkRole[45].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UpdateBillCheckingTransaction, getBillcheckingData, getUpdatedAuthoritiesData, getcreateAuthoritiesData, postBillcheckingData } from "./BillCheckingTransactionAction";
+import { UpdateBillCheckingTransaction, billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, getcreateAuthoritiesData, mappEmployed, postBillcheckingData, statusDropDownData } from "./BillCheckingTransactionAction";
 
 const initialState = {
   status: "",
@@ -12,6 +12,8 @@ const initialState = {
   exportData:[],
   authoritiesData:"",
   authorityData:"",
+  billTypeDataDropDowm:[],
+  statusDropDownData:[]
 
 
 };
@@ -32,6 +34,7 @@ export const BillCheckingTransactionSlice = createSlice({
     builder.addCase(getBillcheckingData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
+        console.log("payloadbillchecking",payload);
         let getAllbillCheckingData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -193,6 +196,7 @@ export const BillCheckingTransactionSlice = createSlice({
       builder.addCase(getUpdatedAuthoritiesData.fulfilled, (state, action) => {
         const { payload } = action;
         if (payload?.status === 200 && payload?.data?.status === true) {
+          console.log("payloadAuthorites",payload);
           let authoritiesData = payload.data.data;
           state.status = "succeded";
           state.showLoaderModal = false;
@@ -267,6 +271,103 @@ export const BillCheckingTransactionSlice = createSlice({
       builder.addCase(UpdateBillCheckingTransaction.rejected, (state) => {
         state.status = "rejected";
       });
+
+
+      //__________________getBillTypeData________________
+
+
+      
+      builder.addCase(billTypeDataDropDowm.pending, (state) => {
+        state.status = "loading";
+
+      });
+
+      builder.addCase(billTypeDataDropDowm.fulfilled, (state, action) => {
+        const { payload } = action;
+        if (payload?.status === 200 && payload?.data?.status === 1) {
+          let billTypeDataDropDowm = payload.data.data.map((d)=>({ value: d.id, label: d.bill_type }))
+          state.status = "succeded";
+          state.showLoaderModal = false;
+
+          state.billTypeDataDropDowm = [...billTypeDataDropDowm];
+          state.notify = null;
+          state.notify = { type: "success", message: payload.data.message };
+        } else {
+          let notify = { type: "danger", message: payload.data.message };
+          state.notify = null;
+          state.notify = notify;
+
+        }
+      });
+      builder.addCase(billTypeDataDropDowm.rejected, (state) => {
+        state.status = "rejected";
+      });
+      
+
+      //_____________________________________getStatusData_______________________________
+
+      builder.addCase(statusDropDownData.pending, (state) => {
+        state.status = "loading";
+
+      });
+
+      builder.addCase(statusDropDownData.fulfilled, (state, action) => {
+        const { payload } = action;
+        if (payload?.status === 200 && payload?.data?.status === 1) {
+          let statusDropDownData = payload.data.data.map((d) => ({
+            value: d.id,
+            label: d.convention_name,
+          }))
+          state.status = "succeded";
+          state.showLoaderModal = false;
+
+          state.statusDropDownData = [...statusDropDownData];
+          state.notify = null;
+          state.notify = { type: "success", message: payload.data.message };
+        } else {
+          let notify = { type: "danger", message: payload.data.message };
+          state.notify = null;
+          state.notify = notify;
+
+        }
+      });
+      builder.addCase(statusDropDownData.rejected, (state) => {
+        state.status = "rejected";
+      });
+      
+      //___________________getMppEmployed__________________________________
+
+      builder.addCase(mappEmployed.pending, (state) => {
+        state.status = "loading";
+
+      });
+
+      builder.addCase(mappEmployed.fulfilled, (state, action) => {
+        const { payload } = action;
+        if (payload?.status === 200 && payload?.data?.status === 1) {
+          let mappEmployed = payload.data.data.map((d) => ({
+            value: d.id,
+            label: d.employee_name,
+          }))
+          state.status = "succeded";
+          state.showLoaderModal = false;
+
+          state.mappEmployed = [...mappEmployed];
+          state.notify = null;
+          state.notify = { type: "success", message: payload.data.message };
+        } else {
+          let notify = { type: "danger", message: payload.data.message };
+          state.notify = null;
+          state.notify = notify;
+
+        }
+      });
+      builder.addCase(mappEmployed.rejected, (state) => {
+        state.status = "rejected";
+      });
+
+
+
   },
 });
 

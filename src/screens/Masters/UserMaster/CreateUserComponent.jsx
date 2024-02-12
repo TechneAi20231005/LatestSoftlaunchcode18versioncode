@@ -1612,6 +1612,7 @@ function CreateUserComponent({ match }) {
   const roleDropdown = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllRoles
   );
+  console.log("roleDropdown",roleDropdown);
   const [filteredRoles, setFilteredRoles] = useState([]);
 
   const [country, setCountry] = useState(null);
