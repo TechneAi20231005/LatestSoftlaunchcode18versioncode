@@ -904,7 +904,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Spinner } from "react-bootstrap";
 import { useDispatch,useSelector } from "react-redux";
-import { getAllTaskData, getBasketTaskData } from "./TaskComponentAction";
+import { getAllTaskData, getBasketByIdData, getBasketTaskData } from "./TaskComponentAction";
 
 
 
@@ -931,6 +931,7 @@ console.log("t",ticketId)
   const dispatch = useDispatch();
   const BasketData = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
   const OwnerShip = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.ownership)
+  // const B = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
 
 
   const getTicketData = async () => {
@@ -973,30 +974,33 @@ console.log("t",ticketId)
     setShowBasketModal(false);
   };
 
+
+
   const handleShowBasketModal = async (id) => {
     setBasketData(null);
     if (id) {
-      await new BasketService()
-        .getBasketById(id)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setBasketData(null);
-              var temp = res.data.data;
-              setBasketData(temp);
-            }
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "Task",
-            "Get_Basket",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(getBasketByIdData(id))
+      // await new BasketService()
+      //   .getBasketById(id)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setBasketData(null);
+      //         var temp = res.data.data;
+      //         setBasketData(temp);
+      //       }
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     new ErrorLogService().sendErrorLog(
+      //       "Task",
+      //       "Get_Basket",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     } else {
       setBasketData(null);
     }
@@ -1247,6 +1251,7 @@ console.log("t",ticketId)
 
     dispatch(getBasketTaskData(ticketId))
     dispatch(getAllTaskData(id))
+    dispatch(getBasketByIdData(id))
     await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -1365,7 +1370,6 @@ console.log("t",ticketId)
     );
   }
 
-  {console.log("task",tasksData)}
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Manage Task" />
