@@ -4,15 +4,49 @@ import {
   getParentData,
   getAllTypeData,
   postTemplateData,
+  updateBasketModalData,
+  basketinEditData,
+  addTaskinBasketData,
+  getTemplateByIdData,
 } from "./TemplateComponetAction";
 
 const initialState = {
   status: "",
   err: "",
+  basketId:'',
+  newData:{template_name: null,
+    calculate_from: null,
+    template_data: [
+      {
+        basket_name: null,
+        basket_owner: null,
+        basket_task: [],
+      },
+    ],},
   templateData: [],
   getParentData: [],
   getAllTypeData: [],
-  postTemplateData:[]
+  postTemplateData:[],
+  modal:{
+    showModal: false,
+    modalData: "",
+    basketIndex: "",
+    taskIndex: "",
+    modalHeader: "",
+  },
+  getTemplateByIdData:[],
+  addBasketModal:{
+    showModal: false,
+    modalAddData: null,
+    modalAddHeader: null,
+
+  },
+  addTaskModal:{
+    showModal: false,
+    modalAddData: null,
+    modalAddHeader: null,
+
+  }
 };
 
 export const templateSlice = createSlice({
@@ -23,6 +57,22 @@ export const templateSlice = createSlice({
       state.showLoaderModal = action.payload;
       console.log("action of modal", action.payload);
     },
+    handleModalOpen: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleModalClose: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleBasketModal: (state, action) => {
+      state.addBasketModal = action.payload;
+    },
+
+    handleTaskModal: (state, action) => {
+       state.basketId=action.payload.modalData.basket_id
+      
+      state.addTaskModal = action.payload;
+    },
+  
   },
   extraReducers: (builder) => {
     builder.addCase(templateData.pending, (state) => {
@@ -108,6 +158,7 @@ export const templateSlice = createSlice({
 
     builder.addCase(postTemplateData.pending, (state) => {
       state.status = "loading";
+      state.notify=null
     });
     builder.addCase(postTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -128,6 +179,119 @@ export const templateSlice = createSlice({
     builder.addCase(postTemplateData.rejected, (state) => {
       state.status = "rejected";
     });
+    //__________________________updateBasketModalData______________
+
+
+    builder.addCase(updateBasketModalData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+    builder.addCase(updateBasketModalData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+        let updateBasketModalData = payload.data.data;
+        console.log(updateBasketModalData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.updateBasketModalData = updateBasketModalData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(updateBasketModalData.rejected, (state) => {
+      state.status = "rejected";
+    });
+    
+
+    //_______________________BasketEdit______________________
+
+    
+    builder.addCase(basketinEditData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+    builder.addCase(basketinEditData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.addBasketModal = { showModal: false, modalAddData: null,
+          modalAddHeader: null, };
+
+        let basketinEditData = payload.data.data;
+        console.log(basketinEditData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.basketinEditData = basketinEditData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(basketinEditData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //________________________addTaskInBasket______________________________
+
+    builder.addCase(addTaskinBasketData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+    builder.addCase(addTaskinBasketData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+        state.addTaskModal = {  showModal: false,
+          modalAddData: null,
+          modalAddHeader: null, };
+
+        let addTaskinBasketData = payload.data.data;
+        console.log(addTaskinBasketData);
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        state.addTaskinBasketData = addTaskinBasketData;
+      } else {
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(addTaskinBasketData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //____________________________getTemplateById____________________
+
+
+    builder.addCase(getTemplateByIdData.pending, (state) => {
+      state.status = "loading";
+      state.notify=null
+    });
+    builder.addCase(getTemplateByIdData.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log("payload Role", payload);
+      // if (payload?.status === 200 && payload?.data?.status === 1) {
+      //   state.notify = { type: "success", message: payload.data.message };
+      //   state.addTaskModal = {  showModal: false,
+      //     modalAddData: null,
+      //     modalAddHeader: null, };
+
+      //   let getTemplateByIdData = payload.data.data;
+      //   console.log(getTemplateByIdData);
+      //   state.status = "succeded";
+      //   state.showLoaderModal = false;
+      //   state.getTemplateByIdData = getTemplateByIdData;
+      // } else {
+      //   state.notify = { type: "danger", message: payload.data.message };
+      // }
+    });
+    builder.addCase(getTemplateByIdData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
 
 
 
@@ -139,5 +303,6 @@ export const templateSlice = createSlice({
 
   },
 });
+export const { handleModalOpen, handleModalClose,handleBasketModal,handleTaskModal, } = templateSlice.actions;
 
 export default templateSlice.reducer;

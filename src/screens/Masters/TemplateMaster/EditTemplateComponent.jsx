@@ -18,14 +18,50 @@ import BasketService from "../../../services/TicketService/BasketService";
 import Select from "react-select";
 import { _base } from "../../../settings/constants";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTaskinBasketData,
+  basketinEditData,
+  getAllTypeData,
+  getTemplateByIdData,
+  postTemplateData,
+  updateBasketModalData,
+  updateTemplateData,
+} from "./TemplateComponetAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { handleBasketModal, handleTaskModal } from "./TemplateComponetSlice";
+
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
 const EditTemplateComponent = ({ match, props }) => {
-  const history = useNavigate();
-  const [notify, setNotify] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  
-  const {id}=useParams()
-  const templateId = id
+  const taskTypeDropdown = useSelector(
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.getAllTypeData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+  );
+  const userData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+  );
+  const notify = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
+  );
+  const addBasketModal = useSelector(
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.addBasketModal
+  );
+  const addTaskModal = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal);
+  const basketId = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId );
+
+  // const [notify, setNotify] = useState(null);
+
+  const { id } = useParams();
+  const templateId = id;
 
   const [data, setData] = useState(null);
 
@@ -43,31 +79,32 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const [user, setUser] = useState();
   const [stack, setStack] = useState({ SE: "", AB: "" });
-  const [userData, setUserData] = useState();
+  // const [userData, setUserData] = useState();
 
   const [show, setShow] = useState(false);
   const [modal, setModal] = useState({ shown: false, modalData: null });
   const [error, setError] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
-  const [addBasketModal, setAddBasketModal] = useState({
-    showModal: false,
-    modalAddData: null,
-    modalAddHeader: null,
-  });
-  const [addTaskModal, setAddTaskModal] = useState({
-    showModal: false,
-    modalAddData: null,
-    modalAddHeader: null,
-  });
+  // const [addBasketModal, setAddBasketModal] = useState({
+  //   showModal: false,
+  //   modalAddData: null,
+  //   modalAddHeader: null,
+  // });
+  // const [addTaskModal, setAddTaskModal] = useState({
+  //   showModal: false,
+  //   modalAddData: null,
+  //   modalAddHeader: null,
+  // });
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const handleAddBasketModal = (data) => {
-    setAddBasketModal(data);
+    dispatch(handleBasketModal(data));
+    // setAddBasketModal(data);
   };
-  const [basketId, setBasketId] = useState();
+  // const [basketId, setBasketId] = useState();
   const handleAddTaskModal = (data) => {
-    setAddTaskModal(data);
-    setBasketId(data.modalData.basket_id);
+    // setAddTaskModal(data);
+    // setBasketId(data.modalData.basket_id);
   };
   const mainJson = {
     template_name: null,
@@ -116,9 +153,10 @@ const EditTemplateComponent = ({ match, props }) => {
   const showHandler = (e) => {
     setShow((prev) => true);
   };
-  const [taskTypeDropdown, setTaskTypeDropdown] = useState();
+  // const [taskTypeDropdown, setTaskTypeDropdown] = useState();
 
   const loadData = async () => {
+    // dispatch(getTemplateByIdData({id:templateId}))
     await new TemplateService().getTemplateById(templateId).then((res) => {
       if (res.status === 200) {
         const newData = {
@@ -131,46 +169,50 @@ const EditTemplateComponent = ({ match, props }) => {
         setNewData((prevData) => ({ ...prevData, ...newData }));
       }
     });
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data;
-          setTaskTypeDropdown(
-            temp
-              .filter((d) => d.type === "TASK" && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
-      }
-    });
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getAllTypeData());
+    // await new TaskTicketTypeService().getAllType().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data;
+    //       setTaskTypeDropdown(
+    //         temp
+    //           .filter((d) => d.type === "TASK" && d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.type_name }))
+    //       );
+    //     }
+    //   }
+    // });
+    dispatch(getRoles());
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
+    dispatch(getUserForMyTicketsData(inputRequired));
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUserData(
-            temp.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
-          );
-        }
-      }
-    });
+    // const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    //       setUserData(
+    //         temp.map((d) => ({
+    //           value: d.id,
+    //           label: d.first_name + " " + d.last_name,
+    //         }))
+    //       );
+    //     }
+    //   }
+    // });
   };
 
-
   const submitHandler = (e) => {
-    setNotify(null);
+    // setNotify(null);
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -179,39 +221,44 @@ const EditTemplateComponent = ({ match, props }) => {
       }
     });
     if (a > 0) {
-      setNotify(null);
-      setNotify({ type: "warning", message: "Add Data" });
+      // setNotify(null);
+      // setNotify({ type: "warning", message: "Add Data" });
     } else {
-      setNotify(null);
-      new TemplateService()
-        .postTemplate(rows)
-        .then((res) => {
-          if (res.status === 200) {
-            const data = res.data;
+      // setNotify(null);
+      dispatch(postTemplateData(rows)).then((res) => {
+        if (res?.payload?.data?.status && res?.payload?.status == 200) {
+          navigate(`/${_base}/Template`);
+        }
+      });
+      // new TemplateService()
+      //   .postTemplate(rows)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       const data = res.data;
 
-            if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Template`,
-    
-              },{                            state: {alert : {type: 'success', message:res.data.message} }
-            });
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "TemplateMaster",
-            "Create_TemplateMaster",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      //       if (res.data.status === 1) {
+      //         navigate({
+      //           pathname: `/${_base}/Template`,
+
+      //         },{                            state: {alert : {type: 'success', message:res.data.message} }
+      //       });
+      //       } else {
+      //         // setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       // setNotify({ type: "danger", message: res.message });
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     new ErrorLogService().sendErrorLog(
+      //       "TemplateMaster",
+      //       "Create_TemplateMaster",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
 
@@ -221,17 +268,26 @@ const EditTemplateComponent = ({ match, props }) => {
     const formData = new FormData();
     formData.append("basket_name", modal.modalData.basket_name);
 
-    new BasketService()
-      .updatetempalateBasket(modal.modalData.basket_id, formData)
+    dispatch(
+      updateBasketModalData({
+        id: modal.modalData.basket_id,
+        payload: formData,
+      })
+    );
+    handleHideModal();
+    loadData();
 
-      .then((res) => {
-        if (res.status === 200 && res.data.status === 1) {
-          handleHideModal();
-          loadData();
-          setNotify(null);
-          setNotify({ type: "success", message: res.data.message });
-        }
-      });
+    // new BasketService()
+    //   .updatetempalateBasket(modal.modalData.basket_id, formData)
+
+    //   .then((res) => {
+    //     if (res.status === 200 && res.data.status === 1) {
+    //       handleHideModal();
+    //       loadData();
+    //       // setNotify(null);
+    //       // setNotify({ type: "success", message: res.data.message });
+    //     }
+    //   });
   };
 
   const handleChange = (e, type) => {
@@ -267,12 +323,6 @@ const EditTemplateComponent = ({ match, props }) => {
   const handleShow = () => {
     setShow((prev) => !prev);
   };
-
-
-  
-
-
-
 
   const handleNewChange = (e, idx, type, name) => {
     const value = type === "select1" ? e.target.value : e.value;
@@ -355,20 +405,23 @@ const EditTemplateComponent = ({ match, props }) => {
       flag = 1;
     }
     if (flag == 1) {
-      await new TemplateService()
-        .addBasketinEdit(templateId, formData)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              loadData();
-              handleAddBasketModal({
-                showModal: false,
-                modalData: "",
-                modalHeader: "",
-              });
-            }
-          }
-        });
+      dispatch(basketinEditData({ id: templateId, payload: formData }));
+      loadData();
+
+      // await new TemplateService()
+      //   .addBasketinEdit(templateId, formData)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status == 1) {
+      //         loadData();
+      //         handleAddBasketModal({
+      //           showModal: false,
+      //           modalData: "",
+      //           modalHeader: "",
+      //         });
+      //       }
+      //     }
+      //   });
     }
   };
 
@@ -376,44 +429,62 @@ const EditTemplateComponent = ({ match, props }) => {
     e.preventDefault();
     const form = new FormData(e.target);
     for (const entry of form.entries(form)) {
-      // console.log(entry[0], entry[1])
     }
-    await new TemplateService().updateTemplate(templateId, form).then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          history({
-            pathname: `/${_base}/Template`,
-          
-          },{                            state: {alert : {type: 'success', message:res.data.message} }
-        });
+
+    dispatch(updateTemplateData({ id: templateId, payload: form })).then(
+      (res) => {
+        if (res.payload.data.status == 1 && res.payload.status == 200) {
+          navigate(`/${_base}/Template`);
         }
       }
-    });
+    );
+
+    // await new TemplateService().updateTemplate(templateId, form).then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       navigate({
+    //         pathname: `/${_base}/Template`,
+
+    //       },{    state: {alert : {type: 'success', message:res.data.message} }
+    //     });
+    //     }
+    //   }
+    // });
   };
 
   const handleAddTask = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
+    console.log("e", formData);
     // Add your form data to the `formData` object here
 
     // Print the formData entries
     for (const entry of formData.entries(formData)) {
       // console.log(entry[0], entry[1])
     }
-    await new TemplateService()
-      .addTaskinBasket(templateId, basketId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            handleAddTaskModal({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            });
-            loadData();
-          }
-        }
-      });
+    dispatch(
+      addTaskinBasketData({
+        templateId: templateId,
+        basketId: basketId,
+        payload: formData,
+      })
+    );
+    loadData();
+    // await new TemplateService()
+    //   .addTaskinBasket(templateId, basketId, formData)
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         handleAddTaskModal({
+    //           showModal: false,
+    //           modalData: "",
+    //           modalHeader: "",
+    //         });
+    //         loadData();
+    //       }
+    //     }
+    //   });
   };
   const handleCancel = () => {
     setShow(false);
@@ -426,7 +497,7 @@ const EditTemplateComponent = ({ match, props }) => {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[14].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -503,7 +574,7 @@ const EditTemplateComponent = ({ match, props }) => {
               type="button"
               className="btn btn-sm btn-primary"
               onClick={() => {
-                setAddBasketModal({ showModal: true });
+                dispatch(handleBasketModal({ showModal: true }));
               }}
               // disabled={isButtonDisabled}
             >
@@ -575,11 +646,13 @@ const EditTemplateComponent = ({ match, props }) => {
                     type="button"
                     className="btn btn-sm btn-danger"
                     onClick={(e) => {
-                      handleAddBasketModal({
-                        showModal: false,
-                        modalData: "",
-                        modalHeader: "",
-                      });
+                      dispatch(
+                        handleBasketModal({
+                          showModal: false,
+                          modalData: "",
+                          modalHeader: "",
+                        })
+                      );
                     }}
                   >
                     Cancel
@@ -596,11 +669,13 @@ const EditTemplateComponent = ({ match, props }) => {
           centered
           show={addTaskModal.showModal}
           onHide={(e) => {
-            handleAddTaskModal({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            });
+            dispatch(
+              handleTaskModal({
+                showModal: false,
+                modalData: "",
+                modalHeader: "",
+              })
+            );
           }}
         >
           {" "}
@@ -635,7 +710,6 @@ const EditTemplateComponent = ({ match, props }) => {
                   options={taskTypeDropdown && taskTypeDropdown}
                 />
 
-                
                 <div className="col-sm-12">
                   <label className="col-form-label">
                     <b>
@@ -694,11 +768,13 @@ const EditTemplateComponent = ({ match, props }) => {
                     type="button"
                     className="btn btn-sm btn-danger"
                     onClick={(e) =>
-                      handleAddTaskModal({
-                        showModal: false,
-                        modalData: "",
-                        modalHeader: "",
-                      })
+                      dispatch(
+                        handleTaskModal({
+                          showModal: false,
+                          modalData: "",
+                          modalHeader: "",
+                        })
+                      )
                     }
                   >
                     Cancel
@@ -727,10 +803,12 @@ const EditTemplateComponent = ({ match, props }) => {
                         type="button"
                         className="btn btn-danger fw-bold text-white btn-sm"
                         onClick={(e) =>
-                          handleAddTaskModal({
-                            showModal: true,
-                            modalData: data,
-                          })
+                          dispatch(
+                            handleTaskModal({
+                              showModal: true,
+                              modalData: data,
+                            })
+                          )
                         }
                       >
                         <i

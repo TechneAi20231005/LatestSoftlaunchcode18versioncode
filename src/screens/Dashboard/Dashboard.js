@@ -28,6 +28,11 @@ import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModule
 import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
 import { getCustomerMappingData, getQueryTypeData, getTemplateData, getcustomerTypeData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 import { dynamicFormData, dynamicFormDropDownData, getAllDropDownData } from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
+import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
+import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
+import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
+import { getParentDropdown, taskAndTicketMaster } from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
 
 
 
@@ -218,6 +223,15 @@ dispatch(getAllDropDownData())
 
 
 
+   dispatch(getAllUserById())
+   dispatch(departmentData());
+   dispatch(getRoleData());
+   dispatch(getStatusData())
+   dispatch(getCustomerTypeData())
+   dispatch(templateData())
+   dispatch(testingData());
+   dispatch(taskAndTicketMaster ())
+   dispatch(getParentDropdown())
 
 }
 
