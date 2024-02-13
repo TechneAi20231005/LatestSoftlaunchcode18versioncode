@@ -1,17 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { BulkUploadVendorData, PaymentDropDown, downloadFormat, downloadFormatData, getAllActiveState, getVendorData, getVendorMasterData, paymentDropDown, postVendor } from "./VendorMasterAction";
+import {
+  BulkUploadVendorData,
+  PaymentDropDown,
+  downloadFormat,
+  downloadFormatData,
+  getAllActiveState,
+  getVendorData,
+  getVendorMasterData,
+  paymentDropDown,
+  postVendor,
+} from "./VendorMasterAction";
 
 const initialState = {
   status: "",
   err: "",
 
+  modal: {
+    showModal: false,
+    modalData: "",
+    modalHeader: "",
+  },
+
   notify: null,
-  getVendorMasterData:[],
-  exportData:[],
-  vendorMasterDropDown:[],
-  getVendorAllData:[],
-  paymentDropDownData:[],
-  state:[]
+  getVendorMasterData: [],
+  exportData: [],
+  vendorMasterDropDown: [],
+  getVendorAllData: [],
+  paymentDropDownData: [],
+  state: [],
 };
 
 export const VendorMasterSlice = createSlice({
@@ -21,11 +37,19 @@ export const VendorMasterSlice = createSlice({
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
     },
+
+    handleModalOpen: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleModalClose: (state, action) => {
+      state.modal = action.payload;
+    },
   },
   extraReducers: (builder) => {
     // get general setting
     builder.addCase(getVendorMasterData.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(getVendorMasterData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -33,64 +57,55 @@ export const VendorMasterSlice = createSlice({
         let getVendorMasterData = payload.data.data;
         const temp = getVendorMasterData.filter((d) => d.is_active == 1);
         const vendorMasterDropDown = temp.map((d) => ({
-            value: d.id,
-            label: d.vendor_name,
-          }))
+          value: d.id,
+          label: d.vendor_name,
+        }));
 
-    
-          
         state.status = "succeded";
         state.showLoaderModal = false;
-     
-        state.vendorMasterDropDown=vendorMasterDropDown
-        }
-      
+
+        state.vendorMasterDropDown = vendorMasterDropDown;
+      }
     });
     builder.addCase(getVendorMasterData.rejected, (state) => {
       state.status = "rejected";
     });
 
-
-
+    //_________________________postVendor_________________________
 
     builder.addCase(postVendor.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(postVendor.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        
-    
-          
         state.status = "succeded";
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
         state.showLoaderModal = false;
-        state.status = "succeeded";
         state.showLoaderModal = false;
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
         state.status = "failed";
         state.showLoaderModal = false;
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(postVendor.rejected, (state) => {
       state.status = "rejected";
     });
 
-
-
-
     builder.addCase(getVendorData.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(getVendorData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const temp = payload.data.data
-        const getVendorAllData =[]
+        const temp = payload.data.data;
+        const getVendorAllData = [];
         let counter = 1;
         for (const key in temp) {
           getVendorAllData.push({
@@ -142,96 +157,80 @@ export const VendorMasterSlice = createSlice({
             narration: temp[key].narration,
           });
         }
-    
-        state.getVendorAllData =getVendorAllData
-          
-        state.status = "succeded";
-    
-        state.notify = { type: "success", message: payload.data.message };
-      } else {
 
-        state.notify = { type: "danger", message: payload.data.message };
+        state.getVendorAllData = getVendorAllData;
+
+        state.status = "succeded";
+
+        // state.notify = { type: "success", message: payload.data.message };
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(getVendorData.rejected, (state) => {
       state.status = "rejected";
     });
 
-
-
-
-
     builder.addCase(PaymentDropDown.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(PaymentDropDown.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const temp = payload.data.data
-        console.log("tiii",temp)
-        const paymentDropDownData = temp.filter((d) => d.is_active === 1)
-                .map((i) => ({ value: i.id, label: i.template_name }))
-       
-    
-        state.paymentDropDownData =paymentDropDownData
-          console.log("p",state.paymentDropDownData)
-        state.status = "succeded";
-    
-        state.notify = { type: "success", message: payload.data.message };
-      } else {
+        const temp = payload.data.data;
 
-        state.notify = { type: "danger", message: payload.data.message };
+        const paymentDropDownData = temp
+          .filter((d) => d.is_active === 1)
+          .map((i) => ({ value: i.id, label: i.template_name }));
+
+        state.paymentDropDownData = paymentDropDownData;
+
+        state.status = "succeded";
+
+        // state.notify = { type: "success", message: payload.data.message };
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(PaymentDropDown.rejected, (state) => {
       state.status = "rejected";
     });
 
-
-
-
     builder.addCase(downloadFormatData.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(downloadFormatData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        
         state.status = "succeded";
-    
-        state.notify = { type: "success", message: payload.data.message };
-      } else {
 
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(downloadFormatData.rejected, (state) => {
       state.status = "rejected";
     });
 
-
-
     builder.addCase(BulkUploadVendorData.pending, (state) => {
       state.status = "loading";
+      // state.notify = null;
     });
     builder.addCase(BulkUploadVendorData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        
         state.status = "succeded";
-    
-        state.notify = { type: "success", message: payload.data.message };
-      } else {
 
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(BulkUploadVendorData.rejected, (state) => {
       state.status = "rejected";
@@ -239,30 +238,28 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(getAllActiveState.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(getAllActiveState.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify=null
+      state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state= payload.data.data
-        state.state= state
+        state = payload.data.data;
+        state.state = state;
         state.status = "succeded";
-    
-        state.notify = { type: "success", message: payload.data.message };
-      } else {
 
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
+      } else {
+        // state.notify = { type: "danger", message: payload.data.message };
       }
-      
     });
     builder.addCase(getAllActiveState.rejected, (state) => {
       state.status = "rejected";
     });
 
-    //   // post general setting
-
-    
+    //______________________
   },
 });
 
+export const { handleModalOpen, handleModalClose } = VendorMasterSlice.actions;
 export default VendorMasterSlice.reducer;

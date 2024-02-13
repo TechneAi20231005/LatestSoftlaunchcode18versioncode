@@ -14,7 +14,7 @@ import { _base } from "../../../settings/constants";
 import Select from "react-select";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch,useDispatch,useSelector } from "react-redux"
-import { DashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
+import { DashbordSlice, hideNotification } from "../../Dashboard/DashbordSlice";
 import { getCityData, getCountryDataSort, getCustomerData, getCustomerType, getRoles, getStateData, postCustomerData } from "../../Dashboard/DashboardAction";
 export default function CreateCustomer({ match }) {
   const history = useNavigate();
@@ -54,20 +54,20 @@ export default function CreateCustomer({ match }) {
   const navigate = useNavigate();
 
 const dispatch = useDispatch()
-const customerType = useSelector(DashboardSlice=>DashboardSlice.dashboard.customerTypeData)
-const countryDropdown = useSelector(DashboardSlice=>DashboardSlice.dashboard.filteredCountryData)
-const stateDropdown = useSelector(DashboardSlice=>DashboardSlice.dashboard.stateData)
+const customerType = useSelector(DashbordSlice=>DashbordSlice.dashboard.customerTypeData)
+const countryDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.filteredCountryData)
+const stateDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.stateData)
 
 const AllcityDropDownData = useSelector(
-  (DashboardSlice) => DashboardSlice.dashboard.cityData
+  (DashbordSlice) => DashbordSlice.dashboard.cityData
 );
 
 console.log("s",AllcityDropDownData)
 
-const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
 
 const Notify = useSelector(
-  (dashboardSlice) => dashboardSlice.dashboard.notify
+  (dashbordSlice) => dashbordSlice.dashboard.notify
 );
 // console.log("type",countryDropdown)
 
@@ -350,6 +350,7 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
       dispatch(getRoles())
 
     }
+    dispatch(getCityData())
 
     if(!cityDropdownData.length){
       dispatch(getCityData())

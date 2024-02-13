@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
@@ -12,22 +11,50 @@ import {
   deleteTask,
 } from "../../services/TicketService/TaskService";
 
-import {useSelector,useDispatch} from "react-redux"
+import { useSelector, useDispatch } from "react-redux";
 import { _base } from "../../settings/constants";
-import { getAllDashboardData, getAllUserById, getCityData, getCountryData, getCountryDataSort, getCustomerData, getCustomerType, getEmployeeData, getNotifications, getStateData, getStateDataSort } from "./DashboardAction";
+import {
+  getAllDashboardData,
+  getAllUserById,
+  getCityData,
+  getCountryData,
+  getCountryDataSort,
+  getCustomerData,
+  getCustomerType,
+  getDynamiucFormData,
+  getEmployeeData,
+  getNotifications,
+  getStateData,
+  getStateDataSort,
+} from "./DashboardAction";
 import { dashboardSlice } from "./DashbordSlice";
 import { getRoles } from "./DashboardAction";
 import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
-import { getUserForMyTicketsData, getUserTicketsTest } from "../TicketManagement/MyTicketComponentAction";
+import {
+  getUserForMyTicketsData,
+  getUserTicketsTest,
+} from "../TicketManagement/MyTicketComponentAction";
 import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
 import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
 import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
 import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
-import { getSubModuleById, subModuleMaster } from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
+import {
+  getSubModuleById,
+  subModuleMaster,
+} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
 import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
 import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
-import { getCustomerMappingData, getQueryTypeData, getTemplateData, getcustomerTypeData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import { dynamicFormData, dynamicFormDropDownData, getAllDropDownData } from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+import {
+  getCustomerMappingData,
+  getQueryTypeData,
+  getTemplateData,
+  getcustomerTypeData,
+} from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
+import {
+  dynamicFormData,
+  dynamicFormDropDownData,
+  getAllDropDownData,
+} from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
 import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
 import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
@@ -36,16 +63,10 @@ import { getParentDropdown, taskAndTicketMaster } from "../Masters/TaskAndTicket
 import { getBasketByIdData, getBasketTaskData, getmoduleSetting } from "../TicketManagement/TaskManagement/TaskComponentAction";
 
 
-
-
-
-
-
-
 export default function HrDashboard(props) {
   const history = useNavigate();
-  
-   const location = useLocation()
+
+  const location = useLocation();
   const dispatch = useDispatch();
   const getRolesData = useSelector(
     (DashboardSlice) => DashboardSlice.dashboard.getRoles
@@ -63,18 +84,27 @@ export default function HrDashboard(props) {
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
 
-
- 
-
-  const PreviousTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.previousTask)
-  const TotalTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.totalTask)
-  const CompletedTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.completeTask)
-  const UpcomingTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.upcomingTask)
- const DailyTask = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.dailyTask)
- const ChartData = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.pieCharData)
- const Count = useSelector(dashboardSlice=>dashboardSlice.dashboard.allDashboardData.count)
-
-
+  const PreviousTask = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.previousTask
+  );
+  const TotalTask = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.totalTask
+  );
+  const CompletedTask = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.completeTask
+  );
+  const UpcomingTask = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.upcomingTask
+  );
+  const DailyTask = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.dailyTask
+  );
+  const ChartData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.pieCharData
+  );
+  const Count = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.allDashboardData.count
+  );
 
   const [chartData, setChartData] = useState({
     series: [50, 59, 40],
@@ -152,7 +182,7 @@ export default function HrDashboard(props) {
         temp.series[1] = res.data.data.pieCharData.workingTask;
         temp.series[2] = res.data.data.pieCharData.completedTask;
 
-        setChartData(null); 
+        setChartData(null);
         setChartData(temp);
       }
     });
@@ -180,41 +210,43 @@ export default function HrDashboard(props) {
       }
     });
   };
- 
 
-const loadData=()=>{
-  const inputRequired =
+  const loadData = () => {
+    const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-dispatch(getCityData())
-dispatch(getCountryData())
-dispatch(getStateData())
-dispatch(getEmployeeData())
-dispatch(getNotifications())
-dispatch(getAllDashboardData())
-dispatch(getRoles());
+    dispatch(getCityData());
+    dispatch(getCountryData());
+    dispatch(getStateData());
+    dispatch(getEmployeeData());
+    dispatch(getNotifications());
+    dispatch(getAllDashboardData());
+    dispatch(getRoles());
     dispatch(getDesignationData());
-    dispatch(getCountryData())
-   dispatch(getStateDataSort())
-   dispatch(getCountryDataSort())
-   dispatch(getCustomerData())
-   dispatch(getCustomerType())
-   dispatch(getAllUserById(localStorage.getItem("id")))
-   dispatch(getUserTicketsTest())
-   dispatch(getUserForMyTicketsData(inputRequired))
-   dispatch(getStatusData());
-   dispatch(departmentData())
-   dispatch(getprojectData())
-   dispatch(moduleMaster())
-  //  dispatch(getSubModuleById())
-   dispatch(subModuleMaster())
-   dispatch(queryType())
-   dispatch(getCustomerMappingData())
-dispatch(getcustomerTypeData())
-dispatch(getQueryTypeData())
-dispatch(getTemplateData())
-dispatch(dynamicFormDropDownData())
-dispatch(dynamicFormData())
-dispatch(getAllDropDownData())
+    dispatch(getCountryData());
+    dispatch(getStateDataSort());
+    dispatch(getCountryDataSort());
+    dispatch(getCustomerData());
+    dispatch(getCustomerType());
+    dispatch(getAllUserById(localStorage.getItem("id")));
+    dispatch(getUserTicketsTest());
+    dispatch(getUserForMyTicketsData(inputRequired));
+    dispatch(getStatusData());
+    dispatch(departmentData());
+    dispatch(getprojectData());
+    dispatch(moduleMaster());
+    //  dispatch(getSubModuleById())
+    dispatch(subModuleMaster());
+    dispatch(queryType());
+    dispatch(getCustomerMappingData());
+    dispatch(getcustomerTypeData());
+    dispatch(getQueryTypeData());
+    dispatch(getTemplateData());
+    dispatch(dynamicFormDropDownData());
+    dispatch(dynamicFormData());
+    dispatch(getAllDropDownData());
+    dispatch(getDynamiucFormData());
+    dispatch(getCustomerData());
+    dispatch(queryType());
 
 
 
@@ -242,14 +274,25 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
   // dispatch(getBasketTaskData(ticketId))
 
 
-}
+
+    dispatch(getAllUserById());
+    dispatch(departmentData());
+    dispatch(getRoleData());
+    dispatch(getStatusData());
+    dispatch(getCustomerTypeData());
+    dispatch(templateData());
+    dispatch(testingData());
+    dispatch(taskAndTicketMaster());
+    dispatch(getParentDropdown());
+    //  dispatch(getBasketByIdData(id))
+  };
 
   useEffect(() => {
     get();
 
-    loadData()
-
+    loadData();
   }, []);
+
 
   return (
     <div className="container-xxl">
@@ -513,11 +556,9 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-
                               <Link
                                 to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
                               >
-
                                 {ele.task_name ? (
                                   <h6
                                     className="fw-bold mb-0 small-14"
@@ -640,7 +681,6 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
                 {PreviousTask &&
                   PreviousTask.length > 0 &&
                   PreviousTask.map((ele, index) => {
-
                     if (ele.time_status == "STOP") {
                       return (
                         <div
@@ -650,11 +690,10 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
                               {/* <Link to={`Ticket/Task/${ele.ticket_id}`}> */}
-                              <Link 
-                              // to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              to={`/${_base}/Ticket/Task/` + ele.ticket_id}
+                              <Link
+                                // to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                to={`/${_base}/Ticket/Task/` + ele.ticket_id}
                               >
-                                
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -795,10 +834,9 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
                               <Link
-                              //  to={`Ticket/Task/${ele.ticket_id}`}
-                              to={`/${_base}/Ticket/Task/` + ele.ticket_id}
-
-                               >
+                                //  to={`Ticket/Task/${ele.ticket_id}`}
+                                to={`/${_base}/Ticket/Task/` + ele.ticket_id}
+                              >
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -1173,4 +1211,5 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
       </div>
     </div>
   );
-}
+                
+                }

@@ -3805,6 +3805,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           highlightOnHover={true}
                         />
                       )}
+                      
                       <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
@@ -3818,12 +3819,13 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignedToMeData && (
+                        {assignToMeData  && (
                           <small>
-                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
-                            {assignedToMeData.total}
+                            {assignToMeData.from}-{assignToMeData.to} of{" "}
+                            {assignToMeData.total}
                           </small>
                         )}
+                        {console.log("assignedToMeData",assignedToMeData)}
                         <button
                           onClick={(e) => {
                             handleAssignedToMeRowChanged(e, "MINUS");
@@ -4214,6 +4216,8 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                         </div>
                       </div>
 
+  
+
                       {assignToMeData && (
                         <DataTable
                           columns={unpassedColumns}
@@ -4245,6 +4249,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                             {assignedToMeData.total}
                           </small>
                         )}
+         
                         <button
                           onClick={(e) => {
                             handleUnpassedRowChanged(e, "MINUS");
