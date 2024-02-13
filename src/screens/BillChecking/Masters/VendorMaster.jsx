@@ -62,9 +62,8 @@ function VendorMaster({ match }) {
     (VendorMasterSlice) => VendorMasterSlice.vendorMaster.modal
   );
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 44)
-);
-
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 44)
+  );
 
   // const [notify, setNotify] = useState();
   // const [modal, setModal] = useState({
@@ -306,66 +305,66 @@ function VendorMaster({ match }) {
 
   const loadData = async () => {
     dispatch(getVendorData());
-    const data = [];
-    await new VendorMasterService().getVendors().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            id: temp[key].id,
-            counter: counter++,
-            vendor_name: temp[key].vendor_name,
-            address: temp[key].address,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
+    // const data = [];
+    // await new VendorMasterService().getVendors().then((res) => {
+    //   if (res.status === 200) {
+    //     let counter = 1;
+    //     const temp = res.data.data;
+    //     for (const key in temp) {
+    //       data.push({
+    //         id: temp[key].id,
+    //         counter: counter++,
+    //         vendor_name: temp[key].vendor_name,
+    //         address: temp[key].address,
+    //         is_active: temp[key].is_active,
+    //         remark: temp[key].remark,
 
-            created_at: temp[key].created_at,
-            created_by_name: temp[key].created_by_name,
+    //         created_at: temp[key].created_at,
+    //         created_by_name: temp[key].created_by_name,
 
-            updated_at: temp[key].updated_at,
-            updated_by_name: temp[key].updated_by_name,
+    //         updated_at: temp[key].updated_at,
+    //         updated_by_name: temp[key].updated_by_name,
 
-            country: temp[key].country,
-            state: temp[key].state,
-            city: temp[key].city,
+    //         country: temp[key].country,
+    //         state: temp[key].state,
+    //         city: temp[key].city,
 
-            pincode: temp[key].pincode,
-            mobile_no: temp[key].mobile_no,
-            email: temp[key].email,
+    //         pincode: temp[key].pincode,
+    //         mobile_no: temp[key].mobile_no,
+    //         email: temp[key].email,
 
-            adhar_no: temp[key].adhar_no,
-            pan_no: temp[key].pan_no,
+    //         adhar_no: temp[key].adhar_no,
+    //         pan_no: temp[key].pan_no,
 
-            msme_no: temp[key].msme_no,
-            gst_no: temp[key].gst_no,
-            acme_account_name: temp[key].acme_account_name,
+    //         msme_no: temp[key].msme_no,
+    //         gst_no: temp[key].gst_no,
+    //         acme_account_name: temp[key].acme_account_name,
 
-            consider_in_payment: temp[key].consider_in_payment,
-            bank_name: temp[key].bank_name,
-            account_no: temp[key].account_no,
-            ifsc_code: temp[key].ifsc_code,
-            payment_template: temp[key].payment_template,
-            template_name: temp[key].template_name,
-            pan_attachment: temp[key].pan_attachment,
-            gst_attachment: temp[key].gst_attachment,
-            adhar_attachment: temp[key].adhar_attachment,
-            msme_attachment: temp[key].msme_attachment,
-            bank_passbook_attachment: temp[key].bank_passbook_attachment,
-            cheque_attachment: temp[key].cheque_attachment,
-            bank_branch_name: temp[key].bank_branch_name,
-            beneficiary_name: temp[key].beneficiary_name,
-            acme_account_name: temp[key].acme_account_name,
-            reference_number: temp[key].reference_number,
-            card_number: temp[key].card_number,
-            narration: temp[key].narration,
-          });
-        }
-        setData(null);
-        setData(data);
-        setDeta(res.data.access);
-      }
-    });
+    //         consider_in_payment: temp[key].consider_in_payment,
+    //         bank_name: temp[key].bank_name,
+    //         account_no: temp[key].account_no,
+    //         ifsc_code: temp[key].ifsc_code,
+    //         payment_template: temp[key].payment_template,
+    //         template_name: temp[key].template_name,
+    //         pan_attachment: temp[key].pan_attachment,
+    //         gst_attachment: temp[key].gst_attachment,
+    //         adhar_attachment: temp[key].adhar_attachment,
+    //         msme_attachment: temp[key].msme_attachment,
+    //         bank_passbook_attachment: temp[key].bank_passbook_attachment,
+    //         cheque_attachment: temp[key].cheque_attachment,
+    //         bank_branch_name: temp[key].bank_branch_name,
+    //         beneficiary_name: temp[key].beneficiary_name,
+    //         acme_account_name: temp[key].acme_account_name,
+    //         reference_number: temp[key].reference_number,
+    //         card_number: temp[key].card_number,
+    //         narration: temp[key].narration,
+    //       });
+    //     }
+    //     setData(null);
+    //     setData(data);
+    //     setDeta(res.data.access);
+    //   }
+    // });
 
     // await new VendorMasterService().getVendorMasterById().then((res)=>{
     //     if(res.status === 200){
@@ -397,7 +396,7 @@ function VendorMaster({ match }) {
       }
     });
 
-    dispatch(getRoles())
+    dispatch(getRoles());
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {

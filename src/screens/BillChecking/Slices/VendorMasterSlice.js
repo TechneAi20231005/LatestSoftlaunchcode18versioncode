@@ -44,13 +44,12 @@ export const VendorMasterSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
-
   },
   extraReducers: (builder) => {
     // get general setting
     builder.addCase(getVendorMasterData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(getVendorMasterData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -76,21 +75,21 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(postVendor.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(postVendor.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify = null;
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
         state.showLoaderModal = false;
         state.showLoaderModal = false;
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
         state.status = "failed";
         state.showLoaderModal = false;
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(postVendor.rejected, (state) => {
@@ -99,11 +98,11 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(getVendorData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(getVendorData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify = null;
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const temp = payload.data.data;
         const getVendorAllData = [];
@@ -163,9 +162,9 @@ export const VendorMasterSlice = createSlice({
 
         state.status = "succeded";
 
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(getVendorData.rejected, (state) => {
@@ -174,11 +173,11 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(PaymentDropDown.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(PaymentDropDown.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify = null;
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const temp = payload.data.data;
 
@@ -190,9 +189,9 @@ export const VendorMasterSlice = createSlice({
 
         state.status = "succeded";
 
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(PaymentDropDown.rejected, (state) => {
@@ -201,17 +200,17 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(downloadFormatData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(downloadFormatData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.notify = null;
+      // state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
 
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(downloadFormatData.rejected, (state) => {
@@ -220,7 +219,7 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(BulkUploadVendorData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(BulkUploadVendorData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -228,9 +227,9 @@ export const VendorMasterSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
 
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(BulkUploadVendorData.rejected, (state) => {
@@ -249,9 +248,9 @@ export const VendorMasterSlice = createSlice({
         state.state = state;
         state.status = "succeded";
 
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(getAllActiveState.rejected, (state) => {
