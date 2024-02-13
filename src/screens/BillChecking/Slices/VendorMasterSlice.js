@@ -257,7 +257,7 @@ export const VendorMasterSlice = createSlice({
       state.status = "rejected";
     });
 
-    //   // post general setting
+    //______________________
   },
 });
 

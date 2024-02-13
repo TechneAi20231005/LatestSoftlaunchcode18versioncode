@@ -36,6 +36,8 @@ import {
 import { handleModalClose, handleModalOpen } from "../Slices/VendorMasterSlice";
 import VendorMasterSlice from "../Slices/VendorMasterSlice";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import { getUpdatedAuthoritiesData } from "../Slices/BillCheckingTransactionAction";
+import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
 
 function VendorMaster({ match }) {
   const [data, setData] = useState(null);
@@ -55,6 +57,7 @@ function VendorMaster({ match }) {
   const VendorData = useSelector(
     (VendorMasterSlice) => VendorMasterSlice.vendorMaster.getVendorAllData
   );
+  console.log("VendorData", VendorData);
   const paymentDropdown = useSelector(
     (VendorMasterSlice) => VendorMasterSlice.vendorMaster.paymentDropDownData
   );
@@ -63,6 +66,10 @@ function VendorMaster({ match }) {
   );
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 44)
+  );
+  const authorities = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.authoritiesData
   );
 
   // const [notify, setNotify] = useState();
@@ -119,7 +126,7 @@ function VendorMaster({ match }) {
   };
 
   const [country, setCountry] = useState();
-  const [authorities, SetAuthorities] = useState();
+  // const [authorities, SetAuthorities] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
@@ -307,6 +314,7 @@ function VendorMaster({ match }) {
     dispatch(getVendorData());
     // const data = [];
     // await new VendorMasterService().getVendors().then((res) => {
+    //   console.log("res",res);
     //   if (res.status === 200) {
     //     let counter = 1;
     //     const temp = res.data.data;
@@ -366,25 +374,29 @@ function VendorMaster({ match }) {
     //   }
     // });
 
-    // await new VendorMasterService().getVendorMasterById().then((res)=>{
-    //     if(res.status === 200){
-    //         if(res,data.status == 1){
-    //             setData(res.data.data)
-    //         }
-    //     }
-    // })
-
-    await new BillCheckingTransactionService()
-      .getUpdatedAuthorities()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            SetAuthorities(res.data.data);
-          }
+    await new VendorMasterService().getVendorMasterById().then((res) => {
+      console.log("restau",res)
+      if (res.status === 200) {
+        if (res?.data?.status == 1) {
+          setData(res.data.data);
         }
-      });
+      }
+    });
+
+    dispatch(getUpdatedAuthoritiesData());
+
+    // await new BillCheckingTransactionService()
+    //   .getUpdatedAuthorities()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         SetAuthorities(res.data.data);
+    //       }
+    //     }
+    //   });
 
     await new VendorMasterService().getActiveCountry().then((res) => {
+      console.log(res);
       if (res.status === 200) {
         setCountry(res.data.data);
         setCountryDropdown(
@@ -408,6 +420,7 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
+        console.log("res", res);
         setState(res.data.data);
         setStateDropdown(
           res.data.data.map((d) => ({
@@ -1305,7 +1318,7 @@ function VendorMaster({ match }) {
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {data && (
+                {VendorData && (
                   <DataTable
                     columns={columns}
                     // data={data}

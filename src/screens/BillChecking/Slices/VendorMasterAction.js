@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
+
 export const getVendorMasterData = createAsyncThunk("getVendorMasterData",async(config,thunkapi)=>{
     try{
         const service = new BillCheckingTransactionService()
@@ -71,7 +72,18 @@ export const getAllActiveState = createAsyncThunk("getAllActiveState",async(payl
         throw(error)
     }
 })
+//___________________updateVendorMaster______________________________
 
+
+export const updateVendorMaster = createAsyncThunk("updateVendorMaster",async(config,thunkapi)=>{
+    try{
+        const service = new VendorMasterService()
+        const response = await service.updateVendor(config.id,config.payload)
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
 
 
 
