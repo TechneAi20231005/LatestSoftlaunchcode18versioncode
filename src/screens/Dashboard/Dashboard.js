@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { getData } from "../../services/DashboardService";
 import Chart from "react-apexcharts";
@@ -33,7 +33,7 @@ import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeC
 import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
 import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
 import { getParentDropdown, taskAndTicketMaster } from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
-import { getBasketByIdData } from "../TicketManagement/TaskManagement/TaskComponentAction";
+import { getBasketByIdData, getBasketTaskData, getmoduleSetting } from "../TicketManagement/TaskManagement/TaskComponentAction";
 
 
 
@@ -52,6 +52,8 @@ export default function HrDashboard(props) {
   );
 
 
+  const {id} = useParams()
+  console.log("id0000",id)
 
 
   const data = props.data;
@@ -217,10 +219,13 @@ dispatch(getAllDropDownData())
 
 
 
+// dispatch(getmoduleSetting({module_name:"Ticket",submodule_name:"Task"}))
 
 
 
+// dispatch(getmoduleSetting("Ticket","Task"))
 
+dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
 
 
 
@@ -234,6 +239,7 @@ dispatch(getAllDropDownData())
    dispatch(taskAndTicketMaster ())
    dispatch(getParentDropdown())
   //  dispatch(getBasketByIdData(id))
+  // dispatch(getBasketTaskData(ticketId))
 
 
 }

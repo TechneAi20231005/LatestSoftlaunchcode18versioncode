@@ -913,12 +913,23 @@ function CityComponent() {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
     
+
+  // };
+
+  const [searchTerm, setSearchTerm] = useState('');
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+  const handleSearch = (value) => {
+    console.log("fff",filteredData);
   };
+  
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
@@ -1309,6 +1320,21 @@ function CityComponent() {
   }, []);
 
   useEffect(() => {
+    setFilteredData(cityData.filter(customer => {
+      if (typeof searchTerm === 'string') {
+        if (typeof customer === 'string') {
+          return customer.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (typeof customer === 'object') {
+          return Object.values(customer).some(value =>
+            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+      }
+      return false;
+    }));
+  }, [searchTerm, cityData]);
+
+  useEffect(() => {
     if (dependent.country_id !== null) {
       const newStates = [...copyState];
       const filterNewState = newStates.filter((state) => {
@@ -1407,8 +1433,11 @@ function CityComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              // onClick={handleSearch}
               style={{ marginTop: "0px", fontWeight: "600" }}
+              value={searchTerm} 
+              onClick={() => handleSearch(searchTerm)}
+
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -1435,7 +1464,19 @@ function CityComponent() {
               {cityData && (
                 <DataTable
                   columns={columns}
-                  data={cityData}
+                  // data={cityData}
+                  data={cityData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
+                        return Object.values(customer).some(value =>
+                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

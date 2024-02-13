@@ -273,7 +273,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(getCityData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let cityData = payload.data.data;
+        let cityData = payload.data.data.filter((d) => d.is_active === 1);
 
 
         state.status = "succeded";
@@ -504,7 +504,7 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let stateData = payload.data.data;
+        let stateData = payload.data.data.filter((d) => d.is_active === 1);
 
         state.status = "succeded";
         state.showLoaderModal = false;

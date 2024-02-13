@@ -982,6 +982,14 @@ export default function MyTicketComponent({ location }) {
       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
   );
   
+const assignedToMeData= useSelector((MyTicketComponentSlice) =>
+MyTicketComponentSlice.myTicketComponent.getUserTicketTestData
+)
+
+// const unpassedData= useSelector((MyTicketComponentSlice) =>
+// MyTicketComponentSlice.myTicketComponent.alluserTickettest
+// )
+
   const statusData = useSelector(
     (statusMasterSlice) =>
     statusMasterSlice.statusMaster.sortStatusData
@@ -995,7 +1003,6 @@ const getAssignedUserData = useSelector(myTicketComponentSlice=>myTicketComponen
 const departsmentData = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
 const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
 
-console.log("d",UserForMyTicketData)
   
   const [modal, setModal] = useState({
     showModal: false,
@@ -1034,7 +1041,7 @@ console.log("d",UserForMyTicketData)
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [assignedToMeData, setAssignedToMeData] = useState();
+  // const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
 
   const handleSelectAllNamesChange = () => {
@@ -1177,7 +1184,6 @@ console.log("d",UserForMyTicketData)
                     </Link>
                   </li>
                 )}
-{console.log("iii",data.id)}
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
@@ -2231,7 +2237,7 @@ console.log("d",UserForMyTicketData)
         <div style={{ display: "flex", alignItems: "center" }}>
           <input
             type="checkbox"
-            checked={selectedRowss.includes(row.id)}
+            checked={selectedRowss?.includes(row.id)}
             onChange={() => handleCheckboxChangee(row)}
             style={{ marginRight: "5px" }}
           />
@@ -3093,16 +3099,16 @@ console.log("d",UserForMyTicketData)
   dispatch(getStatusData());
       
     }
-    if(!assignToMeData.length){
+    if(!assignToMeData?.length){
   dispatch(getUserTicketsTest());}
-  if(!UserForMyTicketData.length){
+  if(!UserForMyTicketData?.length){
   dispatch(getUserForMyTicketsData(inputRequired))}
-    if(!departsmentData.length){
+    if(!departsmentData?.length){
     dispatch(departmentData())}
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-    if(!checkRole.length){
+    if(!checkRole?.length){
       dispatch(getRoles())
     }
   }, []);
@@ -3146,7 +3152,11 @@ console.log("d",UserForMyTicketData)
     form1.limit = 10;
     form1.typeOf = k;
     form1.page = 1;
-    dispatch(getUserTicketsTest(form1));
+    dispatch(getUserTicketsTest(form1)).then((res)=>{
+      setUnpassedData({...assignToMeData,current_page:res.payload.data.data.current_page})
+    })
+
+//     console.log("u=",unpassedData)
     // await new MyTicketService().getUserTicketsTest(form1).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -3228,16 +3238,17 @@ console.log("d",UserForMyTicketData)
     //     page: 1,
     //   };
 
-    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-    //     if (res.status === 200) {
-    //       if (res.data.status == 1) {
-    //         setUnpassedData(res.data.data);
+      // await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+      //   if (res.status === 200) {
+      //     if (res.data.status == 1) {
+      //       setUnpassedData(res.data.data);
 
-    //         setUnpassedTickets(res.data.data.data);
-    //       }
-    //     }
-    //   });
-    // }
+      //       setUnpassedTickets(res.data.data.data);
+      //       setUnpassedData({...unpassedData,current_page:res.data.data.current_page})
+      //     }
+      //   }
+      // });
+    
   };
 
   const handleAssignedToMeRowChanged = async (e, type) => {
@@ -3412,13 +3423,13 @@ console.log("d",UserForMyTicketData)
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setUnpassedTickets(res.data.data.data);
-        }
-      }
-    });
+    // await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setUnpassedTickets(res.data.data.data);
+    //     }
+    //   }
+    // });
   };
 
   return (
@@ -3866,10 +3877,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {createdByMeData && (
+                        {assignedToMeData && (
                           <small>
-                            {createdByMeData.from}-{createdByMeData.to} of{" "}
-                            {createdByMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -3930,10 +3941,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {departmentWiseData && (
+                        {assignedToMeData && (
                           <small>
-                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
-                            {departmentWiseData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -3991,10 +4002,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {yourTaskData && (
+                        {assignedToMeData && (
                           <small>
-                            {yourTaskData.from}-{yourTaskData.to} of{" "}
-                            {yourTaskData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -4101,7 +4112,7 @@ console.log("d",UserForMyTicketData)
                                   className="btn btn-success btn-block text-white"
                                   onClick={(e) => {
                                     const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                      (row) => selectedRowss?.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
@@ -4118,7 +4129,7 @@ console.log("d",UserForMyTicketData)
                                   className="btn btn-danger btn-block text-white"
                                   onClick={(e) => {
                                     const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                      (row) => selectedRowss?.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
@@ -4228,10 +4239,10 @@ console.log("d",UserForMyTicketData)
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {unpassedData && (
+                        {assignedToMeData && (
                           <small>
-                            {unpassedData.from}-{unpassedData.to} of{" "}
-                            {unpassedData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button

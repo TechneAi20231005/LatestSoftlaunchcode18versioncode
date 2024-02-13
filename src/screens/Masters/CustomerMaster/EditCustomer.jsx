@@ -62,14 +62,12 @@ const Notify = useSelector(
   (dashboardSlice) => dashboardSlice.dashboard.notify
 );
 
-console.log("d",Notify)
   // const handleDependent = (e, name) => {
   //   setData({
   //     ...data,
   //     [name]: e.value,
   //   });
   // };
-console.log("dddd",data)
   const loadData = async () => {
     // const data = [];
     // await new CustomerService()
@@ -242,13 +240,17 @@ console.log("dddd",data)
 
     if (flag == 1) {
       setNotify(null);
-      dispatch(updateCustomerData({id:customerId, payload:formData}))
+      dispatch(updateCustomerData({id:customerId, payload:formData})).then((res)=>{
+        if(res.payload.data.status===1 && res.payload.status === 200){
+          navigate(`/${_base}/Customer`)
+          dispatch(getCustomerData())
+        }
+      })
       // .then((res)=>{
       //   if(res.payload.data.status===1 && res.payload.status === 200){
       //     navigate(`/${_base}/Customer`)
       //   }
       // })
-      dispatch(getCustomerData())
       // await new CustomerService()
       //   .updateCustomer(customerId, formData)
       //   .then((res) => {
@@ -480,6 +482,9 @@ console.log("dddd",data)
                         placeholder="Email Address"
                         required
                         defaultValue={data.email_id}
+                        onKeyPress={(e) => {
+                          Validation.emailOnly(e);
+                        }}
                         pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
                       />
                     </div>
@@ -531,10 +536,10 @@ console.log("dddd",data)
                         id="remark"
                         name="remark"
                         maxLength={50}
+                        defaultValue={data.remark}
                       />
                     </div>
                   </div>
-
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>Status :</b>
@@ -550,10 +555,10 @@ console.log("dddd",data)
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active
+                                data && data.is_active === 1
                                   ? true
-                                  : !data
-                                  ? true
+                                  // : !data
+                                  // ? true
                                   : false
                               }
                             />
@@ -575,7 +580,7 @@ console.log("dddd",data)
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              //defaultChecked={data && data.is_active==1 ? true :false}
+                              defaultChecked={data && data.is_active==0 ? true :false}
                             />
                             <label
                               className="form-check-label"

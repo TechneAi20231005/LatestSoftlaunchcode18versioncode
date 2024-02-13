@@ -21,10 +21,9 @@ export default function CustomerMappingComponent() {
   const dispatch=useDispatch()
   const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
   const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.exportTempData)
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 29));
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 
 
-console.log("c",checkRole)
 
   const location = useLocation()
 

@@ -1764,6 +1764,9 @@ import {useDispatch,useSelector} from "react-redux"
 import { getAllRoles, getAllUserById, getCityData, getCountryDataSort, getRoles, getStateData, getStateDataSort, updateUserData } from "../../Dashboard/DashboardAction";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
 import { getDesignationData } from "../DesignationMaster/DesignationAction";
+import RoleMasterSlice from "../RoleMaster/RoleMasterSlice";
+import { getRoleData } from "../RoleMaster/RoleMasterAction";
+import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -1785,7 +1788,7 @@ function EditUserComponent({ match }) {
   // const [cityDropdown, setCityDropdown] = useState(null);
 
   const [userDepartment, setUserDepartment] = useState(null);
-  const [departmentDropdown, setDepartmentDropdown] = useState(null);
+  // const [departmentDropdown, setDepartmentDropdown] = useState(null);
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
   const [defaultDepartment, setDefaultDepartment] = useState();
 
@@ -1794,12 +1797,14 @@ function EditUserComponent({ match }) {
   const [dataa, setDataa] = useState({ employee_id: null, departments: null });
 
 
+  const departmentDropdown = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
+  console.log("dpar",departmentDropdown)
 
   const dispatch = useDispatch()
 
 
   const data = useSelector(DashbordSlice=>DashbordSlice.dashboard.getAllUser)
-  console.log("ddd",data)
+  console.log("ddd11",data)
 
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
@@ -1843,29 +1848,35 @@ function EditUserComponent({ match }) {
   const [passwordValid, setPasswordValid] = useState(false);
 
 
-  const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
+  const Notify = useSelector( (DashbordSlice) => DashbordSlice.dashboard.notify);
   const CountryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
   );
+
+  console.log("CountryData",CountryData)
   const roleDropdown = useSelector(
-    (DashboardSlice) => DashboardSlice.dashboard.getAllRoles
+    (DashbordSlice) => DashbordSlice.dashboard.getAllRoles
   );
+const filterrole=useSelector(RoleMasterSlice=>RoleMasterSlice.rolemaster.filterRoleData)
+  console.log("f",filterrole)
   const cityData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+    (DashbordSlice) => DashbordSlice.dashboard.sortedCityData
   );
   const AllcityDropDownData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.cityData
+    (DashbordSlice) => DashbordSlice.dashboard.cityData
   );
   const designationDropdown = useSelector(
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
   const stateDropdown = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.stateData
+    (DashbordSlice) => DashbordSlice.dashboard.stateData
   );
+
+  console.log("s",stateDropdown)
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
       setInputState({ ...state, passwordErr: "Please enter Password" });
@@ -1971,7 +1982,7 @@ function EditUserComponent({ match }) {
 
   const [emailError, setEmailError] = useState(null);
   const [mailError, setMailError] = useState(false);
-  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
   const [cityDropdownData, setCityDropdownData] = useState(false);
 
   const handleEmail = (e) => {
@@ -2070,6 +2081,7 @@ function EditUserComponent({ match }) {
 
     if (flag === 1) {
       dispatch(updateUserData({id:userId,payload:form}))
+
       // await new UserService()
       //   .updateUser(userId, form)
       //   .then((res) => {
@@ -2246,29 +2258,29 @@ function EditUserComponent({ match }) {
     //     );
     //   });
 
-    // await new DepartmentMappingService()
-    //   .getDepartmentMappingByEmployeeId(userId)
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       if (res.data.status == 1) {
-    //         const temp = [];
-    //         res.data.data.forEach((d) => {
-    //           temp.push({
-    //             department_id: d.department_id,
-    //             ticket_passing_authority: d.ticket_passing_authority,
-    //             ticket_show_type: d.ticket_show_type,
-    //             is_default: d.is_default,
-    //           });
-    //         });
-    //         setRows(null);
-    //         setRows(temp);
-    //       } else {
-    //         setRows([mappingData]);
-    //       }
-    //     } else {
-    //       setRows([mappingData]);
-    //     }
-    //   });
+    await new DepartmentMappingService()
+      .getDepartmentMappingByEmployeeId(userId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            const temp = [];
+            res.data.data.forEach((d) => {
+              temp.push({
+                department_id: d.department_id,
+                ticket_passing_authority: d.ticket_passing_authority,
+                ticket_show_type: d.ticket_show_type,
+                is_default: d.is_default,
+              });
+            });
+            setRows(null);
+            setRows(temp);
+          } else {
+            setRows([mappingData]);
+          }
+        } else {
+          setRows([mappingData]);
+        }
+      });
 
   //   await new ManageMenuService().getRole(roleId).then((res) => {
   //     if (res.status === 200) {
@@ -2304,7 +2316,7 @@ function EditUserComponent({ match }) {
       //     .filter((d) => d.state_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.city }))
       // );
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+      setCityDropdownData(AllcityDropDownData?.filter((filterState) => filterState.state_id===e.value)?.map((d) => ({ value: d.id, label: d.city })))
 
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
@@ -2462,7 +2474,7 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
   //   }
   // }, [Notify, dispatch]);
   useEffect(() => {
-    // loadData();
+    loadData();
 
     if(!data.length){
 
@@ -2474,10 +2486,11 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
       dispatch(getStateDataSort());
     
     }
-    if(!stateDropdown){
+    if(!stateDropdownData){
       dispatch(getStateData());
     
     }
+    dispatch(departmentData())
     if(!AllcityDropDownData.length){
 dispatch(getCityData())
     }
@@ -2489,6 +2502,8 @@ dispatch(getCityData())
     }
 
     dispatch(getAllRoles())
+
+    dispatch(getRoleData())
 
     // if(!data){
     // }
@@ -3032,7 +3047,7 @@ dispatch(getCityData())
                           </span>
                         )}
                       </div> */}
-
+{console.log("data55",data)}
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -3053,6 +3068,7 @@ dispatch(getCityData())
                               placeholder="Password"
                               // minLength={6} // Minimum length is set to 8 characters
                               // maxLength={12}
+                              defaultValue={data.password}
                               type={passwordShown ? "text" : "password"}
                               onKeyPress={(e) => {
                                 Validation.password(e);
@@ -3106,6 +3122,8 @@ dispatch(getCityData())
                               id="confirm_password"
                               ref={confirmedPasswordRef}
                               // onChange={handleConfirmedPassword}
+                              defaultValue={data.password}
+
                               type={passwordShown1 ? "text" : "Password"}
                               onPaste={(e) => {
                                 e.preventDefault();
@@ -3165,13 +3183,18 @@ dispatch(getCityData())
 
                               defaultValue={
                                 data &&
-                                filteredRoles &&
-                                filteredRoles.filter(
+                                filterrole &&
+                                filterrole.filter(
                                   (d) => d.value == data.role_id
                                 )
                               }
+
                             />
                           )}
+
+
+
+
                           {inputState && (
                             <small
                               style={{
@@ -3353,6 +3376,7 @@ dispatch(getCityData())
                           />
                         </div>
                       </div>
+                      {console.log("count",stateDropdownData)}
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
@@ -3367,8 +3391,8 @@ dispatch(getCityData())
                             }
                             id="state_id"
                             name="state_id"
-                            // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
-                            defaultValue={stateName ? stateName : ""}
+                            defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
+                            // defaultValue={stateName ? stateName : ""}
                             onChange={(e) => handleDependentChange(e, "STATE")}
                             // value={stateName ? stateName : ""}
                           />
@@ -3468,6 +3492,7 @@ dispatch(getCityData())
                           <tr key={idx}>
                             <td className="text-center">{idx + 1}</td>
                             <td>
+                              {console.log("rows",rows)}
                               
                               {departmentDropdown && item.department_id &&
                               <Select

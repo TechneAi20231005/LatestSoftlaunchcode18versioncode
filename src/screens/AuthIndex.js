@@ -34,6 +34,8 @@ class AuthIndex extends React.Component {
               <Routes>
                 {/* Define routes within AuthIndex */}
                 <Route path='/*' element={<SignIn/>} />
+                <Route exact path={`/${_base}/forget-password`} element={<ForgetPassword/>} />
+                <Route exact path={`/${_base}/reset-password`} element={<ResetPassword/>} />
             
                 <Route path='*' element={<Page404 />} />{' '}
                 {/* Catch-all route for 404 */}

@@ -88,7 +88,7 @@ const initialState = {
   postTimer: [],
   timeState: null,
   basketData:[],
-  moduleSettingData:[]
+  moduleSettingData:""
 };
 
 export const TaskcomponentSlice = createSlice({
@@ -278,33 +278,32 @@ export const TaskcomponentSlice = createSlice({
 
 
 
-    // builder.addCase(getmoduleSetting.pending, (state,action) => {
-    //   console.log("action payload pending" ,action.payload.data.data )
-    //   state.status = "loading";
+    builder.addCase(getmoduleSetting.pending, (state,action) => {
+      state.status = "loading";
      
-    // });
-    // builder.addCase(getmoduleSetting.fulfilled, (state, action) => {
-    //   const { payload } = action;
-    //   if (payload?.status === 200 && payload?.data?.status === 1) {
+    });
+    builder.addCase(getmoduleSetting.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
        
-    //     let moduleSettingData = payload.data.data
-    //     state.status = "succeded";
-    //     state.notify = null;
-    //     state.notify = { type: "success", message: payload.data.message };
-    //     state.moduleSettingData= moduleSettingData
-    //     console.log("module",payload)
-    //     // let modal = { showModal: false, modalData: "", modalHeader: "" };
-    //     // state.modal = modal;
-    //   } else {
-    //     let notify = { type: "danger", message: payload.data.message };
-    //     state.notify = null;
-    //     state.notify = notify;
-    //   }
-    // });
-    // builder.addCase(getmoduleSetting.rejected, (state) => {
-    //   console.log("hello")
-    //   state.status = "rejected";
-    // });
+        let moduleSettingData = payload.data.data
+        state.moduleSettingData= moduleSettingData
+        console.log("module",moduleSettingData)
+        state.status = "succeded";
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        // let modal = { showModal: false, modalData: "", modalHeader: "" };
+        // state.modal = modal;
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(getmoduleSetting.rejected, (state) => {
+      console.log("hello")
+      state.status = "rejected";
+    });
   },
 });
 export const {
