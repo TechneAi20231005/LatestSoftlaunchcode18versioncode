@@ -22,20 +22,39 @@ import UserService from "../../../services/MastersService/UserService";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { creteAuthority, getModuleSettingData, getSubmoduleData, updateAuthority } from "../Slices/BillCheckingTransactionAction";
+import { handleModalClose,handleModalOpen } from "../Slices/BillCheckingTransactionSlice"
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
-  const [userData, setUserData] = useState([]); // State to store user data
+  // const [userData, setUserData] = useState([]); // State to store user data
 
-  const [authorities, SetAuthorities] = useState();
+  // const [authorities, SetAuthorities] = useState();
   const roleId = sessionStorage.getItem("role_id");
+  const dispatch =useDispatch()
 
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39));
+  const authorities = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.getModuleSettingData)
+  const userData = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
+  const submodulename = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.getSubmoduleData)
+  const notify=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.notify)
+  const modal=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.modal)
+  console.log("modal",modal);
+  console.log("authorities",authorities)
+  // console.log("submodule",submodule);
+
+ 
+
+
   const [error, setError] = useState("");
 
   const [user, setUser] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [submodulename, SetSubmodulename] = useState();
+  // const [submodulename, SetSubmodulename] = useState();
 
   const [read, setRead] = useState(true);
 
@@ -52,17 +71,17 @@ const AuthorityMapping = () => {
     new Array(assign.length).fill("")
   );
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
-  const [notify, setNotify] = useState();
+  // const [notify, setNotify] = useState();
   const currentDate = new Date();
 
   const handleModal = (data) => {
-    setModal(data);
+    // setModal(data);
   };
   const searchRef = useRef();
 
@@ -95,11 +114,13 @@ const AuthorityMapping = () => {
             data-bs-target="#depedit"
             onClick={(e) => {
               handleData(e, row);
-              handleModal({
+              dispatch(
+              
+              handleModalOpen({
                 showModal: true,
                 modalData: row,
                 modalHeader: "Assign Authority",
-              });
+              }));
             }}
             style={{ marginRight: "10px" }}
           >
@@ -111,11 +132,14 @@ const AuthorityMapping = () => {
             data-bs-target="#depedit"
             onClick={(e) => {
               handleData(e, row);
-              handleModal({
+
+              dispatch(
+
+              handleModalOpen({
                 showModal: true,
                 modalData: row,
                 modalHeader: "Details",
-              });
+              }));
             }}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
@@ -294,7 +318,7 @@ const AuthorityMapping = () => {
   const mainJson = {
     updated_by: sessionStorage.getItem("id"),
     updated_at: new Date(),
-    setting_id: modal.modalData.id,
+    setting_id: modal?.modalData?.id,
     setting_value: "Y",
     user_details: assign.map((item) => ({
       user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
@@ -434,102 +458,126 @@ const AuthorityMapping = () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
 
+
+    dispatch(getModuleSettingData())
+
     const data = [];
     const exportTempData = [];
 
-    await new BillCheckingTransactionService()
-      .getModuleSetting()
-      .then((res) => {
-        if (res.status === 200) {
-          setUser(res.data.data);
-          setShowLoaderModal(false);
+    // await new BillCheckingTransactionService()
+    //   .getModuleSetting()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setUser(res.data.data);
+    //       setShowLoaderModal(false);
 
-          let counter = 1;
-          const temp = res.data.data;
+    //       let counter = 1;
+    //       const temp = res.data.data;
 
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              setting_name: temp[key].setting_name,
-              submodule_name: temp[key].submodule_name,
-              sub_module_name: temp[key].sub_module_name,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              Status: temp[key].Status,
-              created_at: temp[key].created_at,
-              created_by_name: temp[key].created_by_name,
-              updated_at: temp[key].updated_at,
-              updated_by_name: temp[key].updated_by_name,
-              user_id: temp[key].user_id,
-              setting_id: temp[key].setting_id,
-              from_date: temp[key].from_date,
-              to_date: temp[key].to_date,
-            });
-          }
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           setting_name: temp[key].setting_name,
+    //           submodule_name: temp[key].submodule_name,
+    //           sub_module_name: temp[key].sub_module_name,
+    //           is_active: temp[key].is_active,
+    //           remark: temp[key].remark,
+    //           Status: temp[key].Status,
+    //           created_at: temp[key].created_at,
+    //           created_by_name: temp[key].created_by_name,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by_name: temp[key].updated_by_name,
+    //           user_id: temp[key].user_id,
+    //           setting_id: temp[key].setting_id,
+    //           from_date: temp[key].from_date,
+    //           to_date: temp[key].to_date,
+    //         });
+    //       }
 
-          setData(null);
-          setData(data);
+    //       setData(null);
+    //       setData(data);
 
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              setting_name: data[i].setting_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
-        }
-      })
-      .catch((error) => {});
+    //       for (const i in data) {
+    //         exportTempData.push({
+    //           Sr: data[i].counter,
+    //           setting_name: data[i].setting_name,
+    //           Status: data[i].is_active ? "Active" : "Deactive",
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: data[i].updated_at,
+    //           updated_by: data[i].updated_by,
+    //         });
+    //       }
+    //     }
+    //   })
+    //   .catch((error) => {});
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+      
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUserData(
-            temp.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
-          );
-        }
-      }
-    });
-    await new BillTransactionService().getUpdatedAuthorities().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const a = res.data.data;
+      dispatch(getRoles())
 
-          SetAuthorities(res.data.data);
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
-    await new BillCheckingTransactionService().getSubmodule(45).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          SetSubmodulename(
-            res.data.data.map((d) => ({ value: d.id, label: d.name }))
-          );
-        }
-      }
-    });
+
+    const inputRequired =
+    "id,employee_id,first_name,last_name,middle_name,is_active";
+  dispatch(getUserForMyTicketsData(inputRequired));
+
+
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    //       setUserData(
+    //         temp.map((d) => ({
+    //           value: d.id,
+    //           label: d.first_name + " " + d.last_name,
+    //         }))
+    //       );
+    //     }
+    //   }
+    // });
+
+    dispatch(updateAuthority())
+    // await new BillTransactionService().getUpdatedAuthorities().then((res) => {
+    //   console.log("res",res);
+
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const a = res.data.data;
+
+    //       // SetAuthorities(res.data.data);
+    //     }
+    //   }
+    // });
+
+
+
+
+
+
+
+    dispatch(getSubmoduleData())
+
+    // await new BillCheckingTransactionService().getSubmodule(45).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       SetSubmodulename(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.name }))
+    //       );
+    //     }
+    //   }
+    // });
   };
 
   function getCurrentDateString() {
@@ -542,7 +590,7 @@ const AuthorityMapping = () => {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
 
     const form = new FormData(e.target);
 
@@ -558,10 +606,10 @@ const AuthorityMapping = () => {
     const specialCharacters = /[!@#$%^&*(),.?":{}|<>]/;
 
     if (specialCharacters.test(inputValue)) {
-      setNotify({
-        type: "danger",
-        message: "Special characters are not allowed",
-      });
+      // setNotify({
+      //   type: "danger",
+      //   message: "Special characters are not allowed",
+      // });
       return;
     }
 
@@ -578,29 +626,32 @@ const AuthorityMapping = () => {
         return;
       }
 
-      await new BillCheckingTransactionService()
-        .createModuleAuthorityUserSetting(mainJson)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
+      dispatch(creteAuthority(mainJson))
+      loadData()
 
-              loadData();
-            } else {
-              setError({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Designation",
-              "Create_Designation",
-              "INSERT",
-              res.message
-            );
-          }
-        });
+      // await new BillCheckingTransactionService()
+      //   .createModuleAuthorityUserSetting(mainJson)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       setShowLoaderModal(false);
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+
+      //         loadData();
+      //       } else {
+      //         setError({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Designation",
+      //         "Create_Designation",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   });
       
         
 
@@ -642,7 +693,7 @@ const AuthorityMapping = () => {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[50].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -696,12 +747,12 @@ const AuthorityMapping = () => {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {authorities && (
                 <DataTable
                   columns={columns}
                   defaultSortField="title"
                   pagination
-                  data={data}
+                  data={authorities}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -717,19 +768,29 @@ const AuthorityMapping = () => {
         show={modal.showModal}
         aria-labelledby="contained-modal-title-vcenter"
         size="xl"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header closeButton 
+             onClick={() => {
+              dispatch(
+              handleModalClose({
+                showModal: false,
+                modalData: "",
+                modalHeader: "",
+              }));
+            }}
+          
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
 
@@ -746,7 +807,7 @@ const AuthorityMapping = () => {
                     className="form-control"
                     id="setting_name"
                     name="setting_name"
-                    defaultValue={modal.modalData.setting_name}
+                    defaultValue={modal?.modalData?.setting_name}
                     onKeyDown={handleKeyDown}
                     onChange={handleChanges}
                     ref={searchRef}
@@ -1214,11 +1275,12 @@ const AuthorityMapping = () => {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
+                dispatch(
+                handleModalClose({
                   showModal: false,
                   modalData: "",
                   modalHeader: "",
-                });
+                }));
               }}
             >
               Cancel

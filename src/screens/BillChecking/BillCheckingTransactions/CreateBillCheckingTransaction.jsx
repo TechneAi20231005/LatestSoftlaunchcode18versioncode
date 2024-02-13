@@ -23,10 +23,11 @@ import BillTransactionService from "../../../services/Bill Checking/Bill Checkin
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { getUpdatedAuthoritiesData, getcreateAuthoritiesData, postBillcheckingData } from "../Slices/BillCheckingTransactionAction";
+import { getUpdatedAuthoritiesData, getcreateAuthoritiesData, postBillcheckingData, sectionDropDownData } from "../Slices/BillCheckingTransactionAction";
 import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
 import VendorMasterSlice from "../Slices/VendorMasterSlice";
 import { getVendorMasterData } from "../Slices/VendorMasterAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -46,9 +47,11 @@ export default function CreateBillCheckingTransaction({ match }) {
 
 
   const notify = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.notify)
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41));
   const vendorDropdown = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
   const authorities = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData) //update
   const authority = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authorityData) //create
+  
   
 
 
@@ -99,7 +102,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   // const [authorities, SetAuthorities] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const sectionRef = useRef();
   const tdsPercentageRef = useRef();
@@ -185,8 +188,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleSectionDropDownChange = async (e) => {
-    await new BillCheckingTransactionService()
-      .getSectionMappingDropdown(e.value)
+    await new BillCheckingTransactionService().getSectionMappingDropdown(e.value)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
@@ -295,33 +297,38 @@ export default function CreateBillCheckingTransaction({ match }) {
     //       }
     //     }
     //   });
+    dispatch(getRoles())
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
-    await new BillCheckingTransactionService()
-      .getSectionDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setSectionDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.section_name }))
-            );
-            setConstitutionDropdown(
-              res.data.data.map((d) => ({
-                value: d.id,
-                label: d.constitution_name,
-              }))
-            );
-          }
-        }
-      });
+
+    dispatch(sectionDropDownData())
+    
+    // await new BillCheckingTransactionService()
+    //   .getSectionDropdown()
+    //   .then((res) => {
+    //     console.log("res",res);
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setSectionDropdown(
+    //           res.data.data.map((d) => ({ value: d.id, label: d.section_name }))
+    //         );
+    //         setConstitutionDropdown(
+    //           res.data.data.map((d) => ({
+    //             value: d.id,
+    //             label: d.constitution_name,
+    //           }))
+    //         );
+    //       }
+    //     }
+    //   });
 
     // await new BillCheckingTransactionService()
     //   .getVendorsDropdown()
@@ -968,7 +975,7 @@ setSelectedFiles(null)
   ]);
 
   useEffect(() => {
-    if (checkRole && checkRole[45].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

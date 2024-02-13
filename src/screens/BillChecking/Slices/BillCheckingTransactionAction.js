@@ -98,6 +98,105 @@ export const BillcheckingpostData = createAsyncThunk("BillcheckingpostData",asyn
     }
 })
 
+export const cancelBillCheckData = createAsyncThunk("cancelBillCheckData",async(config,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.cancelBill(config.id)
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+export const sectionDropDownData = createAsyncThunk("sectionDropDownData",async(config,thunkapi)=>{
+    try{
+        const service = new BillCheckingTransactionService()
+        const response = await service.getSectionDropdown()
+        return (response)
+    }catch (error){
+        throw(error)
+    }
+})
+
+//____________________________getAllAuthority_____________________________
+
+
+export const getModuleSettingData = createAsyncThunk(
+    "getModuleSettingData",
+    async (config, thunkapi) => {
+      try {
+        const service = new BillCheckingTransactionService();
+        const response = await service.getModuleSetting();
+        console.log("r",response);
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
+  //_______________________subModulename________________________
+
+
+  export const getSubmoduleData = createAsyncThunk(
+    "getSubmoduleData",
+    async (config, thunkapi) => {
+      try {
+        const service = new BillCheckingTransactionService();
+        const response = await service.getSubmodule(45);
+     
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+  //_____________________AuthorittyMappingPost________________________
+
+  export const creteAuthority = createAsyncThunk(
+    "creteAuthority",
+    async (config, thunkapi) => {
+      try {
+        const service = new BillCheckingTransactionService();
+        const response = await service.createModuleAuthorityUserSetting(config);
+     
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+  //______________________updateAuthorites______________
+
+  export const updateAuthority = createAsyncThunk(
+    "updateAuthority",
+    async (config, thunkapi) => {
+      try {
+        const service = new BillCheckingTransactionService();
+        const response = await service.getUpdatedAuthorities();
+     
+  
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,21 +1,45 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { BillcheckingpostData, UpdateBillCheckingTransaction, billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, getcreateAuthoritiesData, mappEmployed, postBillcheckingData, statusDropDownData } from "./BillCheckingTransactionAction";
+import {
+  BillcheckingpostData,
+  UpdateBillCheckingTransaction,
+  billTypeDataDropDowm,
+  cancelBillCheckData,
+  creteAuthority,
+  getBillcheckingData,
+  getModuleSettingData,
+  getSubmoduleData,
+  getUpdatedAuthoritiesData,
+  getcreateAuthoritiesData,
+  mappEmployed,
+  postBillcheckingData,
+  sectionDropDownData,
+  statusDropDownData,
+  updateAuthority,
+} from "./BillCheckingTransactionAction";
 
 const initialState = {
   status: "",
   err: "",
 
-  notify: {},
+
   getAllbillCheckingData: [],
-  sortedBillCheckingData:[],
-  updateBillCheckingTransactionData:[],
-  exportData:[],
-  authoritiesData:"",
-  authorityData:"",
-  billTypeDataDropDowm:[],
-  statusDropDownData:[]
-
-
+  sortedBillCheckingData: [],
+  updateBillCheckingTransactionData: [],
+  exportData: [],
+  authoritiesData: "",
+  authorityData: "",
+  billTypeDataDropDowm: [],
+  statusDropDownData: [],
+  cancelBillCheckData: [],
+  exportModuleData: [],
+  getModuleSettingData: [],
+  creteAuthority:[],
+  notify: "",
+  modal: {
+    showModal: false,
+    modalData: "",
+    modalHeader: "",
+  },
 };
 
 export const BillCheckingTransactionSlice = createSlice({
@@ -25,6 +49,15 @@ export const BillCheckingTransactionSlice = createSlice({
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
     },
+    handleModalOpen: (state, action) => {
+      state.modal = action.payload;
+    },
+    handleModalClose: (state, action) => {
+      state.modal = action.payload;
+    },
+
+
+
   },
   extraReducers: (builder) => {
     // get general setting
@@ -34,7 +67,7 @@ export const BillCheckingTransactionSlice = createSlice({
     builder.addCase(getBillcheckingData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        console.log("payloadbillchecking",payload);
+        console.log("payloadbillchecking", payload);
         let getAllbillCheckingData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -50,12 +83,14 @@ export const BillCheckingTransactionSlice = createSlice({
             id: getAllbillCheckingData[key].id,
             "Bill ID": getAllbillCheckingData[key].bc_id,
             "Vendor Name": getAllbillCheckingData[key].vendor_id_name,
-            getAllbillCheckingDatalate_name: getAllbillCheckingData[key].getAllbillCheckingDatalate_name,
+            getAllbillCheckingDatalate_name:
+              getAllbillCheckingData[key].getAllbillCheckingDatalate_name,
             employee_name: getAllbillCheckingData[key].employee_name,
 
             "Payment Date": getAllbillCheckingData[key].payment_date,
             "Bill No": getAllbillCheckingData[key].vendor_bill_no,
-            "Actual Payment Date": getAllbillCheckingData[key].actual_payment_date,
+            "Actual Payment Date":
+              getAllbillCheckingData[key].actual_payment_date,
             "Bill Amount": getAllbillCheckingData[key].bill_amount,
             "Net Amount": getAllbillCheckingData[key].net_payment,
             is_active: getAllbillCheckingData[key].is_active,
@@ -66,7 +101,8 @@ export const BillCheckingTransactionSlice = createSlice({
             "Debit Advance": getAllbillCheckingData[key].debit_advance,
             "Bill date": getAllbillCheckingData[key].bill_date,
             "Bill Status": getAllbillCheckingData[key].payment_status,
-            "Is Original Bill": getAllbillCheckingData[key].is_original_bill_needed,
+            "Is Original Bill":
+              getAllbillCheckingData[key].is_original_bill_needed,
             "Recieved Date": getAllbillCheckingData[key].received_date,
             "Hold Amount": getAllbillCheckingData[key].hold_amount,
             "Paid Amount": getAllbillCheckingData[key].actual_paid,
@@ -86,18 +122,20 @@ export const BillCheckingTransactionSlice = createSlice({
             approvedBy: getAllbillCheckingData[key].approvedBy,
             "Pending From": getAllbillCheckingData[key].level_approver,
             audit_remark: getAllbillCheckingData[key].audit_remark,
-            external_audit_remark: getAllbillCheckingData[key].external_audit_remark,
+            external_audit_remark:
+              getAllbillCheckingData[key].external_audit_remark,
 
             levels_of_approval: getAllbillCheckingData[key].levels_of_approval,
 
             level_approver: getAllbillCheckingData[key].level_approver,
-            is_editable_for_creator: getAllbillCheckingData[key].is_editable_for_creator,
+            is_editable_for_creator:
+              getAllbillCheckingData[key].is_editable_for_creator,
             is_rejected: getAllbillCheckingData[key].is_rejected,
             "Is cancelled": getAllbillCheckingData[key].cancelled,
           });
         }
 
-        const exportData=[]
+        const exportData = [];
         for (const key in getAllbillCheckingData) {
           exportData.push({
             // counter: counter++,
@@ -106,7 +144,8 @@ export const BillCheckingTransactionSlice = createSlice({
             "Vendor Name": getAllbillCheckingData[key].vendor_id_name,
             "Payment Date": getAllbillCheckingData[key].payment_date,
             "Bill No": getAllbillCheckingData[key].vendor_bill_no,
-            "Actual Payment Date": getAllbillCheckingData[key].actual_payment_date,
+            "Actual Payment Date":
+              getAllbillCheckingData[key].actual_payment_date,
             "Bill Amount": getAllbillCheckingData[key].bill_amount,
             "Net Amount": getAllbillCheckingData[key].net_payment,
             "Rejected By": getAllbillCheckingData[key].rejectedBy,
@@ -125,18 +164,22 @@ export const BillCheckingTransactionSlice = createSlice({
             "Recieved Date": getAllbillCheckingData[key].received_date,
             total_level: getAllbillCheckingData[key].total_level,
             last_approved_by: getAllbillCheckingData[key].last_approved_by,
-            is_editable_for_creator: getAllbillCheckingData[key].is_editable_for_creator,
+            is_editable_for_creator:
+              getAllbillCheckingData[key].is_editable_for_creator,
 
-            "Levels of approval": getAllbillCheckingData[key].levels_of_approval,
+            "Levels of approval":
+              getAllbillCheckingData[key].levels_of_approval,
             "Approve By": getAllbillCheckingData[key].approved_by,
             "Pending From": getAllbillCheckingData[key].level_approver,
 
             "Assign From": getAllbillCheckingData[key].created_by,
             "Assign To": getAllbillCheckingData[key].assign_to_name,
-            is_assign_to: getAllbillCheckingData[key].is_assign_to == 0 ? "NO" : "YES",
+            is_assign_to:
+              getAllbillCheckingData[key].is_assign_to == 0 ? "NO" : "YES",
 
             approvedBy: getAllbillCheckingData[key].approvedBy,
-            "Is Original Bill": getAllbillCheckingData[key].is_original_bill_needed,
+            "Is Original Bill":
+              getAllbillCheckingData[key].is_original_bill_needed,
 
             // "is original Bill": temp[key].is_original_bill_needed,
             "Internal Audit": getAllbillCheckingData[key].audit_remark,
@@ -150,11 +193,10 @@ export const BillCheckingTransactionSlice = createSlice({
             "Updated At": getAllbillCheckingData[key].updated_at,
             "Updated By": getAllbillCheckingData[key].updated_by,
           });
-         
         }
         state.getAllbillCheckingData = [...getAllbillCheckingData];
-        state.sortedBillCheckingData=sortedBillCheckingData;
-        state.exportData=exportData
+        state.sortedBillCheckingData = sortedBillCheckingData;
+        state.exportData = exportData;
       }
     });
     builder.addCase(getBillcheckingData.rejected, (state) => {
@@ -163,216 +205,205 @@ export const BillCheckingTransactionSlice = createSlice({
 
     //   // post general setting
 
-      builder.addCase(postBillcheckingData.pending, (state) => {
-        state.status = "loading";
+    builder.addCase(postBillcheckingData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+    builder.addCase(postBillcheckingData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
-      });
-      builder.addCase(postBillcheckingData.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          state.status = "succeded";
-          state.showLoaderModal = false;
-
-         
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
-
-        }
-      });
-      builder.addCase(postBillcheckingData.rejected, (state) => {
-        state.status = "rejected";
-      });
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(postBillcheckingData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
     //   //update general setting
-      builder.addCase(getUpdatedAuthoritiesData.pending, (state) => {
-        state.status = "loading";
+    builder.addCase(getUpdatedAuthoritiesData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
-      });
+    builder.addCase(getUpdatedAuthoritiesData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === true) {
+        console.log("payloadAuthorites", payload);
+        let authoritiesData = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
-      builder.addCase(getUpdatedAuthoritiesData.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === true) {
-          console.log("payloadAuthorites",payload);
-          let authoritiesData = payload.data.data;
-          state.status = "succeded";
-          state.showLoaderModal = false;
+        state.authoritiesData = authoritiesData;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(getUpdatedAuthoritiesData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
-          state.authoritiesData = authoritiesData;
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
+    builder.addCase(getcreateAuthoritiesData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
-        }
-      });
-      builder.addCase(getUpdatedAuthoritiesData.rejected, (state) => {
-        state.status = "rejected";
-      });
+    builder.addCase(getcreateAuthoritiesData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let authorityData = payload.data.access;
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
+        state.authorityData = authorityData;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(getcreateAuthoritiesData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
+    builder.addCase(UpdateBillCheckingTransaction.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
-      builder.addCase(getcreateAuthoritiesData.pending, (state) => {
-        state.status = "loading";
-
-      });
-
-      builder.addCase(getcreateAuthoritiesData.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          let authorityData = payload.data.access;
-          state.status = "succeded";
-          state.showLoaderModal = false;
-
-          state.authorityData = authorityData;
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
-
-        }
-      });
-      builder.addCase(getcreateAuthoritiesData.rejected, (state) => {
-        state.status = "rejected";
-      });
-
-
-
-
-      builder.addCase(UpdateBillCheckingTransaction.pending, (state) => {
-        state.status = "loading";
-
-      });
-
-      builder.addCase(UpdateBillCheckingTransaction.fulfilled, (state, action) => {
+    builder.addCase(
+      UpdateBillCheckingTransaction.fulfilled,
+      (state, action) => {
         const { payload } = action;
         if (payload?.status === 200 && payload?.data?.status === 1) {
           let updateBillCheckingTransactionData = payload.data.data;
           state.status = "succeded";
           state.showLoaderModal = false;
 
-          state.updateBillCheckingTransactionData = [...updateBillCheckingTransactionData];
+          state.updateBillCheckingTransactionData = [
+            ...updateBillCheckingTransactionData,
+          ];
           state.notify = null;
           state.notify = { type: "success", message: payload.data.message };
         } else {
           let notify = { type: "danger", message: payload.data.message };
           state.notify = null;
           state.notify = notify;
-
         }
-      });
-      builder.addCase(UpdateBillCheckingTransaction.rejected, (state) => {
-        state.status = "rejected";
-      });
+      }
+    );
+    builder.addCase(UpdateBillCheckingTransaction.rejected, (state) => {
+      state.status = "rejected";
+    });
 
+    //__________________getBillTypeData________________
 
-      //__________________getBillTypeData________________
+    builder.addCase(billTypeDataDropDowm.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
+    builder.addCase(billTypeDataDropDowm.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let billTypeDataDropDowm = payload.data.data.map((d) => ({
+          value: d.id,
+          label: d.bill_type,
+        }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
-      
-      builder.addCase(billTypeDataDropDowm.pending, (state) => {
-        state.status = "loading";
+        state.billTypeDataDropDowm = [...billTypeDataDropDowm];
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(billTypeDataDropDowm.rejected, (state) => {
+      state.status = "rejected";
+    });
 
-      });
+    //_____________________________________getStatusData_______________________________
 
-      builder.addCase(billTypeDataDropDowm.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          let billTypeDataDropDowm = payload.data.data.map((d)=>({ value: d.id, label: d.bill_type }))
-          state.status = "succeded";
-          state.showLoaderModal = false;
+    builder.addCase(statusDropDownData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
-          state.billTypeDataDropDowm = [...billTypeDataDropDowm];
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
+    builder.addCase(statusDropDownData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let statusDropDownData = payload.data.data.map((d) => ({
+          value: d.id,
+          label: d.convention_name,
+        }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
-        }
-      });
-      builder.addCase(billTypeDataDropDowm.rejected, (state) => {
-        state.status = "rejected";
-      });
-      
+        state.statusDropDownData = [...statusDropDownData];
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(statusDropDownData.rejected, (state) => {
+      state.status = "rejected";
+    });
 
-      //_____________________________________getStatusData_______________________________
+    //___________________getMppEmployed__________________________________
 
-      builder.addCase(statusDropDownData.pending, (state) => {
-        state.status = "loading";
+    builder.addCase(mappEmployed.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
 
-      });
+    builder.addCase(mappEmployed.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let mappEmployed = payload.data.data.map((d) => ({
+          value: d.id,
+          label: d.employee_name,
+        }));
+        state.status = "succeded";
+        state.showLoaderModal = false;
 
-      builder.addCase(statusDropDownData.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          let statusDropDownData = payload.data.data.map((d) => ({
-            value: d.id,
-            label: d.convention_name,
-          }))
-          state.status = "succeded";
-          state.showLoaderModal = false;
-
-          state.statusDropDownData = [...statusDropDownData];
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
-
-        }
-      });
-      builder.addCase(statusDropDownData.rejected, (state) => {
-        state.status = "rejected";
-      });
-      
-      //___________________getMppEmployed__________________________________
-
-      builder.addCase(mappEmployed.pending, (state) => {
-        state.status = "loading";
-
-      });
-
-      builder.addCase(mappEmployed.fulfilled, (state, action) => {
-        const { payload } = action;
-        if (payload?.status === 200 && payload?.data?.status === 1) {
-          let mappEmployed = payload.data.data.map((d) => ({
-            value: d.id,
-            label: d.employee_name,
-          }))
-          state.status = "succeded";
-          state.showLoaderModal = false;
-
-          state.mappEmployed = [...mappEmployed];
-          state.notify = null;
-          state.notify = { type: "success", message: payload.data.message };
-        } else {
-          let notify = { type: "danger", message: payload.data.message };
-          state.notify = null;
-          state.notify = notify;
-
-        }
-      });
-      builder.addCase(mappEmployed.rejected, (state) => {
-        state.status = "rejected";
-      });
-      
+        state.mappEmployed = [...mappEmployed];
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(mappEmployed.rejected, (state) => {
+      state.status = "rejected";
+    });
 
     //___________________________________BillCheckingPostData_____________________________________
 
-
     builder.addCase(BillcheckingpostData.pending, (state) => {
       state.status = "loading";
-
+      state.notify = null;
     });
 
     builder.addCase(BillcheckingpostData.fulfilled, (state, action) => {
@@ -381,7 +412,7 @@ export const BillCheckingTransactionSlice = createSlice({
         let BillcheckingpostData = payload.data.data.map((d) => ({
           value: d.id,
           label: d.employee_name,
-        }))
+        }));
         state.status = "succeded";
         state.showLoaderModal = false;
 
@@ -392,16 +423,179 @@ export const BillCheckingTransactionSlice = createSlice({
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
         state.notify = notify;
-
       }
     });
     builder.addCase(BillcheckingpostData.rejected, (state) => {
       state.status = "rejected";
     });
+
+    //___________________________cancleBillChecking________________
+
+    builder.addCase(cancelBillCheckData.pending, (state) => {
+      state.status = "loading";
+    });
+
+    builder.addCase(cancelBillCheckData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let cancelBillCheckData = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        state.cancelBillCheckData = [...cancelBillCheckData];
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(cancelBillCheckData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //__________________________getSectionData_______________________
+
+    builder.addCase(sectionDropDownData.pending, (state) => {
+      state.status = "loading";
+    });
+
+    builder.addCase(sectionDropDownData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let sectionDropDownData = payload.data.data;
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        state.sectionDropDownData = [...sectionDropDownData];
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+      } else {
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
+      }
+    });
+    builder.addCase(sectionDropDownData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //___________________________getAllAuthoritity_____________________
+
+    builder.addCase(getModuleSettingData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+    builder.addCase(getModuleSettingData.fulfilled, (state, action) => {
+      const { payload } = action;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getModuleSettingData = payload.data.data;
+
     
+  
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        let count = 1;
+        for (let i = 0; i < getModuleSettingData.length; i++) {
+          getModuleSettingData[i].counter = count++;
+        }
+        state.getModuleSettingData = [...getModuleSettingData];
+    
+      }
+    });
+    builder.addCase(getModuleSettingData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //______________________getSubModuleData__________________________
+
+
+    builder.addCase(getSubmoduleData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+    builder.addCase(getSubmoduleData.fulfilled, (state, action) => {
+      const { payload } = action;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let getSubmoduleData = payload.data.data.map((d) => ({ value: d.id, label: d.name }))
+
+    
+  
+        state.status = "succeded";
+        state.showLoaderModal = false;
+        let count = 1;
+        for (let i = 0; i < getSubmoduleData.length; i++) {
+          getSubmoduleData[i].counter = count++;
+        }
+        state.getSubmoduleData = [...getSubmoduleData];
+    
+      }
+    });
+    builder.addCase(getSubmoduleData.rejected, (state) => {
+      state.status = "rejected";
+    });
+    //___________________createAuthority______________________
+
+    builder.addCase(creteAuthority.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+    builder.addCase(creteAuthority.fulfilled, (state, action) => {
+      const { payload } = action;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let creteAuthority = payload.data.data
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+    
+  
+        state.status = "succeded";
+        state.showLoaderModal = false;
+       
+        state.creteAuthority =creteAuthority
+    
+      }
+    });
+    builder.addCase(creteAuthority.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+    //_________________________updateAuthority___________________
+
+
+    builder.addCase(updateAuthority.pending, (state) => {
+      state.status = "loading";
+      state.notify = null;
+    });
+    builder.addCase(updateAuthority.fulfilled, (state, action) => {
+      const { payload } = action;
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let updateAuthority = payload.data.data
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+
+    
+  
+        state.status = "succeded";
+        state.showLoaderModal = false;
+       
+        state.updateAuthority =updateAuthority
+    
+      }
+    });
+    builder.addCase(updateAuthority.rejected, (state) => {
+      state.status = "rejected";
+    });
+
 
 
   },
 });
 
+export const { handleModalOpen, handleModalClose } = BillCheckingTransactionSlice.actions;
 export default BillCheckingTransactionSlice.reducer;

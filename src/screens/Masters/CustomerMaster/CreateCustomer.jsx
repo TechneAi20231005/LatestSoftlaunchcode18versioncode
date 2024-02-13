@@ -15,7 +15,7 @@ import Select from "react-select";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch,useDispatch,useSelector } from "react-redux"
 import { dashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
-import { getCountryDataSort, getCustomerData, getCustomerType, getRoles, getStateData, postCustomerData } from "../../Dashboard/DashboardAction";
+import { getCityData, getCountryDataSort, getCustomerData, getCustomerType, getRoles, getStateData, postCustomerData } from "../../Dashboard/DashboardAction";
 export default function CreateCustomer({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -347,6 +347,7 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
       dispatch(getRoles())
 
     }
+    dispatch(getCityData())
 
 
   },[])

@@ -24,7 +24,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { UseDispatch,useDispatch,useSelector } from "react-redux";
 import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
-import { BillcheckingpostData, billTypeDataDropDowm, getBillcheckingData, getUpdatedAuthoritiesData, postBillcheckingData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
+import { BillcheckingpostData, billTypeDataDropDowm, cancelBillCheckData, getBillcheckingData, getUpdatedAuthoritiesData, postBillcheckingData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { getVendorMasterData } from "../Slices/VendorMasterAction";
@@ -58,7 +58,6 @@ function BillCheckingTransaction() {
   const statusDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.statusDropDownData)
   const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
 
-console.log("AllBillCheckingDatadd",AllBillCheckingData)
 
 
 
@@ -130,7 +129,7 @@ console.log("AllBillCheckingDatadd",AllBillCheckingData)
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${"dropdown-basic_" + data?.id}`}
               className="btn btn-primary text-white"
             >
               <i className="icofont-listine-dots"></i>
@@ -705,21 +704,24 @@ console.log("AllBillCheckingDatadd",AllBillCheckingData)
   const handleCancelBill = async (e, id) => {
     // Display a confirmation dialog
     var response = window.confirm("Are you sure you want to Cancel this Bill?");
-    setNotify(null);
+    // setNotify(null);
     if (response) {
       try {
+
+        dispatch(cancelBillCheckData({id:id}))
+        loadData()
         // Assuming 'cancelBill' returns a promise
-        await new BillCheckingService().cancelBill(id).then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              setNotify({ type: "success", message: res.data.message });
-              // Bill canceled successfully, update data
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          }
-        });
+        // await new BillCheckingService().cancelBill(id).then((res) => {
+        //   if (res.status === 200) {
+        //     if (res.data.status == 1) {
+        //       setNotify({ type: "success", message: res.data.message });
+        //       // Bill canceled successfully, update data
+        //       loadData();
+        //     } else {
+        //       setNotify({ type: "danger", message: res.data.message });
+        //     }
+        //   }
+        // });
       } catch (error) {
         // Handle any potential errors during cancellation
       }
@@ -965,29 +967,29 @@ console.log("AllBillCheckingDatadd",AllBillCheckingData)
     //   }
     // });
 
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        setCountry(res.data.data);
-        setCountryDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.country,
-          }))
-        );
-      }
-    });
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     setCountry(res.data.data);
+    //     setCountryDropdown(
+    //       res.data.data.map((d) => ({
+    //         value: d.id,
+    //         label: d.country,
+    //       }))
+    //     );
+    //   }
+    // });
 
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        setState(res.data.data);
-        setStateDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.state,
-          }))
-        );
-      }
-    });
+    // await new StateService().getState().then((res) => {
+    //   if (res.status === 200) {
+    //     setState(res.data.data);
+    //     setStateDropdown(
+    //       res.data.data.map((d) => ({
+    //         value: d.id,
+    //         label: d.state,
+    //       }))
+    //     );
+    //   }
+    // });
 
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {

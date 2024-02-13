@@ -186,14 +186,14 @@ export const Characters = (e) => {
 };
 
 export const CharacterWithSpace = (e) => {
-  var regex = new RegExp("^[a-zA-Z ]+$");
-  // var regex = regex1.replace(/[^A-Za-z]/gi, "")
+  var regex = new RegExp("^[a-zA-Z0-9\\s@#$%^&*()_+={}\\[\\]:;\"'<>,.?/|]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
     return false;
   }
 };
+
 
 export const userNameOnly = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9]+$");

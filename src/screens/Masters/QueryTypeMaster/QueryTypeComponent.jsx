@@ -57,11 +57,9 @@ function QueryTypeComponent() {
   const modal = useSelector(
     (queryTypeSlice) => queryTypeSlice.queryTypeMaster.modal
   );
-
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
   );
-
   const dynamicFormDropdown = useSelector(
     (DashboardSlice) => DashboardSlice.dashboard.getDynamiucFormData
   );
@@ -661,7 +659,6 @@ function QueryTypeComponent() {
   }
 
   const loadData = async () => {
-    dispatch(queryType());
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
     // const data = [];
@@ -671,7 +668,6 @@ function QueryTypeComponent() {
     //   .then((res) => {
     //     if (res.status === 200) {
     //       setShowLoaderModal(false);
-
     //       let counter = 1;
     //       const temp = res.data.data;
     //       for (const key in temp) {
@@ -681,7 +677,6 @@ function QueryTypeComponent() {
     //           query_type_name: temp[key].query_type_name,
     //           form_id: temp[key].form_id,
     //           customer_id: temp[key].customer_id,
-
     //           form_name: temp[key].form_id_name,
     //           query_group_name: temp[key].query_group_name,
     //           query_group: temp[key].query_group,
@@ -697,7 +692,6 @@ function QueryTypeComponent() {
     //       setData(null);
     //       setData(data);
     //       setDataa(data);
-
     //       for (const i in data) {
     //         exportTempData.push({
     //           Sr: data[i].counter,
@@ -711,7 +705,6 @@ function QueryTypeComponent() {
     //           query_group_data: temp[i].query_group_data,
     //         });
     //       }
-
     //       setExportData(null);
     //       setExportData(exportTempData);
     //     }
@@ -726,11 +719,9 @@ function QueryTypeComponent() {
     //       errorObject.data.message
     //     );
     //   });
-
     // await new DynamicFormService().getDynamicForm().then((res) => {
     //   if (res.data.status == 1) {
     //     setShowLoaderModal(false);
-
     //     setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
     //     setDynamicFormDropdown(
     //       res.data.data
@@ -739,10 +730,6 @@ function QueryTypeComponent() {
     //     );
     //   }
     // });
-
-    dispatch(getDynamiucFormData());
-    dispatch(getCustomerData());
-    dispatch(getRoles());
     // await new CustomerService().getCustomer().then((res) => {
     //   if (res.data.status == 1) {
     //     setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
@@ -753,11 +740,9 @@ function QueryTypeComponent() {
     //     );
     //   }
     // });
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
-
     //     if (res.data.status == 1) {
     //       const getRoleId = sessionStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
@@ -803,7 +788,7 @@ function QueryTypeComponent() {
           form.delete("is_active");
           form.append("is_active", 1);
           dispatch(postqueryTypeForm(form));
-          loadData()
+          loadData();
           // const res = await new QueryTypeService().postQueryType(form);
           // if (res.status === 200) {
           //   setShowLoaderModal(false);
@@ -826,7 +811,7 @@ function QueryTypeComponent() {
           //   );
           // }
         } else {
-          dispatch(updateQueryTypeData({id:id,payload:form}))
+          dispatch(updateQueryTypeData({ id: id, payload: form }));
           // form.delete("is_active");
           // form.append("is_active", isActive);
           // const res = await new QueryTypeService().updateQueryType(id, form);
@@ -899,6 +884,18 @@ function QueryTypeComponent() {
   // },[formId])
 
   useEffect(() => {
+    if (!queryTypedata.length) {
+      dispatch(queryType());
+    }
+    if (!dynamicFormDropdown.length) {
+      dispatch(getDynamiucFormData());
+    }
+    if (!customerDropdown.length) {
+      dispatch(getCustomerData());
+    }
+    if (!checkRole?.length) {
+      dispatch(getRoles());
+    }
     loadData();
     loadDataEditPopup();
     // setNotify(null);

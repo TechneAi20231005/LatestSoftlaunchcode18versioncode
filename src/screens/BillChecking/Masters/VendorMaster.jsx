@@ -26,35 +26,52 @@ import { _base } from "../../../settings/constants";
 import { Table } from "react-bootstrap";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
-import { BulkUploadVendorData, PaymentDropDown, downloadFormatData, getVendorData, postVendor } from "../Slices/VendorMasterAction";
+import {
+  BulkUploadVendorData,
+  PaymentDropDown,
+  downloadFormatData,
+  getVendorData,
+  postVendor,
+} from "../Slices/VendorMasterAction";
+import { handleModalClose, handleModalOpen } from "../Slices/VendorMasterSlice";
 import VendorMasterSlice from "../Slices/VendorMasterSlice";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function VendorMaster({ match }) {
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState();
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [uppercase, SetUpperCase] = useState();
   const [Panuppercase, SetPanUpeeerCase] = useState();
   const [ifscodeUppercase, setIfsccodeUppercase] = useState();
   const [succes, setSucces] = useState();
   const [error, setError] = useState();
 
+  const dispatch = useDispatch();
+  const notify = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.notify
+  );
+  const VendorData = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.getVendorAllData
+  );
+  const paymentDropdown = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.paymentDropDownData
+  );
+  const modal = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.modal
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 44)
+);
 
 
-  const dispatch = useDispatch()
-  const notify = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.notify)
-  const VendorData = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.getVendorAllData)
-  const paymentDropdown = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.paymentDropDownData)
-
-
-  
   // const [notify, setNotify] = useState();
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
@@ -99,7 +116,7 @@ function VendorMaster({ match }) {
     }
     //setConsiderInPay(null)
     // setConsiderInPay(data? data.modalData.consider_in_payment: "")
-    setModal(data);
+    // setModal(data);
   };
 
   const [country, setCountry] = useState();
@@ -136,11 +153,13 @@ function VendorMaster({ match }) {
             data-bs-toggle="modal"
             data-bs-target="#depedit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Vendor",
-              });
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Vendor",
+                })
+              );
               setError(null);
               setMSMESelectedFiles(null);
               setSelectedFiles(null);
@@ -286,7 +305,7 @@ function VendorMaster({ match }) {
   ];
 
   const loadData = async () => {
-    dispatch(getVendorData())
+    dispatch(getVendorData());
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
       if (res.status === 200) {
@@ -378,14 +397,15 @@ function VendorMaster({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
@@ -403,16 +423,16 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
-          res.data.data.filter((d)=>d.is_active == 1).map((i) => ({
-            value: i.id,
-            label: i.city,
-          }))
+          res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((i) => ({
+              value: i.id,
+              label: i.city,
+            }))
         );
-
-          
       }
     });
-dispatch(PaymentDropDown())
+    dispatch(PaymentDropDown());
 
     // await new VendorMasterService().getActivePaymentTemplate().then((res) => {
     //   if (res.status === 200) {
@@ -504,8 +524,8 @@ dispatch(PaymentDropDown())
       return;
     }
     // if (inputState.MSMENumberErr) {
-      //   alert("Invalid MSME Number ");
-      //   return;
+    //   alert("Invalid MSME Number ");
+    //   return;
     // }
     if (inputState.BankNameErr) {
       alert("Invalid Bank Name ");
@@ -570,7 +590,8 @@ dispatch(PaymentDropDown())
         flag = 0;
       }
       if (flag == 1) {
-      dispatch(postVendor(form))
+        dispatch(postVendor(form));
+        loadData();
         // await new VendorMasterService()
         //   .createVendor(form)
         //   .then((res) => {
@@ -642,7 +663,7 @@ dispatch(PaymentDropDown())
             if (res.status === 200) {
               if (res.data.status === 1) {
                 // setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
+                // setModal({ showModal: false, modalData: "", modalHeader: "" });
                 loadData();
               } else {
                 setError({ type: "danger", message: res.data.message });
@@ -846,8 +867,7 @@ dispatch(PaymentDropDown())
 
   const handleEmail = (e) => {
     const email = e.target.value;
-    const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+    const emailRegex = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})$/;
     if (email === "") {
       setEmailError("");
       setMailError(false);
@@ -864,11 +884,12 @@ dispatch(PaymentDropDown())
 
   const [contactNumber, setContactNumber] = useState(null);
 
-  const url = `${_attachmentUrl}/${modal.modalData.pan_attachment}`;
+  const url = `${_attachmentUrl}/${modal?.modalData?.pan_attachment}`;
   const fileName = url.split("/").pop();
 
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
+    console.log(contactValidation);
 
     if (contactValidation.length === 0) {
       setInputState({
@@ -881,8 +902,7 @@ dispatch(PaymentDropDown())
       contactValidation.charAt(0) == "9" ||
       contactValidation.charAt(0) == "8" ||
       contactValidation.charAt(0) == "7" ||
-      contactValidation.charAt(0) == "6" ||
-      contactValidation.charAt(0) == "4"
+      contactValidation.charAt(0) == "6"
     ) {
       setInputState({ ...state, contactNoErr: "" });
       setContactValid(false);
@@ -987,7 +1007,7 @@ dispatch(PaymentDropDown())
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("bank_passbook_attachment").value = null;
-        setPassBookSelectedFiles(null)
+        setPassBookSelectedFiles(null);
       }
     }
 
@@ -995,7 +1015,7 @@ dispatch(PaymentDropDown())
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("cheque_attachment").value = null;
-        setChequeAttachmentSelectedFiles(null)
+        setChequeAttachmentSelectedFiles(null);
       }
     }
   };
@@ -1144,12 +1164,14 @@ dispatch(PaymentDropDown())
     if (e) {
       e.preventDefault();
     }
-  
+
     // const form = new FormData(e.target);
     dispatch(downloadFormatData()).then((res) => {
       if (res.payload.status === 200) {
         if (res.payload.data.status == 1) {
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.payload.data.data;
+          URL =
+            "http://3.108.206.34/2_Testing/TSNewBackend/" +
+            res.payload.data.data;
           window.open(URL, "_blank").focus();
         }
       }
@@ -1175,7 +1197,9 @@ dispatch(PaymentDropDown())
           loadData();
         } else {
           setError({ type: "danger", message: res.payload.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.payload.data.data;
+          URL =
+            "http://3.108.206.34/2_Testing/TSNewBackend/" +
+            res.payload.data.data;
           window.open(URL, "_blank").focus();
         }
       }
@@ -1197,7 +1221,6 @@ dispatch(PaymentDropDown())
 
   return (
     <>
-
       <div className="container-xxl">
         <PageHeader
           headerTitle="Vendor Master"
@@ -1207,11 +1230,13 @@ dispatch(PaymentDropDown())
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: "",
-                      modalHeader: "Add Vendor",
-                    });
+                    dispatch(
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: "",
+                        modalHeader: "Add Vendor",
+                      })
+                    );
                     setMSMESelectedFiles(null);
                     setPassBookSelectedFiles(null);
                     setChequeAttachmentSelectedFiles(null);
@@ -1305,21 +1330,32 @@ dispatch(PaymentDropDown())
           centered
           show={modal.showModal}
           size="xl"
-          onHide={(e) => {
-            handleModal({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            });
-          }}
+          // onHide={(e) => {
+          //   handleModal({
+          //     showModal: false,
+          //     modalData: "",
+          //     modalHeader: "",
+          //   });
+          // }}
         >
-      {notify && <Alert alertData={notify} />}
+          {notify && <Alert alertData={notify} />}
 
           <form
             method="post"
             onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
           >
-            <Modal.Header closeButton>
+            <Modal.Header
+              onClick={() => {
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
+              }}
+              closeButton
+            >
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -1337,7 +1373,7 @@ dispatch(PaymentDropDown())
                       id="vendor_name"
                       name="vendor_name"
                       maxLength={50}
-                      // minLength={3}
+                      minLength={3}
                       onKeyUp={(e) => {
                         handleErp(e);
                       }}
@@ -1870,7 +1906,6 @@ dispatch(PaymentDropDown())
                   )}
                 </div> */}
 
-
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
                       PAN No :<Astrick color="red" size="13px" />
@@ -2305,8 +2340,7 @@ dispatch(PaymentDropDown())
                             ...state,
                             MSMENumberErr: "",
                           });
-                        } else 
-if (msmeNo.length < 19) {
+                        } else if (msmeNo.length < 19) {
                           setInputState({
                             ...state,
                             MSMENumberErr: "Invalid MSME No.",
@@ -2594,7 +2628,7 @@ if (msmeNo.length < 19) {
                         id="bank_name"
                         name="bank_name"
                         maxLength={50}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
@@ -2640,7 +2674,7 @@ onKeyPress={(e) => {
                         name="bank_name"
                         maxLength={50}
                         onKeyPress={(e) => {
-                        Validation.CharacterWithSpace(e);
+                          Validation.CharacterWithSpace(e);
                         }}
                         required={true}
                         onChange={(event) => {
@@ -2686,7 +2720,7 @@ onKeyPress={(e) => {
                         id="bank_branch_name"
                         name="bank_branch_name"
                         maxLength={25}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
@@ -2742,7 +2776,7 @@ onKeyPress={(e) => {
                         // onKeyPress={(e) => {
                         //   Validation.CharactersNumbersSpeicalOnly(e);
                         // }}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         onChange={(event) => {
@@ -3155,7 +3189,6 @@ onKeyPress={(e) => {
                             ? true
                             : false
                         }
-                       
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
 
@@ -3353,7 +3386,6 @@ onKeyPress={(e) => {
                             ? true
                             : false
                         }
-                        
                         className="form-control"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
@@ -3886,11 +3918,13 @@ onKeyPress={(e) => {
                 type="button"
                 className="btn btn-danger text-white"
                 onClick={() => {
-                  handleModal({
-                    showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  });
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: "",
+                      modalHeader: "",
+                    })
+                  );
                 }}
               >
                 Close
