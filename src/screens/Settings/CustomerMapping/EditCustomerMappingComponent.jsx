@@ -31,7 +31,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [notify, setNotify] = useState();
 
 const dispatch = useDispatch()
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 29));
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 const customerTypeDropdown=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerTypeData)
 const queryType=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.queryTypeData)
 const queryTypeDropdown=useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.queryTypeDropDownData)

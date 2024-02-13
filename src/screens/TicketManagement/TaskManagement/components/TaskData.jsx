@@ -24,12 +24,23 @@ import {
   getTaskRegularizationTime,
 } from "../../../../services/TicketService/TaskService";
 import PlannerModal from './PlannerModal'
+import { useDispatch,useSelector } from 'react-redux'
+
+import { getmoduleSetting } from '../TaskComponentAction'
+import TaskComponentSlice from '../TaskComponentSlice'
 
 export default function TaskData (props) {
   var priorityColor = 'bg-default'
   const data = props.data
   const isRegularisedData = props.data.regularized_data
   const allData = props
+
+
+
+  const dispatch = useDispatch()
+
+
+  const moduleSetting = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.moduleSettingData)
 
   const [userTypeData, setUserTypeData] = useState(null)
   const [loading, setLoading] = useState(false);
@@ -78,17 +89,19 @@ setLoading(false)
   }
 
 
-  const [moduleSetting, setModuleSetting] = useState();
+  // const [moduleSetting, setModuleSetting] = useState();
+
+
 
   const loadData = async () => {
-    await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setModuleSetting(res.data.data);
+    // await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       setModuleSetting(res.data.data);
           
-        }
-      }
-    });
+    //     }
+    //   }
+    // });
   }
 
 
@@ -228,6 +241,8 @@ setLoading(false)
   }
   useEffect(() => {
     loadData()
+    if(!moduleSetting.length)
+    dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
     setTimerState(null)
     if (
       props.data.time_status === 'START' ||

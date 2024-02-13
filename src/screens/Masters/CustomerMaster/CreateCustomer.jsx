@@ -14,7 +14,7 @@ import { _base } from "../../../settings/constants";
 import Select from "react-select";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch,useDispatch,useSelector } from "react-redux"
-import { dashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
+import { DashbordSlice, hideNotification } from "../../Dashboard/DashbordSlice";
 import { getCityData, getCountryDataSort, getCustomerData, getCustomerType, getRoles, getStateData, postCustomerData } from "../../Dashboard/DashboardAction";
 export default function CreateCustomer({ match }) {
   const history = useNavigate();
@@ -54,17 +54,20 @@ export default function CreateCustomer({ match }) {
   const navigate = useNavigate();
 
 const dispatch = useDispatch()
-const customerType = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerTypeData)
-const countryDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.filteredCountryData)
-const stateDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.stateData)
+const customerType = useSelector(DashbordSlice=>DashbordSlice.dashboard.customerTypeData)
+const countryDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.filteredCountryData)
+const stateDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.stateData)
+
 const AllcityDropDownData = useSelector(
-  (dashboardSlice) => dashboardSlice.dashboard.cityData
+  (DashbordSlice) => DashbordSlice.dashboard.cityData
 );
 
-const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+console.log("s",AllcityDropDownData)
+
+const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
 
 const Notify = useSelector(
-  (dashboardSlice) => dashboardSlice.dashboard.notify
+  (dashbordSlice) => dashbordSlice.dashboard.notify
 );
 // console.log("type",countryDropdown)
 
@@ -349,6 +352,10 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     }
     dispatch(getCityData())
 
+    if(!cityDropdownData.length){
+      dispatch(getCityData())
+    }
+
 
   },[])
 
@@ -437,11 +444,12 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
                       name="email_id"
                       placeholder="Email Address"
                       onKeyPress={(e) => {
-                        Validation.CharactersNumbersSpeicalOnly(e);
+                        Validation.emailOnly(e);
                       }}
                       // onChange={handleEmail}
                       required
-                      pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
+                      // pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
+                      // pattern="/^[a-zA-Z0-9._%+-]+$/"
                     />
                   </div>
                 </div>

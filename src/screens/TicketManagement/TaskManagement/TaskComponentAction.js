@@ -62,7 +62,7 @@ export const getAllTaskData = createAsyncThunk(
   async (config, thunkapi) => {
     try {
       const response = await getTaskData(config);
-      console.log("reB", response);
+      console.log("reBp", response);
       return response;
     } catch (error) {
       throw error;
@@ -173,10 +173,11 @@ export const getBasketByIdData = createAsyncThunk(
 
 // export const getmoduleSetting = createAsyncThunk(
 //   "getmoduleSetting",
-//   async ({ module_name, submodule_name }, thunkAPI) => {
+//   async({module_name,submodule_name}, thunkAPI) => {
+//     console.log()
 //     try {
 //       const service = new ModuleSetting();
-//       const response = await service.getSettingByName();
+//       const response = await service.getSettingByName(module_name.module_name,submodule_name.submodule_name);
 //       console.log("response ===", response);
 //       return response.data; // Assuming you want to return only the data from the response
 //     } catch (error) {
@@ -185,8 +186,52 @@ export const getBasketByIdData = createAsyncThunk(
 //   }
 // );
 
+
+
+export const getmoduleSetting = createAsyncThunk(
+  "getmoduleSetting",
+  async ({module_name,submodule_name}, thunkapi) => {
+    try {
+      const service = new ModuleSetting();
+      const response = await service.getSettingByName(module_name,submodule_name);
+
+      console.log("reBpm", response);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 // const _URL=settingMasterUrl.moduleSetting;
 // const _getSettingByName=_URL+"/getSettingByName";
+// export const getmoduleSetting = createAsyncThunk(
+//   "moduleSetting/get",
+//   async ({module_name, submodule_name}, thunkAPI) => {
+//     console.log("lkjhgfdfghjkl")
+//     try {
+//       const token = localStorage.getItem("jwt_token");
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: "application/json",
+//           "Content-Type": "application/json",
+//         },
+//       };
+
+//       // const response = await axios.get(`_getSettingByName/${module_name}/${submodule_name}`, config);
+//     const response=  axios.get(_getSettingByName+"/"+module_name+"/"+submodule_name,config);
+      
+//       console.log("kk",response)
+//       return response.data; // Assuming your API returns data directly
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(error.response.data); // Pass error data to reducer
+//     }
+//   }
+// );
+
+
+
 
 
 

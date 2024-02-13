@@ -904,7 +904,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { Spinner } from "react-bootstrap";
 import { useDispatch,useSelector } from "react-redux";
-import { getAllTaskData, getBasketByIdData, getBasketTaskData } from "./TaskComponentAction";
+import { getAllTaskData, getBasketByIdData, getBasketTaskData, getmoduleSetting } from "./TaskComponentAction";
 
 
 
@@ -918,10 +918,9 @@ export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const {id} = useParams()
   const ticketId = id
-console.log("t",ticketId)
   const history = useNavigate();
 
-  const [moduleSetting, setModuleSetting] = useState();
+  // const [moduleSetting, setModuleSetting] = useState();
   //Ticket Related
   const [ticketData, setTicketData] = useState();
   const [attachment, setAttachment] = useState();
@@ -932,7 +931,8 @@ console.log("t",ticketId)
   const BasketData = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
   const OwnerShip = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.ownership)
   // const B = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.basketData.data?.data)
-
+  const moduleSetting = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.moduleSettingData)
+console.log("mo",moduleSetting)
 
   const getTicketData = async () => {
     await new MyTicketService()
@@ -1023,83 +1023,83 @@ console.log("t",ticketId)
   // const [isRegularised, setIsRegularised] = useState([]);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
-  const getBasketData = async () => {
-    const tempAllTaskList = [];
-    const taskDataa = [];
-    const tasksDataa = [];
-    setIsLoading(true);
+  // const getBasketData = async () => {
+  //   const tempAllTaskList = [];
+  //   const taskDataa = [];
+  //   const tasksDataa = [];
+  //   setIsLoading(true);
 
-    await new BasketService()
+  //   await new BasketService()
 
-      .getBasketTaskData(ticketId)
+  //     .getBasketTaskData(ticketId)
 
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-          setIsLoading(false);
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         setShowLoaderModal(false);
+  //         setIsLoading(false);
 
-          if (res.data.status === 1) {
-            setIsLoading(false);
+  //         if (res.data.status === 1) {
+  //           setIsLoading(false);
 
             
-            const temp = res.data.data;
-            sortingArr = res.data.basket_id_array;
-            setIsReviewer(res.data.is_reviewer);
-            console.log(res.data);
-            setOwnership(res.data.ownership);
-            setBasketIdArray(res.data.basket_id_array);
-            // setIsRegularised(res.data.is_regularized)
-            setData(null);
-            res.data.data.sort(sortFunc);
-            setData(res.data.data);
+  //           const temp = res.data.data;
+  //           sortingArr = res.data.basket_id_array;
+  //           setIsReviewer(res.data.is_reviewer);
+  //           console.log(res.data);
+  //           setOwnership(res.data.ownership);
+  //           setBasketIdArray(res.data.basket_id_array);
+  //           // setIsRegularised(res.data.is_regularized)
+  //           setData(null);
+  //           res.data.data.sort(sortFunc);
+  //           setData(res.data.data);
 
-            res.data.data.map((tasks, index) => {
-              tasks.taskData.forEach((d, i) => {
-                let taskOwnerNames = d.taskOwners
-                  .map((owner) => owner.taskOwnerName)
-                  .join(", ");
-                tasksDataa.push({
-                  ticket_id_name: d.ticket_id_name,
-                  Task_Names: d.task_name,
-                  Task_Hours: d.task_hours,
-                  Start_Date: d.start_date,
-                  End_Date: d.end_date,
-                  Status: d.status,
-                  Priority: d.priority,
-                  Total_Worked: d.total_worked,
-                  Basket_Name: tasks.basket_name,
-                  taskOwnerNames: taskOwnerNames,
-                });
-              });
-            });
+  //           res.data.data.map((tasks, index) => {
+  //             tasks.taskData.forEach((d, i) => {
+  //               let taskOwnerNames = d.taskOwners
+  //                 .map((owner) => owner.taskOwnerName)
+  //                 .join(", ");
+  //               tasksDataa.push({
+  //                 ticket_id_name: d.ticket_id_name,
+  //                 Task_Names: d.task_name,
+  //                 Task_Hours: d.task_hours,
+  //                 Start_Date: d.start_date,
+  //                 End_Date: d.end_date,
+  //                 Status: d.status,
+  //                 Priority: d.priority,
+  //                 Total_Worked: d.total_worked,
+  //                 Basket_Name: tasks.basket_name,
+  //                 taskOwnerNames: taskOwnerNames,
+  //               });
+  //             });
+  //           });
 
-            setTasksData(tasksDataa);
-            res.data.data.forEach((dataa) => {
-              dataa.taskData.forEach((task) => {
-                tempAllTaskList.push({ value: task.id, label: task.task_name });
-              });
-            });
-            setAllTaskList([]);
-            setAllTaskList(tempAllTaskList);
+  //           setTasksData(tasksDataa);
+  //           res.data.data.forEach((dataa) => {
+  //             dataa.taskData.forEach((task) => {
+  //               tempAllTaskList.push({ value: task.id, label: task.task_name });
+  //             });
+  //           });
+  //           setAllTaskList([]);
+  //           setAllTaskList(tempAllTaskList);
 
-            setIsLoading(false); // Loading finished
-          }
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Task",
-          "Get_Basket_Data",
-          "INSERT",
-          errorObject.data.message
-        );
-        setIsLoading(false);
-      });
-  };
+  //           setIsLoading(false); // Loading finished
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       const { response } = error;
+  //       const { request, ...errorObject } = response;
+  //       new ErrorLogService().sendErrorLog(
+  //         "Task",
+  //         "Get_Basket_Data",
+  //         "INSERT",
+  //         errorObject.data.message
+  //       );
+  //       setIsLoading(false);
+  //     });
+  // };
 
   //Task Related
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -1248,17 +1248,18 @@ console.log("t",ticketId)
   const [taskDropdown, setTaskDropdown] = useState();
 
   const loadData = async () => {
-
+console.log("ticketId",ticketId)
     dispatch(getBasketTaskData(ticketId))
     dispatch(getAllTaskData(id))
     dispatch(getBasketByIdData(id))
-    await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setModuleSetting(res.data.data);
-        }
-      }
-    });
+
+    // await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       setModuleSetting(res.data.data);
+    //     }
+    //   }
+    // });
     await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -1334,8 +1335,11 @@ console.log("t",ticketId)
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    getBasketData();
+    // getBasketData();
     loadData();
+        if(!moduleSetting.length){
+      dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))}
+
     // getTicketData();
     // handleRegularizationRequest();
     // handleTaskRegularizationRequest();
@@ -1587,9 +1591,9 @@ console.log("t",ticketId)
           })}
       </div> */}
       <div>
-        {isLoading == true ? (
+        {/* {isLoading == true ? (
           <LoaderComponent />
-        ) : (
+        ) : ( */}
           <>
             <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">
               {BasketData &&
@@ -1704,7 +1708,7 @@ console.log("t",ticketId)
                                 <TaskData
                                   key={task.id.toString()}
                                   data={task}
-                                  loadBasket={getBasketData}
+                                  // loadBasket={getBasketData}
                                   // ownership={ownership}
                                   onShowTaskModal={handleShowTaskModal}
                                 // onCloseTaskModal={handleCloseTaskModal}
@@ -1728,7 +1732,7 @@ console.log("t",ticketId)
                   data={taskModalData}
                   show={showTaskModal}
                   ownership={OwnerShip }
-                  loadBasket={getBasketData}
+                  // loadBasket={getBasketData}
                   allTaskList={allTaskList}
                   taskDropdown={taskDropdown}
                   close={handleCloseTaskModal}
@@ -1744,7 +1748,7 @@ console.log("t",ticketId)
                   show={showBasketModal}
                   hide={handleCloseBasketModal}
                   data={basketData}
-                  loadData={getBasketData}
+                  // loadData={getBasketData}
                 />
               )}
 
@@ -1766,7 +1770,7 @@ console.log("t",ticketId)
               )}
             </div>
           </>
-        )}
+        {/* )} */}
       </div>
       <div></div>
     </div>

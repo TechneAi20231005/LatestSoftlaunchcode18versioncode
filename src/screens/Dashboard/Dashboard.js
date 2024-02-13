@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { getData } from "../../services/DashboardService";
 import Chart from "react-apexcharts";
@@ -59,11 +59,9 @@ import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
 import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
 import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
 import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
-import {
-  getParentDropdown,
-  taskAndTicketMaster,
-} from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
-import { getBasketByIdData } from "../TicketManagement/TaskManagement/TaskComponentAction";
+import { getParentDropdown, taskAndTicketMaster } from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
+import { getBasketByIdData, getBasketTaskData, getmoduleSetting } from "../TicketManagement/TaskManagement/TaskComponentAction";
+
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -73,6 +71,11 @@ export default function HrDashboard(props) {
   const getRolesData = useSelector(
     (DashboardSlice) => DashboardSlice.dashboard.getRoles
   );
+
+
+  const {id} = useParams()
+  console.log("id0000",id)
+
 
   const data = props.data;
 
@@ -245,6 +248,33 @@ export default function HrDashboard(props) {
     dispatch(getCustomerData());
     dispatch(queryType());
 
+
+
+
+// dispatch(getmoduleSetting({module_name:"Ticket",submodule_name:"Task"}))
+
+
+
+// dispatch(getmoduleSetting("Ticket","Task"))
+
+dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
+
+
+
+   dispatch(getAllUserById())
+   dispatch(departmentData());
+   dispatch(getRoleData());
+   dispatch(getStatusData())
+   dispatch(getCustomerTypeData())
+   dispatch(templateData())
+   dispatch(testingData());
+   dispatch(taskAndTicketMaster ())
+   dispatch(getParentDropdown())
+  //  dispatch(getBasketByIdData(id))
+  // dispatch(getBasketTaskData(ticketId))
+
+
+
     dispatch(getAllUserById());
     dispatch(departmentData());
     dispatch(getRoleData());
@@ -262,6 +292,7 @@ export default function HrDashboard(props) {
 
     loadData();
   }, []);
+
 
   return (
     <div className="container-xxl">
@@ -1180,4 +1211,5 @@ export default function HrDashboard(props) {
       </div>
     </div>
   );
-}
+                
+                }

@@ -982,7 +982,14 @@ export default function MyTicketComponent({ location }) {
       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
   );
   
-  console.log("a",assignToMeData);
+const assignedToMeData= useSelector((MyTicketComponentSlice) =>
+MyTicketComponentSlice.myTicketComponent.getUserTicketTestData
+)
+
+// const unpassedData= useSelector((MyTicketComponentSlice) =>
+// MyTicketComponentSlice.myTicketComponent.alluserTickettest
+// )
+
   const statusData = useSelector(
     (statusMasterSlice) =>
     statusMasterSlice.statusMaster.sortStatusData
@@ -995,7 +1002,6 @@ const UserForMyTicketData = useSelector(myTicketComponentSlice=>myTicketComponen
 const getAssignedUserData = useSelector(myTicketComponentSlice=>myTicketComponentSlice.myTicketComponent.getAssignedUserData)
 const departsmentData = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
 const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
-
 
   
   const [modal, setModal] = useState({
@@ -1035,7 +1041,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [assignedToMeData, setAssignedToMeData] = useState();
+  // const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
 
   const handleSelectAllNamesChange = () => {
@@ -1178,7 +1184,6 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                     </Link>
                   </li>
                 )}
-
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
@@ -2232,7 +2237,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
         <div style={{ display: "flex", alignItems: "center" }}>
           <input
             type="checkbox"
-            checked={selectedRowss.includes(row.id)}
+            checked={selectedRowss?.includes(row.id)}
             onChange={() => handleCheckboxChangee(row)}
             style={{ marginRight: "5px" }}
           />
@@ -3147,7 +3152,11 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     form1.limit = 10;
     form1.typeOf = k;
     form1.page = 1;
-    dispatch(getUserTicketsTest(form1));
+    dispatch(getUserTicketsTest(form1)).then((res)=>{
+      setUnpassedData({...assignToMeData,current_page:res.payload.data.data.current_page})
+    })
+
+//     console.log("u=",unpassedData)
     // await new MyTicketService().getUserTicketsTest(form1).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -3229,16 +3238,17 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     //     page: 1,
     //   };
 
-    //   await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-    //     if (res.status === 200) {
-    //       if (res.data.status == 1) {
-    //         setUnpassedData(res.data.data);
+      // await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+      //   if (res.status === 200) {
+      //     if (res.data.status == 1) {
+      //       setUnpassedData(res.data.data);
 
-    //         setUnpassedTickets(res.data.data.data);
-    //       }
-    //     }
-    //   });
-    // }
+      //       setUnpassedTickets(res.data.data.data);
+      //       setUnpassedData({...unpassedData,current_page:res.data.data.current_page})
+      //     }
+      //   }
+      // });
+    
   };
 
   const handleAssignedToMeRowChanged = async (e, type) => {
@@ -3413,13 +3423,13 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setUnpassedTickets(res.data.data.data);
-        }
-      }
-    });
+    // await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setUnpassedTickets(res.data.data.data);
+    //     }
+    //   }
+    // });
   };
 
   return (
@@ -3869,10 +3879,10 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignToMeData && (
+                        {assignedToMeData && (
                           <small>
-                            {assignToMeData.from}-{assignToMeData.to} of{" "}
-                            {assignToMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -3933,10 +3943,10 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignToMeData && (
+                        {assignedToMeData && (
                           <small>
-                            {assignToMeData.from}-{assignToMeData.to} of{" "}
-                            {assignToMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -3994,10 +4004,10 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignToMeData && (
+                        {assignedToMeData && (
                           <small>
-                            {assignToMeData.from}-{assignToMeData.to} of{" "}
-                            {assignToMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
                         <button
@@ -4104,7 +4114,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                                   className="btn btn-success btn-block text-white"
                                   onClick={(e) => {
                                     const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                      (row) => selectedRowss?.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
@@ -4121,7 +4131,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                                   className="btn btn-danger btn-block text-white"
                                   onClick={(e) => {
                                     const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                      (row) => selectedRowss?.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
@@ -4233,10 +4243,10 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignToMeData && (
+                        {assignedToMeData && (
                           <small>
-                            {assignToMeData.from}-{assignToMeData.to} of{" "}
-                            {assignToMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
          
