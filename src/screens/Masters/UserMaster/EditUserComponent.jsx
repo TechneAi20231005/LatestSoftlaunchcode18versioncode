@@ -1737,7 +1737,7 @@
 
 
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, json, useNavigate, useParams } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
@@ -2389,8 +2389,29 @@ const filterrole=useSelector(RoleMasterSlice=>RoleMasterSlice.rolemaster.filterR
       setRows(temp_state);
     }
   };
+  const [roleD, setRoleD] = useState(filterrole.filter(d => d.value === data.role_id)); // State to hold the selected role
 
 
+// const roleD =   data &&
+// filterrole &&filterrole.filter((d) => d.value == data.role_id)
+
+useEffect(() => {
+  // Dispatch action to set default value when component mounts
+  if (data && filterrole) {
+    const defaultRole = filterrole.filter(d => d.value === data.role_id);
+    console.log("dd",defaultRole)
+    if (defaultRole) {
+      setRoleD(defaultRole.value);
+    }
+  }
+}, [data, filterrole]);
+console.log("rol",roleD)  
+
+const handleChange = (selectedValue) => {
+  // Handle onChange event
+  setRoleD(selectedValue);
+  // Dispatch action or perform other actions based on the selected value
+};
 
 
   const sortSlefRole= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() !== "user"; })
@@ -2480,20 +2501,21 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
 
       dispatch(getAllUserById(userId))
     }
-    if(!CountryData.length){
-    dispatch(getCountryDataSort())}
+    // if(!CountryData.length){
+    dispatch(getCountryDataSort())
+  // }
     if(!stateDropdown){
       dispatch(getStateDataSort());
     
     }
-    if(!stateDropdownData){
+    // if(!stateDropdownData){
       dispatch(getStateData());
     
-    }
+    // }
     dispatch(departmentData())
-    if(!AllcityDropDownData.length){
+    // if(!AllcityDropDownData.length){
 dispatch(getCityData())
-    }
+    // }
     if(!designationDropdown.length){
       dispatch(getDesignationData())
     }
@@ -3174,25 +3196,30 @@ dispatch(getCityData())
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          {filteredRoles && (
+
+                          {filterrole && data &&
+                           (
+                            
                             <Select
                               id="role_id"
                               name="role_id"
                               // options={filteredRoles}
                           options={accountFor === "SELF" ? orderedSelfRoleData : orderedCustomerRoleData}
-
-                              defaultValue={
-                                data &&
-                                filterrole &&
-                                filterrole.filter(
-                                  (d) => d.value == data.role_id
-                                )
-                              }
+                          onChange={handleChange}
+                              // defaultValue={
+                              //   data &&
+                              //   filterrole &&
+                              //   filterrole.filter(
+                              //     (d) => d.value == data.role_id
+                              //   )
+                              // }
+                              value={roleD}
 
                             />
                           )}
 
-
+{filterrole && data && <h1></h1>}
+{console.log("do",data)}
 
 
                           {inputState && (

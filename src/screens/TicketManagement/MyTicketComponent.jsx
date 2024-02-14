@@ -986,6 +986,8 @@ const assignedToMeData= useSelector((MyTicketComponentSlice) =>
 MyTicketComponentSlice.myTicketComponent.getUserTicketTestData
 )
 
+
+console.log("a",assignedToMeData)
 // const unpassedData= useSelector((MyTicketComponentSlice) =>
 // MyTicketComponentSlice.myTicketComponent.alluserTickettest
 // )
@@ -3819,13 +3821,13 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           <option value="30">30</option>
                           <option value="40">40</option>
                         </select>
-                        {assignToMeData  && (
+                        {assignedToMeData  && (
                           <small>
-                            {assignToMeData.from}-{assignToMeData.to} of{" "}
-                            {assignToMeData.total}
+                            {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                            {assignedToMeData.total}
                           </small>
                         )}
-                        {console.log("assignedToMeData",assignedToMeData)}
+                        {console.log("assignedToMeData",assignedToMeData.total)}
                         <button
                           onClick={(e) => {
                             handleAssignedToMeRowChanged(e, "MINUS");

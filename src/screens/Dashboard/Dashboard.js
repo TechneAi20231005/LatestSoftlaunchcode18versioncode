@@ -261,7 +261,7 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
 
 
 
-   dispatch(getAllUserById())
+  //  dispatch(getAllUserById())
    dispatch(departmentData());
    dispatch(getRoleData());
    dispatch(getStatusData())
@@ -275,7 +275,7 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
 
 
 
-    dispatch(getAllUserById());
+    // dispatch(getAllUserById());
     dispatch(departmentData());
     dispatch(getRoleData());
     dispatch(getStatusData());

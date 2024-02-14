@@ -37,9 +37,9 @@ function DynamicFormComponent( ) {
 
     const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
 
-    const  data = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData)
+    const  data = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData)
 const  exportData = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData)
-
+console.log("data",data)
 
    
     function SearchInputData(data, search) {
