@@ -1426,7 +1426,9 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">

@@ -364,9 +364,9 @@ export default function EditTenant({ match }) {
                   <b>State : </b>
                 </label>
                 <div className="col-sm-4">
-                  {stateDropdown && data && (
+                  {stateDropdownData && data && (
                     <Select
-                      options={stateDropdown}
+                      options={stateDropdownData}
                       id="state_id"
                       name="state_id"
                       defaultValue={

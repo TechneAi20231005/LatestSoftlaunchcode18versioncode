@@ -19,7 +19,7 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import DynamicFormDropDownSlice from '../DynamicFormDropdown/Slices/DynamicFormDropDownSlice';
-import { getAllDropDownData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
+import { dynamicFormData, getAllDropDownData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
 
 
 function CreateDynamicForm() {
@@ -317,8 +317,14 @@ const dispatch = useDispatch()
                     history({
                         pathname: `/${_base}/DynamicForm`,
                        
-                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    },{ state: { alert: { type: "success", message: res.data.message } }
+                
+                }
+
                     );
+            dispatch(dynamicFormData())
+
+                    // window.location.reload(true)
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
                 }

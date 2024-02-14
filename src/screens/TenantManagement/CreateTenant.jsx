@@ -114,6 +114,7 @@ export default function CreateTenant({ match }) {
     
     }
     
+    
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -340,9 +341,9 @@ export default function CreateTenant({ match }) {
                 <b>State : </b>
               </label>
               <div className="col-sm-4">
-                {stateDropdown && (
+                {stateDropdownData && (
                   <Select
-                    options={stateDropdown}
+                    options={stateDropdownData}
                     id="state_id"
                     name="state_id"
                     onChange={(e) => handleDependentChange(e, "STATE")}
@@ -358,9 +359,9 @@ export default function CreateTenant({ match }) {
               </label>
 
               <div className="col-sm-4">
-                {cityDropdown && (
+                {cityDropdownData && (
                   <Select
-                    options={cityDropdown}
+                    options={cityDropdownData}
                     id="city_id"
                     name="city_id"
                     onChange={(e) => handleDependentChange(e, "CITY")}

@@ -1656,7 +1656,7 @@ function CreateUserComponent({ match }) {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
   const stateDropdown = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.stateData
+    (DashbordSlice) => DashbordSlice.dashboard.stateData
   );
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },

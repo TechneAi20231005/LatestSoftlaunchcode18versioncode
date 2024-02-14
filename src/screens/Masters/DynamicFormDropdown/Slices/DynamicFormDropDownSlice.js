@@ -91,14 +91,17 @@ let exportDynamicFormData=[]
           let counter = 1;
           let getDynamicFormDropDownData= []
                   const temp = payload.data.data
+                  console.log("res---",temp)
                   for (const key in temp) {
                       getDynamicFormDropDownData.push({
                           counter: counter++,
                           id: temp[key].id,
-                          dropdown_name: temp[key].dropdown_name,
+                          template_name: temp[key].template_name,
                           is_active: temp[key].is_active,
                           updated_at: temp[key].updated_at,
                           updated_by: temp[key].updated_by,
+                          created_at: temp[key].created_at,
+                          created_by: temp[key].created_by,
                       })
   
                   }

@@ -1316,7 +1316,7 @@ import DatePicker from "react-date-picker";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { getAllDropDownData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+import { dynamicFormData, getAllDropDownData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 
 
 function EditDynamicForm({ match }) {
@@ -1616,6 +1616,7 @@ function EditDynamicForm({ match }) {
     //       }
     //     }
     //   });
+    dispatch(dynamicFormData())
 
     await new DynamicFormService()
       .getDynamicFormById(formId)
