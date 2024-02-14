@@ -1612,9 +1612,7 @@ function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
-  const roleDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.getAllRoles
-  );
+  const roleDropdown = useSelector( (DashbordSlice) => DashbordSlice.dashboard.getAllRoles);
   const departmentDropdown = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
 
   const [filteredRoles, setFilteredRoles] = useState([]);
