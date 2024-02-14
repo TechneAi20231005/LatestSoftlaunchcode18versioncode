@@ -241,9 +241,9 @@ function QueryTypeComponent() {
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.query_type_name && row.query_type_name.length < 10
-                    ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + "...."}
+                  {row?.query_type_name && row?.query_type_name?.length < 10
+                    ? row?.query_type_name
+                    : row?.query_type_name.substring(0, 10) + "...."}
                 </span>
               </div>
             </OverlayTrigger>
@@ -286,14 +286,14 @@ function QueryTypeComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.query_group_name && (
+          {row?.query_group_name && (
             <OverlayTrigger
-              overlay={<Tooltip>{row.query_group_name} </Tooltip>}
+              overlay={<Tooltip>{row?.query_group_name} </Tooltip>}
             >
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.query_group_name && row.query_group_name.length < 10
+                  {row?.query_group_name && row.query_group_name?.length < 10
                     ? row.query_group_name
                     : row.query_group_name.substring(0, 10) + "...."}
                 </span>
@@ -884,13 +884,13 @@ function QueryTypeComponent() {
   // },[formId])
 
   useEffect(() => {
-    if (!queryTypedata.length) {
+    if (!queryTypedata?.length) {
       dispatch(queryType());
     }
-    if (!dynamicFormDropdown.length) {
+    if (!dynamicFormDropdown?.length) {
       dispatch(getDynamiucFormData());
     }
-    if (!customerDropdown.length) {
+    if (!customerDropdown?.length) {
       dispatch(getCustomerData());
     }
     if (!checkRole?.length) {
