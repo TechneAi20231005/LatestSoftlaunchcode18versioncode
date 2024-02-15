@@ -69,6 +69,64 @@ export default function EditTenant({ match }) {
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
+
+  const [inputState, setInputState] = useState({
+ 
+  });
+
+  const [contactValid, setContactValid] = useState(false);
+
+  const [contactNumber, setContactNumber] = useState(null);
+  const handleContactValidation = (e) => {
+    const contactValidation = e.target.value;
+    console.log(contactValidation);
+
+    if (contactValidation.length === 0) {
+      setInputState({
+        ...state,
+        contactNoErr: "",
+      });
+      return;
+    }
+    if (
+      contactValidation.charAt(0) == "9" ||
+      contactValidation.charAt(0) == "8" ||
+      contactValidation.charAt(0) == "7" ||
+      contactValidation.charAt(0) == "6"
+    ) {
+      setInputState({ ...state, contactNoErr: "" });
+      setContactValid(false);
+    } else {
+      setContactValid(true);
+    }
+
+    if (contactValidation.includes("000000000")) {
+      setInputState({
+        ...state,
+        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 10) {
+      if (contactValidation.length === 0) {
+        setInputState({
+          ...state,
+          contactNoErr: "please enter Mobile Number",
+        });
+        setContactValid(true);
+      }
+      setInputState({
+        ...state,
+        contactNoErr: "Invalid Mobile Number",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 11) {
+      setContactNumber(contactValidation);
+    }
+  };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
       // setStateDropdown(
@@ -289,11 +347,22 @@ export default function EditTenant({ match }) {
                   required
                   minLength={10}
                   maxLength={10}
+                onChange={handleContactValidation}
+
                   defaultValue={data && data.contact_no}
                   onKeyPress={(e) => {
-                    Validation.NumbersOnly(e);
+                    Validation.MobileNumbersOnly(e);
                   }}
                 />
+                                          {inputState && (
+                      <small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {inputState.contactNoErr}
+                      </small>
+                    )}
               </div>
             </div>
           </div>
@@ -364,9 +433,9 @@ export default function EditTenant({ match }) {
                   <b>State : </b>
                 </label>
                 <div className="col-sm-4">
-                  {stateDropdown && data && (
+                  {stateDropdownData && data && (
                     <Select
-                      options={stateDropdown}
+                      options={stateDropdownData}
                       id="state_id"
                       name="state_id"
                       defaultValue={

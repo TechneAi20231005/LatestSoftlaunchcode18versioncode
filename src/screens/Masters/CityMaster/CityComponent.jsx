@@ -922,9 +922,7 @@ function CityComponent() {
   // };
 
   const [searchTerm, setSearchTerm] = useState('');
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+ 
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
     console.log("fff",filteredData);
@@ -1426,7 +1424,9 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">

@@ -38,8 +38,8 @@ function DynamicFormComponent( ) {
     const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
 
     const  data = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData)
-const  exportData = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData)
-console.log("data",data)
+const  exportData = useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData)
+console.log("data..",exportData)
 
    
     function SearchInputData(data, search) {
@@ -62,11 +62,23 @@ console.log("data",data)
     
     
     
-      const handleSearch = () => {
-        const SearchValue = searchRef.current.value;
-        const result = SearchInputData(data, SearchValue);
-        // setData(result);
-      };
+    //   const handleSearch = () => {
+    //     const SearchValue = searchRef.current.value;
+    //     const result = SearchInputData(data, SearchValue);
+    //     // setData(result);
+    //   };
+
+    const [searchTerm, setSearchTerm] = useState('');
+    // const handleSearch = (e) => {
+    //   setSearchTerm(e.target.value);
+    // };
+    const [filteredData, setFilteredData] = useState([]);
+    
+    const handleSearch = (value) => {
+      console.log("fff",filteredData);
+    };
+    
+  
     
 
     const columns = [
@@ -182,6 +194,9 @@ console.log("data",data)
           if(!data.length){
             dispatch(dynamicFormData())
           }
+          if(!exportData.length){
+            dispatch(dynamicFormData())
+          }
     },[])
 
     useEffect(() => {
@@ -216,14 +231,18 @@ console.log("data",data)
                             className="form-control"
                             placeholder="Search by Form Name...."
                             ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
+
                         />
                     </div>
                     <div className="col-md-3">
                         <button
                             className="btn btn-sm btn-warning text-white"
                             type="button"
-                            onClick={handleSearch}
+                            // onClick={handleSearch}
                             style={{ marginTop: '0px', fontWeight: '600' }}
+                            value={searchTerm} 
+                            onClick={() => handleSearch(searchTerm)}
                         >
                             <i className="icofont-search-1 "></i> Search
                         </button>
@@ -251,7 +270,19 @@ console.log("data",data)
                         <div className="col-sm-12">
                             {data && <DataTable
                                 columns={columns}
-                                data={data}
+                                // data={data}
+                                data={data.filter(customer => {
+                                    if (typeof searchTerm === 'string') {
+                                      if (typeof customer === 'string') {
+                                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                                      } else if (typeof customer === 'object') {
+                                        return Object.values(customer).some(value =>
+                                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                                        );
+                                      }
+                                    }
+                                    return false;
+                                  })}
                                 defaultSortField="title"
                                 pagination
                                 selectableRows={false}

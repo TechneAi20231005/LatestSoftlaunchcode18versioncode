@@ -4,6 +4,7 @@ import { postData } from "../../../services/loginService";
 export const postLoginUser = createAsyncThunk("postLoginUser", async (config, thunkapi) => {
     try {
         const res = await postData(config);
+        console.log("rt",res)
         if (res?.status === 200 && res?.data?.status === 1) {
             const data = res?.data?.data;
             const token = res?.data?.token;
@@ -18,7 +19,7 @@ export const postLoginUser = createAsyncThunk("postLoginUser", async (config, th
             return res.data
         
         } else {
-            return res.message;
+            return res.data.message;
         }
     } catch (error) {
         console.log("rejected 1", error)

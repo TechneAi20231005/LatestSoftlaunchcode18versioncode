@@ -87,6 +87,8 @@ function TenantComponent() {
       name: "Status",
       //   selector: (row) => row.is_active,
       sortable: false,
+      width: "100px",
+
       cell: (row) => (
         <div>
           {row.is_active == 1 && (
@@ -98,10 +100,22 @@ function TenantComponent() {
         </div>
       ),
     },
+    // {
+    //   name: "Created At",
+    //   selector: (row) => row.created_at,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Created By",
+    //   selector: (row) => row.created_by_name,
+    //   sortable: true,
+    // },
     {
       name: "Updated At",
       selector: (row) => row.updated_at,
       sortable: true,
+      // width: "100px",
+
     },
     {
       name: "Updated By",

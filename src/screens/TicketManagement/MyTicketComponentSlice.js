@@ -56,11 +56,12 @@ export const MyTicketComponentSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getUserTicketTestData = payload.data.data;
+        console.log("da,,,",getUserTicketTestData)
         state.status = "succeded";
-        let current_page = 0
-        let alluserTickettest=[getUserTicketTestData,current_page=payload.data.data.current_page]
+        // let current_page = 0
+        // let alluserTickettest=[getUserTicketTestData,current_page=payload.data.data.current_page]
         state.getUserTicketTestData = getUserTicketTestData;
-        state.alluserTickettest=alluserTickettest
+        // state.alluserTickettest=alluserTickettest
       }
     });
     builder.addCase(getUserTicketsTest.rejected, (state) => {

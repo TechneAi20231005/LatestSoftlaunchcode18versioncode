@@ -1656,7 +1656,7 @@ function CreateUserComponent({ match }) {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
   const stateDropdown = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.stateData
+    (DashbordSlice) => DashbordSlice.dashboard.stateData
   );
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
@@ -1776,13 +1776,13 @@ function CreateUserComponent({ match }) {
     } else if (selectContactNo.length < 10) {
       setInputState({
         ...state,
-        contactNoErr: "contact length should be equal to 10",
+        contactNoErr: "contact number length should be 10 digit",
       });
       flag = 1;
     } else if (selectContactNo.length > 10) {
       setInputState({
         ...state,
-        contactNoErr: "contact length should be equal to 10",
+        contactNoErr: "contact number length should be 10 digit",
       });
       flag = 1;
     } else if (contactValid == true) {

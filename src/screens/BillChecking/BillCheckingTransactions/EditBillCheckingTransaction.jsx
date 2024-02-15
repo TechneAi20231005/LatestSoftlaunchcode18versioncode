@@ -440,19 +440,19 @@ const {id}=useParams()
       }
     }
 
-    if (document.getElementById('is_igst_applicable').checked) {
+    if (document.getElementById('is_igst_applicable').getAttribute("defaultChecked")) {
       form.append("is_igst_applicable", 1)
     } else {
       form.append("is_igst_applicable", 0)
     }
-    if (document.getElementById('is_tds_applicable').checked) {
+    if (document.getElementById('is_tds_applicable').getAttribute("defaultChecked")) {
 
       form.append("is_tds_applicable", 1)
     } else {
       form.append("is_tds_applicable", 0)
     }
 
-    if (document.getElementById('is_tcs_applicable').checked) {
+    if (document.getElementById('is_tcs_applicable').getAttribute("defaultChecked")) {
 
       form.append("is_tcs_applicable", 1)
     } else {
@@ -1401,17 +1401,18 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         type="hidden"
 value={igst=== true ?1 :0} */}
                     {/* /> */}
+                    {console.log("checked",data.is_igst_applicable)}
                     <div className=" col ">
                       <input
                         className="sm"
                         id="is_igst_applicable"
-                        // name="is_igst_applicable"
+                        name="is_igst_applicable"
                         type="checkbox"
                         style={{ marginRight: "8px" }}
                         readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-
-                        defaultChecked={data.is_igst_applicable === 1}
-
+// data-read-only={true}
+                        defaultChecked={data.is_igst_applicable === 1 ? true :false}
+                        defaultValue={data.is_igst_applicable === 1 ? true :false}
                         onChange={(e) => {
                           handleIgst(e);
                         }}
@@ -1687,6 +1688,8 @@ readOnly={isTcsApplicable === true ? false : true}
                           data.is_tds_applicable == 1 ? true : false
                         }
                     disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                    defaultValue={ data.is_tds_applicable == 1 ? true : false}
+                      
                       />
                       <label className="col-form-label">
                         <b>TDS Applicable:</b>
@@ -1712,6 +1715,7 @@ readOnly={isTcsApplicable === true ? false : true}
                         defaultChecked={
                           data.is_tcs_applicable == 1 ? true : false
                         }
+                        defaultValue={data.is_tcs_applicable == 1 ? true : false}
                       />
                       <label className="col-form-label">
                         <b>TCS Applicable:</b>
@@ -1964,6 +1968,9 @@ required
                         name="is_original_bill_needed"
                         onChange={(e) => handleAuthorizedByManagement(e)}
                         defaultChecked={
+                          data.is_original_bill_needed == 1 ? true : false
+                        }
+                        defaultValue={
                           data.is_original_bill_needed == 1 ? true : false
                         }
                         disabled={

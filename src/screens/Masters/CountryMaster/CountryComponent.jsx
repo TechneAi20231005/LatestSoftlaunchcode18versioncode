@@ -704,11 +704,22 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   }
 
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState('');
+ 
+  const [filteredData, setFilteredData] = useState([]);
+  const handleSearch = (value) => {
+    console.log("fff",filteredData);
   };
+  
+
+
+ 
   
   const columns = [
     {
@@ -1040,13 +1051,20 @@ dispatch(getRoles())
               placeholder="Search by Country Name...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
+
+              onChange={(e) => setSearchTerm(e.target.value)}
+
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              // onClick={handleSearch}
+              value={searchTerm} 
+              onClick={() => handleSearch(searchTerm)}
+
+
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -1056,6 +1074,7 @@ dispatch(getRoles())
               type="button"
               onClick={() => window.location.reload(false)}
               style={{ marginTop: "0px", fontWeight: "600" }}
+              
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -1074,7 +1093,19 @@ dispatch(getRoles())
               {countryData && (
                 <DataTable
                   columns={columns}
-                  data={countryData}
+                  // data={countryData}
+                  data={countryData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
+                        return Object.values(customer).some(value =>
+                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -1136,6 +1167,7 @@ dispatch(getRoles())
                     id="country"
                     name="country"
                     maxLength={25}
+                    minLength={4}
                     required
                     defaultValue={
                       modal.modalData ? modal.modalData.country : ""

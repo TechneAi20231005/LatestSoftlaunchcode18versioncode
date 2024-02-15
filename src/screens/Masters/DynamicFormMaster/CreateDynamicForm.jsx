@@ -19,7 +19,7 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import DynamicFormDropDownSlice from '../DynamicFormDropdown/Slices/DynamicFormDropDownSlice';
-import { getAllDropDownData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
+import { dynamicFormData, getAllDropDownData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
 
 
 function CreateDynamicForm() {
@@ -288,14 +288,28 @@ const dispatch = useDispatch()
         }
     };
 
-    const handleRemoveSpecificRow = (idx) => () => {
-        if (idx > 0) {
-            setRows(
-                rows.filter((_, i) => i !== idx)
-            );
-        }
-    }
+    // const handleRemoveSpecificRow = (idx) => () => {
+    //     if (idx > 0) {
+    //         setRows(
+    //             rows.filter((_, i) => i !== idx)
+    //         );
+    //     }
+    // }
 
+    const handleRemoveSpecificRow = (idx) => {
+        // Filter out the row with the given index
+        const updatedRows = rows.filter((row, index) => index !== idx);
+        // Update state with the filtered rows
+        setRows(updatedRows);
+    };
+    // const handleRemoveSpecificRow = (id) => {
+    //     // Filter out the row with the given id
+    //     const updatedRows = rows.filter((row) => row.id !== id);
+    //     // Update state with the filtered rows
+    //     setRows(updatedRows);
+    // };
+    
+    
     const handldeFormShow = () => {
         setFormShow(
             formShow == true ? false : true
@@ -317,8 +331,14 @@ const dispatch = useDispatch()
                     history({
                         pathname: `/${_base}/DynamicForm`,
                        
-                    },{ state: { alert: { type: "success", message: res.data.message } }}
+                    },{ state: { alert: { type: "success", message: res.data.message } }
+                
+                }
+
                     );
+            dispatch(dynamicFormData())
+
+                    // window.location.reload(true)
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
                 }
@@ -446,6 +466,7 @@ const dispatch = useDispatch()
                                                     {rows && rows.map((item, idx) => (
 
                                                         <tr id={`addr_${idx}`} key={idx}>
+                                                        {/* // <tr id={`addr_${item.id}`} key={item.id}> */}
                                                             <td>{idx + 1}</td>
                                                             <td>
                                                                 <select 
@@ -572,7 +593,7 @@ const dispatch = useDispatch()
 
                                                             </td>
 
-                                                            <td>
+                                                            {/* <td>
                                                                 {idx == 0 &&
                                                                     <button type="button" className="btn btn-sm btn-outline-primary pull-left"
                                                                         onClick={handleAddRow}><i className="icofont-plus-circle"></i></button>
@@ -583,6 +604,29 @@ const dispatch = useDispatch()
                                                                         <i className="icofont-ui-delete"></i>
                                                                     </button>
                                                                 }
+                                                            </td> */}
+
+                                                             <td>
+                                                                {idx == 0 &&
+                                                                    <button type="button" className="btn btn-sm btn-outline-primary pull-left"
+                                                                        onClick={handleAddRow}><i className="icofont-plus-circle"></i></button>
+                                                                }
+                                                                {/* {rows.length == idx + 1 && idx != 0 &&
+                                                                    <button type="button" className="btn btn-outline-danger btn-sm"
+                                                                        onClick={handleRemoveSpecificRow(idx)} >
+                                                                        <i className="icofont-ui-delete"></i>
+                                                                    </button>
+                                                                } */}
+                                                                 {/* {idx !== 0 && (
+                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
+                    <i className="icofont-ui-delete"></i>
+                </button>
+            )} */}
+
+{idx !== 1 && (
+                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
+                    <i className="icofont-ui-delete"></i>
+                </button>)}
                                                             </td>
                                                         </tr>
                                                     ))}

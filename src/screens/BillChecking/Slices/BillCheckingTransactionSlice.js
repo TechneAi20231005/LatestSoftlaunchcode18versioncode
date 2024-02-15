@@ -294,7 +294,7 @@ export const BillCheckingTransactionSlice = createSlice({
           state.showLoaderModal = false;
 
           state.updateBillCheckingTransactionData = [
-            ...updateBillCheckingTransactionData,
+            updateBillCheckingTransactionData,
           ];
           state.notify = null;
           state.notify = { type: "success", message: payload.data.message };
