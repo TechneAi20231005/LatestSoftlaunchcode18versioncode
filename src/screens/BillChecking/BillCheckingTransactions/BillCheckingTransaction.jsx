@@ -135,6 +135,7 @@ function BillCheckingTransaction() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+              {console.log("rows",row)}
               {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
@@ -146,6 +147,7 @@ function BillCheckingTransaction() {
                   (row.level != parseInt(row.total_level) &&
                     row.is_approver == 1)) && (
                   <li>
+
                     <Link
                       to={`/${_base}/EditBillCheckingTransaction/` + row.id}
                       className="btn btn-sm btn-primary text-white"

@@ -27,7 +27,7 @@ import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 import { UseDispatch,useDispatch,useSelector } from "react-redux"
-import TicketSlices from "./Slices/TicketSlices";
+import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 import { getAllQueryGroupData, getCustomerMappingsetting, getDepartmentMappingByEmployeeIdData, getParentData, postCreateticket, queryTypesData } from "./Slices/TicketAction";
 import { getRoles } from "../Dashboard/DashboardAction";
 export default function CreateTicketComponent() {
@@ -650,6 +650,17 @@ console.log("customer",customerMapping)
       getRoles()
     }
   }, []);
+
+
+  useEffect(() => {
+    if (notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 1500); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [notify, dispatch]);
+
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {

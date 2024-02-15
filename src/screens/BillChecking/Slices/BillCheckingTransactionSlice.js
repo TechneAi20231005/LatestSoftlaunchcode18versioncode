@@ -117,7 +117,7 @@ export const BillCheckingTransactionSlice = createSlice({
             "Assign To": getAllbillCheckingData[key].assign_to_name,
             is_assign_to: getAllbillCheckingData[key].is_assign_to,
             level: getAllbillCheckingData[key].level,
-            total_level: getAllbillCheckingData[key].level,
+            total_level: getAllbillCheckingData[key].total_level,
             last_approved_by: getAllbillCheckingData[key].last_approved_by,
             approvedBy: getAllbillCheckingData[key].approvedBy,
             "Pending From": getAllbillCheckingData[key].level_approver,

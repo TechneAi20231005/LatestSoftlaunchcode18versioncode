@@ -3711,6 +3711,8 @@ import "./custome.css";
 import { Spinner } from "react-bootstrap";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
+import { useSelector,useDispatch } from "react-redux";
+import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 
 export default function MyTicketComponent() {
   const location = useLocation();
@@ -3754,6 +3756,7 @@ export default function MyTicketComponent() {
   const [userDepartment, setUserDepartment] = useState();
 
   const [exportData, setExportData] = useState(null);
+  const dispatch=useDispatch()
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3776,6 +3779,11 @@ export default function MyTicketComponent() {
     modalsData: "",
     modalsHeader: "",
   });
+
+
+  const Notify = useSelector(TicketSlices=>TicketSlices.ticket.notify)
+
+
 
   const [show, setShow] = useState(false);
 
@@ -6134,12 +6142,20 @@ export default function MyTicketComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    if (notify) {
+      const timer = setTimeout(() => {
+        dispatch(hideNotification());
+      }, 1500); // Adjust the timeout duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [notify, dispatch]);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
       {/* <LoadingSpinner/> */}
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
       {/* {userData && JSON.stringify(userData)} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
