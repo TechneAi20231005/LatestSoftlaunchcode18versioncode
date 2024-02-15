@@ -1310,9 +1310,9 @@ dispatch(getRoles())
 
 function CountryDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new CountryService().getCountry().then((res) => {
+     new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -1334,28 +1334,28 @@ function CountryDropdown(props) {
       {data && (
         <select
           className="form-control form-control-sm"
-          id={props.id}
-          name={props.name}
-          onChange={props.getChangeValue}
-          required={props.required ? true : false}
+          id={props?.id}
+          name={props?.name}
+          onChange={props?.getChangeValue}
+          required={props?.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props?.defaultValue == 0 && (
             <option value={0} selected>
               Select Country
             </option>
           )}
-          {props.defaultValue != 0 && <option value={0}>Select Country</option>}
+          {props?.defaultValue != 0 && <option value={0}>Select Country</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props?.defaultValue && props?.defaultValue == item.id) {
               return (
-                <option key={i} value={item.id} selected>
-                  {item.country}
+                <option key={i} value={item?.id} selected>
+                  {item?.country}
                 </option>
               );
             } else {
               return (
-                <option key={i} value={item.id}>
-                  {item.country}
+                <option key={i} value={item?.id}>
+                  {item?.country}
                 </option>
               );
             }

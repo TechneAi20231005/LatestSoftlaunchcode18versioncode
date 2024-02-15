@@ -448,7 +448,7 @@ function CreateUserComponentCopy({ match }) {
                                                 <StateDropdown
                                                     id="state_id"
                                                     name="state_id"
-                                                    countryId={dependent.country_id}
+                                                    countryId={dependent?.country_id}
                                                     onChange={handleDependent}
                                                 />
                                             </div>
@@ -461,8 +461,8 @@ function CreateUserComponentCopy({ match }) {
                                                 <CityDropdown
                                                     id="city_id"
                                                     name="city_id"
-                                                    countryId={dependent.country_id}
-                                                    stateId={dependent.state_id}
+                                                    countryId={dependent?.country_id}
+                                                    stateId={dependent?.state_id}
                                                 />
                                             </div>
                                         </div>

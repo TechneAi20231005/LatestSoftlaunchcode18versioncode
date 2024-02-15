@@ -56,14 +56,14 @@ export const desegnationSlice = createSlice({
         let exportDesignation = [];
         for (const i in getDesignationData) {
           exportDesignation.push({
-            Sr: getDesignationData[i].counter,
-            Role: getDesignationData[i].role,
-            Status: getDesignationData[i].is_active ? "Active" : "Deactive",
-            Remark: getDesignationData[i].remark,
-            created_at: getDesignationData[i].created_at,
-            created_by: getDesignationData[i].created_by,
-            updated_at: getDesignationData[i].updated_at,
-            updated_by: getDesignationData[i].updated_by,
+                    Sr: getDesignationData[i].counter,
+              Designation: getDesignationData[i].designation,
+              Status: getDesignationData[i].is_active ? "Active" : "Deactive",
+              Remark: getDesignationData[i].remark,
+              created_at: getDesignationData[i].created_at,
+              created_by: getDesignationData[i].created_by,
+              updated_at: getDesignationData[i].updated_at,
+              updated_by: getDesignationData[i].updated_by,
           });
         }
 
