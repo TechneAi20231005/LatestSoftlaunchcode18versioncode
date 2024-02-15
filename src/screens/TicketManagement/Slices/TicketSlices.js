@@ -27,6 +27,9 @@ export const createTicketSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
+    hideNotification(state) {
+      state.notify = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getCustomerMappingsetting.pending, (state) => {
@@ -143,7 +146,7 @@ export const createTicketSlice = createSlice({
         if (payload?.status === 200 && payload?.data?.status === 1) {
         
           state.status = "succeded";
-          state.notify = null;
+          // state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
       } else {
         // let notify = { type: "danger", message: payload.data.message };
@@ -182,5 +185,10 @@ export const createTicketSlice = createSlice({
 
   },
 });
+
+export const {
+ 
+  hideNotification,
+} = createTicketSlice.actions;
 
 export default createTicketSlice.reducer;
