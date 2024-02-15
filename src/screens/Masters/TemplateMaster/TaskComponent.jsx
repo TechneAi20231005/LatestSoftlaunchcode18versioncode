@@ -6,6 +6,7 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Select from "react-select";
+import { Astrick } from "../../../components/Utilities/Style";
 export default function TaskComponent(props) {
   const [data, setData] = useState({ task: props.taskData.task_name });
   const [notify, setNotify] = useState(null);
@@ -46,39 +47,32 @@ export default function TaskComponent(props) {
     if (type === "select2") {
       // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
-  
-  
+
       // Assuming the name is 'task_type_id', you can adjust it as needed
       const name = "task_type_id";
-  
-      
-      const updatedData = { ...data, [name]: selectedValue};
+
+      const updatedData = { ...data, [name]: selectedValue };
       setData(updatedData);
-    } else if( type === "select3"){
+    } else if (type === "select3") {
       const name = "parent_id";
-      
-      const selectedValue = e.value
-      const updatedData = { ...data, [name]: selectedValue};
-      setData(updatedData)
-    }else {
+
+      const selectedValue = e.value;
+      const updatedData = { ...data, [name]: selectedValue };
+      setData(updatedData);
+    } else {
       // Handle standard input elements
       const { name, value } = e.target;
-  
-  
+
       const updatedData = { ...data, [name]: value };
       setData(updatedData);
     }
   };
-  
-  
-  
+
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
-const [parent, setParent] = useState();
+  const [parent, setParent] = useState();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(async () => {
-
-    await new TaskTicketTypeService().getParent().then((res) => {
+  useEffect(() => {
+    new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           if (res.status === 200) {
@@ -95,38 +89,34 @@ const [parent, setParent] = useState();
       }
     });
 
-
-
-    await new TaskTicketTypeService().getAllType().then((res) => {
+    new TaskTicketTypeService().getAllType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-// setTaskTypeDropdown(
+          // setTaskTypeDropdown(
           //   temp
           //     .filter((d) => d.type === "TICKET" && d.is_active == 1)
           //     .map((d) => ({ value: d.id, label: d.type_name }))
           // );
           setTaskTypeDropdown(
             temp
-              .filter((d) =>  d.is_active == 1)
+              .filter((d) => d.is_active == 1)
               .map((d) => ({ value: d.id, label: d.type_name }))
           );
         }
       }
     });
-
-
-
   }, []);
-
-
 
   const handleSubmit = (e) => {
     setNotify(null);
     e.preventDefault();
+
+    
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
       .then((res) => {
+        console.log("res",res);
         if (res.status === 200) {
           if (res.data.status == 1) {
             props.refreshData(id);
@@ -222,58 +212,54 @@ const [parent, setParent] = useState();
                     {show && (
                       <div className="">
                         <label>Task Name</label>
+                        <Astrick color="red" size="13px" />
+
+          
                         <input
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
                           name="task"
-                          onInput={e=>handleChange(e, "standard")}
+                          required
+                          onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
 
-<label>
-                          <b>
-                            Parent Task Type :
-                          </b>
+                        {/* <label>
+                          <b>Parent Task Type :</b>
                         </label>
                         <Select
                           id="parent_id"
                           name="parent_id"
-                          onChange={e=>handleChange(e,"select3")}
+                          onChange={(e) => handleChange(e, "select3")}
                           className="col-7 form-control form-control-sm"
                           options={parent && parent}
                           defaultValue={
                             parent &&
                             parent.filter(
-                              (d) =>
-                                d.value == props.taskData.parent_id
+                              (d) => d.value == props.taskData.parent_id
                             )
                           }
-                        />
+                        /> */}
                         <label>
-                          <b>
-                            Task Type :
-                          </b>
+                          <b>Task Type :</b>
                         </label>
                         <Select
                           id="task_type_id"
                           name="task_type_id"
-                          onChange={e=>handleChange(e,"select2")}
+                          onChange={(e) => handleChange(e, "select2")}
                           className="col-7 form-control form-control-sm"
                           options={taskTypeDropdown && taskTypeDropdown}
                           defaultValue={
                             taskTypeDropdown &&
                             taskTypeDropdown.filter(
-                              (d) =>
-                                d.value == props.taskData.task_type_id
+                              (d) => d.value == props.taskData.task_type_id
                             )
                           }
                         />
 
-
-
-
                         <br />
                         <label>Days Required</label>
+                        <Astrick color="red" size="13px" />
                         <input
                           type="number"
                           min="1"
@@ -281,9 +267,11 @@ const [parent, setParent] = useState();
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.task_days}
                           name="days"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
                         <br />
                         <label>Hours Required</label>
+                        <Astrick color="red" size="13px" />
                         <input
                           className="form-control form-control-sm"
                           defaultValue={
@@ -292,7 +280,8 @@ const [parent, setParent] = useState();
                               : "00.00"
                           }
                           name="total_time"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
                         <br />
                         <label>
                           Start task{" "}
@@ -301,6 +290,7 @@ const [parent, setParent] = useState();
                             : "before"}{" "}
                           days :
                         </label>
+                        <Astrick color="red" size="13px" />
                         <input
                           type="number"
                           min="1"
@@ -308,7 +298,8 @@ const [parent, setParent] = useState();
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.start_days}
                           name="start_days"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
                       </div>
                     )}
                   </div>

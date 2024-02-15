@@ -690,8 +690,8 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
-                                {editTaskModal.modalData &&
-                                  JSON.stringify(editTaskModal.modalData)}
+                                {/* {editTaskModal.modalData &&
+                                  JSON.stringify(editTaskModal.modalData)} */}
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">

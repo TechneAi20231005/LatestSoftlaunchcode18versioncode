@@ -130,6 +130,7 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
+  console.log(CountryDropdown);
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
   const [payment, setPayment] = useState();
@@ -375,7 +376,7 @@ function VendorMaster({ match }) {
     // });
 
     await new VendorMasterService().getVendorMasterById().then((res) => {
-      console.log("restau",res)
+      console.log("restau", res);
       if (res.status === 200) {
         if (res?.data?.status == 1) {
           setData(res.data.data);
@@ -1585,7 +1586,7 @@ function VendorMaster({ match }) {
                     <label className="form-label font-weight-bold">
                       Country :<Astrick color="red" size="13px" />
                     </label>
-                    {CountryDropdown && data ? (
+                    {CountryDropdown && (
                       <Select
                         id="country"
                         name="country"
@@ -1604,8 +1605,8 @@ function VendorMaster({ match }) {
                         }
                         required={true}
                       />
-                    ) : (
-                      <p>...Loading</p>
+                      // ) : (
+                      //   <p>...Loading</p>
                     )}
                   </div>
 
