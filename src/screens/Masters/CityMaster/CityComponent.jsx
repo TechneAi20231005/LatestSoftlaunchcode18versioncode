@@ -922,9 +922,7 @@ function CityComponent() {
   // };
 
   const [searchTerm, setSearchTerm] = useState('');
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+ 
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
     console.log("fff",filteredData);

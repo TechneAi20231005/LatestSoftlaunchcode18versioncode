@@ -238,23 +238,26 @@ import { postData } from "../../services/loginService";
 import Alert from "../Common/Alert";
 import Dashboard from "../../screens/Dashboard/Dashboard";
 import { postLoginUser } from "./AuthSices/loginAction";
+import loginSlice from "./AuthSices/loginSlice";
 
 export default function SignIn() {
   const location = useLocation()
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const [notify, setNotify] = useState(null);
+  // const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
+  const notify = useSelector(loginSlice=>loginSlice.login.notify)
+console.log("n---",notify)
   const submitHandler = (e) => {
     e.preventDefault();
     if (isLoading) {
       return
     }
     setIsLoading(true)
-    setNotify(null);
+    // setNotify(null);
     const data = new FormData(e.target);
     dispatch(postLoginUser(data))
       .then((success) => {
@@ -263,13 +266,16 @@ export default function SignIn() {
           const token = localStorage.getItem("jwt_token")
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
-          setNotify({ type: "success", message: success.payload.status });
+          // setNotify({ type: "success", message: success.payload.status });
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
         } else {
           setIsLoading(false)
-          setNotify({ type: "danger", message: success.payload?.status });
+          // setNotify({ type: "danger", message: success.payload?.status });
+
         }
       });
+
+      console.log("n",notify)
     // postData(data).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status === 1) {
@@ -346,11 +352,12 @@ export default function SignIn() {
     if (
       sessionStorage.getItem("message_type") &&
       sessionStorage.getItem("message")
-    ) {
-      setNotify({
-        type: sessionStorage.getItem("message_type"),
-        message: sessionStorage.getItem("message"),
-      });
+    ) 
+    {
+      // setNotify({
+      //   type: sessionStorage.getItem("message_type"),
+      //   message: sessionStorage.getItem("message"),
+      // });
       sessionStorage.setItem("message_type", null);
       sessionStorage.setItem("message", null);
     }

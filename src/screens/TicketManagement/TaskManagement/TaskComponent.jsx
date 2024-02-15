@@ -127,7 +127,7 @@
 //   // const [isRegularised, setIsRegularised] = useState([]);
 //   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-//   const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
 //   const getBasketData = async () => {
 //     const tempAllTaskList = [];
@@ -1023,83 +1023,83 @@ console.log("mo",moduleSetting)
   // const [isRegularised, setIsRegularised] = useState([]);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // const getBasketData = async () => {
-  //   const tempAllTaskList = [];
-  //   const taskDataa = [];
-  //   const tasksDataa = [];
-  //   setIsLoading(true);
+  const getBasketData = async () => {
+    const tempAllTaskList = [];
+    const taskDataa = [];
+    const tasksDataa = [];
+    setIsLoading(true);
 
-  //   await new BasketService()
+    await new BasketService()
 
-  //     .getBasketTaskData(ticketId)
+      .getBasketTaskData(ticketId)
 
-  //     .then((res) => {
-  //       if (res.status === 200) {
-  //         setShowLoaderModal(false);
-  //         setIsLoading(false);
+      .then((res) => {
+        if (res.status === 200) {
+          setShowLoaderModal(false);
+          setIsLoading(false);
 
-  //         if (res.data.status === 1) {
-  //           setIsLoading(false);
+          if (res.data.status === 1) {
+            setIsLoading(false);
 
             
-  //           const temp = res.data.data;
-  //           sortingArr = res.data.basket_id_array;
-  //           setIsReviewer(res.data.is_reviewer);
-  //           console.log(res.data);
-  //           setOwnership(res.data.ownership);
-  //           setBasketIdArray(res.data.basket_id_array);
-  //           // setIsRegularised(res.data.is_regularized)
-  //           setData(null);
-  //           res.data.data.sort(sortFunc);
-  //           setData(res.data.data);
+            const temp = res.data.data;
+            sortingArr = res.data.basket_id_array;
+            setIsReviewer(res.data.is_reviewer);
+            console.log(res.data);
+            setOwnership(res.data.ownership);
+            setBasketIdArray(res.data.basket_id_array);
+            // setIsRegularised(res.data.is_regularized)
+            setData(null);
+            res.data.data.sort(sortFunc);
+            setData(res.data.data);
 
-  //           res.data.data.map((tasks, index) => {
-  //             tasks.taskData.forEach((d, i) => {
-  //               let taskOwnerNames = d.taskOwners
-  //                 .map((owner) => owner.taskOwnerName)
-  //                 .join(", ");
-  //               tasksDataa.push({
-  //                 ticket_id_name: d.ticket_id_name,
-  //                 Task_Names: d.task_name,
-  //                 Task_Hours: d.task_hours,
-  //                 Start_Date: d.start_date,
-  //                 End_Date: d.end_date,
-  //                 Status: d.status,
-  //                 Priority: d.priority,
-  //                 Total_Worked: d.total_worked,
-  //                 Basket_Name: tasks.basket_name,
-  //                 taskOwnerNames: taskOwnerNames,
-  //               });
-  //             });
-  //           });
+            res.data.data.map((tasks, index) => {
+              tasks.taskData.forEach((d, i) => {
+                let taskOwnerNames = d.taskOwners
+                  .map((owner) => owner.taskOwnerName)
+                  .join(", ");
+                tasksDataa.push({
+                  ticket_id_name: d.ticket_id_name,
+                  Task_Names: d.task_name,
+                  Task_Hours: d.task_hours,
+                  Start_Date: d.start_date,
+                  End_Date: d.end_date,
+                  Status: d.status,
+                  Priority: d.priority,
+                  Total_Worked: d.total_worked,
+                  Basket_Name: tasks.basket_name,
+                  taskOwnerNames: taskOwnerNames,
+                });
+              });
+            });
 
-  //           setTasksData(tasksDataa);
-  //           res.data.data.forEach((dataa) => {
-  //             dataa.taskData.forEach((task) => {
-  //               tempAllTaskList.push({ value: task.id, label: task.task_name });
-  //             });
-  //           });
-  //           setAllTaskList([]);
-  //           setAllTaskList(tempAllTaskList);
+            setTasksData(tasksDataa);
+            res.data.data.forEach((dataa) => {
+              dataa.taskData.forEach((task) => {
+                tempAllTaskList.push({ value: task.id, label: task.task_name });
+              });
+            });
+            setAllTaskList([]);
+            setAllTaskList(tempAllTaskList);
 
-  //           setIsLoading(false); // Loading finished
-  //         }
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       const { response } = error;
-  //       const { request, ...errorObject } = response;
-  //       new ErrorLogService().sendErrorLog(
-  //         "Task",
-  //         "Get_Basket_Data",
-  //         "INSERT",
-  //         errorObject.data.message
-  //       );
-  //       setIsLoading(false);
-  //     });
-  // };
+            setIsLoading(false); // Loading finished
+          }
+        }
+      })
+      .catch((error) => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        new ErrorLogService().sendErrorLog(
+          "Task",
+          "Get_Basket_Data",
+          "INSERT",
+          errorObject.data.message
+        );
+        setIsLoading(false);
+      });
+  };
 
   //Task Related
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -1283,7 +1283,7 @@ console.log("ticketId",ticketId)
 
     await new BasketService().pushForward(sendArray).then((res) => {
       // loadData();
-      // getBasketData();
+      getBasketData();
       // getTicketData();
       // handleRegularizationRequest();
     });
@@ -1335,7 +1335,7 @@ console.log("ticketId",ticketId)
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    // getBasketData();
+    getBasketData();
     loadData();
         if(!moduleSetting.length){
       dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))}
@@ -1385,9 +1385,10 @@ console.log("ticketId",ticketId)
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5>
+                {console.log("t",ticketData)}
                 <strong>
-                  {/* Ticket - {ticketData && ticketData.ticket_id} {' '} */}
-                  Ticket -{" "}
+                  Ticket - {ticketData && ticketData.ticket_id} {' '}
+                  {/* Ticket -{" "} */}
                   {tasksData &&
                     tasksData.length > 0 &&
                     tasksData[0].ticket_id_name}

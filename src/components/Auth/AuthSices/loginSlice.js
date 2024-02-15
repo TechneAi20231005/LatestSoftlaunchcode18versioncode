@@ -5,7 +5,8 @@ const initialState = {
     status: "",
     err: "",
     loginUserDetail: {},
-    data: []
+    data: [],
+    notify:[]
 }
 
 export const loginSlice = createSlice({
@@ -18,10 +19,18 @@ export const loginSlice = createSlice({
 
             builder.addCase(postLoginUser.pending, (state) => {
                 state.status = 'loading'
+                state.notify=null
             });
             builder.addCase(postLoginUser.fulfilled, (state, action) => {
+                const { payload } = action;
+                console.log("payload Role", payload);
+                if (payload?.status === 200 && payload?.data?.status === 1) {
                 state.status = 'succeded';
-                console.log("action", action)
+        state.notify = { type: "success", message: payload};
+                }
+        else {
+            state.notify = { type: "danger", message: payload };
+          }
 
             });
             builder.addCase(postLoginUser.rejected, (state) => {

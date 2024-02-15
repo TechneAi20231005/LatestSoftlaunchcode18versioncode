@@ -94,6 +94,64 @@ export default function CreateTenant({ match }) {
 
   console.log("c",cityDropdownData)
 
+  const [inputState, setInputState] = useState({
+ 
+  });
+
+  const [contactValid, setContactValid] = useState(false);
+
+  const [contactNumber, setContactNumber] = useState(null);
+  const handleContactValidation = (e) => {
+    const contactValidation = e.target.value;
+    console.log(contactValidation);
+
+    if (contactValidation.length === 0) {
+      setInputState({
+        ...state,
+        contactNoErr: "",
+      });
+      return;
+    }
+    if (
+      contactValidation.charAt(0) == "9" ||
+      contactValidation.charAt(0) == "8" ||
+      contactValidation.charAt(0) == "7" ||
+      contactValidation.charAt(0) == "6"
+    ) {
+      setInputState({ ...state, contactNoErr: "" });
+      setContactValid(false);
+    } else {
+      setContactValid(true);
+    }
+
+    if (contactValidation.includes("000000000")) {
+      setInputState({
+        ...state,
+        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 10) {
+      if (contactValidation.length === 0) {
+        setInputState({
+          ...state,
+          contactNoErr: "please enter Mobile Number",
+        });
+        setContactValid(true);
+      }
+      setInputState({
+        ...state,
+        contactNoErr: "Invalid Mobile Number",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 11) {
+      setContactNumber(contactValidation);
+    }
+  };
+
   const loadData = async () => {
     // await new CountryService().getCountry().then((res) => {
     //   if (res.status === 200) {
@@ -274,11 +332,23 @@ export default function CreateTenant({ match }) {
                 required
                 minLength={10}
                 maxLength={10}
+                onChange={handleContactValidation}
+
                 onKeyPress={(e) => {
-                  Validation.NumbersOnly(e);
+                  Validation.MobileNumbersOnly(e);
                 }}
               />
+                          {inputState && (
+                      <small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {inputState.contactNoErr}
+                      </small>
+                    )}
             </div>
+
           </div>
         </div>
 
@@ -374,7 +444,7 @@ export default function CreateTenant({ match }) {
 
           <div className="mt-3" style={{ textAlign: "right" }}>
             <button type="submit" className="btn btn-primary">
-              Update
+              Submit
             </button>
             <Link
               to={`/${_base}/TenantMaster`}

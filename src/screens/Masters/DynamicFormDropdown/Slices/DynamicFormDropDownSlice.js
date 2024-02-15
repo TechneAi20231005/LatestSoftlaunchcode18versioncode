@@ -61,10 +61,11 @@ export const DynamicFormDropDownSlice = createSlice({
         
         state.getDynamicFormData=getDynamicFormData
 let exportDynamicFormData=[]
+console.log("tem",temp)
         for (const i in temp) {
             exportDynamicFormData.push({
-                Sr: temp[i].counter,
-                form_Name: temp[i].template_name,
+                Sr: temp[i].counter++,
+                template_name: temp[i].template_name,
                 Status: temp[i].is_active ? 'Active' : 'Deactive',
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
@@ -107,18 +108,20 @@ let exportDynamicFormData=[]
                   }
           
           state.getDynamicFormDropDownData=getDynamicFormDropDownData
-  let exportDynamicFormDropDownData=[]
+  let getDynamicFormData=[]
           for (const i in temp) {
-              exportDynamicFormDropDownData.push({
-                Sr: counter++,
-                Query: temp[i].query_type_name,
-                Template: temp[i].template_name,
-                Department: temp[i].department_name,
-                Priority: temp[i].priority,
-                Approach: temp[i].approach,
+            getDynamicFormData.push({
+                
+                Sr: getDynamicFormDropDownData[i].counter,
+                                form_Name: temp[i].template_name,
+                                Status: temp[i].is_active ? 'Active' : 'Deactive',
+                                created_at: temp[i].created_at,
+                                created_by: temp[i].created_by,
+                                updated_at: temp[i].updated_at,
+                                updated_by: temp[i].updated_by,
               })
             }
-            state.exportDynamicFormDropDownData=exportDynamicFormDropDownData
+            state.getDynamicFormData=getDynamicFormData
       }
       });
       builder.addCase(dynamicFormData.rejected, (state) => {

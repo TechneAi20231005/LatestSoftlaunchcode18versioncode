@@ -5885,7 +5885,6 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
-
             setUnpassedTickets(res.data.data.data);
           }
         }
@@ -6932,6 +6931,8 @@ export default function MyTicketComponent() {
                           </div>
                         </div>
                       </div>
+
+                      {console.log("un",unpassedTickets)}
 
                       {unpassedTickets && (
                         <DataTable
