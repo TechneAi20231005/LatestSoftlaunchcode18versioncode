@@ -15,22 +15,45 @@ import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
 import { el } from "date-fns/locale";
-import { handleModalClose,handleModalOpe, handleModalOpen } from "./TaskAndTicketTypeMasterSlice"
-import { getParentDropdown, postTaskandTicket, taskAndTicketMaster, updateTaskAndTicketType } from "./TaskAndTicketTypeMasterAction";
+import {
+  handleModalClose,
+  handleModalOpe,
+  handleModalOpen,
+} from "./TaskAndTicketTypeMasterSlice";
+import {
+  getParentDropdown,
+  postTaskandTicket,
+  taskAndTicketMaster,
+  updateTaskAndTicketType,
+} from "./TaskAndTicketTypeMasterAction";
 import { useDispatch, useSelector } from "react-redux";
 
 import TaskAndTicketTypeMasterSlice from "./TaskAndTicketTypeMasterSlice";
 
 function TaskAndTicketTypeMaster(props) {
-  const dispatch=useDispatch()
-  const tasktype=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.taskAndTicketMaster)
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10));
-  const parentDropDown=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.getParentDropdown)
-  const modal=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.modal)
-  const notify=useSelector(TaskAndTicketTypeMasterSlice=>TaskAndTicketTypeMasterSlice.taskandticket.notify)
+  const dispatch = useDispatch();
+  const tasktype = useSelector(
+    (TaskAndTicketTypeMasterSlice) =>
+      TaskAndTicketTypeMasterSlice.taskandticket.taskAndTicketMaster
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  );
+  const parentDropDown = useSelector(
+    (TaskAndTicketTypeMasterSlice) =>
+      TaskAndTicketTypeMasterSlice.taskandticket.getParentDropdown
+  );
+  const modal = useSelector(
+    (TaskAndTicketTypeMasterSlice) =>
+      TaskAndTicketTypeMasterSlice.taskandticket.modal
+  );
+  const notify = useSelector(
+    (TaskAndTicketTypeMasterSlice) =>
+      TaskAndTicketTypeMasterSlice.taskandticket.notify
+  );
 
-  console.log("parentDropDown",parentDropDown);
-  console.log("tasktype",tasktype);
+  console.log("parentDropDown", parentDropDown);
+  console.log("tasktype", tasktype);
   const [selectedValue, setSelectedValue] = useState("");
   // const [notify, setNotify] = useState();
   const [data, setData] = useState();
@@ -54,9 +77,9 @@ function TaskAndTicketTypeMaster(props) {
     // Add more options as needed
   ];
   const loadData = async () => {
-    dispatch(taskAndTicketMaster())
-    dispatch(getParentDropdown())
-    
+    dispatch(taskAndTicketMaster());
+    dispatch(getParentDropdown());
+
     // const exportTempData = [];
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
@@ -137,12 +160,12 @@ function TaskAndTicketTypeMaster(props) {
             data-bs-target="#edit"
             onClick={(e) => {
               dispatch(
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-
-                modalHeader: "Edit Type",
-              }));
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Task/Ticket Type",
+                })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -166,10 +189,10 @@ function TaskAndTicketTypeMaster(props) {
       name: "Parent",
       width: "150px",
       cell: (row) => {
-        if (parent) {
+        if (parentDropDown) {
           const parent_name =
-            parent &&
-            parent
+            parentDropDown &&
+            parentDropDown
 
               ?.filter((d) => d.value == row.parent_id)
               .map((d) => ({ value: d.value, label: d.label }));
@@ -246,16 +269,26 @@ function TaskAndTicketTypeMaster(props) {
     });
   }
 
-  const handleSearch = () => {
-    const searchValue = searchRef.current.value;
-    const result = searchInData(data, searchValue);
-    setData(result);
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+
+  // const handleSearch = () => {
+  //   const searchValue = searchRef.current.value;
+  //   const result = searchInData(data, searchValue);
+  //   setData(result);
+  // };
+  // const handleKeyDown = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleSearch();
+  //   }
+  // };
   const handleButtonClick = (e) => {
     // setModal({ showModal: false });
   };
@@ -287,7 +320,10 @@ function TaskAndTicketTypeMaster(props) {
     // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postTaskandTicket(form))
+      dispatch(postTaskandTicket(form));
+      dispatch(taskAndTicketMaster());
+      dispatch(getParentDropdown());
+
       // await new TaskTicketTypeService().postType(form).then((res) => {
       //   if (res.status === 200) {
       //     if (res.data.status === 1) {
@@ -304,9 +340,10 @@ function TaskAndTicketTypeMaster(props) {
       //   }
       // });
     } else {
+      dispatch(updateTaskAndTicketType({ id: id, payload: form }));
+      dispatch(taskAndTicketMaster());
+      dispatch(getParentDropdown());
 
-      dispatch(updateTaskAndTicketType({id:id,payload:form}))
-   
       // await new TaskTicketTypeService()._updateType(id, form).then((res) => {
       //   if (res.status === 200) {
       //     if (res.data.status == 1) {
@@ -322,7 +359,6 @@ function TaskAndTicketTypeMaster(props) {
       //   }
       // });
     }
-   
   };
 
   useEffect(() => {
@@ -346,11 +382,12 @@ function TaskAndTicketTypeMaster(props) {
                 className="btn btn-dark btn-set-task w-sm-100"
                 onClick={() => {
                   dispatch(
-                  handleModalOpen({
-                    showModal: true,
-                    modalData: "",
-                    modalHeader: "Add Task/Ticket Type",
-                  }));
+                    handleModalOpen({
+                      showModal: true,
+                      modalData: "",
+                      modalHeader: "Add Task/Ticket Type",
+                    })
+                  );
                   setSelectedValue("");
                 }}
               >
@@ -361,10 +398,10 @@ function TaskAndTicketTypeMaster(props) {
         }}
       />
 
-      <div>
+      {/* <div>
         <SearchComponent
           placeholder="Search ...."
-          handleKeyDown={handleKeyDown}
+          // handleKeyDown={handleKeyDown}
           ref={searchRef}
           className="btn btn-sm btn-warning text-white"
           style={{
@@ -376,11 +413,51 @@ function TaskAndTicketTypeMaster(props) {
           buttonName2="Reset"
           Searchicon="icofont-search-1 "
           className2="btn btn-sm btn-info text-white"
-          handleSearch={handleSearch}
+          onClick={() => handleSearch(searchTerm)}
+        
           className3="btn btn-sm btn-danger"
           fileName="Task and Ticket type file"
           apiData={exportData}
         />
+      </div> */}
+
+      <div className="card card-body">
+        <div className="row">
+          <div className="col-md-9">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by Templete Name...."
+              ref={searchRef}
+              // onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="col-md-3">
+            <button
+              className="btn btn-sm btn-warning text-white"
+              type="button"
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-search-1 "></i> Search
+            </button>
+            <button
+              className="btn btn-sm btn-info text-white"
+              type="button"
+              onClick={() => window.location.reload(false)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-refresh text-white"></i> Reset
+            </button>
+            <ExportToExcel
+              className="btn btn-sm btn-danger"
+              apiData={exportData}
+              fileName="Template master Records"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Modal For Add and Edit Data */}
@@ -395,7 +472,19 @@ function TaskAndTicketTypeMaster(props) {
         //   });
         // }}
       >
-        <Modal.Header closeButton>
+        <Modal.Header
+          closeButton
+          onClick={(e) => {
+            dispatch(
+              handleModalClose({
+                showModal: false,
+                // modalData: row,
+
+                modalHeader: "Edit Type",
+              })
+            );
+          }}
+        >
           <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -432,7 +521,7 @@ function TaskAndTicketTypeMaster(props) {
                         className="form-label font-weight-bold"
                         readOnly={true}
                       >
-                        Parent Task Type 
+                        Parent Task Type
                         <Astrick color="red" size="13px" />
                       </label>
                       <Select
@@ -442,12 +531,13 @@ function TaskAndTicketTypeMaster(props) {
                         required
                         defaultValue={
                           modal.modalData
-                            ? (modal.modalData &&
+                            ? modal.modalData &&
                               parentDropDown &&
                               parentDropDown.filter(
                                 (d) => d.value == modal.modalData.parent_id
                               )
-                            ):( parentDropDown && parentDropDown.filter((d) => d.value == 0))
+                            : parentDropDown &&
+                              parentDropDown.filter((d) => d.value == 0)
                         }
                       />
                     </div>
@@ -472,11 +562,12 @@ function TaskAndTicketTypeMaster(props) {
                           defaultValue={
                             modal.modalData
                               ? modal.modalData &&
-                              parentDropDown &&
-                              parentDropDown.filter(
+                                parentDropDown &&
+                                parentDropDown.filter(
                                   (d) => d.value == modal.modalData.parent_id
                                 )
-                              : parentDropDown && parentDropDown.filter((d) => d.value[0])
+                              : parentDropDown &&
+                                parentDropDown.filter((d) => d.value[0])
                           }
                         />
                       </div>
@@ -607,7 +698,71 @@ function TaskAndTicketTypeMaster(props) {
                 </>
               </div>
             </div>
+
             <Modal.Footer>
+              {!modal.modalData && (
+                <button
+                  type="submit"
+                  className="btn btn-primary text-white"
+                  style={{
+                    backgroundColor: "#484C7F",
+                    width: "80px",
+                    padding: "8px",
+                  }}
+                >
+                  Submit
+                </button>
+              )}
+
+              {modal.modalData && (
+                <button
+                  type="submit"
+                  className="btn btn-primary text-white"
+                  style={{
+                    backgroundColor: "#484C7F",
+                    width: "80px",
+                    padding: "8px",
+                  }}
+                >
+                  Update
+                </button>
+              )}
+
+              {/* {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+                <button
+                  type="submit"
+                  className="btn btn-primary text-white"
+                  style={{ backgroundColor: "#484C7F" }}
+                >
+                  Update
+                </button>
+              ) : (
+                ""
+              )} */}
+              <button
+                type="button"
+                className="btn btn-danger text-white"
+                // onClick={() => {
+                //   handleModal({
+                //     showModal: false,
+                //     modalData: "",
+                //     modalHeader: "",
+                //   });
+                // }}
+                onClick={() => {
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: "",
+                      modalHeader: "",
+                    })
+                  );
+                }}
+              >
+                Cancel
+              </button>
+            </Modal.Footer>
+            {/* <Modal.Footer>
               <ButtonComponent type="submit" text="Submit" />
               <ButtonComponent
                 type="button"
@@ -616,7 +771,7 @@ function TaskAndTicketTypeMaster(props) {
                 getClick={handleButtonClick}
                 text="Cancel"
               />
-            </Modal.Footer>
+            </Modal.Footer> */}
           </form>
         </Modal.Body>
       </Modal>
@@ -629,7 +784,24 @@ function TaskAndTicketTypeMaster(props) {
               {tasktype && (
                 <DataTable
                   columns={columns}
-                  data={tasktype}
+                  data={tasktype.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

@@ -106,10 +106,20 @@ function VendorMaster({ match }) {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
   const handleModal = (data) => {
@@ -130,6 +140,7 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
+  console.log(CountryDropdown);
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
   const [payment, setPayment] = useState();
@@ -375,7 +386,7 @@ function VendorMaster({ match }) {
     // });
 
     await new VendorMasterService().getVendorMasterById().then((res) => {
-      console.log("restau",res)
+      console.log("restau", res);
       if (res.status === 200) {
         if (res?.data?.status == 1) {
           setData(res.data.data);
@@ -1289,8 +1300,9 @@ function VendorMaster({ match }) {
                 type="text"
                 className="form-control"
                 placeholder="Search...."
-                onClick={(e) => handleSearch(e)}
-                onKeyDown={handleKeyDown}
+                // onClick={(e) => handleSearch(e)}
+                // onKeyDown={handleKeyDown}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 ref={searchRef}
               />
             </div>
@@ -1298,7 +1310,8 @@ function VendorMaster({ match }) {
               <button
                 className="btn btn-sm btn-warning text-white"
                 type="button"
-                onClick={handleSearch}
+                value={searchTerm}
+                onClick={() => handleSearch(searchTerm)}
               >
                 <i className="icofont-search-1 "></i> Search
               </button>
@@ -1322,7 +1335,25 @@ function VendorMaster({ match }) {
                   <DataTable
                     columns={columns}
                     // data={data}
-                    data={VendorData}
+                    // data={VendorData}
+                    data={VendorData.filter((customer) => {
+                      if (typeof searchTerm === "string") {
+                        if (typeof customer === "string") {
+                          return customer
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase());
+                        } else if (typeof customer === "object") {
+                          return Object.values(customer).some(
+                            (value) =>
+                              typeof value === "string" &&
+                              value
+                                .toLowerCase()
+                                .includes(searchTerm.toLowerCase())
+                          );
+                        }
+                      }
+                      return false;
+                    })}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination
@@ -1585,7 +1616,7 @@ function VendorMaster({ match }) {
                     <label className="form-label font-weight-bold">
                       Country :<Astrick color="red" size="13px" />
                     </label>
-                    {CountryDropdown && data ? (
+                    {CountryDropdown && (
                       <Select
                         id="country"
                         name="country"
@@ -1604,8 +1635,8 @@ function VendorMaster({ match }) {
                         }
                         required={true}
                       />
-                    ) : (
-                      <p>...Loading</p>
+                      // ) : (
+                      //   <p>...Loading</p>
                     )}
                   </div>
 

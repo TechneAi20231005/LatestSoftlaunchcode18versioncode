@@ -109,7 +109,7 @@ export const taskandticketTypeSlice = createSlice({
         state.status = "succeded";
         state.showLoaderModal = false;
        
-        state.postTaskandTicket = [...postTaskandTicket];
+        state.postTaskandTicket = postTaskandTicket
       }
     });
     builder.addCase(postTaskandTicket.rejected, (state) => {
@@ -136,7 +136,7 @@ export const taskandticketTypeSlice = createSlice({
         state.status = "succeded";
         state.showLoaderModal = false;
        
-        state.updateTaskAndTicketType = [...updateTaskAndTicketType];
+        state.updateTaskAndTicketType = updateTaskAndTicketType;
       }
     });
     builder.addCase(updateTaskAndTicketType.rejected, (state) => {

@@ -339,26 +339,56 @@ const CreateTemplateComponent = () => {
   };
 
   const handleEditTaskData = (e, basketIndex, idx, type, event) => {
+    let value;
     if (type === "select2") {
-      var value = event.value;
+      value = event.value;
     } else {
-      var value = e.target.value;
+      value = e.target.value;
     }
-    setRows((prevRows) => {
+    
+    setRows(prevRows => {
       const updatedTemplateData = [...prevRows.template_data];
+      const updatedBasketTask = [...updatedTemplateData[basketIndex].basket_task];
+      const updatedTask = { ...updatedBasketTask[idx] };
+      
       if (type === "select2") {
-        updatedTemplateData[basketIndex].basket_task[idx][e.name] = value;
+        updatedTask[e.name] = value;
       } else {
-        updatedTemplateData[basketIndex].basket_task[idx][e.target.name] =
-          value;
+        updatedTask[e.target.name] = value;
       }
-
+  
+      updatedBasketTask[idx] = updatedTask;
+      updatedTemplateData[basketIndex].basket_task = updatedBasketTask;
+  
       return {
         ...prevRows,
         template_data: updatedTemplateData,
       };
     });
   };
+  
+
+  // const handleEditTaskData = (e, basketIndex, idx, type, event) => {
+  //   if (type === "select2") {
+  //     var value = event.value;
+  //   } else {
+  //     var value = e.target.value;
+  //   }
+  //   setRows((prevRows) => {
+  //     const updatedTemplateData = [...prevRows.template_data];
+  //     if (type === "select2") {
+  //       updatedTemplateData[basketIndex].basket_task[idx][e.name] = value;
+  //     } else {
+  //       updatedTemplateData[basketIndex].basket_task[idx][e.target.name] =
+  //         value;
+  //     }
+
+  //     return {
+  //       ...prevRows,
+  //       template_data: updatedTemplateData,
+  //     };
+  //   });
+  // };
   useEffect(() => {
     if (!parent.length) {
       dispatch(getParentData());
@@ -660,8 +690,8 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
-                                {editTaskModal.modalData &&
-                                  JSON.stringify(editTaskModal.modalData)}
+                                {/* {editTaskModal.modalData &&
+                                  JSON.stringify(editTaskModal.modalData)} */}
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">

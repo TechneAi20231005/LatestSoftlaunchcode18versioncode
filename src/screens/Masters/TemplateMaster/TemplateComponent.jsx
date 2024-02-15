@@ -67,12 +67,23 @@ function TemplateComponent() {
 
 
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
 
+
+  const [searchTerm, setSearchTerm] = useState('');
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+  
+  const handleSearch = (value) => {
+    console.log("fff",filteredData);
+  };
+  
 
   const columns = [
     {
@@ -183,6 +194,8 @@ function TemplateComponent() {
     }
   };
 
+
+
   useEffect(() => {
     loadData();
 
@@ -223,14 +236,16 @@ function TemplateComponent() {
               className="form-control"
               placeholder="Search by Templete Name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm} 
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -258,7 +273,18 @@ function TemplateComponent() {
             <div className="col-sm-12">
               {templatedata && <DataTable
                 columns={columns}
-                data={templatedata}
+                data={templatedata.filter(customer => {
+                  if (typeof searchTerm === 'string') {
+                    if (typeof customer === 'string') {
+                      return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                    } else if (typeof customer === 'object') {
+                      return Object.values(customer).some(value =>
+                        typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                      );
+                    }
+                  }
+                  return false;
+                })}
                 defaultSortField="title"
                 pagination
                 selectableRows={false}
