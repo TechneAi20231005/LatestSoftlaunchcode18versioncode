@@ -484,20 +484,20 @@
 //       }
 //     });
 
-//     await new CustomerService().getCustomer().then((res) => {
-//       if (res.status == 200) {
-//         if (res.data.status == 1) {
-//           setCustomerDrp(
-//             res.data.data
-//               .filter((d) => d.is_active === 1)
-//               .map((d) => ({
-//                 value: d.id,
-//                 label: d.name,
-//               }))
-//           );
-//         }
-//       }
-//     });
+    // await new CustomerService().getCustomer().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       setCustomerDrp(
+    //         res.data.data
+    //           .filter((d) => d.is_active === 1)
+    //           .map((d) => ({
+    //             value: d.id,
+    //             label: d.name,
+    //           }))
+    //       );
+    //     }
+    //   }
+    // });
 
 //     await new ManageMenuService().getRole(roleId).then((res) => {
 //       if (res.status === 200) {
@@ -1635,6 +1635,8 @@ function CreateUserComponent({ match }) {
   // const [checkRole, setCheckRole] = useState(null);
 
   const dispatch = useDispatch();
+const navigate = useNavigate();
+
 
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
@@ -1655,9 +1657,9 @@ function CreateUserComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
-  const stateDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.stateData
-  );
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+
+  console.log("s",useSelector((DashbordSlice) => DashbordSlice.dashboard))
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
     {
@@ -1951,7 +1953,9 @@ function CreateUserComponent({ match }) {
       pincodeValid == false
     ) {
       if (flag === 1) {
-        dispatch(postUserData(form));
+        dispatch(postUserData(form)).then((res)=>{
+          if(res.payload.data.status===1 && res.payload.status === 200){
+            navigate(`/${_base}/User`)}})
         //  await new UserService()
         //     .postUser(form)
         //     .then((res) => {
@@ -2001,7 +2005,6 @@ function CreateUserComponent({ match }) {
   const loadData = async () => {
     setRows([mappingData]);
     dispatch(getCountryDataSort());
-    dispatch(getCityData());
 
     //  **************************Country load data**************************************
     // await new CountryService().getCountrySort().then((res) => {
@@ -2115,20 +2118,21 @@ function CreateUserComponent({ match }) {
     //   }
     // });
 
-    // await new CustomerService().getCustomer().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       setCustomerDrp(
-    //         res.data.data
-    //           .filter((d) => d.is_active === 1)
-    //           .map((d) => ({
-    //             value: d.id,
-    //             label: d.name,
-    //           }))
-    //       );
-    //     }
-    //   }
-    // });
+    await new CustomerService().getCustomer().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+
+          setCustomerDrp(
+            res.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.name,
+              }))
+          );
+        }
+      }
+    });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -2143,6 +2147,7 @@ function CreateUserComponent({ match }) {
 
 
   const handleDependentChange = (e, type) => {
+    console.log("e",e.value)
     if (type == "COUNTRY") {
       // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
       // setStateDropdown(
@@ -2151,7 +2156,8 @@ function CreateUserComponent({ match }) {
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
       setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+console.log("state",stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
     //  console.log("city11",AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
      
       // console.log("state dropdown" , stateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state }))))
@@ -2159,18 +2165,20 @@ function CreateUserComponent({ match }) {
       //   setUpdateStatus(newStatus);
       //   setStateName(null);
       //   setCityName(null);
-      // }
-      // if (type == "STATE") {
-      //   // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      //   setCityDropdown(
-      //     city
-      //       .filter((d) => d.state_id == e.value)
-      //       .map((d) => ({ value: d.id, label: d.city }))
-      //   );
-      //   const newStatus = { ...updateStatus, citydrp: 1 };
-      //   setUpdateStatus(newStatus);
-      //   setStateName(e);
-      // setCityName(null);
+      }
+      if (type == "STATE") {
+        // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
+      setCityDropdownData(AllcityDropDownData?.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
+        // setCityDropdown(
+        //   city
+        //     .filter((d) => d.state_id == e.value)
+        //     .map((d) => ({ value: d.id, label: d.city }))
+        // );
+        // const newStatus = { ...updateStatus, citydrp: 1 };
+        // setUpdateStatus(newStatus);
+        setStateName(e);
+      setCityName(null);
     }
   };
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
@@ -2353,6 +2361,8 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
   const [copyData, setCopyData] = useState(null);
   const whatsappRef = useRef(null);
   function copyTextValue(e) {
+    console.log("eee00",e)
+
     if (e.target.checked) {
       setIsReadOnly(true);
     } else {
@@ -2362,8 +2372,10 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
+    console.log("text",text1)
     // document.getElementById("whats_app_contact_no").value = text1;
   }
+
 
   useEffect(() => {
     whatsappRef.current.value = copyData;
@@ -2407,7 +2419,7 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     });
   }
   useEffect(() => {
-    // loadData();
+    loadData();
     if(!checkRole.length){
 
       dispatch(getRoles());
@@ -2416,15 +2428,25 @@ if(!designationDropdown.length){
   dispatch(getDesignationData());
 
 }
-if(!stateDropdown){
-  dispatch(getStateDataSort());
 
+if(!AllcityDropDownData.length){
+  dispatch(getCityData())
 }
 
-if(!stateDropdown){
+if(!cityDropdownData.length){
+  dispatch(getCityData())
+}
+
+if(!stateDropdown.length){
   dispatch(getStateData());
 
 }
+if(!stateDropdownData.length){
+  dispatch(getStateData())
+}
+
+
+
 // handleData()
 dispatch(getAllRoles())
 dispatch(departmentData())
@@ -2519,7 +2541,7 @@ dispatch(departmentData())
                           placeholder="Please enter first name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -2552,7 +2574,7 @@ dispatch(departmentData())
                           placeholder="Middle Name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -2585,7 +2607,7 @@ dispatch(departmentData())
                           placeholder="Last Name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -3306,9 +3328,7 @@ dispatch(departmentData())
             </button>
           )}
 
-          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
-            Cancel
-          </Link>
+         
           {tabKey == "User_Settings" && (
             <button
               onClick={() => setTabKey("All_Tickets")}
@@ -3317,6 +3337,9 @@ dispatch(departmentData())
               Back
             </button>
           )}
+           <Link to={`/${_base}/User`} className="btn btn-danger text-white">
+            Cancel
+          </Link>
         </div>
       </form>
     </div>

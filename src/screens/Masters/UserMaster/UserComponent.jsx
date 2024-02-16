@@ -555,7 +555,9 @@ function UserComponent( ) {
   const employeeData = useSelector(dashboardSlice=>dashboardSlice.dashboard.employeeData);
   const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportUserData)
 
-
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
   const handleModal = (data) => {
     setModal(data);
   };
@@ -895,7 +897,9 @@ useEffect(() => {
 
   return (
     <div className="container-xxl">
-      {notify && flag == 1 && <Alert alertData={notify} />}
+      {/* {notify && flag == 1 && <Alert alertData={notify} />} */}
+      {Notify &&  <Alert alertData={Notify} />}
+
 
       <PageHeader
         headerTitle="User Master"
