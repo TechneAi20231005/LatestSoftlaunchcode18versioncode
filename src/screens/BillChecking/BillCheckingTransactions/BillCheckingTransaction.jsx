@@ -35,7 +35,7 @@ function BillCheckingTransaction() {
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
-  // const [exportData, setExportData] = useState(null);
+  const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const [modal, setModal] = useState({
@@ -50,7 +50,7 @@ function BillCheckingTransaction() {
 
   const dispatch=useDispatch()
   const AllBillCheckingData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.sortedBillCheckingData)
-  const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
+  // const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
   const authorities=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData)
   const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41));
   const billTypeDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm)
@@ -789,7 +789,7 @@ function BillCheckingTransaction() {
             "Assign To": temp[key].assign_to_name,
             is_assign_to: temp[key].is_assign_to,
             level: temp[key].level,
-            total_level: temp[key].level,
+            total_level: temp[key].total_level,
             last_approved_by: temp[key].last_approved_by,
             approvedBy: temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
