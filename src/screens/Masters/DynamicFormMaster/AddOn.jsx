@@ -162,6 +162,7 @@ function AddOn(props) {
           defaultValue={props.data.inputAddOn.inputRangeMin}
           min={props.data.inputAddOn.inputRangeMin}
         />
+        {/* {console.log("props",props.data)} */}
       </div>
       <div className="form-group">
         <label>Max Number:</label>
