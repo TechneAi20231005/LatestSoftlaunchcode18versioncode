@@ -182,6 +182,9 @@ const ViewBillTypeComponent = ({ match }) => {
         }
       });
   };
+
+
+  console.log("bil",billTypeData)
   const handleUserSelection = (sectionIndex, rowIndex, selectedOptions) => {
     const updatedSelectedUsersArray = [...selectedUsersArray];
     const newData = [...approverData.data];
@@ -388,6 +391,9 @@ const transformData = (billTypeData) => {
     loadData();
   }, []);
 
+
+  
+
   return (
       <div className="container-xxl">
       <PageHeader headerTitle="View Bill Type" />
@@ -484,6 +490,8 @@ const transformData = (billTypeData) => {
                         }
                       />
                     )}
+
+                    {console.log("bill",billTypeData && billTypeData)}
                     <label className="form-check-label" htmlFor="is_active_1">
                       Active
                     </label>

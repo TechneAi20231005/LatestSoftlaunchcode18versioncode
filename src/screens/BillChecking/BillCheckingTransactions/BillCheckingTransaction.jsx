@@ -91,9 +91,15 @@ function BillCheckingTransaction() {
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     const result = searchInData(data, searchValue);
-
     setData(result);
   };
+
+
+
+
+
+
+
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -735,129 +741,129 @@ function BillCheckingTransaction() {
     var temprory = [];
     setIsLoading(true);
 
-    dispatch(getBillcheckingData())
+    // dispatch(getBillcheckingData())
 
-    // await new BillCheckingService().getBillCheckData().then((res) => {
-    //   console.log(res)
-    //   if (res.status === 200) {
-    //     setIsLoading(false);
+    await new BillCheckingService().getBillCheckData().then((res) => {
+      console.log(res)
+      if (res.status === 200) {
+        setIsLoading(false);
 
-    //     let counter = 1;
+        let counter = 1;
 
-    //     const temp = res.data.data;
-    //     var tempData = [];
-    //     for (const key in temp) {
-    //       data.push({
-    //         counter: counter++,
-    //         id: temp[key].id,
-    //         "Bill ID": temp[key].bc_id,
-    //         "Vendor Name": temp[key].vendor_id_name,
-    //         template_name: temp[key].template_name,
-    //         employee_name: temp[key].employee_name,
+        const temp = res.data.data;
+        var tempData = [];
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            "Bill ID": temp[key].bc_id,
+            "Vendor Name": temp[key].vendor_id_name,
+            template_name: temp[key].template_name,
+            employee_name: temp[key].employee_name,
 
-    //         "Payment Date": temp[key].payment_date,
-    //         "Bill No": temp[key].vendor_bill_no,
-    //         "Actual Payment Date": temp[key].actual_payment_date,
-    //         "Bill Amount": temp[key].bill_amount,
-    //         "Net Amount": temp[key].net_payment,
-    //         is_active: temp[key].is_active,
-    //         "Is TCS applicable": temp[key].is_tcs_applicable,
-    //         bill_type_name: temp[key].bill_type_name,
-    //         assign_to_name: temp[key].assign_to_name,
-    //         "Taxable Amount": temp[key].taxable_amount,
-    //         "Debit Advance": temp[key].debit_advance,
-    //         "Bill date": temp[key].bill_date,
-    //         "Bill Status": temp[key].payment_status,
-    //         "Is Original Bill": temp[key].is_original_bill_needed,
-    //         "Recieved Date": temp[key].received_date,
-    //         "Hold Amount": temp[key].hold_amount,
-    //         "Paid Amount": temp[key].actual_paid,
-    //         created_at: temp[key].created_at,
-    //         created_by: temp[key].created_by,
-    //         updated_at: temp[key].updated_at,
+            "Payment Date": temp[key].payment_date,
+            "Bill No": temp[key].vendor_bill_no,
+            "Actual Payment Date": temp[key].actual_payment_date,
+            "Bill Amount": temp[key].bill_amount,
+            "Net Amount": temp[key].net_payment,
+            is_active: temp[key].is_active,
+            "Is TCS applicable": temp[key].is_tcs_applicable,
+            bill_type_name: temp[key].bill_type_name,
+            assign_to_name: temp[key].assign_to_name,
+            "Taxable Amount": temp[key].taxable_amount,
+            "Debit Advance": temp[key].debit_advance,
+            "Bill date": temp[key].bill_date,
+            "Bill Status": temp[key].payment_status,
+            "Is Original Bill": temp[key].is_original_bill_needed,
+            "Recieved Date": temp[key].received_date,
+            "Hold Amount": temp[key].hold_amount,
+            "Paid Amount": temp[key].actual_paid,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: temp[key].updated_at,
 
-    //         updated_by: temp[key].updated_by,
-    //         "Rejected By": temp[key].rejectedBy,
+            updated_by: temp[key].updated_by,
+            "Rejected By": temp[key].rejectedBy,
 
-    //         is_approver: temp[key].is_approver,
-    //         "Assign To": temp[key].assign_to_name,
-    //         is_assign_to: temp[key].is_assign_to,
-    //         level: temp[key].level,
-    //         total_level: temp[key].level,
-    //         last_approved_by: temp[key].last_approved_by,
-    //         approvedBy: temp[key].approvedBy,
-    //         "Pending From": temp[key].level_approver,
-    //         audit_remark: temp[key].audit_remark,
-    //         external_audit_remark: temp[key].external_audit_remark,
+            is_approver: temp[key].is_approver,
+            "Assign To": temp[key].assign_to_name,
+            is_assign_to: temp[key].is_assign_to,
+            level: temp[key].level,
+            total_level: temp[key].level,
+            last_approved_by: temp[key].last_approved_by,
+            approvedBy: temp[key].approvedBy,
+            "Pending From": temp[key].level_approver,
+            audit_remark: temp[key].audit_remark,
+            external_audit_remark: temp[key].external_audit_remark,
 
-    //         levels_of_approval: temp[key].levels_of_approval,
+            levels_of_approval: temp[key].levels_of_approval,
 
-    //         level_approver: temp[key].level_approver,
-    //         is_editable_for_creator: temp[key].is_editable_for_creator,
-    //         is_rejected: temp[key].is_rejected,
-    //         "Is cancelled": temp[key].cancelled,
-    //       });
-    //     }
-    //     for (const key in temp) {
-    //       tempData.push({
-    //         // counter: counter++,
-    //         SrNo: tempData.length + 1,
-    //         "Bill ID": temp[key].bc_id,
-    //         "Vendor Name": temp[key].vendor_id_name,
-    //         "Payment Date": temp[key].payment_date,
-    //         "Bill No": temp[key].vendor_bill_no,
-    //         "Actual Payment Date": temp[key].actual_payment_date,
-    //         "Bill Amount": temp[key].bill_amount,
-    //         "Net Amount": temp[key].net_payment,
-    //         "Rejected By": temp[key].rejectedBy,
-    //         "Is TCS applicable": temp[key].is_tcs_applicable,
+            level_approver: temp[key].level_approver,
+            is_editable_for_creator: temp[key].is_editable_for_creator,
+            is_rejected: temp[key].is_rejected,
+            "Is cancelled": temp[key].cancelled,
+          });
+        }
+        for (const key in temp) {
+          tempData.push({
+            // counter: counter++,
+            SrNo: tempData.length + 1,
+            "Bill ID": temp[key].bc_id,
+            "Vendor Name": temp[key].vendor_id_name,
+            "Payment Date": temp[key].payment_date,
+            "Bill No": temp[key].vendor_bill_no,
+            "Actual Payment Date": temp[key].actual_payment_date,
+            "Bill Amount": temp[key].bill_amount,
+            "Net Amount": temp[key].net_payment,
+            "Rejected By": temp[key].rejectedBy,
+            "Is TCS applicable": temp[key].is_tcs_applicable,
 
-    //         bill_type_name: temp[key].bill_type_name,
+            bill_type_name: temp[key].bill_type_name,
 
-    //         "Taxable Amount": temp[key].taxable_amount,
-    //         "Debit Advance": temp[key].debit_advance,
-    //         "Bill date": temp[key].bill_date,
-    //         "Rejected By": temp[key].rejectedBy,
+            "Taxable Amount": temp[key].taxable_amount,
+            "Debit Advance": temp[key].debit_advance,
+            "Bill date": temp[key].bill_date,
+            "Rejected By": temp[key].rejectedBy,
 
-    //         // "Bill Status": temp[key].bill_status,
-    //         "Bill Status": temp[key].payment_status,
+            // "Bill Status": temp[key].bill_status,
+            "Bill Status": temp[key].payment_status,
 
-    //         "Recieved Date": temp[key].received_date,
-    //         total_level: temp[key].total_level,
-    //         last_approved_by: temp[key].last_approved_by,
-    //         is_editable_for_creator: temp[key].is_editable_for_creator,
+            "Recieved Date": temp[key].received_date,
+            total_level: temp[key].total_level,
+            last_approved_by: temp[key].last_approved_by,
+            is_editable_for_creator: temp[key].is_editable_for_creator,
 
-    //         "Levels of approval": temp[key].levels_of_approval,
-    //         "Approve By": temp[key].approved_by,
-    //         "Pending From": temp[key].level_approver,
+            "Levels of approval": temp[key].levels_of_approval,
+            "Approve By": temp[key].approved_by,
+            "Pending From": temp[key].level_approver,
 
-    //         "Assign From": temp[key].created_by,
-    //         "Assign To": temp[key].assign_to_name,
-    //         is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
+            "Assign From": temp[key].created_by,
+            "Assign To": temp[key].assign_to_name,
+            is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
-    //         approvedBy: temp[key].approvedBy,
-    //         "Is Original Bill": temp[key].is_original_bill_needed,
+            approvedBy: temp[key].approvedBy,
+            "Is Original Bill": temp[key].is_original_bill_needed,
 
-    //         // "is original Bill": temp[key].is_original_bill_needed,
-    //         "Internal Audit": temp[key].audit_remark,
-    //         "External Audit": temp[key].external_audit_remark,
-    //         "Hold Amount": temp[key].hold_amount,
-    //         "Paid Amount": temp[key].actual_paid,
-    //         "Is cancelled": temp[key].cancelled,
+            // "is original Bill": temp[key].is_original_bill_needed,
+            "Internal Audit": temp[key].audit_remark,
+            "External Audit": temp[key].external_audit_remark,
+            "Hold Amount": temp[key].hold_amount,
+            "Paid Amount": temp[key].actual_paid,
+            "Is cancelled": temp[key].cancelled,
 
-    //         "Created at": temp[key].created_at,
-    //         "Created by": temp[key].created_by,
-    //         "Updated At": temp[key].updated_at,
-    //         "Updated By": temp[key].updated_by,
-    //       });
-    //       // setExportData(null);
-    //       // setExportData(tempData);
-    //     }
-    //     setData(null);
-    //     setData(data);
-    //     res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
-    //   }
-    // });
+            "Created at": temp[key].created_at,
+            "Created by": temp[key].created_by,
+            "Updated At": temp[key].updated_at,
+            "Updated By": temp[key].updated_by,
+          });
+          // setExportData(null);
+          // setExportData(tempData);
+        }
+        setData(null);
+        setData(data);
+        res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
+      }
+    });
 
 
 
@@ -1021,87 +1027,87 @@ function BillCheckingTransaction() {
     setNotify(null);
     e.preventDefault();
     const formData = new FormData(e.target);
-    dispatch(BillcheckingpostData(formData))
-    // await new BillCheckingTransactionService()
-    //   .filterBillCheckingData(formData)
-    //   .then((res) => {
-    //     if (res.data.status === 1) {
-    //       const tempData = [];
-    //       let counter = 1;
-    //       const temp = res.data.data;
+    // dispatch(BillcheckingpostData(formData))
+    await new BillCheckingTransactionService()
+      .filterBillCheckingData(formData)
+      .then((res) => {
+        if (res.data.status === 1) {
+          const tempData = [];
+          let counter = 1;
+          const temp = res.data.data;
 
-    //       for (const key in temp) {
-    //         tempData.push({
-    //           "Sr No": counter++,
-    //           id: temp[key].id,
-    //           // bc_id: temp[key].bc_id,
-    //           "Bill ID": temp[key].bc_id,
-    //           "Vendor Name": temp[key].vendor_id_name,
-    //           "Payment Date": temp[key].payment_date,
-    //           "Bill No": temp[key].vendor_bill_no,
-    //           "Actual Payment Date": temp[key].payment_date,
-    //           "Bill Amount": temp[key].bill_amount,
-    //           "Net Amount": temp[key].net_payment,
-    //           // "Bill Status": temp[key].bill_status,
-    //           "Bill Status": temp[key].payment_status,
+          for (const key in temp) {
+            tempData.push({
+              "Sr No": counter++,
+              id: temp[key].id,
+              // bc_id: temp[key].bc_id,
+              "Bill ID": temp[key].bc_id,
+              "Vendor Name": temp[key].vendor_id_name,
+              "Payment Date": temp[key].payment_date,
+              "Bill No": temp[key].vendor_bill_no,
+              "Actual Payment Date": temp[key].payment_date,
+              "Bill Amount": temp[key].bill_amount,
+              "Net Amount": temp[key].net_payment,
+              // "Bill Status": temp[key].bill_status,
+              "Bill Status": temp[key].payment_status,
 
-    //           bill_type_name: temp[key].bill_type_name,
-    //           "Assign From": temp[key].created_by,
-    //           "Assign To": temp[key].assign_to_name,
-    //           "Levels of approval": temp[key].levels_of_approval,
-    //           approvedBy: temp[key].approvedBy,
-    //           "Pending From": temp[key].level_approver,
-    //           // rejectedBy:temp[key].rejectedBy,
+              bill_type_name: temp[key].bill_type_name,
+              "Assign From": temp[key].created_by,
+              "Assign To": temp[key].assign_to_name,
+              "Levels of approval": temp[key].levels_of_approval,
+              approvedBy: temp[key].approvedBy,
+              "Pending From": temp[key].level_approver,
+              // rejectedBy:temp[key].rejectedBy,
 
-    //           // "Approve By": temp[key].approved_by,
+              // "Approve By": temp[key].approved_by,
 
-    //           // "Rejected By": temp[key].rejectedBy,
-    //           // rejectedBy: temp[key].rejectedBy,
-    //           "Taxable Amount": temp[key].taxable_amount,
-    //           "Debit Advance": temp[key].debit_advance,
-    //           // "is original Bill": temp[key].is_original_bill_needed,
-    //           "Is Original Bill":
-    //             temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
+              // "Rejected By": temp[key].rejectedBy,
+              // rejectedBy: temp[key].rejectedBy,
+              "Taxable Amount": temp[key].taxable_amount,
+              "Debit Advance": temp[key].debit_advance,
+              // "is original Bill": temp[key].is_original_bill_needed,
+              "Is Original Bill":
+                temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
-    //           // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
-    //           // audit_remark: temp[key].audit_remark,
-    //           // external_audit_remark: temp[key].external_audit_remark,
-    //           "Bill date": temp[key].bill_date,
-    //           "Recieved Date": temp[key].received_date,
-    //           "Hold Amount": temp[key].hold_amount,
-    //           "Paid Amount": temp[key].actual_paid,
-    //           "Is cancelled": temp[key].cancelled,
-    //           "Is TCS applicable":
-    //             temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
-    //           created_at: temp[key].created_at,
-    //           created_by: temp[key].created_by,
+              // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
+              // audit_remark: temp[key].audit_remark,
+              // external_audit_remark: temp[key].external_audit_remark,
+              "Bill date": temp[key].bill_date,
+              "Recieved Date": temp[key].received_date,
+              "Hold Amount": temp[key].hold_amount,
+              "Paid Amount": temp[key].actual_paid,
+              "Is cancelled": temp[key].cancelled,
+              "Is TCS applicable":
+                temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
 
-    //           // created_by: temp[key].created_by,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by: temp[key].updated_by,
-    //           // is_editable_for_creator: temp[key].is_editable_for_creator,
-    //           // bill_type_name: temp[key].bill_type_name,
-    //           // "Assign From": temp[key].created_by,
-    //           // assign_to_name: temp[key].assign_to_name,
-    //           // is_assign_to: temp[key].assign_to_name,
-    //           // "Assign To": temp[key].assign_to_name,
-    //           // "Approve By": temp[key].approved_by,
-    //           // "Pending From": temp[key].level_approver,
+              // created_by: temp[key].created_by,
+              updated_at: temp[key].updated_at,
+              updated_by: temp[key].updated_by,
+              // is_editable_for_creator: temp[key].is_editable_for_creator,
+              // bill_type_name: temp[key].bill_type_name,
+              // "Assign From": temp[key].created_by,
+              // assign_to_name: temp[key].assign_to_name,
+              // is_assign_to: temp[key].assign_to_name,
+              // "Assign To": temp[key].assign_to_name,
+              // "Approve By": temp[key].approved_by,
+              // "Pending From": temp[key].level_approver,
 
-    //           // level_approver: temp[key].level_approver,
-    //           // level: temp[key].level,
-    //           // total_level: temp[key].total_level,
-    //         });
-    //       }
-    //       setData(null);
+              // level_approver: temp[key].level_approver,
+              // level: temp[key].level,
+              // total_level: temp[key].total_level,
+            });
+          }
+          setData(null);
 
-    //       // setExportData(null);
-    //       // setExportData(tempData);
-    //       setData(tempData);
-    //     } else {
-    //       setNotify({ type: "danger", message: res.data.message });
-    //     }
-    //   });
+          // setExportData(null);
+          // setExportData(tempData);
+          setData(tempData);
+        } else {
+          setNotify({ type: "danger", message: res.data.message });
+        }
+      });
   };
 
   const [importModal, setImportModal] = useState({
@@ -1151,7 +1157,7 @@ function BillCheckingTransaction() {
 
   useEffect(() => {
     loadData();
-    dispatch(getBillcheckingData())
+    // dispatch(getBillcheckingData())
     if (location && location.state) {
       setNotify(location.state.alert);
     }
@@ -1721,8 +1727,8 @@ function BillCheckingTransaction() {
                   {AllBillCheckingData && (
                     <DataTable
                       columns={columns}
-                      // data={data}
-                      data={AllBillCheckingData}
+                      data={data}
+                      // data={AllBillCheckingData}
                       // defaultSortFieldId="billId"
                       pagination
                       selectableRows={false}

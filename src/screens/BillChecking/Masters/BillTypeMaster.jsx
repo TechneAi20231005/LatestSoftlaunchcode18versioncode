@@ -18,6 +18,7 @@ function BillTypeMaster() {
   const searchRef = useRef();
 
   function SearchInputData(data, search) {
+
     const lowercaseSearch = search.toLowerCase();
 
     return data.filter((d) => {
@@ -41,6 +42,7 @@ function BillTypeMaster() {
     const SearchValue = searchRef.current.value;
     const result = SearchInputData(data, SearchValue);
     setData(result);
+
   };
 
 
