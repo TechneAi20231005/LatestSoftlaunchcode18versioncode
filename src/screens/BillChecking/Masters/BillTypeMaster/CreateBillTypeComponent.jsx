@@ -214,7 +214,7 @@ const requiredUserRef = useRef();
 
     if (index === 0) {
       // Special case for the last index
-      const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
+      const previousAmount = index === 0 ? slabsData[index+1]?.amount :slabsData[index - 1]?.amount;
       if (index === 0 && newValue > previousAmount) {
         alert(
           `Amount in section ${

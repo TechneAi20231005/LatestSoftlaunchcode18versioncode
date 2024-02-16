@@ -598,6 +598,7 @@ const validateAmounts = (e, index) => {
         );
       });
     });
+    
 
     // Check if assign_employee_id[] is empty
     const assignEmployeeId = formData.getAll("assign_employee_id[]");

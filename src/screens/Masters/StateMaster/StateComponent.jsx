@@ -1074,8 +1074,12 @@ function StateComponent() {
     // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
     if (!stateData.length || !checkRole.length) {
       dispatch(getStateData());
-      // dispatch(getCountryDataSort());
+     
       dispatch(getRoles());
+    }
+    if(!CountryData.length){
+
+      dispatch(getCountryDataSort());
     }
   }, []);
 
