@@ -797,7 +797,7 @@ function PaymentTemplateMaster() {
                       <Select
                         options={options}
                         id="bill_day"
-                        name="bill_day"
+                        name="bill_day[]"
                         isSearchable
                         ref={billDayRef}
                         isMulti
@@ -818,8 +818,8 @@ function PaymentTemplateMaster() {
 
                       <Select
                         options={options}
-                        id="days"
-                        name="days"
+                        id="bill_day[]"
+                        name="bill_day[]"
                         isSearchable
                         isMulti
                         isClearable

@@ -231,21 +231,24 @@ export const addressFieldOnly = (e) => {
   }
 };
 
-export const CharactersOnly = (e) => {
-  // const reg = /^[A-Za-z]+$/
-  // let preval=e.target.value
-  // if (e.target.value === '' || reg.test(e.target.value))
-  // return true
-  // else
-  // e.target.value = preval.substring(0,(preval.length-1))
+// export const CharactersOnly = (e) => {
+//   var regex = new RegExp("^[a-zA-Z]+$");
+//   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+//   if (!regex.test(key)) {
+//     e.preventDefault();
+//     return false;
+//   }
+// };
 
-  var regex = new RegExp("^[a-zA-Z]+$");
+export const CharactersOnly = (e) => {
+  var regex = new RegExp("^[a-zA-Z0-9]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
     return false;
   }
 };
+
 
 export const CharactersNumbersOnly = (e) => {
   var regex = new RegExp("^[a-zA-Z 0-9]+$");
