@@ -42,25 +42,17 @@
 //     }
 //   };
 
-
 //   const dispatch = useDispatch()
-
 
 //   const notify = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.notify)
 //   const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41));
 //   const vendorDropdown = useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
 //   const authorities = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData) //update
 //   const authority = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authorityData) //create
-  
-  
-
 
 //   useEffect(() => {
 //     featchData();
 //   }, []);
-
-
-
 
 //   const [modal, setModal] = useState({
 //     showModal: false,
@@ -308,9 +300,8 @@
 //     //   }
 //     // });
 
-
 //     dispatch(sectionDropDownData())
-    
+
 //     // await new BillCheckingTransactionService()
 //     //   .getSectionDropdown()
 //     //   .then((res) => {
@@ -416,7 +407,6 @@
 //         form.append(`attachment[${index}]`, file.file, file.file.name);
 //       });
 //     }
-
 
 //     dispatch(postBillcheckingData(form)).then((res)=>{
 //       if(res.payload.data.status===1 && res.payload.status === 200){
@@ -550,7 +540,6 @@
 //   };
 
 //   const [selectedFiles, setSelectedFiles] = useState([]);
-
 
 //   // const uploadAttachmentHandler = (e, type, id = null) => {
 //   //   if (type === "UPLOAD") {
@@ -2022,11 +2011,10 @@
 //                                                      <button className ="btn btn p-0 mt-2" style={{marginLeft:"50%"}}onClick={() => {
 //                                                     setShowFiles(showFiles.filter(d => d !== image))
 //                                                 }}>
-                                             
+
 //                                              <i className="icofont-close-line" style={{fontWeight:"bold" , fontSize:"20px"}} ></i>
 //                                                 </button>
 
-                                               
 //                                             </div>
 //                                         })}
 //                                     </div> */}
@@ -2045,7 +2033,7 @@
 //                         name="attachment"
 //                         className="form-control"
 //                         // ref={fileInputRef}
-                        
+
 //                         accept="image/jpg,image/jpeg,image/png,application/pdf"
 //                         ref={fileInputRef}
 // capture="camera"
@@ -2055,10 +2043,10 @@
 //                             ? true
 //                             : false
 //                         }
-                        
+
 //                         onChange={(e) => {
 //                           const selectedFile = e.target.files[0];
-  
+
 //                           // Check if the file type is one of the allowed types
 //                           if (
 //                             selectedFile.type === "image/jpg" ||
@@ -2080,7 +2068,7 @@
 //                             }
 //                             e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
 //                           }
-  
+
 //                           uploadAttachmentHandler(e, "UPLOAD", "");
 //                           maxLengthCheck(e, "UPLOAD");
 //                         }}
@@ -2225,7 +2213,6 @@
 //                                         </div>
 //                                     </div>
 
-
 //                                 </div> */}
 //               </div>
 //             </div>
@@ -2277,9 +2264,6 @@
 //     </div>
 //   );
 // }
-
-
-
 
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -2676,10 +2660,12 @@ export default function CreateBillCheckingTransaction({ match }) {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/BillCheckingTransaction`},
-           { state: { alert: { type: "success", message: res.data.message } }}
-            );
+          history(
+            {
+              pathname: `/${_base}/BillCheckingTransaction`,
+            },
+            { state: { alert: { type: "success", message: res.data.message } } }
+          );
           loadData();
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -2798,7 +2784,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
-
 
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
@@ -2979,21 +2964,21 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (type === "UPLOAD") {
       var tempSelectedFile = [];
       for (var i = 0; i < e.target.files.length; i++) {
-                  tempSelectedFile.push({
-            file: e.target.files[i],
-            fileName: e.target.files[i].name,
-            tempUrl: URL.createObjectURL(e.target.files[i]),
-          });
+        tempSelectedFile.push({
+          file: e.target.files[i],
+          fileName: e.target.files[i].name,
+          tempUrl: URL.createObjectURL(e.target.files[i]),
+        });
       }
-        setSelectedFiles(tempSelectedFile);
-          } else if (type === "DELETE") {
+      setSelectedFiles(tempSelectedFile);
+    } else if (type === "DELETE") {
       fileInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-      };
+  };
 
   const handleDeleteAttachment = (e, id) => {
     // deleteAttachment(id).then((res) => {
@@ -3011,7 +2996,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (e.target.files.length > 10) {
       alert("You Can Upload Only 10 Attachments");
       document.getElementById("attachment").value = null;
-setSelectedFiles(null)
+      setSelectedFiles(null);
     }
   };
 
@@ -3254,8 +3239,6 @@ setSelectedFiles(null)
     });
   };
 
-
-  
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -4295,20 +4278,19 @@ setSelectedFiles(null)
                         name="attachment"
                         className="form-control"
                         // ref={fileInputRef}
-                        
+
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         ref={fileInputRef}
-capture="camera"
+                        capture="camera"
                         multiple
                         required={
                           selectedFiles && selectedFiles.length <= 0
                             ? true
                             : false
                         }
-                        
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
-  
+
                           // Check if the file type is one of the allowed types
                           if (
                             selectedFile.type === "image/jpg" ||
@@ -4330,19 +4312,17 @@ capture="camera"
                             }
                             e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                           }
-  
+
                           uploadAttachmentHandler(e, "UPLOAD", "");
                           maxLengthCheck(e, "UPLOAD");
                         }}
-
                       />
                     </div>
                   </div>
-                                  </div>
+                </div>
                 <div className="d-flex">
-
                   {selectedFiles &&
-selectedFiles.map((attachment, index) => {
+                    selectedFiles.map((attachment, index) => {
                       return (
                         <div
                           key={index}
@@ -4376,11 +4356,7 @@ selectedFiles.map((attachment, index) => {
                                   className="btn btn-danger text-white btn-sm p-1"
                                   type="button"
                                   onClick={(e) => {
-                                    uploadAttachmentHandler(
-                                      e,
-                                      "DELETE",
-                                      index
-                                    );
+                                    uploadAttachmentHandler(e, "DELETE", index);
                                   }}
                                 >
                                   <i
@@ -4527,4 +4503,3 @@ selectedFiles.map((attachment, index) => {
     </div>
   );
 }
-
