@@ -67,6 +67,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
+      // console.log("first",firstAmount)
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -587,6 +588,8 @@ const [inputState, setInputState] = useState({
  });
 
  const [remarkError, setRemarkError] = useState(null);
+ const [billTypeErr, setBillTypeErr] = useState(null);
+
  
 
  const handleRemark = (e) => {
@@ -599,20 +602,31 @@ const [inputState, setInputState] = useState({
   }
 };
 
+const handlbillType = (e) => {
+  const billTypeValue = e.target.value;
+  if (billTypeValue === "") {
+    setBillTypeErr("Invalid Bill type");
+  } 
+  else{
+    setBillTypeErr("")
+  }
+};
+
+
 //Function To Sumbmit the main form
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    const isEmpty = approverData.data.some((section) => {
-      return section.level.some((levelItem) => {
+    const isEmpty = approverData?.data?.some((section) => {
+      return section?.level?.some((levelItem) => {
         return (
-          levelItem.employee_id.length === 0 ||
-          levelItem.required_users.length === 0 ||
-          isNaN(levelItem.required_numbers) ||
-          levelItem.required_numbers == null ||
-          isNaN(section.amount) ||
-          section.slab === null
+          levelItem?.employee_id?.length === 0 ||
+          levelItem?.required_users?.length === 0 ||
+          isNaN(levelItem?.required_numbers) ||
+          levelItem?.required_numbers == null ||
+          isNaN(section?.amount) ||
+          section?.slab === null
         );
       });
     });
@@ -732,9 +746,17 @@ const [inputState, setInputState] = useState({
                   className="form-control"
                   id="bill_type"
                   required={true}
+                  onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
                   maxLength={20}
                 />
+                      <small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {billTypeErr}
+                      </small>
               </div>
 
               <div className="col-sm-4 ">
@@ -857,6 +879,9 @@ const [inputState, setInputState] = useState({
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
+                      {console.log("approve",approverData.data.length)}
+                      {console.log("item",item.amount)}
+
                       <strong>
                         {index === approverData.data.length - 1
                           ? "Above Amount:"
@@ -919,9 +944,9 @@ const [inputState, setInputState] = useState({
                     <thead>
                       <tr>
                         <th>Sr</th>
-                        <th>Assinged Approvers</th>
-                        <th>Required Approvers </th>
-                        <th>Required Numbers</th>
+                        <th>Assinged Approvers <Astrick color="red" size="13px" /></th>
+                        <th>Required Approvers <Astrick color="red" size="13px" /> </th>
+                        <th>Required Numbers <Astrick color="red" size="13px" /></th>
                         <th>Actions</th>
                       </tr>
                     </thead>

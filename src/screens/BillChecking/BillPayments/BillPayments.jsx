@@ -1022,8 +1022,20 @@ console.log("d",d)
     const tempData = [];
     const FilterData=[]
     form.append("requestFor", myForm.current.buttonId);
-    dispatch(getBillPayment(form))
 
+    if (form.get("requestFor") == "downloadButton") {
+      await new BillPaymentServices().downloadTxtFile(form).then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            var a = res.data.fileName;
+            URL = "http://3.108.206.34/" + res.data.data;
+            alert(res.data.data);
+            window.open(URL, "_blank")?.focus();
+          }
+        }
+      });}else{
+    dispatch(getBillPayment(form))
+      }
   }
   const handleForm = async (e) => {
     e.preventDefault();
@@ -1330,7 +1342,7 @@ console.log("d",d)
                       <i className="icofont-filter" /> Filter
                     </button>
                   </div>
-                  {filteredData && authorities&& authorities.Bill_Payment===true && (
+                  {getBillPaymentData && authorities&& authorities.Bill_Payment===true && (
                     <div className="col-md-5 mt-3 ">
                       <button
                         className="btn  btn-info text-white"

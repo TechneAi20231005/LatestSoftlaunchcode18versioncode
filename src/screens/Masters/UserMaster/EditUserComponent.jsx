@@ -1828,7 +1828,7 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                             <td className="text-center">{idx + 1}</td>
                             <td>
                               
-                              {/* {departmentDropdown && item.department_id && */}
+                              {departmentDropdown && item.department_id &&
                               <Select
                                 options={departmentDropdown}
                                 id={`department_id_` + idx}
@@ -1840,11 +1840,11 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                                   )
                                 }
                               />
-                            {/* } */}
+                              }
                             </td>
                            
                             <td>
-                              {/* {options && item.ticket_show_type && */}
+                              {options && item.ticket_show_type &&
                               <Select
                                 options={options}
                                 id={`ticket_show_type_id_` + idx}
@@ -1858,7 +1858,7 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                                   )
                                 }
                               />
-                              {/* } */}
+}
                             </td>
 
                             <td className="text-center">
