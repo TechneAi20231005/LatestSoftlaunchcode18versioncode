@@ -587,6 +587,8 @@ const [inputState, setInputState] = useState({
  });
 
  const [remarkError, setRemarkError] = useState(null);
+ const [billTypeErr, setBillTypeErr] = useState(null);
+
  
 
  const handleRemark = (e) => {
@@ -598,6 +600,17 @@ const [inputState, setInputState] = useState({
     setRemarkError("")
   }
 };
+
+const handlbillType = (e) => {
+  const billTypeValue = e.target.value;
+  if (billTypeValue === "") {
+    setBillTypeErr("Invalid Bill type");
+  } 
+  else{
+    setBillTypeErr("")
+  }
+};
+
 
 //Function To Sumbmit the main form
   const handleForm = async (e) => {
@@ -732,9 +745,17 @@ const [inputState, setInputState] = useState({
                   className="form-control"
                   id="bill_type"
                   required={true}
+                  onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
                   maxLength={20}
                 />
+                      <small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {billTypeErr}
+                      </small>
               </div>
 
               <div className="col-sm-4 ">
@@ -919,9 +940,9 @@ const [inputState, setInputState] = useState({
                     <thead>
                       <tr>
                         <th>Sr</th>
-                        <th>Assinged Approvers</th>
-                        <th>Required Approvers </th>
-                        <th>Required Numbers</th>
+                        <th>Assinged Approvers <Astrick color="red" size="13px" /></th>
+                        <th>Required Approvers <Astrick color="red" size="13px" /> </th>
+                        <th>Required Numbers <Astrick color="red" size="13px" /></th>
                         <th>Actions</th>
                       </tr>
                     </thead>
