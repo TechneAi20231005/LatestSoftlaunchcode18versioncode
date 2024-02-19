@@ -320,8 +320,8 @@ function BillCheckingTransaction() {
       sortable: true,
     },
     {
-      name: "Net Amount",
-      selector: (row) => row["Net Amount"],
+      name: "Net Payment",
+      selector: (row) => row["Net Payment"],
       sortable: true,
     },
     {
@@ -765,7 +765,7 @@ function BillCheckingTransaction() {
             "Bill No": temp[key].vendor_bill_no,
             "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
+            "Net Payment": temp[key].net_payment,
             is_active: temp[key].is_active,
             "Is TCS applicable": temp[key].is_tcs_applicable,
             bill_type_name: temp[key].bill_type_name,
@@ -774,7 +774,8 @@ function BillCheckingTransaction() {
             "Debit Advance": temp[key].debit_advance,
             "Bill date": temp[key].bill_date,
             "Bill Status": temp[key].payment_status,
-            "Is Original Bill": temp[key].is_original_bill_needed,
+            "Is Original Bill": temp[key].is_original_bill_needed === 1 ? "Yes" :"No",
+
             "Recieved Date": temp[key].received_date,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
@@ -814,7 +815,7 @@ function BillCheckingTransaction() {
             "Bill No": temp[key].vendor_bill_no,
             "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
+            "Net Payment": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
             "Is TCS applicable": temp[key].is_tcs_applicable,
 
@@ -842,7 +843,7 @@ function BillCheckingTransaction() {
             is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
             approvedBy: temp[key].approvedBy,
-            "Is Original Bill": temp[key].is_original_bill_needed,
+            "Is Original Bill": temp[key].is_original_bill_needed === 1 ? "Yes" :"No",
 
             // "is original Bill": temp[key].is_original_bill_needed,
             "Internal Audit": temp[key].audit_remark,
@@ -1035,7 +1036,6 @@ function BillCheckingTransaction() {
           const tempData = [];
           let counter = 1;
           const temp = res.data.data;
-
           for (const key in temp) {
             tempData.push({
               "Sr No": counter++,
@@ -1101,8 +1101,8 @@ function BillCheckingTransaction() {
           }
           setData(null);
 
-          // setExportData(null);
-          // setExportData(tempData);
+          setExportData(null);
+          setExportData(tempData);
           setData(tempData);
         } else {
           setNotify({ type: "danger", message: res.data.message });

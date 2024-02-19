@@ -1009,16 +1009,23 @@ function PaymentDetails({ location, match }) {
     });
   }
   
-  const handleSearch = () => {
-    const searchValue = searchRef.current.value;
-    const result = searchInData(data, searchValue);
-    setData(result);
-  }
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
+  // const handleSearch = () => {
+  //   const searchValue = searchRef.current.value;
+  //   const result = searchInData(data, searchValue);
+  //   setData(result);
+  // }
+  // const handleKeyDown = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleSearch();
+  //   }
+  // };
+  const [searchTerm, setSearchTerm] = useState('');
+ 
+  const [filteredData, setFilteredData] = useState([]);
+  const handleSearch = (value) => {
+    console.log("fff",filteredData);
   };
+  
   // Assuming modal.modalData.payment_date is a valid date string
 
   let formattedMaxDate;
@@ -1321,15 +1328,19 @@ function PaymentDetails({ location, match }) {
               type="text"
               className="form-control"
               placeholder="Search...."
+              // ref={searchRef}
               ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-2">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={e=>handleSearch(e)}
-              onKeyDown={e=>handleKeyDown(e)}
+              // onClick={e=>handleSearch(e)}
+              onClick={() => handleSearch(searchTerm)}
+
+              // onKeyDown={e=>handleKeyDown(e)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -1360,7 +1371,19 @@ function PaymentDetails({ location, match }) {
                 <DataTable
                   columns={columns}
                   // data={data}
-                  data={getPaymentDetailsData}
+                  // data={getPaymentDetailsData}
+                  data={getPaymentDetailsData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
+                        return Object.values(customer).some(value =>
+                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
