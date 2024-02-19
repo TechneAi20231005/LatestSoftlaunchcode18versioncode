@@ -67,6 +67,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
+      // console.log("first",firstAmount)
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -617,15 +618,15 @@ const handlbillType = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    const isEmpty = approverData.data.some((section) => {
-      return section.level.some((levelItem) => {
+    const isEmpty = approverData?.data?.some((section) => {
+      return section?.level?.some((levelItem) => {
         return (
-          levelItem.employee_id.length === 0 ||
-          levelItem.required_users.length === 0 ||
-          isNaN(levelItem.required_numbers) ||
-          levelItem.required_numbers == null ||
-          isNaN(section.amount) ||
-          section.slab === null
+          levelItem?.employee_id?.length === 0 ||
+          levelItem?.required_users?.length === 0 ||
+          isNaN(levelItem?.required_numbers) ||
+          levelItem?.required_numbers == null ||
+          isNaN(section?.amount) ||
+          section?.slab === null
         );
       });
     });
@@ -878,6 +879,9 @@ const handlbillType = (e) => {
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
+                      {console.log("approve",approverData.data.length)}
+                      {console.log("item",item.amount)}
+
                       <strong>
                         {index === approverData.data.length - 1
                           ? "Above Amount:"
