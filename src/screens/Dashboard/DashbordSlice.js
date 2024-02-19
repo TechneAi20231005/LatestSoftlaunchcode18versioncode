@@ -201,6 +201,7 @@ import { all } from "axios";
 const initialState = {
   status: "",
   err: "",
+  isLoading: false,
   cityUserDetail: {},
   cityData: [],
   countryData: [],
@@ -539,9 +540,9 @@ export const DashbordSlice = createSlice({
         let filteredStateData = payload.data.data
           .filter((d) => d.is_active == 1)
           .map((i) => ({
-          value: i.id,
-          label: i.state,
-        }));
+            value: i.id,
+            label: i.state,
+          }));
 
         state.filteredStateData = filteredStateData;
 
@@ -687,10 +688,15 @@ export const DashbordSlice = createSlice({
 
     builder.addCase(postUserData.pending, (state) => {
       state.status = "loading";
+      // state.isLoading = true;
     });
 
     builder.addCase(postUserData.fulfilled, (state, action) => {
       const { payload } = action;
+      if (state.isLoading) {
+        return
+      }
+      state.isLoading = true;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postUser = payload.data.data;
         state.status = "succeded";
@@ -699,14 +705,17 @@ export const DashbordSlice = createSlice({
         state.notify = { type: "success", message: payload.data.message };
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
+
       } else {
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
         state.notify = notify;
       }
+      state.isLoading = false;
     });
     builder.addCase(postUserData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading = false;
     });
 
     // update user data
