@@ -2084,6 +2084,7 @@ required
                       // defaultValue={data.narration ? data.narration : ""}
                       />
                     </div>
+                    {console.log("da",data)}
                     <div className=" col-md-4 ">
                       <label className=" col-form-label">
                         <b> Remark History: </b>
@@ -2108,9 +2109,9 @@ required
                         className="form-control form-control-sm"
                         id="audit_remark"
                         name="audit_remark"
-                        // defaultValue={
-                        //   data.audit_remark ? data.audit_remark : ""
-                        // }
+                        defaultValue={
+                          data.audit_remark ? data.audit_remark : ""
+                        }
                         readOnly={
                           authorities && authorities.Internal_Audit === false
                             ? true
@@ -2135,7 +2136,7 @@ required
                             : false
                         }
                       // defaultValue={
-                      //   data.external_remark ? data.external_remark : ""
+                      //   data.external_audit_remark ? data.external_audit_remark : ""
                       // }
                       />
                     </div>
@@ -2158,7 +2159,7 @@ required
 className="form-control"
                             ref={fileInputRef}
                             multiple
-                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
 maxLengthCheck(e, "UPLOAD")
