@@ -1246,7 +1246,7 @@ function VendorMaster({ match }) {
     <>
       <div className="container-xxl">
         <PageHeader
-          headerTitle="Vendor Masterssss"
+          headerTitle="Vendor Master"
           renderRight={() => {
             return (
               <div className="col-auto d-flex w-sm-100">

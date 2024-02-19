@@ -30,20 +30,16 @@ import DashbordSlice from "../../Dashboard/DashbordSlice";
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
   const dispatch = useDispatch();
-  const customerData = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
-  );
-  const modal = useSelector(
-    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
-  );
-  const notify = useSelector(
-    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
-  );
+  const customerData = useSelector((CustomerTypeComponentSlice) => CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData );
+  const exportData = useSelector((CustomerTypeComponentSlice) => CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData);
+  // console.log("customerData",Datasss);
+  const modal = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal);
+  const notify = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify);
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
+
 
   const isActive0Ref = useRef();
   const [data, setData] = useState(null);
@@ -56,7 +52,7 @@ function CustomerTypeComponent() {
   // });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [isActive, setIsActive] = useState(1);
-  const [exportData, setExportData] = useState(null);
+  // const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
@@ -82,10 +78,20 @@ function CustomerTypeComponent() {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
   const columns = [
@@ -256,8 +262,13 @@ function CustomerTypeComponent() {
     // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postCustomerData(form));
-      dispatch(getCustomerTypeData());
+      dispatch(postCustomerData(form)).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCustomerTypeData())
+        } else {
+        }
+      });
+
 
       // await new CustomerType()
       //   .postCustomerType(form)
@@ -367,9 +378,10 @@ function CustomerTypeComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(getCustomerTypeData());
 
-    if (!customerData.length) {
-      dispatch(getCustomerTypeData());
+
+    if (!customerData?.length) {
       dispatch(getRoles());
     }
   }, []);
@@ -414,14 +426,16 @@ function CustomerTypeComponent() {
               className="form-control"
               placeholder="Search by Customer Name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -450,7 +464,26 @@ function CustomerTypeComponent() {
               {customerData && (
                 <DataTable
                   columns={columns}
-                  data={customerData}
+                  // data={customerData}
+                  
+                  data={customerData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

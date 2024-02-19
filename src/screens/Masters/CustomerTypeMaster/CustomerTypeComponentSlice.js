@@ -50,14 +50,25 @@ export const customerMasterSlice = createSlice({
 
         for (const i in getCustomerTypeData) {
           exportCustomerData.push({
+            // Sr: getCustomerTypeData[i].counter,
+            // Department: getCustomerTypeData[i].department,
+            // Status: getCustomerTypeData[i].is_active ? "Active" : "Deactive",
+            // Remark: getCustomerTypeData[i].remark,
+            // created_at: getCustomerTypeData[i].created_at,
+            // created_by: getCustomerTypeData[i].created_by,
+            // updated_at: getCustomerTypeData[i].updated_at,
+            // updated_by: getCustomerTypeData[i].updated_by,
+
+
+
             Sr: getCustomerTypeData[i].counter,
-            Department: getCustomerTypeData[i].department,
-            Status: getCustomerTypeData[i].is_active ? "Active" : "Deactive",
-            Remark: getCustomerTypeData[i].remark,
-            created_at: getCustomerTypeData[i].created_at,
-            created_by: getCustomerTypeData[i].created_by,
-            updated_at: getCustomerTypeData[i].updated_at,
-            updated_by: getCustomerTypeData[i].updated_by,
+                      customer_type_name: getCustomerTypeData[i].type_name,
+                       Status: getCustomerTypeData[i].is_active ? "Active" : "Deactive",
+                       Remark: getCustomerTypeData[i].remark,
+                       created_at: getCustomerTypeData[i].created_at,
+                       created_by: getCustomerTypeData[i].created_by,
+                       updated_at: getCustomerTypeData[i].updated_at,
+                       updated_by: getCustomerTypeData[i].updated_by,
           });
         }
         state.exportCustomerData=exportCustomerData

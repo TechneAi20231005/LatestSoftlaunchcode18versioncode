@@ -496,7 +496,7 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let stateData = payload.data.data.filter((d) => d.is_active === 1);
+        let stateData = payload.data.data;
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -539,9 +539,9 @@ export const DashbordSlice = createSlice({
         let filteredStateData = payload.data.data
           .filter((d) => d.is_active == 1)
           .map((i) => ({
-            value: i.id,
-            label: i.state,
-          }));
+          value: i.id,
+          label: i.state,
+        }));
 
         state.filteredStateData = filteredStateData;
 
