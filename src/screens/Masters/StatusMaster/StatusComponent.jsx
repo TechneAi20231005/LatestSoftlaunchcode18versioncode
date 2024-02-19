@@ -25,6 +25,7 @@ function StatusComponent() {
     const checkRole=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
     const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
     const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
+    console.log("notify",notify);
  
     
  
@@ -67,13 +68,22 @@ function StatusComponent() {
     
     
     
-      const handleSearch = () => {
-        const SearchValue = searchRef.current.value;
-        const result = SearchInputData(data, SearchValue);
-        setData(result);
-      };
+    //   const handleSearch = () => {
+    //     const SearchValue = searchRef.current.value;
+    //     const result = SearchInputData(data, SearchValue);
+    //     setData(result);
+    //   };
     
   
+    const [searchTerm, setSearchTerm] = useState("");
+    // const handleSearch = (e) => {
+    //   setSearchTerm(e.target.value);
+    // };
+    const [filteredData, setFilteredData] = useState([]);
+  
+    const handleSearch = (value) => {
+      console.log("fff", filteredData);
+    };
     
     const columns = [
         {
@@ -282,7 +292,8 @@ function StatusComponent() {
                             className="form-control"
                             placeholder="Search By Status Name...."
                             ref={searchRef}
-                            onKeyDown={handleKeyDown}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            // onKeyDown={handleKeyDown}
 
                         />
                     </div>
@@ -290,7 +301,8 @@ function StatusComponent() {
                         <button
                             className="btn btn-sm btn-warning text-white"
                             type="button"
-                            onClick={handleSearch}
+                            value={searchTerm}
+                            onClick={() => handleSearch(searchTerm)}
                             style={{ marginTop: '0px', fontWeight: '600' }}
                         >
                             <i className="icofont-search-1 "></i> Search
@@ -318,7 +330,27 @@ function StatusComponent() {
                         <div className="col-sm-12">
                             {statusData && <DataTable
                                 columns={columns}
-                                data={statusData}
+                                // data={statusData}
+
+                                data={statusData.filter((customer) => {
+                                    if (typeof searchTerm === "string") {
+                                      if (typeof customer === "string") {
+                                        return customer
+                                          .toLowerCase()
+                                          .includes(searchTerm.toLowerCase());
+                                      } else if (typeof customer === "object") {
+                                        return Object.values(customer).some(
+                                          (value) =>
+                                            typeof value === "string" &&
+                                            value
+                                              .toLowerCase()
+                                              .includes(searchTerm.toLowerCase())
+                                        );
+                                      }
+                                    }
+                                    return false;
+                                  })}
+                                  
                                 defaultSortField="title"
                                 pagination
                                 selectableRows={false}

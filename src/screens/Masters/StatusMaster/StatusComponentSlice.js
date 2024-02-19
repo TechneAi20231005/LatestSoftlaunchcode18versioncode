@@ -61,7 +61,7 @@ export const statusMasterSlice = createSlice({
         }
 
         let filerStatus=payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.status }))
-state.filterStatus=filerStatus
+        state.filterStatus=filerStatus
         state.sortStatusData=sortStatusData
         let exportStatusData = [];
         for (const i in getStatusData) {
