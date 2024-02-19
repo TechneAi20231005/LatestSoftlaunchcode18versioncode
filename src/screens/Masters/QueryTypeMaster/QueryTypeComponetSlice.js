@@ -34,6 +34,9 @@ export const queryTypeSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
+    handleFormQueryGroup: (state, action) => {
+      state.modal = action.payload;
+    },
 
 
 
@@ -221,5 +224,5 @@ export const queryTypeSlice = createSlice({
 
   },
 });
-export const { handleModalOpen, handleModalClose } = queryTypeSlice.actions;
+export const { handleModalOpen, handleModalClose,handleFormQueryGroup } = queryTypeSlice.actions;
 export default queryTypeSlice.reducer;

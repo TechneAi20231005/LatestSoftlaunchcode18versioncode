@@ -278,8 +278,14 @@ function RoleComponent({ location }) {
     const form = new FormData(e.target);
 
     if (!id) {
-      dispatch(postRole(form));
-      dispatch(getRoleData());
+      dispatch(postRole(form)).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getRoleData());
+        } else {
+        }
+      });
+
+      // dispatch(getRoleData());
       // await new RoleService().postRole(form).then((res) => {
       //   console.log("res",res);
       //     if (res.status === 200) {
@@ -312,8 +318,13 @@ function RoleComponent({ location }) {
       //     );
       //   });
     } else {
-      dispatch(updatedRole({ id: id, payload: form }));
-      dispatch(getRoleData());
+      dispatch(updatedRole({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getRoleData());
+        } else {
+        }
+      });
+   
       // await new RoleService().updateRole(id, form)
       //   .then((res) => {
       //     if (res.status === 200) {

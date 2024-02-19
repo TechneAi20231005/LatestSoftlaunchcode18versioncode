@@ -28,6 +28,7 @@ const initialState = {
   getVendorAllData: [],
   paymentDropDownData: [],
   state: [],
+  postVendor:''
 };
 
 export const VendorMasterSlice = createSlice({
@@ -63,6 +64,8 @@ export const VendorMasterSlice = createSlice({
 
         state.status = "succeded";
         state.showLoaderModal = false;
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+        state.notify = { type: "success", message: payload.data.message };
 
         state.vendorMasterDropDown = vendorMasterDropDown;
       }
@@ -75,21 +78,19 @@ export const VendorMasterSlice = createSlice({
 
     builder.addCase(postVendor.pending, (state) => {
       state.status = "loading";
-      // state.notify = null;
     });
     builder.addCase(postVendor.fulfilled, (state, action) => {
       const { payload } = action;
-      // state.notify = null;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
+        state.notify = { type: "success", message: payload.data.message };
+
         state.showLoaderModal = false;
-        state.showLoaderModal = false;
-        // state.notify = { type: "success", message: payload.data.message };
+        state.postVendor=postVendor
       } else {
-        state.status = "failed";
-        state.showLoaderModal = false;
-        // state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(postVendor.rejected, (state) => {
@@ -256,17 +257,6 @@ export const VendorMasterSlice = createSlice({
     builder.addCase(getAllActiveState.rejected, (state) => {
       state.status = "rejected";
     });
-
-  
-
-
-
-
-
-
-
-
-
   },
 });
 
