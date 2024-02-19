@@ -581,6 +581,24 @@ const validateAmounts = (e, index) => {
   };
 //Created By Rushikesh harkare 12/10/2023
 
+
+const [inputState, setInputState] = useState({
+  remarkErr:""
+ });
+
+ const [remarkError, setRemarkError] = useState(null);
+ 
+
+ const handleRemark = (e) => {
+  const remarkValue = e.target.value;
+  if (remarkValue === "") {
+    setRemarkError("Invalid Remark");
+  } 
+  else{
+    setRemarkError("")
+  }
+};
+
 //Function To Sumbmit the main form
   const handleForm = async (e) => {
     e.preventDefault();
@@ -598,6 +616,12 @@ const validateAmounts = (e, index) => {
         );
       });
     });
+
+
+    if (inputState.remarkErr) {
+      alert("Please Fill Remark Field");
+      return;
+    }
 
     // Check if assign_employee_id[] is empty
     const assignEmployeeId = formData.getAll("assign_employee_id[]");
@@ -744,11 +768,37 @@ const validateAmounts = (e, index) => {
                 <textarea
                   type="text"
                   cols="4"
-                  className="form-control"
+                  // className="form-control"
+                  className="form-control form-control"
+
                   name="remark"
                   defaultValue={billTypeData && billTypeData.remark}
                   required={true}
+
+                  onChange={handleRemark}
+                  onKeyPress={(e) => {
+                    handleRemark(e);
+                  }}
+                  // onChange={(event) => {
+                  //   if (event.target.value === "") {
+                  //     setInputState({
+                  //       ...inputState,
+                  //       remarkErr: "Remark Required",
+                  //     });
+                  //   } else {
+                  //     setInputState({ ...inputState, remarkErr: "" });
+                  //   }
+                  // }}
                 />
+                {inputState && (
+                      <small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        {remarkError}
+                      </small>
+                    )}
               </div>
               <div className="col-sm-12">
                 <label className="form-label font-weight-bold">

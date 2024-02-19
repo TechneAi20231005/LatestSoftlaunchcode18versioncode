@@ -17,6 +17,9 @@ function BillTypeMaster() {
 
   const searchRef = useRef();
 
+
+
+  
   function SearchInputData(data, search) {
 
     const lowercaseSearch = search.toLowerCase();

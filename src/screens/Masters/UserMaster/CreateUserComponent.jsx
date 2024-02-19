@@ -484,20 +484,20 @@
 //       }
 //     });
 
-    // await new CustomerService().getCustomer().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       setCustomerDrp(
-    //         res.data.data
-    //           .filter((d) => d.is_active === 1)
-    //           .map((d) => ({
-    //             value: d.id,
-    //             label: d.name,
-    //           }))
-    //       );
-    //     }
-    //   }
-    // });
+// await new CustomerService().getCustomer().then((res) => {
+//   if (res.status == 200) {
+//     if (res.data.status == 1) {
+//       setCustomerDrp(
+//         res.data.data
+//           .filter((d) => d.is_active === 1)
+//           .map((d) => ({
+//             value: d.id,
+//             label: d.name,
+//           }))
+//       );
+//     }
+//   }
+// });
 
 //     await new ManageMenuService().getRole(roleId).then((res) => {
 //       if (res.status === 200) {
@@ -1600,6 +1600,7 @@ import {
   getStateData,
   getStateDataSort,
   postUserData,
+  getEmployeeData
 } from "../../Dashboard/DashboardAction";
 import DesignationSlice from "../DesignationMaster/DesignationSlice";
 import { getDesignationData } from "../DesignationMaster/DesignationAction";
@@ -1612,8 +1613,8 @@ function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
-  const roleDropdown = useSelector( (DashbordSlice) => DashbordSlice.dashboard.getAllRoles);
-  const departmentDropdown = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
+  const roleDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.getAllRoles);
+  const departmentDropdown = useSelector(DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData)
 
   const [filteredRoles, setFilteredRoles] = useState([]);
 
@@ -1630,17 +1631,18 @@ function CreateUserComponent({ match }) {
   // const [roleDropdown, setRoleDropdown] = useState(null);
   // const [designationDropdown, setDesignationDropdown] = useState(null);
   const [CustomerDrp, setCustomerDrp] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
   const dispatch = useDispatch();
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
+  const isLoading = useSelector((dashboardSlice) => dashboardSlice.dashboard.isLoading);
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -1659,7 +1661,6 @@ const navigate = useNavigate();
   );
   const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
 
-  console.log("s",useSelector((DashbordSlice) => DashbordSlice.dashboard))
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
     {
@@ -1916,8 +1917,103 @@ const navigate = useNavigate();
     }
   };
 
+  // const handleForm = async (e) => {
+  //   e.preventDefault();
+  //   if (loading) {
+  //     return
+  //   }
+  //   setNotify(null);
+  //   const form = new FormData(e.target);
+  //   var flag = 1;
+
+  //   var a = JSON.stringify(Object.fromEntries(form));
+
+  //   const formValidation = checkingValidation(form);
+  //   if (formValidation === 1) {
+  //     return false;
+  //   }
+
+  //   var selectDepartment = form.getAll("department_id[]");
+  //   if (selectDepartment == "") {
+  //     setInputState({ ...state, departmentErr: " Please Select Department" });
+  //     return false;
+  //   }
+
+  //   if (confirmPasswordError == true) {
+  //     alert("Password Does not Match");
+  //     return false;
+  //   } else if (mailError == true) {
+  //     alert("Enter valid email");
+  //     return false;
+  //   } else if (pincodeValid == true) {
+  //     alert("Enter valid Pincode");
+  //     return false;
+  //   } else if (
+  //     confirmPasswordError == false &&
+  //     mailError == false &&
+  //     contactValid == false &&
+  //     whatsappValid == false &&
+  //     pincodeValid == false
+  //   ) {
+  //     if (flag === 1) {
+  //       dispatch(postUserData(form)).then((res) => {
+  //         if (res.payload.data.status === 1 && res.payload.status === 200) {
+  //           navigate(`/${_base}/User`)
+  //         }
+  //       })
+  //       //  await new UserService()
+  //       //     .postUser(form)
+  //       //     .then((res) => {
+  //       //       if (res.status === 200) {
+  //       //         if (res.data.status === 1) {
+  //       //           history({
+  //       //             pathname: `/${_base}/User`
+  //       //           }
+  //       //           ,
+  //       //        { state: {
+  //       //           type: "success", message: res.data.message ,
+  //       //        }
+  //       //       }
+  //       //           );
+  //       //         } else {
+  //       //           setNotify({ type: "danger", message: res.data.message });
+  //       //         }
+  //       //       } else {
+  //       //         setNotify({ type: "danger", message: res.message });
+  //       //         new ErrorLogService().sendErrorLog(
+  //       //           "User",
+  //       //           "Create_User",
+  //       //           "INSERT",
+  //       //           res.message
+  //       //         );
+  //       //       }
+  //       //     })
+  //       //     .catch((error) => {
+  //       //       if (error.response) {
+  //       //         const { request, ...errorObject } = error.response;
+  //       //         new ErrorLogService().sendErrorLog(
+  //       //           "User",
+  //       //           "Create_User",
+  //       //           "INSERT",
+  //       //           errorObject.data.message
+  //       //         );
+  //       //       } else if (error.request) {
+  //       //         console.error("Error response is undefined:", error.request);
+  //       //       } else {
+  //       //         console.error("Error:", error.message);
+  //       //       }
+  //       //     });
+  //     }
+  //   }
+  // };
+
+
   const handleForm = async (e) => {
     e.preventDefault();
+    if (loading) {
+      return;
+    }
+    setLoading(true); // Set loading state to true
     setNotify(null);
 
     const form = new FormData(e.target);
@@ -1927,23 +2023,28 @@ const navigate = useNavigate();
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
+      setLoading(false); // Reset loading state
       return false;
     }
 
     var selectDepartment = form.getAll("department_id[]");
     if (selectDepartment == "") {
       setInputState({ ...state, departmentErr: " Please Select Department" });
+      setLoading(false); // Reset loading state
       return false;
     }
 
     if (confirmPasswordError == true) {
       alert("Password Does not Match");
+      setLoading(false); // Reset loading state
       return false;
     } else if (mailError == true) {
       alert("Enter valid email");
+      setLoading(false); // Reset loading state
       return false;
     } else if (pincodeValid == true) {
       alert("Enter valid Pincode");
+      setLoading(false); // Reset loading state
       return false;
     } else if (
       confirmPasswordError == false &&
@@ -1953,51 +2054,13 @@ const navigate = useNavigate();
       pincodeValid == false
     ) {
       if (flag === 1) {
-        dispatch(postUserData(form)).then((res)=>{
-          if(res.payload.data.status===1 && res.payload.status === 200){
-            navigate(`/${_base}/User`)}})
-        //  await new UserService()
-        //     .postUser(form)
-        //     .then((res) => {
-        //       if (res.status === 200) {
-        //         if (res.data.status === 1) {
-        //           history({
-        //             pathname: `/${_base}/User`
-        //           }
-        //           ,
-        //        { state: {
-        //           type: "success", message: res.data.message ,
-        //        }
-        //       }
-        //           );
-        //         } else {
-        //           setNotify({ type: "danger", message: res.data.message });
-        //         }
-        //       } else {
-        //         setNotify({ type: "danger", message: res.message });
-        //         new ErrorLogService().sendErrorLog(
-        //           "User",
-        //           "Create_User",
-        //           "INSERT",
-        //           res.message
-        //         );
-        //       }
-        //     })
-        //     .catch((error) => {
-        //       if (error.response) {
-        //         const { request, ...errorObject } = error.response;
-        //         new ErrorLogService().sendErrorLog(
-        //           "User",
-        //           "Create_User",
-        //           "INSERT",
-        //           errorObject.data.message
-        //         );
-        //       } else if (error.request) {
-        //         console.error("Error response is undefined:", error.request);
-        //       } else {
-        //         console.error("Error:", error.message);
-        //       }
-        //     });
+        dispatch(postUserData(form)).then((res) => {
+          if (res.payload.data.status === 1 && res.payload.status === 200) {
+            navigate(`/${_base}/User`);
+            dispatch(getEmployeeData())
+          }
+          setLoading(false); // Reset loading state
+        });
       }
     }
   };
@@ -2147,7 +2210,6 @@ const navigate = useNavigate();
 
 
   const handleDependentChange = (e, type) => {
-    console.log("e",e.value)
     if (type == "COUNTRY") {
       // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
       // setStateDropdown(
@@ -2155,29 +2217,29 @@ const navigate = useNavigate();
       //     .filter((d) => d.country_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
-console.log("state",stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
+      // console.log("state", stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
       // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
-    //  console.log("city11",AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
-     
+      //  console.log("city11",AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+
       // console.log("state dropdown" , stateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state }))))
       //   const newStatus = { ...updateStatus, statedrp: 1 };
       //   setUpdateStatus(newStatus);
       //   setStateName(null);
       //   setCityName(null);
-      }
-      if (type == "STATE") {
-        // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdownData(AllcityDropDownData?.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+    }
+    if (type == "STATE") {
+      // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
+      setCityDropdownData(AllcityDropDownData?.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
 
-        // setCityDropdown(
-        //   city
-        //     .filter((d) => d.state_id == e.value)
-        //     .map((d) => ({ value: d.id, label: d.city }))
-        // );
-        // const newStatus = { ...updateStatus, citydrp: 1 };
-        // setUpdateStatus(newStatus);
-        setStateName(e);
+      // setCityDropdown(
+      //   city
+      //     .filter((d) => d.state_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.city }))
+      // );
+      // const newStatus = { ...updateStatus, citydrp: 1 };
+      // setUpdateStatus(newStatus);
+      setStateName(e);
       setCityName(null);
     }
   };
@@ -2202,60 +2264,64 @@ console.log("state",stateDropdown.filter((filterState) => filterState.country_id
   };
 
 
-  const [s,setS]=useState()
+  const [s, setS] = useState()
 
-//   const handleData=()=>{
-//     console.log("r",roleDropdown)
-//     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
-//       if (accountFor === "SELF") {
-//         return filterData.role.toLowerCase() !== "user";
-//       } else if (accountFor === "CUSTOMER") {
-//         return filterData.role.toLowerCase() === "user";
-//       }
-//     });
+  //   const handleData=()=>{
+  //     console.log("r",roleDropdown)
+  //     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
+  //       if (accountFor === "SELF") {
+  //         return filterData.role.toLowerCase() !== "user";
+  //       } else if (accountFor === "CUSTOMER") {
+  //         return filterData.role.toLowerCase() === "user";
+  //       }
+  //     });
 
-//     const response = filteredAsAccountFor?.filter((d) => d.is_active === 1)
-//       .map((d) => ({
-//         value: d.id,
-//         label: d.role,
-//       }));
-//       console.log("r22",response)
-//     const aa = response.sort(function (a, b) {
-//       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-//     });
-//     setS(aa);
-//   }
-// console.log("s",s)
-
-
-const sortSlefRole= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() !== "user"; })
-const filterSelfRole = sortSlefRole?.filter((d) => d.is_active === 1)
-.map((d) => ({
-  value: d.id,
-  label: d.role,
-}));
-const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
-  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-});
+  //     const response = filteredAsAccountFor?.filter((d) => d.is_active === 1)
+  //       .map((d) => ({
+  //         value: d.id,
+  //         label: d.role,
+  //       }));
+  //       console.log("r22",response)
+  //     const aa = response.sort(function (a, b) {
+  //       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  //     });
+  //     setS(aa);
+  //   }
+  // console.log("s",s)
 
 
-const customerSort= roleDropdown && roleDropdown?.filter(d=>{return d.role.toLowerCase() === "user"; })
-const filterCutomerRole = customerSort?.filter((d) => d.is_active === 1)
-.map((d) => ({
-  value: d.id,
-  label: d.role,
-}));
-const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
-  return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-});
+  const sortSlefRole = roleDropdown && roleDropdown?.filter(d => { return d.role.toLowerCase() !== "user"; })
+  const filterSelfRole = sortSlefRole?.filter((d) => d.is_active === 1)
+    .map((d) => ({
+      value: d.id,
+      label: d.role,
+    }));
+  const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
+
+
+  const customerSort = roleDropdown && roleDropdown?.filter(d => { return d.role.toLowerCase() === "user"; })
+  const filterCutomerRole = customerSort?.filter((d) => d.is_active === 1)
+    .map((d) => ({
+      value: d.id,
+      label: d.role,
+    }));
+  const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
 
   const accountForChange = async (account_for) => {
     setAccountFor(account_for);
     const accountFor = account_for;
+    console.log("roleDropdown", roleDropdown)
     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
+
       if (accountFor === "SELF") {
+        console.log("self", accountFor)
         return filterData.role.toLowerCase() !== "user";
       } else if (accountFor === "CUSTOMER") {
+        console.log("CUSTOMER", accountFor)
         return filterData.role.toLowerCase() === "user";
       }
     });
@@ -2361,7 +2427,7 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
   const [copyData, setCopyData] = useState(null);
   const whatsappRef = useRef(null);
   function copyTextValue(e) {
-    console.log("eee00",e)
+
 
     if (e.target.checked) {
       setIsReadOnly(true);
@@ -2372,7 +2438,6 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
-    console.log("text",text1)
     // document.getElementById("whats_app_contact_no").value = text1;
   }
 
@@ -2420,36 +2485,36 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
   }
   useEffect(() => {
     loadData();
-    if(!checkRole.length){
+    if (!checkRole.length) {
 
       dispatch(getRoles());
     }
-if(!designationDropdown.length){
-  dispatch(getDesignationData());
+    if (!designationDropdown.length) {
+      dispatch(getDesignationData());
 
-}
+    }
 
-if(!AllcityDropDownData.length){
-  dispatch(getCityData())
-}
+    if (!AllcityDropDownData.length) {
+      dispatch(getCityData())
+    }
 
-if(!cityDropdownData.length){
-  dispatch(getCityData())
-}
+    if (!cityDropdownData.length) {
+      dispatch(getCityData())
+    }
 
-if(!stateDropdown.length){
-  dispatch(getStateData());
+    if (!stateDropdown.length) {
+      dispatch(getStateData());
 
-}
-if(!stateDropdownData.length){
-  dispatch(getStateData())
-}
+    }
+    if (!stateDropdownData.length) {
+      dispatch(getStateData())
+    }
 
 
 
-// handleData()
-dispatch(getAllRoles())
-dispatch(departmentData())
+    // handleData()
+    dispatch(getAllRoles())
+    dispatch(departmentData())
   }, []);
 
   useEffect(() => {
@@ -2663,9 +2728,9 @@ dispatch(departmentData())
                             }
                           }}
                           placeholder="Please enter valid email address"
-                          // onKeyPress={(e) => {
-                          //   handleEmail(e);
-                          // }}
+                        // onKeyPress={(e) => {
+                        //   handleEmail(e);
+                        // }}
                         />
 
                         {inputState && (
@@ -3017,8 +3082,8 @@ dispatch(departmentData())
                           placeholder="Enter maximum 250 character"
                           rows="4"
                           maxLength={250}
-                          // onKeyPress={(e) => {
-                          //   Validation.addressFieldOnly(e);}}
+                        // onKeyPress={(e) => {
+                        //   Validation.addressFieldOnly(e);}}
                         />
                       </div>
                     </div>
@@ -3093,8 +3158,8 @@ dispatch(departmentData())
                           id="state_id"
                           onChange={(e) => handleDependentChange(e, "STATE")}
                           defaultValue={stateName ? stateName : ""}
-                          // key={Math.random()}
-                          // value={stateName ? state : ""}
+                        // key={Math.random()}
+                        // value={stateName ? state : ""}
                         />
                       </div>
 
@@ -3117,8 +3182,8 @@ dispatch(departmentData())
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                          // key={Math.random()}
-                          // value={ cityName? cityName : ""}
+                        // key={Math.random()}
+                        // value={ cityName? cityName : ""}
                         />
                       </div>
                     </div>
@@ -3219,7 +3284,7 @@ dispatch(departmentData())
                               type="hidden"
                               name="is_default[]"
                               value={item.is_default ? item.is_default : ""}
-                              // key={Math.random()}
+                            // key={Math.random()}
                             />
                             <input
                               type="checkbox"
@@ -3328,7 +3393,7 @@ dispatch(departmentData())
             </button>
           )}
 
-         
+
           {tabKey == "User_Settings" && (
             <button
               onClick={() => setTabKey("All_Tickets")}
@@ -3337,7 +3402,7 @@ dispatch(departmentData())
               Back
             </button>
           )}
-           <Link to={`/${_base}/User`} className="btn btn-danger text-white">
+          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
             Cancel
           </Link>
         </div>
