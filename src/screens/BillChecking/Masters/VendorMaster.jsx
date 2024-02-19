@@ -4684,6 +4684,7 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag === 1) {
+    
         setNotify(null)
         await new VendorMasterService()
           .updateVendor(id, form)
@@ -5955,12 +5956,13 @@ function VendorMaster({ match }) {
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
+                      {/* {JSON.stringify(modal.modalData.pan_attachment)} */}
                       {modal.modalData && modal.modalData.pan_attachment && (
                         <a
                           href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                           target="_blank"
                           downlaod
-                          // required={true}
+                       
                           className="btn btn-info btn-sm p-0"
                           accept="image/jpg,image/jpeg,image/png,application/pdf"
                           onChange={(e) => {
@@ -6002,7 +6004,8 @@ function VendorMaster({ match }) {
                         </a>
                       )}
                     </label>
-                    {console.log(_attachmentUrl)}
+                
+               
                     <input
                       // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
