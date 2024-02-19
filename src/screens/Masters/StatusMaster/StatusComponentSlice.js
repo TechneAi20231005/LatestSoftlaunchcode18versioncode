@@ -14,7 +14,8 @@ const initialState = {
 
   getStatusData: [],
   sortStatusData:[],
-  filterStatus:[]
+  filterStatus:[],
+  postStatusData:''
 };
 
 export const statusMasterSlice = createSlice({
