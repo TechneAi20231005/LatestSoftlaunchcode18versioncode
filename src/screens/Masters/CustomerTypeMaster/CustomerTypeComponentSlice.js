@@ -12,6 +12,8 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
+  notify: "",
+
 };
 
 export const customerMasterSlice = createSlice({
@@ -32,7 +34,6 @@ export const customerMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getCustomerTypeData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
     });
     builder.addCase(getCustomerTypeData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -96,7 +97,7 @@ export const customerMasterSlice = createSlice({
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let postCustomerData = payload.data.data;
-        console.log(postCustomerData);
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postCustomerData = postCustomerData;

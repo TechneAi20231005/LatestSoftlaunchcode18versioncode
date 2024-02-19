@@ -35,6 +35,7 @@ function CustomerTypeComponent() {
   // console.log("customerData",Datasss);
   const modal = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal);
   const notify = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify);
+  console.log("notify",notify);
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
@@ -305,8 +306,13 @@ function CustomerTypeComponent() {
       //     );
       //   });
     } else {
-      dispatch(updateCustomerData({ id: id, payload: form }));
-      dispatch(getCustomerTypeData());
+      dispatch(updateCustomerData({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCustomerTypeData());
+        } else {
+        }
+      });
+ 
       //   form.delete('is_active')
       //   form.append('is_active', isActive)
       // await new CustomerType()
