@@ -1424,7 +1424,7 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) =>setSearchTerm(e.target.value)}
 
               // onKeyDown={handleKeyDown}
             />
