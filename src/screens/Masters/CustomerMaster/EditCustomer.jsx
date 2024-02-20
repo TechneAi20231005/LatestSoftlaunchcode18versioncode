@@ -46,15 +46,15 @@ function EditCustomer({ match }) {
   // const [checkRole, setCheckRole] = useState(null);
   const [stateDropdownData, setStateDropdownData] = useState(false);
   const [cityDropdownData, setCityDropdownData] = useState(false);
+  console.log(cityDropdownData);
 
   const dispatch = useDispatch()
   const data = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerByIdData)
-const customerType = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerTypeData)
-const countryDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.filteredCountryData)
-const stateDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.stateData)
-const AllcityDropDownData = useSelector(
-  (dashboardSlice) => dashboardSlice.dashboard.cityData
-);
+  const customerType = useSelector(dashboardSlice=>dashboardSlice.dashboard.customerTypeData)
+  const countryDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.filteredCountryData)
+
+  const stateDropdown = useSelector(dashboardSlice=>dashboardSlice.dashboard.stateData)
+  const AllcityDropDownData = useSelector((dashboardSlice) => dashboardSlice.dashboard.cityData);
 
 const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
 
@@ -657,19 +657,21 @@ const Notify = useSelector(
                         Country : <Astrick color="red" />
                       </b>
                     </label>
+                    
                     <div className="col-sm-4">
-                      {countryDropdown && data && (
+                      {countryDropdown && (
                         <Select
                           options={countryDropdown}
                           id="country_id"
                           name="country_id"
-                          defaultValue={
-                            data &&
-                            countryDropdown &&
-                            countryDropdown.filter(
-                              (d) => d.value == data.country_id
-                            )
-                          }
+                          // defaultValue={
+                          //   data &&
+                          //   countryDropdown &&
+                          //   countryDropdown.filter(
+                          //     (d) => d.value == data.country_id
+                          //   )
+                          // }
+                          defaultValue={countryDropdown&& countryDropdown.filter((d)=>d.value==data.country_id)}
                           onChange={handleCountryChange}
                           //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
                         />
@@ -682,16 +684,17 @@ const Notify = useSelector(
                         State : <Astrick color="red" />
                       </b>
                     </label>
+                    {console.log("pp",stateDropdownData&&stateDropdownData)}
                     <div className="col-sm-4">
-                      {stateDropdownData && data && (
+                      {stateDropdown && data && (
                         <Select
-                          options={stateDropdownData}
+                          options={stateDropdown}
                           id="state_id"
                           name="state_id"
                           // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
-                          defaultValue={stateName}
+                          defaultValue={stateDropdown&&stateDropdown.filter((d)=>d.value==data.state_id)}
                           onChange={handleStateChange}
-                          value={stateName}
+                          value={stateDropdown}
                         />
                       )}
                     </div>
@@ -704,6 +707,8 @@ const Notify = useSelector(
                         City : <Astrick color="red" />
                       </b>
                     </label>
+                    {console.log("pss",data)}
+              {console.log("cityDropdownData",cityDropdownData)}
 
                     <div className="col-sm-4">
                       {cityDropdownData && data && (
@@ -712,9 +717,10 @@ const Notify = useSelector(
                           id="city_id"
                           name="city_id"
                           // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
-                          defaultValue={cityName}
+                          defaultValue={cityDropdownData&&cityDropdownData.filter((d)=>d.value==data.city_id)}
+                          // defaultInputValue={AllcityDropDownData&& AllcityDropDownData[0].city}
                           onChange={(e) => setCityName(e)}
-                          value={cityName}
+                          value={cityDropdownData}
                         />
                       )}
                     </div>

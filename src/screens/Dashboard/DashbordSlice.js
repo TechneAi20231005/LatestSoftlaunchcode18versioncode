@@ -270,7 +270,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(getCityData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let cityData = payload.data.data.filter((d) => d.is_active === 1);
+        let cityData = payload.data.data
 
         state.status = "succeded";
         state.showLoaderModal = false;

@@ -620,10 +620,6 @@
 //           }
 //         });
 
-
-
-
-
 //         //  loadData()
 //         // await new VendorMasterService()
 //         //   .createVendor(form)
@@ -2460,7 +2456,7 @@
 
 //                         if (msmeNo.toLowerCase() === "na") {
 //                           msmeNo = "NA"; // Convert "na" to "NA"
-                        
+
 //                         // if (msmeNo === "NA") {
 //                         //   setInputState({
 //                         //     ...state,
@@ -2607,7 +2603,7 @@
 //                         maxLengthCheck(e, "MSME");
 //                       }}
 //                     />
-//                     {/* 
+//                     {/*
 //                   <p style={{ fontSize: "10px" }}>
 //                     {" "}
 //                     Note :-Accept only png, jpeg, jpp and pdf file.
@@ -4058,9 +4054,6 @@
 
 // export { VendorMaster };
 
-
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -4106,6 +4099,7 @@ function VendorMaster({ match }) {
     modalData: "",
     modalHeader: "",
   });
+  console.log("id", modal.modalData.id);
 
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
@@ -4453,16 +4447,15 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
-          res.data.data.filter((d)=>d.is_active == 1).map((i) => ({
-            value: i.id,
-            label: i.city,
-          }))
+          res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((i) => ({
+              value: i.id,
+              label: i.city,
+            }))
         );
-
-          
       }
     });
-
 
     await new VendorMasterService().getActivePaymentTemplate().then((res) => {
       if (res.status === 200) {
@@ -4554,8 +4547,8 @@ function VendorMaster({ match }) {
       return;
     }
     // if (inputState.MSMENumberErr) {
-      //   alert("Invalid MSME Number ");
-      //   return;
+    //   alert("Invalid MSME Number ");
+    //   return;
     // }
     if (inputState.BankNameErr) {
       alert("Invalid Bank Name ");
@@ -4684,8 +4677,7 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag === 1) {
-    
-        setNotify(null)
+        setNotify(null);
         await new VendorMasterService()
           .updateVendor(id, form)
           .then((res) => {
@@ -5037,7 +5029,7 @@ function VendorMaster({ match }) {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("bank_passbook_attachment").value = null;
-        setPassBookSelectedFiles(null)
+        setPassBookSelectedFiles(null);
       }
     }
 
@@ -5045,7 +5037,7 @@ function VendorMaster({ match }) {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("cheque_attachment").value = null;
-        setChequeAttachmentSelectedFiles(null)
+        setChequeAttachmentSelectedFiles(null);
       }
     }
   };
@@ -5894,7 +5886,6 @@ function VendorMaster({ match }) {
                   )}
                 </div> */}
 
-
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
                       PAN No :<Astrick color="red" size="13px" />
@@ -5962,7 +5953,6 @@ function VendorMaster({ match }) {
                           href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                           target="_blank"
                           downlaod
-                       
                           className="btn btn-info btn-sm p-0"
                           accept="image/jpg,image/jpeg,image/png,application/pdf"
                           onChange={(e) => {
@@ -6004,8 +5994,8 @@ function VendorMaster({ match }) {
                         </a>
                       )}
                     </label>
-                
-               
+                    {console.log("ppp", modal.modalData)}
+
                     <input
                       // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
@@ -6038,6 +6028,7 @@ function VendorMaster({ match }) {
                           }
                           e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         }
+                        // Check if attachment is required and input field is empty
 
                         uploadPanAttachmentHandler(e, "UPLOAD", "");
                         maxLengthCheck(e, "PAN");
@@ -6331,8 +6322,7 @@ function VendorMaster({ match }) {
                             ...state,
                             MSMENumberErr: "",
                           });
-                        } else 
-if (msmeNo.length < 19) {
+                        } else if (msmeNo.length < 19) {
                           setInputState({
                             ...state,
                             MSMENumberErr: "Invalid MSME No.",
@@ -6620,7 +6610,7 @@ if (msmeNo.length < 19) {
                         id="bank_name"
                         name="bank_name"
                         maxLength={50}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
@@ -6666,7 +6656,7 @@ onKeyPress={(e) => {
                         name="bank_name"
                         maxLength={50}
                         onKeyPress={(e) => {
-                        Validation.CharacterWithSpace(e);
+                          Validation.CharacterWithSpace(e);
                         }}
                         required={true}
                         onChange={(event) => {
@@ -6712,7 +6702,7 @@ onKeyPress={(e) => {
                         id="bank_branch_name"
                         name="bank_branch_name"
                         maxLength={25}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
@@ -6768,7 +6758,7 @@ onKeyPress={(e) => {
                         // onKeyPress={(e) => {
                         //   Validation.CharactersNumbersSpeicalOnly(e);
                         // }}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         onChange={(event) => {
@@ -7181,7 +7171,6 @@ onKeyPress={(e) => {
                             ? true
                             : false
                         }
-                       
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
 
@@ -7379,7 +7368,6 @@ onKeyPress={(e) => {
                             ? true
                             : false
                         }
-                        
                         className="form-control"
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
@@ -7996,5 +7984,3 @@ onKeyPress={(e) => {
 }
 
 export { VendorMaster };
-
-
