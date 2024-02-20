@@ -206,7 +206,7 @@ export default function DynamicFormDropdownComponent() {
   }, [data]);
 
   useEffect(() => {
-    loadData();
+    // loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
     }
