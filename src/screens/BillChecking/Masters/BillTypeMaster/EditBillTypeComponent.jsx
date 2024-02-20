@@ -67,7 +67,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
-      // console.log("first",firstAmount)
+      console.log("first",firstAmount)
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -914,6 +914,16 @@ const handlbillType = (e) => {
                           index > 0 && index === approverData.data.length - 1
                         }
                       />
+{/* {item.amount<= approverData.data[0].amount ?<small
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                  hi
+                      </small>:""} */}
+                      {/* {console.log("am",item.amount)}
+                      {console.log("apdata",approverData.data[0].amount)} */}
+
                       {index + 1 === item.slab && index === 0 ? (
                         <Button
                           type="button"
