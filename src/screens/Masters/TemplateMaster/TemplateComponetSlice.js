@@ -47,7 +47,8 @@ const initialState = {
     modalAddData: null,
     modalAddHeader: null,
 
-  }
+  },
+  notify:''
 };
 
 export const templateSlice = createSlice({

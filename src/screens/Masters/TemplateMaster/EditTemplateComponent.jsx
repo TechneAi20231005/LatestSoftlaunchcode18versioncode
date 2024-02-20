@@ -25,6 +25,7 @@ import {
   getAllTypeData,
   getTemplateByIdData,
   postTemplateData,
+  templateData,
   updateBasketModalData,
   updateTemplateData,
 } from "./TemplateComponetAction";
@@ -434,6 +435,7 @@ const EditTemplateComponent = ({ match, props }) => {
     dispatch(updateTemplateData({ id: templateId, payload: form })).then(
       (res) => {
         if (res.payload.data.status == 1 && res.payload.status == 200) {
+          dispatch(templateData());
           navigate(`/${_base}/Template`);
         }
       }

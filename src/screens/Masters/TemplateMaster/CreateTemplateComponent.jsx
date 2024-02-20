@@ -20,6 +20,7 @@ import {
   getAllTypeData,
   getParentData,
   postTemplateData,
+  templateData,
 } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleModalClose,handleModalOpen } from "./TemplateComponetSlice"
@@ -239,6 +240,7 @@ const CreateTemplateComponent = () => {
       // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
+          dispatch(templateData());
           navigate(`/${_base}/Template`);
         }
       });
