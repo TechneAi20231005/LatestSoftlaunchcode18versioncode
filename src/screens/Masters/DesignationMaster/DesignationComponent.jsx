@@ -139,6 +139,7 @@ function DesignationComponent() {
       name: "Status",
       selector: (row) => row.is_active,
       sortable: true,
+      width: "150px",
       cell: (row) => (
         <div>
           {row.is_active == 1 && (

@@ -139,6 +139,7 @@ function CustomerTypeComponent() {
       name: "Status",
       selector: (row) => row.is_active,
       sortable: true,
+      width: "125px",
       cell: (row) => (
         <div>
           {row.is_active == 1 && (
