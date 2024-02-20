@@ -110,6 +110,13 @@ export default function TaskComponent(props) {
   }, []);
 
   const handleSubmit = (e) => {
+    console.log("pp",props.taskData.task_days
+    )
+
+    if(!props.taskData.task_days){
+      alert("Task Name is required")
+
+    }
     setNotify(null);
     e.preventDefault();
 
@@ -213,7 +220,7 @@ export default function TaskComponent(props) {
                     {show && (
                       <div className="">
                         <label>Task Name</label>
-                        {/* <Astrick color="red" size="13px" /> */}
+                        <Astrick color="red" size="13px" />
 
           
                         <input
@@ -226,7 +233,7 @@ export default function TaskComponent(props) {
                         <br />
 
                         <label>Days Required</label>
-                        {/* <Astrick color="red" size="13px" /> */}
+                        <Astrick color="red" size="13px" />
                         <input
                           type="number"
                         
@@ -234,14 +241,14 @@ export default function TaskComponent(props) {
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.task_days}
                           name="days"
-                         required
+                          required
 
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
 
                         <label>Hours Required</label>
-                        {/* <Astrick color="red" size="13px" /> */}
+                        <Astrick color="red" size="13px" />
                         <input
                           className="form-control form-control-sm"
                           defaultValue={
@@ -300,7 +307,7 @@ export default function TaskComponent(props) {
                             : "before"}{" "}
                           days :
                         </label>
-                        {/* <Astrick color="red" size="13px" /> */}
+                        <Astrick color="red" size="13px" />
                         <input
                           type="number"
                           min="1"
@@ -322,7 +329,16 @@ export default function TaskComponent(props) {
                   >
                     Update
                   </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    // onClick={handleSubmit}
+                  >
+                    Cancle
+                  </button>
                 </div>
+
+                
               </div>
             </div>
           </div>

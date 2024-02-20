@@ -26,10 +26,7 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
-  const paymentdata = useSelector(
-    (PaymentTemplateMasterSlice) =>
-      PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
-  );
+ const paymentdata = useSelector( (PaymentTemplateMasterSlice) =>PaymentTemplateMasterSlice.paymentmaster.paymentTemplate  );
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 45)
   );
@@ -122,10 +119,20 @@ function PaymentTemplateMaster() {
 
   const billDayRef = useRef(null);
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
   const [country, setCountry] = useState();
@@ -360,7 +367,7 @@ function PaymentTemplateMaster() {
   };
 
   const loadData = async () => {
-    dispatch(paymentTemplate());
+    dispatch(paymentTemplate())
     dispatch(getRoles());
 
     // const data = [];
@@ -475,7 +482,7 @@ function PaymentTemplateMaster() {
             if (res.data.status === 1) {
               setNotify({ type: "success", message: res.data.message });
               setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
+              dispatch(paymentTemplate());
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -508,7 +515,7 @@ function PaymentTemplateMaster() {
             if (res.data.status === 1) {
               setNotify({ type: "success", message: res.data.message });
               setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
+              dispatch(paymentTemplate());
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -589,14 +596,17 @@ function PaymentTemplateMaster() {
               name="search"
               placeholder="Search...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={(e) => handleSearch(e)}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
+              // onClick={(e) => handleSearch(e)}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -619,7 +629,26 @@ function PaymentTemplateMaster() {
               {paymentdata && (
                 <DataTable
                   columns={columns}
-                  data={paymentdata}
+                  // data={paymentdata}
+                  data={paymentdata.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
+                  
                   defaultSortFieldId="id"
                   pagination
                   selectableRows={false}
@@ -782,6 +811,7 @@ function PaymentTemplateMaster() {
                     <label className="form-label font-weight-bold">
                       Bill Day :<Astrick color="red" size="13px" />
                     </label>
+                 
                     {modal.modalData && (
                       // <input
                       //   type="text"
@@ -801,6 +831,14 @@ function PaymentTemplateMaster() {
                         isSearchable
                         ref={billDayRef}
                         isMulti
+                        defaultValue={
+                          modal?.modalData?.bill_day
+                            ? options.filter((option) =>
+                                modal.modalData.bill_day.split(',').includes(option.value)
+                              )
+                            : null
+                        }
+                        
                         isClearable
                       />
                     )}
