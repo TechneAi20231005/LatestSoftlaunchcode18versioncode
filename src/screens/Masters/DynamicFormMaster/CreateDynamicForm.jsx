@@ -548,6 +548,7 @@ const dispatch = useDispatch()
                                                                     className="center"
                                                                 />
                                                             </td>
+                                                            {console.log("i",item.inputMandatory)}
                                                             <td>
                                                                 {rows[idx].inputType == "select" &&
                                                                 <input
@@ -672,7 +673,7 @@ const dispatch = useDispatch()
                                             }
 
                                             return <div key={index} className={`${data.inputWidth} mt-2`} >
-                                                <label><b>{data.inputLabel} : </b></label>
+                                                <label><b>{data.inputLabel} :{data.inputMandatory === true ? <Astrick color="red" size="13px" /> : ""}</b></label>
 
                                                 {data.inputType === 'text' &&
                                                     <input

@@ -14,8 +14,8 @@ import "./styles.css"; // Import your CSS file
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
 
-  const {id} =useParams()
-  const  BillId =id
+  const { id } = useParams();
+  const BillId = id;
   const [approverData, setApproverData] = useState({
     data: [
       {
@@ -67,7 +67,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
-      console.log("first",firstAmount)
+      console.log("first", firstAmount);
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -162,7 +162,7 @@ const EditBillTypeComponent = ({ match }) => {
   };
   //Created By Rushikesh harkare 12/10/2023
 
-// Function To Remove Slab
+  // Function To Remove Slab
   const handleRemoveSection = (indexToRemove) => {
     const newData = [...approverData.data];
 
@@ -191,9 +191,9 @@ const EditBillTypeComponent = ({ match }) => {
     // Update the state with the modified data
     setApproverData({ data: newData });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for on Changing amount update in state
+  //Function for on Changing amount update in state
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
     var amountValue = parseFloat(value);
@@ -214,143 +214,121 @@ const EditBillTypeComponent = ({ match }) => {
       setApproverData({ data: newData });
     }
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Validation For amount 
-// const validateAmounts = (e, index) => {
-//   const slabsData = approverData.data;
-//   const numSlabs = slabsData.length;
+  //Validation For amount
+  // const validateAmounts = (e, index) => {
+  //   const slabsData = approverData.data;
+  //   const numSlabs = slabsData.length;
 
-//   // Check if the input value has changed
-//   if (e.target.value === slabsData[index].amount) {
-//     return; // Exit the function if the value hasn't changed
-//   }
+  //   // Check if the input value has changed
+  //   if (e.target.value === slabsData[index].amount) {
+  //     return; // Exit the function if the value hasn't changed
+  //   }
 
-//   // Update the current slab's amount
-//   const newValue = parseFloat(e.target.value);
+  //   // Update the current slab's amount
+  //   const newValue = parseFloat(e.target.value);
 
-//   if (index === 0) {
-//     // Special case for the last index
-//     const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
-//     if (index === 0 && newValue > previousAmount) {
-//       alert(
-//         `Amount in section ${
-//           index + 1
-//         } should not be greater than the previous tab`
-//       );
-//       e.target.value = previousAmount;
-//       slabsData[index].amount = previousAmount;
-//       newValue = previousAmount;
-//     }else {
-//       // Update the last slab's amount
-//       slabsData[index].amount = newValue;
-//     }
-//     if (index > 0 && newValue < previousAmount) {
-//       alert(
-//         `Amount in section ${
-//           index + 1
-//         } should be greater than the previous tab`
-//       );
-//       e.target.value = previousAmount;
-//       slabsData[index].amount = previousAmount;
-//     } else {
-//       // Update the last slab's amount
-//       slabsData[index].amount = newValue;
-//     }
-//   } else {
-//     // For all other indices
-//     const previousAmount = slabsData[index - 1].amount;
-//     const nextAmount = slabsData[index + 1].amount;
+  //   if (index === 0) {
+  //     // Special case for the last index
+  //     const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
+  //     if (index === 0 && newValue > previousAmount) {
+  //       alert(
+  //         `Amount in section ${
+  //           index + 1
+  //         } should not be greater than the previous tab`
+  //       );
+  //       e.target.value = previousAmount;
+  //       slabsData[index].amount = previousAmount;
+  //       newValue = previousAmount;
+  //     }else {
+  //       // Update the last slab's amount
+  //       slabsData[index].amount = newValue;
+  //     }
+  //     if (index > 0 && newValue < previousAmount) {
+  //       alert(
+  //         `Amount in section ${
+  //           index + 1
+  //         } should be greater than the previous tab`
+  //       );
+  //       e.target.value = previousAmount;
+  //       slabsData[index].amount = previousAmount;
+  //     } else {
+  //       // Update the last slab's amount
+  //       slabsData[index].amount = newValue;
+  //     }
+  //   } else {
+  //     // For all other indices
+  //     const previousAmount = slabsData[index - 1].amount;
+  //     const nextAmount = slabsData[index + 1].amount;
 
-//     if (index === numSlabs - 2) {
-//       // Special case for the second-last index
-//       if (newValue < previousAmount) {
-//         alert(
-//           `Amount in section ${
-//             index + 1
-//           } should be greater than the previous tab`
-//         );
-//         e.target.value = previousAmount;
-//         slabsData[index].amount = previousAmount;
-//         slabsData[index + 1].amount = previousAmount;
-//       } else {
-//         // Update the current slab's amount
-//         slabsData[index].amount = newValue;
-//       }
-//     } else {
-//       // For all other indices except the last and second-last
-//       if (newValue <= previousAmount || newValue >= nextAmount) {
-//         alert(
-//           `Amount in section ${
-//             index + 1
-//           } should be greater than the previous tab and less than the next tab`
-//         );
-//         e.target.value = previousAmount;
-//         slabsData[index].amount = previousAmount;
-//       } else {
-//         // Update the current slab's amount
-//         slabsData[index].amount = newValue;
-//       }
-//     }
-//   }
+  //     if (index === numSlabs - 2) {
+  //       // Special case for the second-last index
+  //       if (newValue < previousAmount) {
+  //         alert(
+  //           `Amount in section ${
+  //             index + 1
+  //           } should be greater than the previous tab`
+  //         );
+  //         e.target.value = previousAmount;
+  //         slabsData[index].amount = previousAmount;
+  //         slabsData[index + 1].amount = previousAmount;
+  //       } else {
+  //         // Update the current slab's amount
+  //         slabsData[index].amount = newValue;
+  //       }
+  //     } else {
+  //       // For all other indices except the last and second-last
+  //       if (newValue <= previousAmount || newValue >= nextAmount) {
+  //         alert(
+  //           `Amount in section ${
+  //             index + 1
+  //           } should be greater than the previous tab and less than the next tab`
+  //         );
+  //         e.target.value = previousAmount;
+  //         slabsData[index].amount = previousAmount;
+  //       } else {
+  //         // Update the current slab's amount
+  //         slabsData[index].amount = newValue;
+  //       }
+  //     }
+  //   }
 
-//   // Update the state with the modified data
-//   setApproverData({ data: slabsData });
-// };
+  //   // Update the state with the modified data
+  //   setApproverData({ data: slabsData });
+  // };
 
+  //Validation For amount
+  const validateAmounts = (e, index) => {
+    const slabsData = approverData.data;
+    const numSlabs = slabsData.length;
 
-
-
-
-//Validation For amount
-const validateAmounts = (e, index) => {
-  const slabsData = approverData.data;
-  const numSlabs = slabsData.length;
-
-  // Check if the input value has changed
-  if (e.target.value === slabsData[index].amount) {
-    return; // Exit the function if the value hasn't changed
-  }
-
-  // Update the current slab's amount
-  const newValue = parseFloat(e.target.value);
-
-  if (index === 0) {
-    // Special case for the last index
-    const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
-    if (index === 0 && newValue > previousAmount) {
-      alert(
-        `Amount in section ${
-          index + 1
-        } should not be greater than the previous tab`
-      );
-      e.target.value = previousAmount;
-      slabsData[index].amount = previousAmount;
-      newValue = previousAmount;
-    }else {
-      // Update the last slab's amount
-      slabsData[index].amount = newValue;
+    // Check if the input value has changed
+    if (e.target.value === slabsData[index].amount) {
+      return; // Exit the function if the value hasn't changed
     }
-    if (index > 0 && newValue < previousAmount) {
-      alert(
-        `Amount in section ${
-          index + 1
-        } should be greater than the previous tab`
-      );
-      e.target.value = previousAmount;
-      slabsData[index].amount = previousAmount;
-    } else {
-      // Update the last slab's amount
-      slabsData[index].amount = newValue;
-    }
-  } else {
-    // For all other indices
-    const previousAmount = slabsData[index - 1].amount;
-    const nextAmount = slabsData[index + 1].amount;
 
-    if (index === numSlabs - 2) {
-      // Special case for the second-last index
-      if (newValue < previousAmount) {
+    // Update the current slab's amount
+    const newValue = parseFloat(e.target.value);
+
+    if (index === 0) {
+      // Special case for the last index
+      const previousAmount =
+        index === 0 ? slabsData[index + 1].amount : slabsData[index - 1].amount;
+      if (index === 0 && newValue > previousAmount) {
+        alert(
+          `Amount in section ${
+            index + 1
+          } should not be greater than the previous tab`
+        );
+        e.target.value = previousAmount;
+        slabsData[index].amount = previousAmount;
+        newValue = previousAmount;
+      } else {
+        // Update the last slab's amount
+        slabsData[index].amount = newValue;
+      }
+      if (index > 0 && newValue < previousAmount) {
         alert(
           `Amount in section ${
             index + 1
@@ -358,41 +336,57 @@ const validateAmounts = (e, index) => {
         );
         e.target.value = previousAmount;
         slabsData[index].amount = previousAmount;
-        slabsData[index + 1].amount = previousAmount;
       } else {
-        // Update the current slab's amount
+        // Update the last slab's amount
         slabsData[index].amount = newValue;
       }
     } else {
-      // For all other indices except the last and second-last
-      if (newValue <= previousAmount || newValue >= nextAmount) {
-        alert(
-          `Amount in section ${
-            index + 1
-          } should be greater than the previous tab and less than the next tab`
-        );
-        e.target.value = previousAmount;
-        slabsData[index].amount = previousAmount;
+      // For all other indices
+      const previousAmount = slabsData[index - 1].amount;
+      const nextAmount = slabsData[index + 1].amount;
+
+      if (index === numSlabs - 2) {
+        // Special case for the second-last index
+        if (newValue < previousAmount) {
+          alert(
+            `Amount in section ${
+              index + 1
+            } should be greater than the previous tab`
+          );
+          e.target.value = previousAmount;
+          slabsData[index].amount = previousAmount;
+          slabsData[index + 1].amount = previousAmount;
+        } else {
+          // Update the current slab's amount
+          slabsData[index].amount = newValue;
+        }
       } else {
-        // Update the current slab's amount
-        slabsData[index].amount = newValue;
+        // For all other indices except the last and second-last
+        if (newValue <= previousAmount || newValue >= nextAmount) {
+          alert(
+            `Amount in section ${
+              index + 1
+            } should be greater than the previous tab and less than the next tab`
+          );
+          e.target.value = previousAmount;
+          slabsData[index].amount = previousAmount;
+        } else {
+          // Update the current slab's amount
+          slabsData[index].amount = newValue;
+        }
       }
     }
-  }
 
-  // Update the state with the modified data
-  setApproverData({ data: slabsData });
-};
+    // Update the state with the modified data
+    setApproverData({ data: slabsData });
+  };
 
+  //Created By Rushikesh harkare 12/10/2023
 
-
-
-
-//Created By Rushikesh harkare 12/10/2023
-
-// onLoad function to collect data from API's
+  // onLoad function to collect data from API's
   const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -429,9 +423,9 @@ const validateAmounts = (e, index) => {
         }
       });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for update state selected values from each slab and each row perticularly 
+  //Function for update state selected values from each slab and each row perticularly
   const handleUserSelection = (sectionIndex, rowIndex, selectedOptions) => {
     const updatedSelectedUsersArray = [...selectedUsersArray];
     const newData = [...approverData.data];
@@ -511,9 +505,9 @@ const validateAmounts = (e, index) => {
     setApproverData({ data: updatedData });
     // Clear the input field's value
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for update state selected values from each slab and each row perticularly 
+  //Function for update state selected values from each slab and each row perticularly
   const handleUserSelection2 = (sectionIndex, rowIndex, selectedOptions) => {
     // Copy the current selectedUsersArray to avoid mutating state directly
     const updatedSelectedUsersArray = [...selectedUsersArray];
@@ -543,9 +537,9 @@ const validateAmounts = (e, index) => {
       inputRefs.current[sectionIndex][rowIndex].value = "";
     }
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for get only selected users from optional approvers dropdown 
+  //Function for get only selected users from optional approvers dropdown
   const getAvailableOptions = (options, sectionIndex, rowIndex) => {
     const selectedUsersInSection = selectedUsersArray[sectionIndex];
 
@@ -562,9 +556,9 @@ const validateAmounts = (e, index) => {
     // If no selection has been made, show all options
     return options;
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Update in state Required Numbers
+  //Update in state Required Numbers
   const handleRequiredNumbersChange = (index, rowIndex, newValue) => {
     // Get the maximum length from the required_users array
     const maxLength =
@@ -580,40 +574,34 @@ const validateAmounts = (e, index) => {
     // Update the state with the new data
     setApproverData({ data: newData });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
+  const [inputState, setInputState] = useState({
+    remarkErr: "",
+  });
 
-const [inputState, setInputState] = useState({
-  remarkErr:""
- });
+  const [remarkError, setRemarkError] = useState(null);
+  const [billTypeErr, setBillTypeErr] = useState(null);
 
- const [remarkError, setRemarkError] = useState(null);
- const [billTypeErr, setBillTypeErr] = useState(null);
+  const handleRemark = (e) => {
+    const remarkValue = e.target.value;
+    if (remarkValue === "") {
+      setRemarkError("Invalid Remark");
+    } else {
+      setRemarkError("");
+    }
+  };
 
- 
+  const handlbillType = (e) => {
+    const billTypeValue = e.target.value;
+    if (billTypeValue === "") {
+      setBillTypeErr("Invalid Bill type");
+    } else {
+      setBillTypeErr("");
+    }
+  };
 
- const handleRemark = (e) => {
-  const remarkValue = e.target.value;
-  if (remarkValue === "") {
-    setRemarkError("Invalid Remark");
-  } 
-  else{
-    setRemarkError("")
-  }
-};
-
-const handlbillType = (e) => {
-  const billTypeValue = e.target.value;
-  if (billTypeValue === "") {
-    setBillTypeErr("Invalid Bill type");
-  } 
-  else{
-    setBillTypeErr("")
-  }
-};
-
-
-//Function To Sumbmit the main form
+  //Function To Sumbmit the main form
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -630,7 +618,6 @@ const handlbillType = (e) => {
         );
       });
     });
-
 
     if (inputState.remarkErr) {
       alert("Please Fill Remark Field");
@@ -663,11 +650,13 @@ const handlbillType = (e) => {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/billTypeMaster`,
-            message: "once",
-         
-          },   {state: { alert: { type: "success", message: res.data.message } }});
+          history(
+            {
+              pathname: `/${_base}/billTypeMaster`,
+              message: "once",
+            },
+            { state: { alert: { type: "success", message: res.data.message } } }
+          );
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }
@@ -677,7 +666,7 @@ const handlbillType = (e) => {
       console.error("Error:", error);
     }
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
   // Initialize approverData with default values from billTypeData
   useEffect(() => {
@@ -750,13 +739,13 @@ const handlbillType = (e) => {
                   defaultValue={billTypeData && billTypeData.bill_type}
                   maxLength={20}
                 />
-                      <small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        {billTypeErr}
-                      </small>
+                <small
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {billTypeErr}
+                </small>
               </div>
 
               <div className="col-sm-4 ">
@@ -792,11 +781,9 @@ const handlbillType = (e) => {
                   cols="4"
                   // className="form-control"
                   className="form-control form-control"
-
                   name="remark"
                   defaultValue={billTypeData && billTypeData.remark}
                   required={true}
-
                   onChange={handleRemark}
                   onKeyPress={(e) => {
                     handleRemark(e);
@@ -813,14 +800,14 @@ const handlbillType = (e) => {
                   // }}
                 />
                 {inputState && (
-                      <small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        {remarkError}
-                      </small>
-                    )}
+                  <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {remarkError}
+                  </small>
+                )}
               </div>
               <div className="col-sm-12">
                 <label className="form-label font-weight-bold">
@@ -879,8 +866,8 @@ const handlbillType = (e) => {
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
-                      {console.log("approve",approverData.data.length)}
-                      {console.log("item",item.amount)}
+                      {console.log("approve", approverData.data.length)}
+                      {console.log("item", item.amount)}
 
                       <strong>
                         {index === approverData.data.length - 1
@@ -888,7 +875,6 @@ const handlbillType = (e) => {
                           : "Upto Amount:"}
                       </strong>
 
-                      
                       <input
                         className="form-control-sm"
                         style={
@@ -900,7 +886,12 @@ const handlbillType = (e) => {
                         key={index}
                         value={item.amount ? item.amount : ""}
                         onKeyPress={(e) => {
-                          if (!/^[0-9]*(\.[0-9]{0,2})?$/.test(e.target.value + e.key) || e.target.value.length >= 10) {
+                          if (
+                            !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                              e.target.value + e.key
+                            ) ||
+                            e.target.value.length >= 10
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -914,16 +905,7 @@ const handlbillType = (e) => {
                           index > 0 && index === approverData.data.length - 1
                         }
                       />
-{/* {item.amount<= approverData.data[0].amount ?<small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                  hi
-                      </small>:""} */}
-                      {/* {console.log("am",item.amount)}
-                      {console.log("apdata",approverData.data[0].amount)} */}
-
+                     
                       {index + 1 === item.slab && index === 0 ? (
                         <Button
                           type="button"
@@ -948,15 +930,41 @@ const handlbillType = (e) => {
                         </Button>
                       ) : null}
                     </Col>
+                    {/* {console.log("i",(index>0 && !index === approverData.data.length - 1))}
+                    {console.log("index",index)}
+                    {(index > 0 ) && (!index === approverData.data.length - 1) === false &&
+                    <>
+                    {item.amount <= approverData.data[0].amount ? (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          value should be greater than the previous slab
+                        </small>
+                      ) : (
+                        ""
+                      )}
+                      </>
+                      }
+                       {console.log("am",item.amount)}
+                      {console.log("apdata",approverData.data[0].amount)}  */}
+
                   </Row>
 
                   <Table className="mt-2">
                     <thead>
                       <tr>
                         <th>Sr</th>
-                        <th>Assinged Approvers <Astrick color="red" size="13px" /></th>
-                        <th>Required Approvers <Astrick color="red" size="13px" /> </th>
-                        <th>Required Numbers <Astrick color="red" size="13px" /></th>
+                        <th>
+                          Assinged Approvers <Astrick color="red" size="13px" />
+                        </th>
+                        <th>
+                          Required Approvers <Astrick color="red" size="13px" />{" "}
+                        </th>
+                        <th>
+                          Required Numbers <Astrick color="red" size="13px" />
+                        </th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -1094,13 +1102,11 @@ const handlbillType = (e) => {
               Cancel
             </Button> */}
 
-            
-            <Link to={`/${_base}/billTypeMaster`}
-            className="pull-right btn btn-danger text-white"
-            
+            <Link
+              to={`/${_base}/billTypeMaster`}
+              className="pull-right btn btn-danger text-white"
             >
-                   Cancel
-            
+              Cancel
             </Link>
             <Button className="pull-right" type="submit" variant="primary">
               Update
