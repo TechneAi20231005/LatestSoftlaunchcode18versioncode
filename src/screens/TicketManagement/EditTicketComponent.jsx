@@ -18,14 +18,7 @@ import DynamicFormDropdownMasterService from "../../services/MastersService/Dyna
 import UserService from "../../services/MastersService/UserService";
 import PageHeader from "../../components/Common/PageHeader";
 import Select from "react-select";
-import { getCurrentDate } from "../../components/Utilities/Functions";
-import { UserDropdown } from "../Masters/UserMaster/UserComponent";
-import { DepartmentDropdown } from "../Masters/DepartmentMaster/DepartmentComponent";
-import { StatusDropdown } from "../Masters/StatusMaster/StatusComponent";
-import { QueryTypeDropdown } from "../Masters/QueryTypeMaster/QueryTypeComponent";
-import { ProjectDropdown } from "../ProjectManagement/ProjectMaster/ProjectComponent";
-import { ModuleDropdown } from "../ProjectManagement/ModuleMaster/ModuleComponent";
-import { SubModuleDropdown } from "../ProjectManagement/SubModuleMaster/SubModuleComponent";
+
 import { Astrick } from "../../components/Utilities/Style";
 import { userSessionData as user } from "../../settings/constants";
 import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
@@ -45,38 +38,10 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import { Mention, MentionsInput } from "react-mentions";
 import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
-import { UseDispatch,useDispatch,useSelector } from "react-redux";
-import ProjectMasterSlice from "../ProjectManagement/ProjectMaster/ProjectMasterSlice";
-import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
-import ModuleSlice from "../ProjectManagement/ModuleMaster/ModuleSlice";
-import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
-import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
-import { getSubModuleById, subModuleMaster } from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
-import StatusComponentSlice from "../Masters/StatusMaster/StatusComponentSlice";
-import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
-import QueryTypeComponetSlice from "../Masters/QueryTypeMaster/QueryTypeComponetSlice";
-import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
-import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
-import { getUserForMyTicketsData } from "./MyTicketComponentAction";
-import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function EditTicketComponent({ match }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [notify, setNotify] = useState(null);
-
-const dispatch = useDispatch()
-const projectDropdown = useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.projectDropDownData)
-const moduleData= useSelector(ModuleSlice=>ModuleSlice.moduleMaster.sortModuleData)
-const subModuleData=useSelector(SubModuleMasterSlice=>SubModuleMasterSlice.subModuleMaster.sortSubModuleData)
-const statusData = useSelector(StatusComponentSlice=>StatusComponentSlice.statusMaster.filterStatus)
-const queryTypes=useSelector(QueryTypeComponetSlice=>QueryTypeComponetSlice.queryTypeMaster.queryTypeData)
-const departmentDropdown = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
-const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
-
-
-
-
-
 
   const { id } = useParams();
   const ticketId = id;
@@ -92,15 +57,15 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  // const [checkRole, setCheckRole] = useState(null);
+  const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
-  // const [projectDropdown, setProjectDropdown] = useState();
+  const [projectDropdown, setProjectDropdown] = useState();
 
-  // const [moduleData, setModuleData] = useState();
+  const [moduleData, setModuleData] = useState();
   const [moduleDropdown, setModuleDropdown] = useState();
 
-  // const [subModuleData, setSubModuleData] = useState();
+  const [subModuleData, setSubModuleData] = useState();
   const [subModuleDropdown, setSubModuleDropdown] = useState();
 
   const [data, setData] = useState(null);
@@ -109,11 +74,11 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const [dynamicTicketData, setDynamicTicketData] = useState(null);
   const [attachment, setAttachment] = useState(null);
 
-  // const [queryType, setQueryType] = useState();
+  const [queryType, setQueryType] = useState();
   const [queryTypeDropdown, setQueryTypeDropdown] = useState();
 
   const [department, setDepartment] = useState();
-  // const [departmentDropdown, setDepartmentDropdown] = useState();
+  const [departmentDropdown, setDepartmentDropdown] = useState();
 
   const [user, setUser] = useState([]);
   const [userDropdown, setUserDropdown] = useState([]);
@@ -136,11 +101,10 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const [tester, setTester] = useState(null);
   const [ticketStatus, setTicketStatus] = useState();
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const [confirmationModalDetails, setConfirmationModalDetails] =
-    useState(false);
+  const [confirmationModalDetails, setConfirmationModalDetails] =useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-  const [updateStatus, setUpdateStatus] = useState({});
+
   const [dateErr, setDateErr] = useState(null);
 
   const [proceed, setProceed] = useState(true);
@@ -211,6 +175,9 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
             setProceed(true);
             setConfirmationModal(false);
             setNotify({ type: "success", message: res.data.message });
+            setTimeout(() => {
+              navigate(`/${_base}/Ticket`);
+            }, 1000);
           } else {
             setNotify({ type: "danger", message: res.data.message });
             setProceed(false);
@@ -257,15 +224,19 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
           setShowLoaderModal(false);
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/Ticket`,
-                },
-                {
-                  state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
-                }
+              navigate(
+                `/${_base}/Ticket`
+                // {
+                //   alert: { type: "success", message: res.data.message },
+                // }
+                // {
+                //   pathname: `/${_base}/Ticket`,
+                // },
+                // {
+                //   state: {
+                //     alert: { type: "success", message: res.data.message },
+                //   },
+                // }
               );
             } else {
               setNotify({ type: "danger", message: res.data.message });
@@ -349,7 +320,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const [users, setUsers] = useState();
   const [projectId, setProjectId] = useState();
   const [reviewerData, setReviewerData] = useState();
-  // const [statusData, setStatusData] = useState();
+  const [statusData, setStatusData] = useState();
   const loadData = async () => {
     setSelectedFile([]);
     setShowLoaderModal(null);
@@ -357,11 +328,11 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
 
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status == 200) {
-        if (res.payload.data.status == 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active == 1);
-          const select = res.payload.data.data
+    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data
             .filter((d) => d.is_active == 1)
             .map((d) => ({
               value: d.id,
@@ -373,27 +344,6 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
         }
       }
     });
-
-
-
-    // const inputRequired =
-    //   "id,employee_id,first_name,last_name,middle_name,is_active";
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data
-    //         .filter((d) => d.is_active == 1)
-    //         .map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }));
-    //       setUser(data);
-    //       setUserDropdown(select);
-    //       setUserdrp(select);
-    //     }
-    //   }
-    // });
 
     await new MyTicketService().getTicketById(ticketId).then((res) => {
       if (res.status === 200) {
@@ -460,132 +410,132 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
       }
     });
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+    await new ManageMenuService().getRole(roleId).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const getRoleId = sessionStorage.getItem("role_id");
+          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+        }
+      }
+    });
 
-    // await new DesignationService().getdesignatedDropdown().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const deta = res.data.data;
-    //       setBa(
-    //         deta.BA.filter((d) => d.is_active === 1).map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
-    //         }))
-    //       );
-    //       setDev(
-    //         deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
-    //         }))
-    //       );
-    //       setTester(
-    //         deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
+    await new DesignationService().getdesignatedDropdown().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const deta = res.data.data;
+          setBa(
+            deta.BA.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+            }))
+          );
+          setDev(
+            deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+            }))
+          );
+          setTester(
+            deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+            }))
+          );
+        }
+      }
+    });
 
-    // await new CustomerMappingService()
-    //   .getCustomerMappingSettings()
-    //   .then((res) => {
-    //     const queryType = [];
-    //     const department = [];
-    //     if (res.data.status === 1) {
-    //       if (res.data.data) {
-    //         const queryTypeTemp = [];
-    //         setCustomerMapping(null);
-    //         setCustomerMapping(res.data.data);
-    //         res.data.data.forEach((query) => {
-    //           if (query.query_type_id) {
-    //             queryTypeTemp.push(query.query_type_id);
-    //           }
-    //         });
-    //       }
-    //     }
-    //   });
+    await new CustomerMappingService()
+      .getCustomerMappingSettings()
+      .then((res) => {
+        const queryType = [];
+        const department = [];
+        if (res.data.status === 1) {
+          if (res.data.data) {
+            const queryTypeTemp = [];
+            setCustomerMapping(null);
+            setCustomerMapping(res.data.data);
+            res.data.data.forEach((query) => {
+              if (query.query_type_id) {
+                queryTypeTemp.push(query.query_type_id);
+              }
+            });
+          }
+        }
+      });
 
-    // new QueryTypeService().getQueryType().then((resp) => {
-    //   if (resp.data.status === 1) {
-    //     var queryType = [];
-    //     resp.data.data.forEach((q) => {
-    //       if (q.query_type_name) {
-    //         queryType.push({ value: q.id, label: q.query_type_name });
-    //       }
-    //     });
-    //     setQueryType(queryType);
-    //   }
-    // });
+    new QueryTypeService().getQueryType().then((resp) => {
+      if (resp.data.status === 1) {
+        var queryType = [];
+        resp.data.data.forEach((q) => {
+          if (q.query_type_name) {
+            queryType.push({ value: q.id, label: q.query_type_name });
+          }
+        });
+        setQueryType(queryType);
+      }
+    });
 
-    // await new DepartmentService().getDepartment().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data
-    //         .filter((d) => d.is_active == 1)
-    //         .map((d) => ({ value: d.id, label: d.department }));
-    //       setDepartment(data);
-    //       setDepartmentDropdown(select);
-    //     }
-    //   }
-    // });
+    await new DepartmentService().getDepartment().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({ value: d.id, label: d.department }));
+          setDepartment(data);
+          setDepartmentDropdown(select);
+        }
+      }
+    });
 
-    // await new ProjectService().getProject().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setProjectData(temp);
-    //       setProjectDropdown(
-    //         temp.map((d) => ({ value: d.id, label: d.project_name }))
-    //       );
-    //     }
-    //   }
-    // });
+    await new ProjectService().getProject().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const temp = res.data.data.filter((d) => d.is_active == 1);
+          setProjectData(temp);
+          setProjectDropdown(
+            temp.map((d) => ({ value: d.id, label: d.project_name }))
+          );
+        }
+      }
+    });
 
-    // await new ModuleService().getModule().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
+    await new ModuleService().getModule().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data.filter((d) => d.is_active == 1);
 
-    //       setModuleData(temp);
-    //       setModuleDropdown(
-    //         temp.map((d) => ({ value: d.id, label: d.module_name }))
-    //       );
-    //     }
-    //   }
-    // });
+          setModuleData(temp);
+          setModuleDropdown(
+            temp.map((d) => ({ value: d.id, label: d.module_name }))
+          );
+        }
+      }
+    });
 
-    // await new SubModuleService().getSubModule().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setSubModuleData(temp);
-    //       setSubModuleDropdown(
-    //         temp.map((d) => ({ value: d.id, label: d.sub_module_name }))
-    //       );
-    //     }
-    //   }
-    // });
+    await new SubModuleService().getSubModule().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data.filter((d) => d.is_active == 1);
+          setSubModuleData(temp);
+          setSubModuleDropdown(
+            temp.map((d) => ({ value: d.id, label: d.sub_module_name }))
+          );
+        }
+      }
+    });
 
-    // await new StatusService().getStatus().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setStatusValue(temp);
-    //       const select = temp.map((d) => ({ value: d.id, label: d.status }));
-    //       setStatusData(select);
-    //     }
-    //   }
-    // });
+    await new StatusService().getStatus().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          const temp = res.data.data.filter((d) => d.is_active == 1);
+          setStatusValue(temp);
+          const select = temp.map((d) => ({ value: d.id, label: d.status }));
+          setStatusData(select);
+        }
+      }
+    });
 
     loadComments();
     setShowLoaderModal(false);
@@ -633,6 +583,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   const moduleIdRef = useRef();
   const subModuleIdRef = useRef();
   const reviewerIdRef = useRef();
+  console.log("module id", moduleIdRef);
   const handleDepartment = (e) => {
     if (e) {
       const select = user
@@ -766,26 +717,6 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     loadData();
     setConfirmationModal(false, null);
     loadAttachment();
-    if(!projectDropdown.length){
-    dispatch(getprojectData())}
-    if(!moduleData.length){
-    dispatch(moduleMaster())}
-    if(!subModuleData.length){
-      dispatch(subModuleMaster())
-    }
-    if(!statusData.length){
-      dispatch(getStatusData())
-    }
-    if(queryTypes){
-      dispatch(queryType())
-    }
-    if(!departmentDropdown){
-      dispatch(departmentData())
-    }
-    if(!checkRole.length){
-      dispatch(getRoles())
-    }
-
   }, []);
 
   useEffect(() => {
@@ -825,7 +756,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     .padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`;
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_update === 0) {
+    if (checkRole && checkRole[15].can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -859,14 +790,14 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                       <label className="col-form-label">
                         <b>Query Type: </b>
                       </label>
-                      {queryTypes && (
+                      {queryType && (
                         <Select
                           id="query_type_id"
                           name="query_type_id"
-                          options={queryTypes}
+                          options={queryType}
                           defaultValue={
                             data &&
-                            queryTypes.filter(
+                            queryType.filter(
                               (d) => d.value == data.query_type_id
                             )
                           }
@@ -1079,7 +1010,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           Module : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {/* {moduleDropdown && ( */}
+                      {moduleDropdown && (
                         <Select
                           id="module_id"
                           name="module_id"
@@ -1087,28 +1018,28 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                           ref={moduleIdRef}
                           clearValue={true}
                           onChange={handleModuleChange}
-                          defaultValue={moduleDropdown&&moduleDropdown.filter(
+                          defaultValue={moduleDropdown.filter(
                             (d) => d.value == data.module_id
                           )}
                         />
-                      {/* )} */}
+                      )}
                     </div>
 
                     <div className="col-sm-3">
                       <label className=" col-form-label">
                         <b>Sub Module :</b>
                       </label>
-                      {/* {subModuleDropdown && ( */}
+                      {subModuleDropdown && (
                         <Select
                           options={subModuleDropdown}
                           id="submodule_id"
                           name="submodule_id"
                           ref={subModuleIdRef}
-                          defaultValue={subModuleDropdown&& subModuleDropdown.filter(
+                          defaultValue={subModuleDropdown.filter(
                             (d) => d.value == data.submodule_id
                           )}
                         />
-                      {/* )} */}
+                      )}
                     </div>
 
                     <div className="col-sm-3">
@@ -1237,17 +1168,17 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
                                                 getChangeValue={e => handleTicketStatus(e)}
                                             /> */}
 
-                        {/* {statusData && ( */}
+                        {statusData && (
                           <Select
                             id="status_id"
                             name="status_id"
                             options={statusData}
                             onChange={(e) => handleTicketStatus(e)}
-                            defaultValue={statusData&&statusData.filter(
+                            defaultValue={statusData.filter(
                               (d) => d.value == data.status_id
                             )}
                           />
-                        {/* )} */}
+                        )}
                       </div>
                     </div>
                   </div>
