@@ -457,6 +457,10 @@ const EditTemplateComponent = ({ match, props }) => {
   const handleAddTask = async (e) => {
     e.preventDefault();
 
+    
+
+    
+
     const formData = new FormData(e.target);
     console.log("e", formData);
     // Add your form data to the `formData` object here
@@ -722,6 +726,8 @@ const EditTemplateComponent = ({ match, props }) => {
                   <input
                     type="number"
                     id="days"
+                    max="100"
+                    min="1"
                     name="days"
                     className="form-control form-control-sm"
                   />
