@@ -32,6 +32,51 @@ function AddOn(props) {
         loadData();
     }, [])
 
+
+
+    const [minValue,setMinValue]= useState()
+    const [maxValue,setMaxValue]= useState()
+
+
+
+// const handleMin=(e)=>{
+// setMinValue(e.target.value)
+// }
+
+// const handleMin = (e) => {
+//   const min = parseFloat(e.target.value);
+//   const max = parseFloat(props.data.inputAddOn.inputRangeMax);
+
+//   if (!isNaN(min) && !isNaN(max) && min > max) {
+//     // Min is greater than Max, so set Max to Min
+//     props.onGetChange({
+//       target: {
+//         name: "inputRangeMax",
+//         value: min.toString(),
+//       },
+//     });
+//   } else {
+//     setMinValue(e.target.value);
+//   }
+// };
+
+console.log("min",minValue)
+
+
+
+const handleMax = (e) => {
+  const maxValue = e.target.value;
+
+  if (parseInt(maxValue) < parseInt(minValue)) {
+    setMaxValue("Invalid Remark");
+  } else {
+    setMaxValue("");
+  }
+};
+
+
+
+
     if (props) {
         var range=null;
         // if (props.data.inputAddOn.inputRange) 
@@ -71,6 +116,8 @@ function AddOn(props) {
                                 max={props.data.inputAddOn.inputRangeMax}
                             />
                         </div>
+                       
+                 
                     </div>
                 }
 
@@ -156,18 +203,41 @@ function AddOn(props) {
               props.onGetChange(e);
             }
           }}
+
+          // onChange={(e) => {
+          //   const min = parseFloat(e.target.value);
+          //   const max = parseFloat(props.data.inputAddOn.inputRangeMax);
+          
+          //   setMinValue(min);
+          //   if (!isNaN(min) && !isNaN(max) && min > max) {
+          //     // Min is greater than Max, so set Max to Min
+          //     props.onGetChange({
+          //       target: {
+          //         name: "inputRangeMax",
+          //         value: min.toString(),
+          //       },
+          //     });
+          //   } else {
+          //     props.onGetChange(e);
+          //   }}}
           id="inputRangeMin"
           name="inputRangeMin"
           className="form-control form-control-sm"
           defaultValue={props.data.inputAddOn.inputRangeMin}
           min={props.data.inputAddOn.inputRangeMin}
         />
-        {/* {console.log("props",props.data)} */}
+        {console.log("props",props.data)}
       </div>
       <div className="form-group">
         <label>Max Number:</label>
         <input
           type="number"
+          // onChange={(e)=>handleMax(e)}
+          // onChange={handleMax}
+          // onKeyPress={(e) => {
+          //   handleMax(e);
+          // }}
+
           onChange={(e) => {
             const max = parseFloat(e.target.value);
             const min = parseFloat(props.data.inputAddOn.inputRangeMin);
@@ -190,6 +260,14 @@ function AddOn(props) {
           defaultValue={props.data.inputAddOn.inputRangeMax}
           max={props.data.inputAddOn.inputRangeMax}
         />
+         <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {maxValue}
+                  </small>
+              
       </div>
     </div>
   )

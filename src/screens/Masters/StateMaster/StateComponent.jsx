@@ -1026,8 +1026,13 @@ function StateComponent() {
         //     );
         //   });
       } else {
-        dispatch(updateStateData({ id: id, payload: form }));
-        dispatch(getStateData());
+        dispatch(updateStateData({ id: id, payload: form })).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getStateData());
+          } else {
+          }
+        });
+      
 
         // await new StateService()
         //   .updateState(id, form)

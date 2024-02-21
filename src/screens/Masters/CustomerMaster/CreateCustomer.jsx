@@ -157,9 +157,10 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
         dispatch(postCustomerData(formData)).then((res)=>{
           if(res.payload.data.status===1 && res.payload.status === 200){
             navigate(`/${_base}/Customer`)
+            dispatch(getCustomerData())
           }
         })
-        dispatch(getCustomerData())
+      
         // await new CustomerService().postCustomer(formData)
         //   .then((res) => {
         //     if (res.status === 200) {

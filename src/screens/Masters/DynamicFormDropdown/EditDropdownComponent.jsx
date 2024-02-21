@@ -572,7 +572,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                             <td>
                                                 <input
                                                     type="text"
-                                                    name="label[]"
+                                                    name="dropdown_values[]"
                                                     className="form-control form-control-sm"
                                                     defaultValue={item.label}
                                                 />

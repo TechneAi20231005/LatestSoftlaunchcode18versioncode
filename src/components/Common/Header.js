@@ -441,9 +441,7 @@ export default function Header() {
               >
                 <div className='card border-0 w280' style={{ zIndex: 5 }}>
                   <div className='p-2' style={{ zIndex: 700 }}>
-                    {console.log("tenantDropdown",tenantDropdown)}
-                    {console.log("tenantId",tenantId)}
-                    {console.log("showDropdown",showDropdown)}
+                   
 
 
 

@@ -319,10 +319,12 @@ const dispatch = useDispatch()
     const handleSubmit = async (e) => {
         e.preventDefault();
         // const data=new FormData(e.target);
+
         const data = {
             template_name: e.target.template_name.value,
             data: JSON.stringify(rows)
         }
+        console.log("dataj",data)
         // var a = JSON.stringify(Object.fromEntries(data))
         // console.log(a)
         await new DynamicFormService().postDynamicForm(data).then(res => {
@@ -548,6 +550,7 @@ const dispatch = useDispatch()
                                                                     className="center"
                                                                 />
                                                             </td>
+                                                            {console.log("i",item.inputMandatory)}
                                                             <td>
                                                                 {rows[idx].inputType == "select" &&
                                                                 <input
@@ -572,7 +575,7 @@ const dispatch = useDispatch()
                                                                     </select>
                                                                 }
                                                             </td>
-
+{console.log("rowrow",rows)}
                                                             <td>
                                                                 {rows &&
 
@@ -672,7 +675,7 @@ const dispatch = useDispatch()
                                             }
 
                                             return <div key={index} className={`${data.inputWidth} mt-2`} >
-                                                <label><b>{data.inputLabel} : </b></label>
+                                                <label><b>{data.inputLabel} :{data.inputMandatory === true ? <Astrick color="red" size="13px" /> : ""}</b></label>
 
                                                 {data.inputType === 'text' &&
                                                     <input

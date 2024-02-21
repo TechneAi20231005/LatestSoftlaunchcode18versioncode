@@ -1727,8 +1727,8 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                             }
                             id="state_id"
                             name="state_id"
-                            // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
-                            defaultValue={stateName ? stateName : ""}
+                            defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
+                            // defaultValue={stateName ? stateName : ""}
                             onChange={(e) => handleDependentChange(e, "STATE")}
                             // value={stateName ? stateName : ""}
                           />
@@ -1751,8 +1751,8 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                               }
                               id="city_id"
                               name="city_id"
-                              // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
-                              defaultValue={cityName ? cityName : ""}
+                              defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
+                              // defaultValue={cityName ? cityName : ""}
                               onChange={(e) => setCityName(e)}
                               // value={cityName ? cityName : ""}
                             />

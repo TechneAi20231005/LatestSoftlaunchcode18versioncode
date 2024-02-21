@@ -20,6 +20,7 @@ import {
   getAllTypeData,
   getParentData,
   postTemplateData,
+  templateData,
 } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleModalClose,handleModalOpen } from "./TemplateComponetSlice"
@@ -239,6 +240,7 @@ const CreateTemplateComponent = () => {
       // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
+          dispatch(templateData());
           navigate(`/${_base}/Template`);
         }
       });
@@ -967,19 +969,19 @@ const CreateTemplateComponent = () => {
                               />
                               <label>
                                 <b>
-                                  Hours Required :
+                                  Hours Requiredss :
                                   <Astrick color="red" size="13px" />
                                 </b>
                               </label>
                               <input
-                                type="text"
+                                type="time"
                                 className="form-control form-control-sm mb-2"
                                 name="hours"
                                 id="hours_add"
                                 min="1"
                                 max="100"
                                 placeholder="Days Required"
-                                defaultValue="00.00"
+                                // defaultValue="00.00"
                                 required
                               />
                               <label>

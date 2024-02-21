@@ -27,6 +27,7 @@ const initialState = {
   getParentData: [],
   getAllTypeData: [],
   postTemplateData:[],
+  exportTemplateData:'',
   modal:{
     showModal: false,
     modalData: "",
@@ -46,7 +47,8 @@ const initialState = {
     modalAddData: null,
     modalAddHeader: null,
 
-  }
+  },
+  notify:''
 };
 
 export const templateSlice = createSlice({
@@ -92,6 +94,23 @@ export const templateSlice = createSlice({
           templateData[i].counter = count++;
         }
         state.templateData = [...templateData];
+
+        let exportTemplateData = [];
+        for (const i in templateData) {
+          exportTemplateData.push({
+                       Sr: templateData[i].counter,
+            template_name: templateData[i].template_name,
+            Status: templateData[i].is_active ? 'Active' : 'Deactive',
+            created_at: templateData[i].created_at,
+            created_by: templateData[i].created_by,
+            updated_at: templateData[i].updated_at,
+            updated_by: templateData[i].updated_by,
+
+
+         
+          });
+          state.exportTemplateData=exportTemplateData
+        }
       }
     });
     builder.addCase(templateData.rejected, (state) => {

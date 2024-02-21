@@ -2714,6 +2714,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
+
+  console.log("i",igst)
   const [isOriginal, setIsOriginal] = useState(0);
   const handleIsOriginal = (e) => {
     if (e) {
@@ -3368,21 +3370,21 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </b>
                     </label>
                     {authority && (
-                      <input
-                        type="date"
-                        className="form-control form-control-sm"
-                        id="bill_date"
-                        name="bill_date"
-                        // min={
-                        //   authority.Audit_Remark == true
-                        //     ? new Date().getFullYear() - 1 + "-04-01"
-                        //     : new Date().getFullYear() + "-04-01"
-                        // }
-                        // min={new Date().getFullYear() + "-04-01"}
-                        max={formattedDate}
-                        required
-                        // max={new Date().toISOString().split("T")[0]}
-                      />
+                        <input
+                          type="date"
+                          className="form-control form-control-sm"
+                          id="bill_date"
+                          name="bill_date"
+                          // min={
+                          //   authority.Audit_Remark == true
+                          //     ? new Date().getFullYear() - 1 + "-04-01"
+                          //     : new Date().getFullYear() + "-04-01"
+                          // }
+                          // min={new Date().getFullYear() + "-04-01"}
+                          max={formattedDate}
+                          required
+                          // max={new Date().toISOString().split("T")[0]}
+                        />
                     )}
                   </div>
 
@@ -3574,7 +3576,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </b>
                     </label>
 
-                    <input
+                    {igst == 0 ? <>
+                      <input
                       type="text"
                       className="form-control form-control-sm"
                       id="gst_amount"
@@ -3627,6 +3630,61 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                       }}
                     />
+                    </>:
+
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="igst_amount"
+                      name="igst_amount"
+                      maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                      value={billAmountValues.igst_amount}
+                      onChange={(e) => handleInputChange(e)}
+                      required
+                      onKeyPress={(e) => {
+                        const inputValue = e.key;
+                        const currentInput = e.target.value;
+                        const decimalIndex = currentInput.indexOf(".");
+
+                        if (
+                          !/^\d$/.test(inputValue) &&
+                          inputValue !== "." &&
+                          inputValue !== "Backspace"
+                        ) {
+                          e.preventDefault();
+                        }
+
+                        if (
+                          decimalIndex !== -1 &&
+                          currentInput.length - decimalIndex > 2
+                        ) {
+                          e.preventDefault();
+                        }
+
+                        if (
+                          currentInput.length >= 10 &&
+                          inputValue !== "." &&
+                          decimalIndex === -1
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                      onInput={(e) => {
+                        const value = e.target.value;
+                        const parts = value.split(".");
+
+                        if (parts.length > 1) {
+                          // Ensure only 2 decimal places
+                          parts[1] = parts[1].slice(0, 2);
+                        }
+
+                        e.target.value = parts.join(".");
+
+                        if (value.length > 13) {
+                          e.target.value = value.slice(0, 13);
+                        }
+                      }}
+                    />}
                   </div>
 
                   <div className=" col ">
@@ -4215,7 +4273,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     />
                   </div>
 
-                  <div className=" col-md-3 ">
+                  {/* <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b> Audit Remark: </b>
                     </label>
@@ -4232,7 +4290,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // }
                       />
                     )}
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* <div className=" col-md-3 ">

@@ -229,7 +229,8 @@ function BillCheckingTransaction() {
               )}
               {authorities &&
                 authorities.Is_Cancle_Bill === true &&
-                row.is_rejected == 0 && (
+                // row.is_rejected == 0 && 
+                (
                   <li>
                     <button
                       className="btn btn-sm btn-danger text-white"
