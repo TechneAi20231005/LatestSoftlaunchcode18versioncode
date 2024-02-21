@@ -38,10 +38,11 @@ export const desegnationSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getDesignationData.pending, (state) => {
       state.status = "loading";
+      // state.notify=null
     });
     builder.addCase(getDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log(payload);
+    
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getDesignationData = payload.data.data;
@@ -85,44 +86,55 @@ export const desegnationSlice = createSlice({
     //__________________________PostRole________________________________
     builder.addCase(postDesignationData.pending, (state) => {
       state.status = "loading";
+      state.notify=null
+      
     });
     builder.addCase(postDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+      
 
         let postDesignationData = payload.data.data;
-        console.log(postDesignationData);
+    
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postDesignationData = postDesignationData;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+     
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
       }
     });
     builder.addCase(postDesignationData.rejected, (state) => {
       state.status = "rejected";
     });
 
-    //___________________________________________UpdateRole_________________________________
+    //___________________________________________UpdateDesignation_________________________________
 
     builder.addCase(updatedDesignationData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(updatedDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
-
-        let updatedDesignationData = payload.data.data;
+       let updatedDesignationData = payload.data.data;
        
-        state.status = "succeded";
-        state.showLoaderModal = false;
-        state.updatedDesignationData = updatedDesignationData;
+       state.status = "succeeded";
+       state.notify = null;
+       state.notify = { type: "success", message: payload.data.message };
+       state.showLoaderModal = false;
+
+       state.updatedDesignationData = updatedDesignationData;
+
+       let modal = { showModal: false, modalData: "", modalHeader: "" };
+       state.modal = modal;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }

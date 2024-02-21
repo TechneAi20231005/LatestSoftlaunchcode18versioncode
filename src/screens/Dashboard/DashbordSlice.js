@@ -291,9 +291,11 @@ export const DashbordSlice = createSlice({
         for (const i in cityData) {
           exportCityData.push({
             Sr: cityData[i].counter,
-            City: cityData[i].city,
-            State: cityData[i].state,
             Country: cityData[i].country,
+            State: cityData[i].state,
+            City: cityData[i].city,
+
+           
             Status: cityData[i].is_active ? "Active" : "Deactive",
             Remark: cityData[i].remark,
             created_at: cityData[i].created_at,
@@ -373,7 +375,7 @@ export const DashbordSlice = createSlice({
     // fetch country data
     builder.addCase(getCountryData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(getCountryData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -511,8 +513,9 @@ export const DashbordSlice = createSlice({
         for (const i in stateData) {
           exportData.push({
             Sr: stateData[i].counter,
-            State: stateData[i].state,
             Country: stateData[i].country,
+            State: stateData[i].state,
+        
             Status: stateData[i].is_active ? "Active" : "Deactive",
             Remark: stateData[i].remark,
             created_at: stateData[i].created_at,

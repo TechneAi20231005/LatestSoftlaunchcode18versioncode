@@ -74,11 +74,17 @@ export const templateSlice = createSlice({
       
       state.addTaskModal = action.payload;
     },
+
+    // hideNotification(state) {
+    //   state.notify = false;
+    // },
+  
   
   },
   extraReducers: (builder) => {
     builder.addCase(templateData.pending, (state) => {
       state.status = "loading";
+      
     });
 
     builder.addCase(templateData.fulfilled, (state, action) => {
@@ -105,9 +111,6 @@ export const templateSlice = createSlice({
             created_by: templateData[i].created_by,
             updated_at: templateData[i].updated_at,
             updated_by: templateData[i].updated_by,
-
-
-         
           });
           state.exportTemplateData=exportTemplateData
         }
@@ -121,11 +124,12 @@ export const templateSlice = createSlice({
 
     builder.addCase(getParentData.pending, (state) => {
       state.status = "loading";
+      
     });
 
     builder.addCase(getParentData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payloadparent", payload);
+      
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getParentData = payload.data.data.map((d) => ({
@@ -149,6 +153,7 @@ export const templateSlice = createSlice({
 
     builder.addCase(getAllTypeData.pending, (state) => {
       state.status = "loading";
+      state.notify=null
     });
 
     builder.addCase(getAllTypeData.fulfilled, (state, action) => {
@@ -183,16 +188,18 @@ export const templateSlice = createSlice({
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
+        
         let postTemplateData = payload.data.data;
-        console.log(postTemplateData);
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postTemplateData = postTemplateData;
+        state.notify = { type: "success", message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: "" };
       } else {
+        state.notify=null
         state.notify = { type: "danger", message: payload.data.message };
+    
       }
     });
     builder.addCase(postTemplateData.rejected, (state) => {
@@ -322,6 +329,7 @@ export const templateSlice = createSlice({
 
   },
 });
-export const { handleModalOpen, handleModalClose,handleBasketModal,handleTaskModal, } = templateSlice.actions;
+  
+  export const { handleModalOpen,hideNotification,handleModalClose,handleBasketModal,handleTaskModal, } = templateSlice.actions;
 
 export default templateSlice.reducer;

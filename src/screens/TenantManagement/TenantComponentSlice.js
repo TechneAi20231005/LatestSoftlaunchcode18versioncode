@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getAllTenant, posttenantData } from "./TenantConponentAction";
+import { getAllTenant, posttenantData, updatetenantData } from "./TenantConponentAction";
 
 const initialState = {
   status: "",
@@ -11,9 +11,9 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
-  exportRoleData:[],
-  exportAllTenantData:[],
-  getAllTenant:[]
+  exportRoleData: [],
+  exportAllTenantData: [],
+  getAllTenant: []
 
 
 };
@@ -36,21 +36,22 @@ export const tenantmasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getAllTenant.pending, (state) => {
       state.status = "loading";
-      state.notify = null
+
     });
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllTenant = payload.data.data;
-        console.log("getAllTenant",getAllTenant);
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < getAllTenant.length; i++) {
-            getAllTenant[i].counter = count++;
+          getAllTenant[i].counter = count++;
         }
         state.getAllTenant = [...getAllTenant];
+
+
         // let exportAllTenantData = [];
         // for (const i in getAllTenant) {
         //     exportAllTenantData.push({
@@ -73,18 +74,15 @@ export const tenantmasterSlice = createSlice({
 
     //__________________________PostTenant________________________________
     builder.addCase(posttenantData.pending, (state) => {
-      state.status = "loading";     
+      state.status = "loading";
       state.notify = null
     });
     builder.addCase(posttenantData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
-
         let posttenantData = payload.data.data;
-        console.log("posttenantData",posttenantData);
         state.status = "succeded";
         state.showLoaderModal = false;
         state.posttenantData = posttenantData;
@@ -93,6 +91,25 @@ export const tenantmasterSlice = createSlice({
       }
     });
     builder.addCase(posttenantData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+    builder.addCase(updatetenantData.pending, (state) => {
+      state.status = "loading";
+      state.notify = null
+    });
+    builder.addCase(updatetenantData.fulfilled, (state, action) => {
+      const { payload } = action;
+      if (payload?.data?.status === 1) {
+        state.notify = { type: "success", message: payload.data.message };
+
+      } else {
+        state.notify = null;
+        state.notify = { type: "danger", message: payload.data.message };
+      }
+    });
+    builder.addCase(updatetenantData.rejected, (state) => {
       state.status = "rejected";
     });
 

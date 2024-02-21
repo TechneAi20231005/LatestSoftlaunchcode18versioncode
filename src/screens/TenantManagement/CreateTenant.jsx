@@ -15,24 +15,29 @@ import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
+import { getAllTenant } from "./TenantConponentAction";
+
+
 import {
   getCityData,
   getCountryDataSort,
   getRoles,
   getStateData,
   getStateDataSort,
+
 } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
 import { posttenantData } from "./TenantConponentAction";
+import { tenantmasterSlice } from "./TenantComponentSlice";
 
 export default function CreateTenant({ match }) {
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
   // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
-  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
+  const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -41,7 +46,10 @@ export default function CreateTenant({ match }) {
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
 
-  const [notify, setNotify] = useState();
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
+  );
+
+
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
@@ -62,7 +70,7 @@ export default function CreateTenant({ match }) {
       value: "Community Interest Company",
     },
   ];
-  const [country, setCountry] = useState(null);
+  // const [country, setCountry] = useState(null);
   // const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
   // const [stateDropdown, setStateDropdown] = useState(null);
@@ -78,8 +86,8 @@ export default function CreateTenant({ match }) {
       //     .filter((d) => d.country_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
-      console.log("s",stateDropdown.filter((filterState) => filterState))
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
+
     }
     if (type == "STATE") {
       // setCityDropdown(
@@ -87,15 +95,13 @@ export default function CreateTenant({ match }) {
       //     .filter((d) => d.state_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.city }))
       // );
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
 
     }
   };
 
-  console.log("c",cityDropdownData)
-
   const [inputState, setInputState] = useState({
- 
+
   });
 
   const [contactValid, setContactValid] = useState(false);
@@ -103,7 +109,7 @@ export default function CreateTenant({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
-    console.log(contactValidation);
+
 
     if (contactValidation.length === 0) {
       setInputState({
@@ -167,12 +173,7 @@ export default function CreateTenant({ match }) {
     dispatch(getRoles());
     dispatch(getStateDataSort());
     dispatch(getCityData());
-    if(!stateDropdown){
-      dispatch(getStateData());
-    
-    }
-    
-    
+    dispatch(getStateData());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -229,12 +230,15 @@ export default function CreateTenant({ match }) {
     // });
 
     dispatch(posttenantData(formData)).then((res) => {
-      console.log("object", res);
+
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         navigate(`/${_base}/TenantMaster`);
+        dispatch(getAllTenant())
       }
     });
   };
+
+
 
   useEffect(() => {
     if (isMasterAdmin !== "MasterAdmin") {
@@ -255,8 +259,7 @@ export default function CreateTenant({ match }) {
     <div className="container-xxl">
       {notify && (
         <>
-          {" "}
-          <Alert alertData={notify} />{" "}
+          <Alert alertData={notify} />
         </>
       )}
       <PageHeader headerTitle="Add Tenant" />
@@ -306,13 +309,17 @@ export default function CreateTenant({ match }) {
             </label>
             <div className="col-sm-4">
               <input
-                type="email"
+                type="text"
                 className="form-control form-control-sm"
+
                 id="email_id"
                 name="email_id"
                 placeholder="Email Address"
                 required
+                onKeyPress={e => { Validation.emailOnly(e) }}
+              // value={email}
               />
+
             </div>
           </div>
 
@@ -338,15 +345,15 @@ export default function CreateTenant({ match }) {
                   Validation.MobileNumbersOnly(e);
                 }}
               />
-                          {inputState && (
-                      <small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        {inputState.contactNoErr}
-                      </small>
-                    )}
+              {inputState && (
+                <small
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {inputState.contactNoErr}
+                </small>
+              )}
             </div>
 
           </div>
@@ -382,8 +389,8 @@ export default function CreateTenant({ match }) {
                   name="pincode"
                   minLength={6}
                   maxLength={6}
-                  onKeyPress={(e) => {
-                    Validation.NumbersOnly(e);
+                  onChange={(e) => {
+                    Validation.NumbersOnlyForPincode(e);
                   }}
                 />
               </div>

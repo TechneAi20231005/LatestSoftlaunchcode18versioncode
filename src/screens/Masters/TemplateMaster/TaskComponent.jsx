@@ -44,7 +44,6 @@ export default function TaskComponent(props) {
   };
 
   const handleChange = (e, type) => {
-    
     if (type === "select2") {
       // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
@@ -109,22 +108,31 @@ export default function TaskComponent(props) {
     });
   }, []);
 
+  const handleCancle=()=>{
+    setShow(false)
+
+  }
+
   const handleSubmit = (e) => {
-    console.log("pp",props.taskData.task_days
-    )
-
-    if(!props.taskData.task_days){
-      alert("Task Name is required")
-
-    }
+    console.log("pp", props.taskData.task_days);
+     // Check if any required fields are empty
+     const taskName = document.querySelector('input[name="task"]').value.trim();
+     const daysRequired = document.querySelector('input[name="days"]').value.trim();
+     const hoursRequired = document.querySelector('input[name="total_time"]').value.trim();
+     const startDays = document.querySelector('input[name="start_days"]').value.trim();
+     
+     if (!taskName || !daysRequired || !hoursRequired || !startDays) {
+         alert("Please fill out all required fields.");
+         return; // Prevent form submission
+     
+     }
     setNotify(null);
     e.preventDefault();
 
-    
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
       .then((res) => {
-        console.log("res",res);
+        console.log("res", res);
         if (res.status === 200) {
           if (res.data.status == 1) {
             props.refreshData(id);
@@ -222,7 +230,6 @@ export default function TaskComponent(props) {
                         <label>Task Name</label>
                         <Astrick color="red" size="13px" />
 
-          
                         <input
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
@@ -234,7 +241,7 @@ export default function TaskComponent(props) {
 
                         <label>Days Required</label>
                         <Astrick color="red" size="13px" />
-                        <input
+                        {/* <input
                           type="number"
                         
                           max="100"
@@ -244,7 +251,37 @@ export default function TaskComponent(props) {
                           required
 
                           onInput={(e) => handleChange(e, "standard")}
+                        /> */}
+
+                        <input
+                          // type="time"
+                          max="100"
+                          className="form-control form-control-sm"
+                          defaultValue={props.taskData.task_days}
+                          name="days"
+                          required
+                          onInput={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value > 100) {
+                              e.target.setCustomValidity(
+                                "Day should be maximum 100"
+                              );
+                            } else {
+                              e.target.setCustomValidity("");
+                            }
+                            handleChange(e, "standard");
+
+                            // Display error message manually
+                            const errorSpan = e.target.nextElementSibling; // Get the next element (error span)
+                            if (value > 100) {
+                              errorSpan.innerText = "Day should be maximum 100"; // Set error message
+                            } else {
+                              errorSpan.innerText = ""; // Clear error message
+                            }
+                          }}
                         />
+                        <span className="error" style={{ color: "red" }}></span>
+
                         <br />
 
                         <label>Hours Required</label>
@@ -257,9 +294,10 @@ export default function TaskComponent(props) {
                               : "00.00"
                           }
                           name="total_time"
+                           type="time"
                           onInput={(e) => handleChange(e, "standard")}
                         />
-                         <br />
+                        <br />
 
                         {/* <label>
                           <b>Parent Task Type :</b>
@@ -278,7 +316,6 @@ export default function TaskComponent(props) {
                           }
                         /> */}
 
-
                         <label>
                           <b>Task Type :</b>
                         </label>
@@ -296,9 +333,6 @@ export default function TaskComponent(props) {
                           }
                         />
 
-                       
-                       
-                    
                         <br />
                         <label>
                           Start task{" "}
@@ -332,13 +366,11 @@ export default function TaskComponent(props) {
                   <button
                     type="button"
                     className="btn btn-danger"
-                    // onClick={handleSubmit}
+                    onClick={handleCancle}
                   >
                     Cancle
                   </button>
                 </div>
-
-                
               </div>
             </div>
           </div>

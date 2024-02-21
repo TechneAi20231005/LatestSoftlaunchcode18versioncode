@@ -82,7 +82,7 @@
 //     (MyTicketComponentSlice) =>
 //       MyTicketComponentSlice.myTicketComponent.getUserTicketTestData.data
 //   );
-  
+
 //   console.log("assign",useSelector(
 //     (MyTicketComponentSlice) =>
 //       MyTicketComponentSlice.myTicketComponent
@@ -110,7 +110,7 @@
 // const departsmentData = useSelector(DepartmentMasterSlice=>DepartmentMasterSlice.department.sortDepartmentData)
 // const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
 
-  
+
 //   const [modal, setModal] = useState({
 //     showModal: false,
 //     modalData: "",
@@ -1588,9 +1588,9 @@
 //   const loadData = async () => {
 //     // setShowLoaderModal(null);
 //     // setShowLoaderModal(true);
-   
+
 //     // setIsLoading(true);
-    
+
 
 //     // await new UserService()
 //     //   .getUserForMyTickets(inputRequired)
@@ -2204,7 +2204,7 @@
 //     "id,employee_id,first_name,last_name,middle_name,is_active";
 //     if(!statusData.length){
 //   dispatch(getStatusData());
-      
+
 //     }
 //     // if(!assignToMeData?.length){
 //   // dispatch(getUserTicketsTest());}
@@ -2355,7 +2355,7 @@
 //       //     }
 //       //   }
 //       // });
-    
+
 //   };
 
 //   const handleAssignedToMeRowChanged = async (e, type) => {
@@ -2912,7 +2912,7 @@
 //                           highlightOnHover={true}
 //                         />
 //                       )}
-                      
+
 //                       <div className="back-to-top pull-right mt-2 mx-2">
 //                         <label className="mx-2">rows per page</label>
 //                         <select
@@ -3323,7 +3323,7 @@
 //                         </div>
 //                       </div>
 
-  
+
 
 //                       {assignToMeData && (
 //                         <DataTable
@@ -3356,7 +3356,7 @@
 //                             {assignedToMeData.total}
 //                           </small>
 //                         )}
-         
+
 //                         <button
 //                           onClick={(e) => {
 //                             handleUnpassedRowChanged(e, "MINUS");
@@ -3627,7 +3627,7 @@
 //                   <input
 //                     type="text"
 //                     className="form-control form-control-sm"
-                   
+
 //                     defaultValue={
 //                       bulkRemarkModal && Array.isArray(bulkRemarkModal.modalData)
 //                         ? bulkRemarkModal.modalData.map((i) => i.ticket_id)
@@ -3711,7 +3711,7 @@ import "./custome.css";
 import { Spinner } from "react-bootstrap";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 
 export default function MyTicketComponent() {
@@ -3756,7 +3756,7 @@ export default function MyTicketComponent() {
   const [userDepartment, setUserDepartment] = useState();
 
   const [exportData, setExportData] = useState(null);
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -3781,7 +3781,7 @@ export default function MyTicketComponent() {
   });
 
 
-  const Notify = useSelector(TicketSlices=>TicketSlices.ticket.notify)
+  const Notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
 
 
@@ -3829,9 +3829,9 @@ export default function MyTicketComponent() {
     .getHours()
     .toString()
     .padStart(2, "0")}${currentDate
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
   const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
     2,
     4
@@ -4533,9 +4533,8 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "SEARCH_RESULT"),
     },
 
@@ -4552,7 +4551,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -4651,9 +4650,8 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "YOUR_TASK"),
     },
     {
@@ -4674,7 +4672,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -4775,9 +4773,8 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
 
-      width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
-      }`,
+      width: `${assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
     },
     { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
@@ -4793,7 +4790,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -4894,9 +4891,8 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
       ignoreRowClick: true,
-      width: `${
-        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ADDED_BY_ME"),
     },
 
@@ -4918,7 +4914,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -5031,13 +5027,12 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        unpassedTickets
-          ? unpassedTickets.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${unpassedTickets
+        ? unpassedTickets.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "UNPASSED_TICKET"),
     },
     // {
@@ -5109,7 +5104,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -5212,13 +5207,12 @@ export default function MyTicketComponent() {
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        departmentwiseTicket
-          ? departmentwiseTicket.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${departmentwiseTicket
+        ? departmentwiseTicket.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "DEPARTMENTWISE_TICKET"),
     },
     {
@@ -5239,7 +5233,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -5456,7 +5450,7 @@ export default function MyTicketComponent() {
       });
 
     await new MyTicketService().getUserTicketsTest().then((res) => {
-      console.log("res2",res)
+      console.log("res2", res)
       if (res.status === 200) {
         if (res.data.status == 1) {
           setAssignedToMeData(res.data.data);
@@ -5940,7 +5934,7 @@ export default function MyTicketComponent() {
         }
       }
     });
-};
+  };
 
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
@@ -5980,7 +5974,7 @@ export default function MyTicketComponent() {
         }
       }
     });
-};
+  };
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
@@ -6023,7 +6017,7 @@ export default function MyTicketComponent() {
         }
       }
     });
-}
+  }
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
@@ -6063,7 +6057,7 @@ export default function MyTicketComponent() {
         }
       }
     });
-};
+  };
 
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
@@ -6154,6 +6148,7 @@ export default function MyTicketComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
+      <h1>Hello</h1>
       {/* <LoadingSpinner/> */}
       {Notify && <Alert alertData={Notify} />}
       {/* {userData && JSON.stringify(userData)} */}
@@ -6281,7 +6276,7 @@ export default function MyTicketComponent() {
                       defaultValue={startDate}
                       required={toDateRequired}
                       ref={selectFromDateRef}
-                      // max={disableDate()}
+                    // max={disableDate()}
                     />
                   </div>
                   <div className="col-md-6">
@@ -6517,7 +6512,7 @@ export default function MyTicketComponent() {
                             typeOf="AssignToMe"
                           />
                         )}
-                        {console.log("ass",assignedToMe)}
+                        {console.log("ass", assignedToMe)}
 
                         {assignedToMe && (
                           <DataTable
@@ -6948,7 +6943,7 @@ export default function MyTicketComponent() {
                         </div>
                       </div>
 
-                      {console.log("un",unpassedTickets)}
+
 
                       {unpassedTickets && (
                         <DataTable

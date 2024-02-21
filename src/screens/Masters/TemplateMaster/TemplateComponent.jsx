@@ -15,7 +15,7 @@ import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { templateData } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import TemplateComponetSlice from "./TemplateComponetSlice";
+import TemplateComponetSlice, { hideNotification } from "./TemplateComponetSlice";
 
 function TemplateComponent() {
   const location = useLocation();
@@ -28,11 +28,15 @@ function TemplateComponent() {
       TemplateComponetSlice.tempateMaster.exportTemplateData
   );
 
+  const notify = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
+  );
+  console.log('notify' , notify)
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
   );
 
-  const [notify, setNotify] = useState(null);
+  // const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [modal, setModal] = useState({
@@ -241,9 +245,18 @@ function TemplateComponent() {
       dispatch(getRoles());
     }
     if (location && location.state) {
-      setNotify(location.state.notify);
+      // setNotify(location.state.notify);
     }
   }, []);
+
+  // useEffect(() => {
+  //   if (notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 5000); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [notify, dispatch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {

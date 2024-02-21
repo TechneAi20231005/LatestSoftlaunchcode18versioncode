@@ -36,6 +36,7 @@ export const statusMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getStatusData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(getStatusData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -82,26 +83,33 @@ export const statusMasterSlice = createSlice({
     });
     builder.addCase(getStatusData.rejected, (state) => {
       state.status = "rejected";
+      state.notify = null;
     });
 
     //__________________________PostRole________________________________
     builder.addCase(postStatusData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(postStatusData.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+ 
 
         let postStatusData = payload.data.data;
-        console.log(postStatusData);
+   
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postStatusData = postStatusData;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
       }
     });
     builder.addCase(postStatusData.rejected, (state) => {
@@ -112,19 +120,25 @@ export const statusMasterSlice = createSlice({
 
     builder.addCase(updateStatusData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
+
     });
     builder.addCase(updateStatusData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+   
 
         let updateStatusData = payload.data.data;
-        console.log(updateStatusData);
+        state.notify = null;
+    
+     
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateStatusData = updateStatusData;
+        state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }
