@@ -319,10 +319,12 @@ const dispatch = useDispatch()
     const handleSubmit = async (e) => {
         e.preventDefault();
         // const data=new FormData(e.target);
+
         const data = {
             template_name: e.target.template_name.value,
             data: JSON.stringify(rows)
         }
+        console.log("dataj",data)
         // var a = JSON.stringify(Object.fromEntries(data))
         // console.log(a)
         await new DynamicFormService().postDynamicForm(data).then(res => {
@@ -573,7 +575,7 @@ const dispatch = useDispatch()
                                                                     </select>
                                                                 }
                                                             </td>
-
+{console.log("rowrow",rows)}
                                                             <td>
                                                                 {rows &&
 

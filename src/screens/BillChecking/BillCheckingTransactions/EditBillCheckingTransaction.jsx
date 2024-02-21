@@ -25,17 +25,11 @@ import {
   ReactSelectComponent,
 } from "../../../components/Utilities/Button/Button";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { UpdateBillCheckingTransaction } from "../Slices/BillCheckingTransactionAction";
 
-const secretKey = "rushikesh"; 
+const secretKey = "rushikesh";
 
 export default function CreateBillCheckingTransaction({ match }) {
-
-  const navigate = useNavigate();
-
-const dispatch =useDispatch()
-  
+ 
   var section = 0;
 const {id}=useParams()
   const [modal, setModal] = useState({
@@ -55,15 +49,16 @@ const {id}=useParams()
         setIp(res.data.ip);
       } catch (error) {
         // Handle errors if needed
+        console.error("Error fetching data:", error);
       }
     };
-  
+ 
     // Call the async function immediately
     fetchData();
-  
+ 
     // Dependency array remains empty if the effect doesn't depend on any props or state
   }, []);
-  
+ 
   const history = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -440,19 +435,20 @@ const {id}=useParams()
       }
     }
 
-    if (document.getElementById('is_igst_applicable').getAttribute("defaultChecked")) {
+    // console.log("isigst",document.getElementById('is_igst_applicable').value)
+    if (document.getElementById('is_igst_applicable').checked) {
       form.append("is_igst_applicable", 1)
     } else {
       form.append("is_igst_applicable", 0)
     }
-    if (document.getElementById('is_tds_applicable').getAttribute("defaultChecked")) {
+    if (document.getElementById('is_tds_applicable').checked) {
 
       form.append("is_tds_applicable", 1)
     } else {
       form.append("is_tds_applicable", 0)
     }
 
-    if (document.getElementById('is_tcs_applicable').getAttribute("defaultChecked")) {
+    if (document.getElementById('is_tcs_applicable').checked) {
 
       form.append("is_tcs_applicable", 1)
     } else {
@@ -462,51 +458,44 @@ const {id}=useParams()
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
     // form.append("is_tcs_applicable", isTcsApplicable === true ? 1 : 0);
 
+    await new BillTransactionService()
+      .updateBillChecking(id, form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            history({
+              pathname: `/${_base}/BillCheckingTransaction`,
+             
+            },
+            { state: { alert: { type: "success", message: res.data.message } }}
 
-    
-dispatch(UpdateBillCheckingTransaction({id:id,form:form})).then((res)=>{
-  if(res.payload.data.status===1 && res.payload.status === 200){
-    navigate(`/${_base}/BillCheckingTransaction`)
-  }
-})
-    // await new BillTransactionService()
-    //   .updateBillChecking(id, form)
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       if (res.data.status === 1) {
-    //         history({
-    //           pathname: `/${_base}/BillCheckingTransaction`,
-              
-    //         },
-    //         { state: { alert: { type: "success", message: res.data.message } }}
-
-    //         );
-    //         setNotify({ type: "success", message: res.data.message });
-    //         loadData();
-    //       } else {
-    //         setNotify({ type: "danger", message: res.data.message });
-    //       }
-    //     } else {
-    //       setNotify({ type: "danger", message: res.data.message });
-    //       new ErrorLogService().sendErrorLog(
-    //         "Payment_template",
-    //         "Create_Payment_template",
-    //         "INSERT",
-    //         res.message
-    //       );
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     setNotify({ type: "danger", message: "Request Error !!!" });
-    //     new ErrorLogService().sendErrorLog(
-    //       "Payment_template",
-    //       "Create_Payment_template",
-    //       "INSERT",
-    //       errorObject.data.message
-    //     );
-    //   });
+            );
+            setNotify({ type: "success", message: res.data.message });
+            loadData();
+          } else {
+            setNotify({ type: "danger", message: res.data.message });
+          }
+        } else {
+          setNotify({ type: "danger", message: res.data.message });
+          new ErrorLogService().sendErrorLog(
+            "Payment_template",
+            "Create_Payment_template",
+            "INSERT",
+            res.message
+          );
+        }
+      })
+      .catch((error) => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        setNotify({ type: "danger", message: "Request Error !!!" });
+        new ErrorLogService().sendErrorLog(
+          "Payment_template",
+          "Create_Payment_template",
+          "INSERT",
+          errorObject.data.message
+        );
+      });
   };
 
   const fileInputRef = useRef(null);
@@ -531,7 +520,7 @@ dispatch(UpdateBillCheckingTransaction({id:id,form:form})).then((res)=>{
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
-  
+ 
   const validFileTypes = [
     "image/png",
     "image/jpeg",
@@ -734,7 +723,7 @@ fileInputRef.current.value = "";
           parseFloat(billAmount1) -
           parseFloat(document.getElementById("debit_advance").value);
       }
-      
+     
       setNetPayment(Math.round(netPayment));
 
       if (document.getElementById("is_tds_applicable").checked) {
@@ -791,7 +780,7 @@ fileInputRef.current.value = "";
     return () => { };
   }, []);
 
-  
+ 
 
 // Get the current date
 const currentDatee = new Date();
@@ -832,14 +821,14 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
 
       <div className="row clearfix g-3">
-        
+       
         {data && (
           <div className="col-sm-12">
             <form method="POST" onSubmit={(e) => handleForm(e)}>
               {/* ********* MAIN DATA ********* */}
               <div className="card mt-2">
 
-            
+           
                 <div className="card-header bg-primary text-white p-2">
                   <h5>Edit Data</h5>
                 </div>
@@ -1012,7 +1001,7 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         </b>
                       </label>
 
-                      
+                     
                        {/* <Select
                          type="text"
                          className="form-control form-control-sm"
@@ -1257,6 +1246,7 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                   </div>
 
 
+{/* {console.log("a",data && data.map((i)=>i.approvers_id))} */}
                   <div className=" form-group row mt-3">
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1275,8 +1265,8 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         required
 
                         readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                      
-                        
+                     
+                       
                         // readOnly={
                         //   userSessionData.userId != data.created_by ||
 
@@ -1401,18 +1391,17 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         type="hidden"
 value={igst=== true ?1 :0} */}
                     {/* /> */}
-                    {console.log("checked",data.is_igst_applicable)}
                     <div className=" col ">
                       <input
                         className="sm"
                         id="is_igst_applicable"
-                        name="is_igst_applicable"
+                        // name="is_igst_applicable"
                         type="checkbox"
                         style={{ marginRight: "8px" }}
                         readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-// data-read-only={true}
-                        defaultChecked={data.is_igst_applicable === 1 ? true :false}
-                        defaultValue={data.is_igst_applicable === 1 ? true :false}
+
+                        defaultChecked={data.is_igst_applicable === 1}
+
                         onChange={(e) => {
                           handleIgst(e);
                         }}
@@ -1645,7 +1634,7 @@ value={igst=== true ?1 :0} */}
                           // }
 readOnly={isTcsApplicable === true ? false : true}
 
-                          
+                         
                           // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                           required={true}
                           onKeyPress={(e) => {
@@ -1688,8 +1677,6 @@ readOnly={isTcsApplicable === true ? false : true}
                           data.is_tds_applicable == 1 ? true : false
                         }
                     disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                    defaultValue={ data.is_tds_applicable == 1 ? true : false}
-                      
                       />
                       <label className="col-form-label">
                         <b>TDS Applicable:</b>
@@ -1715,7 +1702,6 @@ readOnly={isTcsApplicable === true ? false : true}
                         defaultChecked={
                           data.is_tcs_applicable == 1 ? true : false
                         }
-                        defaultValue={data.is_tcs_applicable == 1 ? true : false}
                       />
                       <label className="col-form-label">
                         <b>TCS Applicable:</b>
@@ -1970,9 +1956,6 @@ required
                         defaultChecked={
                           data.is_original_bill_needed == 1 ? true : false
                         }
-                        defaultValue={
-                          data.is_original_bill_needed == 1 ? true : false
-                        }
                         disabled={
                           authorities &&
                             authorities.Original_Bill_Needed === false &&
@@ -2084,7 +2067,6 @@ required
                       // defaultValue={data.narration ? data.narration : ""}
                       />
                     </div>
-                    {console.log("da",data)}
                     <div className=" col-md-4 ">
                       <label className=" col-form-label">
                         <b> Remark History: </b>
@@ -2109,9 +2091,9 @@ required
                         className="form-control form-control-sm"
                         id="audit_remark"
                         name="audit_remark"
-                        defaultValue={
-                          data.audit_remark ? data.audit_remark : ""
-                        }
+                        // defaultValue={
+                        //   data.audit_remark ? data.audit_remark : ""
+                        // }
                         readOnly={
                           authorities && authorities.Internal_Audit === false
                             ? true
@@ -2136,7 +2118,7 @@ required
                             : false
                         }
                       // defaultValue={
-                      //   data.external_audit_remark ? data.external_audit_remark : ""
+                      //   data.external_remark ? data.external_remark : ""
                       // }
                       />
                     </div>
@@ -2159,7 +2141,7 @@ required
 className="form-control"
                             ref={fileInputRef}
                             multiple
-                          disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
 maxLengthCheck(e, "UPLOAD")

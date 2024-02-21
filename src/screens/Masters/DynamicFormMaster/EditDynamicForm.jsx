@@ -1663,6 +1663,7 @@ function EditDynamicForm({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     }
   }, [checkRole]);
+  console.log("data==>",data)
   return (
     <>
       <div className="body d-flex py-3">
@@ -1817,6 +1818,7 @@ function EditDynamicForm({ match }) {
                           </tr>
                         </thead>
                         <tbody>
+                          {console.log("r",rows)}
                           {rows &&
                             rows.map((item, idx) => (
                               <tr id={`addr_${idx}`} key={idx}>

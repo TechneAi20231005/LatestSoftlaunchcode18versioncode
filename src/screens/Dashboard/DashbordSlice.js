@@ -618,6 +618,7 @@ export const DashbordSlice = createSlice({
 
     builder.addCase(getEmployeeData.pending, (state) => {
       state.status = "loading";
+      // state.status = null
     });
 
     builder.addCase(getEmployeeData.fulfilled, (state, action) => {
@@ -638,10 +639,11 @@ export const DashbordSlice = createSlice({
         }
 
         state.employeeData = [...employeeData];
+        console.log("empl",employeeData)
         let exportUserData = [];
         for (const i in employeeData) {
           exportUserData.push({
-            SrNo: employeeData.length + 1,
+            SrNo: employeeData[i].counter,
 
             Account_for: employeeData[i].account_for,
             customer_name: employeeData[i].customer,
