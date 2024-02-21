@@ -387,7 +387,9 @@ const getDynamicForm = async () =>{
     if(!templateDropdown.length){
       dispatch(getTemplateData())
     }
+    dispatch()
   },[]);
+
 
 
   useEffect(()=>{

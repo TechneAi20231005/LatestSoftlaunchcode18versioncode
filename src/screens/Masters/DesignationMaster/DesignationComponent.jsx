@@ -251,8 +251,15 @@ function DesignationComponent() {
     // setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postDesignationData(form));
-      dispatch(getDesignationData());
+      dispatch(postDesignationData(form)).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getDesignationData());
+
+        } else {
+        }
+      });
+
+
 
       // await new DesignationService()
       //   .postDesignation(form)
@@ -288,8 +295,14 @@ function DesignationComponent() {
       //     );
       //   });
     } else {
-      dispatch(updatedDesignationData({ id: id, payload: form }));
-      dispatch(getDesignationData());
+      dispatch(updatedDesignationData({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getDesignationData());
+
+        } else {
+        }
+      });
+
       // await new DesignationService()
       //   .updateDesignation(id, form)
       //   .then((res) => {

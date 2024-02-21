@@ -23,21 +23,33 @@ import {
   templateData,
 } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalClose,handleModalOpen } from "./TemplateComponetSlice"
+import { handleModalClose, handleModalOpen, hideNotification } from "./TemplateComponetSlice";
 
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15) );
-  const parent = useSelector((TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData);
-  const taskTypeDropdown = useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.getAllTypeData);
-  const userData = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
-  const notify=useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.notify);
-  const editTaskModal=useSelector((TemplateComponetSlice) =>TemplateComponetSlice.tempateMaster.modal);
-
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+  );
+  const parent = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
+  );
+  const taskTypeDropdown = useSelector(
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.getAllTypeData
+  );
+  const userData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+  );
+  // const notify = useSelector(
+  //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
+  // );
+  const editTaskModal = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
+  );
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -240,8 +252,9 @@ const CreateTemplateComponent = () => {
       // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
-          dispatch(templateData());
+         
           navigate(`/${_base}/Template`);
+          dispatch(templateData());
         }
       });
 
@@ -347,28 +360,29 @@ const CreateTemplateComponent = () => {
     } else {
       value = e.target.value;
     }
-    
-    setRows(prevRows => {
+
+    setRows((prevRows) => {
       const updatedTemplateData = [...prevRows.template_data];
-      const updatedBasketTask = [...updatedTemplateData[basketIndex].basket_task];
+      const updatedBasketTask = [
+        ...updatedTemplateData[basketIndex].basket_task,
+      ];
       const updatedTask = { ...updatedBasketTask[idx] };
-      
+
       if (type === "select2") {
         updatedTask[e.name] = value;
       } else {
         updatedTask[e.target.name] = value;
       }
-  
+
       updatedBasketTask[idx] = updatedTask;
       updatedTemplateData[basketIndex].basket_task = updatedBasketTask;
-  
+
       return {
         ...prevRows,
         template_data: updatedTemplateData,
       };
     });
   };
-  
 
   // const handleEditTaskData = (e, basketIndex, idx, type, event) => {
   //   if (type === "select2") {
@@ -391,6 +405,15 @@ const CreateTemplateComponent = () => {
   //     };
   //   });
   // };
+
+  // useEffect(() => {
+  //   if (notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 1500); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [notify, dispatch]);
   useEffect(() => {
     if (!parent.length) {
       dispatch(getParentData());
@@ -414,7 +437,7 @@ const CreateTemplateComponent = () => {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
       <PageHeader headerTitle="Template Master" />
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -618,12 +641,13 @@ const CreateTemplateComponent = () => {
                             className="btn btn-sm btn-info"
                             onClick={(e) => {
                               dispatch(
-                              handleModalOpen({
-                                showModal: true,
-                                modalData: task,
-                                basketIndex: basketIndex,
-                                taskIndex: idx,
-                              }));
+                                handleModalOpen({
+                                  showModal: true,
+                                  modalData: task,
+                                  basketIndex: basketIndex,
+                                  taskIndex: idx,
+                                })
+                              );
                             }}
                           >
                             <i className="icofont-ui-edit"></i>
@@ -683,11 +707,12 @@ const CreateTemplateComponent = () => {
                             show={editTaskModal.showModal}
                             onHide={(e) => {
                               dispatch(
-                              handleModalClose({
-                                showModal: false,
-                                modalData: "",
-                                modalHeader: "",
-                              }));
+                                handleModalClose({
+                                  showModal: false,
+                                  modalData: "",
+                                  modalHeader: "",
+                                })
+                              );
                             }}
                           >
                             <Modal.Body>
@@ -715,8 +740,7 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                       defaultValue={
-                                        editTaskModal
-                                        ?.modalData?.task_name
+                                        editTaskModal?.modalData?.task_name
                                       }
                                       className="form-control form-control-sm"
                                     />
@@ -784,7 +808,8 @@ const CreateTemplateComponent = () => {
                                         taskTypeDropdown.filter(
                                           (d) =>
                                             d.value ==
-                                            editTaskModal?.modalData?.task_type_id
+                                            editTaskModal?.modalData
+                                              ?.task_type_id
                                         )
                                       }
                                     />
@@ -821,7 +846,7 @@ const CreateTemplateComponent = () => {
                                       </b>
                                     </label>
                                     <input
-                                      type="text"
+                                      type="time"
                                       id="hours_required"
                                       name="total_time"
                                       onChange={(e) =>
@@ -868,7 +893,7 @@ const CreateTemplateComponent = () => {
 
                               <Modal.Footer>
                                 <div>
-                                  <button
+                                  {/* <button
                                     type="button"
                                     onClick={(e) =>
                                       dispatch(
@@ -882,6 +907,50 @@ const CreateTemplateComponent = () => {
                                     style={{ backgroundColor: "#484C7F" }}
                                   >
                                     Submit
+                                  </button> */}
+
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      // Check if any required fields are empty
+                                      const taskName = document
+                                        .getElementById("task")
+                                        .value.trim();
+                                      const daysRequired = document
+                                        .getElementById("days")
+                                        .value.trim();
+                                      const hoursRequired = document
+                                        .getElementById("hours_required")
+                                        .value.trim();
+                                      const startDays = document
+                                        .getElementById("start_days")
+                                        .value.trim();
+
+                                      if (
+                                        !taskName ||
+                                        !daysRequired ||
+                                        !hoursRequired ||
+                                        !startDays
+                                      ) {
+                                        alert(
+                                          "Please fill out all required fields."
+                                        );
+                                        return; // Prevent further execution
+                                      }
+
+                                      // If all required fields are filled, dispatch the action to close the modal
+                                      dispatch(
+                                        handleModalClose({
+                                          showModal: false,
+                                          modalData: "",
+                                          modalHeader: "",
+                                        })
+                                      );
+                                    }}
+                                    className="btn btn-sm btn-primary"
+                                    style={{ backgroundColor: "#484C7F" }}
+                                  >
+                                    Submit
                                   </button>
 
                                   <button
@@ -889,11 +958,12 @@ const CreateTemplateComponent = () => {
                                     className="btn btn-sm btn-danger"
                                     onClick={(e) =>
                                       dispatch(
-                                      handleModalClose({
-                                        showModal: false,
-                                        modalData: "",
-                                        modalHeader: "",
-                                      }))
+                                        handleModalClose({
+                                          showModal: false,
+                                          modalData: "",
+                                          modalHeader: "",
+                                        })
+                                      )
                                     }
                                   >
                                     Cancel

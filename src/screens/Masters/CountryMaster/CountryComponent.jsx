@@ -892,8 +892,14 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     setNotify(null);
     if (!id) {
       dispatch(postCountryData(form))
-    dispatch(getCountryData())
+      .then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCountryData())
 
+        } else {
+        }
+      });
+    
       // await new CountryService()
       //   .postCountry(form)
       //   .then((res) => {
@@ -930,7 +936,14 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
       //   });
     } else {
       dispatch(updateCountryData({id:id,payload:form}))
-  dispatch(getCountryData())
+      .then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCountryData())
+
+        } else {
+        }
+      });
+
 
       // await new CountryService()
       //   .updateCountry(id, form)
