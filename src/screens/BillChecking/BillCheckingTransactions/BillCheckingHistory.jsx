@@ -11,7 +11,7 @@ const BillCheckingHistory = ({ match }) => {
   const { id } = useParams();
 
   const [data, setData] = useState();
-  
+  console.log("dh",data)
   const columns = [
     { name: "Sr", selector: (row) => row.counter, sortable: true },
     {

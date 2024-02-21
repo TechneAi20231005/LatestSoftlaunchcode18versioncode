@@ -147,7 +147,11 @@ function Profile() {
         } else if (contactErr == true) {
             alert("Enter valid Mobile Number");
             return false;
-        } else if (whatsappValid == true) {
+        }else if (confirmPasswordError == true) {
+            alert("Enter valid password");
+            return false;}
+        
+        else if (whatsappValid == true) {
             alert("Enter valid Whatsapp Number");
             return false;
         }
@@ -157,16 +161,20 @@ function Profile() {
                     if (res.status === 200) {
                         if (res.data.status == 1) {
                             const data = res.data.data;
-                            Object.keys(data).map(key => {
-                                sessionStorage.setItem(key, data[key]);
-                                localStorage.setItem(key, data[key]);
-                            })
+                            // Object.keys(data).map(key => {
+                            //     sessionStorage.setItem(key, data[key]);
+                            //     localStorage.setItem(key, data[key]);
+                            // })
                             setNotify({ type: 'success', message: res.data.message })
-                            window.location.reload(false);
-                            history({
-                                pathname: `/${_base}/Profile`,
+                            // window.location.reload(false);
+                            history(
+                                {
+                                pathname: `/${_base}/Dashboard`,
+
+
                                
-                            },{ state: { alert: { type: "success", message: res.data.message } }}
+                            },
+                            { state: { alert: { type: "success", message: res.data.message } }}
                             );
                         } else {
                             setNotify({ type: 'danger', message: res.data.message })
@@ -276,7 +284,7 @@ function Profile() {
             {notify && <Alert alertData={notify} />}
             <div className="row">
 
-
+{console.log("p",data)}
                 <div className="col-4">
                     <div className="card shadow">
                         <div className="card-header bg-primary text-white">
@@ -547,6 +555,7 @@ function Profile() {
                                     </div>
                                 </div>
 
+                                {confirmPasswordError && (<span style={{ color: "red", position: 'absolute', right: '15%', }}>Password Not matched</span>)}
 
 
                                 <div className="mt-3" style={{ 'textAlign': 'right' }}>

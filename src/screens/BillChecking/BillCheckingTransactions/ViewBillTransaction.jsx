@@ -565,6 +565,8 @@ export default function ViewBillTransaction({ match }, props) {
                         defaultChecked={
                           data.is_tcs_applicable == 1 ? true : false
                         }
+                        disabled
+
                         // onChange={(e) => handleTcsApplicable(e)}
 
                         // disabled={
@@ -589,12 +591,17 @@ export default function ViewBillTransaction({ match }, props) {
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         id="is_original_bill_needed"
                         name="is_original_bill_needed"
+                        disabled
+                        defaultChecked={
+                          data.is_original_bill_needed == 1 ? true : false
+                        }
                         // disabled={data && data.access.Update_Bill ? false : true}
                       />
                       <label className="col-form-label">
                         <b>Original Bill Needed</b>
                       </label>
                     </div>
+                    {console.log("d1",data)}
 
                     <div className="col-md-3  ">
                       <label className="col-form-label">
@@ -789,6 +796,49 @@ export default function ViewBillTransaction({ match }, props) {
                         />
                       </div>
 
+                    
+
+                      <div className=" col-md-3 mt-4">
+                        <input
+                          className="sm-1"
+                          type="checkbox"
+                          style={{ marginRight: "8px", marginLeft: "10px" }}
+                          id="authorized_by_management"
+                          name="authorized_by_management"
+                          // onChange={(e) => handleTdsApplicable(e)}
+                          defaultChecked={
+                            data.authorized_by_management == 1 ? true : false
+                          }
+
+                          disabled={true}
+                        />
+                        <label className="col-form-label">
+                          <b>Authorised by management:</b>
+                        </label>
+                      </div>
+
+                      <div className=" col-md mt-4">
+                        <input
+                          className="sm-1"
+                          type="checkbox"
+                          style={{ marginRight: "8px", marginLeft: "10px" }}
+                          // disabled={
+                          //   data && data.access.TCS_Applicable ? false : true
+                          // }
+                          id="authorized_by_hod"
+                          name="authorized_by_hod"
+                          // onChange={(e) => handleTcsApplicable(e)}
+                          disabled={true}
+                          defaultChecked={
+                            data.authorized_by_hod == 1 ? true : false
+                          }
+
+                        />
+                        <label className="col-form-label">
+                          <b>Authorised by HOD :</b>
+                        </label>
+                      </div>
+
                       <div className="d-flex flex-wrap mt-5 mx-5">
                         {data &&
                           data.attachment.length > 0 &&
@@ -834,43 +884,6 @@ export default function ViewBillTransaction({ match }, props) {
                               </div>
                             );
                           })}
-                      </div>
-
-                      <div className=" col-md-3 mt-4">
-                        <input
-                          className="sm-1"
-                          type="checkbox"
-                          style={{ marginRight: "8px", marginLeft: "10px" }}
-                          id="is_tds_applicable"
-                          name="is_tds_applicable"
-                          // onChange={(e) => handleTdsApplicable(e)}
-                          // defaultChecked={
-                          //   data.is_tds_applicable == 1 ? true : false
-                          // }
-
-                          disabled={true}
-                        />
-                        <label className="col-form-label">
-                          <b>Authorised by management:</b>
-                        </label>
-                      </div>
-
-                      <div className=" col-md mt-4">
-                        <input
-                          className="sm-1"
-                          type="checkbox"
-                          style={{ marginRight: "8px", marginLeft: "10px" }}
-                          // disabled={
-                          //   data && data.access.TCS_Applicable ? false : true
-                          // }
-                          id="is_tcs_applicable"
-                          name="is_tcs_applicable"
-                          // onChange={(e) => handleTcsApplicable(e)}
-                          disabled={true}
-                        />
-                        <label className="col-form-label">
-                          <b>Authorised by HOD :</b>
-                        </label>
                       </div>
                     </div>
                   </div>
