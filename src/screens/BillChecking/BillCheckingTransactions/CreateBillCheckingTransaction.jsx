@@ -3110,7 +3110,9 @@ export default function CreateBillCheckingTransaction({ match }) {
     parseFloat(
       billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
     ) +
-    parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) +
+    (igst === 0 ?
+    parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) :  parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0))+
+    
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0) +
     parseFloat(billAmountValues.tcs ? billAmountValues.tcs : 0);
 
@@ -3118,7 +3120,10 @@ export default function CreateBillCheckingTransaction({ match }) {
     parseFloat(
       billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
     ) +
-    parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) +
+    // parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) 
+    (igst === 0 ?
+      parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) :  parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0))
+    +
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0);
 
   const BillAmount = billValue.toFixed(2);
@@ -3381,7 +3386,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           //     : new Date().getFullYear() + "-04-01"
                           // }
                           // min={new Date().getFullYear() + "-04-01"}
-                          max={formattedDate}
+                          // max={formattedDate}
                           required
                           // max={new Date().toISOString().split("T")[0]}
                         />

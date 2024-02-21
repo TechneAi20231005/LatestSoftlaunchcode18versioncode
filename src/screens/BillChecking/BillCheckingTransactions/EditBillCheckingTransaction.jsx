@@ -636,10 +636,14 @@ fileInputRef.current.value = "";
 
 
 ;
-  const [isTcsApplicable, setIsTcsApplicable] = useState(false);
+  const [isTcsApplicable, setIsTcsApplicable] = useState(data && data.is_tcs_applicable == 1 ?true : false);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
   const [isoriginalbillneeded, SetIsOriginalBillNeeded] = useState(false);
+
+  console.log("data111",data&&data.is_tcs_applicable)
+  console.log("data112",isTcsApplicable)
+
 
   const handleTcsApplicable = (e) => {
     setIsTcsApplicable(e.target.checked);
@@ -648,7 +652,7 @@ fileInputRef.current.value = "";
     } else {
       setIsTcsApplicable((e.target.checked = false));
     }
-    // const newValue = e.target.checked;
+    const newValue = e.target.checked;
 
     // Update the local state
     // setIgst(newValue);
@@ -672,6 +676,13 @@ fileInputRef.current.value = "";
     currentDate.getMonth(),
     currentDate.getDate()
   );
+
+
+  const currentDateee = new Date();
+const formattedDate = currentDateee.toISOString().slice(0, 10); // YYYY-MM-DD
+console.log(formattedDate);
+
+  console.log("cccc",formattedDate)
   const formattedOneYearAgo = `${oneYearAgo.getFullYear()}-${(
     oneYearAgo.getMonth() + 1
   )
@@ -766,6 +777,19 @@ fileInputRef.current.value = "";
     isTcsApplicable,
   ]);
 
+
+  console.log("bill amount1",billAmount1&&billAmount1)
+  console.log("bill amount",billAmount&&billAmount)
+  // console.log("tcs",document?.getElementById("tcs")?.value)
+
+console.log("tcs99",tcs&&tcs.length)
+
+  // console.log("debit advance",parseFloat(document.getElementById("debit_advance").value))
+  // console.log("tds amount",tdsAmount)
+
+
+ 
+
   useEffect(() => {
     if (checkRole && checkRole[45].can_update === 0) {
       // alert("Rushi")
@@ -784,6 +808,8 @@ fileInputRef.current.value = "";
 
 // Get the current date
 const currentDatee = new Date();
+
+console.log("c",currentDate)
 
 // Calculate the start date of the current financial year (April 1 of the current year)
 //  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
@@ -1558,6 +1584,8 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
+                    {isTcsApplicable === true || data.is_tcs_applicable == 1 &&
+
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
@@ -1576,7 +1604,7 @@ value={igst=== true ?1 :0} */}
                           step="any"
                           onChange={(e) => handleTcs(e)}
                           defaultValue={data.tcs ? data.tcs : 0}
-                          readOnly={isTcsApplicable === true ? false : true}
+                          // readOnly={isTcsApplicable === true ? false : true}
                           // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                           // value={data.tcs}
 
@@ -1643,6 +1671,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         />
                       )} */}
                     </div>
+}
+                    {console.log("istcsApllicable",isTcsApplicable)}
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
@@ -1657,7 +1687,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         name="bill_amount"
                         defaultValue={data.bill_amount ? data.bill_amount : 0}
                         value={
-                          billAmount > 0 && isTcsApplicable === true
+                          billAmount > 0 
+                          // && isTcsApplicable === true
                             ? billAmount
                             : billAmount1
                         }
