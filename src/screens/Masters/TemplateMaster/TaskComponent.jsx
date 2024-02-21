@@ -234,7 +234,7 @@ export default function TaskComponent(props) {
 
                         <label>Days Required</label>
                         <Astrick color="red" size="13px" />
-                        <input
+                        {/* <input
                           type="number"
                         
                           max="100"
@@ -244,7 +244,35 @@ export default function TaskComponent(props) {
                           required
 
                           onInput={(e) => handleChange(e, "standard")}
-                        />
+                        /> */}
+
+<input
+  type="time"
+  max="100"
+  className="form-control form-control-sm"
+  defaultValue={props.taskData.task_days}
+  name="days"
+  required
+  onInput={(e) => {
+    const value = parseInt(e.target.value);
+    if (value > 100) {
+      e.target.setCustomValidity("Day should be maximum 100");
+    } else {
+      e.target.setCustomValidity("");
+    }
+    handleChange(e, "standard");
+
+    // Display error message manually
+    const errorSpan = e.target.nextElementSibling; // Get the next element (error span)
+    if (value > 100) {
+      errorSpan.innerText = "Day should be maximum 100"; // Set error message
+    } else {
+      errorSpan.innerText = ""; // Clear error message
+    }
+  }}
+/>
+<span className="error" style={{ color: 'red' }}></span>
+
                         <br />
 
                         <label>Hours Required</label>
@@ -257,6 +285,7 @@ export default function TaskComponent(props) {
                               : "00.00"
                           }
                           name="total_time"
+                          //  type="time"
                           onInput={(e) => handleChange(e, "standard")}
                         />
                          <br />

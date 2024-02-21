@@ -250,6 +250,8 @@ function PaymentTemplateMaster() {
       name: "Bill Day",
       selector: (row) => row.bill_day,
       sortable: true,
+      width: "150px",
+
 
       cell: (row) => (
         <div
@@ -262,7 +264,7 @@ function PaymentTemplateMaster() {
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.bill_day && row.bill_day.length}
+                  {row.bill_day && row.bill_day}
                 </span>
               </div>
             </OverlayTrigger>

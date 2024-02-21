@@ -734,7 +734,7 @@ const EditTemplateComponent = ({ match, props }) => {
                     </b>
                   </label>
                   <input
-                    type="text"
+                    type="time"
                     id="hours_required"
                     name="total_hours"
                     className="form-control form-control-sm"
