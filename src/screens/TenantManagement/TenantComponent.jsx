@@ -28,8 +28,9 @@ function TenantComponent() {
   );
 
   const [data, setData] = useState(null);
-  const [notify, setNotify] = useState(null);
-
+  // const [notify, setNotify] = useState(null);
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
+  );
   const roleId = sessionStorage.getItem("role_id");
   const isMasterAdmin = localStorage.getItem("role_name");
   // const [checkRole, setCheckRole] = useState(null);
@@ -61,7 +62,7 @@ function TenantComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -100,16 +101,16 @@ function TenantComponent() {
         </div>
       ),
     },
-    // {
-    //   name: "Created At",
-    //   selector: (row) => row.created_at,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Created By",
-    //   selector: (row) => row.created_by_name,
-    //   sortable: true,
-    // },
+    {
+      name: "Created At",
+      selector: (row) => row.created_at,
+      sortable: true,
+    },
+    {
+      name: "Created By",
+      selector: (row) => row.created_by_name,
+      sortable: true,
+    },
     {
       name: "Updated At",
       selector: (row) => row.updated_at,
@@ -176,7 +177,7 @@ function TenantComponent() {
   useEffect(() => {
     loadData();
     if (location && location.state) {
-      setNotify(location.state.alert);
+      // setNotify(location.state.alert);
     }
   }, []);
 
@@ -200,6 +201,8 @@ function TenantComponent() {
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
+
+
       <PageHeader
         headerTitle="Tenant Master"
         renderRight={() => {
