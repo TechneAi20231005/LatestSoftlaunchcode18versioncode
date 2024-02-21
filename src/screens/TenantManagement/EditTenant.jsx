@@ -13,10 +13,10 @@ import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import Alert from "../../components/Common/Alert";
-import {  useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { getCityData, getCountryDataSort, getStateData, getStateDataSort } from "../Dashboard/DashboardAction";
 import { getRoles } from "../Dashboard/DashboardAction";
-import { updatetenantData } from "./TenantConponentAction";
+import { getAllTenant, updatetenantData } from "./TenantConponentAction";
 
 export default function EditTenant({ match }) {
   const navigate = useNavigate();
@@ -24,12 +24,12 @@ export default function EditTenant({ match }) {
   const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
   const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
-  const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==33))
-  const [notify, setNotify] = useState();
+  const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
+  // const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [toggleRadio, setToggleRadio] = useState(false);
   const { id } = useParams();
-
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify)
   const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
   // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
@@ -71,7 +71,7 @@ export default function EditTenant({ match }) {
 
 
   const [inputState, setInputState] = useState({
- 
+
   });
 
   const [contactValid, setContactValid] = useState(false);
@@ -134,7 +134,7 @@ export default function EditTenant({ match }) {
       //     .filter((d) => d.country_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
 
     }
     if (type == "STATE") {
@@ -143,7 +143,7 @@ export default function EditTenant({ match }) {
       //     .filter((d) => d.state_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.city }))
       // );
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
 
     }
   };
@@ -152,12 +152,7 @@ export default function EditTenant({ match }) {
     dispatch(getCountryDataSort());
     dispatch(getRoles());
     dispatch(getStateDataSort())
-    if(!stateDropdown){
-      dispatch(getStateData());
-    
-    }
-  
-
+    dispatch(getStateData());
     dispatch(getCityData());
     // await new CountryService().getCountry().then((res) => {
     //   if (res.status === 200) {
@@ -190,7 +185,7 @@ export default function EditTenant({ match }) {
     //     }
     //   }
     // });
-  
+
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -218,12 +213,14 @@ export default function EditTenant({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("is_active", toggleRadio ? 1 : 0);
-    setNotify(null);
-    dispatch(updatetenantData({id:tenanatId,payload:formData})).then((res)=>{
-   if(res.payload.data.status===1 &&res.payload.status===200){
-    navigate(`/${_base}/TenantMaster`)
-    
-   }
+    // setNotify(null);
+    dispatch(updatetenantData({ id: tenanatId, payload: formData })).then((res) => {
+
+      if (res.payload.data.status === 1 && res.payload.status === 200) {
+        navigate(`/${_base}/TenantMaster`)
+        dispatch(getAllTenant())
+
+      }
     })
 
     // await new TenantService().updateTenant(tenanatId, formData).then((res) => {
@@ -256,7 +253,6 @@ export default function EditTenant({ match }) {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
-      // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -327,6 +323,7 @@ export default function EditTenant({ match }) {
                   placeholder="Email Address"
                   required
                   defaultValue={data && data.email_id}
+                  onKeyPress={e => { Validation.emailOnly(e) }}
                 />
               </div>
             </div>
@@ -347,22 +344,22 @@ export default function EditTenant({ match }) {
                   required
                   minLength={10}
                   maxLength={10}
-                onChange={handleContactValidation}
+                  onChange={handleContactValidation}
 
                   defaultValue={data && data.contact_no}
                   onKeyPress={(e) => {
                     Validation.MobileNumbersOnly(e);
                   }}
                 />
-                                          {inputState && (
-                      <small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        {inputState.contactNoErr}
-                      </small>
-                    )}
+                {inputState && (
+                  <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {inputState.contactNoErr}
+                  </small>
+                )}
               </div>
             </div>
           </div>

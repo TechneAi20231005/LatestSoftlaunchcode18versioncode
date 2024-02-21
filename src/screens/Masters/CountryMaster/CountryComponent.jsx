@@ -57,7 +57,7 @@
 //     const result = SearchInputData(data, SearchValue);
 //     setData(result);
 //   };
-  
+
 //   const columns = [
 //     {
 //       name: "Action",
@@ -306,7 +306,7 @@
 //     if (checkRole && checkRole[4].can_read === 0) {
 //       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
 //     }
-    
+
 //   }, [checkRole])
 
 
@@ -543,10 +543,10 @@
 //                 Add
 //               </button>
 //             )}
-           
+
 
 //             {modal.modalData && checkRole && checkRole[4].can_update == 1 ? (
-               
+
 //               <button
 //                 type="submit"
 //                 className="btn btn-primary text-white"
@@ -654,10 +654,10 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import DataTableExtensions from "react-data-table-component-extensions";
 import { Spinner } from "react-bootstrap";
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { dashboardSlice, hideNotification } from "../../Dashboard/DashbordSlice";
 import { getCountryData, getRoles, postCountryData, updateCountryData } from "../../Dashboard/DashboardAction";
-import { handleModalInStore,handleModalClose,loaderModal } from "../../Dashboard/DashbordSlice";
+import { handleModalInStore, handleModalClose, loaderModal } from "../../Dashboard/DashbordSlice";
 
 function CountryComponent() {
   const [data, setData] = useState(null);
@@ -679,13 +679,13 @@ function CountryComponent() {
   //   setModal(data);
   // };
   const searchRef = useRef();
-const dispatch = useDispatch();
-const countryData = useSelector(dashboardSlice=>dashboardSlice.dashboard.countryData)
-const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
-const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
-const showLoadermodal = useSelector((dashboardSlice) => dashboardSlice.dashboard.showLoaderModal);
-const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCountryData)
-const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5));
+  const dispatch = useDispatch();
+  const countryData = useSelector(dashboardSlice => dashboardSlice.dashboard.countryData)
+  const Notify = useSelector((dashboardSlice) => dashboardSlice.dashboard.notify);
+  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const showLoadermodal = useSelector((dashboardSlice) => dashboardSlice.dashboard.showLoaderModal);
+  const ExportData = useSelector((dashboardSlice) => dashboardSlice.dashboard.exportCountryData)
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5));
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -711,20 +711,20 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
   // };
 
   const [searchTerm, setSearchTerm] = useState('');
- 
+
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
+    console.log("fff", filteredData);
   };
-  
 
 
- 
-  
+
+
+
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -739,19 +739,20 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
             data-bs-toggle="modal"
             data-bs-target="#depedit"
             onClick={(e) => {
-            //   handleModal({
-            //     showModal: true,
-            //     modalData: row,
-            //     modalHeader: "Edit Country",
-            //   });
-            // }}
-            dispatch(
-              handleModalInStore({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Country",
-              })
-            );}}
+              //   handleModal({
+              //     showModal: true,
+              //     modalData: row,
+              //     modalHeader: "Edit Country",
+              //   });
+              // }}
+              dispatch(
+                handleModalInStore({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Country",
+                })
+              );
+            }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
@@ -876,14 +877,14 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     //     );
     //   });
 
-  //   await new ManageMenuService().getRole(roleId).then((res) => {
-  //     if (res.status === 200) {
-  //       if (res.data.status == 1) {
-  //         const getRoleId = sessionStorage.getItem("role_id");
-  //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-  //       }
-  //     }
-  //   });
+    //   await new ManageMenuService().getRole(roleId).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         const getRoleId = sessionStorage.getItem("role_id");
+    //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //       }
+    //     }
+    //   });
   };
 
   const handleForm = (id) => async (e) => {
@@ -974,7 +975,7 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
       //     new ErrorLogService().sendErrorLog(
       //       "Country",
       //       "Create_Country",
-      
+
       //       "INSERT",
       //       errorObject.data.message
       //     );
@@ -997,18 +998,19 @@ const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRol
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-    
+
   }, [checkRole])
 
 
-  useEffect(()=>{
+  useEffect(() => {
     loadData()
 
-if(!countryData.length || !checkRole.length){
-  dispatch(getCountryData())
-dispatch(getRoles())
+    if (!countryData.length || !checkRole.length) {
+      dispatch(getCountryData())
+      dispatch(getRoles())
 
-  }},[])
+    }
+  }, [])
 
   // useEffect(() => {
   //   if (Notify) {
@@ -1031,19 +1033,20 @@ dispatch(getRoles())
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                  //   handleModal({
-                  //     showModal: true,
-                  //     modalData: null,
-                  //     modalHeader: "Add Country",
-                  //   });
-                  // }}
-                  dispatch(
-                    handleModalInStore({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Country",
-                    })
-                  );}}
+                    //   handleModal({
+                    //     showModal: true,
+                    //     modalData: null,
+                    //     modalHeader: "Add Country",
+                    //   });
+                    // }}
+                    dispatch(
+                      handleModalInStore({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Country",
+                      })
+                    );
+                  }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Country
                 </button>
@@ -1074,7 +1077,7 @@ dispatch(getRoles())
               className="btn btn-sm btn-warning text-white"
               type="button"
               // onClick={handleSearch}
-              value={searchTerm} 
+              value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
 
 
@@ -1087,7 +1090,7 @@ dispatch(getRoles())
               type="button"
               onClick={() => window.location.reload(false)}
               style={{ marginTop: "0px", fontWeight: "600" }}
-              
+
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -1128,8 +1131,8 @@ dispatch(getRoles())
               )}
             </div>
             <Modal
-            //  show={dispatch(loaderModal({sh}))} 
-             centered>
+              //  show={dispatch(loaderModal({sh}))} 
+              centered>
               <Modal.Body className="text-center">
                 <Spinner animation="grow" variant="primary" />
                 <Spinner animation="grow" variant="secondary" />
@@ -1147,24 +1150,26 @@ dispatch(getRoles())
       <Modal
         centered
         show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
+      // onHide={(e) => {
+      //   handleModal({
+      //     showModal: false,
+      //     modalData: "",
+      //     modalHeader: "",
+      //   });
+      // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton  onClick={() => {dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: null,
-                  modalHeader: "Add Country",
-                }))}}>
+          <Modal.Header closeButton onClick={() => {
+            dispatch(
+              handleModalClose({
+                showModal: false,
+                modalData: null,
+                modalHeader: "Add Country",
+              }))
+          }}>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -1230,8 +1235,8 @@ dispatch(getRoles())
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                ? true
-                                : false
+                                  ? true
+                                  : false
                             }
                           />
                           <label
@@ -1276,15 +1281,15 @@ dispatch(getRoles())
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px" }}
+                style={{ backgroundColor: "#484C7F", width: '80px', padding: "8px" }}
               >
                 Add
               </button>
             )}
-           
+
 
             {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
-               
+
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -1305,12 +1310,14 @@ dispatch(getRoles())
               //     modalHeader: "",
               //   });
               // }}
-              onClick={() => {dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                }))}}
+              onClick={() => {
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  }))
+              }}
             >
               Cancel
             </button>
@@ -1323,9 +1330,9 @@ dispatch(getRoles())
 
 function CountryDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect( () => {
+  useEffect(() => {
     const tempData = [];
-     new CountryService().getCountry().then((res) => {
+    new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
