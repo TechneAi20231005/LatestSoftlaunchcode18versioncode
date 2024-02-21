@@ -25,7 +25,7 @@ export const getcustomerTypeData = createAsyncThunk(
       try {
         const service = new CustomerTypeService();
         const response = await service.getCustomerType();
-  console.log("re",response)
+
         return response;
       } catch (error) {
         throw error;
@@ -39,7 +39,7 @@ export const getcustomerTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.getQueryType();
-  console.log("re",response)
+
         return response;
       } catch (error) {
         throw error;

@@ -36,6 +36,7 @@ export const departmentMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(departmentData.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(departmentData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -91,21 +92,27 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
 
     builder.addCase(postdepartment.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(postdepartment.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+       
 
         let postdepartment = payload.data.data;
         console.log(postdepartment);
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postdepartment = postdepartment;
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        let notify = { type: "danger", message: payload.data.message };
+        state.notify = null;
+        state.notify = notify;
       }
     });
     builder.addCase(postdepartment.rejected, (state) => {
@@ -115,19 +122,24 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
     //_____________________________updateData______________________________
     builder.addCase(updateDepartment.pending, (state) => {
       state.status = "loading";
+      state.notify = null;
     });
     builder.addCase(updateDepartment.fulfilled, (state, action) => {
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+     
 
         let updateDepartment = payload.data.data;
         console.log(updateDepartment);
         state.status = "succeded";
+        state.notify = null;
+        state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
         state.updateDepartment = updateDepartment;
+        
+        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.modal = modal;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }

@@ -38,7 +38,7 @@ export const desegnationSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getDesignationData.pending, (state) => {
       state.status = "loading";
-      state.notify=null
+      // state.notify=null
     });
     builder.addCase(getDesignationData.fulfilled, (state, action) => {
       const { payload } = action;

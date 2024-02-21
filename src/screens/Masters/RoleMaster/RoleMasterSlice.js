@@ -43,7 +43,7 @@ export const rolemasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getRoleData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(getRoleData.fulfilled, (state, action) => {
       const { payload } = action;

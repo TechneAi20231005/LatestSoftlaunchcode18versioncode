@@ -375,7 +375,7 @@ export const DashbordSlice = createSlice({
     // fetch country data
     builder.addCase(getCountryData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      // state.notify = null;
     });
     builder.addCase(getCountryData.fulfilled, (state, action) => {
       const { payload } = action;
