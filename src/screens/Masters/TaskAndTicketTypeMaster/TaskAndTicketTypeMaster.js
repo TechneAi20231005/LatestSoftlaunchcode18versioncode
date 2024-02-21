@@ -946,7 +946,7 @@ function TaskAndTicketTypeMaster(props) {
                 showModal: true,
                 modalData: row,
 
-                modalHeader: "Edit Type",
+                modalHeader: "Edit Task /Ticket Type",
               });
             }}
           >

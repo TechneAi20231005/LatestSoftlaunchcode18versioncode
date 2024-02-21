@@ -44,6 +44,7 @@ export default function TaskComponent(props) {
   };
 
   const handleChange = (e, type) => {
+    
     if (type === "select2") {
       // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
@@ -109,6 +110,13 @@ export default function TaskComponent(props) {
   }, []);
 
   const handleSubmit = (e) => {
+    console.log("pp",props.taskData.task_days
+    )
+
+    if(!props.taskData.task_days){
+      alert("Task Name is required")
+
+    }
     setNotify(null);
     e.preventDefault();
 
@@ -219,10 +227,39 @@ export default function TaskComponent(props) {
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
                           name="task"
-                          required
+                          // required
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
+
+                        <label>Days Required</label>
+                        <Astrick color="red" size="13px" />
+                        <input
+                          type="number"
+                        
+                          max="100"
+                          className="form-control form-control-sm"
+                          defaultValue={props.taskData.task_days}
+                          name="days"
+                          required
+
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
+                        <br />
+
+                        <label>Hours Required</label>
+                        <Astrick color="red" size="13px" />
+                        <input
+                          className="form-control form-control-sm"
+                          defaultValue={
+                            props.taskData.total_hours
+                              ? props.taskData.total_hours
+                              : "00.00"
+                          }
+                          name="total_time"
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
+                         <br />
 
                         {/* <label>
                           <b>Parent Task Type :</b>
@@ -240,6 +277,8 @@ export default function TaskComponent(props) {
                             )
                           }
                         /> */}
+
+
                         <label>
                           <b>Task Type :</b>
                         </label>
@@ -257,31 +296,9 @@ export default function TaskComponent(props) {
                           }
                         />
 
-                        <br />
-                        <label>Days Required</label>
-                        <Astrick color="red" size="13px" />
-                        <input
-                          type="number"
-                          min="1"
-                          max="100"
-                          className="form-control form-control-sm"
-                          defaultValue={props.taskData.task_days}
-                          name="days"
-                          onInput={(e) => handleChange(e, "standard")}
-                        />
-                        <br />
-                        <label>Hours Required</label>
-                        <Astrick color="red" size="13px" />
-                        <input
-                          className="form-control form-control-sm"
-                          defaultValue={
-                            props.taskData.total_hours
-                              ? props.taskData.total_hours
-                              : "00.00"
-                          }
-                          name="total_time"
-                          onInput={(e) => handleChange(e, "standard")}
-                        />
+                       
+                       
+                    
                         <br />
                         <label>
                           Start task{" "}
@@ -312,7 +329,16 @@ export default function TaskComponent(props) {
                   >
                     Update
                   </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    // onClick={handleSubmit}
+                  >
+                    Cancle
+                  </button>
                 </div>
+
+                
               </div>
             </div>
           </div>
