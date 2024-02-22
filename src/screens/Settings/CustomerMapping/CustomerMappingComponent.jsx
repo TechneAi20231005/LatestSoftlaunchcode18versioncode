@@ -20,6 +20,7 @@ export default function CustomerMappingComponent() {
 
   const dispatch=useDispatch()
   const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
+
   const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.exportTempData)
   const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 
@@ -59,11 +60,22 @@ export default function CustomerMappingComponent() {
 
 
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    // setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   // setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
+
 
 
 
@@ -191,9 +203,9 @@ export default function CustomerMappingComponent() {
 
   useEffect(() => {
     loadData();
-    if(!data.length){
-      dispatch(getCustomerMappingData())
-    }
+
+    dispatch(getCustomerMappingData())
+   
     if(!checkRole.length){
       dispatch(getRoles())
     }
@@ -230,14 +242,16 @@ export default function CustomerMappingComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -262,7 +276,25 @@ export default function CustomerMappingComponent() {
         <div className="col-sm-12">
           {data && <DataTable
             columns={columns}
-            data={data}
+            data={data.filter((customer) => {
+              if (typeof searchTerm === "string") {
+                if (typeof customer === "string") {
+                  return customer
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+                } else if (typeof customer === "object") {
+                  return Object.values(customer).some(
+                    (value) =>
+                      typeof value === "string" &&
+                      value
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
+                  );
+                }
+              }
+              return false;
+            })}
+            
             defaultSortField="title"
             pagination
             selectableRows={false}
