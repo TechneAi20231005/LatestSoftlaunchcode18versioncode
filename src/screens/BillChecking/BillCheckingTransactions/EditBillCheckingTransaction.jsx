@@ -309,6 +309,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     });
   };
 
+  const handleBillTypeChange = (e) => {
+    // Clear the userDropdown state
+    setUserDropdown(null);
+  };
+
+
   const loadData = async () => {
     await new BillTransactionService().getBillCheckingById(id).then((res) => {
       if (res.status === 200) {
@@ -967,7 +973,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                           type="text"
                           className="form-control form-control"
                           options={billTypeDropdown}
-                          onChange={handleAssignToPerson}
+                          // onChange={handleAssignToPerson}
+                          onChange={(e) => {
+                            handleAssignToPerson(e);
+                            handleBillTypeChange(e); // Call the function to clear the assign to field
+                          }}
                           defaultValue={
                             data &&
                             billTypeDropdown.filter(
@@ -2234,7 +2244,7 @@ readOnly={isTcsApplicable === true ? false : true}
                     </div>
                     <div className=" col-md-4 ">
                       <label className=" col-form-label">
-                        <b> External Remark: </b>
+                        <b> External Audit Remark: </b>
                       </label>
                       <textarea
                         type="text"

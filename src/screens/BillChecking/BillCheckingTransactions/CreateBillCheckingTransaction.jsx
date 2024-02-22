@@ -2470,6 +2470,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     });
   };
 
+  const handleBillTypeChange = (e) => {
+    // Clear the userDropdown state
+    setAssignToDropdown(null);
+  };
+
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -2485,8 +2490,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-
-
 
   const handleReset = () => {};
   const handleFilter = async (e) => {
@@ -2724,7 +2727,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     }
   };
-
 
   const [isOriginal, setIsOriginal] = useState(0);
   const handleIsOriginal = (e) => {
@@ -3120,9 +3122,13 @@ export default function CreateBillCheckingTransaction({ match }) {
     parseFloat(
       billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
     ) +
-    (igst === 0 ?
-    parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) :  parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0))+
-    
+    (igst === 0
+      ? parseFloat(
+          billAmountValues.gst_amount ? billAmountValues.gst_amount : 0
+        )
+      : parseFloat(
+          billAmountValues.igst_amount ? billAmountValues.igst_amount : 0
+        )) +
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0) +
     parseFloat(billAmountValues.tcs ? billAmountValues.tcs : 0);
 
@@ -3130,10 +3136,14 @@ export default function CreateBillCheckingTransaction({ match }) {
     parseFloat(
       billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
     ) +
-    // parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) 
-    (igst === 0 ?
-      parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0) :  parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0))
-    +
+    // parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0)
+    (igst === 0
+      ? parseFloat(
+          billAmountValues.gst_amount ? billAmountValues.gst_amount : 0
+        )
+      : parseFloat(
+          billAmountValues.igst_amount ? billAmountValues.igst_amount : 0
+        )) +
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0);
 
   const BillAmount = billValue.toFixed(2);
@@ -3284,7 +3294,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                         type="text"
                         className="form-control form-control"
                         options={billTypeDropdown}
-                        onChange={(e) => handleAssignToPerson(e)}
+                        // onChange={(e) => handleAssignToPerson(e)}
+                        onChange={(e) => {
+                          handleAssignToPerson(e);
+                          handleBillTypeChange(e); // Call the function to clear the assign to field
+                        }}
                         id="bill_type"
                         name="bill_type"
                         placeholder="Bill Type"
@@ -3385,29 +3399,28 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </b>
                     </label>
                     {authority && (
-                        <input
-                          type="date"
-                          className="form-control form-control-sm"
-                          id="bill_date"
-                          name="bill_date"
-                          min={
-                            authorities &&
-                            authorities.Past_Financial_Year_Bill_Date === true &&
-                            formattedStartDate
-                          }
-                          // min={
-                          //   authority.Audit_Remark == true
-                          //     ? new Date().getFullYear() - 1 + "-04-01"
-                          //     : new Date().getFullYear() + "-04-01"
-                          // }
-                          // min={new Date().getFullYear() + "-04-01"}
-                          max={formattedDate}
-                          required
-                          // max={new Date().toISOString().split("T")[0]}
-                        />
+                      <input
+                        type="date"
+                        className="form-control form-control-sm"
+                        id="bill_date"
+                        name="bill_date"
+                        min={
+                          authorities &&
+                          authorities.Past_Financial_Year_Bill_Date === true &&
+                          formattedStartDate
+                        }
+                        // min={
+                        //   authority.Audit_Remark == true
+                        //     ? new Date().getFullYear() - 1 + "-04-01"
+                        //     : new Date().getFullYear() + "-04-01"
+                        // }
+                        // min={new Date().getFullYear() + "-04-01"}
+                        max={formattedDate}
+                        required
+                        // max={new Date().toISOString().split("T")[0]}
+                      />
                     )}
                   </div>
-
 
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
@@ -3578,15 +3591,42 @@ export default function CreateBillCheckingTransaction({ match }) {
                     />
                   </div>
 
-                  <div className=" col ">
-                    <input
-                      className="sm"
+                  <div className=" col-md">
+                    <div className="d-flex align-items-center">
+                      <input
+                        className="sm-1"
+                        type="checkbox"
+                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        id="is_igst_applicable"
+                        onChange={(e) => {
+                          handleIgst(e);
+                        }}
+                        onKeyPress={(e) => {
+                          Validation.NumbersSpeicalOnlyDot(e);
+                        }}
+                      />
+
+                      <label
+                        className="col-sm-3 col-form-label"
+                        style={{ width: "200px" }}
+                      >
+                        <b>
+                          IGST/GST :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                    </div>
+
+                    {/* <input
+                     className="sm-1"
+                     type="checkbox"
+                     style={{ marginRight: "8px", marginLeft: "10px" }}
+                      // className="sm"
                       id="is_igst_applicable"
-                      type="checkbox"
+                      // type="checkbox"
                       onChange={(e) => {
                         handleIgst(e);
                       }}
-                      style={{ marginRight: "8px" }}
+                      // style={{ marginRight: "8px" }}
                       onKeyPress={(e) => {
                         Validation.NumbersSpeicalOnlyDot(e);
                       }}
@@ -3595,123 +3635,129 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <b>
                         IGST/GST :<Astrick color="red" size="13px" />
                       </b>
-                    </label>
+                    </label> */}
 
-                    {igst == 0 ? <>
+                    {igst == 0 ? (
+                      <>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="gst_amount"
+                          name="gst_amount"
+                          maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                          value={billAmountValues.gst_amount}
+                          onChange={(e) => handleInputChange(e)}
+                          required
+                          onKeyPress={(e) => {
+                            const inputValue = e.key;
+                            const currentInput = e.target.value;
+                            const decimalIndex = currentInput.indexOf(".");
+
+                            if (
+                              !/^\d$/.test(inputValue) &&
+                              inputValue !== "." &&
+                              inputValue !== "Backspace"
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              decimalIndex !== -1 &&
+                              currentInput.length - decimalIndex > 2
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              currentInput.length >= 10 &&
+                              inputValue !== "." &&
+                              decimalIndex === -1
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onInput={(e) => {
+                            const value = e.target.value;
+                            const parts = value.split(".");
+
+                            if (parts.length > 1) {
+                              // Ensure only 2 decimal places
+                              parts[1] = parts[1].slice(0, 2);
+                            }
+
+                            e.target.value = parts.join(".");
+
+                            if (value.length > 13) {
+                              e.target.value = value.slice(0, 13);
+                            }
+                          }}
+                        />
+                      </>
+                    ) : (
                       <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="gst_amount"
-                      name="gst_amount"
-                      maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                      value={billAmountValues.gst_amount}
-                      onChange={(e) => handleInputChange(e)}
-                      required
-                      onKeyPress={(e) => {
-                        const inputValue = e.key;
-                        const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf(".");
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="igst_amount"
+                        name="igst_amount"
+                        maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                        value={billAmountValues.igst_amount}
+                        onChange={(e) => handleInputChange(e)}
+                        required
+                        onKeyPress={(e) => {
+                          const inputValue = e.key;
+                          const currentInput = e.target.value;
+                          const decimalIndex = currentInput.indexOf(".");
 
-                        if (
-                          !/^\d$/.test(inputValue) &&
-                          inputValue !== "." &&
-                          inputValue !== "Backspace"
-                        ) {
-                          e.preventDefault();
-                        }
+                          if (
+                            !/^\d$/.test(inputValue) &&
+                            inputValue !== "." &&
+                            inputValue !== "Backspace"
+                          ) {
+                            e.preventDefault();
+                          }
 
-                        if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
-                        ) {
-                          e.preventDefault();
-                        }
+                          if (
+                            decimalIndex !== -1 &&
+                            currentInput.length - decimalIndex > 2
+                          ) {
+                            e.preventDefault();
+                          }
 
-                        if (
-                          currentInput.length >= 10 &&
-                          inputValue !== "." &&
-                          decimalIndex === -1
-                        ) {
-                          e.preventDefault();
-                        }
-                      }}
-                      onInput={(e) => {
-                        const value = e.target.value;
-                        const parts = value.split(".");
+                          if (
+                            currentInput.length >= 10 &&
+                            inputValue !== "." &&
+                            decimalIndex === -1
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
+                        onInput={(e) => {
+                          const value = e.target.value;
+                          const parts = value.split(".");
 
-                        if (parts.length > 1) {
-                          // Ensure only 2 decimal places
-                          parts[1] = parts[1].slice(0, 2);
-                        }
+                          if (parts.length > 1) {
+                            // Ensure only 2 decimal places
+                            parts[1] = parts[1].slice(0, 2);
+                          }
 
-                        e.target.value = parts.join(".");
+                          e.target.value = parts.join(".");
 
-                        if (value.length > 13) {
-                          e.target.value = value.slice(0, 13);
-                        }
-                      }}
-                    />
-                    </>:
-
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="igst_amount"
-                      name="igst_amount"
-                      maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                      value={billAmountValues.igst_amount}
-                      onChange={(e) => handleInputChange(e)}
-                      required
-                      onKeyPress={(e) => {
-                        const inputValue = e.key;
-                        const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf(".");
-
-                        if (
-                          !/^\d$/.test(inputValue) &&
-                          inputValue !== "." &&
-                          inputValue !== "Backspace"
-                        ) {
-                          e.preventDefault();
-                        }
-
-                        if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
-                        ) {
-                          e.preventDefault();
-                        }
-
-                        if (
-                          currentInput.length >= 10 &&
-                          inputValue !== "." &&
-                          decimalIndex === -1
-                        ) {
-                          e.preventDefault();
-                        }
-                      }}
-                      onInput={(e) => {
-                        const value = e.target.value;
-                        const parts = value.split(".");
-
-                        if (parts.length > 1) {
-                          // Ensure only 2 decimal places
-                          parts[1] = parts[1].slice(0, 2);
-                        }
-
-                        e.target.value = parts.join(".");
-
-                        if (value.length > 13) {
-                          e.target.value = value.slice(0, 13);
-                        }
-                      }}
-                    />}
+                          if (value.length > 13) {
+                            e.target.value = value.slice(0, 13);
+                          }
+                        }}
+                      />
+                    )}
                   </div>
 
                   <div className=" col ">
-                    <label className="col-sm-3 col-form-label">
+                    {/* <label className="col-sm-3 col-form-label">
                       <b> Round Off: </b>
-                    </label>
+                    </label> */}
+                    <label className="col-sm-3 col-form-label" style={{ width: "200px" }}>
+                    <b> Round Off: </b>
+
+</label>
 
                     {/* <input
                       type="number"
@@ -4044,7 +4090,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
-                    <label className="col-form-label">
+                    <label className="col-form-label" style={{width:"100px"}}>
                       <b>TDS Applicable:</b>
                     </label>
                   </div>
@@ -4066,12 +4112,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                       />
                     )}
-                    <label className="col-form-label">
+                    <label className="col-form-label" style={{ width: "100px" }}>
                       <b>TCS Applicable:</b>
                     </label>
                   </div>
 
-                  <div className=" col-md mt-4">
+                  {/* <div className=" col-md mt-4">
                     <input
                       className="sm-1"
                       type="checkbox"
@@ -4091,7 +4137,28 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <label className="col-form-label">
                       <b>Original Bill Needed</b>
                     </label>
-                  </div>
+                  </div> */}
+                  <div className="col-md d-flex align-items-center mt-4">
+  <input
+    className="sm-1"
+    type="checkbox"
+    style={{ marginRight: "8px", marginLeft: "10px" }}
+    id="is_original_bill_needed"
+    onChange={(e) => {
+      handleIsOriginal(e);
+    }}
+    disabled={
+      authorities &&
+      authorities.Original_Bill_Needed === false
+        ? true
+        : false
+    }
+  />
+  <label className="col-form-label" style={{ width: "100px" }}>
+    <b>Original Bill Needed</b>
+  </label>
+</div>
+
                 </div>
 
                 {showTdsFileds && (
@@ -4294,9 +4361,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                     />
                   </div>
 
-                  {/* <div className=" col-md-3 ">
+                  <div className=" col-md-3 ">
                     <label className=" col-form-label">
-                      <b> Audit Remark: </b>
+                      <b>Internal Audit Remark: </b>
                     </label>
                     {authority && (
                       <textarea
@@ -4306,12 +4373,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="audit_remark"
                         rows="4"
                         maxLength={1000}
-                        // readOnly={
-                        //   authority.Audit_Remark === false ? true : false
-                        // }
+                        readOnly={
+                          authority.Audit_Remark === false ? true : false
+                        }
                       />
                     )}
-                  </div> */}
+                  </div>
                 </div>
 
                 {/* <div className=" col-md-3 ">
@@ -4399,51 +4466,122 @@ export default function CreateBillCheckingTransaction({ match }) {
                     </div>
                   </div>
                 </div>
-                <div className="d-flex">
+                <div
+                  //  className="d-flex"
+                  className="attachments-container"
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    maxWidth: "100%",
+                    maxHeight: "400px", // Example maximum height
+                    overflowY: "auto", // Enable vertical scrolling if needed
+                  }}
+                >
                   {selectedFiles &&
                     selectedFiles.map((attachment, index) => {
                       return (
+                        // <div
+                        //   key={index}
+                        //   className="justify-content-end"
+                        //   style={{
+                        //     marginRight: "20px",
+                        //     padding: "5px",
+                        //     maxWidth: "250px",
+                        //   }}
+                        // >
+                        //   <div
+                        //     className="card"
+                        //     style={{ backgroundColor: "#EBF5FB" }}
+                        //   >
+                        //     <div className="card-header">
+                        //       <span>{attachment.fileName}</span>
+                        //       {/* <img
+                        //       src={attachment.tempUrl}
+                        //       style={{ height: "100%", width: "100%" }}
+                        //     />{" "}
+                        //     * */}
+                        //       <div className="d-flex justify-content-between p-0 mt-1">
+                        //         <a
+                        //           href={`${attachment.tempUrl}`}
+                        //           target="_blank"
+                        //           className="btn btn-warning btn-sm p-0 px-1"
+                        //         >
+                        //           <i class="icofont-ui-zoom-out"></i>
+                        //         </a>
+                        //         <button
+                        //           className="btn btn-danger text-white btn-sm p-1"
+                        //           type="button"
+                        //           onClick={(e) => {
+                        //             uploadAttachmentHandler(e, "DELETE", index);
+                        //           }}
+                        //         >
+                        //           <i
+                        //             class="icofont-ui-delete"
+                        //             style={{ fontSize: "15px" }}
+                        //           ></i>
+                        //         </button>
+                        //       </div>
+                        //     </div>
+                        //   </div>
+                        // </div>
                         <div
                           key={index}
-                          className="justify-content-end"
                           style={{
                             marginRight: "20px",
-                            padding: "5px",
-                            maxWidth: "250px",
+                            marginBottom: "20px", // Add margin bottom for spacing between attachments
+                            width: "100px", // Set a fixed width for consistency
                           }}
                         >
                           <div
                             className="card"
-                            style={{ backgroundColor: "#EBF5FB" }}
+                            style={{
+                              backgroundColor: "#EBF5FB",
+                              height: "100%", // Set the height of the card to fill the container
+                              display: "flex", // Use flexbox to align content vertically
+                              flexDirection: "column", // Align content in a column layout
+                            }}
                           >
-                            <div className="card-header">
-                              <span>{attachment.fileName}</span>
-                              {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
-                              <div className="d-flex justify-content-between p-0 mt-1">
-                                <a
-                                  href={`${attachment.tempUrl}`}
-                                  target="_blank"
-                                  className="btn btn-warning btn-sm p-0 px-1"
-                                >
-                                  <i class="icofont-ui-zoom-out"></i>
-                                </a>
-                                <button
-                                  className="btn btn-danger text-white btn-sm p-1"
-                                  type="button"
-                                  onClick={(e) => {
-                                    uploadAttachmentHandler(e, "DELETE", index);
-                                  }}
-                                >
-                                  <i
-                                    class="icofont-ui-delete"
-                                    style={{ fontSize: "15px" }}
-                                  ></i>
-                                </button>
-                              </div>
+                            <div
+                              className="card-header"
+                              style={{ padding: "10px", overflow: "hidden" }}
+                            >
+                              <span
+                                // style={{
+                                //   overflow: "hidden",
+                                //   textOverflow: "ellipsis",
+                                //   whiteSpace: "nowrap",
+                                // }}
+                                style={{
+                                  display: "inline-block",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  maxWidth: "100%", // Ensure the span does not exceed the container width
+                                }}
+                              >
+                                {attachment.fileName}
+                              </span>
+                            </div>
+                            <div className="d-flex justify-content-between p-3">
+                              <a
+                                href={`${attachment.tempUrl}`}
+                                target="_blank"
+                                className="btn btn-warning btn-sm p-0 px-1"
+                              >
+                                <i className="icofont-ui-zoom-out"></i>
+                              </a>
+                              <button
+                                className="btn btn-danger text-white btn-sm p-1"
+                                type="button"
+                                onClick={(e) => {
+                                  uploadAttachmentHandler(e, "DELETE", index);
+                                }}
+                              >
+                                <i
+                                  className="icofont-ui-delete"
+                                  style={{ fontSize: "15px" }}
+                                ></i>
+                              </button>
                             </div>
                           </div>
                         </div>
