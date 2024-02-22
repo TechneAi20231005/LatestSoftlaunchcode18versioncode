@@ -20,6 +20,20 @@ export default class UserService {
       
     return axios.get(_URL, config);
   }
+
+  getExportTicket() {
+    const token = localStorage.getItem("jwt_token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+      
+    return axios.get(_URL,+ "/export", config);
+  }
   getUserForMyTickets(queryParams) {
     const token = localStorage.getItem("jwt_token");
     const config = {
