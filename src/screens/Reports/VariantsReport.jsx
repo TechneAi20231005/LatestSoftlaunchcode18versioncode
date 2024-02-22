@@ -117,62 +117,63 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-    const data = [];
-    await new ReportService()
-      .variantsReport()
-      .then((res) => {
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              sr: counter++,
-              ticket_id: temp[key].ticket_id,
-              task_owner: temp[key].task_owner,
-              task_name: temp[key].task_name,
-              task_start_Date: temp[key].task_start_Date,
-              task_scheduled_Hours: temp[key].task_scheduled_Hours,
-              task_actual_worked: temp[key].task_actual_worked,
-              task_delivery_scheduled: temp[key].task_delivery_scheduled,
-              task_last_update: temp[key].task_last_update,
-              task_status: temp[key].task_status,
-              task_actual_status: temp[key].task_actual_status,
-              task_completed_at: temp[key].task_completed_at,
-            });
-          }
-          setData(null);
-          setData(data);
-          for (const i in temp) {
-            exportTempData.push({
-              sr: counter++,
-              ticket_id: temp[i].ticket_id,
-              task_owner: temp[i].task_owner,
-              task_name: temp[i].task_name,
-              task_start_Date: temp[i].task_start_Date,
-              task_scheduled_Hours: temp[i].task_scheduled_Hours,
-              task_actual_worked: temp[i].task_actual_worked,
-              task_delivery_scheduled: temp[i].task_delivery_scheduled,
-              task_last_update: temp[i].task_last_update,
-              task_status: temp[i].task_status,
-              task_actual_status: temp[i].task_actual_status,
-              task_completed_at: temp[i].task_completed_at,
-            });
-          }
+    // const data = [];
+    // await new ReportService()
+    //   .variantsReport()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           sr: counter++,
+    //           ticket_id: temp[key].ticket_id,
+    //           task_owner: temp[key].task_owner,
+    //           task_name: temp[key].task_name,
+    //           task_start_Date: temp[key].task_start_Date,
+    //           task_scheduled_Hours: temp[key].task_scheduled_Hours,
+    //           task_actual_worked: temp[key].task_actual_worked,
+    //           task_delivery_scheduled: temp[key].task_delivery_scheduled,
+    //           task_last_update: temp[key].task_last_update,
+    //           task_status: temp[key].task_status,
+    //           task_actual_status: temp[key].task_actual_status,
+    //           task_completed_at: temp[key].task_completed_at,
+    //         });
+    //       }
+    // setData(null);
+    // setData(data);
+    // for (const i in temp) {
+    //   exportTempData.push({
+    //     sr: counter++,
+    //     ticket_id: temp[i].ticket_id,
+    //     task_owner: temp[i].task_owner,
+    //     task_name: temp[i].task_name,
+    //     task_start_Date: temp[i].task_start_Date,
+    //     task_scheduled_Hours: temp[i].task_scheduled_Hours,
+    //     task_actual_worked: temp[i].task_actual_worked,
+    //     task_delivery_scheduled: temp[i].task_delivery_scheduled,
+    //     task_last_update: temp[i].task_last_update,
+    //     task_status: temp[i].task_status,
+    //     task_actual_status: temp[i].task_actual_status,
+    //     task_completed_at: temp[i].task_completed_at,
+    //   });
+    // }
 
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "VariantsReport",
-          "Get_VariantsReport",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //   setExportData(null);
+    //   setExportData(exportTempData);
+    // }
+    // }
+    // )
+    // .catch((error) => {
+    //   const { response } = error;
+    //   const { request, ...errorObject } = response;
+    //   new ErrorLogService().sendErrorLog(
+    //     "VariantsReport",
+    //     "Get_VariantsReport",
+    //     "INSERT",
+    //     errorObject.data.message
+    //   );
+    // });
   };
 
   const handleFromDate = (e) => {
@@ -235,10 +236,10 @@ export default function ResourcePlanningReportComponent() {
                 }
                 setData(null);
                 setData(tempData);
-
+                let count = 1;
                 for (const key in data) {
                   exportTempData.push({
-                    sr: sr++,
+                    sr: count++,
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
                     task_name: data[key].task_name,
@@ -299,7 +300,7 @@ export default function ResourcePlanningReportComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
-
+      <h1>Hellp</h1>
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm}>
@@ -402,8 +403,8 @@ export default function ResourcePlanningReportComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
-                  // expandableRows
-                  // expandableRowsComponent={ExpandedComponent}
+                // expandableRows
+                // expandableRowsComponent={ExpandedComponent}
                 />
               )}
             </div>
