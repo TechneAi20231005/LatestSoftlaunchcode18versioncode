@@ -1546,15 +1546,19 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import axios from "axios";
 import { _attachmentUrl } from "../../../settings/constants";
 import { Astrick } from "../../../components/Utilities/Style";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 const BillPayments = () => {
+  const dispatch =useDispatch()
   const [filteredData, setFilteredData] = useState();
   const [exportFilteredData, setExportFilteredData] = useState();
 
   const [notify, setNotify] = useState();
   const roleId = sessionStorage.getItem("role_id");
 
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 42));
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
   const [data, setData] = useState();
@@ -1758,14 +1762,15 @@ const BillPayments = () => {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getRoles())
 
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
@@ -1889,7 +1894,7 @@ const BillPayments = () => {
                   "Payment Amount": temp[key].total_payment,
                   "Vendor Bill No": temp[key].bill_no,
                   "Bill ID": temp[key].bc_id,
-                  "SBI Amount": temp[key].balance,
+                  // "SBI Amount": temp[key].balance,
                   "Remark": temp[key].remark,
                   "Beneficiary name": temp[key].beneficiary_name,
                   "Bank Name": temp[key].bank_name,
@@ -1966,7 +1971,7 @@ const BillPayments = () => {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[46].can_read === 0) {
+    if (checkRole && checkRole[0].can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -2041,7 +2046,7 @@ const BillPayments = () => {
                 <div className="col-md-3">
                   <label className=" col-form-label">
                     <b>Bill Type : </b>
-                    <Astrick color="red" size="13px" />
+                    {/* <Astrick color="red" size="13px" /> */}
 
                   </label>
                   {billTypeDropdown && (
@@ -2053,7 +2058,7 @@ const BillPayments = () => {
                       id="bill_type"
                       name="bill_type[]"
                       placeholder="Bill Type"
-                      required
+                      // required
                     />
                   )}
                 </div>

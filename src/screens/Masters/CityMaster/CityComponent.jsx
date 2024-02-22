@@ -1189,8 +1189,14 @@ function CityComponent() {
     }
     if (flag === 1) {
       if (!id) {
-        dispatch(postCityData(form));
-      dispatch(getCityData());
+        dispatch(postCityData(form)).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCityData());
+  
+          } else {
+          }
+        });
+      
       // dispatch(getCountryDataSort())
       // dispatch(getStateDataSort())
       // dispatch(getStateData())
@@ -1235,8 +1241,14 @@ function CityComponent() {
 
 
         dispatch(updateCityData({ id:id,
-          payload: form}))
-      dispatch(getCityData());
+          payload: form})).then((res) => {
+            if (res?.payload?.data?.status === 1) {
+              dispatch(getCityData());
+    
+            } else {
+            }
+          });
+ 
       // dispatch(getCountryDataSort())
       // dispatch(getStateDataSort())
       // dispatch(getStateData())

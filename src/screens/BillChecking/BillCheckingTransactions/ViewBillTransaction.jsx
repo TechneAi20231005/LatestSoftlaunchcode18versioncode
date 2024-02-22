@@ -463,6 +463,7 @@ export default function ViewBillTransaction({ match }, props) {
                           IGST/GST :<Astrick color="red" size="13px" />
                         </b>
                       </label>
+                      
 
                       <input
                         type="text"
@@ -726,79 +727,54 @@ export default function ViewBillTransaction({ match }, props) {
                         name="narration"
                         rows="4"
                         readOnly={true}
-                        defaultValue={data.narration ? data.narration : ""}
+                        // defaultValue={data.narration ? data.narration : ""}
                       />
                     </div>
-
-                    <div className=" col-md-3 ">
-                      <label className=" col-form-label">
-                        <b> Remark History: </b>
-                      </label>
-                      <textarea
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="remark"
-                        name="remark"
-                        readOnly
-                        rows="4"
-                        defaultValue={data.remark ? data.remark : ""}
-                      />
-                    </div>
-                    <div className=" col-md-4 ">
-                      <label className=" col-form-label">
-                        <b>Internal Audit Remark: </b>
-                      </label>
-                      <textarea
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="audit_remark"
-                        name="audit_remark"
-                        defaultValue={
-                          data.audit_remark ? data.audit_remark : ""
-                        }
-                        readOnly={true}
-                        rows="4"
-                      />
-                    </div>
-
-                    <div className=" col-md-3 ">
-                      <label className=" col-form-label">
-                        <b> Audit Remark: </b>
-                      </label>
-                      <textarea
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="audit_remark"
-                        name="audit_remark"
-                        defaultValue={
-                          data.audit_remark ? data.audit_remark : ""
-                        }
-                        readOnly
-                        rows="4"
-                      />
-                    </div>
-
-                    <div
-                      className="d-flex justify-content-start mt-2"
-                      style={{ overflowX: "auto" }}
-                    >
-                      <div className=" col-md-3 ">
-                        <label className=" col-form-label">
-                          <b> External Remark: </b>
-                        </label>
-                        <textarea
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="audit_remark"
-                          name="audit_remark"
-                          readOnly
-                          rows="4"
-                        />
-                      </div>
+                    <div className="form-group row mt-3">
+  <div className="col-md-3">
+    <label className="col-form-label">
+      <b> Remark History: </b>
+    </label>
+    <textarea
+      type="text"
+      className="form-control form-control-sm"
+      id="remark"
+      name="remark"
+      readOnly
+      rows="4"
+      defaultValue={data.remark ? data.remark : ""}
+    />
+  </div>
+  <div className="col-md-3">
+    <label className="col-form-label">
+      <b>Internal Audit Remark: </b>
+    </label>
+    <textarea
+      type="text"
+      className="form-control form-control-sm"
+      id="audit_remark"
+      name="audit_remark"
+      readOnly={true}
+      rows="4"
+    />
+  </div>
+  <div className="col-md-3">
+    <label className="col-form-label">
+      <b> External Audit Remark: </b>
+    </label>
+    <textarea
+      type="text"
+      className="form-control form-control-sm"
+      id="external_audit_remark"
+      name="external_audit_remark"
+      readOnly
+      rows="4"
+    />
+  </div>
+</div>
 
                     
-
-                      <div className=" col-md-3 mt-4">
+                    <div className=" col-md-3 mt-4">
                         <input
                           className="sm-1"
                           type="checkbox"
@@ -838,57 +814,81 @@ export default function ViewBillTransaction({ match }, props) {
                           <b>Authorised by HOD :</b>
                         </label>
                       </div>
+                  </div>
 
-                      <div className="d-flex flex-wrap mt-5 mx-5">
-                        {data &&
-                          data.attachment.length > 0 &&
-                          data.attachment.map((attach, index) => {
-                            return (
+                  <div className="col-mt-4">
+
+                  {data && data.attachment && (
+                    <div
+                      className="d-flex justify-content-start mt-2"
+                      style={{ overflowX: "auto" }}
+                    >
+                      {data &&
+                        data.attachment.map((attach, index) => {
+                          return (
+                            <div
+                              className="justify-content-start"
+                              style={{
+                                marginRight: "5px",
+                                padding: "0px",
+                                width: "auto",
+                              }}
+                            >
                               <div
-                                style={{
-                                  marginRight: "5px",
-                                  padding: "0px",
-                                }}
+                                className="card"
+                                style={{ backgroundColor: "#EBF5FB" }}
                               >
-                                <div
-                                  className="card"
-                                  style={{ backgroundColor: "#EBF5FB" }}
-                                >
-                                  <div className="card-header">
-                                    <p style={{ fontSize: "12px" }}>
-                                      <b>{attach.name}</b>
-                                    </p>
-                                    <div className="d-flex justify-content-end p-0">
-                                      <a
-                                        href={`${attach.path}`}
-                                        target="_blank"
-                                        className="btn btn-warning btn-sm p-0 px-1"
-                                      >
-                                        <i
-                                          className="icofont-download"
-                                          style={{
-                                            fontSize: "10px",
-                                            height: "15px",
-                                          }}
-                                        ></i>
-                                      </a>
-                                      {/* <button className='btn btn-danger text-white btn-sm p-0 px-1'
-                                                                type="button"
-                                                                disabled={data && data.access.Update_Bill == false ? true : false}
-                                                                onClick={e => { handleDeleteAttachment(e, attach.id) }}>
-                                                                <i className="icofont-ui-delete" style={{ fontSize: '12px' }}></i>
-                                                            </button> */}
-                                    </div>
+                                <div className="card-header">
+                                  <p style={{ fontSize: "12px" }}>
+                                    <b>{attach.name}</b>
+                                  </p>
+                                  <div className="d-flex justify-content-end p-0">
+                                    <a
+                                      href={`${attach.path}`}
+                                      target="_blank"
+                                      className="btn btn-warning btn-sm p-0 px-1"
+                                      disabled
+
+                                    >
+                                      <i
+                                        className="icofont-download"
+                                        style={{
+                                          fontSize: "10px",
+                                          height: "15px",
+                                        }}
+                                        disabled
+
+                                      ></i>
+                                    </a>
+
+                                    <button
+                                      className="btn btn-danger text-white btn-sm p-0 px-1"
+                                      type="button"
+                            disabled
+
+                                      // disabled={
+                                      //   authorities &&
+                                      //   authorities.Edit_In_Bill === false
+                                      //     ? true
+                                      //     : false
+                                      // }
+                                      // onClick={(e) => {
+                                      //   handleDeleteAttachment(e, attach.id);
+                                      // }}
+                                    >
+                                      <i
+                                        className="icofont-ui-delete"
+                                        style={{ fontSize: "12px" }}
+                                      ></i>
+                                    </button>
                                   </div>
                                 </div>
                               </div>
-                            );
-                          })}
-                      </div>
+                            </div>
+                          );
+                        })}
                     </div>
-                  </div>
-
-                  <div className="col-sm-6 mt-4">
+                  )}
                     {/* <label className="form-label font-weight-bold">
                       Status :<Astrick color="red" size="13px" />
                     </label>

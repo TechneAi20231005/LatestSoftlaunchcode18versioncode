@@ -24,8 +24,16 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { creteAuthority, getModuleSettingData, getSubmoduleData, updateAuthority } from "../Slices/BillCheckingTransactionAction";
-import { handleModalClose,handleModalOpen } from "../Slices/BillCheckingTransactionSlice"
+import {
+  creteAuthority,
+  getModuleSettingData,
+  getSubmoduleData,
+  updateAuthority,
+} from "../Slices/BillCheckingTransactionAction";
+import {
+  handleModalClose,
+  handleModalOpen,
+} from "../Slices/BillCheckingTransactionSlice";
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
 const AuthorityMapping = () => {
@@ -34,21 +42,35 @@ const AuthorityMapping = () => {
 
   // const [authorities, SetAuthorities] = useState();
   const roleId = sessionStorage.getItem("role_id");
-  const dispatch =useDispatch()
+  const dispatch = useDispatch();
 
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39));
-  const authorities = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.getModuleSettingData)
-  const userData = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
-  const submodulename = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.getSubmoduleData)
-  const notify=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.notify)
-  const modal=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.modal)
-  console.log("modal",modal);
-  console.log("authorities",authorities)
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
+  );
+  const authorities = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getModuleSettingData
+  );
+  const userData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+  );
+  const submodulename = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getSubmoduleData
+  );
+  const notify = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.notify
+  );
+  const modal = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.modal
+  );
+  console.log("modal", modal);
+  console.log("authorities", authorities);
   // console.log("submodule",submodule);
-
- 
-
 
   const [error, setError] = useState("");
 
@@ -115,12 +137,12 @@ const AuthorityMapping = () => {
             onClick={(e) => {
               handleData(e, row);
               dispatch(
-              
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Assign Authority",
-              }));
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Assign Authority",
+                })
+              );
             }}
             style={{ marginRight: "10px" }}
           >
@@ -134,12 +156,12 @@ const AuthorityMapping = () => {
               handleData(e, row);
 
               dispatch(
-
-              handleModalOpen({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Details",
-              }));
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Details",
+                })
+              );
             }}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
@@ -217,16 +239,27 @@ const AuthorityMapping = () => {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
+  // const handleKeyDown = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleSearch();
+  //   }
+  // };
+
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
   const handleChanges = (e) => {
@@ -248,7 +281,8 @@ const AuthorityMapping = () => {
     const updatedAssign = [...assign];
     updatedAssign[index] = {
       ...updatedAssign[index],
-      from_date: event.target.value,todayDate
+      from_date: event.target.value,
+      todayDate,
     };
 
     setAssign(updatedAssign);
@@ -266,11 +300,7 @@ const AuthorityMapping = () => {
   const current = new Date();
   const todayDate = `${current.getFullYear()}-${
     (current.getMonth() + 1 < 10 ? "0" : "") + (current.getMonth() + 1)
-  }-${
-    (current.getDate() < 10 ? "0" : "") + current.getDate()
-  }`;
-  
-
+  }-${(current.getDate() < 10 ? "0" : "") + current.getDate()}`;
 
   const todaysDate = `${current.getFullYear()}-${
     current.getMonth() + 1 < 10
@@ -295,8 +325,6 @@ const AuthorityMapping = () => {
     setRead(false);
   };
 
-
-  
   const handleRemoveSpecificRow = (index) => async () => {
     const id = assign[index].id;
 
@@ -351,9 +379,12 @@ const AuthorityMapping = () => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
-                const from_dateReadOnly =item.from_date && new Date(item.from_date) < new Date(todayDate);
-                const to_dateReadOnly=item.to_date&& new Date(item.to_date)<new Date(todayDate)
-                  
+                const from_dateReadOnly =
+                  item.from_date &&
+                  new Date(item.from_date) < new Date(todayDate);
+                const to_dateReadOnly =
+                  item.to_date && new Date(item.to_date) < new Date(todayDate);
+
                 return {
                   ...item,
                   from_dateReadOnly,
@@ -366,8 +397,6 @@ const AuthorityMapping = () => {
         });
     }
   };
-  
-  
 
   // const handleData = async (e, row) => {
   //   if (row.id) {
@@ -423,43 +452,39 @@ const AuthorityMapping = () => {
   //   }
   // };
 
+  //   const handleData = async (e, row) => {
+  //   if (row.id) {
+  //     await new BillCheckingTransactionService()
+  //       .getModuleAuthorityUserSetting(row.id)
+  //       .then((res) => {
+  //         if (res.status === 200) {
+  //           if (res.data.status === 1) {
+  //             const updatedAssign = res.data.data.map((item) => {
+  //               // Modify the condition to set readOnly for from_date
+  //               const from_dateReadOnly =
+  //                 item.from_date && new Date(item.from_date) >= new Date(todayDate);
+  //               // Modify the condition to set readOnly for to_date
+  //               const to_dateReadOnly =
+  //                 item.to_date && new Date(item.to_date) < new Date(todayDate);
 
-
-//   const handleData = async (e, row) => {
-//   if (row.id) {
-//     await new BillCheckingTransactionService()
-//       .getModuleAuthorityUserSetting(row.id)
-//       .then((res) => {
-//         if (res.status === 200) {
-//           if (res.data.status === 1) {
-//             const updatedAssign = res.data.data.map((item) => {
-//               // Modify the condition to set readOnly for from_date
-//               const from_dateReadOnly =
-//                 item.from_date && new Date(item.from_date) >= new Date(todayDate);
-//               // Modify the condition to set readOnly for to_date
-//               const to_dateReadOnly =
-//                 item.to_date && new Date(item.to_date) < new Date(todayDate);
-
-//               return {
-//                 ...item,
-//                 from_dateReadOnly,
-//                 to_dateReadOnly,
-//               };
-//             });
-//             setAssign(updatedAssign);
-//           }
-//         }
-//       });
-//   }
-// };
-
+  //               return {
+  //                 ...item,
+  //                 from_dateReadOnly,
+  //                 to_dateReadOnly,
+  //               };
+  //             });
+  //             setAssign(updatedAssign);
+  //           }
+  //         }
+  //       });
+  //   }
+  // };
 
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
 
-
-    dispatch(getModuleSettingData())
+    dispatch(getModuleSettingData());
 
     const data = [];
     const exportTempData = [];
@@ -513,9 +538,7 @@ const AuthorityMapping = () => {
     //   })
     //   .catch((error) => {});
 
-      
-
-      dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -527,11 +550,9 @@ const AuthorityMapping = () => {
     //   }
     // });
 
-
     const inputRequired =
-    "id,employee_id,first_name,last_name,middle_name,is_active";
-  dispatch(getUserForMyTicketsData(inputRequired));
-
+      "id,employee_id,first_name,last_name,middle_name,is_active";
+    dispatch(getUserForMyTicketsData(inputRequired));
 
     // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
     //   if (res.status === 200) {
@@ -547,7 +568,7 @@ const AuthorityMapping = () => {
     //   }
     // });
 
-    dispatch(updateAuthority())
+    dispatch(updateAuthority());
     // await new BillTransactionService().getUpdatedAuthorities().then((res) => {
     //   console.log("res",res);
 
@@ -560,13 +581,7 @@ const AuthorityMapping = () => {
     //   }
     // });
 
-
-
-
-
-
-
-    dispatch(getSubmoduleData())
+    dispatch(getSubmoduleData());
 
     // await new BillCheckingTransactionService().getSubmodule(45).then((res) => {
     //   if (res.status === 200) {
@@ -626,8 +641,8 @@ const AuthorityMapping = () => {
         return;
       }
 
-      dispatch(creteAuthority(mainJson))
-      loadData()
+      dispatch(creteAuthority(mainJson));
+      loadData();
 
       // await new BillCheckingTransactionService()
       //   .createModuleAuthorityUserSetting(mainJson)
@@ -652,8 +667,6 @@ const AuthorityMapping = () => {
       //       );
       //     }
       //   });
-      
-        
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];
@@ -698,9 +711,6 @@ const AuthorityMapping = () => {
     }
   }, [checkRole]);
 
-
-  
-
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -718,7 +728,8 @@ const AuthorityMapping = () => {
               type="text"
               className="form-control"
               placeholder="Search...."
-              onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
               id="searchInput"
               ref={searchRef}
             />
@@ -727,7 +738,8 @@ const AuthorityMapping = () => {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -752,7 +764,26 @@ const AuthorityMapping = () => {
                   columns={columns}
                   defaultSortField="title"
                   pagination
-                  data={authorities}
+
+                  data={authorities.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
+                  // data={authorities}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -780,16 +811,17 @@ const AuthorityMapping = () => {
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton 
-             onClick={() => {
+          <Modal.Header
+            closeButton
+            onClick={() => {
               dispatch(
-              handleModalClose({
-                showModal: false,
-                modalData: "",
-                modalHeader: "",
-              }));
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
             }}
-          
           >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
@@ -808,7 +840,7 @@ const AuthorityMapping = () => {
                     id="setting_name"
                     name="setting_name"
                     defaultValue={modal?.modalData?.setting_name}
-                    onKeyDown={handleKeyDown}
+                    // onKeyDown={handleKeyDown}
                     onChange={handleChanges}
                     ref={searchRef}
                     required={true}
@@ -924,8 +956,6 @@ const AuthorityMapping = () => {
                           )}
                         </td>
 
-                   
-                   
                         <td>
                           {assign && (
                             <input
@@ -937,7 +967,7 @@ const AuthorityMapping = () => {
                                 item.from_dateReadOnly ||
                                 modal.modalHeader === "Details"
                               }
-                               min={todayDate}
+                              min={todayDate}
                               onChange={(event) => handleFromDate(event, idx)}
                               required
                             />
@@ -1276,11 +1306,12 @@ const AuthorityMapping = () => {
               className="btn btn-danger text-white"
               onClick={() => {
                 dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                }));
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel

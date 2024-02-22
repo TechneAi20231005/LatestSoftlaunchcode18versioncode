@@ -525,7 +525,7 @@ const dispatch = useDispatch()
                                                                     className="form-control form-control-sm"
                                                                     required
                                                                     onKeyPress={e => {
-                                                                        Validation.CharactersNumbersOnly(e)
+                                                                        Validation.CharactersNumbersSpeicalOnly(e)
                                                                     }}
                                                                 />
                                                             </td>
@@ -537,7 +537,7 @@ const dispatch = useDispatch()
                                                                     onChange={handleChange(idx)}
                                                                     className="form-control form-control-sm"
                                                                     onKeyPress={e => {
-                                                                        Validation.CharactersNumbersOnly(e)
+                                                                        Validation.CharactersNumbersSpeicalOnly(e)
                                                                     }}
                                                                 />
                                                             </td>
@@ -562,6 +562,7 @@ const dispatch = useDispatch()
                                                                 />
                                                                 }
                                                             </td>
+                                                            {console.log("rowo",rows)}
                                                             <td>
                                                                 {rows[idx].inputType == "date" &&
                                                                     <select className="form-control form-control-sm" required
@@ -572,6 +573,8 @@ const dispatch = useDispatch()
                                                                         <option>Select Format</option>
                                                                         <option value="y-MM-dd">yyyy-mm-dd</option>
                                                                         <option value="dd-MM-y">dd-mm-yyyy</option>
+                                                                        <option value="dd-MM-y">mm-dd-yyyy</option>
+
                                                                     </select>
                                                                 }
                                                             </td>

@@ -309,19 +309,26 @@ export default function CreateBillCheckingTransaction({ match }) {
     });
   };
 
+  const handleBillTypeChange = (e) => {
+    // Clear the userDropdown state
+    setUserDropdown(null);
+  };
+
+
   const loadData = async () => {
     await new BillTransactionService().getBillCheckingById(id).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setData(res.data.data);
-          setIsTcsApplicable(res.data.data.is_tcs_applicable == 1 ? true : false)
+          setIsTcsApplicable(
+            res.data.data.is_tcs_applicable == 1 ? true : false
+          );
           handleSectionDropDownChange1(res.data.data.tds_section);
           if (res.data.data.is_tds_applicable == 1) {
             setShowTdsFileds(true);
           }
         }
       }
-     
     });
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
@@ -431,6 +438,7 @@ export default function CreateBillCheckingTransaction({ match }) {
         form.append("status", 2);
       }
     }
+
 
     // console.log("isigst",document.getElementById('is_igst_applicable').value)
     if (document.getElementById("is_igst_applicable").checked) {
@@ -651,7 +659,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     setIsTcsApplicable(newValue);
   };
 
-
   const handleAuthorizedByHod = (e) => {
     SetauthorizedByHod(e.target.checked);
   };
@@ -806,6 +813,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+  console.log(formattedStartDate);
 
   const endYear = endFinancialYear.getFullYear();
   const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
@@ -813,7 +821,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
   const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
-
 
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -967,7 +974,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                           type="text"
                           className="form-control form-control"
                           options={billTypeDropdown}
-                          onChange={handleAssignToPerson}
+                          // onChange={handleAssignToPerson}
+                          onChange={(e) => {
+                            handleAssignToPerson(e);
+                            handleBillTypeChange(e); // Call the function to clear the assign to field
+                          }}
                           defaultValue={
                             data &&
                             billTypeDropdown.filter(
@@ -1201,23 +1212,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? false
                             : true
                         }
-                        // min={
-                        //   userSessionData &&
-                        //     userSessionData.Past_Financial_Year_Bill_Date ===
-                        //     "true"
-                        //     ? formattedOneYearAgo
-                        //     : new Date().getFullYear() + "-04-01"
-                        // }
-
-                        // min={
-                        //   authorities &&
-                        //     authorities.Past_Financial_Year_Bill_Date === true
-                        //     ? new Date().getFullYear() - 1 + "-04-01"
-                        //     : new Date().getFullYear() + "-04-01"
-                        // }
-                        // max={new Date().toISOString().split("T")[0]} // Set max date to current date
-                        // max={data.bill_date}
-                        required
                         defaultValue={data.bill_date}
                       />
                     </div>
@@ -1624,7 +1618,9 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                    {/* {isTcsApplicable === true || data.is_tcs_applicable == 1 && */}
+                    {console.log("is",isTcsApplicable)}
+
+                  {/* { isTcsApplicable && isTcsApplicable === true && */}
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1645,8 +1641,8 @@ value={igst=== true ?1 :0} */}
                         onChange={(e) => handleTcs(e)}
                         // defaultValue={data.tcs ? data.tcs : 0}
                         // value={data.tcs ? data.tcs : 0}
-                        value={isTcsApplicable === true ? data.tcs : 0}
-                        readOnly={isTcsApplicable  ? false : true}
+                        defaultValue={isTcsApplicable === true ? data.tcs : 0}
+                        // readOnly={isTcsApplicable  ? false : true}
                         // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                         // value={data.tcs}
 
@@ -1660,59 +1656,12 @@ value={igst=== true ?1 :0} */}
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
                       />
-                      {/* {isTcsApplicable === true  ? (
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          id="tcs"
-                          name="tcs"
-                          step="any"
-                          onChange={(e) => handleTcs(e)}
-                          defaultValue={data.tcs ? data.tcs : 0}
-                          readOnly={isTcsApplicable === true ? false : true}
-                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                          // value={data.tcs}
 
-                          // readOnly={
-                          //   data.is_active == 0 && isTcsApplicable === false
-                          //     ? true
-                          //     : false
-                          // }
-                          required={isTcsApplicable === true ? true : false}
-                          onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
-                          }}
-                        />
-                      ) : (
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          id="tcs"
-                          name="tcs"
-                          step="any"
-                          onChange={(e) => handleTcs(e)}
-                          // value={0}
-                          value={data.is_tcs_applicable == 1 ? data.tcs : 0}
-                          // readOnly={true}
-                          // readOnly={
-                          //   (data.is_active == 0 &&
-                          //     isTcsApplicable === false) ||
-                          //   (authorities &&
-                          //     authorities.All_Update_Bill === false)
-                          //     ? true
-                          //     : false
-                          // }
-readOnly={isTcsApplicable === true ? false : true}
+                  
 
-                         
-                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                          required={true}
-                          onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
-                          }}
-                        />
-                      )} */}
+
                     </div>
+{/* } */}
                     {/* } */}
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
@@ -2206,6 +2155,7 @@ readOnly={isTcsApplicable === true ? false : true}
                         id="narration"
                         name="narration"
                         rows="4"
+                        maxLength={2000}
                         // readOnly={
                         //   authorities && authorities.All_Update_Bill === true
                         //     ? false
@@ -2238,6 +2188,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         className="form-control form-control-sm"
                         id="audit_remark"
                         name="audit_remark"
+                        maxLength={250}
+
                         // defaultValue={
                         //   data.audit_remark ? data.audit_remark : ""
                         // }
@@ -2251,7 +2203,7 @@ readOnly={isTcsApplicable === true ? false : true}
                     </div>
                     <div className=" col-md-4 ">
                       <label className=" col-form-label">
-                        <b> External Remark: </b>
+                        <b> External Audit Remark: </b>
                       </label>
                       <textarea
                         type="text"
@@ -2259,6 +2211,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         id="external_remark"
                         name="external_remark"
                         rows="4"
+                        maxLength={250}
+
                         readOnly={
                           authorities && authorities.External_Audit === false
                             ? true
@@ -2288,7 +2242,21 @@ readOnly={isTcsApplicable === true ? false : true}
                             className="form-control"
                             ref={fileInputRef}
                             multiple
-                            disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            disabled={
+                              (data.is_assign_to == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              data.is_rejected == 1 ||
+                              data.created_by == localStorage.getItem("id") ||
+                              (authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              (data.current_user_is_approver == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true &&
+                                data.current_user_is_approver == 0)
+                                ? false
+                                : true
+                            }
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
                               maxLengthCheck(e, "UPLOAD");

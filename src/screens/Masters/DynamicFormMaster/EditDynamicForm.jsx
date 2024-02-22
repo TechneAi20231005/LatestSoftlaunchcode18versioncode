@@ -1318,6 +1318,7 @@ import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { dynamicFormData, getAllDropDownData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 
+import *  as Validation from '../../../components/Utilities/Validation';
 
 function EditDynamicForm({ match }) {
   const [showAlert, setShowAlert] = useState({
@@ -1663,7 +1664,6 @@ function EditDynamicForm({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     }
   }, [checkRole]);
-  console.log("data==>",data)
   return (
     <>
       <div className="body d-flex py-3">
@@ -1767,7 +1767,7 @@ function EditDynamicForm({ match }) {
                       </div>
                     </div>
 
-                    <div className="table-responsive">
+                    {/* <div className="table-responsive">
                       <table
                         className="table table-bordered mt-3 table-responsive"
                         id="tab_logic"
@@ -1785,8 +1785,7 @@ function EditDynamicForm({ match }) {
                               {" "}
                               Type{" "}
                             </th>
-                            {/* <th className="text-center"> Width </th> */}
-                            {/* <th className="text-center"> Name </th> */}
+                          
                             <th
                               className="text-center"
                               style={{ width: "20%" }}
@@ -1818,7 +1817,6 @@ function EditDynamicForm({ match }) {
                           </tr>
                         </thead>
                         <tbody>
-                          {console.log("r",rows)}
                           {rows &&
                             rows.map((item, idx) => (
                               <tr id={`addr_${idx}`} key={idx}>
@@ -1848,30 +1846,7 @@ function EditDynamicForm({ match }) {
                                     </option>
                                   </select>
                                 </td>
-                                {/* <td>
-                                                    <select className="form-control form-control-sm" required
-                                                     name="inputWidth" defaultValue={item.inputWidth}
-                                                     onChange={handleChange(idx)}
-                                                     >                                      
-                                                        <option>Select Width</option>
-                                                        <option value="col-sm-2">Very Small</option>
-                                                        <option value="col-sm-4" selected>Small</option>
-                                                        <option value="col-sm-6">Medium</option>
-                                                        <option value="col-sm-8">Large</option>
-                                                        <option value="col-sm-10">X-Large</option>
-                                                        <option value="col-sm-12">XX-Large</option>
-                                                    </select>
-                                                </td>                                              
-                                                <td>
-                                                    <input
-                                                        type="text"
-                                                        name="inputName"
-                                                        defaultValue={item.inputName}
-                                                        onChange={handleChange(idx)}
-                                                        className="form-control form-control-sm"
-                                                        required
-                                                    />
-                                                </td> */}
+                               
                                 <td>
                                   <input
                                     type="text"
@@ -1947,7 +1922,202 @@ function EditDynamicForm({ match }) {
                             ))}
                         </tbody>
                       </table>
-                    </div>
+                    </div> */}
+
+
+<div className='table-responsive'>
+                                            <table
+                                                className="table table-bordered mt-3 table-responsive"
+                                                id="tab_logic"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th className="text-center" style={{ width: "5%" }}> Sr No. </th>
+                                                        <th className="text-center" style={{ width: "15%" }}> Type </th>
+                                                        <th className="text-center"> Width </th>
+                                                        <th className="text-center" style={{ width: "10%" }}> Label </th>
+                                                        <th className="text-center" style={{ width: "10%" }}> Def. Value </th>
+                                                        <th className="text-center" style={{ width: "10%" }}> Mandatory </th>
+                                                        <th className="text-center" style={{ width: "10%" }}> Multiple</th>
+                                                        <th className="text-center" style={{ width: "10%" }}> Format</th>
+                                                        <th className="text-center" style={{ width: "20%" }}> Add-Ons</th>
+                                                        <th className="text-center" style={{ width: "10%" }} > Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {rows && rows.map((item, idx) => (
+
+                                                        <tr id={`addr_${idx}`} key={idx}>
+                                                        {/* // <tr id={`addr_${item.id}`} key={item.id}> */}
+                                                            <td>{idx + 1}</td>
+                                                            <td>
+                                                                <select 
+                                                                className="form-control form-control-sm" 
+                                                                required
+                                                                name="inputType" 
+                                                                defaultValue={item.inputType}
+                                                                onChange={handleChange(idx)}
+                                                                >
+                                                                    <option value=''>Select Type</option>
+                                                                    <option value="text">TEXT</option>
+                                                                    <option value="textarea">TEXTAREA</option>
+                                                                    <option value="number">NUMBER</option>
+                                                                    <option value="decimal">DECIMAL</option>
+                                                                    <option value="date">DATE</option>
+                                                                    <option value="datetime-local">DATE TIME</option>
+                                                                    <option value="time">TIME</option>
+                                                                    <option value="select">SELECT</option>
+                                                                    <option value="radio">RADIO</option>
+                                                                    <option value="checkbox">CHECKBOX</option>
+                                                                    {/* <option value="select-master">SELECT MASTER</option> */}
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <select className="form-control form-control-sm" required
+                                                                    name="inputWidth" defaultValue={item.inputWidth}
+                                                                    onChange={handleChange(idx)}
+                                                                >
+                                                                    <option>Select Width</option>
+                                                                    <option value="col-sm-2">Very Small</option>
+                                                                    <option value="col-sm-4" selected>Small</option>
+                                                                    <option value="col-sm-6">Medium</option>
+                                                                    <option value="col-sm-8">Large</option>
+                                                                    <option value="col-sm-10">X-Large</option>
+                                                                    <option value="col-sm-12">XX-Large</option>
+                                                                </select>
+                                                            </td>
+                                                            {/* <td>
+                                                        <input
+                                                            type="text"
+                                                            name="inputName"
+                                                            defaultValue={item.inputName}
+                                                            onChange={handleChange(idx)}
+                                                            className="form-control form-control-sm"
+                                                            required
+                                                        />
+                                                    </td> */}
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    name="inputLabel"
+                                                                    defaultValue={item.inputLabel}
+                                                                    onChange={handleChange(idx)}
+                                                                    className="form-control form-control-sm"
+                                                                    required
+                                                                    onKeyPress={e => {
+                                                                        Validation.CharactersNumbersOnly(e)
+                                                                    }}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    name="inputDefaultValue"
+                                                                    defaultValue={item.inputDefaultValue}
+                                                                    onChange={handleChange(idx)}
+                                                                    className="form-control form-control-sm"
+                                                                    onKeyPress={e => {
+                                                                        Validation.CharactersNumbersOnly(e)
+                                                                    }}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="inputMandatory"
+                                                                    defaultValue={item.inputMandatory}
+                                                                    onChange={handleChange(idx)}
+                                                                    className="center"
+                                                                />
+                                                            </td>
+                                                            {console.log("i",item.inputMandatory)}
+                                                            <td>
+                                                                {rows[idx].inputType == "select" &&
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="inputMultiple"
+                                                                    defaultValue={item.inputMultiple}
+                                                                    onChange={handleChange(idx)}
+
+                                                                />
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {rows[idx].inputType == "date" &&
+                                                                    <select className="form-control form-control-sm" required
+                                                                        name="inputFormat"
+                                                                        onChange={handleChange(idx)}
+                                                                        value={rows[idx].inputFormat}
+                                                                    >
+                                                                        <option>Select Format</option>
+                                                                        <option value="y-MM-dd">yyyy-mm-dd</option>
+                                                                        <option value="dd-MM-y">dd-mm-yyyy</option>
+                                                                    </select>
+                                                                }
+                                                            </td>
+{console.log("rowrow",rows)}
+                                                            <td>
+                                                                {rows &&
+
+                                                                    // <AddOn id={idx} 
+                                                                    //     // labelNames={labelNames}
+                                                                    //     data={rows[idx]} 
+                                                                    //     // radioSelect={radioSelect}
+                                                                    //     // checkboxSelect={checkboxSelect}
+                                                                    //     onGetChange={handleChange(idx)} 
+                                                                    //     dropdown={dropdown}
+                                                                    //     key={Math.random()}/>}
+                                                                    <AddOn
+                                                                    id={idx}
+                                                                    data={rows[idx]}
+                                                                    onGetChange={handleChange(idx)}
+                                                                    dropdown={dropdown}
+                                                                    key={Math.random()}
+                                                                  />
+                                                                }
+
+                                                            </td>
+
+                                                            {/* <td>
+                                                                {idx == 0 &&
+                                                                    <button type="button" className="btn btn-sm btn-outline-primary pull-left"
+                                                                        onClick={handleAddRow}><i className="icofont-plus-circle"></i></button>
+                                                                }
+                                                                {rows.length == idx + 1 && idx != 0 &&
+                                                                    <button type="button" className="btn btn-outline-danger btn-sm"
+                                                                        onClick={handleRemoveSpecificRow(idx)} >
+                                                                        <i className="icofont-ui-delete"></i>
+                                                                    </button>
+                                                                }
+                                                            </td> */}
+
+                                                             <td>
+                                                                {idx == 0 &&
+                                                                    <button type="button" className="btn btn-sm btn-outline-primary pull-left"
+                                                                        onClick={handleAddRow}><i className="icofont-plus-circle"></i></button>
+                                                                }
+                                                                {/* {rows.length == idx + 1 && idx != 0 &&
+                                                                    <button type="button" className="btn btn-outline-danger btn-sm"
+                                                                        onClick={handleRemoveSpecificRow(idx)} >
+                                                                        <i className="icofont-ui-delete"></i>
+                                                                    </button>
+                                                                } */}
+                                                                 {/* {idx !== 0 && (
+                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
+                    <i className="icofont-ui-delete"></i>
+                </button>
+            )} */}
+
+{idx !== 1 && (
+                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
+                    <i className="icofont-ui-delete"></i>
+                </button>)}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
 
                     {!formShow && rows && rows.length > 0 && (
                       <button
