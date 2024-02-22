@@ -26,7 +26,7 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
-import { UseDispatch,useDispatch,useSelector } from "react-redux"
+import { UseDispatch, useDispatch, useSelector } from "react-redux"
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 import { getAllQueryGroupData, getCustomerMappingsetting, getDepartmentMappingByEmployeeIdData, getParentData, postCreateticket, queryTypesData } from "./Slices/TicketAction";
 import { getRoles } from "../Dashboard/DashboardAction";
@@ -36,25 +36,16 @@ export default function CreateTicketComponent() {
   const departmentRef = useRef();
   const current = new Date();
 
-const dispatch= useDispatch()
+  const dispatch = useDispatch()
 
-const customerMapping = useSelector(TicketSlices=>TicketSlices.ticket.customerMappingData)
-const queryGroupData = useSelector(TicketSlices=>TicketSlices.ticket.queryGroupData)
-const queryGroupDropdown = useSelector(TicketSlices=>TicketSlices.ticket.queryGroupDropDownData)
-const notify = useSelector(TicketSlices=>TicketSlices.ticket.notify)
+  const customerMapping = useSelector(TicketSlices => TicketSlices.ticket.customerMappingData)
+  const queryGroupData = useSelector(TicketSlices => TicketSlices.ticket.queryGroupData)
+  const queryGroupDropdown = useSelector(TicketSlices => TicketSlices.ticket.queryGroupDropDownData)
+  const notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
-const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
 
-// console.log("cus",customerMappings)
-
-
-
-
-
-
-
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
@@ -151,112 +142,112 @@ const navigate = useNavigate();
 
     // setNotify(null);
     if (flag == 1) {
-      dispatch(postCreateticket(formData)).then((res)=>{
-        if(res.payload.data.status===1 && res.payload.status === 200){
+      dispatch(postCreateticket(formData)).then((res) => {
+        if (res.payload.data.status === 1 && res.payload.status === 200) {
           navigate(`/${_base}/Ticket`)
           setIsSubmitted(false);
         } else {
           // setNotify({ type: "danger", message: res.message });
           setIsSubmitted(false);
 
-          new ErrorLogService().sendErrorLog(
-            "Ticket",
-            "Create_Ticket",
-            "INSERT",
-            res.message
-          );
+          // new ErrorLogService().sendErrorLog(
+          //   "Ticket",
+          //   "Create_Ticket",
+          //   "INSERT",
+          //   res.message
+          // );
         }
       })
-      .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setIsSubmitted(false)
-          // setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "Ticket",
-            "Create_Ticket",
-            "INSERT",
-            errorObject.data.message
-          );
-        } else {
-          console.log(error);
-        }
-      });
-  
+        .catch((error) => {
+          if (error.response) {
+            const { response } = error;
+            const { request, ...errorObject } = response;
+            setIsSubmitted(false)
+            // setNotify({ type: "danger", message: "Request Error !!!" });
+            // new ErrorLogService().sendErrorLog(
+            //   "Ticket",
+            //   "Create_Ticket",
+            //   "INSERT",
+            //   errorObject.data.message
+            // );
+          } else {
+            console.log(error);
+          }
+        });
 
 
-    
 
 
-  //     await new MyTicketService()
-  //       .postTicket(formData)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             history({
-  //               pathname: `/${_base}/Ticket`,
-  //             }
-  //               ,
-  //               {
-  //                 state: {
-  //                   type: "success", message: res.data.message,
-  //                 }
-  //               }
-  //             );
-  //             // window.location.reload(false)
-  //             setIsSubmitted(false);
-  //           } else {
-  //             if (formData.getAll("ticket_uploading") == "REGULAR") {
-  //               setNotify({ type: "danger", message: res.data.message });
-  //               setIsSubmitted(false);
-  //             } else {
-  //               var URL = `${_attachmentUrl}` + res.data.data;
-  //               window.open(URL, "_blank").focus();
-  //               setIsSubmitted(false);
 
-  //               setNotify({ type: "danger", message: res.message });
 
-  //             }
-  //           }
-  //         } else {
-  //           setNotify({ type: "danger", message: res.message });
-  //           setIsSubmitted(false);
+      //     await new MyTicketService()
+      //       .postTicket(formData)
+      //       .then((res) => {
+      //         if (res.status === 200) {
+      //           if (res.data.status === 1) {
+      //             history({
+      //               pathname: `/${_base}/Ticket`,
+      //             }
+      //               ,
+      //               {
+      //                 state: {
+      //                   type: "success", message: res.data.message,
+      //                 }
+      //               }
+      //             );
+      //             // window.location.reload(false)
+      //             setIsSubmitted(false);
+      //           } else {
+      //             if (formData.getAll("ticket_uploading") == "REGULAR") {
+      //               setNotify({ type: "danger", message: res.data.message });
+      //               setIsSubmitted(false);
+      //             } else {
+      //               var URL = `${_attachmentUrl}` + res.data.data;
+      //               window.open(URL, "_blank").focus();
+      //               setIsSubmitted(false);
 
-  //           new ErrorLogService().sendErrorLog(
-  //             "Ticket",
-  //             "Create_Ticket",
-  //             "INSERT",
-  //             res.message
-  //           );
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         if (error.response) {
-  //           const { response } = error;
-  //           const { request, ...errorObject } = response;
-  //           setIsSubmitted(false)
-  //           setNotify({ type: "danger", message: "Request Error !!!" });
-  //           new ErrorLogService().sendErrorLog(
-  //             "Ticket",
-  //             "Create_Ticket",
-  //             "INSERT",
-  //             errorObject.data.message
-  //           );
-  //         } else {
-  //           console.log(error);
-  //         }
-  //       });
+      //               setNotify({ type: "danger", message: res.message });
+
+      //             }
+      //           }
+      //         } else {
+      //           setNotify({ type: "danger", message: res.message });
+      //           setIsSubmitted(false);
+
+      //           new ErrorLogService().sendErrorLog(
+      //             "Ticket",
+      //             "Create_Ticket",
+      //             "INSERT",
+      //             res.message
+      //           );
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         if (error.response) {
+      //           const { response } = error;
+      //           const { request, ...errorObject } = response;
+      //           setIsSubmitted(false)
+      //           setNotify({ type: "danger", message: "Request Error !!!" });
+      //           new ErrorLogService().sendErrorLog(
+      //             "Ticket",
+      //             "Create_Ticket",
+      //             "INSERT",
+      //             errorObject.data.message
+      //           );
+      //         } else {
+      //           console.log(error);
+      //         }
+      //       });
     }
   };
 
   const queryTypeRef = useRef();
-console.log("customer",customerMapping)
+  console.log("customer", customerMapping)
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
       setRows(null);
       var data = customerMapping?.filter((val) => val.query_type_id == e.value);
-      console.log("new",data)
+      console.log("new", data)
       const cmId = data?.length > 0 ? data[0].id : null;
       if (cmId) {
         await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
@@ -382,7 +373,7 @@ console.log("customer",customerMapping)
     const query_type_id = "";
     const queryTypeTemp = [];
 
-    dispatch(getCustomerMappingsetting(query_type_id)).then((res)=>{
+    dispatch(getCustomerMappingsetting(query_type_id)).then((res) => {
       res.payload.data.data.forEach((query) => {
         if (query.query_type_id) {
           if (!queryTypeTemp.includes(query.query_type_id)) {
@@ -418,19 +409,19 @@ console.log("customer",customerMapping)
     //   });
 
     var queryType = [];
-  dispatch(queryTypesData()).then((resp) => {
-    if (resp.payload.data.status === 1) {
-      setUser(queryType);
-      setQueryTypeData(resp.payload.data.data.filter((d) => d.is_active == 1));
-      resp.payload.data.data
-        .filter((q) => q.is_active == 1)
-        .filter((q) => queryTypeTemp.includes(q.id))
-        .forEach((q) => {
-          queryType.push({ id: q.id, query_type_name: q.query_type_name });
-        });
-      setQueryType(queryType);
-    }
-  });
+    dispatch(queryTypesData()).then((resp) => {
+      if (resp.payload.data.status === 1) {
+        setUser(queryType);
+        setQueryTypeData(resp.payload.data.data.filter((d) => d.is_active == 1));
+        resp.payload.data.data
+          .filter((q) => q.is_active == 1)
+          .filter((q) => queryTypeTemp.includes(q.id))
+          .forEach((q) => {
+            queryType.push({ id: q.id, query_type_name: q.query_type_name });
+          });
+        setQueryType(queryType);
+      }
+    });
     // await new QueryTypeService().getQueryType().then((resp) => {
     //   if (resp.data.status === 1) {
     //     setUser(queryType);
@@ -456,7 +447,7 @@ console.log("customer",customerMapping)
     //     );
     //   }
     // });
-   
+
 
     dispatch(getParentData()).then((res) => {
       if (res.payload.status === 200) {
@@ -472,7 +463,8 @@ console.log("customer",customerMapping)
             console.error("error", res.status);
           }
         }
-      }})
+      }
+    })
 
 
     // await new TaskTicketTypeService().getParent().then((res) => {
@@ -544,14 +536,14 @@ console.log("customer",customerMapping)
     //     }
     //   });
 
-  //   await new ManageMenuService().getRole(roleId).then((res) => {
-  //     if (res.status === 200) {
-  //       if (res.data.status == 1) {
-  //         const getRoleId = sessionStorage.getItem("role_id");
-  //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-  //       }
-  //     }
-  //   });
+    //   await new ManageMenuService().getRole(roleId).then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         const getRoleId = sessionStorage.getItem("role_id");
+    //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //       }
+    //     }
+    //   });
   };
 
   const handleDownloadFormat = async (e) => {
@@ -646,9 +638,9 @@ console.log("customer",customerMapping)
 
   useEffect(() => {
     loadData();
-    if(!checkRole.length){
-      getRoles()
-    }
+
+    dispatch(getRoles())
+
   }, []);
 
 
@@ -661,14 +653,15 @@ console.log("customer",customerMapping)
     }
   }, [notify, dispatch]);
 
-
+  // will check role if user doesnot has can create authority than it will throw him to dashboard
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_create === 0) {
-      // alert("Rushi")
 
+    if (checkRole && checkRole[0]?.can_create === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create Ticket" />
