@@ -19,9 +19,12 @@ import DynamicFormService from "../../../services/MastersService/DynamicFormServ
 import UserService from "../../../services/MastersService/UserService";
 
 import Table from "react-bootstrap/Table";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
+  const dispatch=useDispatch()
 
   const { id } = useParams();
   const mappingId = id;
@@ -51,7 +54,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratioTotal, setRatioTotal] = useState(0);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 
   const [data, setData] = useState({
     approach: null,
@@ -121,16 +125,18 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
+      
+      dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       // setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new CustomerTypeService().getCustomerType().then((res) => {
       if (res.status == 200) {
@@ -462,7 +468,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     loadData();
   }, []);
   useEffect(() => {
-    if (checkRole && checkRole[31].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

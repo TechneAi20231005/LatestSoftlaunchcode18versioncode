@@ -52,7 +52,7 @@ export const CustomerMappingSlice = createSlice({
         let customerMappingData = [];
         for (const key in data) {
           customerMappingData.push({
-            counter: counter++,
+            Sro: counter++,
             id: data[key].id,
             query_type_name: data[key].query_type_name,
             template_name: data[key].template_name,
@@ -73,14 +73,26 @@ export const CustomerMappingSlice = createSlice({
         }
         state.customerMappingData = customerMappingData;
         let exportTempData = [];
+        let exportCounter = 1;
         for (const i in data) {
           exportTempData.push({
-            Sr: counter++,
+            Sr: exportCounter++,
+            // Customer:data[i].
             Query: data[i].query_type_name,
             Template: data[i].template_name,
             Department: data[i].department_name,
             Priority: data[i].priority,
             Approach: data[i].approach,
+            remark:data[i].remark,
+            is_active: data[i].is_active,
+            created_at: data[i].created_at,
+            created_by: data[i].created_by,
+            updated_at: data[i].updated_at,
+            updated_by: data[i].updated_by,
+            confirmation_required:[i].confirmation_required,
+            dynamic_form_name: data[i].dynamic_form_name,
+            customer_type_name:data[i].customer_type_name
+            
           });
         }
         state.exportTempData = exportTempData;
