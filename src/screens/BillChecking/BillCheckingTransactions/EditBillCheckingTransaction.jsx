@@ -438,6 +438,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     }
 
+
     // console.log("isigst",document.getElementById('is_igst_applicable').value)
     if (document.getElementById("is_igst_applicable").checked) {
       form.append("is_igst_applicable", 1);
@@ -1634,7 +1635,9 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                    {/* {isTcsApplicable === true || data.is_tcs_applicable == 1 && */}
+                    {console.log("is",isTcsApplicable)}
+
+                  {/* { isTcsApplicable && isTcsApplicable === true && */}
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1655,8 +1658,8 @@ value={igst=== true ?1 :0} */}
                         onChange={(e) => handleTcs(e)}
                         // defaultValue={data.tcs ? data.tcs : 0}
                         // value={data.tcs ? data.tcs : 0}
-                        value={isTcsApplicable === true ? data.tcs : 0}
-                        readOnly={isTcsApplicable  ? false : true}
+                        defaultValue={isTcsApplicable === true ? data.tcs : 0}
+                        // readOnly={isTcsApplicable  ? false : true}
                         // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                         // value={data.tcs}
 
@@ -1670,59 +1673,12 @@ value={igst=== true ?1 :0} */}
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
                       />
-                      {/* {isTcsApplicable === true  ? (
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          id="tcs"
-                          name="tcs"
-                          step="any"
-                          onChange={(e) => handleTcs(e)}
-                          defaultValue={data.tcs ? data.tcs : 0}
-                          readOnly={isTcsApplicable === true ? false : true}
-                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                          // value={data.tcs}
 
-                          // readOnly={
-                          //   data.is_active == 0 && isTcsApplicable === false
-                          //     ? true
-                          //     : false
-                          // }
-                          required={isTcsApplicable === true ? true : false}
-                          onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
-                          }}
-                        />
-                      ) : (
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          id="tcs"
-                          name="tcs"
-                          step="any"
-                          onChange={(e) => handleTcs(e)}
-                          // value={0}
-                          value={data.is_tcs_applicable == 1 ? data.tcs : 0}
-                          // readOnly={true}
-                          // readOnly={
-                          //   (data.is_active == 0 &&
-                          //     isTcsApplicable === false) ||
-                          //   (authorities &&
-                          //     authorities.All_Update_Bill === false)
-                          //     ? true
-                          //     : false
-                          // }
-readOnly={isTcsApplicable === true ? false : true}
+                  
 
-                         
-                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                          required={true}
-                          onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
-                          }}
-                        />
-                      )} */}
+
                     </div>
+{/* } */}
                     {/* } */}
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
@@ -2216,6 +2172,7 @@ readOnly={isTcsApplicable === true ? false : true}
                         id="narration"
                         name="narration"
                         rows="4"
+                        maxLength={2000}
                         // readOnly={
                         //   authorities && authorities.All_Update_Bill === true
                         //     ? false
@@ -2248,6 +2205,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         className="form-control form-control-sm"
                         id="audit_remark"
                         name="audit_remark"
+                        maxLength={250}
+
                         // defaultValue={
                         //   data.audit_remark ? data.audit_remark : ""
                         // }
@@ -2269,6 +2228,8 @@ readOnly={isTcsApplicable === true ? false : true}
                         id="external_remark"
                         name="external_remark"
                         rows="4"
+                        maxLength={250}
+
                         readOnly={
                           authorities && authorities.External_Audit === false
                             ? true

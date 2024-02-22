@@ -60,8 +60,30 @@ function AddOn(props) {
 //   }
 // };
 
-console.log("min",minValue)
+function handleFormatChange(e) {
+  const selectedFormat = parseInt(e.target.value);
+  const timeInputElement = document.getElementById('inputRangeMin');
+  const currentValue = timeInputElement.value;
+  const formattedValue = formatTime(currentValue, selectedFormat);
+  timeInputElement.value = formattedValue;
+}
+function formatTime(time, format) {
+  const date = new Date(`1970-01-01T${time}:00`);
+  switch (format) {
+      case 1:
+          return `${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+      case 2:
+          return `${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+      case 3:
+          return `${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+      default:
+          return time;
+  }
+}
 
+function padZero(value) {
+  return String(value).padStart(2, '0');
+}
 
 
 const handleMax = (e) => {
@@ -92,7 +114,7 @@ const handleMax = (e) => {
                     <div className="d-flex justify-content-between" key={props.key}>
                         <div class="form-group">
                             <label>Min Time:</label>
-                            <input
+                            {/* <input
                                 type="time"
                                 onChange={props.onGetChange}
                                 id="inputRangeMin"
@@ -101,7 +123,27 @@ const handleMax = (e) => {
                                 defaultValue={props.data.inputAddOn.inputRangeMin}
                                 min={props.data.inputAddOn.inputRangeMin}
                             // max={props.data.inputAddOn.inputRangeMax ? props.data.inputAddOn.inputRangeMax : ''}
-                            />
+                            /> */}
+                             <input
+            type="text"
+            onChange={props.onGetChange}
+            style={{width:"100px"}}
+            id="inputRangeMin"
+            name="inputRangeMin"
+            className="form-control form-control-sm"
+            defaultValue={props.data.inputAddOn.inputRangeMin}
+            min={props.data.inputAddOn.inputRangeMin}
+            // max={props.data.inputAddOn.inputRangeMax ? props.data.inputAddOn.inputRangeMax : ''}
+        />
+        <select
+            className="form-select"
+            onChange={handleFormatChange}
+            defaultValue={props.format}
+        >
+            <option value={1}>HH:MM</option>
+            <option value={2}>HH:MM:SS</option>
+            <option value={3}>MM:SS</option>
+        </select>
                         </div>
                         <div className="form-group">
                             <label>Max Time:</label>

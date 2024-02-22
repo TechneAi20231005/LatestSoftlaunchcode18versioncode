@@ -4343,7 +4343,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       id="narration"
                       name="narration"
                       rows="4"
-                      maxLength={1000}
+                      maxLength={2000}
                     />
                   </div>
 
@@ -4372,7 +4372,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="audit_remark"
                         name="audit_remark"
                         rows="4"
-                        maxLength={1000}
+                        maxLength={250}
                         readOnly={
                           authority.Audit_Remark === false ? true : false
                         }
