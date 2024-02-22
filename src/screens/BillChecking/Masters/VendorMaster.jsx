@@ -5194,24 +5194,64 @@ function VendorMaster({ match }) {
       }
     });
   };
+  // const handleBulkUpload = async (e) => {
+  //   e.preventDefault();
+  //   const form = new FormData(e.target);
+  //   const file = e.target.elements.attachment.files[0];
+  //   console.log(file);
+  //   if(!file){
+  //     console.log("he","hey")
+  //     alert("Please choose a file."); // Display alert if file is not selected
+  //   return; // Stop further execution
+
+  //   }
+  //   console.log("form",form)
+  //   setError(null);
+  //   await new VendorMasterService().bulkUploadVendor(form).then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status == 1) {
+  //         setNotify({ type: "success", message: res.data.message });
+  //         handleBulkModal({ showModal: false });
+  //         loadData();
+  //       } else {
+  //         setError({ type: "danger", message: res.data.message });
+  //         URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+  //         window.open(URL, "_blank")?.focus();
+  //       }
+  //     }
+  //   });
+  // };
+
   const handleBulkUpload = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.target);
+    const file = e.target.elements.attachment.files[0]; // Access the file from the event target
+
+    if (!file) {
+        alert("Please choose a file.");
+        return;
+    }
+
+    const form = new FormData();
+    form.append("attachment", file);
+    form.append("created_by", userSessionData.userId);
+
     setError(null);
+
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
-          handleBulkModal({ showModal: false });
-          loadData();
-        } else {
-          setError({ type: "danger", message: res.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
-          window.open(URL, "_blank").focus();
+        if (res.status === 200) {
+            if (res.data.status == 1) {
+                setNotify({ type: "success", message: res.data.message });
+                handleBulkModal({ showModal: false });
+                loadData();
+            } else {
+                setError({ type: "danger", message: res.data.message });
+                URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+                window.open(URL, "_blank")?.focus();
+            }
         }
-      }
     });
-  };
+};
+
 
   return (
     <>
