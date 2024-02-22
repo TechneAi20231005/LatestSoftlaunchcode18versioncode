@@ -833,6 +833,8 @@ import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function EditCustomer({ match }) {
   const history = useNavigate();
@@ -840,6 +842,8 @@ function EditCustomer({ match }) {
 
   const { id } = useParams();
   const customerId = id;
+  const dispatch =useDispatch()
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
 
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
@@ -859,7 +863,7 @@ function EditCustomer({ match }) {
   const stateRef = useRef(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const handleDependent = (e, name) => {
     setData({
@@ -953,15 +957,17 @@ function EditCustomer({ match }) {
         }
       }
     });
+    
+    dispatch(getRoles())
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const [contactError, setContactError] = useState(null);
@@ -1147,7 +1153,7 @@ function EditCustomer({ match }) {
           : cityName
       );
     }
-    if (checkRole && checkRole[3].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [data, cityDropdown, checkRole]);
@@ -1470,7 +1476,7 @@ function EditCustomer({ match }) {
               {/* CARD */}
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[3].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-primary">
                     Update
                   </button>

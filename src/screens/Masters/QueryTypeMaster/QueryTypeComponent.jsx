@@ -1690,8 +1690,11 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function QueryTypeComponent() {
+  const dispatch =useDispatch()
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
@@ -1712,7 +1715,11 @@ function QueryTypeComponent() {
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+  console.log(checkRole);
+
+  
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -2365,17 +2372,18 @@ function QueryTypeComponent() {
         );
       }
     });
+    dispatch(getRoles())
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleClearData = (e) => {
@@ -2514,7 +2522,7 @@ function QueryTypeComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[13].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -2532,7 +2540,7 @@ function QueryTypeComponent() {
           renderRight={() => {
             return (
               <div className="col-auto d-flex w-sm-100">
-                {checkRole && checkRole[13].can_create === 1 ? (
+                {checkRole && checkRole[0]?.can_create === 1 ? (
                   <button
                     className="btn btn-dark btn-set-task w-sm-100"
                     onClick={() => {
@@ -2882,7 +2890,7 @@ function QueryTypeComponent() {
               )}
               {modal.modalData &&
               checkRole &&
-              checkRole[13].can_update === 1 ? (
+              checkRole[0]?.can_update === 1 ? (
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
