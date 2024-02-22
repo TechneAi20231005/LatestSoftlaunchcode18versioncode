@@ -114,7 +114,7 @@ function Profile() {
     const [whatsappError, setWhatsappError] = useState(null);
     const [whatsappValid, setWhatsappValid] = useState(false)
     const [whatsappNumber, setWhatsappNumber] = useState(null)
-
+    const navigate = useNavigate();
     const handleWhatsapp = (e) => {
         const whatsappNumber = e.target.value;
         setWhatsappNumber(whatsappNumber)
@@ -147,7 +147,9 @@ function Profile() {
         } else if (contactErr == true) {
             alert("Enter valid Mobile Number");
             return false;
-        }else if (confirmPasswordError == true) {
+        
+        }
+        else if (confirmPasswordError == true) {
             alert("Enter valid password");
             return false;}
         
@@ -166,16 +168,23 @@ function Profile() {
                             //     localStorage.setItem(key, data[key]);
                             // })
                             setNotify({ type: 'success', message: res.data.message })
+                            setTimeout(() => {
+                                navigate(`/${_base}/Dashboard`, { state: { alert: { type: "success", message: res.data.message } } });
+                            }, 3000);
                             // window.location.reload(false);
-                            history(
-                                {
-                                pathname: `/${_base}/Dashboard`,
-
-
-                               
-                            },
-                            { state: { alert: { type: "success", message: res.data.message } }}
-                            );
+                            // setTimeout(() => {
+                            //     // history.push(`/${_base}/Dashboard`);
+                            //     history(
+                            //         {
+                            //             pathname: `/${_base}/Dashboard`,
+                            //             { state: { alert: { type: "success", message: res.data.message } }}
+    
+    
+                                   
+                            //     },
+                            //     )
+                            // }, 3000); 
+                           
                         } else {
                             setNotify({ type: 'danger', message: res.data.message })
                         }
@@ -284,7 +293,6 @@ function Profile() {
             {notify && <Alert alertData={notify} />}
             <div className="row">
 
-{console.log("p",data)}
                 <div className="col-4">
                     <div className="card shadow">
                         <div className="card-header bg-primary text-white">
@@ -506,7 +514,7 @@ function Profile() {
                                                     name="password"
                                                     type={passwordShown1 ? "text" : "password"}
                                                     required={true}
-                                                    minLength={8}
+                                                    minLength={6}
                                                     maxLength={12}
                                                     onChange={e => handlePasswordValidation(e)}
                                                     onKeyPress={e => {

@@ -2476,6 +2476,18 @@ export default function CreateBillCheckingTransaction({ match }) {
   const day = String(currentDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
 
+  const endFinancialYear = new Date(currentDate.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+
+  const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
+
+  const startYear = startFinancialYear.getFullYear();
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
+  const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
+
+  const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+
+
+
   const handleReset = () => {};
   const handleFilter = async (e) => {
     e.preventDefault();
@@ -2648,7 +2660,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("is_original_bill_needed", 0);
     }
 
-    console.log(selectedFiles);
     if (selectedFiles) {
       selectedFiles.forEach((file, index) => {
         form.append(`attachment[${index}]`, file.file, file.file.name);
@@ -2715,7 +2726,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
 
-  console.log("i",igst)
   const [isOriginal, setIsOriginal] = useState(0);
   const handleIsOriginal = (e) => {
     if (e) {
@@ -3380,18 +3390,24 @@ export default function CreateBillCheckingTransaction({ match }) {
                           className="form-control form-control-sm"
                           id="bill_date"
                           name="bill_date"
+                          min={
+                            authorities &&
+                            authorities.Past_Financial_Year_Bill_Date === true &&
+                            formattedStartDate
+                          }
                           // min={
                           //   authority.Audit_Remark == true
                           //     ? new Date().getFullYear() - 1 + "-04-01"
                           //     : new Date().getFullYear() + "-04-01"
                           // }
                           // min={new Date().getFullYear() + "-04-01"}
-                          // max={formattedDate}
+                          max={formattedDate}
                           required
                           // max={new Date().toISOString().split("T")[0]}
                         />
                     )}
                   </div>
+
 
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">

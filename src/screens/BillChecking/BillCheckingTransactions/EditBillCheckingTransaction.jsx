@@ -29,9 +29,8 @@ import axios from "axios";
 const secretKey = "rushikesh";
 
 export default function CreateBillCheckingTransaction({ match }) {
- 
   var section = 0;
-const {id}=useParams()
+  const { id } = useParams();
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -41,7 +40,6 @@ const {id}=useParams()
   const [statusValue, setStatusValue] = useState("");
 
   useEffect(() => {
- 
     const fetchData = async () => {
       try {
         // Asynchronously fetch data
@@ -52,13 +50,13 @@ const {id}=useParams()
         console.error("Error fetching data:", error);
       }
     };
- 
+
     // Call the async function immediately
     fetchData();
- 
+
     // Dependency array remains empty if the effect doesn't depend on any props or state
   }, []);
- 
+
   const history = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -128,8 +126,6 @@ const {id}=useParams()
     const date = new Date(`04/31/${new Date().getFullYear() - 1}`);
   };
 
- 
-
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
   const [gst, setGst] = useState();
@@ -140,8 +136,7 @@ const {id}=useParams()
   const [showFiles, setShowFiles] = useState([]);
   const [attachment, setAttachment] = useState();
   const [authorities, SetAuthorities] = useState();
-  const[netPaymentError, setNetPaymentError]=useState()
-
+  const [netPaymentError, setNetPaymentError] = useState();
 
   const handleTaxable = (e) => {
     let input = e.target.value;
@@ -319,14 +314,15 @@ const {id}=useParams()
       if (res.status === 200) {
         if (res.data.status == 1) {
           setData(res.data.data);
+          setIsTcsApplicable(res.data.data.is_tcs_applicable == 1 ? true : false)
           handleSectionDropDownChange1(res.data.data.tds_section);
           if (res.data.data.is_tds_applicable == 1) {
             setShowTdsFileds(true);
           }
         }
       }
+     
     });
-
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -373,7 +369,8 @@ const {id}=useParams()
       }
     });
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -436,23 +433,21 @@ const {id}=useParams()
     }
 
     // console.log("isigst",document.getElementById('is_igst_applicable').value)
-    if (document.getElementById('is_igst_applicable').checked) {
-      form.append("is_igst_applicable", 1)
+    if (document.getElementById("is_igst_applicable").checked) {
+      form.append("is_igst_applicable", 1);
     } else {
-      form.append("is_igst_applicable", 0)
+      form.append("is_igst_applicable", 0);
     }
-    if (document.getElementById('is_tds_applicable').checked) {
-
-      form.append("is_tds_applicable", 1)
+    if (document.getElementById("is_tds_applicable").checked) {
+      form.append("is_tds_applicable", 1);
     } else {
-      form.append("is_tds_applicable", 0)
+      form.append("is_tds_applicable", 0);
     }
 
-    if (document.getElementById('is_tcs_applicable').checked) {
-
-      form.append("is_tcs_applicable", 1)
+    if (document.getElementById("is_tcs_applicable").checked) {
+      form.append("is_tcs_applicable", 1);
     } else {
-      form.append("is_tcs_applicable", 0)
+      form.append("is_tcs_applicable", 0);
     }
     form.append("client_ip_address", ip);
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
@@ -463,12 +458,15 @@ const {id}=useParams()
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/BillCheckingTransaction`,
-             
-            },
-            { state: { alert: { type: "success", message: res.data.message } }}
-
+            history(
+              {
+                pathname: `/${_base}/BillCheckingTransaction`,
+              },
+              {
+                state: {
+                  alert: { type: "success", message: res.data.message },
+                },
+              }
             );
             setNotify({ type: "success", message: res.data.message });
             loadData();
@@ -499,7 +497,6 @@ const {id}=useParams()
   };
 
   const fileInputRef = useRef(null);
- 
 
   const date = new Date();
   const futureDate = date.getDate();
@@ -520,7 +517,7 @@ const {id}=useParams()
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
- 
+
   const validFileTypes = [
     "image/png",
     "image/jpeg",
@@ -528,27 +525,25 @@ const {id}=useParams()
     "application/pdf",
   ];
 
-
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       var tempSelectedFile = [];
       for (var i = 0; i < e.target.files.length; i++) {
-            tempSelectedFile.push({
-              file: e.target.files[i],
-              fileName: e.target.files[i].name,
-              tempUrl: URL.createObjectURL(e.target.files[i]),
+        tempSelectedFile.push({
+          file: e.target.files[i],
+          fileName: e.target.files[i].name,
+          tempUrl: URL.createObjectURL(e.target.files[i]),
         });
       }
-              setSelectedFiles(tempSelectedFile);
-          } else if (type === "DELETE") {
-fileInputRef.current.value = "";
+      setSelectedFiles(tempSelectedFile);
+    } else if (type === "DELETE") {
+      fileInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-    };
-
+  };
 
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
@@ -606,13 +601,13 @@ fileInputRef.current.value = "";
   //   e.target.value = ""; // Reset the input field
   // };
 
-    // maximum length check for attachments
-    const maxLengthCheck = (e) => {
-      if (e.target.files.length > 10) {
-        alert("You Can Upload Only 10 Attachments");
-        document.getElementById("attachment").value = null;
-        setSelectedFiles(null)
-      }
+  // maximum length check for attachments
+  const maxLengthCheck = (e) => {
+    if (e.target.files.length > 10) {
+      alert("You Can Upload Only 10 Attachments");
+      document.getElementById("attachment").value = null;
+      setSelectedFiles(null);
+    }
   };
 
   const handleDeleteAttachment = (e, id) => {
@@ -631,32 +626,31 @@ fileInputRef.current.value = "";
     } else {
       setIgst((e.target.checked = false));
     }
-
   };
 
-
-;
-  const [isTcsApplicable, setIsTcsApplicable] = useState(data && data.is_tcs_applicable == 1 ?true : false);
+  const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
   const [isoriginalbillneeded, SetIsOriginalBillNeeded] = useState(false);
 
-  console.log("data111",data&&data.is_tcs_applicable)
-  console.log("data112",isTcsApplicable)
+  // const handleTcsApplicable = (e) => {
+  //   setIsTcsApplicable(e.target.checked);
+  //   if (e.target.checked) {
+  //     setIsTcsApplicable(e.target.checked === true);
+  //   } else {
+  //     setIsTcsApplicable((e.target.checked = false));
+  //   }
+  //   const newValue = e.target.checked;
 
+  //   // Update the local state
+  //   // setIgst(newValue);
+  // };
 
   const handleTcsApplicable = (e) => {
-    setIsTcsApplicable(e.target.checked);
-    if (e.target.checked) {
-      setIsTcsApplicable(e.target.checked === true);
-    } else {
-      setIsTcsApplicable((e.target.checked = false));
-    }
     const newValue = e.target.checked;
-
-    // Update the local state
-    // setIgst(newValue);
+    setIsTcsApplicable(newValue);
   };
+
 
   const handleAuthorizedByHod = (e) => {
     SetauthorizedByHod(e.target.checked);
@@ -677,12 +671,9 @@ fileInputRef.current.value = "";
     currentDate.getDate()
   );
 
+  // const currentDateee = new Date();
+  // const formattedDate = currentDateee.toISOString().slice(0, 10); // YYYY-MM-DD
 
-  const currentDateee = new Date();
-const formattedDate = currentDateee.toISOString().slice(0, 10); // YYYY-MM-DD
-console.log(formattedDate);
-
-  console.log("cccc",formattedDate)
   const formattedOneYearAgo = `${oneYearAgo.getFullYear()}-${(
     oneYearAgo.getMonth() + 1
   )
@@ -734,7 +725,7 @@ console.log(formattedDate);
           parseFloat(billAmount1) -
           parseFloat(document.getElementById("debit_advance").value);
       }
-     
+
       setNetPayment(Math.round(netPayment));
 
       if (document.getElementById("is_tds_applicable").checked) {
@@ -756,13 +747,12 @@ console.log(formattedDate);
         setBillAmount1(billAmount1.toFixed(2));
       }
     }
-    if(netPayment < 0){
-      setNetPaymentError("Net bill payment should be positive value")
-    }
-    else {
+    if (netPayment < 0) {
+      setNetPaymentError("Net bill payment should be positive value");
+    } else {
       setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
     }
-    return () => { };
+    return () => {};
   }, [
     billAmount,
     billAmount1,
@@ -777,18 +767,14 @@ console.log(formattedDate);
     isTcsApplicable,
   ]);
 
-
-  console.log("bill amount1",billAmount1&&billAmount1)
-  console.log("bill amount",billAmount&&billAmount)
+  // console.log("bill amount1",billAmount1&&billAmount1)
+  // console.log("bill amount",billAmount&&billAmount)
   // console.log("tcs",document?.getElementById("tcs")?.value)
 
-console.log("tcs99",tcs&&tcs.length)
+  // console.log("tcs99",tcs&&tcs.length)
 
   // console.log("debit advance",parseFloat(document.getElementById("debit_advance").value))
   // console.log("tds amount",tdsAmount)
-
-
- 
 
   useEffect(() => {
     if (checkRole && checkRole[45].can_update === 0) {
@@ -796,45 +782,43 @@ console.log("tcs99",tcs&&tcs.length)
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-    return () => { };
+    return () => {};
   }, [checkRole]);
 
   useEffect(() => {
     loadData();
-    return () => { };
+    return () => {};
   }, []);
 
- 
+  // Get the current date
+  const currentDatee = new Date();
 
-// Get the current date
-const currentDatee = new Date();
+  // Calculate the start date of the current financial year (April 1 of the current year)
+  //  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
 
-console.log("c",currentDate)
+  // Calculate the end date of the current financial year (March 31 of the next year)
+  const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
 
-// Calculate the start date of the current financial year (April 1 of the current year)
-//  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
+  const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
 
-// Calculate the end date of the current financial year (March 31 of the next year)
-const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+  const startYear = startFinancialYear.getFullYear();
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
+  const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
+
+  const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+
+  const endYear = endFinancialYear.getFullYear();
+  const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
+  const endDay = String(endFinancialYear.getDate()).padStart(2, "0");
+
+  // const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
+  const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
 
-
-const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
-
-const startYear = startFinancialYear.getFullYear();
-const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
-const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
-
-const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-
-
-const endYear = endFinancialYear.getFullYear();
-const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
-const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
-
-// const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
-const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
-
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
 
   return (
     <div className="container-xxl">
@@ -844,17 +828,12 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
       <PageHeader />
 
-
-
       <div className="row clearfix g-3">
-       
         {data && (
           <div className="col-sm-12">
             <form method="POST" onSubmit={(e) => handleForm(e)}>
               {/* ********* MAIN DATA ********* */}
               <div className="card mt-2">
-
-           
                 <div className="card-header bg-primary text-white p-2">
                   <h5>Edit Data</h5>
                 </div>
@@ -1005,30 +984,28 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                           //     : true
                           // }
 
-                        // isDisabled={data.is_active == 0 || data.is_assign_to == 0 ? true : false}
+                          // isDisabled={data.is_active == 0 || data.is_assign_to == 0 ? true : false}
                         />
                       )}
                     </div>
 
+                    {authorities && authorities.Record_Room === true ? (
+                      <div className="col-md-3">
+                        {/* {data && data.is_assign_to == 0 && ( */}
+                        <input
+                          type="hidden"
+                          name="assign_to"
+                          value={data && data.assign_to}
+                        />
+                        {/* )} */}
 
-                    {authorities && authorities.Record_Room === true ?
-                    <div className="col-md-3">
-                      {/* {data && data.is_assign_to == 0 && ( */}
-                      <input
-                        type="hidden"
-                        name="assign_to"
-                        value={data && data.assign_to}
-                      />
-                      {/* )} */}
+                        <label className="col-form-label">
+                          <b>
+                            Assign To : <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
 
-                      <label className="col-form-label">
-                        <b>
-                          Assign To : <Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-
-                     
-                       {/* <Select
+                        {/* <Select
                          type="text"
                          className="form-control form-control-sm"
                          id="assign_to"
@@ -1045,7 +1022,7 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                          defaultValue="Record Room"
                        /> */}
 
-{/* <Select
+                        {/* <Select
   type="text"
   className="form-control form-control-sm"
   id="assign_to"
@@ -1055,67 +1032,61 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
   defaultValue="Record Room" // Set the default value to "Record Room"
 /> */}
 
-<input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="assign_to"
-                        name="assign_to"
-                        required
-                        defaultValue={"Record room"}
-                       
-                      />
-
-                   
-                   </div>
-                    :
-<>
-                    <div className="col-md-3">
-                      {/* {data && data.is_assign_to == 0 && ( */}
-                      <input
-                        type="hidden"
-                        name="assign_to"
-                        value={data && data.assign_to}
-                      />
-                      {/* )} */}
-
-                      <label className="col-form-label">
-                        <b>
-                          Assign To : <Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-
-                      {userDropdown && data ? (
-                        <Select
+                        <input
                           type="text"
                           className="form-control form-control-sm"
                           id="assign_to"
-                          options={userDropdown}
                           name="assign_to"
-                          placeholder="Assign To"
                           required
-                          isDisabled
-                          // isDisabled={
-                          //   authorities && authorities.All_Update_Bill === true
-                          //     ? false
-                          //     : true
-                          // }
-                          defaultValue={userDropdown.filter(
-                            (d) => d.value == data.assign_to
-                          )}
+                          defaultValue={"Record room"}
                         />
-                      ) : (
-                        <p>Loading....</p>
-                      )}
-                    </div>
-</>}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="col-md-3">
+                          {/* {data && data.is_assign_to == 0 && ( */}
+                          <input
+                            type="hidden"
+                            name="assign_to"
+                            value={data && data.assign_to}
+                          />
+                          {/* )} */}
 
+                          <label className="col-form-label">
+                            <b>
+                              Assign To : <Astrick color="red" size="13px" />
+                            </b>
+                          </label>
 
-
+                          {userDropdown && data ? (
+                            <Select
+                              type="text"
+                              className="form-control form-control-sm"
+                              id="assign_to"
+                              options={userDropdown}
+                              name="assign_to"
+                              placeholder="Assign To"
+                              required
+                              isDisabled
+                              // isDisabled={
+                              //   authorities && authorities.All_Update_Bill === true
+                              //     ? false
+                              //     : true
+                              // }
+                              defaultValue={userDropdown.filter(
+                                (d) => d.value == data.assign_to
+                              )}
+                            />
+                          ) : (
+                            <p>Loading....</p>
+                          )}
+                        </div>
+                      </>
+                    )}
 
                     <div className="col-md-3">
                       <label className="col-form-label">
                         <b>
-
                           Vendor Name : <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1217,13 +1188,16 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         // maxDate="31-03-2023"
                         min={
                           authorities &&
-                              authorities.Past_Financial_Year_Bill_Date === true &&
-                          formattedStartDate }
-                        max={formattedEndDate}
+                          authorities.Past_Financial_Year_Bill_Date === true &&
+                          formattedStartDate
+                        }
+                        // max={formattedEndDate}
+
+                        max={formattedDate}
                         readOnly={
                           (authorities && authorities?.Edit_In_Bill === true) ||
-                            (authorities &&
-                              authorities?.Past_Financial_Year_Bill_Date === true)
+                          (authorities &&
+                            authorities?.Past_Financial_Year_Bill_Date === true)
                             ? false
                             : true
                         }
@@ -1271,8 +1245,7 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                     </div>
                   </div>
 
-
-{/* {console.log("a",data && data.map((i)=>i.approvers_id))} */}
+                  {/* {console.log("a",data && data.map((i)=>i.approvers_id))} */}
                   <div className=" form-group row mt-3">
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1287,18 +1260,31 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                         id="debit_advance"
                         name="debit_advance"
                         onChange={(e) => handleDebit(e)}
-                        defaultValue={data.debit_advance ? data.debit_advance : 0}
+                        defaultValue={
+                          data.debit_advance ? data.debit_advance : 0
+                        }
                         required
-
-                        readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                     
-                       
+                        readOnly={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                         // readOnly={
                         //   userSessionData.userId != data.created_by ||
 
                         //   (authorities &&
                         //     authorities.All_Update_Bill === false &&
-                        //     data.is_assign_to == 1)  
+                        //     data.is_assign_to == 1)
                         //     ? true
                         //     : false
                         // }
@@ -1368,7 +1354,21 @@ const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
                           data.taxable_amount ? data.taxable_amount : 0
                         }
                         required
-                        readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                        readOnly={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                         // readOnly={authorities&&authorities.All_Update_Bill=== false ?true :false ||data.is_active == 0 || !(userSessionData.userId == data.created_by) ? true : false}
 
                         // readOnly={
@@ -1424,10 +1424,22 @@ value={igst=== true ?1 :0} */}
                         // name="is_igst_applicable"
                         type="checkbox"
                         style={{ marginRight: "8px" }}
-                        readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-
+                        disabled={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                         defaultChecked={data.is_igst_applicable === 1}
-
                         onChange={(e) => {
                           handleIgst(e);
                         }}
@@ -1455,7 +1467,21 @@ value={igst=== true ?1 :0} */}
                         }
                         onChange={(e) => handleGst(e)}
                         required
-                        readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                        readOnly={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                         onKeyPress={(e) => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
@@ -1505,7 +1531,21 @@ value={igst=== true ?1 :0} */}
                         //     ? false
                         //     : true
                         // }
-                        readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                        readOnly={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                         defaultValue={data.round_off ? data.round_off : 0}
                         // onKeyPress={(e) => {
                         //   Validation.NumbersSpeicalOnlyDot(e);
@@ -1584,7 +1624,7 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                    {isTcsApplicable === true || data.is_tcs_applicable == 1 &&
+                    {/* {isTcsApplicable === true || data.is_tcs_applicable == 1 && */}
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1596,28 +1636,30 @@ value={igst=== true ?1 :0} */}
                           )}
                         </b>
                       </label>
-                                              <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          id="tcs"
-                          name="tcs"
-                          step="any"
-                          onChange={(e) => handleTcs(e)}
-                          defaultValue={data.tcs ? data.tcs : 0}
-                          // readOnly={isTcsApplicable === true ? false : true}
-                          // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                          // value={data.tcs}
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
+                        id="tcs"
+                        name="tcs"
+                        step="any"
+                        onChange={(e) => handleTcs(e)}
+                        // defaultValue={data.tcs ? data.tcs : 0}
+                        // value={data.tcs ? data.tcs : 0}
+                        value={isTcsApplicable === true ? data.tcs : 0}
+                        readOnly={isTcsApplicable  ? false : true}
+                        // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                        // value={data.tcs}
 
-                          // readOnly={
-                          //   data.is_active == 0 && isTcsApplicable === false
-                          //     ? true
-                          //     : false
-                          // }
-                          required={isTcsApplicable === true ? true : false}
-                          onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
-                          }}
-                        />
+                        // readOnly={
+                        //   data.is_active == 0 && isTcsApplicable === false
+                        //     ? true
+                        //     : false
+                        // }
+                        // required={isTcsApplicable === true ? true : false}
+                        onKeyPress={(e) => {
+                          Validation.NumbersSpeicalOnlyDot(e);
+                        }}
+                      />
                       {/* {isTcsApplicable === true  ? (
                         <input
                           type="number"
@@ -1671,8 +1713,7 @@ readOnly={isTcsApplicable === true ? false : true}
                         />
                       )} */}
                     </div>
-}
-                    {console.log("istcsApllicable",isTcsApplicable)}
+                    {/* } */}
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
@@ -1687,13 +1728,13 @@ readOnly={isTcsApplicable === true ? false : true}
                         name="bill_amount"
                         defaultValue={data.bill_amount ? data.bill_amount : 0}
                         value={
-                          billAmount > 0 
-                          // && isTcsApplicable === true
-                            ? billAmount
+                          billAmount > 0
+                            ? // && isTcsApplicable === true
+                              billAmount
                             : billAmount1
                         }
                         readOnly={true}
-                      // required
+                        // required
                       />
                     </div>
                     <div className=" col-md-3 mt-4">
@@ -1707,7 +1748,21 @@ readOnly={isTcsApplicable === true ? false : true}
                         defaultChecked={
                           data.is_tds_applicable == 1 ? true : false
                         }
-                    disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                        disabled={
+                          (data.is_assign_to == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          data.is_rejected == 1 ||
+                          data.created_by == localStorage.getItem("id") ||
+                          (authorities &&
+                            authorities.All_Update_Bill == true) ||
+                          (data.current_user_is_approver == 1 &&
+                            authorities &&
+                            authorities.All_Update_Bill == true &&
+                            data.current_user_is_approver == 0)
+                            ? false
+                            : true
+                        }
                       />
                       <label className="col-form-label">
                         <b>TDS Applicable:</b>
@@ -1721,9 +1776,9 @@ readOnly={isTcsApplicable === true ? false : true}
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
                           authorities &&
-                            authorities.TCS_Applicable === false &&
-                            authorities &&
-                            authorities.All_Update_Bill === false
+                          authorities.TCS_Applicable === false &&
+                          authorities &&
+                          authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -1739,15 +1794,14 @@ readOnly={isTcsApplicable === true ? false : true}
                       </label>
                     </div>
                   </div>
-
                   {showTdsFileds && (
                     <div className=" form-group row mt-3 ">
                       <div className="col-md-3  ">
-<input
-                        type="hidden"
-                        name="tds_section"
-                        value={data && data.tds_section}
-                      />
+                        <input
+                          type="hidden"
+                          name="tds_section"
+                          value={data && data.tds_section}
+                        />
 
                         <label className="col-form-label">
                           <b>TDS section : </b>
@@ -1761,7 +1815,21 @@ readOnly={isTcsApplicable === true ? false : true}
                             placeholder="select..."
                             options={sectionDropdown}
                             ref={sectionRef}
-                            isDisabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            isDisabled={
+                              (data.is_assign_to == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              data.is_rejected == 1 ||
+                              data.created_by == localStorage.getItem("id") ||
+                              (authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              (data.current_user_is_approver == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true &&
+                                data.current_user_is_approver == 0)
+                                ? false
+                                : true
+                            }
                             onChange={(e) => handleSectionDropDownChange(e)}
                             defaultValue={
                               data &&
@@ -1773,11 +1841,11 @@ readOnly={isTcsApplicable === true ? false : true}
                         )}
                       </div>
                       <div className=" col-md-3 ">
-<input
-                        type="hidden"
-                        name="tds_constitution"
-                        value={data && data.tds_constitution}
-                      />
+                        <input
+                          type="hidden"
+                          name="tds_constitution"
+                          value={data && data.tds_constitution}
+                        />
                         <label className=" col-form-label">
                           <b>
                             TDS Constitution :{" "}
@@ -1827,15 +1895,29 @@ readOnly={isTcsApplicable === true ? false : true}
                               name="tds_constitution"
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
-                              isDisabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                              isDisabled={
+                                (data.is_assign_to == 1 &&
+                                  authorities &&
+                                  authorities.All_Update_Bill == true) ||
+                                data.is_rejected == 1 ||
+                                data.created_by == localStorage.getItem("id") ||
+                                (authorities &&
+                                  authorities.All_Update_Bill == true) ||
+                                (data.current_user_is_approver == 1 &&
+                                  authorities &&
+                                  authorities.All_Update_Bill == true &&
+                                  data.current_user_is_approver == 0)
+                                  ? false
+                                  : true
+                              }
                               defaultValue={
                                 data.tds_constitution
                                   ? constitutionDropdown.find(
-                                    (d) => d.value === data.tds_constitution
-                                  )
+                                      (d) => d.value === data.tds_constitution
+                                    )
                                   : null
                               }
-required
+                              required
                             />
                           )}
                         </span>
@@ -1876,7 +1958,21 @@ required
                             value={tdsPercentage ? tdsPercentage : ""}
                             ref={tdsPercentageRef}
                             onChange={(e) => handleTds(e)}
-                            readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            readOnly={
+                              (data.is_assign_to == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              data.is_rejected == 1 ||
+                              data.created_by == localStorage.getItem("id") ||
+                              (authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              (data.current_user_is_approver == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true &&
+                                data.current_user_is_approver == 0)
+                                ? false
+                                : true
+                            }
                           />
                         ) : (
                           <input
@@ -1892,7 +1988,21 @@ required
                             // value={tdsPercentage ? tdsPercentage : ''}
                             ref={tdsPercentageRef}
                             onChange={(e) => handleTds(e)}
-                            readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            readOnly={
+                              (data.is_assign_to == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              data.is_rejected == 1 ||
+                              data.created_by == localStorage.getItem("id") ||
+                              (authorities &&
+                                authorities.All_Update_Bill == true) ||
+                              (data.current_user_is_approver == 1 &&
+                                authorities &&
+                                authorities.All_Update_Bill == true &&
+                                data.current_user_is_approver == 0)
+                                ? false
+                                : true
+                            }
                           />
                         )}
                       </div>
@@ -1916,7 +2026,7 @@ required
                         value={netPayment}
                         defaultValue={data.net_payment ? data.net_payment : 0}
 
-                      // required
+                        // required
                       />
                       <span
                         className="fw-bold"
@@ -1937,9 +2047,15 @@ required
                                             /> */}
                     </div>
 
-                    {netPaymentError && <p  style={{
+                    {netPaymentError && (
+                      <p
+                        style={{
                           color: "red",
-                        }}>{netPaymentError}</p>}
+                        }}
+                      >
+                        {netPaymentError}
+                      </p>
+                    )}
 
                     {/* <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1989,9 +2105,9 @@ required
                         }
                         disabled={
                           authorities &&
-                            authorities.Original_Bill_Needed === false &&
-                            authorities &&
-                            authorities.All_Update_Bill === false
+                          authorities.Original_Bill_Needed === false &&
+                          authorities &&
+                          authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -2095,7 +2211,7 @@ required
                         //     ? false
                         //     : true
                         // }
-                      // defaultValue={data.narration ? data.narration : ""}
+                        // defaultValue={data.narration ? data.narration : ""}
                       />
                     </div>
                     <div className=" col-md-4 ">
@@ -2148,9 +2264,9 @@ required
                             ? true
                             : false
                         }
-                      // defaultValue={
-                      //   data.external_remark ? data.external_remark : ""
-                      // }
+                        // defaultValue={
+                        //   data.external_remark ? data.external_remark : ""
+                        // }
                       />
                     </div>
                   </div>
@@ -2169,13 +2285,13 @@ required
                             type="file"
                             id="attachment"
                             name="attachment[]"
-className="form-control"
+                            className="form-control"
                             ref={fileInputRef}
                             multiple
-                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
-maxLengthCheck(e, "UPLOAD")
+                              maxLengthCheck(e, "UPLOAD");
                             }}
                           />
                         </div>
@@ -2198,7 +2314,7 @@ maxLengthCheck(e, "UPLOAD")
                             }
                             disabled={
                               authorities &&
-                                authorities.Allow_Edit_Authorized_By_Management ===
+                              authorities.Allow_Edit_Authorized_By_Management ===
                                 false
                                 ? true
                                 : false
@@ -2226,7 +2342,7 @@ maxLengthCheck(e, "UPLOAD")
                             // onChange={(e) => handleTcsApplicable(e)}
                             disabled={
                               authorities &&
-                                authorities.Allow_Edit_Authorized_By_HOD === false
+                              authorities.Allow_Edit_Authorized_By_HOD === false
                                 ? true
                                 : false
                             }
@@ -2271,7 +2387,7 @@ maxLengthCheck(e, "UPLOAD")
                                     <button
                                       disabled={
                                         authorities &&
-                                          authorities.Edit_In_Bill === false
+                                        authorities.Edit_In_Bill === false
                                           ? true
                                           : false
                                       }
@@ -2343,7 +2459,7 @@ maxLengthCheck(e, "UPLOAD")
                                       type="button"
                                       disabled={
                                         authorities &&
-                                          authorities.Edit_In_Bill === false
+                                        authorities.Edit_In_Bill === false
                                           ? true
                                           : false
                                       }
