@@ -1659,7 +1659,7 @@ function CreateUserComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
-  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.activeState);
 
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
@@ -1677,6 +1677,7 @@ function CreateUserComponent({ match }) {
     is_default: 0,
   };
   const [rows, setRows] = useState([mappingData]);
+
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -2068,6 +2069,7 @@ function CreateUserComponent({ match }) {
   const loadData = async () => {
     setRows([mappingData]);
     dispatch(getCountryDataSort());
+    dispatch(getStateDataSort())
 
     //  **************************Country load data**************************************
     // await new CountryService().getCountrySort().then((res) => {
@@ -2085,6 +2087,13 @@ function CreateUserComponent({ match }) {
     //     }
     //   }
     // });
+
+
+
+   
+
+
+
     //  ************************** State load data**************************************
     // await new StateService().getStateSort().then((res) => {
     //   if (res.status === 200) {
@@ -2314,14 +2323,11 @@ function CreateUserComponent({ match }) {
   const accountForChange = async (account_for) => {
     setAccountFor(account_for);
     const accountFor = account_for;
-    console.log("roleDropdown", roleDropdown)
     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
 
       if (accountFor === "SELF") {
-        console.log("self", accountFor)
         return filterData.role.toLowerCase() !== "user";
       } else if (accountFor === "CUSTOMER") {
-        console.log("CUSTOMER", accountFor)
         return filterData.role.toLowerCase() === "user";
       }
     });
@@ -2365,11 +2371,38 @@ function CreateUserComponent({ match }) {
     // });
   };
 
-  const handleRemoveSpecificRow = (idx) => () => {
-    if (idx > 0) {
-      setRows(rows.filter((_, i) => i !== idx));
-    }
+  // const handleRemoveSpecificRow = (idx) => () => {
+  //   if (idx > 0) {
+  //     setRows(rows.filter((_, i) => i !== idx));
+  //   }
+  // };
+
+  // const handleRemoveSpecificRow = (idx) => {
+  //   // Create a copy of the rows array
+  //   const updatedRows = rows.filter((item, index) => index !== idx);
+    
+
+  //   // Update the state with the modified rows array
+  //   setRows(updatedRows);
+  // };
+  
+  
+  // const handleRemoveSpecificRow = (idx, itemToRemove) => {
+  //   // Create a copy of the rows array
+  //   const updatedRows = rows.filter((item, index) => index !== idx);
+  
+  //   // Update the state with the modified rows array
+  //   setRows(updatedRows);
+  // };
+  const handleRemoveSpecificRow = (idx, item) => {
+    // You can access the selected row's data through the "item" parameter
+    
+    // Remove the selected row
+    const updatedRows = rows.filter((_, index) => index !== idx);
+    setRows(updatedRows);
   };
+  
+  
 
   const [departmentValue, setDepartmentValue] = useState(false);
   const departmentRef = useRef(null);
@@ -3227,7 +3260,7 @@ function CreateUserComponent({ match }) {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  {/* <tbody>
                     {rows &&
                       rows.map((item, idx) => (
                         <tr key={idx}>
@@ -3295,41 +3328,7 @@ function CreateUserComponent({ match }) {
                               }
                             />
                           </td>
-                          {/* <td className="text-center">
-                            <input
-                              type="hidden"
-                              name="ticket_passing_authority[]"
-                              value={item.ticket_passing_authority}
-                            />
-
-                            <input
-                              type="checkbox"
-                              id={`ticket_passing_authority_` + idx}
-                              // checked={item.ticket_passing_authority == 1}
-                              onChange={(e) =>
-                                handleCheckInput(
-                                  e,
-                                  idx,
-                                  "TICKET_PASSING_AUTHORITY"
-                                )
-                              }
-                            />
-                          </td>
-                          <td className="text-center">
-                            <input
-                              type="hidden"
-                              name="is_default[]"
-                              value={item.is_default}
-                            />
-                            <input
-                              type="checkbox"
-                              id={`is_default_` - idx}
-                              // checked={item.is_default == 1}
-                              onChange={(e) =>
-                                handleCheckInput(e, idx, "IS_DEFAULT")
-                              }
-                            />
-                          </td> */}
+                        
                           <td>
                             {idx === 0 && departmentValue == true && (
                               <button
@@ -3352,7 +3351,103 @@ function CreateUserComponent({ match }) {
                           </td>
                         </tr>
                       ))}
-                  </tbody>
+                  </tbody> */}
+
+<tbody>
+  {rows.map((item, idx) => (
+                      <tr id={`addr_${idx}`} key={idx}>
+    {/* <tr key={idx}> */}
+      <td className="text-center">{idx + 1}</td>
+      <td>
+        <Select
+          options={departmentDropdown}
+          id={`department_id_` + idx}
+          name="department_id[]"
+          ref={departmentRef}
+          onChange={(e) =>
+            handleCheckInput(e, idx, "DEPARTMENT")
+          }
+        />
+      </td>
+      <td>
+        <Select
+          options={options}
+          id={`ticket_show_type_id_` + idx}
+          name="ticket_show_type[]"
+          defaultValue={item.ticket_show_type}
+          onChange={(e) =>
+            handleCheckInput(e, idx, "TICKET_SHOW")
+          }
+        />
+      </td>
+
+      <td className="text-center">
+        <input
+          type="hidden"
+          name="ticket_passing_authority[]"
+          value={
+            item.ticket_passing_authority
+              ? item.ticket_passing_authority
+              : 0
+          }
+        />
+
+        <input
+          type="checkbox"
+          id={`ticket_passing_authority_` + idx}
+          checked={item.ticket_passing_authority == 1}
+          onChange={(e) =>
+            handleCheckInput(
+              e,
+              idx,
+              "TICKET_PASSING_AUTHORITY"
+            )
+          }
+        />
+      </td>
+      <td className="text-center">
+        <input
+          type="hidden"
+          name="is_default[]"
+          value={item.is_default ? item.is_default : ""}
+        />
+        <input
+          type="checkbox"
+          id={`is_default_` + idx}
+          checked={item.is_default == 1}
+          onChange={(e) =>
+            handleCheckInput(e, idx, "IS_DEFAULT")
+          }
+        />
+      </td>
+
+      <td>
+        {idx === 0 && departmentValue == true && (
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-primary pull-left"
+            onClick={handleAddRow}
+          >
+            <i className="icofont-plus-circle"></i>
+          </button>
+        )}
+          {idx != 0 &&
+        
+        <button
+  type="button"
+  className="btn btn-outline-danger btn-sm"
+  onClick={() => handleRemoveSpecificRow(idx, rows[idx])}
+>
+  <i className="icofont-ui-delete"></i>
+</button>
+}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
+
                 </table>
               </div>
             </div>

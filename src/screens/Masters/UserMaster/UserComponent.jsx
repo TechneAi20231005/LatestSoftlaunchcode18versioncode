@@ -593,7 +593,6 @@ function UserComponent( ) {
   const [filteredData, setFilteredData] = useState([]);
   
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
   };
   const columns = [
     {
@@ -700,6 +699,16 @@ function UserComponent( ) {
     // try {
     // } catch (error) {
     // }
+
+    await new UserService().getExportTicket().then((res) => {
+
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          
+        }
+      }
+    });
+
    
     const data = [];
     const exportTempData = [];

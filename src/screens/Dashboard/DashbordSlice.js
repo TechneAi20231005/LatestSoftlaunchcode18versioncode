@@ -217,6 +217,7 @@ const initialState = {
   updateCity: [],
   postState: [],
   filteredStateData: [],
+  activeState:[],
   filteredCountryData: [],
   states: [],
   updateState: [],
@@ -548,6 +549,10 @@ export const DashbordSlice = createSlice({
           }));
 
         state.filteredStateData = filteredStateData;
+
+        let activeState = payload.data.data.filter((d)=>d.is_active == 1)
+state.activeState =activeState
+console.log("active",activeState)
 
         state.states = payload.data.data.filter((d) => d.is_active === 1);
         state.status = "succeded";
