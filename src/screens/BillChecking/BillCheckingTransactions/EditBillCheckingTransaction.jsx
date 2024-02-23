@@ -274,6 +274,14 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       });
   };
+
+
+  const handleTDSSectionChange = (e) => {
+    // Clear the userDropdown state
+    setConstitutionDropdown(null);
+    
+  };
+
   const handleSectionDropDownChange1 = async (section) => {
     await new BillTransactionService()
       .getSectionMappingDropdown(section)
@@ -539,81 +547,81 @@ export default function CreateBillCheckingTransaction({ match }) {
     "application/pdf",
   ];
 
-  const uploadAttachmentHandler = (e, type, id = null) => {
-    if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
-      }
-      setSelectedFiles(tempSelectedFile);
-    } else if (type === "DELETE") {
-      fileInputRef.current.value = "";
-      let filteredFileArray = selectedFiles.filter(
-        (item, index) => id !== index
-      );
-      setSelectedFiles(filteredFileArray);
-    }
-  };
-
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
-  //     var totalSize = 0; // Initialize total size
-
-  //     // Calculate the total size of all files in tempSelectedFile
-  //     for (var i = 0; i < tempSelectedFile.length; i++) {
-  //       totalSize += tempSelectedFile[i].file.size;
-  //     }
-
-  //     // Check if the total size of all files does not exceed 5MB
+  //     var tempSelectedFile = [];
   //     for (var i = 0; i < e.target.files.length; i++) {
-  //       const file = e.target.files[i];
-  //       const fileType = file.type;
-  //       const fileSize = file.size; // Get the file size in bytes
-
-  //       // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-  //       if (validFileTypes.includes(fileType)) {
-  //         // Check if the total size of all files is less than or equal to 5MB
-  //         if (totalSize + fileSize <= 5 * 1024 * 1024) {
-  //           tempSelectedFile.push({
-  //             file: file,
-  //             fileName: file.name,
-  //             tempUrl: URL.createObjectURL(file),
-  //           });
-
-  //           totalSize += fileSize; // Update the total size
-  //         } else {
-  //           // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-  //           alert("Total file size exceeds 5MB. Please select smaller files.");
-  //           break; // Stop processing more files
-  //         }
-  //       } else {
-  //         // Handle the case where an invalid file type is selected (e.g., show an error message)
-  //         alert(
-  //           "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-  //         );
-  //       }
+  //       tempSelectedFile.push({
+  //         file: e.target.files[i],
+  //         fileName: e.target.files[i].name,
+  //         tempUrl: URL.createObjectURL(e.target.files[i]),
+  //       });
   //     }
-  //     // Check if the maximum 10 attachments condition is met
-
-  //     if (tempSelectedFile.length <= 10) {
-  //       fileInputRef.current.value = "";
-  //       setSelectedFiles(tempSelectedFile);
-  //     } else {
-  //       alert("You can only upload a maximum of 10 attachments.");
-  //     }
+  //     setSelectedFiles(tempSelectedFile);
   //   } else if (type === "DELETE") {
+  //     fileInputRef.current.value = "";
   //     let filteredFileArray = selectedFiles.filter(
   //       (item, index) => id !== index
   //     );
   //     setSelectedFiles(filteredFileArray);
   //   }
-  //   e.target.value = ""; // Reset the input field
   // };
+
+  const uploadAttachmentHandler = (e, type, id = null) => {
+    if (type === "UPLOAD") {
+      var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
+      var totalSize = 0; // Initialize total size
+
+      // Calculate the total size of all files in tempSelectedFile
+      for (var i = 0; i < tempSelectedFile.length; i++) {
+        totalSize += tempSelectedFile[i].file.size;
+      }
+
+      // Check if the total size of all files does not exceed 5MB
+      for (var i = 0; i < e.target.files.length; i++) {
+        const file = e.target.files[i];
+        const fileType = file.type;
+        const fileSize = file.size; // Get the file size in bytes
+
+        // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
+        if (validFileTypes.includes(fileType)) {
+          // Check if the total size of all files is less than or equal to 5MB
+          if (totalSize + fileSize <= 5 * 1024 * 1024) {
+            tempSelectedFile.push({
+              file: file,
+              fileName: file.name,
+              tempUrl: URL.createObjectURL(file),
+            });
+
+            totalSize += fileSize; // Update the total size
+          } else {
+            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+            alert("Total file size exceeds 5MB. Please select smaller files.");
+            break; // Stop processing more files
+          }
+        } else {
+          // Handle the case where an invalid file type is selected (e.g., show an error message)
+          alert(
+            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+          );
+        }
+      }
+      // Check if the maximum 10 attachments condition is met
+
+      if (tempSelectedFile.length <= 10) {
+        fileInputRef.current.value = "";
+        setSelectedFiles(tempSelectedFile);
+      } else {
+        alert("You can only upload a maximum of 10 attachments.");
+      }
+    } else if (type === "DELETE") {
+      let filteredFileArray = selectedFiles.filter(
+        (item, index) => id !== index
+      );
+      setSelectedFiles(filteredFileArray);
+    }
+    e.target.value = ""; // Reset the input field
+  };
 
   // maximum length check for attachments
   const maxLengthCheck = (e) => {
@@ -1786,7 +1794,9 @@ value={igst=== true ?1 :0} */}
                                 ? false
                                 : true
                             }
-                            onChange={(e) => handleSectionDropDownChange(e)}
+                            // onChange={(e) => handleSectionDropDownChange(e)}
+                          onChange={(e) => {handleSectionDropDownChange(e);handleTDSSectionChange(e);}}
+
                             defaultValue={
                               data &&
                               sectionDropdown.filter(
@@ -1873,7 +1883,8 @@ value={igst=== true ?1 :0} */}
                                     )
                                   : null
                               }
-                              required
+
+                              required ={constitutionDropdown&&!constitutionDropdown.length ? false :true}
                             />
                           )}
                         </span>
@@ -2330,7 +2341,7 @@ value={igst=== true ?1 :0} */}
                     </div>
                   </div>
 
-                  <div className="d-flex">
+                  {/* <div className="d-flex">
                     {selectedFiles &&
                       selectedFiles.map((attachment, index) => {
                         return (
@@ -2388,69 +2399,233 @@ value={igst=== true ?1 :0} */}
                           </div>
                         );
                       })}
-                  </div>
+                  </div> */}
+
+<div
+                  //  className="d-flex"
+                  className="attachments-container"
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    maxWidth: "100%",
+                    maxHeight: "400px", // Example maximum height
+                    overflowY: "auto", // Enable vertical scrolling if needed
+                  }}
+                >
+                  {selectedFiles &&
+                    selectedFiles.map((attachment, index) => {
+                      return (
+                      
+                        <div
+                          key={index}
+                          style={{
+                            marginRight: "20px",
+                            marginBottom: "20px", // Add margin bottom for spacing between attachments
+                            width: "100px", // Set a fixed width for consistency
+                          }}
+                        >
+                          <div
+                            className="card"
+                            style={{
+                              backgroundColor: "#EBF5FB",
+                              height: "100%", // Set the height of the card to fill the container
+                              display: "flex", // Use flexbox to align content vertically
+                              flexDirection: "column", // Align content in a column layout
+                            }}
+                          >
+                            <div
+                              className="card-header"
+                              style={{ padding: "10px", overflow: "hidden" }}
+                            >
+                              <span
+                                // style={{
+                                //   overflow: "hidden",
+                                //   textOverflow: "ellipsis",
+                                //   whiteSpace: "nowrap",
+                                // }}
+                                style={{
+                                  display: "inline-block",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  maxWidth: "100%", // Ensure the span does not exceed the container width
+                                }}
+                              >
+                                {attachment.fileName}
+                              </span>
+                            </div>
+                            <div className="d-flex justify-content-between p-3">
+                              <a
+                                href={`${attachment.tempUrl}`}
+                                target="_blank"
+                                className="btn btn-warning btn-sm p-0 px-1"
+                              >
+                                <i className="icofont-ui-zoom-out"></i>
+                              </a>
+                              <button
+                               disabled={
+                                authorities &&
+                                authorities.Edit_In_Bill === false
+                                  ? true
+                                  : false
+                              }
+                                className="btn btn-danger text-white btn-sm p-1"
+                                type="button"
+                                onClick={(e) => {
+                                  uploadAttachmentHandler(e, "DELETE", index);
+                                }}
+                              >
+                                <i
+                                  className="icofont-ui-delete"
+                                  style={{ fontSize: "15px" }}
+                                ></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                 
+                </div>
+
 
                   {data && data.attachment && (
                     <div
-                      className="d-flex justify-content-start mt-2"
-                      style={{ overflowX: "auto" }}
+                      // className="d-flex justify-content-start mt-2"
+                      // style={{ overflowX: "auto" }}
+                      className="attachments-container"
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        maxWidth: "100%",
+                        maxHeight: "400px", // Example maximum height
+                        overflowY: "auto", // Enable vertical scrolling if needed
+                      }}
                     >
                       {data &&
                         data.attachment.map((attach, index) => {
                           return (
+
                             <div
-                              className="justify-content-start"
+                            key={index}
+                            style={{
+                              marginRight: "20px",
+                              marginBottom: "20px", // Add margin bottom for spacing between attachments
+                              width: "100px", // Set a fixed width for consistency
+                            }}
+                          >
+                            <div
+                              className="card"
                               style={{
-                                marginRight: "5px",
-                                padding: "0px",
-                                width: "auto",
+                                backgroundColor: "#EBF5FB",
+                                height: "100%", // Set the height of the card to fill the container
+                                display: "flex", // Use flexbox to align content vertically
+                                flexDirection: "column", // Align content in a column layout
                               }}
                             >
                               <div
-                                className="card"
-                                style={{ backgroundColor: "#EBF5FB" }}
+                                className="card-header"
+                                style={{ padding: "10px", overflow: "hidden" }}
                               >
-                                <div className="card-header">
-                                  <p style={{ fontSize: "12px" }}>
-                                    <b>{attach.name}</b>
-                                  </p>
-                                  <div className="d-flex justify-content-end p-0">
-                                    <a
-                                      href={`${attach.path}`}
-                                      target="_blank"
-                                      className="btn btn-warning btn-sm p-0 px-1"
-                                    >
-                                      <i
-                                        className="icofont-download"
-                                        style={{
-                                          fontSize: "10px",
-                                          height: "15px",
-                                        }}
-                                      ></i>
-                                    </a>
-
-                                    <button
-                                      className="btn btn-danger text-white btn-sm p-0 px-1"
-                                      type="button"
-                                      disabled={
-                                        authorities &&
+                                <span
+                                  // style={{
+                                  //   overflow: "hidden",
+                                  //   textOverflow: "ellipsis",
+                                  //   whiteSpace: "nowrap",
+                                  // }}
+                                  style={{
+                                    display: "inline-block",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    maxWidth: "100%", // Ensure the span does not exceed the container width
+                                  }}
+                                >
+                                  {attach.name}
+                                </span>
+                              </div>
+                              <div className="d-flex justify-content-between p-3">
+                                <a
+                                 href={`${attach.path}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i className="icofont-ui-zoom-out"></i>
+                                </a>
+                                        <button
+                                       className="btn btn-danger text-white btn-sm p-0 px-1"
+                                       type="button"
+                                       disabled={
+                                         authorities &&
                                         authorities.Edit_In_Bill === false
                                           ? true
-                                          : false
-                                      }
-                                      onClick={(e) => {
-                                        handleDeleteAttachment(e, attach.id);
+                                           : false
+                                       }
+                                       onClick={(e) => {
+                                       handleDeleteAttachment(e, attach.id);
                                       }}
                                     >
-                                      <i
+                                    <i
                                         className="icofont-ui-delete"
                                         style={{ fontSize: "12px" }}
-                                      ></i>
-                                    </button>
-                                  </div>
-                                </div>
+                                     ></i>
+                                    </button> 
                               </div>
                             </div>
+                          </div>
+                            // <div
+                            //   className="justify-content-start"
+                            //   style={{
+                            //     marginRight: "5px",
+                            //     padding: "0px",
+                            //     width: "auto",
+                            //   }}
+                            // >
+                            //   <div
+                            //     className="card"
+                            //     style={{ backgroundColor: "#EBF5FB" }}
+                            //   >
+                            //     <div className="card-header">
+                            //       <p style={{ fontSize: "12px" }}>
+                            //         <b>{attach.name}</b>
+                            //       </p>
+                            //       <div className="d-flex justify-content-end p-0">
+                            //         <a
+                            //           href={`${attach.path}`}
+                            //           target="_blank"
+                            //           className="btn btn-warning btn-sm p-0 px-1"
+                            //         >
+                            //           <i
+                            //             className="icofont-download"
+                            //             style={{
+                            //               fontSize: "10px",
+                            //               height: "15px",
+                            //             }}
+                            //           ></i>
+                            //         </a>
+
+                            //         <button
+                            //           className="btn btn-danger text-white btn-sm p-0 px-1"
+                            //           type="button"
+                            //           disabled={
+                            //             authorities &&
+                            //             authorities.Edit_In_Bill === false
+                            //               ? true
+                            //               : false
+                            //           }
+                            //           onClick={(e) => {
+                            //             handleDeleteAttachment(e, attach.id);
+                            //           }}
+                            //         >
+                            //           <i
+                            //             className="icofont-ui-delete"
+                            //             style={{ fontSize: "12px" }}
+                            //           ></i>
+                            //         </button>
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>
                           );
                         })}
                     </div>

@@ -4097,7 +4097,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
-                      name="is_tds_applicable"
+                      // name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
                     <label
@@ -4504,50 +4504,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   {selectedFiles &&
                     selectedFiles.map((attachment, index) => {
                       return (
-                        // <div
-                        //   key={index}
-                        //   className="justify-content-end"
-                        //   style={{
-                        //     marginRight: "20px",
-                        //     padding: "5px",
-                        //     maxWidth: "250px",
-                        //   }}
-                        // >
-                        //   <div
-                        //     className="card"
-                        //     style={{ backgroundColor: "#EBF5FB" }}
-                        //   >
-                        //     <div className="card-header">
-                        //       <span>{attachment.fileName}</span>
-                        //       {/* <img
-                        //       src={attachment.tempUrl}
-                        //       style={{ height: "100%", width: "100%" }}
-                        //     />{" "}
-                        //     * */}
-                        //       <div className="d-flex justify-content-between p-0 mt-1">
-                        //         <a
-                        //           href={`${attachment.tempUrl}`}
-                        //           target="_blank"
-                        //           className="btn btn-warning btn-sm p-0 px-1"
-                        //         >
-                        //           <i class="icofont-ui-zoom-out"></i>
-                        //         </a>
-                        //         <button
-                        //           className="btn btn-danger text-white btn-sm p-1"
-                        //           type="button"
-                        //           onClick={(e) => {
-                        //             uploadAttachmentHandler(e, "DELETE", index);
-                        //           }}
-                        //         >
-                        //           <i
-                        //             class="icofont-ui-delete"
-                        //             style={{ fontSize: "15px" }}
-                        //           ></i>
-                        //         </button>
-                        //       </div>
-                        //     </div>
-                        //   </div>
-                        // </div>
+                      
                         <div
                           key={index}
                           style={{
