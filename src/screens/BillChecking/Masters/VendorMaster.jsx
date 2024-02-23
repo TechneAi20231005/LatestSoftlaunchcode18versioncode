@@ -4508,6 +4508,7 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+    
     setError(null);
     setNotify(null);
     var flag = 1;

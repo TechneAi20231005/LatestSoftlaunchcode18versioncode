@@ -1067,6 +1067,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               Assign To : <Astrick color="red" size="13px" />
                             </b>
                           </label>
+                          {console.log("userDropdown",userDropdown)}
 
                           {userDropdown && data ? (
                             <Select
