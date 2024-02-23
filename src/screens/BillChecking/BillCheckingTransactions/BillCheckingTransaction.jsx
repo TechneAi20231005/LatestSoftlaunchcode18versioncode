@@ -859,7 +859,7 @@ function BillCheckingTransaction() {
             "Updated By": temp[key].updated_by,
           });
           // setExportData(null);
-          // setExportData(tempData);
+          setExportData(tempData);
         }
         setData(null);
         setData(data);
