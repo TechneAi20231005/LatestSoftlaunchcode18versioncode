@@ -2442,6 +2442,7 @@ export default function CreateBillCheckingTransaction({ match }) {
             setTdsPercentage(0);
             setConstitutionDropdown(null);
             setConstitution(res.data.data);
+            console.log("constires",res.data.data)
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
@@ -2452,6 +2453,14 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       });
   };
+
+
+  const handleTDSSectionChange = (e) => {
+    // Clear the userDropdown state
+    setConstitutionDropdown(null);
+    
+  };
+
 
   const [assignTo, setAssignTo] = useState();
   const [assignToDropdown, setAssignToDropdown] = useState();
@@ -2919,80 +2928,82 @@ export default function CreateBillCheckingTransaction({ match }) {
   //   e.target.value = "";
   // };
 
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
-  //     var totalSize = 0; // Initialize total size
-
-  //     // Calculate the total size of all files in tempSelectedFile
-  //     for (var i = 0; i < tempSelectedFile.length; i++) {
-  //       totalSize += tempSelectedFile[i].file.size;
-  //     }
-
-  //     // Check if the total size of all files does not exceed 5MB
-  //     for (var i = 0; i < e.target.files.length; i++) {
-  //       const file = e.target.files[i];
-  //       const fileType = file.type;
-  //       const fileSize = file.size; // Get the file size in bytes
-
-  //       // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-  //       if (validFileTypes.includes(fileType)) {
-  //         // Check if the total size of all files is less than or equal to 5MB
-  //         if (totalSize + fileSize <= 5 * 1024 * 1024) {
-  //           tempSelectedFile.push({
-  //             file: file,
-  //             fileName: file.name,
-  //             tempUrl: URL.createObjectURL(file),
-  //           });
-
-  //           totalSize += fileSize; // Update the total size
-  //         } else {
-  //           // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-  //           alert("Total file size exceeds 5MB. Please select smaller files.");
-  //           break; // Stop processing more files
-  //         }
-  //       } else {
-  //         // Handle the case where an invalid file type is selected (e.g., show an error message)
-  //         alert(
-  //           "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-  //         );
-  //       }
-  //     }
-
-  //     if (tempSelectedFile.length <= 10) {
-  //       fileInputRef.current.value = "";
-  //       setSelectedFiles(tempSelectedFile);
-  //     } else {
-  //       alert("You can only upload a maximum of 10 attachments.");
-  //     }
-  //   } else if (type === "DELETE") {
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  //   e.target.value = ""; // Reset the input field
-  // };
-
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
+      var totalSize = 0; // Initialize total size
+
+      // Calculate the total size of all files in tempSelectedFile
+      for (var i = 0; i < tempSelectedFile.length; i++) {
+        totalSize += tempSelectedFile[i].file.size;
       }
-      setSelectedFiles(tempSelectedFile);
+
+      // Check if the total size of all files does not exceed 5MB
+      for (var i = 0; i < e.target.files.length; i++) {
+        const file = e.target.files[i];
+        const fileType = file.type;
+        const fileSize = file.size; // Get the file size in bytes
+
+        // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
+        if (validFileTypes.includes(fileType)) {
+          // Check if the total size of all files is less than or equal to 5MB
+          if (totalSize + fileSize <= 5 * 1024 * 1024) {
+            tempSelectedFile.push({
+              file: file,
+              fileName: file.name,
+              tempUrl: URL.createObjectURL(file),
+            });
+
+            totalSize += fileSize; // Update the total size
+          } else {
+            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+            alert("Total file size exceeds 5MB. Please select smaller files.");
+            break; // Stop processing more files
+          }
+        } else {
+          // Handle the case where an invalid file type is selected (e.g., show an error message)
+          alert(
+            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+          );
+        }
+      }
+
+      if (tempSelectedFile.length <= 10) {
+        fileInputRef.current.value = "";
+        setSelectedFiles(tempSelectedFile);
+      } else {
+        alert("You can only upload a maximum of 10 attachments.");
+      }
     } else if (type === "DELETE") {
-      fileInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
+    e.target.value = ""; // Reset the input field
   };
+
+  // const uploadAttachmentHandler = (e, type, id = null) => {
+  //   if (type === "UPLOAD") {
+  //     var tempSelectedFile = [];
+  //     for (var i = 0; i < e.target.files.length; i++) {
+  //       tempSelectedFile.push({
+  //         file: e.target.files[i],
+  //         fileName: e.target.files[i].name,
+  //         tempUrl: URL.createObjectURL(e.target.files[i]),
+  //       });
+  //     }
+  //     setSelectedFiles(tempSelectedFile);
+  //   }
+
+  //   else if (type === "DELETE") {
+  //     fileInputRef.current.value = "";
+  //     let filteredFileArray = selectedFiles.filter(
+  //       (item, index) => id !== index
+  //     );
+  //     setSelectedFiles(filteredFileArray);
+  //   }
+  // };
 
   const handleDeleteAttachment = (e, id) => {
     // deleteAttachment(id).then((res) => {
@@ -3390,7 +3401,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       }}
                     />
                   </div>
-
+                  {console.log("for", formattedStartDate)}
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
@@ -3404,11 +3415,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         className="form-control form-control-sm"
                         id="bill_date"
                         name="bill_date"
-                        min={
-                          authorities &&
-                          authorities.Past_Financial_Year_Bill_Date === true &&
-                          formattedStartDate
-                        }
+                        min={formattedStartDate}
                         // min={
                         //   authority.Audit_Remark == true
                         //     ? new Date().getFullYear() - 1 + "-04-01"
@@ -3435,11 +3442,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                       id="received_date"
                       name="received_date"
                       defaultValue={defaultValue}
-                      readOnly={
-                        authorities && authorities.Received_Date === false
-                          ? true
-                          : false
-                      }
+                      // readOnly={
+                      //   authorities && authorities.Received_Date === false
+                      //     ? true
+                      //     : false
+                      // }
+                      readOnly
                     />
                   </div>
                 </div>
@@ -3754,10 +3762,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                     {/* <label className="col-sm-3 col-form-label">
                       <b> Round Off: </b>
                     </label> */}
-                    <label className="col-sm-3 col-form-label" style={{ width: "200px" }}>
-                    <b> Round Off: </b>
-
-</label>
+                    <label
+                      className="col-sm-3 col-form-label"
+                      style={{ width: "200px" }}
+                    >
+                      <b> Round Off: </b>
+                    </label>
 
                     {/* <input
                       type="number"
@@ -4087,10 +4097,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
-                      name="is_tds_applicable"
+                      // name="is_tds_applicable"
                       onChange={(e) => handleTdsApplicable(e)}
                     />
-                    <label className="col-form-label" style={{width:"100px"}}>
+                    <label
+                      className="col-form-label"
+                      style={{ width: "100px" }}
+                    >
                       <b>TDS Applicable:</b>
                     </label>
                   </div>
@@ -4112,7 +4125,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                       />
                     )}
-                    <label className="col-form-label" style={{ width: "100px" }}>
+                    <label
+                      className="col-form-label"
+                      style={{ width: "100px" }}
+                    >
                       <b>TCS Applicable:</b>
                     </label>
                   </div>
@@ -4139,26 +4155,28 @@ export default function CreateBillCheckingTransaction({ match }) {
                     </label>
                   </div> */}
                   <div className="col-md d-flex align-items-center mt-4">
-  <input
-    className="sm-1"
-    type="checkbox"
-    style={{ marginRight: "8px", marginLeft: "10px" }}
-    id="is_original_bill_needed"
-    onChange={(e) => {
-      handleIsOriginal(e);
-    }}
-    disabled={
-      authorities &&
-      authorities.Original_Bill_Needed === false
-        ? true
-        : false
-    }
-  />
-  <label className="col-form-label" style={{ width: "100px" }}>
-    <b>Original Bill Needed</b>
-  </label>
-</div>
-
+                    <input
+                      className="sm-1"
+                      type="checkbox"
+                      style={{ marginRight: "8px", marginLeft: "10px" }}
+                      id="is_original_bill_needed"
+                      onChange={(e) => {
+                        handleIsOriginal(e);
+                      }}
+                      disabled={
+                        authorities &&
+                        authorities.Original_Bill_Needed === false
+                          ? true
+                          : false
+                      }
+                    />
+                    <label
+                      className="col-form-label"
+                      style={{ width: "100px" }}
+                    >
+                      <b>Original Bill Needed</b>
+                    </label>
+                  </div>
                 </div>
 
                 {showTdsFileds && (
@@ -4177,10 +4195,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                           options={sectionDropdown}
                           ref={sectionRef}
                           required
-                          onChange={(e) => handleSectionDropDownChange(e)}
+                          onChange={(e) => {handleSectionDropDownChange(e);handleTDSSectionChange(e);}
+                          }
                         />
                       )}
                     </div>
+
+                    {console.log("tds",constitutionDropdown)}
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -4193,6 +4214,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               id="tds_constitution"
                               name="tds_constitution"
+                      
                               options={
                                 constitutionDropdown
                                   ? constitutionDropdown
@@ -4200,6 +4222,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               }
                               onChange={handleTdsPercentage}
                             />
+                            
                           )}
                         </span>
                       )}
@@ -4212,6 +4235,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               className="form-control form-control-sm"
                               id="tds_constitution"
                               name="tds_constitution"
+                              isDisabled={constitutionDropdown&&!constitutionDropdown.length ? true :false}
                               options={
                                 constitutionDropdown
                                   ? constitutionDropdown
@@ -4480,50 +4504,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   {selectedFiles &&
                     selectedFiles.map((attachment, index) => {
                       return (
-                        // <div
-                        //   key={index}
-                        //   className="justify-content-end"
-                        //   style={{
-                        //     marginRight: "20px",
-                        //     padding: "5px",
-                        //     maxWidth: "250px",
-                        //   }}
-                        // >
-                        //   <div
-                        //     className="card"
-                        //     style={{ backgroundColor: "#EBF5FB" }}
-                        //   >
-                        //     <div className="card-header">
-                        //       <span>{attachment.fileName}</span>
-                        //       {/* <img
-                        //       src={attachment.tempUrl}
-                        //       style={{ height: "100%", width: "100%" }}
-                        //     />{" "}
-                        //     * */}
-                        //       <div className="d-flex justify-content-between p-0 mt-1">
-                        //         <a
-                        //           href={`${attachment.tempUrl}`}
-                        //           target="_blank"
-                        //           className="btn btn-warning btn-sm p-0 px-1"
-                        //         >
-                        //           <i class="icofont-ui-zoom-out"></i>
-                        //         </a>
-                        //         <button
-                        //           className="btn btn-danger text-white btn-sm p-1"
-                        //           type="button"
-                        //           onClick={(e) => {
-                        //             uploadAttachmentHandler(e, "DELETE", index);
-                        //           }}
-                        //         >
-                        //           <i
-                        //             class="icofont-ui-delete"
-                        //             style={{ fontSize: "15px" }}
-                        //           ></i>
-                        //         </button>
-                        //       </div>
-                        //     </div>
-                        //   </div>
-                        // </div>
+                      
                         <div
                           key={index}
                           style={{
