@@ -4022,6 +4022,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                 </div>
 
                 <div className=" form-group row mt-3 ">
+
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
@@ -4056,7 +4057,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="tcs"
                         step="any"
                         // onChange={e => { handleTcs(e) }}
-                        value={billAmountValues.tcs}
+                        value={0}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
@@ -4398,7 +4399,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         rows="4"
                         maxLength={250}
                         readOnly={
-                          authority.Audit_Remark === false ? true : false
+                          authority.Internal_Audit === false ? true : false
                         }
                       />
                     )}

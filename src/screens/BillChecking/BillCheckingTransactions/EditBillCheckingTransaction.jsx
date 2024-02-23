@@ -138,7 +138,33 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [authorities, SetAuthorities] = useState();
   const [netPaymentError, setNetPaymentError] = useState();
 
+  const [inputState, setInputState] = useState({
+    debitAdvanceErr: "",
+    taxableAmountErr: "",
+    igstErr: "",
+    tcsErr: "",
+  });
+
+  const [debitAdvanceErr, setDebitAdvanceErr] = useState(null);
+  const [taxableAmountErr, setTaxableAmountErr] = useState(null);
+  const [igstErr, setIgstErr] = useState(null);
+  const [tcsErr, setTcsErr] = useState(null);
+
+  // const handleDebitAdvance = (e) => {
+  //   const debitValue = e.target.value;
+  //   if (debitValue === "") {
+  //     setDebitAdvanceErr("Debit Advance Is Required");
+  //   } else {
+  //     setDebitAdvanceErr("");
+  //   }
+  // };
   const handleTaxable = (e) => {
+    const taxableValue = e.target.value;
+    if (taxableValue === "") {
+      setTaxableAmountErr("Taxable Amount Is Required");
+    } else {
+      setTaxableAmountErr("");
+    }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
     input = input.replace(/[^0-9.]/g, "");
@@ -156,6 +182,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     setTaxable(input);
   };
   const handleGst = (e) => {
+    const igstValue = e.target.value;
+    if (igstValue === "") {
+      setIgstErr("IGST/GST Amount Is Required");
+    } else {
+      setIgstErr("");
+    }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
     input = input.replace(/[^0-9.]/g, "");
@@ -195,6 +227,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     setRoundOff(input);
   };
   const handleTcs = (e) => {
+    const tcsValue = e.target.value;
+    if (tcsValue === "") {
+      setTcsErr("TCS Amount Is Required");
+    } else {
+      setTcsErr("");
+    }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
     input = input.replace(/[^0-9.]/g, "");
@@ -232,6 +270,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
   const handleDebit = (e) => {
+    const debitValue = e.target.value;
+    if (debitValue === "") {
+      setDebitAdvanceErr("Debit Advance Is Required");
+    } else {
+      setDebitAdvanceErr("");
+    }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
     input = input.replace(/[^0-9.]/g, "");
@@ -275,11 +319,9 @@ export default function CreateBillCheckingTransaction({ match }) {
       });
   };
 
-
   const handleTDSSectionChange = (e) => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
-    
   };
 
   const handleSectionDropDownChange1 = async (section) => {
@@ -321,7 +363,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     // Clear the userDropdown state
     setUserDropdown(null);
   };
-
 
   const loadData = async () => {
     await new BillTransactionService().getBillCheckingById(id).then((res) => {
@@ -447,7 +488,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     }
 
-
     // console.log("isigst",document.getElementById('is_igst_applicable').value)
     if (document.getElementById("is_igst_applicable").checked) {
       form.append("is_igst_applicable", 1);
@@ -470,6 +510,19 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("is_original_bill_needed", 1);
     } else {
       form.append("is_original_bill_needed", 0);
+    }
+
+    if (document.getElementById("authorized_by_hod").checked) {
+      form.append("authorized_by_hod", 1);
+    } else {
+      form.append("authorized_by_hod", 0);
+    }
+
+
+    if (document.getElementById("authorized_by_management").checked) {
+      form.append("authorized_by_management", 1);
+    } else {
+      form.append("authorized_by_management", 0);
     }
     form.append("client_ip_address", ip);
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
@@ -608,7 +661,10 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
       // Check if the maximum 10 attachments condition is met
 
-      if (tempSelectedFile.length <= 10) {
+  
+
+
+      if (tempSelectedFile.length + data.attachment.length <= 10) {
         fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
       } else {
@@ -625,13 +681,13 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // maximum length check for attachments
   const maxLengthCheck = (e) => {
+
     if (e.target.files.length > 10) {
       alert("You Can Upload Only 10 Attachments");
       document.getElementById("attachment").value = null;
       setSelectedFiles(null);
     }
   };
-
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
       if (res.status === 200) {
@@ -650,6 +706,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
+
+  
   const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
@@ -1158,7 +1216,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                         }
                                     </div> */}
                   </div>
-                  {console.log("for",formattedStartDate)}
+                  {console.log("for", formattedStartDate)}
 
                   <div className="form-group row mt-3">
                     {/* <div className="col-md-3">
@@ -1342,6 +1400,15 @@ export default function CreateBillCheckingTransaction({ match }) {
                           }
                         }}
                       />
+                      {inputState && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {debitAdvanceErr}
+                        </small>
+                      )}
                     </div>
 
                     <div className=" col-md-3 ">
@@ -1418,6 +1485,15 @@ export default function CreateBillCheckingTransaction({ match }) {
                           }
                         }}
                       />
+                      {inputState && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {taxableAmountErr}
+                        </small>
+                      )}
                     </div>
 
                     {/* <input
@@ -1521,6 +1597,16 @@ value={igst=== true ?1 :0} */}
                           }
                         }}
                       />
+
+                      {inputState && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {igstErr}
+                        </small>
+                      )}
                     </div>
 
                     <div className=" col ">
@@ -1634,10 +1720,69 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                    {console.log("is",isTcsApplicable)}
+                    {console.log("is", isTcsApplicable)}
 
-                  {/* { isTcsApplicable && isTcsApplicable === true && */}
+                    {/* { isTcsApplicable && isTcsApplicable === true && */}
 
+                    
+{isTcsApplicable === true ? 
+      <div className=" col-md-3 ">
+      <label className=" col-form-label">
+        <b>
+          {" "}
+          TCS Amount:{" "}
+          {isTcsApplicable === true && (
+            <Astrick color="red" size="13px" />
+          )}
+        </b>
+      </label>
+      <input
+        type="number"
+        className="form-control form-control-sm"
+        id="tcs"
+        name="tcs"
+        step="any"
+        onChange={(e) => handleTcs(e)}
+
+        // value={data.tcs}
+       
+        defaultValue={isTcsApplicable === true ? data.tcs : 0}
+        // readOnly={isTcsApplicable  ? false : true}
+        // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ||   authorities.TCS_Applicable === true ? false :true}
+        // value={data.tcs}
+
+
+        readOnly={
+          authorities &&
+          authorities.TCS_Applicable === false &&
+          authorities &&
+          authorities.All_Update_Bill === false
+            ? true
+            : false
+        }
+        // readOnly={
+        //   data.is_active == 0 && isTcsApplicable === false
+        //     ? true
+        //     : false
+        // }
+        // required={isTcsApplicable === true ? true : false}
+        onKeyPress={(e) => {
+          Validation.NumbersSpeicalOnlyDot(e);
+        }}
+        required={isTcsApplicable === true ? true : false}
+      />
+
+      {inputState && isTcsApplicable === true && (
+        <small
+          style={{
+            color: "red",
+          }}
+        >
+          {tcsErr}
+        </small>
+      )}
+    </div> :
+    <>
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
@@ -1655,9 +1800,11 @@ value={igst=== true ?1 :0} */}
                         name="tcs"
                         step="any"
                         onChange={(e) => handleTcs(e)}
-                        // defaultValue={data.tcs ? data.tcs : 0}
-                        // value={data.tcs ? data.tcs : 0}
-                        defaultValue={isTcsApplicable === true ? data.tcs : 0}
+readOnly
+value={0}
+                        // value={data.tcs}
+                       
+                        // defaultValue={isTcsApplicable === true ? data.tcs : 0}
                         // readOnly={isTcsApplicable  ? false : true}
                         // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
                         // value={data.tcs}
@@ -1671,14 +1818,23 @@ value={igst=== true ?1 :0} */}
                         onKeyPress={(e) => {
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
+                        // required={isTcsApplicable === true ? true : false}
                       />
 
-                  
-
-
+                      {/* {inputState && isTcsApplicable === true && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {tcsErr}
+                        </small>
+                      )} */}
                     </div>
-{/* } */}
-                    {/* } */}
+
+                    </>
+}
+                   
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
@@ -1796,8 +1952,10 @@ value={igst=== true ?1 :0} */}
                                 : true
                             }
                             // onChange={(e) => handleSectionDropDownChange(e)}
-                          onChange={(e) => {handleSectionDropDownChange(e);handleTDSSectionChange(e);}}
-
+                            onChange={(e) => {
+                              handleSectionDropDownChange(e);
+                              handleTDSSectionChange(e);
+                            }}
                             defaultValue={
                               data &&
                               sectionDropdown.filter(
@@ -1866,7 +2024,7 @@ value={igst=== true ?1 :0} */}
                                 (data.is_assign_to == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true) ||
-                                data.is_rejected == 1 || 
+                                data.is_rejected == 1 ||
                                 data.created_by == localStorage.getItem("id") ||
                                 (authorities &&
                                   authorities.All_Update_Bill == true) ||
@@ -1884,8 +2042,12 @@ value={igst=== true ?1 :0} */}
                                     )
                                   : null
                               }
-
-                              required ={constitutionDropdown&&!constitutionDropdown.length ? false :true}
+                              required={
+                                constitutionDropdown &&
+                                !constitutionDropdown.length
+                                  ? false
+                                  : true
+                              }
                             />
                           )}
                         </span>
@@ -2208,7 +2370,6 @@ value={igst=== true ?1 :0} */}
                         id="audit_remark"
                         name="audit_remark"
                         maxLength={250}
-
                         // defaultValue={
                         //   data.audit_remark ? data.audit_remark : ""
                         // }
@@ -2231,7 +2392,6 @@ value={igst=== true ?1 :0} */}
                         name="external_remark"
                         rows="4"
                         maxLength={250}
-
                         readOnly={
                           authorities && authorities.External_Audit === false
                             ? true
@@ -2289,7 +2449,7 @@ value={igst=== true ?1 :0} */}
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
                             id="authorized_by_management"
-                            name="authorized_by_management"
+                            // name="authorized_by_management"
                             // onChange={(e) => handleTdsApplicable(e)}
                             // defaultChecked={
                             //   data.is_tds_applicable == 1 ? true : false
@@ -2321,7 +2481,7 @@ value={igst=== true ?1 :0} */}
                             //   data && data.access.TCS_Applicable ? false : true
                             // }
                             id="authorized_by_hod"
-                            name="authorized_by_hod"
+                            // name="authorized_by_hod"
                             onChange={(e) => handleAuthorizedByHod(e)}
                             defaultChecked={
                               data.authorized_by_hod == 1 ? true : false
@@ -2402,112 +2562,23 @@ value={igst=== true ?1 :0} */}
                       })}
                   </div> */}
 
-<div
-                  //  className="d-flex"
-                  className="attachments-container"
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    maxWidth: "100%",
-                    maxHeight: "400px", // Example maximum height
-                    overflowY: "auto", // Enable vertical scrolling if needed
-                  }}
-                >
-                  {selectedFiles &&
-                    selectedFiles.map((attachment, index) => {
-                      return (
-                      
-                        <div
-                          key={index}
-                          style={{
-                            marginRight: "20px",
-                            marginBottom: "20px", // Add margin bottom for spacing between attachments
-                            width: "100px", // Set a fixed width for consistency
-                          }}
-                        >
+
+
+                  <div
+                    //  className="d-flex"
+                    className="attachments-container"
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      maxWidth: "100%",
+                      maxHeight: "400px", // Example maximum height
+                      overflowY: "auto", // Enable vertical scrolling if needed
+                    }}
+                  >
+                    {selectedFiles &&
+                      selectedFiles.map((attachment, index) => {
+                        return (
                           <div
-                            className="card"
-                            style={{
-                              backgroundColor: "#EBF5FB",
-                              height: "100%", // Set the height of the card to fill the container
-                              display: "flex", // Use flexbox to align content vertically
-                              flexDirection: "column", // Align content in a column layout
-                            }}
-                          >
-                            <div
-                              className="card-header"
-                              style={{ padding: "10px", overflow: "hidden" }}
-                            >
-                              <span
-                                // style={{
-                                //   overflow: "hidden",
-                                //   textOverflow: "ellipsis",
-                                //   whiteSpace: "nowrap",
-                                // }}
-                                style={{
-                                  display: "inline-block",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  maxWidth: "100%", // Ensure the span does not exceed the container width
-                                }}
-                              >
-                                {attachment.fileName}
-                              </span>
-                            </div>
-                            <div className="d-flex justify-content-between p-3">
-                              <a
-                                href={`${attachment.tempUrl}`}
-                                target="_blank"
-                                className="btn btn-warning btn-sm p-0 px-1"
-                              >
-                                <i className="icofont-ui-zoom-out"></i>
-                              </a>
-                              <button
-                               disabled={
-                                authorities &&
-                                authorities.Edit_In_Bill === false
-                                  ? true
-                                  : false
-                              }
-                                className="btn btn-danger text-white btn-sm p-1"
-                                type="button"
-                                onClick={(e) => {
-                                  uploadAttachmentHandler(e, "DELETE", index);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "15px" }}
-                                ></i>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                 
-                </div>
-
-
-                  {data && data.attachment && (
-                    <div
-                      // className="d-flex justify-content-start mt-2"
-                      // style={{ overflowX: "auto" }}
-                      className="attachments-container"
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        maxWidth: "100%",
-                        maxHeight: "400px", // Example maximum height
-                        overflowY: "auto", // Enable vertical scrolling if needed
-                      }}
-                    >
-                      {data &&
-                        data.attachment.map((attach, index) => {
-                          return (
-
-                            <div
                             key={index}
                             style={{
                               marginRight: "20px",
@@ -2542,38 +2613,128 @@ value={igst=== true ?1 :0} */}
                                     maxWidth: "100%", // Ensure the span does not exceed the container width
                                   }}
                                 >
-                                  {attach.name}
+                                  {attachment.fileName}
                                 </span>
                               </div>
                               <div className="d-flex justify-content-between p-3">
                                 <a
-                                 href={`${attach.path}`}
+                                  href={`${attachment.tempUrl}`}
                                   target="_blank"
                                   className="btn btn-warning btn-sm p-0 px-1"
                                 >
                                   <i className="icofont-ui-zoom-out"></i>
                                 </a>
-                                        <button
-                                       className="btn btn-danger text-white btn-sm p-0 px-1"
-                                       type="button"
-                                       disabled={
-                                         authorities &&
-                                        authorities.Edit_In_Bill === false
-                                          ? true
-                                           : false
-                                       }
-                                       onClick={(e) => {
-                                       handleDeleteAttachment(e, attach.id);
-                                      }}
-                                    >
-                                    <i
-                                        className="icofont-ui-delete"
-                                        style={{ fontSize: "12px" }}
-                                     ></i>
-                                    </button> 
+                                <button
+                                  disabled={
+                                    authorities &&
+                                    authorities.Edit_In_Bill === false
+                                      ? true
+                                      : false
+                                  }
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadAttachmentHandler(e, "DELETE", index);
+                                  }}
+                                >
+                                  <i
+                                    className="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
+                        );
+                      })}
+                  </div>
+
+                  {data && data.attachment && (
+                    <div
+                      // className="d-flex justify-content-start mt-2"
+                      // style={{ overflowX: "auto" }}
+                      className="attachments-container"
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        maxWidth: "100%",
+                        maxHeight: "400px", // Example maximum height
+                        overflowY: "auto", // Enable vertical scrolling if needed
+                      }}
+                    >
+                      {data &&
+                        data.attachment.map((attach, index) => {
+                          return (
+                            <div
+                              key={index}
+                              style={{
+                                marginRight: "20px",
+                                marginBottom: "20px", // Add margin bottom for spacing between attachments
+                                width: "100px", // Set a fixed width for consistency
+                              }}
+                            >
+                              <div
+                                className="card"
+                                style={{
+                                  backgroundColor: "#EBF5FB",
+                                  height: "100%", // Set the height of the card to fill the container
+                                  display: "flex", // Use flexbox to align content vertically
+                                  flexDirection: "column", // Align content in a column layout
+                                }}
+                              >
+                                <div
+                                  className="card-header"
+                                  style={{
+                                    padding: "10px",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  <span
+                                    // style={{
+                                    //   overflow: "hidden",
+                                    //   textOverflow: "ellipsis",
+                                    //   whiteSpace: "nowrap",
+                                    // }}
+                                    style={{
+                                      display: "inline-block",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                      maxWidth: "100%", // Ensure the span does not exceed the container width
+                                    }}
+                                  >
+                                    {attach.name}
+                                  </span>
+                                </div>
+                                <div className="d-flex justify-content-between p-3">
+                                  <a
+                                    href={`${attach.path}`}
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i className="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-0 px-1"
+                                    type="button"
+                                    disabled={
+                                      authorities &&
+                                      authorities.Edit_In_Bill === false
+                                        ? true
+                                        : false
+                                    }
+                                    onClick={(e) => {
+                                      handleDeleteAttachment(e, attach.id);
+                                    }}
+                                  >
+                                    <i
+                                      className="icofont-ui-delete"
+                                      style={{ fontSize: "12px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                             // <div
                             //   className="justify-content-start"
                             //   style={{
