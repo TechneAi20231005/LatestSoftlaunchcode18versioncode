@@ -219,8 +219,8 @@ export const addressFieldOnly = (e) => {
   );
 
   if (e.keyCode === 13) {
-  
-    
+
+
     return true;
   }
 
@@ -289,8 +289,8 @@ export const validateTemplateName = (e, existingTemplates) => {
     return;
   }
 
-   // Check if existingTemplates is an array and not null or undefined
-   if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
+  // Check if existingTemplates is an array and not null or undefined
+  if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
     // Handle the case where existingTemplates is not valid
     console.error("Invalid or empty existingTemplates");
     return;
@@ -414,7 +414,7 @@ export const emailOnly = (e) => {
   const key = e.key;
 
   // Email regex pattern
-  const emailRegex = /^[a-zA-Z0-9._%+-@]+$/;
+  const emailRegex = /^[a-zA-Z0-9._@]+$/;
 
   // Check if the entered character is valid for an email address
   if (!emailRegex.test(key)) {

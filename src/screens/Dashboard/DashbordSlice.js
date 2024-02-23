@@ -194,6 +194,7 @@ import {
   postCustomerData,
   updateCustomerData,
   getAllUserById,
+  getEmployeeDataById,
 } from "./DashboardAction";
 
 import { all } from "axios";
@@ -217,7 +218,7 @@ const initialState = {
   updateCity: [],
   postState: [],
   filteredStateData: [],
-  activeState:[],
+  activeState: [],
   filteredCountryData: [],
   states: [],
   updateState: [],
@@ -241,6 +242,7 @@ const initialState = {
     modalHeader: "",
   },
   customerTypeData: [],
+  getUserById: []
 };
 
 export const DashbordSlice = createSlice({
@@ -296,7 +298,7 @@ export const DashbordSlice = createSlice({
             State: cityData[i].state,
             City: cityData[i].city,
 
-           
+
             Status: cityData[i].is_active ? "Active" : "Deactive",
             Remark: cityData[i].remark,
             created_at: cityData[i].created_at,
@@ -516,7 +518,7 @@ export const DashbordSlice = createSlice({
             Sr: stateData[i].counter,
             Country: stateData[i].country,
             State: stateData[i].state,
-        
+
             Status: stateData[i].is_active ? "Active" : "Deactive",
             Remark: stateData[i].remark,
             created_at: stateData[i].created_at,
@@ -550,9 +552,9 @@ export const DashbordSlice = createSlice({
 
         state.filteredStateData = filteredStateData;
 
-        let activeState = payload.data.data.filter((d)=>d.is_active == 1)
-state.activeState =activeState
-console.log("active",activeState)
+        let activeState = payload.data.data.filter((d) => d.is_active == 1)
+        state.activeState = activeState
+
 
         state.states = payload.data.data.filter((d) => d.is_active === 1);
         state.status = "succeded";
@@ -647,7 +649,7 @@ console.log("active",activeState)
         }
 
         state.employeeData = [...employeeData];
-        console.log("empl",employeeData)
+
         let exportUserData = [];
         for (const i in employeeData) {
           exportUserData.push({
@@ -1055,6 +1057,24 @@ console.log("active",activeState)
     builder.addCase(getAllUserById.rejected, (state) => {
       state.status = "rejected";
     });
+
+
+    // ------------------- Get User By Id--------------------
+
+    // builder.addCase(getEmployeeDataById.pending, (state) => {
+    //   state.status = "loading";
+    //   state.notify = null;
+    // });
+    // builder.addCase(getEmployeeDataById.fulfilled, (state, action) => {
+
+
+
+
+    // });
+    // builder.addCase(getCityData.rejected, (state) => {
+    //   state.status = "rejected";
+    //   state.notify = null;
+    // });
   },
 });
 

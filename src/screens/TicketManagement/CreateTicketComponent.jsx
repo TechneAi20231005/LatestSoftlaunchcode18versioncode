@@ -43,7 +43,7 @@ export default function CreateTicketComponent() {
   const queryGroupDropdown = useSelector(TicketSlices => TicketSlices.ticket.queryGroupDropDownData)
   const notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18));
 
   const navigate = useNavigate();
 

@@ -4099,7 +4099,7 @@ function VendorMaster({ match }) {
     modalData: "",
     modalHeader: "",
   });
-  console.log("id", modal.modalData.id);
+
 
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
@@ -4508,6 +4508,10 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+ 
+   
+    
+    
     setError(null);
     setNotify(null);
     var flag = 1;
@@ -4584,6 +4588,35 @@ function VendorMaster({ match }) {
     if (inputState.RefNumberError) {
       alert("Invalid Referance Nubmer");
     }
+
+ // Append file attachments
+ if (panattachment?.length > 0) {
+  form.append('pan_attachment[0]', panattachment[0].file);
+}
+if (selectedFiles?.length > 0) {
+  form.append('gst_attachment[0]', selectedFiles[0].file);
+}
+if (MSMEselectedFiles?.length > 0) {
+  form.append('msme_attachment[0]', MSMEselectedFiles[0].file);
+}
+if (passBookSelectedFiles?.length > 0) {
+  form.append('bank_passbook_attachment[0]', passBookSelectedFiles[0].file);
+}
+
+if (chequeAttachmentSelectedFiles?.length > 0) {
+  form.append('cheque_attachment[0]', chequeAttachmentSelectedFiles[0].file);
+}
+if (panattachment?.length > 0) {
+  form.append('adhar_attachment[0]', panattachment[0].file);
+}
+
+
+
+
+
+console.log("panattachment",panattachment);
+
+  
 
     if (!id) {
       if (
@@ -5853,7 +5886,7 @@ function VendorMaster({ match }) {
                     <input
                       type="file"
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
-                      name="adhar_attachment"
+                      name="adhar_attachment[]"
                       id="adhar_attachment"
                       className="form-control"
                       ref={fileInputRef}
@@ -6034,12 +6067,12 @@ function VendorMaster({ match }) {
                         </a>
                       )}
                     </label>
-                    {console.log("ppp", modal.modalData)}
+                    
 
                     <input
                       // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
-                      name="pan_attachment"
+                      name="pan_attachment[]"
                       id="pan_attachment"
                       multiple={true}
                       required={modal.modalData.pan_attachment ? false : true}
@@ -6243,7 +6276,7 @@ function VendorMaster({ match }) {
                     )}
                     <input
                       type="file"
-                      name="gst_attachment"
+                      name="gst_attachment[]"
                       id="gst_attachment"
                       multiple={true}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
@@ -6541,7 +6574,7 @@ function VendorMaster({ match }) {
                     )}
                     <input
                       type="file"
-                      name="msme_attachment"
+                      name="msme_attachment[]"
                       id="msme_attachment"
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
                       className="form-control"
@@ -7248,7 +7281,7 @@ function VendorMaster({ match }) {
                     {!modal.modalData && (
                       <input
                         type="file"
-                        name="bank_passbook_attachment"
+                        name="bank_passbook_attachment[]"
                         id="bank_passbook_attachment"
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         className="form-control"
@@ -7441,7 +7474,7 @@ function VendorMaster({ match }) {
                     {!modal.modalData && (
                       <input
                         type="file"
-                        name="cheque_attachment"
+                        name="cheque_attachment[]"
                         id="cheque_attachment"
                         accept="image/jpg,image/jpeg,image/png,application/pdf"
                         className="form-control"

@@ -1709,6 +1709,7 @@ function QueryTypeComponent() {
 
   const [exportData, setExportData] = useState(null);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
+console.log("exportQueryGroupData",exportQueryGroupData)
 
   const [dynamicForm, setDynamicForm] = useState(null);
 
@@ -2159,7 +2160,7 @@ function QueryTypeComponent() {
             exportTempQueryGroupData.push({
               Sr: data[i].counter,
               group_name: data[i].group_name,
-              is_active: data[i].is_active,
+              Status: data[i].is_active ? "Active" : "Deactive",
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
