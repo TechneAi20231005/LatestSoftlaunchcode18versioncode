@@ -5,7 +5,7 @@ import { getAllTenant, posttenantData, updatetenantData } from "./TenantConponen
 const initialState = {
   status: "",
   err: "",
-  notify: "",
+  notify: {},
   modal: {
     showModal: false,
     modalData: "",
@@ -24,7 +24,6 @@ export const tenantmasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -32,11 +31,14 @@ export const tenantmasterSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
+    handleError: (state, action) => {
+      state.notify = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getAllTenant.pending, (state) => {
       state.status = "loading";
-
+      // state.notify = null
     });
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
@@ -80,14 +82,13 @@ export const tenantmasterSlice = createSlice({
     builder.addCase(posttenantData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
+
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
         let posttenantData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;
         state.posttenantData = posttenantData;
-      } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
       }
     });
     builder.addCase(posttenantData.rejected, (state) => {
@@ -102,7 +103,7 @@ export const tenantmasterSlice = createSlice({
     builder.addCase(updatetenantData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
+        // state.notify = { type: "success", message: payload.data.message };
 
       } else {
         state.notify = null;
@@ -140,5 +141,5 @@ export const tenantmasterSlice = createSlice({
   },
 });
 
-export const { handleModalOpen, handleModalClose } = tenantmasterSlice.actions;
+export const { handleModalOpen, handleModalClose, handleError } = tenantmasterSlice.actions;
 export default tenantmasterSlice.reducer;
