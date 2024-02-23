@@ -4084,6 +4084,7 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 
 function VendorMaster({ match }) {
   const [data, setData] = useState(null);
+
   const [attachment, setAttachment] = useState();
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
@@ -4333,6 +4334,7 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
+      console.log("res",res)
       if (res.status === 200) {
         let counter = 1;
         const temp = res.data.data;
@@ -5090,6 +5092,7 @@ console.log("panattachment",panattachment);
           <tr>
             <td>1</td>
             <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
+            {console.log("attchment",data)}
 
             {data.adhar_attachment ? (
               <td>
