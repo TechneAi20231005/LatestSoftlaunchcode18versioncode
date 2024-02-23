@@ -12,9 +12,10 @@ import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTenant } from "./TenantConponentAction";
 import TenantComponentSlice, {
+  handleError,
   tenantmasterSlice,
 } from "./TenantComponentSlice";
-import { getRoles } from "../Dashboard/DashboardAction";
+import { getEmployeeData, getRoles } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
 
 function TenantComponent() {
@@ -25,6 +26,8 @@ function TenantComponent() {
   );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33)
+  );
+  const getAllEmployeeData = useSelector(DashboardSlice => DashboardSlice.dashboard.employeeData
   );
 
   const [data, setData] = useState(null);
@@ -108,7 +111,12 @@ function TenantComponent() {
     },
     {
       name: "Created By",
-      selector: (row) => row.created_by_name,
+      cell: (row) => {
+        let tenantCreatedBy = getAllEmployeeData?.filter(filterEmployee => filterEmployee.id === row.created_by)
+        return (<div>
+          {tenantCreatedBy[0]?.first_name ? `${tenantCreatedBy[0]?.first_name}  ${tenantCreatedBy[0]?.last_name}` : ''}
+        </div>)
+      },
       sortable: true,
     },
     {
@@ -175,7 +183,9 @@ function TenantComponent() {
   };
 
   useEffect(() => {
+
     loadData();
+    dispatch(getEmployeeData())
     if (location && location.state) {
       // setNotify(location.state.alert);
     }
@@ -184,10 +194,10 @@ function TenantComponent() {
   useEffect(() => {
     loadData();
 
-    if (!getAllTenantData.length) {
-      dispatch(getAllTenant());
-      dispatch(getRoles());
-    }
+
+    dispatch(getAllTenant());
+    dispatch(getRoles());
+
   }, []);
 
   useEffect(() => {

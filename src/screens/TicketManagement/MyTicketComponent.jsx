@@ -6148,7 +6148,7 @@ export default function MyTicketComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
-      <h1>Hello</h1>
+
       {/* <LoadingSpinner/> */}
       {Notify && <Alert alertData={Notify} />}
       {/* {userData && JSON.stringify(userData)} */}

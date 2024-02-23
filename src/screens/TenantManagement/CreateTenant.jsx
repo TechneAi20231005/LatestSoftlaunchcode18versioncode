@@ -28,7 +28,7 @@ import {
 } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
 import { posttenantData } from "./TenantConponentAction";
-import { tenantmasterSlice } from "./TenantComponentSlice";
+import { tenantmasterSlice, handleError } from "./TenantComponentSlice";
 
 export default function CreateTenant({ match }) {
 
@@ -232,8 +232,14 @@ export default function CreateTenant({ match }) {
     dispatch(posttenantData(formData)).then((res) => {
 
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+
         navigate(`/${_base}/TenantMaster`);
         dispatch(getAllTenant())
+        dispatch(handleError({ type: "success", message: res.payload.data.message }))
+
+
+      } else {
+        dispatch(handleError({ type: "danger", message: res.payload.data.message }))
       }
     });
   };
