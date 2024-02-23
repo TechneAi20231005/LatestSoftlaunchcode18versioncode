@@ -511,6 +511,19 @@ export default function CreateBillCheckingTransaction({ match }) {
     } else {
       form.append("is_original_bill_needed", 0);
     }
+
+    if (document.getElementById("authorized_by_hod").checked) {
+      form.append("authorized_by_hod", 1);
+    } else {
+      form.append("authorized_by_hod", 0);
+    }
+
+
+    if (document.getElementById("authorized_by_management").checked) {
+      form.append("authorized_by_management", 1);
+    } else {
+      form.append("authorized_by_management", 0);
+    }
     form.append("client_ip_address", ip);
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
     // form.append("is_tcs_applicable", isTcsApplicable === true ? 1 : 0);
@@ -1735,9 +1748,18 @@ value={igst=== true ?1 :0} */}
        
         defaultValue={isTcsApplicable === true ? data.tcs : 0}
         // readOnly={isTcsApplicable  ? false : true}
-        // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+        // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ||   authorities.TCS_Applicable === true ? false :true}
         // value={data.tcs}
 
+
+        readOnly={
+          authorities &&
+          authorities.TCS_Applicable === false &&
+          authorities &&
+          authorities.All_Update_Bill === false
+            ? true
+            : false
+        }
         // readOnly={
         //   data.is_active == 0 && isTcsApplicable === false
         //     ? true
@@ -2427,7 +2449,7 @@ value={0}
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
                             id="authorized_by_management"
-                            name="authorized_by_management"
+                            // name="authorized_by_management"
                             // onChange={(e) => handleTdsApplicable(e)}
                             // defaultChecked={
                             //   data.is_tds_applicable == 1 ? true : false
@@ -2459,7 +2481,7 @@ value={0}
                             //   data && data.access.TCS_Applicable ? false : true
                             // }
                             id="authorized_by_hod"
-                            name="authorized_by_hod"
+                            // name="authorized_by_hod"
                             onChange={(e) => handleAuthorizedByHod(e)}
                             defaultChecked={
                               data.authorized_by_hod == 1 ? true : false

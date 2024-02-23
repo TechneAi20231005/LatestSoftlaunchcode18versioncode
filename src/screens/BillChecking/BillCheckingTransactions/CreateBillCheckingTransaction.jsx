@@ -4399,7 +4399,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         rows="4"
                         maxLength={250}
                         readOnly={
-                          authority.Audit_Remark === false ? true : false
+                          authority.Internal_Audit === false ? true : false
                         }
                       />
                     )}
