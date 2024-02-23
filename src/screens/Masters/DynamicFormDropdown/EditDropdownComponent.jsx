@@ -350,6 +350,7 @@ import *  as Validation from '../../../components/Utilities/Validation';
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import {useDispatch,useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
 
 export default function EditDropdownComponent({ match }) {
 
@@ -419,6 +420,9 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                       
                     },{ state: { alert: { type: "success", message: res.data.message } }}
                     );
+
+      dispatch(dynamicFormDropDownData());
+
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
                 }
@@ -597,7 +601,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
 
                         <div className='pull-right'>
                             <button type="submit" className="btn btn-sm btn-primary">Update</button>
-                            <Link to={`/${_base}/DynamicForm`} className="btn btn-sm btn-danger text-white">Cancel</Link>
+                            <Link to={`/${_base}/DynamicFormDropdown`} className="btn btn-sm btn-danger text-white">Cancel</Link>
                         </div>
                     </form>
                 </div>
