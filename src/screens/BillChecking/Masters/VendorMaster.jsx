@@ -4508,6 +4508,13 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+    if (selectedFiles) {
+      for (var i = 0; i < selectedFiles.length; i++) {
+        form.append("attachment[" + i + "]", selectedFiles[i].file);
+      }
+    }
+    console.log(selectedFiles)
+    
     
     setError(null);
     setNotify(null);
@@ -6035,12 +6042,12 @@ function VendorMaster({ match }) {
                         </a>
                       )}
                     </label>
-                    {console.log("ppp", modal.modalData)}
+                    
 
                     <input
                       // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
-                      name="pan_attachment"
+                      name="pan_attachment[]"
                       id="pan_attachment"
                       multiple={true}
                       required={modal.modalData.pan_attachment ? false : true}

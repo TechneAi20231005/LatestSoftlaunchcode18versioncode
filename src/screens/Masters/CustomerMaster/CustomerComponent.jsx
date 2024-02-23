@@ -263,10 +263,11 @@ function CustomerComponent() {
   // };
   useEffect(() => {
     loadData();
+    dispatch(getCustomerData())
 
-    if(!getallCustomer.length){
-      dispatch(getCustomerData())
-    }
+    // if(!getallCustomer.length){
+     
+    // }
     if(!checkRole.length){
       dispatch(getRoles())
 
