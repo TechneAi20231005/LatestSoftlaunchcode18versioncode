@@ -419,7 +419,7 @@ export default function ViewBillTransaction({ match }, props) {
                         }}
                       />
                     </div>
-
+{console.log("dataoo",data)}
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>

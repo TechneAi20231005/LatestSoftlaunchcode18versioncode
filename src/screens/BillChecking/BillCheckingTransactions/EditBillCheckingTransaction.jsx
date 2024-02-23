@@ -457,6 +457,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     } else {
       form.append("is_tcs_applicable", 0);
     }
+
+    if (document.getElementById("is_original_bill_needed").checked) {
+      form.append("is_original_bill_needed", 1);
+    } else {
+      form.append("is_original_bill_needed", 0);
+    }
     form.append("client_ip_address", ip);
     // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
     // form.append("is_tcs_applicable", isTcsApplicable === true ? 1 : 0);
@@ -1143,6 +1149,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                         }
                                     </div> */}
                   </div>
+                  {console.log("for",formattedStartDate)}
 
                   <div className="form-group row mt-3">
                     {/* <div className="col-md-3">
@@ -1848,7 +1855,7 @@ value={igst=== true ?1 :0} */}
                                 (data.is_assign_to == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true) ||
-                                data.is_rejected == 1 ||
+                                data.is_rejected == 1 || 
                                 data.created_by == localStorage.getItem("id") ||
                                 (authorities &&
                                   authorities.All_Update_Bill == true) ||
@@ -2047,7 +2054,7 @@ value={igst=== true ?1 :0} */}
                         type="checkbox"
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         id="is_original_bill_needed"
-                        name="is_original_bill_needed"
+                        // name="is_original_bill_needed"
                         onChange={(e) => handleAuthorizedByManagement(e)}
                         defaultChecked={
                           data.is_original_bill_needed == 1 ? true : false
