@@ -49,9 +49,9 @@ const EditTemplateComponent = ({ match, props }) => {
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
   );
-  const notify = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
-  );
+  // const notify = useSelector(
+  //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
+  // );
   const addBasketModal = useSelector(
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.addBasketModal
@@ -59,7 +59,7 @@ const EditTemplateComponent = ({ match, props }) => {
   const addTaskModal = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal);
   const basketId = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId );
 
-  // const [notify, setNotify] = useState(null);
+  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const templateId = id;
@@ -432,14 +432,22 @@ const EditTemplateComponent = ({ match, props }) => {
     for (const entry of form.entries(form)) {
     }
 
-    dispatch(updateTemplateData({ id: templateId, payload: form })).then(
-      (res) => {
-        if (res.payload.data.status == 1 && res.payload.status == 200) {
-          dispatch(templateData());
-          navigate(`/${_base}/Template`);
-        }
-      }
-    );
+    dispatch(updateTemplateData({ id: templateId, payload: form })).then((res) => {
+      console.log(res)
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message })
+        dispatch(templateData());
+       
+        setTimeout(() => {
+          navigate(`/${_base}/Template`, {
+            state: { alert: { type: "success", message: res?.payload?.data?.message } },
+          });
+        }, 3000);
+      }else {
+        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+    }
+      
+    });
 
     // await new TemplateService().updateTemplate(templateId, form).then((res) => {
     //   if (res.status == 200) {

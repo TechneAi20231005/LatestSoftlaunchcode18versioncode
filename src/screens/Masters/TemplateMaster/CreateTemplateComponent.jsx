@@ -54,6 +54,7 @@ const CreateTemplateComponent = () => {
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
+  const [notify, setNotify] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -72,6 +73,8 @@ const CreateTemplateComponent = () => {
   };
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
+
+
     template_name: null,
     calculate_from: null,
     template_data: [
@@ -182,12 +185,18 @@ const CreateTemplateComponent = () => {
     }
   };
 
-  const handleRemoveSpecificRow = (idx) => {
-    const updatedRows = rows.template_data.filter((_, i) => i !== idx);
-    setRows({
+ const handleRemoveSpecificRow = (idx) => {
+  setRows(prevState => {
+    const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
+    console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
+    return {
+      ...prevState,
       template_data: updatedRows,
-    });
-  };
+    };
+  });
+};
+
+  
   
 
   const handleRemoveTask = (basketIndex, taskIndex) => {
@@ -254,10 +263,31 @@ const CreateTemplateComponent = () => {
       // setNotify({ type: "warning", message: "Add Data" });
     } else {
       // setNotify(null);
+      // dispatch(postTemplateData(rows)).then((res) => {
+      //   if (res?.payload?.data?.status && res?.payload?.status == 200) {
+      //     navigate(`/${_base}/Template`);
+      //     dispatch(templateData());
+      //   }
+      // });
+
       dispatch(postTemplateData(rows)).then((res) => {
-        if (res?.payload?.data?.status && res?.payload?.status == 200) {
-          navigate(`/${_base}/Template`);
+        console.log(res);
+        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          setNotify({ type: "success", message: res?.payload?.data?.message });
           dispatch(templateData());
+
+          setTimeout(() => {
+            navigate(`/${_base}/Template`, {
+              state: {
+                alert: {
+                  type: "success",
+                  message: res?.payload?.data?.message,
+                },
+              },
+            });
+          }, 3000);
+        } else {
+          setNotify({ type: "danger", message: res?.payload?.data?.message });
         }
       });
 
@@ -440,7 +470,7 @@ const CreateTemplateComponent = () => {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {/* {notify && <Alert alertData={notify} />} */}
+      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Template Master" />
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -526,11 +556,7 @@ const CreateTemplateComponent = () => {
                                 }}
                                 className="form-control form-control-sm"
                                 required={true}
-                                // onKeyPress={(e) => {
-                                //   Validation.CharactersNumbersSpeicalOnly(e);
-                                // }}
                               />
-                              {/* {isBasketNameTaken && <span style={{ color: "red" }}>Basket name already taken</span>}   */}
                             </td>
 
                             <td>
@@ -573,19 +599,6 @@ const CreateTemplateComponent = () => {
                                   <i className="icofont-ui-delete"></i>
                                 </button>
                               </td>
-
-                              {/* {rows.template_data.length === idx + 1 &&
-                                idx !== 0 && (
-                                  <span>
-                                    <button
-                                      type="button"
-                                      className="btn btn-outline-danger btn-sm"
-                                      onClick={handleRemoveSpecificRow(idx)}
-                                    >
-                                      <i className="icofont-ui-delete"></i>
-                                    </button>
-                                  </span>
-                                )} */}
                             </td>
                           </tr>
                         ))}

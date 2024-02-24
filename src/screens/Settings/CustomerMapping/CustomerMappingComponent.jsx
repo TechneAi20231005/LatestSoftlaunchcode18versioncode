@@ -9,7 +9,7 @@ import Select from 'react-select';
 import { _base } from '../../../settings/constants'
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel'
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
-import { Spinner } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import CustomerMappingSlice from './Slices/CustomerMappingSlice';
@@ -91,7 +91,36 @@ export default function CustomerMappingComponent() {
         </div>
     },
     { name: 'Sr.No', selector: row => row.counter, sortable: true,width: "60px", },
-    { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
+    // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
+
+    {
+      name: "Query",
+      selector: (row) => row["Query"],
+      sortable: true,
+      with:"200px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.query_type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.query_type_name && row.query_type_name.length < 10
+                    ? row.query_type_name
+                    : row.query_type_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+    
     { name: 'Template', selector: row => row.template_name, sortable: true,width: "175px" },
     { name: 'Form', selector: row => row.dynamic_form_name, sortable: true, width: "175px"},
 
