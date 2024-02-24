@@ -1072,6 +1072,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
+                    {console.log("data",data.assign_to.filter((d)=>d))}
+
                     {authorities && authorities.Record_Room === true ? (
                       <div className="col-md-3">
                         {/* {data && data.is_assign_to == 0 && ( */}

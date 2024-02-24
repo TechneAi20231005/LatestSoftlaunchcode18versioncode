@@ -9,8 +9,8 @@ const initialState = {
   status: "",
   err: "",
   departmentData: [],
-  exportDepartmentData:[],
-  sortDepartmentData:[],
+  exportDepartmentData: [],
+  sortDepartmentData: [],
   modal: {
     showModal: false,
     modalData: "",
@@ -52,8 +52,8 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-let filterdata=payload.data.data.filter((d) => d.is_active == 1)
-        let sortDepartmentData=[]
+        let filterdata = payload.data.data.filter((d) => d.is_active == 1);
+        let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {
             sortDepartmentData.push({
@@ -63,7 +63,7 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
           }
         }
 
-        state.sortDepartmentData=sortDepartmentData
+        state.sortDepartmentData = sortDepartmentData;
 
         for (const i in departmentData) {
           exportDepartmentData.push({
@@ -77,11 +77,7 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
             updated_by: departmentData[i].updated_by,
           });
         }
-        state.exportDepartmentData=exportDepartmentData
-
-
-
-
+        state.exportDepartmentData = exportDepartmentData;
       }
     });
     builder.addCase(departmentData.rejected, (state) => {
@@ -98,8 +94,6 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-       
-
         let postdepartment = payload.data.data;
         console.log(postdepartment);
         state.status = "succeded";
@@ -128,8 +122,6 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
-     
-
         let updateDepartment = payload.data.data;
         console.log(updateDepartment);
         state.status = "succeded";
@@ -137,7 +129,7 @@ let filterdata=payload.data.data.filter((d) => d.is_active == 1)
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
         state.updateDepartment = updateDepartment;
-        
+
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
       } else {

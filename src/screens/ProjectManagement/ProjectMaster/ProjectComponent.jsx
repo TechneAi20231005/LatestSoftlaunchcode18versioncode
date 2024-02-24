@@ -17,6 +17,7 @@ import { getprojectData } from "./ProjectMasterAction";
 import ProjectMasterSlice from "./ProjectMasterSlice";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import DashboardSlice from "../../Dashboard/DashboardSlice";
+import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
 function ProjectComponent() {
   const location = useLocation();
@@ -27,6 +28,11 @@ function ProjectComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 11)
   );
 
+  const exportData = useSelector(
+    (ProjectMasterSlice) => ProjectMasterSlice.projectMaster.exportProjectData
+  );
+
+  console.log(exportData)
   const dispatch = useDispatch();
 
   const [notify, setNotify] = useState(null);
@@ -53,23 +59,34 @@ function ProjectComponent() {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  // const handleKeyDown = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleSearch();
+  //   }
+  // };
 
   const columns = [
     {
       name: "Action",
       selector: (row) => {},
       sortable: false,
+      width: "150px",
       cell: (row) => (
         <div className="btn-group" role="group">
           <Link
@@ -81,10 +98,10 @@ function ProjectComponent() {
         </div>
       ),
     },
-    { name: "Sr", width: "5%", selector: (row) => row.counter, sortable: true },
+    { name: "Sr",  width: "150px", selector: (row) => row.counter, sortable: true },
     {
       name: "Project Name",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.project_name,
       sortable: true,
 
@@ -138,7 +155,7 @@ function ProjectComponent() {
 
     {
       name: "Description",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.description,
       sortable: true,
       cell: (row) => (
@@ -164,7 +181,7 @@ function ProjectComponent() {
     },
     {
       name: "Status",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
@@ -204,7 +221,7 @@ function ProjectComponent() {
     },
     {
       name: "created at",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.created_at,
       sortable: true,
       cell: (row) => (
@@ -230,7 +247,7 @@ function ProjectComponent() {
     },
     {
       name: "created By",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.created_by,
       sortable: true,
       cell: (row) => (
@@ -256,7 +273,7 @@ function ProjectComponent() {
     },
     {
       name: "Updated By",
-      width: "10%",
+      width: "150px",
       selector: (row) => row.updated_by,
       sortable: true,
 
@@ -283,7 +300,7 @@ function ProjectComponent() {
     },
     {
       name: "Updated At",
-      width: "12%",
+      width: "150px",
       selector: (row) => row.updated_at,
       sortable: true,
       cell: (row) => (
@@ -405,7 +422,7 @@ function ProjectComponent() {
         }}
       />
 
-      <div className="card card-body">
+      {/* <div className="card card-body">
         <div className="row">
           <div className="col-md-10">
             <input
@@ -413,14 +430,17 @@ function ProjectComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-2">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              // onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -435,6 +455,45 @@ function ProjectComponent() {
             </button>
           </div>
         </div>
+      </div> */}
+
+<div className="card card-body">
+        <div className="row">
+          <div className="col-md-9">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by Designation Name...."
+              ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
+            />
+          </div>
+          <div className="col-md-3">
+            <button
+              className="btn btn-sm btn-warning text-white"
+              type="button"
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-search-1 "></i> Search
+            </button>
+            <button
+              className="btn btn-sm btn-info text-white"
+              type="button"
+              onClick={() => window.location.reload(false)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-refresh text-white"></i> Reset
+            </button>
+            <ExportToExcel
+              className="btn btn-sm btn-danger"
+              apiData={exportData}
+              fileName="Designation master Records"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="card mt-2">
@@ -444,7 +503,25 @@ function ProjectComponent() {
               {projectData && (
                 <DataTable
                   columns={columns}
-                  data={projectData}
+                  // data={projectData}
+                  data={projectData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
