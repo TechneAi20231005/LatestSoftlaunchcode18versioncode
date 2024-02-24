@@ -92,9 +92,17 @@ export default function EditModuleComponent({ match }) {
     dispatch(updateModuleMaster({ id: moduleId, payload: formData })).then(
       (res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          setNotify({ type: 'success', message: res?.payload?.data?.message })
+
           dispatch(moduleMaster());
-          navigate(`/${_base}/Module`);
-        }
+          setTimeout(() => {
+            navigate(`/${_base}/Module`, {
+              state: { alert: { type: "success", message: res?.payload?.data?.message } },
+            });
+          }, 3000);
+        }else {
+          setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+      }
       }
     );
 

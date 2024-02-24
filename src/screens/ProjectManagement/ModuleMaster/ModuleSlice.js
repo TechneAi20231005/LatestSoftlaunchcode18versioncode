@@ -30,16 +30,13 @@ export const moduleSlice = createSlice({
       state.showLoaderModal = action.payload;
     },
     filterModuleAccordingToProject: (state, action) => {
-      state.filteredModuleAccordingToProject = state.moduleMaster
-        .filter(
-          (modules) =>
-            modules.project_id === action.payload.value &&
-            modules.is_active === 1
-        )
+      state.filteredModuleAccordingToProject = state.moduleMaster.filter((modules) => modules.project_id === action.payload.value &&modules.is_active === 1  )
+    
         .map((moduleLabel) => ({
           value: moduleLabel.id,
           label: moduleLabel.module_name,
         }));
+        console.log("pp",state.filteredModuleAccordingToProject );
     },
 
     handleModalOpen: (state, action) => {

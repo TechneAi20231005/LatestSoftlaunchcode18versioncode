@@ -154,12 +154,34 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
       return false;
     } else {
       if (flag === 1) {
-        dispatch(postCustomerData(formData)).then((res)=>{
-          if(res.payload.data.status===1 && res.payload.status === 200){
-            navigate(`/${_base}/Customer`)
+        // dispatch(postCustomerData(formData)).then((res)=>{
+        //   if(res.payload.data.status===1 && res.payload.status === 200){
+        //     navigate(`/${_base}/Customer`)
+        //     dispatch(getCustomerData())
+        //   }
+        // })
+
+        dispatch(postCustomerData(formData)).then((res) => {
+          console.log(res)
+          if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+            setNotify({ type: 'success', message: res?.payload?.data?.message })
             dispatch(getCustomerData())
-          }
-        })
+            setTimeout(() => {
+              navigate(`/${_base}/Customer`, {
+                state: { alert: { type: "success", message: res?.payload?.data?.message } },
+              });
+            }, 3000);
+          }else {
+            setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+        }
+          
+        });
+
+
+
+
+
+
       
         // await new CustomerService().postCustomer(formData)
         //   .then((res) => {
@@ -337,24 +359,28 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
 
 
   useEffect(()=>{
+    dispatch(getCityData())
+    dispatch(getStateData());
+    dispatch(getCountryDataSort())
+    dispatch(getCityData())
     if(!customerType.length){
     dispatch(getCustomerType())}
     if(!stateDropdown.length){
-    dispatch(getStateData());
+  
 
     }
     if( !countryDropdown.length){
-      dispatch(getCountryDataSort())
+    
 
     }
     if(!checkRole.length){
       dispatch(getRoles())
 
     }
-    dispatch(getCityData())
+   
 
     if(!cityDropdownData.length){
-      dispatch(getCityData())
+     
     }
 
 
