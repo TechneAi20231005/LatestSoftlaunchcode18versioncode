@@ -880,12 +880,16 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
 
+  const startPastYear = startFinancialYear.getFullYear()-1;
   const startYear = startFinancialYear.getFullYear();
+
   const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
   const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-  console.log(formattedStartDate);
+  const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
+
+ 
 
   const endYear = endFinancialYear.getFullYear();
   const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
@@ -1072,6 +1076,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
+                    {console.log("data",)}
+
                     {authorities && authorities.Record_Room === true ? (
                       <div className="col-md-3">
                         {/* {data && data.is_assign_to == 0 && ( */}
@@ -1121,7 +1127,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           id="assign_to"
                           name="assign_to"
                           required
-                          defaultValue={"Record room"}
+                          defaultValue={data.assign_to[1]}
                         />
                       </div>
                     ) : (
@@ -1152,11 +1158,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               placeholder="Assign To"
                               required
                               isDisabled
-                              // isDisabled={
-                              //   authorities && authorities.All_Update_Bill === true
-                              //     ? false
-                              //     : true
-                              // }
+                          
                               defaultValue={userDropdown.filter(
                                 (d) => d.value == data.assign_to
                               )}
@@ -1273,8 +1275,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // maxDate="31-03-2023"
                         min={
                           authorities &&
-                          authorities.Past_Financial_Year_Bill_Date === true &&
-                          formattedStartDate
+                          authorities.Past_Financial_Year_Bill_Date === true ?
+                          formattedStartPastDate : formattedStartDate
                         }
                         // max={formattedEndDate}
 

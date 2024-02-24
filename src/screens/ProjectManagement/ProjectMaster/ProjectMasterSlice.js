@@ -21,7 +21,8 @@ const initialState = {
   postprojectData: "",
   updateprojectMaster: [],
   getprojectData: [],
-  projectDropDownData:[]
+  projectDropDownData:[],
+  exportProjectData:[]
 };
 
 export const ProjectMasterSlice = createSlice({
@@ -68,6 +69,29 @@ export const ProjectMasterSlice = createSlice({
           getproject[i].counter = count++;
         }
         state.getproject = [...getproject];
+
+
+        let exportProjectData = [];
+
+        let counter =1
+        for (const key in getproject) {
+          exportProjectData.push({
+            counter: counter++,
+                      // id: getproject[key].id,
+                      project_name: getproject[key].project_name,
+                      projectReviewer: getproject[key].projectReviewer,
+                      Status: getproject[key].is_active ? "Active" : "Deactive",
+                      description: getproject[key].description,
+                      remark: getproject[key].remark,
+                      created_at: getproject[key].created_at,
+                      created_by: getproject[key].created_by,
+                      updated_at: getproject[key].updated_at,
+                      updated_by: getproject[key].updated_by,
+          });
+        }
+        state.exportProjectData = exportProjectData;
+
+
 
         let projectDropDownData = payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.project_name }))
         state.projectDropDownData = projectDropDownData

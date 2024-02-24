@@ -98,6 +98,7 @@ export default function ViewBillTransaction({ match }, props) {
         if (res.data.status == 1) {
           sectionId = res.data.data.tds_section;
           setData(res.data.data);
+          console.log("resV",res.data.data)
           // handleSectionDropDownChange1(res.data.data.tds_section);
           // if (res.data.data.is_tds_applicable == 1) {
           //   setShowTdsFileds(true);
@@ -742,7 +743,7 @@ export default function ViewBillTransaction({ match }, props) {
       name="remark"
       readOnly
       rows="4"
-      defaultValue={data.remark ? data.remark : ""}
+      defaultValue={data.remark_history ? data.remark_history : ""}
     />
   </div>
   <div className="col-md-3">

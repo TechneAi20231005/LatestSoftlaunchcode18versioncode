@@ -11,7 +11,7 @@ import * as Validation from "../../../components/Utilities/Validation";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { postmoduleMaster } from "./ModuleAction";
+import { moduleMaster, postmoduleMaster } from "./ModuleAction";
 import ModuleSlice, { moduleSlice } from "./ModuleSlice";
 import { navigateToModule } from "./ModuleSlice";
 
@@ -34,6 +34,7 @@ export default function CreateModuleComponent({ match }) {
     const formData = new FormData(e.target);
     dispatch(postmoduleMaster(formData)).then((res) => {
       if (res?.payload?.data?.status === 1 && res?.payload?.status==200) {
+        dispatch(moduleMaster());
         navigate(`/${_base}/Module`);
       }
     });
