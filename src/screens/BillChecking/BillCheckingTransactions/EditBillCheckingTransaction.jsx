@@ -1076,7 +1076,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                    {console.log("data",data.assign_to.filter((d)=>d))}
+                    {console.log("data",)}
 
                     {authorities && authorities.Record_Room === true ? (
                       <div className="col-md-3">
@@ -1127,7 +1127,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           id="assign_to"
                           name="assign_to"
                           required
-                          defaultValue={"Record room"}
+                          defaultValue={data.assign_to[1]}
                         />
                       </div>
                     ) : (
@@ -1158,11 +1158,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               placeholder="Assign To"
                               required
                               isDisabled
-                              // isDisabled={
-                              //   authorities && authorities.All_Update_Bill === true
-                              //     ? false
-                              //     : true
-                              // }
+                          
                               defaultValue={userDropdown.filter(
                                 (d) => d.value == data.assign_to
                               )}
