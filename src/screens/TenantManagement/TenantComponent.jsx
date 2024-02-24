@@ -15,8 +15,10 @@ import TenantComponentSlice, {
   handleError,
   tenantmasterSlice,
 } from "./TenantComponentSlice";
+
 import { getEmployeeData, getRoles } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
+import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 
 function TenantComponent() {
   const location = useLocation();
@@ -29,7 +31,7 @@ function TenantComponent() {
   );
   const getAllEmployeeData = useSelector(DashboardSlice => DashboardSlice.dashboard.employeeData
   );
-
+  const exportAllTenantData = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.exportAllTenantData)
   const [data, setData] = useState(null);
   // const [notify, setNotify] = useState(null);
   const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
@@ -186,9 +188,10 @@ function TenantComponent() {
 
     loadData();
     dispatch(getEmployeeData())
-    if (location && location.state) {
-      // setNotify(location.state.alert);
-    }
+    // if (location && location.state) {
+
+    //   // setNotify(location.state.alert);
+    // }
   }, []);
 
   useEffect(() => {
@@ -210,7 +213,7 @@ function TenantComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {notify?.type === "success" && <Alert alertData={notify} />}
 
 
       <PageHeader
@@ -241,7 +244,7 @@ function TenantComponent() {
 
       <div className="card card-body">
         <div className="row">
-          <div className="col-md-10">
+          <div className="col-md-9">
             <input
               type="text"
               className="form-control"
@@ -249,7 +252,7 @@ function TenantComponent() {
               ref={searchRef}
             />
           </div>
-          <div className="col-md-2">
+          <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
@@ -266,6 +269,11 @@ function TenantComponent() {
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
+            <ExportToExcel
+              className="btn btn-sm btn-danger"
+              apiData={exportAllTenantData}
+              fileName="Tenant Master"
+            />
           </div>
         </div>
       </div>

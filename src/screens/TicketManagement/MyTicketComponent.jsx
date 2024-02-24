@@ -5517,7 +5517,7 @@ export default function MyTicketComponent() {
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
-      setNotify(null);
+      // setNotify(null);
 
       const formData = new FormData(e.target);
 
@@ -6121,12 +6121,12 @@ export default function MyTicketComponent() {
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state);
-    }
-    return () => {
-      setNotify(null);
-    };
+    // if (location && location.state) {
+    //   setNotify(location.state);
+    // }
+    // return () => {
+    //   setNotify(null);
+    // };
   }, []);
 
   useEffect(() => {
@@ -6136,14 +6136,14 @@ export default function MyTicketComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    if (notify) {
-      const timer = setTimeout(() => {
-        dispatch(hideNotification());
-      }, 1500); // Adjust the timeout duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [notify, dispatch]);
+  // useEffect(() => {
+  //   if (notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 1500); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [notify, dispatch]);
 
   return (
     <div className="container-xxl">

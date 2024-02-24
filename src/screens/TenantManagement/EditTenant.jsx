@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { getCityData, getCountryDataSort, getStateData, getStateDataSort } from "../Dashboard/DashboardAction";
 import { getRoles } from "../Dashboard/DashboardAction";
 import { getAllTenant, updatetenantData } from "./TenantConponentAction";
+import { handleError } from "./TenantComponentSlice";
 
 export default function EditTenant({ match }) {
   const navigate = useNavigate();
@@ -219,7 +220,10 @@ export default function EditTenant({ match }) {
       if (res.payload.data.status === 1 && res.payload.status === 200) {
         navigate(`/${_base}/TenantMaster`)
         dispatch(getAllTenant())
+        dispatch(handleError({ type: "success", message: res.payload.data.message }))
 
+      } else {
+        dispatch(handleError({ type: "danger", message: res.payload.data.message }))
       }
     })
 
@@ -248,6 +252,7 @@ export default function EditTenant({ match }) {
   };
 
   useEffect(() => {
+    dispatch(handleError(null))
     loadData();
   }, []);
 
@@ -260,7 +265,7 @@ export default function EditTenant({ match }) {
   return (
     <div className="container-xxl">
 
-      {notify && <Alert alertData={notify} />}
+      {notify && notify?.type === "danger" && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
         <form onSubmit={handleForm}>
