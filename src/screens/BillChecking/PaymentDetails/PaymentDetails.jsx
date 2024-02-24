@@ -1372,18 +1372,41 @@ function PaymentDetails({ location, match }) {
                   columns={columns}
                   // data={data}
                   // data={getPaymentDetailsData}
+                  // data={getPaymentDetailsData.filter(customer => {
+                  //   if (typeof searchTerm === 'string') {
+                  //     if (typeof customer === 'string') {
+                  //       return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                  //     } else if (typeof customer === 'object') {
+                  //       return Object.values(customer).some(value =>
+                  //         typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                  //       );
+                  //     }
+                  //   }
+                  //   return false;
+                  // })}
+
                   data={getPaymentDetailsData.filter(customer => {
                     if (typeof searchTerm === 'string') {
+                      console.log("Searching for:", searchTerm); // Log the searchTerm
+                      console.log("Customer:", customer); // Log the current customer data
                       if (typeof customer === 'string') {
+                        // If customer is a string, directly check if it includes the searchTerm
+                        console.log("Customer is a string:", customer);
                         return customer.toLowerCase().includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(value =>
+                        // If customer is an object, check if any string value within the object includes the searchTerm
+                        console.log("Customer is an object:", customer);
+                        const found = Object.values(customer).some(value =>
                           typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
                         );
+                        console.log("Found:", found);
+                        return found;
                       }
                     }
-                    return false;
+                    return false; // Default case: searchTerm or customer is not a string
                   })}
+                  
+                  
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

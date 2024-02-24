@@ -24,13 +24,14 @@ import CityService from "../../../services/MastersService/CityService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch,useDispatch,useSelector } from "react-redux";
 import { DashbordSlice } from "../../Dashboard/DashbordSlice";
-import { getCountryDataSort, getRoles } from "../../Dashboard/DashboardAction";
+import { getCountryDataSort, getEmployeeData, getRoles } from "../../Dashboard/DashboardAction";
 import { rolemasterSlice } from "../RoleMaster/RoleMasterSlice";
 import { getRoleData } from "../RoleMaster/RoleMasterAction";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
+  const navigate = useNavigate();
 
   
 const dispatch = useDispatch()
@@ -332,13 +333,22 @@ const CountryData = useSelector(
           console.log("res",res)
           if (res.status === 200) {
             if (res.data.status === 1) {
+              setNotify({ type: 'success', message: res.data.message })
               
-              history({
-                pathname: `/${_base}/User`,
-              },   
-                  {state: {type:"success", message: res.data.message}},
-                     );
-            } else {
+              dispatch(getEmployeeData())
+            //   history({
+            //     pathname: `/${_base}/User`,
+            //   },   
+            //       {state: {type:"success", message: res.data.message}},
+            //          );
+            // } 
+
+            setTimeout(() => {
+              navigate(`/${_base}/User`, { state: { alert: { type: "success", message: res.data.message } } });
+          }, 3000);
+
+        }
+            else {
               setNotify({ type: "danger", message: res.data.message });
             }
           } else {
@@ -1828,7 +1838,8 @@ const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
                             <td className="text-center">{idx + 1}</td>
                             <td>
                               
-                              {departmentDropdown && item.department_id &&
+                              {departmentDropdown 
+                              && item.department_id &&
                               <Select
                                 options={departmentDropdown}
                                 id={`department_id_` + idx}
