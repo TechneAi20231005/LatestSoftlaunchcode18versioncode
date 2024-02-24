@@ -92,6 +92,7 @@ export default class VendorMasterService {
     createVendor(payload){
       const token = localStorage.getItem("jwt_token");
       
+      
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,

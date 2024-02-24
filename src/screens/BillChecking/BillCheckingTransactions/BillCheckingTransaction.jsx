@@ -56,7 +56,7 @@ function BillCheckingTransaction() {
   const billTypeDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm)
   const vendorDropdown=useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
   const statusDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.statusDropDownData)
-  const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
+  // const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
 
 
 
@@ -115,7 +115,7 @@ function BillCheckingTransaction() {
   const [assignToDropdown, setAssignToDropdown] = useState();
   // const [statusDropdown, setStatusDropdown] = useState();
  
-  // const [userDropdown, setUserDropdown] = useState();
+  const [userDropdown, setUserDropdown] = useState();
   // const [authorities, SetAuthorities] = useState();
 
 
@@ -859,7 +859,7 @@ function BillCheckingTransaction() {
             "Updated By": temp[key].updated_by,
           });
           // setExportData(null);
-          // setExportData(tempData);
+          setExportData(tempData);
         }
         setData(null);
         setData(data);
@@ -871,24 +871,23 @@ function BillCheckingTransaction() {
 
 
     const inputRequired = "id,employee_id,first_name,last_name,middle_name";
-    dispatch(getUserForMyTicketsData(inputRequired));
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status == 200) {
-    //     setIsLoading(false);
+    // dispatch(getUserForMyTicketsData(inputRequired));
+    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+      if (res.status == 200) {
+        setIsLoading(false);
 
-    //     if (res.data.status == 1) {
-    //       setIsLoading(false);
-
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setUserDropdown(
-    //         temp.map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
+        if (res.data.status == 1) {
+          setIsLoading(false);
+          const temp = res.data.data.filter((d) => d.is_active == 1);
+          setUserDropdown(
+            temp.map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }))
+          );
+        }
+      }
+    });
 
 
     
@@ -1323,7 +1322,7 @@ function BillCheckingTransaction() {
                       />
                     )}
                   </div>
-
+{console.log("user",userDropdown)}
                   <div className="col-sm-2 ">
                     <label>
                       <b>Assigned To:</b>
