@@ -717,20 +717,20 @@ function BillCheckingTransaction() {
     if (response) {
       try {
 
-        dispatch(cancelBillCheckData({id:id}))
-        loadData()
+        // dispatch(cancelBillCheckData({id:id}))
+        // loadData()
         // Assuming 'cancelBill' returns a promise
-        // await new BillCheckingService().cancelBill(id).then((res) => {
-        //   if (res.status === 200) {
-        //     if (res.data.status == 1) {
-        //       setNotify({ type: "success", message: res.data.message });
-        //       // Bill canceled successfully, update data
-        //       loadData();
-        //     } else {
-        //       setNotify({ type: "danger", message: res.data.message });
-        //     }
-        //   }
-        // });
+        await new BillCheckingService().cancelBill(id).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setNotify({ type: "success", message: res.data.message });
+              // Bill canceled successfully, update data
+              loadData();
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
+          }
+        });
       } catch (error) {
         // Handle any potential errors during cancellation
       }
@@ -878,7 +878,9 @@ function BillCheckingTransaction() {
 
         if (res.data.status == 1) {
           setIsLoading(false);
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+          // const temp = res.data.data.filter((d) => d.is_active == 1);
+          const temp = res.data.data
+      
           setUserDropdown(
             temp.map((d) => ({
               value: d.id,
@@ -1036,6 +1038,7 @@ function BillCheckingTransaction() {
           const tempData = [];
           let counter = 1;
           const temp = res.data.data;
+          console.log("temF",temp)
           for (const key in temp) {
             tempData.push({
               "Sr No": counter++,
@@ -1050,7 +1053,7 @@ function BillCheckingTransaction() {
               "Net Amount": temp[key].net_payment,
               // "Bill Status": temp[key].bill_status,
               "Bill Status": temp[key].payment_status,
-
+              "Net Payment":temp[key].net_payment,
               bill_type_name: temp[key].bill_type_name,
               "Assign From": temp[key].created_by,
               "Assign To": temp[key].assign_to_name,
