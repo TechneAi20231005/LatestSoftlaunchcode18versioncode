@@ -32,7 +32,7 @@ import { getAllQueryGroupData, getCustomerMappingsetting, getDepartmentMappingBy
 import { getRoles } from "../Dashboard/DashboardAction";
 export default function CreateTicketComponent() {
   const history = useNavigate();
-  // const [notify, setNotify] = useState(null);
+  const [notify, setNotify] = useState(null);
   const departmentRef = useRef();
   const current = new Date();
 
@@ -41,7 +41,7 @@ export default function CreateTicketComponent() {
   const customerMapping = useSelector(TicketSlices => TicketSlices.ticket.customerMappingData)
   const queryGroupData = useSelector(TicketSlices => TicketSlices.ticket.queryGroupData)
   const queryGroupDropdown = useSelector(TicketSlices => TicketSlices.ticket.queryGroupDropDownData)
-  const notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
+  // const notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
   const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18));
 
@@ -140,14 +140,15 @@ export default function CreateTicketComponent() {
       flag = 1;
     }
 
-    // setNotify(null);
+    setNotify(null);
     if (flag == 1) {
       dispatch(postCreateticket(formData)).then((res) => {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
+          // setNotify({ type: "success", message: res.message });
           navigate(`/${_base}/Ticket`)
           setIsSubmitted(false);
         } else {
-          // setNotify({ type: "danger", message: res.message });
+          setNotify({ type: "danger", message: res.message });
           setIsSubmitted(false);
 
           // new ErrorLogService().sendErrorLog(
@@ -163,7 +164,7 @@ export default function CreateTicketComponent() {
             const { response } = error;
             const { request, ...errorObject } = response;
             setIsSubmitted(false)
-            // setNotify({ type: "danger", message: "Request Error !!!" });
+            setNotify({ type: "danger", message: "Request Error !!!" });
             // new ErrorLogService().sendErrorLog(
             //   "Ticket",
             //   "Create_Ticket",
@@ -242,7 +243,7 @@ export default function CreateTicketComponent() {
   };
 
   const queryTypeRef = useRef();
-  console.log("customer", customerMapping)
+
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
       setRows(null);
@@ -547,7 +548,7 @@ export default function CreateTicketComponent() {
   };
 
   const handleDownloadFormat = async (e) => {
-    // setNotify(null);s
+    setNotify(null);
     if (data.from_department_id && data.query_type_id) {
       const formData = new FormData();
       formData.append("customer_mapping_id", data.customer_mapping_id);
@@ -566,17 +567,17 @@ export default function CreateTicketComponent() {
             window.open(URL, "_blank").focus();
             setIsFileGenerated(res.data.data);
           } else {
-            // setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: "danger", message: res.data.message });
           }
         } else {
-          // setNotify({ type: "danger", message: res.message });
+          setNotify({ type: "danger", message: res.message });
         }
       });
     } else {
-      // setNotify({
-      //   type: "danger",
-      //   message: "Select Department & Query Type !!!",
-      // });
+      setNotify({
+        type: "danger",
+        message: "Select Department & Query Type !!!",
+      });
     }
   };
 

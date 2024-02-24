@@ -42,7 +42,6 @@ export const tenantmasterSlice = createSlice({
     });
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
-
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllTenant = payload.data.data;
         state.status = "succeded";
@@ -52,7 +51,7 @@ export const tenantmasterSlice = createSlice({
           getAllTenant[i].counter = count++;
         }
         state.getAllTenant = [...getAllTenant];
-
+        state.exportAllTenantData = [...getAllTenant]
 
         // let exportAllTenantData = [];
         // for (const i in getAllTenant) {
@@ -105,9 +104,6 @@ export const tenantmasterSlice = createSlice({
       if (payload?.data?.status === 1) {
         // state.notify = { type: "success", message: payload.data.message };
 
-      } else {
-        state.notify = null;
-        state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(updatetenantData.rejected, (state) => {

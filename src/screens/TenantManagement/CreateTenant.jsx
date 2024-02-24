@@ -49,8 +49,6 @@ export default function CreateTenant({ match }) {
   const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
   );
 
-
-
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const isMasterAdmin = localStorage.getItem("role_name");
@@ -237,7 +235,6 @@ export default function CreateTenant({ match }) {
         dispatch(getAllTenant())
         dispatch(handleError({ type: "success", message: res.payload.data.message }))
 
-
       } else {
         dispatch(handleError({ type: "danger", message: res.payload.data.message }))
       }
@@ -247,6 +244,7 @@ export default function CreateTenant({ match }) {
 
 
   useEffect(() => {
+    dispatch(handleError(null))
     if (isMasterAdmin !== "MasterAdmin") {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -263,7 +261,7 @@ export default function CreateTenant({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && (
+      {notify?.type === "danger" && (
         <>
           <Alert alertData={notify} />
         </>

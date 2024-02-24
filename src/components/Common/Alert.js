@@ -9,7 +9,7 @@ function Alert(props) {
   const notify = () => toast(props.alertData.message);
 
   useEffect(() => {
- 
+
 
     if (props.alertData.type === "success") {
       setColor("#42ba96");
@@ -50,7 +50,7 @@ function Alert(props) {
         draggable
         type="success"
         pauseOnHover
-        toastStyle={{ backgroundColor: `${color}`, color: 'white', fontSize: '18px', zIndex:"100", }}
+        toastStyle={{ backgroundColor: `${color}`, color: 'white', fontSize: '18px', zIndex: "100", }}
       />
     </>
   )
