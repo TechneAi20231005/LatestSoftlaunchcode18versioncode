@@ -26,7 +26,7 @@ export default function EditProjectComponent({ match }) {
   const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
 
 
-  console.log("notify",notify);
+
   // const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
@@ -142,8 +142,9 @@ export default function EditProjectComponent({ match }) {
     dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res)=>{
       if(res.payload.data.status==1&&res.payload.status==200){
         navigate(`/${_base}/Project`)
+        loadData()
       }
-      loadData()
+    
 
 
     })
@@ -184,6 +185,16 @@ export default function EditProjectComponent({ match }) {
     //   });
   };
 
+  function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      // File size exceeds 2MB, notify the user and clear the input field
+      alert("File size must be less than 2MB.");
+      event.target.value = null; // Clear the input field
+    }
+  }
+  
+
   const handleShowLogo = (e) => {
     var URL =
       "http://3.108.206.34/2_Testing//storage/app/Attachment/project/" +
@@ -223,10 +234,11 @@ export default function EditProjectComponent({ match }) {
                         id="customer_id"
                         name="customer_id"
                         required={true}
+                        isMulti={true}
                         options={customer}
                         defaultValue={
                           getproject 
-                            ? customer.filter(
+                            ? customer?.filter(
                                 (d) => d.value == getproject.customer_id
                               )
                             : []
@@ -289,6 +301,8 @@ export default function EditProjectComponent({ match }) {
                         className="form-control form-control-sm"
                         id="logo"
                         name="logo"
+                        onChange={handleFileChange}
+
                         accept="image/*"
                       />
                       {getproject && getproject.logo != "" && (

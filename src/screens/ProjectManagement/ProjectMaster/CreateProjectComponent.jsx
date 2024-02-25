@@ -126,6 +126,15 @@ export default function CreateProjectComponent({ match }) {
   //   }
   //
 
+  function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      // File size exceeds 2MB, notify the user and clear the input field
+      alert("File size must be less than 2MB.");
+      event.target.value = null; // Clear the input field
+    }
+  }
+
   const [ba, setBa] = useState(null);
   const [dev, setDev] = useState(null);
   const [tester, setTester] = useState(null);
@@ -311,7 +320,7 @@ export default function CreateProjectComponent({ match }) {
                       name="logo"
                       //  accept="image/*"
                       ref={fileInputRef}
-                      // onChange={handleChange}
+                      onChange={handleFileChange}
                     />
                     <small style={{ color: "#2167d2" }}>
                       Please upload only .png/.jpeg/.jpg image format

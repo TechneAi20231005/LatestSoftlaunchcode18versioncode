@@ -26,24 +26,27 @@ export const ExportAllTicketsToExcel = ({
       type = 'CreatedByMe'
     }
     if (typeOf == 'DepartmentWise') {
-        type = 'DepartmentWise'
-      }
+      type = 'DepartmentWise'
+    }
     if (typeOf == 'YourTask') {
-        type = 'YourTask'
-      }
-      if (typeOf == 'UnPassed') {
-        type = 'UnPassed'
-      }
-  
+      type = 'YourTask'
+    }
+    if (typeOf == 'UnPassed') {
+      type = 'UnPassed'
+    }
+
 
     const form = {
       typeOf: type,
       filter: 'export'
     }
+
     await new MyTicketService().getUserTicketsTest(form).then(res => {
+
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var dataToDownload =res.data.data.data
+          let dataToDownload = res.data.data;
+
           for (const key in dataToDownload) {
             tempExport.push({
               TICKET_ID: dataToDownload[key].ticket_id,
@@ -73,16 +76,20 @@ export const ExportAllTicketsToExcel = ({
               // query_type_name: dataToDownload[key].query_type_name,
               Status_name: dataToDownload[key].status_name,
               sub_module_name: dataToDownload[key].sub_module_name
-            })
+            });
           }
+
         }
       }
-    })
-    const ws = XLSX.utils.json_to_sheet(tempExport)
-    const wb = { Sheets: { data: ws }, SheetNames: ['data'] }
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-    const data = new Blob([excelBuffer], { type: fileType })
-    FileSaver.saveAs(data, fileName + fileExtension)
+    });
+
+    const ws = XLSX.utils.json_to_sheet(tempExport);
+    const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+
+    FileSaver.saveAs(data, fileName + fileExtension);
+
   }
 
   return (

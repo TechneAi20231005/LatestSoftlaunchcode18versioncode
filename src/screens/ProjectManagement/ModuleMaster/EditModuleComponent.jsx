@@ -11,7 +11,7 @@ import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { getmoduleById } from "./ModuleAction";
+import { getmoduleById, moduleMaster } from "./ModuleAction";
 import { updateModuleMaster } from "./ModuleAction";
 import ModuleSlice from "./ModuleSlice";
 
@@ -92,6 +92,7 @@ export default function EditModuleComponent({ match }) {
     dispatch(updateModuleMaster({ id: moduleId, payload: formData })).then(
       (res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          dispatch(moduleMaster());
           navigate(`/${_base}/Module`);
         }
       }
@@ -250,7 +251,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                moduleById && moduleById.is_active == 1
+                                moduleById && moduleById.is_active === 1
                                   ? true
                                   : false
                               }
@@ -272,7 +273,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_0"
                               value="0"
                               defaultChecked={
-                                moduleById && moduleById.is_active == 0
+                                moduleById && moduleById.is_active === 0
                                   ? true
                                   : false
                               }

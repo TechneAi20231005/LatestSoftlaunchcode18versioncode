@@ -145,7 +145,8 @@ export default function CreateTicketComponent() {
       dispatch(postCreateticket(formData)).then((res) => {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
           // setNotify({ type: "success", message: res.message });
-          navigate(`/${_base}/Ticket`)
+          navigate(`/${_base}/Ticket`, { state: { type: "success", message: res.message } })
+
           setIsSubmitted(false);
         } else {
           setNotify({ type: "danger", message: res.message });
@@ -175,10 +176,6 @@ export default function CreateTicketComponent() {
             console.log(error);
           }
         });
-
-
-
-
 
 
       //     await new MyTicketService()

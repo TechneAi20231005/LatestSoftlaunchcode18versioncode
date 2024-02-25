@@ -15,9 +15,11 @@ const initialState = {
   notify: "",
   updateModuleMaster: [],
   postmoduleMaster: [],
-  modulesortedData:[],
-  filteredModuleAccordingToProject:[],
-  sortModuleData:[]
+  modulesortedData: [],
+  filteredModuleAccordingToProject: [],
+  sortModuleData: [],
+
+  exportModuleData: [],
 };
 
 export const moduleSlice = createSlice({
@@ -26,10 +28,18 @@ export const moduleSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-
     },
-    filterModuleAccordingToProject:(state,action)=>{
-       state.filteredModuleAccordingToProject = state.moduleMaster.filter(modules =>modules.project_id === action.payload.value && modules.is_active===1).map(moduleLabel => ({ value: moduleLabel.id, label: moduleLabel.module_name }))
+    filterModuleAccordingToProject: (state, action) => {
+      state.filteredModuleAccordingToProject = state.moduleMaster
+        .filter(
+          (modules) =>
+            modules.project_id === action.payload.value &&
+            modules.is_active === 1
+        )
+        .map((moduleLabel) => ({
+          value: moduleLabel.id,
+          label: moduleLabel.module_name,
+        }));
     },
 
     handleModalOpen: (state, action) => {
@@ -41,9 +51,6 @@ export const moduleSlice = createSlice({
     navigateToModule: (state, action) => {
       state.navigateToModule = action.payload;
     },
-
-
-
   },
   extraReducers: (builder) => {
     builder.addCase(moduleMaster.pending, (state) => {
@@ -56,10 +63,12 @@ export const moduleSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let moduleMaster = payload.data.data;
         // let modulesortedData=payload.data.data;
-        let modulesortedData=payload.data.data.filter((d)=>d.is_active).map((d) => ({ value: d.id, label: d.module_name }))
-        state.modulesortedData= modulesortedData
-      let sortModuleData=payload.data.data.filter((d)=>d.is_active==1)
-state.sortModuleData=sortModuleData
+        let modulesortedData = payload.data.data
+          .filter((d) => d.is_active)
+          .map((d) => ({ value: d.id, label: d.module_name }));
+        state.modulesortedData = modulesortedData;
+        let sortModuleData = payload.data.data.filter((d) => d.is_active == 1);
+        state.sortModuleData = sortModuleData;
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -68,6 +77,24 @@ state.sortModuleData=sortModuleData
           moduleMaster[i].counter = count++;
         }
         state.moduleMaster = [...moduleMaster];
+        let exportModuleData = [];
+
+        let counter =1
+        for (const i in moduleMaster) {
+          exportModuleData.push({
+            SrNo: counter++,
+
+            module_name: moduleMaster[i].module_name,
+            project_name: moduleMaster[i].project_name,
+            Status: moduleMaster[i].is_active ? "Active" : "Deactive",
+            Remark: moduleMaster[i].remark,
+            created_at: moduleMaster[i].created_at,
+            created_by: moduleMaster[i].created_by,
+            updated_at: moduleMaster[i].updated_at,
+            updated_by: moduleMaster[i].updated_by,
+          });
+        }
+        state.exportModuleData = exportModuleData;
       }
     });
     builder.addCase(moduleMaster.rejected, (state) => {
@@ -131,16 +158,16 @@ state.sortModuleData=sortModuleData
     });
     builder.addCase(postmoduleMaster.fulfilled, (state, action) => {
       const { payload } = action;
-    
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
 
         let postmoduleMaster = payload.data.data;
-       
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postmoduleMaster = postmoduleMaster;
-        state.navigationModule=true
+        state.navigationModule = true;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }
@@ -151,6 +178,11 @@ state.sortModuleData=sortModuleData
   },
 });
 
-export const { handleModalOpen, handleModalClose,navigateToModule ,filterModuleAccordingToProject} = moduleSlice.actions;
+export const {
+  handleModalOpen,
+  handleModalClose,
+  navigateToModule,
+  filterModuleAccordingToProject,
+} = moduleSlice.actions;
 
 export default moduleSlice.reducer;

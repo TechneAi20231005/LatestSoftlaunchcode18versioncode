@@ -1235,8 +1235,11 @@ function EditCustomer({ match }) {
                         name="email_id"
                         placeholder="Email Address"
                         required
+                        onKeyPress={(e) => {
+                          Validation.emailOnly(e);
+                        }}
                         defaultValue={data.email_id}
-                        pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
+                        // pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
                       />
                     </div>
                   </div>

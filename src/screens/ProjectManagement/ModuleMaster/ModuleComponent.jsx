@@ -14,12 +14,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { moduleMaster } from "./ModuleAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import ModuleSlice from "./ModuleSlice";
+import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 function ModuleComponent() {
   const location = useLocation();
   const dispatch = useDispatch();
   const moduleData = useSelector(
     (ModuleSlice) => ModuleSlice.moduleMaster.moduleMaster
   );
+
+console.log(moduleData)
+  const exportData = useSelector(
+    (ModuleSlice) => ModuleSlice?.moduleMaster.exportModuleData
+  );
+  console.log(exportData)
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21)
   );
@@ -48,17 +55,31 @@ function ModuleComponent() {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  
+
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
+
+  // const handleKeyDown = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleSearch();
+  //   }
+  // };
+
+
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const columns = [
     {
@@ -118,6 +139,23 @@ function ModuleComponent() {
       selector: (row) => row.remark,
       sortable: true,
     },
+
+    {
+      name: "created at",
+
+      width: "10%",
+      selector: (row) => row.created_at,
+      sortable: true,
+    },
+    {
+      name: "created by",
+
+      width: "10%",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
+
+    
 
     {
       name: "Updated By",
@@ -219,7 +257,7 @@ function ModuleComponent() {
         }}
       />
 
-      <div className="card card-body">
+      {/* <div className="card card-body">
         <div className="row">
           <div className="col-md-10">
             <input
@@ -227,14 +265,19 @@ function ModuleComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+
+              
+              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-2">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              // onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -249,14 +292,73 @@ function ModuleComponent() {
             </button>
           </div>
         </div>
+      </div> */}
+
+      
+<div className="card card-body">
+        <div className="row">
+          <div className="col-md-9">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by Designation Name...."
+              ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onKeyDown={handleKeyDown}
+            />
+          </div>
+          <div className="col-md-3">
+            <button
+              className="btn btn-sm btn-warning text-white"
+              type="button"
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-search-1 "></i> Search
+            </button>
+            <button
+              className="btn btn-sm btn-info text-white"
+              type="button"
+              onClick={() => window.location.reload(false)}
+              style={{ marginTop: "0px", fontWeight: "600" }}
+            >
+              <i className="icofont-refresh text-white"></i> Reset
+            </button>
+            <ExportToExcel
+              className="btn btn-sm btn-danger"
+              apiData={exportData}
+              fileName="Designation master Records"
+            />
+          </div>
+        </div>
       </div>
+
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           {moduleData && (
             <DataTable
               columns={columns}
-              data={moduleData}
+              // data={moduleData}
+              data={moduleData.filter((customer) => {
+                if (typeof searchTerm === "string") {
+                  if (typeof customer === "string") {
+                    return customer
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase());
+                  } else if (typeof customer === "object") {
+                    return Object.values(customer).some(
+                      (value) =>
+                        typeof value === "string" &&
+                        value
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                    );
+                  }
+                }
+                return false;
+              })}
               defaultSortField="title"
               pagination
               selectableRows={false}

@@ -3683,7 +3683,7 @@
 
 
 
-
+// -------------------Bug solved
 
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -3715,7 +3715,7 @@ import { useSelector, useDispatch } from "react-redux";
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 
 export default function MyTicketComponent() {
-  const location = useLocation();
+  // const location = useLocation();
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
@@ -3780,7 +3780,9 @@ export default function MyTicketComponent() {
     modalsHeader: "",
   });
 
+  const location = useLocation();
 
+  const { state } = location;
   const Notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
 
@@ -5450,14 +5452,15 @@ export default function MyTicketComponent() {
       });
 
     await new MyTicketService().getUserTicketsTest().then((res) => {
-      console.log("res2", res)
       if (res.status === 200) {
         if (res.data.status == 1) {
+          console.log("assigned to me data", res.data.data)
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
           const dataAssignToMe = res.data.data.data;
+
           var counter = 1;
           var tempAssignToMeExport = [];
           for (const key in dataAssignToMe) {
@@ -5535,6 +5538,20 @@ export default function MyTicketComponent() {
           loadData();
           setSelectedRows([]);
           setSelectedRowss([]);
+          const forms = {
+            limit: 10,
+            typeOf: "UnPassed",
+            page: 1,
+          };
+
+          await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+            if (res.status === 200) {
+              if (res.data.status == 1) {
+                setUnpassedData(res.data.data);
+                setUnpassedTickets(res.data.data.data);
+              }
+            }
+          });
 
           setNotify({ type: "success", message });
         } else {
@@ -5637,7 +5654,9 @@ export default function MyTicketComponent() {
       // You can add additional error handling logic here, such as displaying an error message to the user.
     }
   };
+  const passTicketHandler = () => {
 
+  }
   const handleChangeStatus = (e) => {
     setStatusValue(e);
   };
@@ -5819,6 +5838,7 @@ export default function MyTicketComponent() {
         limit: 10,
         typeOf: "Assigned_To_Me",
         page: 1,
+        filter: ""
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
@@ -6150,7 +6170,7 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {/* <LoadingSpinner/> */}
-      {Notify && <Alert alertData={Notify} />}
+      {state && <Alert alertData={state} />}
       {/* {userData && JSON.stringify(userData)} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
@@ -6512,7 +6532,7 @@ export default function MyTicketComponent() {
                             typeOf="AssignToMe"
                           />
                         )}
-                        {console.log("ass", assignedToMe)}
+
 
                         {assignedToMe && (
                           <DataTable
@@ -6574,6 +6594,7 @@ export default function MyTicketComponent() {
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
                           typeOf="CreatedByMe"
+
                         />
                       )}
                       {createdByMe && (
@@ -6840,6 +6861,7 @@ export default function MyTicketComponent() {
                                 <button
                                   className="btn btn-success btn-block text-white"
                                   onClick={(e) => {
+                                    passTicketHandler()
                                     const selectedData = unpassedTickets.filter(
                                       (row) => selectedRowss.includes(row.id)
                                     );
