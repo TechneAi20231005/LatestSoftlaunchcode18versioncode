@@ -13,9 +13,17 @@ import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { UseDispatch,useDispatch,useSelector } from "react-redux"
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
 import { DashbordSlice, hideNotification } from "../../Dashboard/DashbordSlice";
-import { getCityData, getCountryDataSort, getCustomerData, getCustomerType, getRoles, getStateData, postCustomerData } from "../../Dashboard/DashboardAction";
+import {
+  getCityData,
+  getCountryDataSort,
+  getCustomerData,
+  getCustomerType,
+  getRoles,
+  getStateData,
+  postCustomerData,
+} from "../../Dashboard/DashboardAction";
 export default function CreateCustomer({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -53,29 +61,54 @@ export default function CreateCustomer({ match }) {
 
   const navigate = useNavigate();
 
-const dispatch = useDispatch()
-const customerType = useSelector(DashbordSlice=>DashbordSlice.dashboard.customerTypeData)
-const countryDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.filteredCountryData)
-const stateDropdown = useSelector(DashbordSlice=>DashbordSlice.dashboard.stateData)
+  const dispatch = useDispatch();
+  const customerType = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.customerTypeData
+  );
+  const countryDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
+  );
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.stateData
+  );
 
-const AllcityDropDownData = useSelector(
-  (DashbordSlice) => DashbordSlice.dashboard.cityData
-);
+  const AllcityDropDownData = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.cityData
+  );
 
-console.log("s",AllcityDropDownData)
+  console.log("s", AllcityDropDownData);
 
-const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+  );
 
-const Notify = useSelector(
-  (dashbordSlice) => dashbordSlice.dashboard.notify
-);
-// console.log("type",countryDropdown)
+  const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
+  // console.log("type",countryDropdown)
 
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [email, setEmail] = useState("");
 
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
 
+    // Perform email validation only if the field is not empty
+    if (newEmail.trim() === "") {
+      setIsValidEmail(true); // Reset validation if the field is empty
+    } else {
+      // Perform email validation
+      const isValid = validateEmail(newEmail);
+      setIsValidEmail(isValid);
+    }
+  };
 
-const [stateDropdownData, setStateDropdownData] = useState(false);
-const [cityDropdownData, setCityDropdownData] = useState(false);
+  const validateEmail = (email) => {
+    // Use a regular expression for email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
 
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
@@ -162,27 +195,28 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
         // })
 
         dispatch(postCustomerData(formData)).then((res) => {
-          console.log(res)
+          console.log(res);
           if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-            setNotify({ type: 'success', message: res?.payload?.data?.message })
-            dispatch(getCustomerData())
+            setNotify({
+              type: "success",
+              message: res?.payload?.data?.message,
+            });
+            dispatch(getCustomerData());
             setTimeout(() => {
               navigate(`/${_base}/Customer`, {
-                state: { alert: { type: "success", message: res?.payload?.data?.message } },
+                state: {
+                  alert: {
+                    type: "success",
+                    message: res?.payload?.data?.message,
+                  },
+                },
               });
             }, 3000);
-          }else {
-            setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
-        }
-          
+          } else {
+            setNotify({ type: "danger", message: res?.payload?.data?.message });
+          }
         });
 
-
-
-
-
-
-      
         // await new CustomerService().postCustomer(formData)
         //   .then((res) => {
         //     if (res.status === 200) {
@@ -194,7 +228,7 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
         //      { state: {
         //         type: "success", message: res.data.message ,
         //      }
-        //     } 
+        //     }
         //         );
         //       } else {
         //         setNotify({ type: "danger", message: res.data.message });
@@ -227,18 +261,18 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
         //       setNotify({ type: "danger", message: "Non-HTTP error occurred" });
         //     }
         //   });
-          
-          // .catch((error) => {
-          //   const { response } = error;
-          //   const { request, ...errorObject } = response;
-          //   setNotify({ type: "danger", message: "Request Error !!!" });
-          //   new ErrorLogService().sendErrorLog(
-          //     "Customer",
-          //     "Create_Customer",
-          //     "INSERT",
-          //     errorObject.data.message
-          //   );
-          // });
+
+        // .catch((error) => {
+        //   const { response } = error;
+        //   const { request, ...errorObject } = response;
+        //   setNotify({ type: "danger", message: "Request Error !!!" });
+        //   new ErrorLogService().sendErrorLog(
+        //     "Customer",
+        //     "Create_Customer",
+        //     "INSERT",
+        //     errorObject.data.message
+        //   );
+        // });
       }
     }
   };
@@ -255,7 +289,6 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     //     );
     //   }
     // });
-
     //  **************************Country load data**************************************
     // await new CountryService().getCountrySort().then((res) => {
     //   if (res.status === 200) {
@@ -295,8 +328,6 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     //     }
     //   }
     // });
-
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     // setShowLoaderModal(false);
@@ -308,14 +339,17 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     // })
   };
 
-  
   const handleCountryChange = (e) => {
     // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })))
     // const newStatus = { ...updateStatus, statedrp: 1 }
     // setUpdateStatus(newStatus)
-    setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d)=>({ value: d.id, label: d.state })))
+    setStateDropdownData(
+      stateDropdown
+        .filter((filterState) => filterState.country_id === e.value)
+        .map((d) => ({ value: d.id, label: d.state }))
+    );
     // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
-    
+
     // setStateDropdown(
     //   state
     //     .filter((d) => d.country_id == e.value)
@@ -331,7 +365,11 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })))
     // const newStatus = { ...updateStatus, citydrp: 1 }
     // setUpdateStatus(newStatus)
-    setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
+    setCityDropdownData(
+      AllcityDropDownData.filter(
+        (filterState) => filterState.state_id === e.value
+      ).map((d) => ({ value: d.id, label: d.city }))
+    );
 
     // setCityDropdown(
     //   city
@@ -357,34 +395,25 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
     }
   };
 
-
-  useEffect(()=>{
-    dispatch(getCityData())
+  useEffect(() => {
+    dispatch(getCityData());
     dispatch(getStateData());
-    dispatch(getCountryDataSort())
-    dispatch(getCityData())
-    if(!customerType.length){
-    dispatch(getCustomerType())}
-    if(!stateDropdown.length){
-  
-
+    dispatch(getCountryDataSort());
+    dispatch(getCityData());
+    if (!customerType.length) {
+      dispatch(getCustomerType());
     }
-    if( !countryDropdown.length){
-    
-
+    if (!stateDropdown.length) {
     }
-    if(!checkRole.length){
-      dispatch(getRoles())
-
+    if (!countryDropdown.length) {
     }
-   
-
-    if(!cityDropdownData.length){
-     
+    if (!checkRole.length) {
+      dispatch(getRoles());
     }
 
-
-  },[])
+    if (!cityDropdownData.length) {
+    }
+  }, []);
 
   // useEffect(() => {
   //   if (Notify) {
@@ -396,9 +425,8 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
   // }, [Notify, dispatch]);
 
   useEffect(() => {
-    if(checkRole && checkRole[0]?.can_create === 0){
-
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+    if (checkRole && checkRole[0]?.can_create === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -463,7 +491,28 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
                       Email Address :<Astrick color="red" size="13px" />
                     </b>
                   </label>
+
                   <div className="col-sm-4">
+                    <input
+                      type="email"
+                      className={`form-control form-control-sm ${
+                        isValidEmail ? "" : "is-invalid"
+                      }`}
+                      id="email_id"
+                      name="email_id"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={handleEmailChange}
+                      required
+                    />
+                    {!isValidEmail && (
+                      <div className="invalid-feedback">
+                        Please enter a valid email address.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* <div className="col-sm-4">
                     <input
                       type="email"
                       className="form-control form-control-sm"
@@ -473,12 +522,11 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
                       onKeyPress={(e) => {
                         Validation.emailOnly(e);
                       }}
-                      // onChange={handleEmail}
+                   
                       required
-                      // pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
-                      // pattern="/^[a-zA-Z0-9._%+-]+$/"
+                   
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="form-group row mt-3">
@@ -608,7 +656,9 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
                   <div className="col-sm-4">
                     <Select
                       options={
-                        updateStatus.statedrp !== undefined ? stateDropdownData : []
+                        updateStatus.statedrp !== undefined
+                          ? stateDropdownData
+                          : []
                       }
                       id="state_id"
                       name="state_id"
@@ -631,7 +681,9 @@ const [cityDropdownData, setCityDropdownData] = useState(false);
                   <div className="col-sm-4">
                     <Select
                       options={
-                        updateStatus.citydrp !== undefined ? cityDropdownData : []
+                        updateStatus.citydrp !== undefined
+                          ? cityDropdownData
+                          : []
                       }
                       id="city_id"
                       name="city_id"

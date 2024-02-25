@@ -368,7 +368,7 @@ export default function TaskComponent(props) {
                     className="btn btn-danger"
                     onClick={handleCancle}
                   >
-                    Cancle
+                    Cancel
                   </button>
                 </div>
               </div>

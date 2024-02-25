@@ -325,9 +325,10 @@ function DepartmentComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(departmentData());
 
     if (!department.length) {
-      dispatch(departmentData());
+     
       dispatch(getRoles());
     }
   }, []);

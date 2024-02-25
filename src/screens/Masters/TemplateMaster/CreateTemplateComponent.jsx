@@ -1065,7 +1065,7 @@ const CreateTemplateComponent = () => {
                               />
                               <label>
                                 <b>
-                                  Hours Requiredss :
+                                  Hours Required :
                                   <Astrick color="red" size="13px" />
                                 </b>
                               </label>

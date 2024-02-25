@@ -56,8 +56,12 @@ const EditTemplateComponent = ({ match, props }) => {
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.addBasketModal
   );
-  const addTaskModal = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal);
-  const basketId = useSelector( (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId );
+  const addTaskModal = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal
+  );
+  const basketId = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId
+  );
 
   const [notify, setNotify] = useState(null);
 
@@ -408,6 +412,7 @@ const EditTemplateComponent = ({ match, props }) => {
     if (flag == 1) {
       dispatch(basketinEditData({ id: templateId, payload: formData }));
       loadData();
+      
 
       // await new TemplateService()
       //   .addBasketinEdit(templateId, formData)
@@ -432,22 +437,28 @@ const EditTemplateComponent = ({ match, props }) => {
     for (const entry of form.entries(form)) {
     }
 
-    dispatch(updateTemplateData({ id: templateId, payload: form })).then((res) => {
-      console.log(res)
-      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-        setNotify({ type: 'success', message: res?.payload?.data?.message })
-        dispatch(templateData());
-       
-        setTimeout(() => {
-          navigate(`/${_base}/Template`, {
-            state: { alert: { type: "success", message: res?.payload?.data?.message } },
-          });
-        }, 3000);
-      }else {
-        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
-    }
-      
-    });
+    dispatch(updateTemplateData({ id: templateId, payload: form })).then(
+      (res) => {
+        console.log(res);
+        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          setNotify({ type: "success", message: res?.payload?.data?.message });
+          dispatch(templateData());
+
+          setTimeout(() => {
+            navigate(`/${_base}/Template`, {
+              state: {
+                alert: {
+                  type: "success",
+                  message: res?.payload?.data?.message,
+                },
+              },
+            });
+          }, 3000);
+        } else {
+          setNotify({ type: "danger", message: res?.payload?.data?.message });
+        }
+      }
+    );
 
     // await new TemplateService().updateTemplate(templateId, form).then((res) => {
     //   if (res.status == 200) {
@@ -464,10 +475,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const handleAddTask = async (e) => {
     e.preventDefault();
-
-    
-
-    
 
     const formData = new FormData(e.target);
     console.log("e", formData);
@@ -549,8 +556,8 @@ const EditTemplateComponent = ({ match, props }) => {
               </div>
 
               {/* {modal.modalData && ( */}
-               
-                {/* )} */}
+
+              {/* )} */}
               <label
                 className="col-sm-2 col-form-label"
                 style={{ textAlign: "right" }}
@@ -583,59 +590,53 @@ const EditTemplateComponent = ({ match, props }) => {
             </div>
             <br></br>
             <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
+              <label className="form-label font-weight-bold">
+                Status :<Astrick color="red" size="13px" />
+              </label>
+              <div className="row">
+                <div className="col-md-2">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="is_active"
+                      id="is_active_1"
+                      value="1"
+                      defaultChecked={
+                        modal.modalData && modal.modalData.is_active === 1
+                          ? true
+                          : !modal.modalData
+                          ? true
+                          : false
+                      }
+                    />
+                    <label className="form-check-label" htmlFor="is_active_1">
+                      Active
                     </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
-                    </div>
                   </div>
+                </div>
+                <div className="col-md-1">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="is_active"
+                      id="is_active_0"
+                      value="0"
+                      readOnly={modal.modalData ? false : true}
+                      defaultChecked={
+                        modal.modalData && modal.modalData.is_active === 0
+                          ? true
+                          : false
+                      }
+                    />
+                    <label className="form-check-label" htmlFor="is_active_0">
+                      Deactive
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="pull-right mt-4">
               <button type="submit" className="btn btn-sm btn-primary">
                 Submit
@@ -814,6 +815,8 @@ const EditTemplateComponent = ({ match, props }) => {
                     defaultValue={"00:00"}
                   />
                 </div>
+
+                
                 <div className="col-sm-12">
                   <label className="col-form-label">
                     <b>
@@ -828,6 +831,8 @@ const EditTemplateComponent = ({ match, props }) => {
                     className="form-control form-control-sm"
                   />
                 </div>
+
+
               </div>
               <Modal.Footer>
                 <div>
