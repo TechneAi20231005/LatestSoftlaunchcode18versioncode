@@ -294,13 +294,23 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleTdsPercentage = (e) => {
+
     if (e.value) {
       const selectedContition = constitution.filter((d) => d.id === e.value);
       setTdsPercentage(selectedContition[0].percentage);
     }
   };
 
+console.log("dd",constitution)
+  // const handleTdsAmount = (e) => {
+  //   if (e.value) {
+  //     const selectedContition = constitution.filter((d) => d.id === e.value);
+  //     setTdsPercentage(selectedContition[0].percentage);
+  //   }
+  // };
+
   const handleSectionDropDownChange = async (e) => {
+
     await new BillTransactionService()
       .getSectionMappingDropdown(e.value)
       .then((res) => {
@@ -308,6 +318,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (res.data.status == 1) {
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
+            console.log("res==>",res.data.data)
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
@@ -322,6 +333,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const handleTDSSectionChange = (e) => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
+    setTdsAmount(null)
   };
 
   const handleSectionDropDownChange1 = async (section) => {
@@ -700,6 +712,11 @@ export default function CreateBillCheckingTransaction({ match }) {
       setIgst((e.target.checked = false));
     }
   };
+
+
+  
+
+
 
   const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
@@ -2011,6 +2028,8 @@ value={igst=== true ?1 :0} */}
                           </span>
                         )} */}
 
+                        {console.log("cc",constitutionDropdown)}
+
                         {/* {(!tdsData || tdsData.length == 0) && ( */}
                         <span>
                           {constitutionDropdown && data && (
@@ -2079,12 +2098,17 @@ value={igst=== true ?1 :0} */}
                           id="tds_amount"
                           key={Math.random()}
                           name="tds_amount"
-                          defaultValue={data.tds_amount ? data.tds_amount : 0}
+                          
+                          // defaultValue={data.tds_amount ? data.tds_amount : 0}
                           // defaultValue={data.tds_amount}
                           value={tdsAmount}
                           readOnly={true}
+                          
                         />
                       </div>
+
+
+                      {console.log("tds",tdsAmount)}
 
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">

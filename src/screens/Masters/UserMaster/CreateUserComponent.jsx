@@ -1656,8 +1656,10 @@ function CreateUserComponent({ match }) {
     (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
   );
   const AllcityDropDownData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.cityData
+    (dashboardSlice) => dashboardSlice.dashboard.FilterCity
   );
+
+  console.log("a",AllcityDropDownData)
   const designationDropdown = useSelector(
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
@@ -1868,8 +1870,8 @@ function CreateUserComponent({ match }) {
 
   const [passwordError, setPasswordError] = useState(null);
   const [passwordValid, setPasswordValid] = useState(false);
-  const [stateDropdownData, setStateDropdownData] = useState(false);
-  const [cityDropdownData, setCityDropdownData] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
+  const [cityDropdownData, setCityDropdownData] = useState([]);
 
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
@@ -2071,7 +2073,7 @@ function CreateUserComponent({ match }) {
           if (res.payload.data.status === 1 && res.payload.status === 200) {
 
             dispatch(getEmployeeData());
-            setNotify({ type: 'success', message: res.data.message })
+            setNotify({ type: 'success', message: res.payload.data.message })
             setTimeout(() => {
               navigate(`/${_base}/User`)
             }, 3000);
@@ -2236,9 +2238,8 @@ function CreateUserComponent({ match }) {
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
       setStateDropdownData(
-        stateDropdown
-          .filter((filterState) => filterState.country_id === e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
+        stateDropdown && stateDropdown?.filter((filterState) => filterState.country_id === e.value)
+          ?.map((d) => ({ value: d.id, label: d.state }))
       );
       // console.log("state", stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
       // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
@@ -2252,10 +2253,9 @@ function CreateUserComponent({ match }) {
     }
     if (type == "STATE") {
       // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdownData(
+      setCityDropdownData( AllcityDropDownData&&
         AllcityDropDownData?.filter(
-          (filterState) => filterState.state_id === e.value
-        ).map((d) => ({ value: d.id, label: d.city }))
+          (filterState) => filterState.state_id === e.value)?.map((d) => ({ value: d.id, label: d.city }))
       );
 
       // setCityDropdown(
@@ -2291,24 +2291,50 @@ function CreateUserComponent({ match }) {
 
 
 
+  // const handleUserSelect = (selectedOptions, index) => {
+  //   // const selectedUserIds = selectedOptions.filter((option) => option.value);
+
+    
+  //   const selectedUserIds = selectedOptions.value;
+
+
+  //   const updatedAssign = [...rows];
+
+  //   updatedAssign[index] = {
+  //     ...updatedAssign[index],
+  //     department_id: selectedUserIds,
+  //   };
+
+  //   setRows(updatedAssign);
+  //   // const updatedUserErrors = [...userErrors];
+  //   // updatedUserErrors[index] = "";
+  //   // setUserErrors(updatedUserErrors);
+  // };
+
+
+
   const handleUserSelect = (selectedOptions, index) => {
-    // const selectedUserIds = selectedOptions.filter((option) => option.value);
-    const selectedUserIds = selectedOptions.value;
-
-
+    const selectedDepartmentId = selectedOptions.value;
+  
+    // Check if the selected department is already present in the rows
+    const isDepartmentAlreadySelected = rows.some(row => row.department_id === selectedDepartmentId);
+  
+    if (isDepartmentAlreadySelected) {
+      // If the department is already selected, show an error message
+      // You can handle the error message display as per your UI design
+      alert("This Department is already selected. Please select another Department.");
+      return;
+    }
+  
+    // Update the state with the selected department if it's not already selected
     const updatedAssign = [...rows];
-
     updatedAssign[index] = {
       ...updatedAssign[index],
-      department_id: selectedUserIds,
+      department_id: selectedDepartmentId,
     };
-
     setRows(updatedAssign);
-
-    // const updatedUserErrors = [...userErrors];
-    // updatedUserErrors[index] = "";
-    // setUserErrors(updatedUserErrors);
   };
+  
 
 
 
@@ -3262,7 +3288,7 @@ function CreateUserComponent({ match }) {
                           //     ? cityData
                           //     : []
                           // }
-                          options={cityDropdownData}
+                          options={cityDropdownData&& cityDropdownData}
                           name="city_id"
                           id="city_id"
                           onChange={(e) => setCityName(e)}

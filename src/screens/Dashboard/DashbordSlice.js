@@ -205,6 +205,7 @@ const initialState = {
   isLoading: false,
   cityUserDetail: {},
   cityData: [],
+  FilterCity:[],
   countryData: [],
   sortedCityData: [],
   stateData: [],
@@ -274,7 +275,9 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let cityData = payload.data.data
-
+        let FilterCity= payload.data.data
+        .filter((d) => d.is_active === 1)
+state.FilterCity=FilterCity
         state.status = "succeded";
         state.showLoaderModal = false;
         let sortedCityData = payload.data.data

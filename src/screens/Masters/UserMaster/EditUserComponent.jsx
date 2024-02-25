@@ -642,6 +642,17 @@ function EditUserComponent({ match }) {
   };
  
   const handleUserSelect = (selectedOptions, index) => {
+    const selectedDepartmentId = selectedOptions.value;
+  
+    // Check if the selected department is already present in the rows
+    const isDepartmentAlreadySelected = rows.some(row => row.department_id === selectedDepartmentId);
+  
+    if (isDepartmentAlreadySelected) {
+      // If the department is already selected, show an error message
+      // You can handle the error message display as per your UI design
+      alert("This Department is already selected. Please select another Department.");
+      return;
+    }
     // const selectedUserIds = selectedOptions.filter((option) => option.value);
     const selectedUserIds = selectedOptions.value;
 

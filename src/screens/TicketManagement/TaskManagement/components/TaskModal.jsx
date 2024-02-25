@@ -1182,7 +1182,6 @@ export default function TaskModal(props) {
   const taskDetails = useSelector(TaskComponentSlice=>TaskComponentSlice)
   const Notify = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.notify)
 
-console.log("nn",Notify)
 
 
 //   const handleForm = async (e) => {
