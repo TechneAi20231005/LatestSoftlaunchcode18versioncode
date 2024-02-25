@@ -89,6 +89,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [netPayment, setNetPayment] = useState(null);
 
   const [tdsAmount, setTdsAmount] = useState(null);
+  const [tdsAmounts, setTdsAmounts] = useState(null);
+
 
   const [tdsData, setTdsData] = useState(null);
 
@@ -330,10 +332,16 @@ console.log("dd",constitution)
       });
   };
 
+  const inputRef = useRef(null);
+
   const handleTDSSectionChange = (e) => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
-    setTdsAmount(null)
+    if (inputRef.current) {
+      inputRef.current.value = ''; 
+    setTdsAmount(0)
+    // Clear the input value
+    }
   };
 
   const handleSectionDropDownChange1 = async (section) => {
@@ -2098,6 +2106,7 @@ value={igst=== true ?1 :0} */}
                           id="tds_amount"
                           key={Math.random()}
                           name="tds_amount"
+                         ref={ inputRef}
                           
                           // defaultValue={data.tds_amount ? data.tds_amount : 0}
                           // defaultValue={data.tds_amount}

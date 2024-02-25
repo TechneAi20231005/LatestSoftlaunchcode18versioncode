@@ -1578,6 +1578,12 @@ function PaymentDetails({ location, match }) {
 
 
                   <div className="col-sm-4">
+
+                  <input
+                          type="hidden"
+                          name="payment_status"
+                          value={modal && modal.modalData.payment_status}
+                        />
                     <label className="form-label font-weight-bold">
                       Status : <Astrick color="red" size="13px" />
                     </label>
