@@ -1151,7 +1151,7 @@ import * as Validation from "../../../../components/Utilities/Validation";
 import UserService from "../../../../services/MastersService/UserService";
 import TaskTicketTypeService from "../../../../services/MastersService/TaskTicketTypeService";
 import TestCasesService from "../../../../services/TicketService/TestCaseService";
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { taskModal, updatetaskModal } from "../TaskComponentAction";
 import TaskComponentSlice from "../TaskComponentSlice";
 
@@ -1179,35 +1179,35 @@ export default function TaskModal(props) {
 
 
   const dispatch = useDispatch()
-  const taskDetails = useSelector(TaskComponentSlice=>TaskComponentSlice)
-  const Notify = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.notify)
+  const taskDetails = useSelector(TaskComponentSlice => TaskComponentSlice)
+  const Notify = useSelector(TaskComponentSlice => TaskComponentSlice.taskComponent.notify)
 
-console.log("nn",Notify)
+  console.log("nn", Notify)
 
 
-//   const handleForm = async (e) => {
-//     const formData = new FormData(e.target);
-//   //   setNotify(null);
-//   //   //Appeding File in selected State
-//     formData.delete("attachment[]");
-//     formData.delete("show_to_customer[]");
-//     formData.delete("show_to_project_owner[]");
-//     if (selectedFile) {
-//       for (var i = 0; i < selectedFile.length; i++) {
-//         formData.append("attachment[]", selectedFile[i].file);
+  //   const handleForm = async (e) => {
+  //     const formData = new FormData(e.target);
+  //   //   setNotify(null);
+  //   //   //Appeding File in selected State
+  //     formData.delete("attachment[]");
+  //     formData.delete("show_to_customer[]");
+  //     formData.delete("show_to_project_owner[]");
+  //     if (selectedFile) {
+  //       for (var i = 0; i < selectedFile.length; i++) {
+  //         formData.append("attachment[]", selectedFile[i].file);
 
-//         formData.append("show_to_customer[]", selectedFile[i].show_to_customer);
-//         formData.append(
-//           "show_to_project_owner[]",
-//           selectedFile[i].show_to_project_owner
-//         );
-//       }
-//     }
-//     console.log("forma",formData)
-   
-// }
+  //         formData.append("show_to_customer[]", selectedFile[i].show_to_customer);
+  //         formData.append(
+  //           "show_to_project_owner[]",
+  //           selectedFile[i].show_to_project_owner
+  //         );
+  //       }
+  //     }
+  //     console.log("forma",formData)
 
-console.log("task",taskDetails)
+  // }
+
+  console.log("task", taskDetails)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -1239,11 +1239,11 @@ console.log("task",taskDetails)
       props.close();
       props.loadBasket();
       clearInterval(timer);
-   }, 2000);
+    }, 2000);
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
-  
+
   const loadData = async () => {
     setSelectedFile([]);
     const tempUserData = [];
@@ -1259,11 +1259,11 @@ console.log("task",taskDetails)
     //     }
     //   }
     // });
-    
+
     setFilteredOptions(
       props.taskDropdown.filter((d) => d.value != props.data.id)
-      );
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    );
+    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active ";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         const data1 = res.data.data;
@@ -1308,7 +1308,7 @@ console.log("task",taskDetails)
     loadAttachment();
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
-//   if (res.status === 200) {
+    //   if (res.status === 200) {
     //     if (res.data.status == 1) {
     //       const temp = res.data.data;
     //       setTasktypeDropdown(
@@ -1483,13 +1483,13 @@ console.log("task",taskDetails)
 
     var flag = 1;
     // if (typeRef && typeRef.current.commonProps.hasValue == false) {
-      //   alert("Plaese select task type");
-      //   e.preventDefault();
-      //   flag = 0;
+    //   alert("Plaese select task type");
+    //   e.preventDefault();
+    //   flag = 0;
     // } else {
-      //   flag = 1;
+    //   flag = 1;
     // }
-    
+
     if (todateformat > fromdateformat) {
       alert("Please select End Date Greater than Start date");
       flag = 0;
@@ -1520,46 +1520,46 @@ console.log("task",taskDetails)
         alert("Please select End Date Greater than Start date");
       } else {
         if (formData.get("id")) {
-          console.log("t",typeRef)
+          console.log("t", typeRef)
           // const taskTypeId = typeRef.current.props.value.map((d) => {
           //    return d.value;
           // });
           // console.log("ts",taskTypeId)
           // formData.append("task_type_id", taskTypeId);
-          dispatch(updatetaskModal({id:formData.get("id"),payload:formData}))
+          dispatch(updatetaskModal({ id: formData.get("id"), payload: formData }))
           handleClose()
-    //       await updateTask(formData.get("id"), formData)
-    //         .then((res) => {
-    //           if (res.status === 200) {
-    //             if (res.data.status === 1) {
-    //               // props.loadBasket();
-    //               setNotify({ type: "success", message: res.data.message });
-    // // setLoading(false);
+          //       await updateTask(formData.get("id"), formData)
+          //         .then((res) => {
+          //           if (res.status === 200) {
+          //             if (res.data.status === 1) {
+          //               // props.loadBasket();
+          //               setNotify({ type: "success", message: res.data.message });
+          // // setLoading(false);
 
-    //               handleClose();
-    //             } else {
-    //               setNotify({ type: "danger", message: res.data.message });
-    //             }
-    //           } else {
-    //             setNotify({ type: "danger", message: res.message });
-    //             new ErrorLogService().sendErrorLog(
-    //               "Ticket",
-    //               "Edit_Task",
-    //               "INSERT",
-    //               res.message
-    //             );
-    //           }
-    //         })
-    //         .catch((error) => {
-    //           const { response } = error;
-    //           const { request, ...errorObject } = response;
-    //           new ErrorLogService().sendErrorLog(
-    //             "Task",
-    //             "Edit_Task",
-    //             "INSERT",
-    //             errorObject.data.message
-    //           );
-    //         });
+          //               handleClose();
+          //             } else {
+          //               setNotify({ type: "danger", message: res.data.message });
+          //             }
+          //           } else {
+          //             setNotify({ type: "danger", message: res.message });
+          //             new ErrorLogService().sendErrorLog(
+          //               "Ticket",
+          //               "Edit_Task",
+          //               "INSERT",
+          //               res.message
+          //             );
+          //           }
+          //         })
+          //         .catch((error) => {
+          //           const { response } = error;
+          //           const { request, ...errorObject } = response;
+          //           new ErrorLogService().sendErrorLog(
+          //             "Task",
+          //             "Edit_Task",
+          //             "INSERT",
+          //             errorObject.data.message
+          //           );
+          //         });
         } else {
           dispatch(taskModal(formData))
           handleClose();
@@ -1584,16 +1584,16 @@ console.log("task",taskDetails)
           //       );
           //     }
           //   });
-            // .catch((error) => {
-            //   const { response } = error;
-            //   const { request, ...errorObject } = response;
-            //   new ErrorLogService().sendErrorLog(
-            //     "Task",
-            //     "Create_Task",
-            //     "INSERT",
-            //     errorObject.data.message
-            //   );
-            // });
+          // .catch((error) => {
+          //   const { response } = error;
+          //   const { request, ...errorObject } = response;
+          //   new ErrorLogService().sendErrorLog(
+          //     "Task",
+          //     "Create_Task",
+          //     "INSERT",
+          //     errorObject.data.message
+          //   );
+          // });
         }
       }
     }
@@ -1652,11 +1652,11 @@ console.log("task",taskDetails)
           Basket.{props.data.ticket_basket_id}<br/>
           Task.{props.data.id}<br/>
         */}
-         {Notify && <Alert alertData={Notify} />}
-         
+        {Notify && <Alert alertData={Notify} />}
+
         <form onSubmit={handleForm} method="post" encType="multipart/form-data">
           <Modal.Body>
-                       {props.data.id && (
+            {props.data.id && (
               <input
                 type="hidden"
                 className="form-control form-control-sm"
@@ -1782,7 +1782,7 @@ console.log("task",taskDetails)
               </div>
             </div>
 
-<div className="col-md-12">
+            <div className="col-md-12">
               <label className="form-label">
                 <b>Parent Task Type : </b>
               </label>
@@ -1804,28 +1804,28 @@ console.log("task",taskDetails)
               )}
             </div>
             {tasktypeDropdown && (
-            <div className="col-md-12">
-              <label className="form-label">
-                <b>Task Type Name *: </b>
-              </label>
-              {tasktypeDropdown && (
-                <Select
-                  name="task_type_id"
-                  id="task_type_id"
-                  ref={typeRef}
-                  options={tasktypeDropdown}
-                  isDisabled={props.data.task_type_id}
-                  defaultValue={
+              <div className="col-md-12">
+                <label className="form-label">
+                  <b>Task Type Name *: </b>
+                </label>
+                {tasktypeDropdown && (
+                  <Select
+                    name="task_type_id"
+                    id="task_type_id"
+                    ref={typeRef}
+                    options={tasktypeDropdown}
+                    isDisabled={props.data.task_type_id}
+                    defaultValue={
                       props.data &&
                       tasktypeDropdown &&
                       tasktypeDropdown.filter(
                         (d) => d.value == props.data.task_type_id
                       )
                     }
-                />
-              )}
-            </div>
-)}
+                  />
+                )}
+              </div>
+            )}
 
             {/* *****************START DATE, END DATE , TASK HOURS**************** */}
             <div className="row mt-3">
@@ -1847,7 +1847,7 @@ console.log("task",taskDetails)
 
                     required
 
-                    // min={new Date().toISOString().slice(0, 10)}
+                  // min={new Date().toISOString().slice(0, 10)}
                   />
                 ) : (
                   <input
@@ -1863,7 +1863,7 @@ console.log("task",taskDetails)
 
                     required
 
-                    // min={new Date().toISOString().slice(0, 10)}
+                  // min={new Date().toISOString().slice(0, 10)}
                   />
                 )}
               </div>
@@ -1883,7 +1883,7 @@ console.log("task",taskDetails)
 
                     // max={props.expectedSolveDate}
                     required
-                    // onChange={e=>handleMinDate(e)}
+                  // onChange={e=>handleMinDate(e)}
                   />
                 ) : (
                   <input
@@ -1897,7 +1897,7 @@ console.log("task",taskDetails)
 
                     // max={props.expectedSolveDate}
                     required
-                    // onChange={e=>handleMinDate(e)}
+                  // onChange={e=>handleMinDate(e)}
                   />
                 )}
               </div>
@@ -1917,7 +1917,7 @@ console.log("task",taskDetails)
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 ) : (
                   <input
@@ -1928,7 +1928,7 @@ console.log("task",taskDetails)
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -2067,7 +2067,7 @@ console.log("task",taskDetails)
                 <label className="form-label">
                   <b>Assign to user *:</b>
                 </label>
-
+                {console.log('user data', userData)}
                 {defaultUserData?.length > 0 && userData && (
                   <Select
                     defaultValue={defaultUserData}
@@ -2101,11 +2101,11 @@ console.log("task",taskDetails)
                     defaultValue={
                       userData &&
                       userData
-                      .map((d) => ({ value: d.value, label: d.label }))
-                      .filter((d) => d.value == localStorage.getItem("id"))
+                        .map((d) => ({ value: d.value, label: d.label }))
+                        .filter((d) => d.value == localStorage.getItem("id"))
                     }
                     isClearable
-                    // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -2281,7 +2281,7 @@ console.log("task",taskDetails)
               style={{ backgroundColor: "#484C7F" }}
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
-             {/* {loading ? (
+              {/* {loading ? (
           <span>
             <i className="fa fa-spinner fa-spin" /> Loading...
           </span>
