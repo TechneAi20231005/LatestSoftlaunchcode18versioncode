@@ -18,6 +18,8 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 import { dynamicFormData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 import DynamicFormDropDownSlice from "../DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
 
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 function DynamicFormComponent( ) {
     const location = useLocation()
@@ -93,7 +95,36 @@ console.log("data..",exportData)
                 </div>
         },
         { name: "Sr", selector: (row) => row.counter, sortable: true, width: "60px" },
-        { name: "Form Name", selector: (row) => row.template_name, sortable: true },
+
+
+        {
+            name: "Form Name",
+            selector: (row) => row.template_name,
+            sortable: true,
+            cell: (row) => (
+              <div
+                className="btn-group"
+                role="group"
+                aria-label="Basic outlined example"
+              >
+                {row.template_name && (
+                  <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+                    <div>
+                      <span className="ms-1">
+                        {" "}
+                        {row.template_name && row.template_name.length < 10
+                          ? row.template_name
+                          : row.template_name.substring(0, 10) + "...."}
+                      </span>
+                    </div>
+                  </OverlayTrigger>
+                )}
+              </div>
+            ),
+          },
+
+
+        // { name: "Form Name", selector: (row) => row.template_name, sortable: true },
         {
             name: "Status", selector: (row) => row.is_active, sortable: false,
             cell: (row) => <div>
@@ -212,7 +243,7 @@ console.log("data..",exportData)
     return (
         <div className="container-xxl">
 
-            {notify && <Alert alertData={notify} />}
+            {/* {notify && <Alert alertData={notify} />} */}
 
             <PageHeader headerTitle="Dynamic Form Master" renderRight={() => {
                 return <div className="col-auto d-flex w-sm-100">

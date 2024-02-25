@@ -31,8 +31,11 @@ export default class UserService {
         "Content-Type": "application/json",
       },
     };
+
+    const url = `${_URL}?type=EXPORT`
       
-    return axios.get(_URL,+ "/export", config);
+    return axios.get(url, config);
+
   }
   getUserForMyTickets(queryParams) {
     const token = localStorage.getItem("jwt_token");

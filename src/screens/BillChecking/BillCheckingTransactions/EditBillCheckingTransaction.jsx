@@ -518,7 +518,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("authorized_by_hod", 0);
     }
 
-
     if (document.getElementById("authorized_by_management").checked) {
       form.append("authorized_by_management", 1);
     } else {
@@ -661,9 +660,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
       // Check if the maximum 10 attachments condition is met
 
-  
-
-
       if (tempSelectedFile.length + data.attachment.length <= 10) {
         fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
@@ -681,7 +677,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // maximum length check for attachments
   const maxLengthCheck = (e) => {
-
     if (e.target.files.length > 10) {
       alert("You Can Upload Only 10 Attachments");
       document.getElementById("attachment").value = null;
@@ -706,8 +701,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-
-  
   const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
@@ -880,7 +873,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
 
-  const startPastYear = startFinancialYear.getFullYear()-1;
+  const startPastYear = startFinancialYear.getFullYear() - 1;
   const startYear = startFinancialYear.getFullYear();
 
   const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
@@ -888,8 +881,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
   const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
-
- 
 
   const endYear = endFinancialYear.getFullYear();
   const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
@@ -902,6 +893,9 @@ export default function CreateBillCheckingTransaction({ match }) {
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
   const day = String(currentDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
+
+  let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
+  console.log("recordRoomuser", recordRoom);
 
   return (
     <div className="container-xxl">
@@ -1076,9 +1070,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                    {console.log("data",)}
+                 
 
-                    {authorities && authorities.Record_Room === true ? (
+                 {console.log("pp",recordRoom == data.assign_to[1])}
+                 {console.log(data.assign_to)}
+
+                    {(authorities && authorities.Record_Room === true) ||
+                    data.bill_status === "Solved" ? (
                       <div className="col-md-3">
                         {/* {data && data.is_assign_to == 0 && ( */}
                         <input
@@ -1121,14 +1119,31 @@ export default function CreateBillCheckingTransaction({ match }) {
   defaultValue="Record Room" // Set the default value to "Record Room"
 /> */}
 
-                        <input
+                        {/* <input
                           type="text"
                           className="form-control form-control-sm"
                           id="assign_to"
                           name="assign_to"
                           required
                           defaultValue={data.assign_to[1]}
-                        />
+                        /> */}
+
+                        {recordRoom && data ? (
+                          <Select
+                            type="text"
+                            className="form-control form-control-sm"
+                            id="assign_to"
+                            options={recordRoom}
+                            name="assign_to"
+                            placeholder="Assign To"
+                            required
+                            // isDisabled
+
+                            defaultValue={recordRoom === data.assign_to[1]}
+                          />
+                        ) : (
+                          <p>Loading....</p>
+                        )}
                       </div>
                     ) : (
                       <>
@@ -1146,7 +1161,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               Assign To : <Astrick color="red" size="13px" />
                             </b>
                           </label>
-                          {console.log("userDropdown",userDropdown)}
+                          {console.log("userDropdown", userDropdown)}
 
                           {userDropdown && data ? (
                             <Select
@@ -1158,7 +1173,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                               placeholder="Assign To"
                               required
                               isDisabled
-                          
                               defaultValue={userDropdown.filter(
                                 (d) => d.value == data.assign_to
                               )}
@@ -1275,8 +1289,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // maxDate="31-03-2023"
                         min={
                           authorities &&
-                          authorities.Past_Financial_Year_Bill_Date === true ?
-                          formattedStartPastDate : formattedStartDate
+                          authorities.Past_Financial_Year_Bill_Date === true
+                            ? formattedStartPastDate
+                            : formattedStartDate
                         }
                         // max={formattedEndDate}
 
@@ -1726,104 +1741,102 @@ value={igst=== true ?1 :0} */}
 
                     {/* { isTcsApplicable && isTcsApplicable === true && */}
 
-                    
-{isTcsApplicable === true ? 
-      <div className=" col-md-3 ">
-      <label className=" col-form-label">
-        <b>
-          {" "}
-          TCS Amount:{" "}
-          {isTcsApplicable === true && (
-            <Astrick color="red" size="13px" />
-          )}
-        </b>
-      </label>
-      <input
-        type="number"
-        className="form-control form-control-sm"
-        id="tcs"
-        name="tcs"
-        step="any"
-        onChange={(e) => handleTcs(e)}
+                    {isTcsApplicable === true ? (
+                      <div className=" col-md-3 ">
+                        <label className=" col-form-label">
+                          <b>
+                            {" "}
+                            TCS Amount:{" "}
+                            {isTcsApplicable === true && (
+                              <Astrick color="red" size="13px" />
+                            )}
+                          </b>
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          id="tcs"
+                          name="tcs"
+                          step="any"
+                          onChange={(e) => handleTcs(e)}
+                          // value={data.tcs}
 
-        // value={data.tcs}
-       
-        defaultValue={isTcsApplicable === true ? data.tcs : 0}
-        // readOnly={isTcsApplicable  ? false : true}
-        // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ||   authorities.TCS_Applicable === true ? false :true}
-        // value={data.tcs}
+                          defaultValue={isTcsApplicable === true ? data.tcs : 0}
+                          // readOnly={isTcsApplicable  ? false : true}
+                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ||   authorities.TCS_Applicable === true ? false :true}
+                          // value={data.tcs}
 
+                          readOnly={
+                            authorities &&
+                            authorities.TCS_Applicable === false &&
+                            authorities &&
+                            authorities.All_Update_Bill === false
+                              ? true
+                              : false
+                          }
+                          // readOnly={
+                          //   data.is_active == 0 && isTcsApplicable === false
+                          //     ? true
+                          //     : false
+                          // }
+                          // required={isTcsApplicable === true ? true : false}
+                          onKeyPress={(e) => {
+                            Validation.NumbersSpeicalOnlyDot(e);
+                          }}
+                          required={isTcsApplicable === true ? true : false}
+                        />
 
-        readOnly={
-          authorities &&
-          authorities.TCS_Applicable === false &&
-          authorities &&
-          authorities.All_Update_Bill === false
-            ? true
-            : false
-        }
-        // readOnly={
-        //   data.is_active == 0 && isTcsApplicable === false
-        //     ? true
-        //     : false
-        // }
-        // required={isTcsApplicable === true ? true : false}
-        onKeyPress={(e) => {
-          Validation.NumbersSpeicalOnlyDot(e);
-        }}
-        required={isTcsApplicable === true ? true : false}
-      />
+                        {inputState && isTcsApplicable === true && (
+                          <small
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            {tcsErr}
+                          </small>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <div className=" col-md-3 ">
+                          <label className=" col-form-label">
+                            <b>
+                              {" "}
+                              TCS Amount:{" "}
+                              {isTcsApplicable === true && (
+                                <Astrick color="red" size="13px" />
+                              )}
+                            </b>
+                          </label>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            id="tcs"
+                            name="tcs"
+                            step="any"
+                            onChange={(e) => handleTcs(e)}
+                            readOnly
+                            value={0}
+                            // value={data.tcs}
 
-      {inputState && isTcsApplicable === true && (
-        <small
-          style={{
-            color: "red",
-          }}
-        >
-          {tcsErr}
-        </small>
-      )}
-    </div> :
-    <>
-                    <div className=" col-md-3 ">
-                      <label className=" col-form-label">
-                        <b>
-                          {" "}
-                          TCS Amount:{" "}
-                          {isTcsApplicable === true && (
-                            <Astrick color="red" size="13px" />
-                          )}
-                        </b>
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        id="tcs"
-                        name="tcs"
-                        step="any"
-                        onChange={(e) => handleTcs(e)}
-readOnly
-value={0}
-                        // value={data.tcs}
-                       
-                        // defaultValue={isTcsApplicable === true ? data.tcs : 0}
-                        // readOnly={isTcsApplicable  ? false : true}
-                        // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                        // value={data.tcs}
+                            // defaultValue={isTcsApplicable === true ? data.tcs : 0}
+                            // readOnly={isTcsApplicable  ? false : true}
+                            // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
+                            // value={data.tcs}
 
-                        // readOnly={
-                        //   data.is_active == 0 && isTcsApplicable === false
-                        //     ? true
-                        //     : false
-                        // }
-                        // required={isTcsApplicable === true ? true : false}
-                        onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
-                        }}
-                        // required={isTcsApplicable === true ? true : false}
-                      />
+                            // readOnly={
+                            //   data.is_active == 0 && isTcsApplicable === false
+                            //     ? true
+                            //     : false
+                            // }
+                            // required={isTcsApplicable === true ? true : false}
+                            onKeyPress={(e) => {
+                              Validation.NumbersSpeicalOnlyDot(e);
+                            }}
+                            // required={isTcsApplicable === true ? true : false}
+                          />
 
-                      {/* {inputState && isTcsApplicable === true && (
+                          {/* {inputState && isTcsApplicable === true && (
                         <small
                           style={{
                             color: "red",
@@ -1832,11 +1845,10 @@ value={0}
                           {tcsErr}
                         </small>
                       )} */}
-                    </div>
+                        </div>
+                      </>
+                    )}
 
-                    </>
-}
-                   
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
@@ -2563,8 +2575,6 @@ value={0}
                         );
                       })}
                   </div> */}
-
-
 
                   <div
                     //  className="d-flex"

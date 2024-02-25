@@ -9,6 +9,7 @@ const initialState = {
   status: "",
   err: "",
   notify: "",
+  sortDropDown:[],
   modal: {
     showModal: false,
     modalData: "",
@@ -39,6 +40,7 @@ export const DynamicFormDropDownSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(dynamicFormDropDownData.pending, (state) => {
       state.status = "loading";
+      
     });
     builder.addCase(dynamicFormDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -141,6 +143,8 @@ export const DynamicFormDropDownSlice = createSlice({
           value: d.id,
         }));
         state.dropDownData = dropDownData;
+        let sortDropDown = payload.data.data
+        state.sortDropDown = sortDropDown 
       }
     });
     builder.addCase(getAllDropDownData.rejected, (state) => {

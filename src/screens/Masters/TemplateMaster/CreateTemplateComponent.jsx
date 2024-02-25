@@ -23,7 +23,11 @@ import {
   templateData,
 } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalClose, handleModalOpen, hideNotification } from "./TemplateComponetSlice";
+import {
+  handleModalClose,
+  handleModalOpen,
+  hideNotification,
+} from "./TemplateComponetSlice";
 
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
@@ -178,13 +182,13 @@ const CreateTemplateComponent = () => {
     }
   };
 
-  const handleRemoveSpecificRow = (idx) => () => {
-    if (idx > 0) {
-      setRows({
-        template_data: rows.template_data.filter((_, i) => i !== idx),
-      });
-    }
+  const handleRemoveSpecificRow = (idx) => {
+    const updatedRows = rows.template_data.filter((_, i) => i !== idx);
+    setRows({
+      template_data: updatedRows,
+    });
   };
+  
 
   const handleRemoveTask = (basketIndex, taskIndex) => {
     setRows((prevRows) => {
@@ -252,7 +256,6 @@ const CreateTemplateComponent = () => {
       // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
-         
           navigate(`/${_base}/Template`);
           dispatch(templateData());
         }
@@ -561,7 +564,17 @@ const CreateTemplateComponent = () => {
                                 </span>
                               )}
 
-                              {rows.template_data.length === idx + 1 &&
+                              <td>
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-danger btn-sm"
+                                  onClick={() => handleRemoveSpecificRow(idx)}
+                                >
+                                  <i className="icofont-ui-delete"></i>
+                                </button>
+                              </td>
+
+                              {/* {rows.template_data.length === idx + 1 &&
                                 idx !== 0 && (
                                   <span>
                                     <button
@@ -572,7 +585,7 @@ const CreateTemplateComponent = () => {
                                       <i className="icofont-ui-delete"></i>
                                     </button>
                                   </span>
-                                )}
+                                )} */}
                             </td>
                           </tr>
                         ))}

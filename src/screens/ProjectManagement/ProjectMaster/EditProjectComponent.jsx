@@ -26,7 +26,7 @@ export default function EditProjectComponent({ match }) {
   const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
 
 
-  console.log("notify",notify);
+
   // const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
@@ -142,8 +142,9 @@ export default function EditProjectComponent({ match }) {
     dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res)=>{
       if(res.payload.data.status==1&&res.payload.status==200){
         navigate(`/${_base}/Project`)
+        loadData()
       }
-      loadData()
+    
 
 
     })
