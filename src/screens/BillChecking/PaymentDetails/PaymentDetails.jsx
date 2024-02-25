@@ -1247,7 +1247,7 @@ function PaymentDetails({ location, match }) {
     e.preventDefault();
     var a = statusDropdownRef.current.getValue().map((d) => d.value);
     const form = new FormData(e.target);
-    // form.append("payment_status", a);
+    form.append("payment_status",  modal.modalData.payment_status,);
     form.append("created_by", modal.modalData.created_by);
     form.append("client_ip_address", ip);
 
