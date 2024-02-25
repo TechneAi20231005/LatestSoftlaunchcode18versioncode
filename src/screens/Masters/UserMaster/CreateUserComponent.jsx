@@ -1600,7 +1600,7 @@ import {
   getStateData,
   getStateDataSort,
   postUserData,
-  getEmployeeData
+  getEmployeeData,
 } from "../../Dashboard/DashboardAction";
 import DesignationSlice from "../DesignationMaster/DesignationSlice";
 import { getDesignationData } from "../DesignationMaster/DesignationAction";
@@ -1613,8 +1613,13 @@ function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
-  const roleDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.getAllRoles);
-  const departmentDropdown = useSelector(DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData)
+  const roleDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.getAllRoles
+  );
+  const departmentDropdown = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
+  );
 
   const [filteredRoles, setFilteredRoles] = useState([]);
 
@@ -1638,11 +1643,12 @@ function CreateUserComponent({ match }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
-  const isLoading = useSelector((dashboardSlice) => dashboardSlice.dashboard.isLoading);
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading
+  );
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -1659,7 +1665,9 @@ function CreateUserComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
-  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.activeState);
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
 
   const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
@@ -1669,16 +1677,23 @@ function CreateUserComponent({ match }) {
     },
   ];
 
-
   const mappingData = {
     department_id: null,
     ticket_show_type: null,
     ticket_passing_authority: 0,
     is_default: 0,
   };
-  const [rows, setRows] = useState([mappingData]);
+  const [rows, setRows] = useState([{   department_id: [],
+    ticket_show_type: null,
+    ticket_passing_authority: 0,
+    is_default: 0,}]);
 
 
+    const [empty, setEmpty] = useState([{   department_id: [],
+      ticket_show_type: null,
+      ticket_passing_authority: 0,
+      is_default: 0,}]);
+  
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [passwordShown, setPasswordShown] = useState(false);
@@ -1856,8 +1871,6 @@ function CreateUserComponent({ match }) {
   const [stateDropdownData, setStateDropdownData] = useState(false);
   const [cityDropdownData, setCityDropdownData] = useState(false);
 
-
-
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
       setInputState({ ...state, passwordErr: "Please enter Password" });
@@ -2008,7 +2021,6 @@ function CreateUserComponent({ match }) {
   //   }
   // };
 
-
   const handleForm = async (e) => {
     e.preventDefault();
     if (loading) {
@@ -2057,8 +2069,13 @@ function CreateUserComponent({ match }) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
           if (res.payload.data.status === 1 && res.payload.status === 200) {
-            navigate(`/${_base}/User`);
-            dispatch(getEmployeeData())
+
+            dispatch(getEmployeeData());
+            setNotify({ type: 'success', message: res.data.message })
+            setTimeout(() => {
+              navigate(`/${_base}/User`)
+            }, 3000);
+           
           }
           setLoading(false); // Reset loading state
         });
@@ -2067,9 +2084,9 @@ function CreateUserComponent({ match }) {
   };
 
   const loadData = async () => {
-    setRows([mappingData]);
+    // setRows([mappingData]);
     dispatch(getCountryDataSort());
-    dispatch(getStateDataSort())
+    dispatch(getStateDataSort());
 
     //  **************************Country load data**************************************
     // await new CountryService().getCountrySort().then((res) => {
@@ -2087,12 +2104,6 @@ function CreateUserComponent({ match }) {
     //     }
     //   }
     // });
-
-
-
-   
-
-
 
     //  ************************** State load data**************************************
     // await new StateService().getStateSort().then((res) => {
@@ -2193,7 +2204,6 @@ function CreateUserComponent({ match }) {
     await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-
           setCustomerDrp(
             res.data.data
               .filter((d) => d.is_active === 1)
@@ -2217,7 +2227,6 @@ function CreateUserComponent({ match }) {
     // });
   };
 
-
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
       // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
@@ -2226,7 +2235,11 @@ function CreateUserComponent({ match }) {
       //     .filter((d) => d.country_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
+      setStateDropdownData(
+        stateDropdown
+          .filter((filterState) => filterState.country_id === e.value)
+          .map((d) => ({ value: d.id, label: d.state }))
+      );
       // console.log("state", stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
       // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
       //  console.log("city11",AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
@@ -2239,7 +2252,11 @@ function CreateUserComponent({ match }) {
     }
     if (type == "STATE") {
       // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdownData(AllcityDropDownData?.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
+      setCityDropdownData(
+        AllcityDropDownData?.filter(
+          (filterState) => filterState.state_id === e.value
+        ).map((d) => ({ value: d.id, label: d.city }))
+      );
 
       // setCityDropdown(
       //   city
@@ -2273,7 +2290,43 @@ function CreateUserComponent({ match }) {
   };
 
 
-  const [s, setS] = useState()
+
+  const handleUserSelect = (selectedOptions, index) => {
+    // const selectedUserIds = selectedOptions.filter((option) => option.value);
+    const selectedUserIds = selectedOptions.value;
+
+
+    const updatedAssign = [...rows];
+
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      department_id: selectedUserIds,
+    };
+
+    setRows(updatedAssign);
+
+    // const updatedUserErrors = [...userErrors];
+    // updatedUserErrors[index] = "";
+    // setUserErrors(updatedUserErrors);
+  };
+
+
+
+
+  
+
+  const handleRemoveSpecificRow = (index) => async () => {
+   console.log("i",index)
+          const updatedAssign = [...rows];
+          updatedAssign.splice(index, 1);
+
+          // Update the state
+          setRows(updatedAssign);
+      //   }
+      // });
+  };
+
+  const [s, setS] = useState();
 
   //   const handleData=()=>{
   //     console.log("r",roleDropdown)
@@ -2298,9 +2351,13 @@ function CreateUserComponent({ match }) {
   //   }
   // console.log("s",s)
 
-
-  const sortSlefRole = roleDropdown && roleDropdown?.filter(d => { return d.role.toLowerCase() !== "user"; })
-  const filterSelfRole = sortSlefRole?.filter((d) => d.is_active === 1)
+  const sortSlefRole =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.role.toLowerCase() !== "user";
+    });
+  const filterSelfRole = sortSlefRole
+    ?.filter((d) => d.is_active === 1)
     .map((d) => ({
       value: d.id,
       label: d.role,
@@ -2309,9 +2366,13 @@ function CreateUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-
-  const customerSort = roleDropdown && roleDropdown?.filter(d => { return d.role.toLowerCase() === "user"; })
-  const filterCutomerRole = customerSort?.filter((d) => d.is_active === 1)
+  const customerSort =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.role.toLowerCase() === "user";
+    });
+  const filterCutomerRole = customerSort
+    ?.filter((d) => d.is_active === 1)
     .map((d) => ({
       value: d.id,
       label: d.role,
@@ -2324,7 +2385,6 @@ function CreateUserComponent({ match }) {
     setAccountFor(account_for);
     const accountFor = account_for;
     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
-
       if (accountFor === "SELF") {
         return filterData.role.toLowerCase() !== "user";
       } else if (accountFor === "CUSTOMER") {
@@ -2380,29 +2440,25 @@ function CreateUserComponent({ match }) {
   // const handleRemoveSpecificRow = (idx) => {
   //   // Create a copy of the rows array
   //   const updatedRows = rows.filter((item, index) => index !== idx);
-    
 
   //   // Update the state with the modified rows array
   //   setRows(updatedRows);
   // };
-  
-  
+
   // const handleRemoveSpecificRow = (idx, itemToRemove) => {
   //   // Create a copy of the rows array
   //   const updatedRows = rows.filter((item, index) => index !== idx);
-  
+
   //   // Update the state with the modified rows array
   //   setRows(updatedRows);
   // };
-  const handleRemoveSpecificRow = (idx, item) => {
-    // You can access the selected row's data through the "item" parameter
-    
-    // Remove the selected row
-    const updatedRows = rows.filter((_, index) => index !== idx);
-    setRows(updatedRows);
-  };
-  
-  
+  // const handleRemoveSpecificRow = (idx, item) => {
+  //   // You can access the selected row's data through the "item" parameter
+
+  //   // Remove the selected row
+  //   const updatedRows = rows.filter((_, index) => index !== idx);
+  //   setRows(updatedRows);
+  // };
 
   const [departmentValue, setDepartmentValue] = useState(false);
   const departmentRef = useRef(null);
@@ -2460,8 +2516,6 @@ function CreateUserComponent({ match }) {
   const [copyData, setCopyData] = useState(null);
   const whatsappRef = useRef(null);
   function copyTextValue(e) {
-
-
     if (e.target.checked) {
       setIsReadOnly(true);
     } else {
@@ -2473,7 +2527,6 @@ function CreateUserComponent({ match }) {
     setCopyData(text1);
     // document.getElementById("whats_app_contact_no").value = text1;
   }
-
 
   useEffect(() => {
     whatsappRef.current.value = copyData;
@@ -2519,35 +2572,30 @@ function CreateUserComponent({ match }) {
   useEffect(() => {
     loadData();
     if (!checkRole.length) {
-
       dispatch(getRoles());
     }
     if (!designationDropdown.length) {
       dispatch(getDesignationData());
-
     }
 
     if (!AllcityDropDownData.length) {
-      dispatch(getCityData())
+      dispatch(getCityData());
     }
 
     if (!cityDropdownData.length) {
-      dispatch(getCityData())
+      dispatch(getCityData());
     }
 
     if (!stateDropdown.length) {
       dispatch(getStateData());
-
     }
     if (!stateDropdownData.length) {
-      dispatch(getStateData())
+      dispatch(getStateData());
     }
 
-
-
     // handleData()
-    dispatch(getAllRoles())
-    dispatch(departmentData())
+    dispatch(getAllRoles());
+    dispatch(departmentData());
   }, []);
 
   useEffect(() => {
@@ -2761,9 +2809,9 @@ function CreateUserComponent({ match }) {
                             }
                           }}
                           placeholder="Please enter valid email address"
-                        // onKeyPress={(e) => {
-                        //   handleEmail(e);
-                        // }}
+                          // onKeyPress={(e) => {
+                          //   handleEmail(e);
+                          // }}
                         />
 
                         {inputState && (
@@ -3032,7 +3080,11 @@ function CreateUserComponent({ match }) {
                           name="role_id"
                           defaultValue={filteredRoles}
                           // options={filteredRoles}
-                          options={accountFor === "SELF" ? orderedSelfRoleData : orderedCustomerRoleData}
+                          options={
+                            accountFor === "SELF"
+                              ? orderedSelfRoleData
+                              : orderedCustomerRoleData
+                          }
                           onChange={(e) => {
                             if (e.value === "") {
                               setInputState({
@@ -3115,8 +3167,8 @@ function CreateUserComponent({ match }) {
                           placeholder="Enter maximum 250 character"
                           rows="4"
                           maxLength={250}
-                        // onKeyPress={(e) => {
-                        //   Validation.addressFieldOnly(e);}}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);}}
                         />
                       </div>
                     </div>
@@ -3191,8 +3243,8 @@ function CreateUserComponent({ match }) {
                           id="state_id"
                           onChange={(e) => handleDependentChange(e, "STATE")}
                           defaultValue={stateName ? stateName : ""}
-                        // key={Math.random()}
-                        // value={stateName ? state : ""}
+                          // key={Math.random()}
+                          // value={stateName ? state : ""}
                         />
                       </div>
 
@@ -3215,8 +3267,8 @@ function CreateUserComponent({ match }) {
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                        // key={Math.random()}
-                        // value={ cityName? cityName : ""}
+                          // key={Math.random()}
+                          // value={ cityName? cityName : ""}
                         />
                       </div>
                     </div>
@@ -3353,101 +3405,125 @@ function CreateUserComponent({ match }) {
                       ))}
                   </tbody> */}
 
-<tbody>
-  {rows.map((item, idx) => (
+                  <tbody>
+                    {rows.map((item, idx) => (
                       <tr id={`addr_${idx}`} key={idx}>
-    {/* <tr key={idx}> */}
-      <td className="text-center">{idx + 1}</td>
-      <td>
-        <Select
-          options={departmentDropdown}
-          id={`department_id_` + idx}
-          name="department_id[]"
-          ref={departmentRef}
-          onChange={(e) =>
-            handleCheckInput(e, idx, "DEPARTMENT")
-          }
-        />
-      </td>
-      <td>
-        <Select
-          options={options}
-          id={`ticket_show_type_id_` + idx}
-          name="ticket_show_type[]"
-          defaultValue={item.ticket_show_type}
-          onChange={(e) =>
-            handleCheckInput(e, idx, "TICKET_SHOW")
-          }
-        />
-      </td>
+                        {/* <tr key={idx}> */}
+                        <td className="text-center">{idx + 1}</td>
+                        <td>
+                          {/* <Select
+                            options={departmentDropdown}
+                            id={`department_id_` + idx}
+                            name="department_id[]"
+                            ref={departmentRef}
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, "DEPARTMENT")
+                            }
+                          /> */}
 
-      <td className="text-center">
-        <input
-          type="hidden"
-          name="ticket_passing_authority[]"
-          value={
-            item.ticket_passing_authority
-              ? item.ticket_passing_authority
-              : 0
-          }
-        />
+<Select
+                              // isMulti
+                              isSearchable={true}
+                              name="department_id[]"
+                              id="department_id[]"
+                              key={idx}
+                              className="basic-multi-select"
+                              classNamePrefix="select"
+                            //   options={userData}
+                            options={departmentDropdown}
+                            //   isDisabled={
+                            //     item.from_dateReadOnly ||
+                            //     modal.modalHeader === "Details"
+                            //   }
+                              value={departmentDropdown.filter((d) =>
+                                Array.isArray(item.department_id)
+                                  ? item.department_id.includes(d.value)
+                                  : item.department_id === d.value
+                              )}
+                              required
+                              style={{ zIndex: "100" }}
+                              onChange={(selectedOption) =>
+                                handleUserSelect(selectedOption, idx)
+                              }
+                            />
+                        </td>
+                        <td>
+                          <Select
+                            options={options}
+                            id={`ticket_show_type_id_` + idx}
+                            name="ticket_show_type[]"
+                            defaultValue={item.ticket_show_type}
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, "TICKET_SHOW")
+                            }
+                          />
+                        </td>
 
-        <input
-          type="checkbox"
-          id={`ticket_passing_authority_` + idx}
-          checked={item.ticket_passing_authority == 1}
-          onChange={(e) =>
-            handleCheckInput(
-              e,
-              idx,
-              "TICKET_PASSING_AUTHORITY"
-            )
-          }
-        />
-      </td>
-      <td className="text-center">
-        <input
-          type="hidden"
-          name="is_default[]"
-          value={item.is_default ? item.is_default : ""}
-        />
-        <input
-          type="checkbox"
-          id={`is_default_` + idx}
-          checked={item.is_default == 1}
-          onChange={(e) =>
-            handleCheckInput(e, idx, "IS_DEFAULT")
-          }
-        />
-      </td>
+                        <td className="text-center">
+                          <input
+                            type="hidden"
+                            name="ticket_passing_authority[]"
+                            value={
+                              item.ticket_passing_authority
+                                ? item.ticket_passing_authority
+                                : 0
+                            }
+                          />
 
-      <td>
-        {idx === 0 && departmentValue == true && (
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary pull-left"
-            onClick={handleAddRow}
-          >
-            <i className="icofont-plus-circle"></i>
-          </button>
-        )}
-          {idx != 0 &&
-        
-        <button
-  type="button"
-  className="btn btn-outline-danger btn-sm"
-  onClick={() => handleRemoveSpecificRow(idx, rows[idx])}
->
-  <i className="icofont-ui-delete"></i>
-</button>
-}
-      </td>
-    </tr>
-  ))}
-</tbody>
+                          <input
+                            type="checkbox"
+                            id={`ticket_passing_authority_` + idx}
+                            checked={item.ticket_passing_authority == 1}
+                            onChange={(e) =>
+                              handleCheckInput(
+                                e,
+                                idx,
+                                "TICKET_PASSING_AUTHORITY"
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="text-center">
+                          <input
+                            type="hidden"
+                            name="is_default[]"
+                            value={item.is_default ? item.is_default : ""}
+                          />
+                          <input
+                            type="checkbox"
+                            id={`is_default_` + idx}
+                            checked={item.is_default == 1}
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, "IS_DEFAULT")
+                            }
+                          />
+                        </td>
 
+                        <td>
+                          {idx === 0 && departmentValue == true && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary pull-left"
+                              onClick={handleAddRow}
+                            >
+                              <i className="icofont-plus-circle"></i>
+                            </button>
+                          )}
+                          {idx != 0 && (
+                          
 
-
+                            <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={handleRemoveSpecificRow(idx)}
+                          >
+                            <i className="icofont-ui-delete"></i>
+                          </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -3487,7 +3563,6 @@ function CreateUserComponent({ match }) {
               Submit
             </button>
           )}
-
 
           {tabKey == "User_Settings" && (
             <button

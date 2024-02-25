@@ -553,11 +553,11 @@ function UserComponent( ) {
 
 
   const employeeData = useSelector(dashboardSlice=>dashboardSlice.dashboard.employeeData);
-  const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportUserData)
+  // const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportUserData)
 
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
+  // const Notify = useSelector(
+  //   (dashboardSlice) => dashboardSlice.dashboard.notify
+  // );
   const handleModal = (data) => {
     setModal(data);
   };
@@ -693,6 +693,8 @@ function UserComponent( ) {
     },
   ];
 
+
+
   const loadData = async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
@@ -700,18 +702,72 @@ function UserComponent( ) {
     // } catch (error) {
     // }
 
-    await new UserService().getExportTicket().then((res) => {
+    // await new UserService().getExportTicket().then((res) => {
 
-      if (res.status === 200) {
-        if (res.data.status == 1) {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
           
+    //     }
+    //   }
+    // });
+
+
+    const exportTempData = [];
+
+    await new UserService().getExportTicket().then((res) => {
+      if (res.status == 200) {
+        // setExportData(res.data)
+        const temp = res.data.data;
+
+              for (const i in temp) {
+            exportTempData.push({
+              SrNo: exportTempData.length + 1,
+
+              Account_for: temp[i].account_for,
+              customer_name: temp[i].customer,
+              Name:
+                temp[i].first_name +
+                " " +
+                temp[i].middle_name +
+                " " +
+                temp[i].last_name,
+              Email: temp[i].email_id,
+              ContactNo: temp[i].contact_no,
+              WhatsappNo: temp[i].whats_app_contact_no,
+              User_Name: temp[i].user_name,
+              Role: temp[i].role,
+              Designation: temp[i].designation,
+              Address: temp[i].address,
+              Pincode: temp[i].pincode,
+              Country: temp[i].country,
+              State: temp[i].state,
+              City: temp[i].city,
+              Department: temp[i].department,
+              Ticket_Show_Type: temp[i].ticket_show_type,
+              all_department: temp[i].all_department,
+              Ticket_Passing_Authority: temp[i].ticket_passing_authority
+                ? "Yes"
+                : "No",
+              Make_Default: temp[i].is_default ? "yes" : "No",
+              Status: temp[i].is_active ? "Active" : "Deactive",
+              created_at: temp[i].created_at,
+              created_by: temp[i].created_by,
+              updated_at: temp[i].updated_at,
+
+              updated_by: temp[i].updated_by,
+            });
+          }
+
+          setExportData(null);
+          setExportData(exportTempData);
         }
-      }
+      
+      
     });
 
+
    
-    const data = [];
-    const exportTempData = [];
+    // const data = [];
     //  **************************Country load data**************************************
     // await new CountryService().getCountry().then((res) => {
     //   if (res.status === 200) {
@@ -907,7 +963,7 @@ useEffect(() => {
   return (
     <div className="container-xxl">
       {/* {notify && flag == 1 && <Alert alertData={notify} />} */}
-      {Notify &&  <Alert alertData={Notify} />}
+      {/* {Notify &&  <Alert alertData={Notify} />} */}
 
 
       <PageHeader
@@ -964,7 +1020,7 @@ useEffect(() => {
             </button>
             <ExportToExcel
               className="btn btn-sm btn-danger"
-              apiData={ExportData}
+              apiData={exportData && exportData}
               fileName="User master Records"
             />
           </div>

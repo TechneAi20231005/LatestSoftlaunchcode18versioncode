@@ -1331,12 +1331,17 @@ function EditDynamicForm({ match }) {
   const history = useNavigate();
   const [data, setData] = useState();
   const dispatch = useDispatch()
+  const navigate = useNavigate();
+
 
   const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12));
-  const dropdown=useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.dropDownData)
+  // const dropdown=useSelector(DynamicFormDropDownSlice=>DynamicFormDropDownSlice.dynamicFormDropDown.dropDownData)
 
-
-
+  const dropdown = useSelector(
+    (DynamicFormDropDownSlice) =>
+      DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
+  );
+console.log("dro",dropdown)
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
@@ -1489,6 +1494,8 @@ function EditDynamicForm({ match }) {
       alert("Not Allowed to use entered Keywork");
       rows[idx].inputLabel = "";
     }
+
+    
     // const rows = [...rows];
     // rows[idx] = {
     //     [name]: value
@@ -1542,7 +1549,9 @@ function EditDynamicForm({ match }) {
     };
 
     if (flag === 1) {
-      await setRows([...rows, item]);
+       setRows([...rows, item]);
+      setRows([...rows, mainJson]);
+
     } else {
       setShowAlert({
         show: true,
@@ -1552,10 +1561,23 @@ function EditDynamicForm({ match }) {
     }
   };
 
-  const handleRemoveSpecificRow = (idx) => () => {
-    if (idx > 0) {
-      setRows(rows.filter((_, i) => i !== idx));
-    }
+  // const handleRemoveSpecificRow = (idx) => () => {
+  //   if (idx > 0) {
+  //     setRows(rows.filter((_, i) => i !== idx));
+  //   }
+  // };
+
+  const handleRemoveSpecificRow = (index) => async () => {
+    console.log("index", index);
+
+    const updatedAssign = [...rows];
+    console.log("up", updatedAssign);
+    updatedAssign.splice(index, 1);
+
+    // Update the state
+    setRows(updatedAssign);
+    //   }
+    // });
   };
 
   const handldeFormShow = () => {
@@ -1577,11 +1599,19 @@ function EditDynamicForm({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/DynamicForm`,
+            dispatch(dynamicFormData())
+            // history({
+            //   pathname: `/${_base}/DynamicForm`,
        
-            },{ state: { alert: { type: "success", message: res.data.message } }}
-            );
+            // },{ state: { alert: { type: "success", message: res.data.message } }}
+
+            
+            // );
+
+            setNotify({ type: 'success', message: res.data.message })
+            setTimeout(() => {
+                navigate(`/${_base}/DynamicForm`, { state: { alert: { type: "success", message: res.data.message } } });
+            }, 3000);
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }
@@ -1664,6 +1694,9 @@ function EditDynamicForm({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
     }
   }, [checkRole]);
+
+
+console.log("fff",data)
   return (
     <>
       <div className="body d-flex py-3">
@@ -1955,7 +1988,7 @@ function EditDynamicForm({ match }) {
                                                                 className="form-control form-control-sm" 
                                                                 required
                                                                 name="inputType" 
-                                                                defaultValue={item.inputType}
+                                                                value={item.inputType}
                                                                 onChange={handleChange(idx)}
                                                                 >
                                                                     <option value=''>Select Type</option>
@@ -1974,7 +2007,8 @@ function EditDynamicForm({ match }) {
                                                             </td>
                                                             <td>
                                                                 <select className="form-control form-control-sm" required
-                                                                    name="inputWidth" defaultValue={item.inputWidth}
+                                                                    name="inputWidth" 
+                                                                    value={item.inputWidth}
                                                                     onChange={handleChange(idx)}
                                                                 >
                                                                     <option>Select Width</option>
@@ -2000,7 +2034,7 @@ function EditDynamicForm({ match }) {
                                                                 <input
                                                                     type="text"
                                                                     name="inputLabel"
-                                                                    defaultValue={item.inputLabel}
+                                                                    value={item.inputLabel}
                                                                     onChange={handleChange(idx)}
                                                                     className="form-control form-control-sm"
                                                                     required
@@ -2013,7 +2047,7 @@ function EditDynamicForm({ match }) {
                                                                 <input
                                                                     type="text"
                                                                     name="inputDefaultValue"
-                                                                    defaultValue={item.inputDefaultValue}
+                                                                    value={item.inputDefaultValue}
                                                                     onChange={handleChange(idx)}
                                                                     className="form-control form-control-sm"
                                                                     onKeyPress={e => {
@@ -2091,28 +2125,40 @@ function EditDynamicForm({ match }) {
                                                                 }
                                                             </td> */}
 
-                                                             <td>
+                                                             {/* <td>
                                                                 {idx == 0 &&
                                                                     <button type="button" className="btn btn-sm btn-outline-primary pull-left"
                                                                         onClick={handleAddRow}><i className="icofont-plus-circle"></i></button>
                                                                 }
-                                                                {/* {rows.length == idx + 1 && idx != 0 &&
-                                                                    <button type="button" className="btn btn-outline-danger btn-sm"
-                                                                        onClick={handleRemoveSpecificRow(idx)} >
-                                                                        <i className="icofont-ui-delete"></i>
-                                                                    </button>
-                                                                } */}
-                                                                 {/* {idx !== 0 && (
-                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
-                    <i className="icofont-ui-delete"></i>
-                </button>
-            )} */}
-
+                                                             
 {idx !== 1 && (
                 <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleRemoveSpecificRow(idx)}>
                     <i className="icofont-ui-delete"></i>
                 </button>)}
-                                                            </td>
+                                                            </td> */}
+
+<td>
+                                  {idx == 0 && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-outline-primary pull-left"
+                                      onClick={handleAddRow}
+                                    >
+                                      <i className="icofont-plus-circle"></i>
+                                    </button>
+                                  )}
+                                  
+
+                                  {idx != 0 && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-danger btn-sm"
+                                      onClick={handleRemoveSpecificRow(idx)}
+                                    >
+                                      <i className="icofont-ui-delete"></i>
+                                    </button>
+                                  )}
+                                </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
