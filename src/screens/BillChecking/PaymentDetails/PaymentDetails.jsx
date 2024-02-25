@@ -25,10 +25,6 @@
 //   const {id}=useParams()
 //   const [ip, setIp] = useState('');
 
-
-
-  
-
 //   useEffect(()=>{
 //     const fetchData = async()=>{
 //       try{
@@ -42,7 +38,6 @@
 
 //     }
 //     fetchData()
-
 
 //   },[])
 //   const [data, setData] = useState(null);
@@ -63,7 +58,7 @@
 
 //   function searchInData(data, search) {
 //     const lowercaseSearch = search.toLowerCase();
-  
+
 //     return data.filter((d) => {
 //       for (const key in d) {
 //         if (typeof d[key] === 'string'  && d[key].toLowerCase().includes(lowercaseSearch)) {
@@ -73,7 +68,7 @@
 //       return false;
 //     });
 //   }
-  
+
 //   const handleSearch = () => {
 //     const searchValue = searchRef.current.value;
 //     const result = searchInData(data, searchValue);
@@ -99,7 +94,7 @@
 
 //     const formattedPaymentDate = paymentDate.toISOString().split("T")[0];
 //      formattedMaxDate = maxDate.toISOString().split("T")[0];
-//   } 
+//   }
 //   }
 
 //   const [country, setCountry] = useState();
@@ -120,8 +115,7 @@
 //         if (res.status === 200) {
 //           let counter = 1;
 //           const temp = res.data.data;
-          
-          
+
 //           for (const key in temp) {
 //             data.push({
 //               counter: counter++,
@@ -592,7 +586,6 @@
 //   />
 // </div>
 
-
 //                   <div className="col-sm-4">
 //                     <label className="form-label font-weight-bold">
 //                       Status : <Astrick color="red" size="13px" />
@@ -664,8 +657,7 @@
 //                             options={statusDropDown}
 //                             ref={statusDropdownRef}
 //                             isDisabled={userSessionData.Update_Payment_Details==="true"}
-                           
-                            
+
 //                             required={true}
 //                             defaultValue={
 //                               modal.modalData &&
@@ -751,10 +743,6 @@
 //                       </>
 //                     )} */}
 //                   </div>
-                
-               
-               
-
 
 //                   <div className="col-sm-3 mt-4">
 //                     <label className="form-label font-weight-bold">
@@ -779,7 +767,7 @@
 //                           modal.modalData ? modal.modalData.payment_date : ""
 //                         }
 //                         //  min={modal.modalData.bill_date}
-                        
+
 //                         max={formattedMaxDate && formattedMaxDate}
 //                         // min={
 //                         //   (modal.modalData.payment_status_name === "Paid" &&
@@ -787,11 +775,9 @@
 //                         // }
 //                         min={modal.modalData.payment_status_name==="Paid"?modal.modalData.payment_date:modal.modalData.bill_date}
 
-
 //                       />
 //                     ) : (
 
-                     
 //                       <input
 //                         type="date"
 //                         className="form-control"
@@ -926,8 +912,6 @@
 
 // export default PaymentDetails;
 
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Dropdown } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -949,37 +933,32 @@ import DropdownService from "../../../services/Bill Checking/Bill Checking Trans
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import axios from "axios";
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import { PaymentDetailsSilce } from "./PaymentDetailsSlice";
 import { getPaymentDetails } from "./PaymentDetailsAction";
 
 function PaymentDetails({ location, match }) {
+  const { id } = useParams();
+  const [ip, setIp] = useState("");
 
-  const {id}=useParams()
-  const [ip, setIp] = useState('');
+  const dispatch = useDispatch();
+  const getPaymentDetailsData = useSelector(
+    (PaymentDetailsSilce) =>
+      PaymentDetailsSilce.paymentDetails.paymentDetailsData
+  );
+  console.log("pay", getPaymentDetailsData);
 
-
-
-  const dispatch = useDispatch()
-  const getPaymentDetailsData = useSelector(PaymentDetailsSilce=>PaymentDetailsSilce.paymentDetails.paymentDetailsData)
-  console.log("pay",getPaymentDetailsData)
-
-  useEffect(()=>{
-    const fetchData = async()=>{
-      try{
-        const res=await axios.get("https://api.ipify.org/?format=json");
-        setIp(res.data.ip)
-
-      }catch (error){
-        console.error("Error fetching IP:", error)
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("https://api.ipify.org/?format=json");
+        setIp(res.data.ip);
+      } catch (error) {
+        console.error("Error fetching IP:", error);
       }
-
-    }
-    fetchData()
-
-
-  },[])
+    };
+    fetchData();
+  }, []);
   const [data, setData] = useState(null);
   const [authorities, SetAuthorities] = useState();
   const [notify, setNotify] = useState();
@@ -998,17 +977,20 @@ function PaymentDetails({ location, match }) {
 
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
-  
+
     return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string'  && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === "string" &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
       return false;
     });
   }
-  
+
   // const handleSearch = () => {
   //   const searchValue = searchRef.current.value;
   //   const result = searchInData(data, searchValue);
@@ -1019,30 +1001,33 @@ function PaymentDetails({ location, match }) {
   //     handleSearch();
   //   }
   // };
-  const [searchTerm, setSearchTerm] = useState('');
- 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
+    console.log("fff", filteredData);
   };
-  
+
   // Assuming modal.modalData.payment_date is a valid date string
 
   let formattedMaxDate;
   const paymentDateStr = modal.modalData.payment_date;
   const paymentDate = new Date(paymentDateStr);
-  if(paymentDate)
-{  if (!isNaN(paymentDate.getTime())) {
-    const maxDate = new Date(paymentDate);
+  if (paymentDate) {
+    if (!isNaN(paymentDate.getTime())) {
+      const maxDate = new Date(paymentDate);
 
-    maxDate.setFullYear(paymentDate.getFullYear() + 1);
+      maxDate.setFullYear(paymentDate.getFullYear() + 1);
 
-    // Format the payment_date to "YYYY-MM-DD"
+      // Format the payment_date to "YYYY-MM-DD"
 
-    const formattedPaymentDate = paymentDate.toISOString().split("T")[0];
-     formattedMaxDate = maxDate.toISOString().split("T")[0];
-  } 
+      const formattedPaymentDate = paymentDate.toISOString().split("T")[0];
+      formattedMaxDate = maxDate.toISOString().split("T")[0];
+    }
   }
+  console.log("dat", formattedMaxDate);
+
+  
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -1053,9 +1038,9 @@ function PaymentDetails({ location, match }) {
   const fileInputRef = useRef(null);
   const userId = sessionStorage.getItem("id");
   const [exportData, setExportData] = useState();
-  console.log("dataDp",data) 
+  console.log("dataDp", data);
   const loadData = async () => {
-    dispatch(getPaymentDetails(id, userId))
+    dispatch(getPaymentDetails(id, userId));
     const data = [];
     const ExportTempData = [];
     await new PaymentDetailsService()
@@ -1064,8 +1049,7 @@ function PaymentDetails({ location, match }) {
         if (res.status === 200) {
           let counter = 1;
           const temp = res.data.data;
-          
-          
+
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -1080,7 +1064,7 @@ function PaymentDetails({ location, match }) {
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_by: temp[key].updated_by,
-              bill_date: temp[key].bill_date
+              bill_date: temp[key].bill_date,
             });
           }
           setData(null);
@@ -1247,7 +1231,7 @@ function PaymentDetails({ location, match }) {
     e.preventDefault();
     var a = statusDropdownRef.current.getValue().map((d) => d.value);
     const form = new FormData(e.target);
-    form.append("payment_status",  modal.modalData.payment_status,);
+    form.append("payment_status", modal.modalData.payment_status);
     form.append("created_by", modal.modalData.created_by);
     form.append("client_ip_address", ip);
 
@@ -1339,7 +1323,6 @@ function PaymentDetails({ location, match }) {
               type="button"
               // onClick={e=>handleSearch(e)}
               onClick={() => handleSearch(searchTerm)}
-
               // onKeyDown={e=>handleKeyDown(e)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
@@ -1385,19 +1368,25 @@ function PaymentDetails({ location, match }) {
                   //   return false;
                   // })}
 
-                  data={getPaymentDetailsData.filter(customer => {
-                    if (typeof searchTerm === 'string') {
+                  data={getPaymentDetailsData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
                       console.log("Searching for:", searchTerm); // Log the searchTerm
                       console.log("Customer:", customer); // Log the current customer data
-                      if (typeof customer === 'string') {
+                      if (typeof customer === "string") {
                         // If customer is a string, directly check if it includes the searchTerm
                         console.log("Customer is a string:", customer);
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
                         // If customer is an object, check if any string value within the object includes the searchTerm
                         console.log("Customer is an object:", customer);
-                        const found = Object.values(customer).some(value =>
-                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        const found = Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                         console.log("Found:", found);
                         return found;
@@ -1405,8 +1394,6 @@ function PaymentDetails({ location, match }) {
                     }
                     return false; // Default case: searchTerm or customer is not a string
                   })}
-                  
-                  
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -1443,7 +1430,6 @@ function PaymentDetails({ location, match }) {
           </Modal.Header>
           {deta && (
             <Modal.Body>
-
               {/* {JSON.stringify(modal.modalData.bill_date)} */}
               <div className="deadline-form">
                 <input
@@ -1520,62 +1506,76 @@ function PaymentDetails({ location, match }) {
                     />
                   </div> */}
 
-<div className="col-sm-3 mt-4">
-  <label className="form-label font-weight-bold">
-    Amount To Be Paid :<Astrick color="red" size="13px" />
-  </label>
+                  <div className="col-sm-3 mt-4">
+                    <label className="form-label font-weight-bold">
+                      Amount To Be Paid :<Astrick color="red" size="13px" />
+                    </label>
 
-  <input
-    type="text"
-    className="form-control form-control-sm"
-    id="amount_to_be_paid"
-    name="amount_to_be_paid"
-    maxLength={13}
-    onKeyPress={(e) => {
-      const allowedKeys = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "Backspace"
-      ];
-      const inputValue = e.key;
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="amount_to_be_paid"
+                      name="amount_to_be_paid"
+                      maxLength={13}
+                      onKeyPress={(e) => {
+                        const allowedKeys = [
+                          "0",
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6",
+                          "7",
+                          "8",
+                          "9",
+                          ".",
+                          "Backspace",
+                        ];
+                        const inputValue = e.key;
 
-      if (!allowedKeys.includes(inputValue)) {
-        e.preventDefault();
-      }
+                        if (!allowedKeys.includes(inputValue)) {
+                          e.preventDefault();
+                        }
 
-      const currentInput = e.target.value;
-      const decimalIndex = currentInput.indexOf(".");
+                        const currentInput = e.target.value;
+                        const decimalIndex = currentInput.indexOf(".");
 
-      if (inputValue === "." && decimalIndex !== -1) {
-        e.preventDefault(); // Prevent entering more than one decimal point
-      }
+                        if (inputValue === "." && decimalIndex !== -1) {
+                          e.preventDefault(); // Prevent entering more than one decimal point
+                        }
 
-      if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
-        e.preventDefault(); // Prevent more than two decimal places
-      }
+                        if (
+                          decimalIndex !== -1 &&
+                          currentInput.length - decimalIndex > 2
+                        ) {
+                          e.preventDefault(); // Prevent more than two decimal places
+                        }
 
-      if (
-        currentInput.length >= 10 &&
-        inputValue !== "." &&
-        decimalIndex === -1
-      ) {
-        e.preventDefault(); // Limit total length excluding decimal point to 10 characters
-      }
-    }}
-    readOnly={
-      (modal.modalData &&
-        modal.modalData.payment_status == 15) ||
-      (authorities &&
-        authorities.Update_Payment_Details === false &&
-        authorities.Payment_Status_Release === true) ||
-        (authorities && authorities.Prepone_Payment_Date === true)
-        ? true
-        : false
-    }
-    defaultValue={
-      modal.modalData ? modal.modalData.amount_to_be_paid : ""
-    }
-  />
-</div>
-
+                        if (
+                          currentInput.length >= 10 &&
+                          inputValue !== "." &&
+                          decimalIndex === -1
+                        ) {
+                          e.preventDefault(); // Limit total length excluding decimal point to 10 characters
+                        }
+                      }}
+                      readOnly={
+                        (modal.modalData &&
+                          modal.modalData.payment_status == 15) ||
+                        (authorities &&
+                          authorities.Update_Payment_Details === false &&
+                          authorities.Payment_Status_Release === true) ||
+                        (authorities &&
+                          authorities.Prepone_Payment_Date === true)
+                          ? true
+                          : false
+                      }
+                      defaultValue={
+                        modal.modalData ? modal.modalData.amount_to_be_paid : ""
+                      }
+                    />
+                  </div>
 
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
@@ -1735,10 +1735,7 @@ function PaymentDetails({ location, match }) {
                       </>
                     )} */}
                   </div>
-                
-               
-               
-
+                  {console.log("paymentdate", modal.modalData.payment_date)}
 
                   <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">
@@ -1763,19 +1760,18 @@ function PaymentDetails({ location, match }) {
                           modal.modalData ? modal.modalData.payment_date : ""
                         }
                         //  min={modal.modalData.bill_date}
-                        
-                        max={formattedMaxDate && formattedMaxDate}
+
                         // min={
                         //   (modal.modalData.payment_status_name === "Paid" &&
                         //   modal.modalData.payment_date )
                         // }
-                        min={modal.modalData.payment_status_name==="Paid"?modal.modalData.payment_date:modal.modalData.bill_date}
-
-
+                        min={
+                          modal.modalData.payment_status_name === "Paid"
+                            ? modal.modalData.payment_date
+                            : modal.modalData.bill_date
+                        }
                       />
                     ) : (
-
-                     
                       <input
                         type="date"
                         className="form-control"
@@ -1909,4 +1905,3 @@ function PaymentDetails({ location, match }) {
 }
 
 export default PaymentDetails;
-
