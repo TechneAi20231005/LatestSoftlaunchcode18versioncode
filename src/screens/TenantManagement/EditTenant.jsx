@@ -210,6 +210,7 @@ export default function EditTenant({ match }) {
     // });
   };
 
+
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -252,6 +253,8 @@ export default function EditTenant({ match }) {
   };
 
   useEffect(() => {
+    const countryData = CountryData.filter((d) => console.log("d", d.value));
+    console.log("countryData", data)
     dispatch(handleError(null))
     loadData();
   }, []);
@@ -413,6 +416,7 @@ export default function EditTenant({ match }) {
                 >
                   <b>Country : </b>
                 </label>
+
                 <div className="col-sm-4">
                   {CountryData && data && (
                     <Select

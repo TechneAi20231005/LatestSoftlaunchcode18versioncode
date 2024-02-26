@@ -533,7 +533,6 @@ export default function TaskComponent({ match }) {
                     />
                   </li>
                   <li>
-                    {ownership && JSON.stringify(ownership)}
                     {ownership &&
                       (ownership === "TICKET" || ownership === "PROJECT") && (
                         <button
@@ -568,7 +567,7 @@ export default function TaskComponent({ match }) {
                         Time Regularization Request
                         {regularizationRequest && (
                           <span className="badge bg-primary p-2">
-                            {regularizationRequest.length ? regularizationRequest.length : ""}
+                            {regularizationRequest.length > 0 ? regularizationRequest.length : ""}
                           </span>
                         )}
                       </button>
@@ -585,7 +584,7 @@ export default function TaskComponent({ match }) {
                       Task Regularization Request
                       {taskRegularizationRequest && (
                         <span className="badge bg-warning p-2">
-                          {taskRegularizationRequest.length ? taskRegularizationRequest.length : ""}
+                          {/* {taskRegularizationRequest.length > 0 ? taskRegularizationRequest.length : ""} */}
                         </span>
                       )}
                     </button>

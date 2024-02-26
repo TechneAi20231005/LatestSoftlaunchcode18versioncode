@@ -1134,7 +1134,7 @@ export default function EditTicketComponent({ match }) {
                       <div className="col-sm-3">
                         <label className=" col-form-label">
                           <b>
-                            Assign to Department :{" "}
+                            Assign Department :{" "}
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
