@@ -199,10 +199,10 @@ export default function CreateProjectComponent({ match }) {
     await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const user = res.data.data.filter((d) => d.is_active == 1);
+          const user = res.data.data.filter((d) => d.is_active == 1 && d.account_for == "SELF");
           setBa(
-            res.data.data
-              .filter((d) => d.is_active == 1 && d.account_for == "SELF")
+            user
+              .filter((d) => d.is_active == 1)
               .map((d) => ({
                 value: d.id,
                 label: d.first_name + " " + d.last_name,
@@ -277,7 +277,7 @@ export default function CreateProjectComponent({ match }) {
                       id="customer_id"
                       name="customer_id"
                       ref={customerRef}
-                      // onBlur={handleFocus}
+                    // onBlur={handleFocus}
                     />
                   </div>
 

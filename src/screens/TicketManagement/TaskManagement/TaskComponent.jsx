@@ -1989,6 +1989,8 @@ export default function TaskComponent({ match }) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskModalData, setTaskModalData] = useState(null);
   const handleShowTaskModal = async (ticket_id, ticket_basket_id, id) => {
+    console.log("task modal opened")
+    setShowTaskModal(true);
     var temp = {
       id: null,
       ticket_basket_id: ticket_basket_id,
@@ -2023,7 +2025,7 @@ export default function TaskComponent({ match }) {
     } else {
       setTaskModalData(temp);
     }
-    setShowTaskModal(true);
+
   };
   const handleCloseTaskModal = () => {
     setShowTaskModal(false);
