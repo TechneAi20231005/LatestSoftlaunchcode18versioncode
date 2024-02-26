@@ -37,8 +37,7 @@ export default function EditModuleComponent({ match }) {
   );
   const modal = useSelector((ModuleSlice) => ModuleSlice);
   const notifys = useSelector((ModuleSlice) => ModuleSlice);
-  console.log("notifys", notifys);
-  console.log("object", modal);
+
 
   console.log("moduleById", moduleById);
 
@@ -55,7 +54,7 @@ export default function EditModuleComponent({ match }) {
     //     }
     //   }
     // });
-    
+    dispatch(getmoduleById({ id: moduleId }));
     // await new ModuleService()
     //   .getModuleById(moduleId)
     //   .then((res) => {
@@ -148,7 +147,6 @@ export default function EditModuleComponent({ match }) {
   };
 
   useEffect(() => {
-    dispatch(getmoduleById({ id: moduleId }));
     loadData();
   }, []);
 
@@ -168,7 +166,7 @@ export default function EditModuleComponent({ match }) {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {moduleById && (
+          {moduleById && moduleById&& (
             <form onSubmit={handleForm}>
               <div className="card mt-2">
                 <div className="card-body">
