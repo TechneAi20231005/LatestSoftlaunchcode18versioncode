@@ -64,11 +64,10 @@ export default function TaskModal(props) {
   };
 
   const handleClose = () => {
-    const timer = setTimeout(() => {
-      props.close();
-      props.loadBasket();
-      clearInterval(timer);
-    }, 2000);
+
+    props.close();
+    props.loadBasket();
+
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
