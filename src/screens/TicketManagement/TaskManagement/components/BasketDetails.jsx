@@ -51,6 +51,7 @@ export default function BasketDetails(props) {
     formData.append("ticket_id", props.ticketId);
     formData.append("source", "AFTER_TICKET_INSERT");
     if (formData.get("id")) {
+      console.log("update vasket", formData.get("id"))
       await new BasketService()
         .updateBasket(formData.get("id"), formData)
 
@@ -84,6 +85,7 @@ export default function BasketDetails(props) {
           );
         });
     } else {
+      console.log("post vasket",)
       await new BasketService()
         .postBasket(formData)
         .then((res) => {
@@ -192,7 +194,7 @@ export default function BasketDetails(props) {
                   id="basket_name"
                   name={`${props.data ? "basket_name" : "basket_name[]"}`}
                   className="form-control form-control-sm"
-                  defaultValue={props.data ? props.data.basket_name : null}
+                  defaultValue={props?.data ? props?.data?.basket_name : null}
                   onKeyPress={(e) => {
                     Validation.CharactersNumbersSpeicalOnly(e);
                   }}

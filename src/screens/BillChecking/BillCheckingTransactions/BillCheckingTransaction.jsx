@@ -798,7 +798,7 @@ function BillCheckingTransaction() {
             audit_remark: temp[key].audit_remark,
             external_audit_remark: temp[key].external_audit_remark,
 
-            levels_of_approval: temp[key].levels_of_approval,
+            levels_of_approval: temp[key].level + 1,
 
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
@@ -818,7 +818,7 @@ function BillCheckingTransaction() {
             "Bill Amount": temp[key].bill_amount,
             "Net Payment": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
-            "Is TCS applicable": temp[key].is_tcs_applicable,
+            "Is TCS applicable": temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
 
             bill_type_name: temp[key].bill_type_name,
 
@@ -831,19 +831,21 @@ function BillCheckingTransaction() {
             "Bill Status": temp[key].payment_status,
 
             "Recieved Date": temp[key].received_date,
-            total_level: temp[key].total_level,
-            last_approved_by: temp[key].last_approved_by,
-            is_editable_for_creator: temp[key].is_editable_for_creator,
+            // total_level: temp[key].total_level,
+            // last_approved_by: temp[key].last_approved_by,
+            // is_editable_for_creator: temp[key].is_editable_for_creator,
 
-            "Levels of approval": temp[key].levels_of_approval,
+            // "Levels of approval": temp[key].levels_of_approval,
+            levels_of_approval: temp[key].level + 1,
+
             "Approve By": temp[key].approved_by,
             "Pending From": temp[key].level_approver,
 
             "Assign From": temp[key].created_by,
             "Assign To": temp[key].assign_to_name,
-            is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
+            // is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
-            approvedBy: temp[key].approvedBy,
+            // approvedBy: temp[key].approvedBy,
             "Is Original Bill": temp[key].is_original_bill_needed === 1 ? "Yes" :"No",
 
             // "is original Bill": temp[key].is_original_bill_needed,
@@ -851,7 +853,7 @@ function BillCheckingTransaction() {
             "External Audit": temp[key].external_audit_remark,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
-            "Is cancelled": temp[key].cancelled,
+            "Is cancelled": temp[key].is_active === 0 ? "Yes" : "No" ,
 
             "Created at": temp[key].created_at,
             "Created by": temp[key].created_by,
@@ -1057,7 +1059,7 @@ function BillCheckingTransaction() {
               bill_type_name: temp[key].bill_type_name,
               "Assign From": temp[key].created_by,
               "Assign To": temp[key].assign_to_name,
-              "Levels of approval": temp[key].levels_of_approval,
+              "Levels of approval": temp[key].level +1 ,
               approvedBy: temp[key].approvedBy,
               "Pending From": temp[key].level_approver,
               // rejectedBy:temp[key].rejectedBy,

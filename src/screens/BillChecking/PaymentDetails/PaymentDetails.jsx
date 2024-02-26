@@ -1351,6 +1351,7 @@ function PaymentDetails({ location, match }) {
         fileName="Payment Details"
       />
 
+
       {/* DATA TABLE */}
       <div className="card mt-2">
         <div className="card-body">

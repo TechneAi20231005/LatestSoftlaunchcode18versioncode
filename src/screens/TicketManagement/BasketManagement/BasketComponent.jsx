@@ -19,7 +19,7 @@ export default function BasketComponent({ match }) {
     const currentDate = new Date();
     const [userData, setUserData] = useState(null);
     const [notify, setNotify] = useState(null);
-    const {id : ticketId} = useParams()
+    const { id: ticketId } = useParams()
     const history = useNavigate();
     const mainJson = {
         ticket_id: ticketId,
@@ -44,18 +44,18 @@ export default function BasketComponent({ match }) {
                 flag = 0;
             }
         }
-        if(flag ==1){
-        var startDate =document.getElementById("start_date").value
-        var endDate = document.getElementById("end_date").value
-        if(endDate < startDate){
-            setDateAlert(true)
-            flag=0
-        }else{
-            setDateAlert(false)
-        }
-        if(flag=0){
-            setDateAlert(false)
-        }
+        if (flag == 1) {
+            var startDate = document.getElementById("start_date").value
+            var endDate = document.getElementById("end_date").value
+            if (endDate < startDate) {
+                setDateAlert(true)
+                flag = 0
+            } else {
+                setDateAlert(false)
+            }
+            if (flag = 0) {
+                setDateAlert(false)
+            }
 
         }
 
@@ -103,7 +103,7 @@ export default function BasketComponent({ match }) {
             end_date: null,
         };
         // if (flag == 1) {
-        await setData([...data, item]);
+        setData([...data, item]);
         // } else {
         //     setNotify({ show: true, type: "warning", message: "Please Fill Previous Row Values" });
         // }
@@ -138,8 +138,8 @@ export default function BasketComponent({ match }) {
                     if (res.data.status === 1) {
                         history({
                             pathname: `/${_base}/Ticket/Task/` + ticketId,
-                          
-                        },{ state: { alert: { type: "success", message: res.data.message } }}
+
+                        }, { state: { alert: { type: "success", message: res.data.message } } }
                         );
                     } else {
                         setNotify({ type: "danger", message: res.data.message });
@@ -180,32 +180,32 @@ export default function BasketComponent({ match }) {
 
         }
     }
-    const[fromDate, setFromDate]= useState();
+    const [fromDate, setFromDate] = useState();
 
-    const handleStartDate =(e) =>{
+    const handleStartDate = (e) => {
         setFromDate(e.target.value)
     }
 
     const loadData = async () => {
         const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
         await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-                        if (res.status === 200) {
+            if (res.status === 200) {
                 const tempData = [];
-                const temp = res.data.data.filter(d=> d.is_active === 1);
+                const temp = res.data.data.filter(d => d.is_active === 1 && d.account_for === "SELF");
                 temp.sort((a, b) => {
-                  if (a.first_name && b.first_name) {
-                    return a.first_name.localeCompare(b.first_name);
-                  }
-                  return 0;
-                });                  
+                    if (a.first_name && b.first_name) {
+                        return a.first_name.localeCompare(b.first_name);
+                    }
+                    return 0;
+                });
                 // const temp = res.data.data.filter(d=> d.is_active ==1);
                 for (const key in temp) {
                     tempData.push({
                         value: temp[key].id,
-                        label: temp[key].first_name + " " + temp[key].last_name+
-                        " (" +
-                        temp[key].id +
-                        ")",
+                        label: temp[key].first_name + " " + temp[key].last_name +
+                            " (" +
+                            temp[key].id +
+                            ")",
                     })
                 }
                 setUserData(null);
@@ -213,7 +213,7 @@ export default function BasketComponent({ match }) {
             }
         })
     }
-   
+
 
     useEffect(() => {
         loadData();
@@ -222,6 +222,7 @@ export default function BasketComponent({ match }) {
     return (
         <div className="container-xxl">
             <PageHeader headerTitle="Manage Basket" />
+            <h1>Hello</h1>
             {notify && <Alert alertData={notify} />}
             <div className='card mt-2' style={{ zIndex: 0 }}>
                 <div className='card-body' >
@@ -254,12 +255,12 @@ export default function BasketComponent({ match }) {
                                                     type="text"
                                                     name="basket_name[]"
                                                     defaultValue={item.basket_name}
-                                                    onChange={e=>{handleChange(e,idx)}}
+                                                    onChange={e => { handleChange(e, idx) }}
                                                     // onInput={e => { handleCheckInput(e, idx) }}
                                                     className="form-control form-control-sm"
                                                     required
                                                     autoComplete="false"
-                                                 onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
+                                                    onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
                                                 />
                                             </td>
 
@@ -299,12 +300,12 @@ export default function BasketComponent({ match }) {
                                                     name="start_date[]"
                                                     // key={Math.random()}
                                                     defaultvalue=""
-                                                    onChange={e=>{handleChange(idx);handleStartDate(e)}}
-                                                    min={new Date().toISOString().slice(0,10)}
+                                                    onChange={e => { handleChange(idx); handleStartDate(e) }}
+                                                    min={new Date().toISOString().slice(0, 10)}
                                                     className="form-control form-control-sm"
                                                     required
                                                 />
-                                               
+
                                             </td>
 
                                             <td>
@@ -314,15 +315,15 @@ export default function BasketComponent({ match }) {
                                                     name="end_date[]"
                                                     //   key={Math.random()}
                                                     defaultValue={item.end_date}
-                                                    
+
                                                     onChange={handleChange(idx)}
-                                                      min={fromDate}
+                                                    min={fromDate}
                                                     className="form-control form-control-sm"
                                                     required
                                                 />
-                                                {dateAlert && dateAlert == true ? <span style={{color:"red", fontSize:"10px"}}>
+                                                {dateAlert && dateAlert == true ? <span style={{ color: "red", fontSize: "10px" }}>
                                                     End date should not be less than start date
-                                                </span>: ""}
+                                                </span> : ""}
                                             </td>
 
 
