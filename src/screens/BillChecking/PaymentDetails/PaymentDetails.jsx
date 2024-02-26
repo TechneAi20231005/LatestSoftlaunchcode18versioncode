@@ -1121,14 +1121,14 @@ function PaymentDetails({ location, match }) {
       cell: (row) => (
         <span>
           {/* {row.payment_status_name!="Paid" && */}
-
+{/* {console.log("status",row)} */}
           {row.payment_status_name === "Paid" ? (
             <button
               type="button"
               className="btn btn-sm btn-info "
               data-bs-toggle="modal"
               disabled={
-                authorities && authorities.Allow_Paid_Entry_Change === false
+                authorities && authorities.Allow_Paid_Entry_Change === false  
                   ? true
                   : false
               }

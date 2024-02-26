@@ -141,7 +141,6 @@ function BillCheckingTransaction() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-     
               {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
@@ -151,7 +150,7 @@ function BillCheckingTransaction() {
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
+                    row.is_approver == 1)) && (row.is_active == 1) && (
                   <li>
 
                     <Link
@@ -194,9 +193,10 @@ function BillCheckingTransaction() {
                     </Link>
                   </li>
                 )}
-              {row.is_assign_to == 1 && row.level == row.total_level && (
-                <>
-                  <li>
+
+{(row.is_assign_to == 1 && row.level == row.total_level) || row.is_active ==0 && (
+
+<li>
                     <Link
                       to={`/${_base}/PaymentHistory/` + row.id}
                       className="btn btn-sm btn-warning text-white"
@@ -205,6 +205,14 @@ function BillCheckingTransaction() {
                       <i className="icofont-tasks"></i> Payment History
                     </Link>
                   </li>
+
+
+)}
+
+
+              {row.is_assign_to == 1 && row.level == row.total_level && (
+                <>
+                  
 
                   <li>
                     <Link
@@ -215,6 +223,7 @@ function BillCheckingTransaction() {
                       <i className="icofont-price"></i> Payment Details
                     </Link>
                   </li>
+                 
 
                   <li>
                     <Link
@@ -228,7 +237,8 @@ function BillCheckingTransaction() {
                 </>
               )}
               {authorities &&
-                authorities.Is_Cancle_Bill === true &&
+                authorities.Is_Cancle_Bill === true && row.is_active == 1 &&
+              
                 // row.is_rejected == 0 && 
                 (
                   <li>
@@ -803,7 +813,7 @@ function BillCheckingTransaction() {
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
             is_rejected: temp[key].is_rejected,
-            "Is cancelled": temp[key].cancelled,
+            "Is cancelled": temp[key].is_active,
           });
         }
         for (const key in temp) {
@@ -1081,7 +1091,8 @@ function BillCheckingTransaction() {
               "Recieved Date": temp[key].received_date,
               "Hold Amount": temp[key].hold_amount,
               "Paid Amount": temp[key].actual_paid,
-              "Is cancelled": temp[key].cancelled,
+              "Is cancelled": temp[key].is_active,
+              is_active:temp[key].is_active,
               "Is TCS applicable":
                 temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
               created_at: temp[key].created_at,
