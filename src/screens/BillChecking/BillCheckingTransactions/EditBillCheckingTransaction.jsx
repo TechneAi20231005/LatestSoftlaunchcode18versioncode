@@ -151,7 +151,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [tcsErr, setTcsErr] = useState(null);
   const [td, setTD] = useState(null);
 
-
   // const handleDebitAdvance = (e) => {
   //   const debitValue = e.target.value;
   //   if (debitValue === "") {
@@ -299,20 +298,17 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (e.value) {
       const selectedContition = constitution.filter((d) => d.id === e.value);
       setTdsPercentage(selectedContition[0].percentage);
-      
     }
   };
 
   const selectTdsPercentageRef = useRef();
   const selecttdsAmountRef = useRef();
 
-
   const handleSectionDropDownChange = async (e) => {
     await new BillTransactionService()
       .getSectionMappingDropdown(e.value)
       .then((res) => {
         if (res.status === 200) {
-         
           if (res.data.status == 1) {
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
@@ -324,16 +320,14 @@ export default function CreateBillCheckingTransaction({ match }) {
             );
           }
           if (selecttdsAmountRef.current.value != null) {
-
             document.getElementById("tds_amount").value = "";
           }
           if (selectTdsPercentageRef.current.value != null) {
             document.getElementById("tds_percentage").value = "";
           }
-          setTD("")
+          setTD("");
 
-          setTdsAmount("")
-         
+          setTdsAmount("");
         }
       });
   };
@@ -342,7 +336,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
     if (selecttdsAmountRef.current.value != null) {
-
       document.getElementById("tds_amount").value = "";
     }
     if (selectTdsPercentageRef.current.value != null) {
@@ -1096,45 +1089,42 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                
-                      
-                      <>
-                        <div className="col-md-3">
-                          {/* {data && data.is_assign_to == 0 && ( */}
-                          <input
-                            type="hidden"
+                    <>
+                      <div className="col-md-3">
+                        {/* {data && data.is_assign_to == 0 && ( */}
+                        <input
+                          type="hidden"
+                          name="assign_to"
+                          value={data && data.assign_to}
+                        />
+                        {/* )} */}
+
+                        <label className="col-form-label">
+                          <b>
+                            Assign To : <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+
+                        {userDropdown && data ? (
+                          <Select
+                            type="text"
+                            className="form-control form-control-sm"
+                            id="assign_to"
+                            options={userDropdown}
                             name="assign_to"
-                            value={data && data.assign_to}
+                            placeholder="Assign To"
+                            required
+                            isDisabled
+                            defaultValue={userDropdown.filter(
+                              (d) => d.value == data.assign_to
+                            )}
                           />
-                          {/* )} */}
+                        ) : (
+                          <p>Loading....</p>
+                        )}
+                      </div>
+                    </>
 
-                          <label className="col-form-label">
-                            <b>
-                              Assign To : <Astrick color="red" size="13px" />
-                            </b>
-                          </label>
-                        
-
-                          {userDropdown && data ? (
-                            <Select
-                              type="text"
-                              className="form-control form-control-sm"
-                              id="assign_to"
-                              options={userDropdown}
-                              name="assign_to"
-                              placeholder="Assign To"
-                              required
-                              isDisabled
-                              defaultValue={userDropdown.filter(
-                                (d) => d.value == data.assign_to
-                              )}
-                            />
-                          ) : (
-                            <p>Loading....</p>
-                          )}
-                        </div>
-                      </>
-                    
                     <div className="col-md-3">
                       <label className="col-form-label">
                         <b>
@@ -2019,9 +2009,7 @@ value={igst=== true ?1 :0} */}
                         {/* )} */}
                       </div>
 
-
-
-                        <div className="col-md-3">
+                      <div className="col-md-3">
                         <label className=" col-form-label">
                           <b>
                             TDS Amount : <Astrick color="red" size="13px" />
@@ -2034,7 +2022,7 @@ value={igst=== true ?1 :0} */}
                           key={Math.random()}
                           ref={selecttdsAmountRef}
                           name="tds_amount"
-                          defaultValue={data.tds_amount && data.tds_amount }
+                          defaultValue={data.tds_amount && data.tds_amount}
                           // defaultValue={data.tds_amount}
                           value={tdsAmount}
                           // readOnly={true}
@@ -2127,7 +2115,6 @@ value={igst=== true ?1 :0} */}
                             // value={tdsPercentage ? tdsPercentage : ''}
                             // ref={tdsPercentageRef}
                             ref={selectTdsPercentageRef}
-
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               (data.is_assign_to == 1 &&

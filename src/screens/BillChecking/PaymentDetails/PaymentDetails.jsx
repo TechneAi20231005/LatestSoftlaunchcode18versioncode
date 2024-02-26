@@ -1026,6 +1026,7 @@ function PaymentDetails({ location, match }) {
     }
   }
 
+  console.log("formattedMaxDate",formattedMaxDate)
   const [country, setCountry] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
@@ -1742,6 +1743,7 @@ function PaymentDetails({ location, match }) {
                         </>
                       )} */}
                     </div>
+                    {console.log("pp",authorities&& authorities)}
 
                   <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">
@@ -1795,7 +1797,7 @@ function PaymentDetails({ location, match }) {
                           modal.modalData ? modal.modalData.payment_date : ""
                         }
                         min={modal.modalData.payment_date}
-                        // max={formattedMaxDate && formattedMaxDate}
+                          max={formattedMaxDate && formattedMaxDate}
                       />
                     )}
                   </div>
