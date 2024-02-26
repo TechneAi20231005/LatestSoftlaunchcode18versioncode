@@ -835,7 +835,6 @@ export default function TaskComponent({ match }) {
                   ticketStartDate={ticketStartDate}
                 />
               )}
-
               {ticketData && (
                 <BasketDetails
                   ticketId={ticketId}
