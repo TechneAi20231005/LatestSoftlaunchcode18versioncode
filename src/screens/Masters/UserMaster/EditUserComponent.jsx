@@ -1955,6 +1955,7 @@ function EditUserComponent({ match }) {
                                         ? item.ticket_show_type.includes(d.value)
                                         : item.ticket_show_type === d.value
                                     )}
+                                    required
 
                                     onChange={(selectedOption) =>
                                       handleTickeTypeShowSelect(selectedOption, idx)
