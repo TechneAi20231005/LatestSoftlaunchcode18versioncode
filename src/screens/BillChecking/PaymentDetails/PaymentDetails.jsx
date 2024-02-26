@@ -1639,7 +1639,7 @@ function PaymentDetails({ location, match }) {
                               )
                             }
                           />
-                          
+                         
                         )}
                       </>
                       {/* ) : (
@@ -1652,8 +1652,8 @@ function PaymentDetails({ location, match }) {
                               options={statusDropDown}
                               ref={statusDropdownRef}
                               isDisabled={userSessionData.Update_Payment_Details==="true"}
-                            
-                              
+                           
+                             
                               required={true}
                               defaultValue={
                                 modal.modalData &&

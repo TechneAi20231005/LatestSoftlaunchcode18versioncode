@@ -89,8 +89,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [netPayment, setNetPayment] = useState(null);
 
   const [tdsAmount, setTdsAmount] = useState(null);
-  const [tdsAmounts, setTdsAmounts] = useState(null);
-
 
   const [tdsData, setTdsData] = useState(null);
 
@@ -151,6 +149,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [taxableAmountErr, setTaxableAmountErr] = useState(null);
   const [igstErr, setIgstErr] = useState(null);
   const [tcsErr, setTcsErr] = useState(null);
+  const [td, setTD] = useState(null);
+
 
   // const handleDebitAdvance = (e) => {
   //   const debitValue = e.target.value;
@@ -296,31 +296,26 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleTdsPercentage = (e) => {
-
     if (e.value) {
       const selectedContition = constitution.filter((d) => d.id === e.value);
       setTdsPercentage(selectedContition[0].percentage);
+      
     }
   };
 
-console.log("dd",constitution)
-  // const handleTdsAmount = (e) => {
-  //   if (e.value) {
-  //     const selectedContition = constitution.filter((d) => d.id === e.value);
-  //     setTdsPercentage(selectedContition[0].percentage);
-  //   }
-  // };
+  const selectTdsPercentageRef = useRef();
+  const selecttdsAmountRef = useRef();
+
 
   const handleSectionDropDownChange = async (e) => {
-
     await new BillTransactionService()
       .getSectionMappingDropdown(e.value)
       .then((res) => {
         if (res.status === 200) {
+         
           if (res.data.status == 1) {
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
-            console.log("res==>",res.data.data)
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
@@ -328,19 +323,30 @@ console.log("dd",constitution)
               }))
             );
           }
+          if (selecttdsAmountRef.current.value != null) {
+
+            document.getElementById("tds_amount").value = "";
+          }
+          if (selectTdsPercentageRef.current.value != null) {
+            document.getElementById("tds_percentage").value = "";
+          }
+          setTD("")
+
+          setTdsAmount("")
+         
         }
       });
   };
 
-  const inputRef = useRef(null);
-
   const handleTDSSectionChange = (e) => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
-    if (inputRef.current) {
-      inputRef.current.value = ''; 
-    setTdsAmount(0)
-    // Clear the input value
+    if (selecttdsAmountRef.current.value != null) {
+
+      document.getElementById("tds_amount").value = "";
+    }
+    if (selectTdsPercentageRef.current.value != null) {
+      document.getElementById("tds_percentage").value = "";
     }
   };
 
@@ -721,11 +727,6 @@ console.log("dd",constitution)
     }
   };
 
-
-  
-
-
-
   const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
@@ -1095,52 +1096,16 @@ console.log("dd",constitution)
                       )}
                     </div>
 
-                    {console.log("pp", recordRoom == data.assign_to[1])}
-                    {console.log("ss",data.assign_to)}
-
-                    {(authorities && authorities.Record_Room === true) &&
-                    data.bill_status === "Solved"&& userDropdown&&userDropdown.filter((d)=>d.value==userSessionData.userId)? (
-                      <div className="col-md-3">
-                        {/* {data && data.is_assign_to == 0 && ( */}
-                        <input
-                          type="hidden"
-                          name="assign_to"
-                          value={data && data.assign_to}
-                        />
-                        {/* )} */}
-
-                        <label className="col-form-label">
-                          <b>
-                            Assign To : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-
-                        {recordRoom && data ? (
-                          <Select
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="assign_to"
-                            options={recordRoom}
-                            name="assign_to"
-                            placeholder="Assign To"
-                            required
-                            // isDisabled
-
-                            defaultValue={recordRoom}
-                          />
-                        ) : (
-                          <p>Loading....</p>
-                        )}
-                      </div>
-                    ) : (
+                
+                      
                       <>
                         <div className="col-md-3">
                           {/* {data && data.is_assign_to == 0 && ( */}
-                          {/* <input
+                          <input
                             type="hidden"
                             name="assign_to"
                             value={data && data.assign_to}
-                          /> */}
+                          />
                           {/* )} */}
 
                           <label className="col-form-label">
@@ -1149,7 +1114,6 @@ console.log("dd",constitution)
                             </b>
                           </label>
                         
-                        {console.log("userSessionData",)}
 
                           {userDropdown && data ? (
                             <Select
@@ -1170,8 +1134,7 @@ console.log("dd",constitution)
                           )}
                         </div>
                       </>
-                    )}
-
+                    
                     <div className="col-md-3">
                       <label className="col-form-label">
                         <b>
@@ -1999,8 +1962,6 @@ value={igst=== true ?1 :0} */}
                           </span>
                         )} */}
 
-                        {console.log("cc",constitutionDropdown)}
-
                         {/* {(!tdsData || tdsData.length == 0) && ( */}
                         <span>
                           {constitutionDropdown && data && (
@@ -2057,6 +2018,48 @@ value={igst=== true ?1 :0} */}
                         </span>
                         {/* )} */}
                       </div>
+
+
+
+                        <div className="col-md-3">
+                        <label className=" col-form-label">
+                          <b>
+                            TDS Amount : <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="tds_amount"
+                          key={Math.random()}
+                          ref={selecttdsAmountRef}
+                          name="tds_amount"
+                          defaultValue={data.tds_amount && data.tds_amount }
+                          // defaultValue={data.tds_amount}
+                          value={tdsAmount}
+                          // readOnly={true}
+                        />
+                      </div>
+
+                      {/* {tdsPercentage ?  <div className="col-md-3">
+                        <label className=" col-form-label">
+                          <b>
+                            TDS Amount : <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="tds_amount"
+                          key={Math.random()}
+                          ref={selecttdsAmountRef}
+                          name="tds_amount"
+                          value={td}
+                          // defaultValue={data.tds_amount}
+                          // value={tdsAmount}
+                          // readOnly={true}
+                        />
+                      </div> :
                       <div className="col-md-3">
                         <label className=" col-form-label">
                           <b>
@@ -2068,19 +2071,15 @@ value={igst=== true ?1 :0} */}
                           className="form-control form-control-sm"
                           id="tds_amount"
                           key={Math.random()}
+                          ref={selecttdsAmountRef}
                           name="tds_amount"
-                         ref={ inputRef}
-                          
-                          // defaultValue={data.tds_amount ? data.tds_amount : 0}
+                          defaultValue={data.tds_amount && data.tds_amount }
                           // defaultValue={data.tds_amount}
-                          value={tdsAmount}
-                          readOnly={true}
-                          
+                          // value={tdsAmount}
+                          // readOnly={true}
                         />
                       </div>
-
-
-                      {console.log("tds",tdsAmount)}
+} */}
 
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
@@ -2096,7 +2095,7 @@ value={igst=== true ?1 :0} */}
                             name="tds_percentage"
                             // defaultValue={data && data.tds_percentage ? data.tds_percentage : ''}
                             value={tdsPercentage ? tdsPercentage : ""}
-                            ref={tdsPercentageRef}
+                            ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               (data.is_assign_to == 1 &&
@@ -2126,7 +2125,9 @@ value={igst=== true ?1 :0} */}
                                 : ""
                             }
                             // value={tdsPercentage ? tdsPercentage : ''}
-                            ref={tdsPercentageRef}
+                            // ref={tdsPercentageRef}
+                            ref={selectTdsPercentageRef}
+
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               (data.is_assign_to == 1 &&
