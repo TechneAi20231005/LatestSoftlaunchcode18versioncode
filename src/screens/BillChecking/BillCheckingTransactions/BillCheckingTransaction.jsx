@@ -141,7 +141,7 @@ function BillCheckingTransaction() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {console.log("rows",row)}
+     
               {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||

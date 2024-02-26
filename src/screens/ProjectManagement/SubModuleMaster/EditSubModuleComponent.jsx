@@ -14,6 +14,7 @@ import { UseSelector, useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import {
   getSubModuleById,
+  subModuleMaster,
   updatesubModuleMaster,
 } from "./SubModuleMasterAction";
 import { filterModuleAccordingToProject } from "../ModuleMaster/ModuleSlice";
@@ -26,7 +27,8 @@ export default function EditModuleComponent({ match }) {
   const navigate = useNavigate();
   const data = useSelector( (SubModuleMasterSlice) =>SubModuleMasterSlice.subModuleMaster.getSubModuleById );
 
-  const filteredModule = useSelector( (moduleSlice) => moduleSlice.moduleMaster.filteredModuleAccordingToProject);
+  const filteredModule = useSelector( (moduleSlice) => moduleSlice.moduleMaster.modulesortedData);
+  console.log(filteredModule);
 
 
   const dispatch = useDispatch();
@@ -100,7 +102,7 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-    dispatch(moduleMaster());
+   
 
     // await new ModuleService().getModule().then((res) => {
     //   if (res.status === 200) {
@@ -130,13 +132,32 @@ export default function EditModuleComponent({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     // setNotify(null);
-    dispatch(
-      updatesubModuleMaster({ id: subModuleId, payload: formData })
-    ).then((res) => {
-      if (res.payload.data.status == 1 && res.payload.status == 200) {
-        navigate(`/${_base}/SubModule`);
-      }
+    // dispatch(updatesubModuleMaster({ id: subModuleId, payload: formData })).then((res) => {
+    //   if (res.payload.data.status == 1 && res.payload.status == 200) {
+    //     navigate(`/${_base}/SubModule`);
+    //   }
+    // });
+
+
+    dispatch(updatesubModuleMaster({ id: subModuleId, payload: formData })).then((res) => {
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message })
+        dispatch(subModuleMaster());
+       
+        setTimeout(() => {
+          navigate(`/${_base}/SubModule`, {
+            state: { alert: { type: "success", message: res?.payload?.data?.message } },
+          });
+        }, 3000);
+      }else {
+        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+    }
+      
     });
+
+
+
+
 
     // await new SubModuleService()
     //   .updateSubModule(subModuleId, formData)
@@ -180,6 +201,7 @@ export default function EditModuleComponent({ match }) {
   };
 
   useState(() => {
+     dispatch(moduleMaster());
     loadData();
 
     return () => {
@@ -250,6 +272,11 @@ export default function EditModuleComponent({ match }) {
                                                 defaultValue={data.module_id}
                                                 onChange={handleDependent}
                                             /> */}
+                                            {console.log(data &&
+                            filteredModule &&
+                            filteredModule.filter(
+                              (d) => d.value === data.module_id
+                            ))}
                       {filteredModule && (
                         <Select
                           options={filteredModule}

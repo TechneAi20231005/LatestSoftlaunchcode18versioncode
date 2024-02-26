@@ -89,6 +89,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [netPayment, setNetPayment] = useState(null);
 
   const [tdsAmount, setTdsAmount] = useState(null);
+  const [tdsAmounts, setTdsAmounts] = useState(null);
+
 
   const [tdsData, setTdsData] = useState(null);
 
@@ -294,13 +296,23 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const handleTdsPercentage = (e) => {
+
     if (e.value) {
       const selectedContition = constitution.filter((d) => d.id === e.value);
       setTdsPercentage(selectedContition[0].percentage);
     }
   };
 
+console.log("dd",constitution)
+  // const handleTdsAmount = (e) => {
+  //   if (e.value) {
+  //     const selectedContition = constitution.filter((d) => d.id === e.value);
+  //     setTdsPercentage(selectedContition[0].percentage);
+  //   }
+  // };
+
   const handleSectionDropDownChange = async (e) => {
+
     await new BillTransactionService()
       .getSectionMappingDropdown(e.value)
       .then((res) => {
@@ -308,6 +320,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (res.data.status == 1) {
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
+            console.log("res==>",res.data.data)
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
@@ -319,9 +332,16 @@ export default function CreateBillCheckingTransaction({ match }) {
       });
   };
 
+  const inputRef = useRef(null);
+
   const handleTDSSectionChange = (e) => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
+    if (inputRef.current) {
+      inputRef.current.value = ''; 
+    setTdsAmount(0)
+    // Clear the input value
+    }
   };
 
   const handleSectionDropDownChange1 = async (section) => {
@@ -701,6 +721,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
+
+  
+
+
+
   const [isTcsApplicable, setIsTcsApplicable] = useState(null);
   const [authorizedByHod, SetauthorizedByHod] = useState(false);
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
@@ -1070,13 +1095,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                 
+                    {console.log("pp", recordRoom == data.assign_to[1])}
+                    {console.log("ss",data.assign_to)}
 
-                 {console.log("pp",recordRoom == data.assign_to[1])}
-                 {console.log(data.assign_to)}
-
-                    {(authorities && authorities.Record_Room === true) ||
-                    data.bill_status === "Solved" ? (
+                    {(authorities && authorities.Record_Room === true) &&
+                    data.bill_status === "Solved"&& userDropdown&&userDropdown.filter((d)=>d.value==userSessionData.userId)? (
                       <div className="col-md-3">
                         {/* {data && data.is_assign_to == 0 && ( */}
                         <input
@@ -1092,42 +1115,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </b>
                         </label>
 
-                        {/* <Select
-                         type="text"
-                         className="form-control form-control-sm"
-                         id="assign_to"
-                        //  options={userDropdown}
-                         name="assign_to"
-                         placeholder="Assign To"
-                         required
-                        //  isDisabled
-                         // isDisabled={
-                         //   authorities && authorities.All_Update_Bill === true
-                         //     ? false
-                         //     : true
-                         // }
-                         defaultValue="Record Room"
-                       /> */}
-
-                        {/* <Select
-  type="text"
-  className="form-control form-control-sm"
-  id="assign_to"
-  name="assign_to"
-  placeholder="Assign To"
-  required
-  defaultValue="Record Room" // Set the default value to "Record Room"
-/> */}
-
-                        {/* <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="assign_to"
-                          name="assign_to"
-                          required
-                          defaultValue={data.assign_to[1]}
-                        /> */}
-
                         {recordRoom && data ? (
                           <Select
                             type="text"
@@ -1139,7 +1126,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             required
                             // isDisabled
 
-                            defaultValue={recordRoom === data.assign_to[1]}
+                            defaultValue={recordRoom}
                           />
                         ) : (
                           <p>Loading....</p>
@@ -1149,11 +1136,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <>
                         <div className="col-md-3">
                           {/* {data && data.is_assign_to == 0 && ( */}
-                          <input
+                          {/* <input
                             type="hidden"
                             name="assign_to"
                             value={data && data.assign_to}
-                          />
+                          /> */}
                           {/* )} */}
 
                           <label className="col-form-label">
@@ -1161,7 +1148,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                               Assign To : <Astrick color="red" size="13px" />
                             </b>
                           </label>
-                          {console.log("userDropdown", userDropdown)}
+                        
+                        {console.log("userSessionData",)}
 
                           {userDropdown && data ? (
                             <Select
@@ -2011,6 +1999,8 @@ value={igst=== true ?1 :0} */}
                           </span>
                         )} */}
 
+                        {console.log("cc",constitutionDropdown)}
+
                         {/* {(!tdsData || tdsData.length == 0) && ( */}
                         <span>
                           {constitutionDropdown && data && (
@@ -2079,12 +2069,18 @@ value={igst=== true ?1 :0} */}
                           id="tds_amount"
                           key={Math.random()}
                           name="tds_amount"
-                          defaultValue={data.tds_amount ? data.tds_amount : 0}
+                         ref={ inputRef}
+                          
+                          // defaultValue={data.tds_amount ? data.tds_amount : 0}
                           // defaultValue={data.tds_amount}
                           value={tdsAmount}
                           readOnly={true}
+                          
                         />
                       </div>
+
+
+                      {console.log("tds",tdsAmount)}
 
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">

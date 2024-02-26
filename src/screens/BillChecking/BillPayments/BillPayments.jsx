@@ -1558,7 +1558,7 @@ const BillPayments = () => {
   const roleId = sessionStorage.getItem("role_id");
 
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 42));
+  // const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 42));
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
   const [data, setData] = useState();
@@ -1970,13 +1970,13 @@ const BillPayments = () => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    if (checkRole && checkRole[0].can_read === 0) {
-      // alert("Rushi")
+  // useEffect(() => {
+  //   if (checkRole && checkRole[0].can_read === 0) {
+  //     // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    }
-  }, [checkRole]);
+  //     window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+  //   }
+  // }, [checkRole]);
 
   return (
     <>

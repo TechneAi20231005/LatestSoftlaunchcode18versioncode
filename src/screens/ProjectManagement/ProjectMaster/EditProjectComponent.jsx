@@ -23,17 +23,20 @@ export default function EditProjectComponent({ match }) {
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22));
   const getproject = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.getprojectByID);
-  const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
+  console.log(getproject?.customer_id
+    );
+  // const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
 
 
 
-  // const [notify, setNotify] = useState(null);
+  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const projectId = id;
 
   const [data, setData] = useState(null);
   const [customer, setCustomer] = useState(null);
+  console.log(customer?.filter((d)=>d.value==getproject?.customer_id));
   const [ba, setBa] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
@@ -139,15 +142,36 @@ export default function EditProjectComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res)=>{
-      if(res.payload.data.status==1&&res.payload.status==200){
-        navigate(`/${_base}/Project`)
-        loadData()
-      }
+    // dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res)=>{
+    //   if(res.payload.data.status==1&&res.payload.status==200){
+    //     navigate(`/${_base}/Project`)
+    //     loadData()
+    //   }
     
 
 
-    })
+    // })
+
+    
+    dispatch(updateprojectMaster({ id: projectId, payload: formData })).then((res) => {
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message })
+        loadData()
+       
+        setTimeout(() => {
+          navigate(`/${_base}/Project`, {
+            state: { alert: { type: "success", message: res?.payload?.data?.message } },
+          });
+        }, 3000);
+      }else {
+        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+    }
+      
+    });
+
+
+
+
 
     // await new ProjectService()
     //   .updateProject(projectId, formData)
@@ -237,11 +261,7 @@ export default function EditProjectComponent({ match }) {
                         isMulti={true}
                         options={customer}
                         defaultValue={
-                          getproject 
-                            ? customer?.filter(
-                                (d) => d.value == getproject.customer_id
-                              )
-                            : []
+                          customer?.filter((d)=>d.value==getproject?.customer_id)
                         }
                       />
                     </div>
