@@ -51,7 +51,7 @@ const requiredUserRef = useRef();
 
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
-    var firstAmount = newData[index].amount;
+    var firstAmount = newData[index].amount + 1;
     if (isNaN(firstAmount)) {
       firstAmount = 0.0;
     }
@@ -83,6 +83,7 @@ const requiredUserRef = useRef();
         }
       }
     }
+    console.log("fff",firstAmount)
 
     // Calculate the new amount based on the previous section
     const previousSection = newData[newData.length - 1];
@@ -719,6 +720,8 @@ disabled ={levelItem.employee_id && levelItem.employee_id != null  ? false : tru
                             onKeyPress={(e) => {
                               Validation.RequiredNumbersOnly(e);
                             }}
+
+                            min={1}
                             ref={(el) => {
                               if (!inputRefs.current[index]) {
                                 inputRefs.current[index] = [];
