@@ -1043,8 +1043,10 @@ function PaymentDetails({ location, match }) {
     await new PaymentDetailsService()
       .getPaymentDetails(id, userId)
       .then((res) => {
+        console.log("res",res)
         if (res.status === 200) {
           let counter = 1;
+
           const temp = res.data.data;
 
           for (const key in temp) {
@@ -1057,6 +1059,7 @@ function PaymentDetails({ location, match }) {
               remark: temp[key].remark,
               actual_payment_date: temp[key].actual_payment_date,
               payment_ref_number: temp[key].payment_ref_number,
+              payment_reference_number:temp[key].payment_reference_number,
               payment_status: temp[key].payment_status,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
@@ -1077,7 +1080,7 @@ function PaymentDetails({ location, match }) {
               payment_date: temp[key].payment_date,
               remark: temp[key].remark,
               actual_payment_date: temp[key].actual_payment_date,
-              payment_ref_number: temp[key].payment_ref_number,
+              payment_reference_number: temp[key].payment_reference_number,
             });
           }
           setExportData(ExportTempData);
