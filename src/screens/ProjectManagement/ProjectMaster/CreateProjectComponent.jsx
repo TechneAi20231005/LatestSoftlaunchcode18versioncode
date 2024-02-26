@@ -36,6 +36,7 @@ export default function CreateProjectComponent({ match }) {
   console.log(checkRole);
   const [notify, setNotify] = useState(null);
   const [customer, setCustomer] = useState(null);
+  console.log(customer)
   const customerRef = useRef("");
   const fileInputRef = useRef(null);
 
@@ -158,6 +159,7 @@ export default function CreateProjectComponent({ match }) {
 
   const loadData = async () => {
     await new CustomerService().getCustomer().then((res) => {
+      console.log("res",res)
       if (res.status == 200) {
         if (res.data.status == 1) {
           // const data=res.data.data.filter(d=>d.is_active==1);

@@ -514,7 +514,7 @@ export default function CreateModuleComponent({ match }) {
                                     </div>
                                 </div>
 
-                                <div className="form-group row mt-3">
+                                {/* <div className="form-group row mt-3">
                                     <label className="col-sm-2 col-form-label">
                                         <b>Status : </b>
                                     </label>
@@ -543,7 +543,7 @@ export default function CreateModuleComponent({ match }) {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
 
                             </div> {/* CARD BODY */}
                         </div>{/* CARD */}
