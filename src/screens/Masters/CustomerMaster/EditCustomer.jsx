@@ -970,6 +970,23 @@ function EditCustomer({ match }) {
     // });
   };
 
+
+
+  const [emailError, setEmailError] = useState("");
+  const [mailError, setMailError] = useState(false);
+
+  const handleEmail = (e) => {
+    const email = e.target.value;
+    const emailRegex =
+      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+    if (emailRegex.test(email) === false) {
+      setEmailError("Invalid Email");
+      setMailError(true);
+    } else {
+      setEmailError("");
+      setMailError(false);
+    }
+  };
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
@@ -1083,6 +1100,10 @@ function EditCustomer({ match }) {
         });
     }
   };
+
+  
+
+
 
   const handleCountryChange = (e) => {
     setStateDropdown(
@@ -1235,12 +1256,17 @@ function EditCustomer({ match }) {
                         name="email_id"
                         placeholder="Email Address"
                         required
+                        onChange={handleEmail}
+                        
                         onKeyPress={(e) => {
                           Validation.emailOnly(e);
                         }}
                         defaultValue={data.email_id}
-                        // pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
+                        
                       />
+                       {mailError && (
+            <div className="text-danger">{emailError}</div>
+          )}
                     </div>
                   </div>
 

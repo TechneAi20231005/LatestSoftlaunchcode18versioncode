@@ -69,11 +69,11 @@ export default function CreateCustomer({ match }) {
     (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
   );
   const stateDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.stateData
+    (DashbordSlice) => DashbordSlice.dashboard.FilterState
   );
 
   const AllcityDropDownData = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.cityData
+    (DashbordSlice) => DashbordSlice.dashboard.FilterCity
   );
 
   console.log("s", AllcityDropDownData);

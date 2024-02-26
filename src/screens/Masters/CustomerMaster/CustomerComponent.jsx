@@ -34,6 +34,7 @@ function CustomerComponent() {
 
   const dispatch = useDispatch()
   const getallCustomer = useSelector(dashboardSlice=>dashboardSlice.dashboard.getAllCustomerData)
+  console.log("getallCustomer",getallCustomer)
   const exportData = useSelector(dashboardSlice=>dashboardSlice.dashboard.exportCustomerData)
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
 

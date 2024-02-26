@@ -22,7 +22,7 @@ import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
 export default function DynamicFormDropdownComponent() {
   const location = useLocation();
 
-  // const [data, setData] = useState(null);
+  const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -33,7 +33,7 @@ export default function DynamicFormDropdownComponent() {
     modalHeader: "",
   });
 
-  // const [exportData, setExportData] = useState(null)
+  const [exportData, setExportData] = useState(null)
   const roleId = sessionStorage.getItem("role_id");
   //   const [checkRole, setCheckRole] = useState(null)
 
@@ -41,14 +41,14 @@ export default function DynamicFormDropdownComponent() {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
   );
-  const data = useSelector(
-    (DynamicFormDropDownSlice) =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData
-  );
-  const exportData = useSelector(
-    (DynamicFormDropDownSlice) =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData
-  );
+  // const data = useSelector(
+  //   (DynamicFormDropDownSlice) =>
+  //     DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData
+  // );
+  // const exportData = useSelector(
+  //   (DynamicFormDropDownSlice) =>
+  //     DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData
+  // );
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -134,45 +134,48 @@ export default function DynamicFormDropdownComponent() {
     // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
-    // await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
-    //     if (res.status === 200) {
-    // setShowLoaderModal(false);
+    await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
+        if (res.status === 200) {
+    setShowLoaderModal(false);
 
-    //         let counter = 1;
-    //         const temp = res.data.data
-    //         for (const key in temp) {
-    //             data.push({
-    //                 counter: counter++,
-    //                 id: temp[key].id,
-    //                 dropdown_name: temp[key].dropdown_name,
-    //                 is_active: temp[key].is_active,
-    //                 updated_at: temp[key].updated_at,
-    //                 updated_by: temp[key].updated_by,
-    //             })
+            let counter = 1;
+            const temp = res.data.data
+            for (const key in temp) {
+                data.push({
+                    counter: counter++,
+                    id: temp[key].id,
+                    dropdown_name: temp[key].dropdown_name,
+                    is_active: temp[key].is_active,
+                    updated_at: temp[key].updated_at,
+                    created_at: temp[key].updated_at,
+                    created_by: temp[key].updated_by,
 
-    //         }
-    //         setData(null);
-    //         setData(data);
-    //         setDataa(data);
+                    updated_by: temp[key].updated_by,
+                })
 
-    //         for (const key in data) {
-    //             exportTempData.push({
-    //                 Sr: data[key].counter,
-    //                 Dropdown: data[key].dropdown_name,
-    //                 Status: data[key].is_active ? 'Active' : 'Deactive',
-    //                 updated_at: data[key].updated_at,
-    //                 updated_by: data[key].updated_by,
-    //             })
-    //         }
+            }
+            setData(null);
+            setData(data);
+            setDataa(data);
 
-    //         setExportData(null)
-    //         setExportData(exportTempData)
-    //     }
-    // }).catch(error => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
-    // })
+            for (const key in data) {
+                exportTempData.push({
+                    Sr: data[key].counter,
+                    Dropdown: data[key].dropdown_name,
+                    Status: data[key].is_active ? 'Active' : 'Deactive',
+                    updated_at: data[key].updated_at,
+                    updated_by: data[key].updated_by,
+                })
+            }
+
+            setExportData(null)
+            setExportData(exportTempData)
+        }
+    }).catch(error => {
+        const { response } = error;
+        const { request, ...errorObject } = response;
+        new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
+    })
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //     if (res.status === 200) {
@@ -206,16 +209,16 @@ export default function DynamicFormDropdownComponent() {
   }, [data]);
 
   useEffect(() => {
-    // loadData();
+    loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
     }
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    if (!data.length) {
-      dispatch(dynamicFormDropDownData());
-    }
+    // if (!data.length) {
+    //   dispatch(dynamicFormDropDownData());
+    // }
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -314,7 +317,7 @@ export default function DynamicFormDropdownComponent() {
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
                   />
-                // </DataTableExtensions>
+                //  </DataTableExtensions>
               )}
             </div>
           </div>

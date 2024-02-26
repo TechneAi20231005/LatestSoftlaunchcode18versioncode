@@ -3482,6 +3482,8 @@ function CreateUserComponent({ match }) {
                             onChange={(e) =>
                               handleCheckInput(e, idx, "TICKET_SHOW")
                             }
+                            required
+
                           />
                         </td>
 

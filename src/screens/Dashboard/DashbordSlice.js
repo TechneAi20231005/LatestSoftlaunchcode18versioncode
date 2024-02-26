@@ -209,6 +209,7 @@ const initialState = {
   countryData: [],
   sortedCityData: [],
   stateData: [],
+  FilterState:[],
   employeeData: [],
   showLoaderModal: false,
   exportData: [],
@@ -506,6 +507,9 @@ state.FilterCity=FilterCity
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let stateData = payload.data.data;
+
+        let FilterState = payload.data.data.filter((d)=>d.is_active==1)
+        state.FilterState= FilterState
 
         state.status = "succeded";
         state.showLoaderModal = false;
