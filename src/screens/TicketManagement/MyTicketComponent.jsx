@@ -5188,18 +5188,18 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    // {
-    //   name: "Solved Date",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_date,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Solved By",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_by,
-    //   sortable: true,
-    // },
+    {
+      name: "Solved Date",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_date,
+      sortable: true,
+    },
+    {
+      name: "Solved By",
+      maxWidth: "auto",
+      selector: (row) => row.ticket_solved_by,
+      sortable: true,
+    },
   ];
 
   const departmentwisetTicketColumns = [
