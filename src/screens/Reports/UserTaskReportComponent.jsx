@@ -55,19 +55,19 @@ function UserTaskReportComponent() {
         setShowLoaderModal(true)
         const tempUserData = [];
         const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
-        await new UserService().getUserForMyTickets(inputRequired).then((res) => { 
-                       if (res.status === 200) {
+        await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+            if (res.status === 200) {
                 const data = res.data.data.filter((d) => d.is_active === 1);
                 for (const key in data) {
                     tempUserData.push({
                         value: data[key].id,
-                        label: data[key].first_name + " " + data[key].last_name+
-                        " (" +
-                        data[key].id +
-                        ")",
+                        label: data[key].first_name + " " + data[key].last_name +
+                            " (" +
+                            data[key].id +
+                            ")",
                     })
                 }
-                const aa =tempUserData.sort(function(a,b) {return (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0);} );
+                const aa = tempUserData.sort(function (a, b) { return (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0); });
                 setUserData(aa);
             }
         })
@@ -82,7 +82,7 @@ function UserTaskReportComponent() {
             }
         })
 
-      
+
     }
 
 
@@ -134,8 +134,8 @@ function UserTaskReportComponent() {
                             task_name: temp[key].task_name,
                             user_name: temp[key].employee_name,
                             total_worked: temp[key].total_worked,
-                            status:temp[key].status,
-                            updated_at:temp[key].updated_at,
+                            status: temp[key].status,
+                            updated_at: temp[key].updated_at,
                         })
                     }
                     setData(null);
@@ -147,8 +147,8 @@ function UserTaskReportComponent() {
                             task_name: temp[key].task_name,
                             user_name: temp[key].employee_name,
                             total_worked: temp[key].total_worked,
-                            status:temp[key].status,
-                            updated_at:temp[key].updated_at,
+                            status: temp[key].status,
+                            updated_at: temp[key].updated_at,
                         })
                     }
                     setExportData(null)
@@ -166,7 +166,7 @@ function UserTaskReportComponent() {
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-            handleForm();  
+            handleForm();
         }
     };
 
@@ -174,13 +174,13 @@ function UserTaskReportComponent() {
         loadData();
     }, [])
 
-    useEffect(()=>{
-        if(checkRole && checkRole[23].can_read === 0){
-          // alert("Rushi")
-      
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+    useEffect(() => {
+        if (checkRole && checkRole[23].can_read === 0) {
+            // alert("Rushi")
+
+            window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
         }
-      },[checkRole])
+    }, [checkRole])
 
     return (
         <div className="container-xxl">
@@ -213,8 +213,8 @@ function UserTaskReportComponent() {
                                     <b>Search Task :</b>
                                 </label>
                                 <input type="text" className="form-control form-control-sm"
-                                onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
-                                onKeyDown={handleKeyDown}
+                                    onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
+                                    onKeyDown={handleKeyDown}
                                     name="task_name" />
                             </div>
 
@@ -249,45 +249,45 @@ function UserTaskReportComponent() {
                             </div>
                         </div>
                     </form>
-                    {data && data.length > 0 && 
+                    {data && data.length > 0 &&
 
-                            <div className="col" style={{ textAlign: 'right', marginTop: '20px', fontWeight: '600' }}>
-                                <ExportToExcel className="btn btn-sm btn-danger" apiData={exportData} fileName="User Task Report" />
-                            </div>
-                        }
+                        <div className="col" style={{ textAlign: 'right', marginTop: '20px', fontWeight: '600' }}>
+                            <ExportToExcel className="btn btn-sm btn-danger" apiData={exportData} fileName="User Task Report" />
+                        </div>
+                    }
                 </div>
             </div>
 
-                            {data && data.length > 0 && 
-            <div className='card mt-2'>
-                <div className='card-body'>
-                    <div className="row clearfix g-3">
-                        <div className="col-sm-12">
-                            <DataTable
-                                columns={columns}
-                                data={data}
-                                defaultSortField="title"
-                                pagination
-                                selectableRows={false}
-                                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                                highlightOnHover={true}
-                            />
+            {data && data.length > 0 &&
+                <div className='card mt-2'>
+                    <div className='card-body'>
+                        <div className="row clearfix g-3">
+                            <div className="col-sm-12">
+                                <DataTable
+                                    columns={columns}
+                                    data={data}
+                                    defaultSortField="title"
+                                    pagination
+                                    selectableRows={false}
+                                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                                    highlightOnHover={true}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-                            }
+            }
             <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+                <Modal.Body className="text-center">
+                    <Spinner animation="grow" variant="primary" />
+                    <Spinner animation="grow" variant="secondary" />
+                    <Spinner animation="grow" variant="success" />
+                    <Spinner animation="grow" variant="danger" />
+                    <Spinner animation="grow" variant="warning" />
+                    <Spinner animation="grow" variant="info" />
+                    <Spinner animation="grow" variant="dark" />
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

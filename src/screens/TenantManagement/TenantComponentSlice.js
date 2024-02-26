@@ -52,21 +52,21 @@ export const tenantmasterSlice = createSlice({
         }
         state.getAllTenant = [...getAllTenant];
         state.exportAllTenantData = [...getAllTenant]
-
-        // let exportAllTenantData = [];
-        // for (const i in getAllTenant) {
-        //     exportAllTenantData.push({
-        //     Sr: getAllTenant[i].counter,
-        //     Role: getAllTenant[i].role,
-        //     Status: getAllTenant[i].is_active ? "Active" : "Deactive",
-        //     Remark: getAllTenant[i].remark,
-        //     created_at: getAllTenant[i].created_at,
-        //     created_by: getAllTenant[i].created_by,
-        //     updated_at: getAllTenant[i].updated_at,
-        //     updated_by: getAllTenant[i].updated_by,
-        //   });
-        // }
-        // state.exportAllTenantData=exportAllTenantData
+        let sr = 1;
+        let exportAllTenantData = [];
+        for (const i in getAllTenant) {
+          exportAllTenantData.push({
+            Sr: sr++,
+            Role: getAllTenant[i].role,
+            Status: getAllTenant[i].is_active ? "Active" : "Deactive",
+            Remark: getAllTenant[i].remark,
+            created_at: getAllTenant[i].created_at,
+            created_by: getAllTenant[i].created_by,
+            updated_at: getAllTenant[i].updated_at,
+            updated_by: getAllTenant[i].updated_by,
+          });
+        }
+        state.exportAllTenantData = exportAllTenantData
       }
     });
     builder.addCase(getAllTenant.rejected, (state) => {
