@@ -14,10 +14,10 @@ export const RequiredNumbersOnly = (e) => {
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   // Check if the input is 0
-  if (key === '0') {
-    e.preventDefault();
-    return false;
-  }
+  // if (key === '0') {
+  //   e.preventDefault();
+  //   return false;
+  // }
 
   if (!regex.test(key)) {
     e.preventDefault();

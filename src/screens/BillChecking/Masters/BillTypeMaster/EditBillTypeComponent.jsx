@@ -46,9 +46,11 @@ const EditBillTypeComponent = ({ match }) => {
   // Function for add new slab
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
-    var firstAmount = newData[index].amount;
+    var firstAmount = newData[index].amount + 1;
+
     if (isNaN(firstAmount)) {
       firstAmount = 0.0;
+      
     }
     if (firstAmount === null || firstAmount === 0) {
       alert("Please enter an amount first.");
@@ -79,6 +81,8 @@ const EditBillTypeComponent = ({ match }) => {
         }
       }
     }
+
+
 
     // Calculate the new amount based on the previous section
     const previousSection = newData[newData.length - 1];
@@ -866,8 +870,6 @@ const EditBillTypeComponent = ({ match }) => {
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
-                      {console.log("approve", approverData.data.length)}
-                      {console.log("item", item.amount)}
 
                       <strong>
                         {index === approverData.data.length - 1
@@ -1035,6 +1037,7 @@ const EditBillTypeComponent = ({ match }) => {
                               <input
                                 type="number"
                                 key={rowIndex}
+                                min={1}
                                 max={
                                   approverData.data[index].level[rowIndex]
                                     .required_users?.length || ""
