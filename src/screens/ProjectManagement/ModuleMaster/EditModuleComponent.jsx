@@ -55,7 +55,7 @@ export default function EditModuleComponent({ match }) {
     //     }
     //   }
     // });
-    dispatch(getmoduleById({ id: moduleId }));
+    
     // await new ModuleService()
     //   .getModuleById(moduleId)
     //   .then((res) => {
@@ -148,6 +148,7 @@ export default function EditModuleComponent({ match }) {
   };
 
   useEffect(() => {
+    dispatch(getmoduleById({ id: moduleId }));
     loadData();
   }, []);
 
