@@ -1121,6 +1121,7 @@ function PaymentDetails({ location, match }) {
       cell: (row) => (
         <span>
           {/* {row.payment_status_name!="Paid" && */}
+          {console.log("ff",row)}
           {row.payment_status_name === "Paid" ? (
             <button
               type="button"
@@ -1153,7 +1154,7 @@ function PaymentDetails({ location, match }) {
                 authorities.Update_Payment_Details === false &&
                 authorities.Prepone_Payment_Date === false &&
                 authorities &&
-                authorities.Payment_Status_Release === false  
+                authorities.Payment_Status_Release === false  || row.payment_status_name == "Confirmation Pending"
                   ? true
                   : false
               }
