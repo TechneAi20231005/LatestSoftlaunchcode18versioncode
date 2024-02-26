@@ -1086,6 +1086,7 @@ function PaymentDetails({ location, match }) {
           setData(null);
           setData(data);
           setDeta(res.data.access);
+          console.log("res===",data)
 
           for (const key in temp) {
             ExportTempData.push({
@@ -1243,11 +1244,14 @@ function PaymentDetails({ location, match }) {
     setImportModal(data);
   };
 
+
   const handleForm = async (e) => {
     e.preventDefault();
-    var a = statusDropdownRef.current.getValue().map((d) => d.value);
+    // var a = statusDropdownRef.current.getValue().map((d) => d.value);
+    // var a = statusDropdownRef.current.getValue().filter((d)=>d.value);
+
     const form = new FormData(e.target);
-    // form.append("payment_status", a);
+    // form.append("payment_status",a);
     form.append("created_by", modal.modalData.created_by);
     form.append("client_ip_address", ip);
 
@@ -1579,11 +1583,16 @@ function PaymentDetails({ location, match }) {
 
                   <div className="col-sm-4">
 
-                  <input
-                          type="hidden"
-                          name="payment_status"
-                          value={modal && modal.modalData.payment_status}
-                        />
+
+                  {authorities&& authorities.Prepone_Payment_Date == false ?  <input
+                              type="hidden"
+                              // id="payment_status"
+    
+                              name="payment_status"
+                              value={modal && modal.modalData.payment_status}
+                            />:""}
+
+                 
                     <label className="form-label font-weight-bold">
                       Status : <Astrick color="red" size="13px" />
                     </label>
