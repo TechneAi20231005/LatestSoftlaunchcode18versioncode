@@ -1096,52 +1096,16 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                    {console.log("pp", recordRoom == data.assign_to[1])}
-                    {console.log("ss",data.assign_to)}
-
-                    {(authorities && authorities.Record_Room === true) &&
-                    data.bill_status === "Solved"&& userDropdown&&userDropdown.filter((d)=>d.value==userSessionData.userId)? (
-                      <div className="col-md-3">
-                        {/* {data && data.is_assign_to == 0 && ( */}
-                        <input
-                          type="hidden"
-                          name="assign_to"
-                          value={data && data.assign_to}
-                        />
-                        {/* )} */}
-
-                        <label className="col-form-label">
-                          <b>
-                            Assign To : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-
-                        {recordRoom && data ? (
-                          <Select
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="assign_to"
-                            options={recordRoom}
-                            name="assign_to"
-                            placeholder="Assign To"
-                            required
-                            // isDisabled
-
-                            defaultValue={recordRoom}
-                          />
-                        ) : (
-                          <p>Loading....</p>
-                        )}
-                      </div>
-                    ) : (
+                
+                      
                       <>
                         <div className="col-md-3">
                           {/* {data && data.is_assign_to == 0 && ( */}
-                          {/* <input
+                          <input
                             type="hidden"
                             name="assign_to"
                             value={data && data.assign_to}
-                          /> */}
+                          />
                           {/* )} */}
 
                           <label className="col-form-label">
@@ -1150,7 +1114,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             </b>
                           </label>
                         
-                        {console.log("userSessionData",)}
 
                           {userDropdown && data ? (
                             <Select
@@ -1171,8 +1134,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           )}
                         </div>
                       </>
-                    )}
-
+                    
                     <div className="col-md-3">
                       <label className="col-form-label">
                         <b>
