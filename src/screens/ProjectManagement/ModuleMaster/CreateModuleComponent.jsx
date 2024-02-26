@@ -18,26 +18,37 @@ import { navigateToModule } from "./ModuleSlice";
 export default function CreateModuleComponent({ match }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const [notify, setNotify] = useState(null);
+  const [notify, setNotify] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null)
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21));
-  const notify = useSelector((ModuleSlice) => ModuleSlice.moduleMaster.notify);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 21)
+  );
+  // const notify = useSelector((ModuleSlice) => ModuleSlice.moduleMaster.notify);
   const navigateFlag = useSelector(
     (ModuleSlice) => ModuleSlice.moduleMaster.navigationModule
   );
 
-  console.log("navigateFlag", navigateFlag);
 
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     dispatch(postmoduleMaster(formData)).then((res) => {
-      if (res?.payload?.data?.status === 1 && res?.payload?.status==200) {
+      console.log(res)
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message })
         dispatch(moduleMaster());
-        navigate(`/${_base}/Module`);
-      }
+        setTimeout(() => {
+          navigate(`/${_base}/Module`, {
+            state: { alert: { type: "success", message: res?.payload?.data?.message } },
+          });
+        }, 3000);
+      }else {
+        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+    }
+      
     });
+
     // setNotify(null)
 
     // await new ModuleService().postModule(formData).then(res =>{
@@ -179,7 +190,7 @@ export default function CreateModuleComponent({ match }) {
                     />
                   </div>
                 </div>
-
+{/* 
                 <div className="form-group row mt-3">
                   <label className="col-sm-2 col-form-label">
                     <b>Status : </b>
@@ -224,7 +235,7 @@ export default function CreateModuleComponent({ match }) {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>{" "}
               {/* CARD BODY */}
             </div>

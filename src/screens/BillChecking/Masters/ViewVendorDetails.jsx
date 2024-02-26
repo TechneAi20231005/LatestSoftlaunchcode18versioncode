@@ -542,7 +542,7 @@ const ViewVendorDetails = ({ match }) => {
                     className="form-control form-control-sm"
                     id="acme_account_name"
                     name="acme_account_name"
-                    defaultValue={data && data.beneficiary_name}
+                    defaultValue={data && data.acme_account_name}
                     readOnly
                   />
                 </div>

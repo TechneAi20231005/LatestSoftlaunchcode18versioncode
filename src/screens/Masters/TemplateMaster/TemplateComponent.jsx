@@ -9,7 +9,7 @@ import Select from "react-select";
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { Modal } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -112,11 +112,38 @@ function TemplateComponent() {
       sortable: true,
       width: "80px",
     },
+    // {
+    //   name: "Template Name",
+    //   selector: (row) => row.template_name,
+    //   sortable: true,
+    //   width: "150px",
+    // },
+
     {
       name: "Template Name",
-      selector: (row) => row.template_name,
+      selector: (row) => row["Template Name"],
       sortable: true,
       width: "150px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.template_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.template_name && row.template_name.length < 10
+                    ? row.template_name
+                    : row.template_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
     {
       name: "Status",

@@ -13,7 +13,7 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Select from "react-select";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
-import { postSubModuleMaster } from "./SubModuleMasterAction";
+import { postSubModuleMaster, subModuleMaster } from "./SubModuleMasterAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { moduleMaster } from "../ModuleMaster/ModuleAction";
 import { filterModuleAccordingToProject } from "../ModuleMaster/ModuleSlice";
@@ -53,7 +53,22 @@ export default function CreateModuleComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    dispatch(postSubModuleMaster(formData));
+    dispatch(postSubModuleMaster(formData)).then((res) => {
+      console.log(res)
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message })
+        dispatch(subModuleMaster());
+       
+        setTimeout(() => {
+          navigate(`/${_base}/SubModule`, {
+            state: { alert: { type: "success", message: res?.payload?.data?.message } },
+          });
+        }, 3000);
+      }else {
+        setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+    }
+      
+    });
 
     //.then((res) => {
     //   if (res.payload.data.status == 1 && res.payload.status == 200) {

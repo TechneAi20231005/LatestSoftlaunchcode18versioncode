@@ -30,9 +30,11 @@ export default function CreateProjectComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 11)
   );
-  const notify = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.notify);
+  // const notify = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.notify);
 
-  // const [notify, setNotify] = useState(null);
+
+  console.log(checkRole);
+  const [notify, setNotify] = useState(null);
   const [customer, setCustomer] = useState(null);
   const customerRef = useRef("");
   const fileInputRef = useRef(null);
@@ -78,12 +80,28 @@ export default function CreateProjectComponent({ match }) {
     }
 
     if (flag === 1) {
+      // dispatch(postprojectData(formData)).then((res) => {
+      //   console.log("res", res);
+      //   if (res?.payload?.data?.status == 1 && res?.payload?.status == 200) {
+      //     navigate(`/${_base}/Project`);
+      //   }
+      //   loadData()
+      // });
+
       dispatch(postprojectData(formData)).then((res) => {
-        console.log("res", res);
-        if (res?.payload?.data?.status == 1 && res?.payload?.status == 200) {
-          navigate(`/${_base}/Project`);
-        }
-        loadData()
+        console.log(res)
+        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+          setNotify({ type: 'success', message: res?.payload?.data?.message })
+          loadData()
+          setTimeout(() => {
+            navigate(`/${_base}/Project`, {
+              state: { alert: { type: "success", message: res?.payload?.data?.message } },
+            });
+          }, 3000);
+        }else {
+          setNotify({ type: 'danger', message:  res?.payload?.data?.message  })
+      }
+        
       });
 
       //   await new ProjectService().postProject(formData).then((res) => {
@@ -438,7 +456,7 @@ export default function CreateProjectComponent({ match }) {
                   </div>
                 </div>
 
-                <div className="form-group row mt-3">
+                {/* <div className="form-group row mt-3">
                   <label className="col-sm-2 col-form-label">
                     <b>Status : </b>
                   </label>
@@ -482,7 +500,7 @@ export default function CreateProjectComponent({ match }) {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>{" "}
               {/* CARD BODY */}
             </div>

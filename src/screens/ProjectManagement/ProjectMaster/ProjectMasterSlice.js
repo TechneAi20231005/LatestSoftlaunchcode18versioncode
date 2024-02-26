@@ -76,7 +76,7 @@ export const ProjectMasterSlice = createSlice({
         let counter =1
         for (const key in getproject) {
           exportProjectData.push({
-            counter: counter++,
+            SrNo: counter++,
                       // id: getproject[key].id,
                       project_name: getproject[key].project_name,
                       projectReviewer: getproject[key].projectReviewer,

@@ -20,8 +20,8 @@ export const subModuleMaster = createAsyncThunk(
     async (config, thunkapi) => {
       try {
         const service = new SubModuleService();
-        const response = await service.postSubModule();
-        console.log("resss", response);
+        const response = await service.postSubModule(config);
+        console.log("sub", response);
         return response;
       } catch (error) {
         throw error;

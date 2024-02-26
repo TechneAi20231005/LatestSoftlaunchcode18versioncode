@@ -1096,13 +1096,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                 
+                    {console.log("pp", recordRoom == data.assign_to[1])}
+                    {console.log("ss",data.assign_to)}
 
-                 {console.log("pp",recordRoom == data.assign_to[1])}
-                 {console.log(data.assign_to)}
-
-                    {(authorities && authorities.Record_Room === true) ||
-                    data.bill_status === "Solved" ? (
+                    {(authorities && authorities.Record_Room === true) &&
+                    data.bill_status === "Solved"&& userDropdown&&userDropdown.filter((d)=>d.value==userSessionData.userId)? (
                       <div className="col-md-3">
                         {/* {data && data.is_assign_to == 0 && ( */}
                         <input
@@ -1118,42 +1116,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </b>
                         </label>
 
-                        {/* <Select
-                         type="text"
-                         className="form-control form-control-sm"
-                         id="assign_to"
-                        //  options={userDropdown}
-                         name="assign_to"
-                         placeholder="Assign To"
-                         required
-                        //  isDisabled
-                         // isDisabled={
-                         //   authorities && authorities.All_Update_Bill === true
-                         //     ? false
-                         //     : true
-                         // }
-                         defaultValue="Record Room"
-                       /> */}
-
-                        {/* <Select
-  type="text"
-  className="form-control form-control-sm"
-  id="assign_to"
-  name="assign_to"
-  placeholder="Assign To"
-  required
-  defaultValue="Record Room" // Set the default value to "Record Room"
-/> */}
-
-                        {/* <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="assign_to"
-                          name="assign_to"
-                          required
-                          defaultValue={data.assign_to[1]}
-                        /> */}
-
                         {recordRoom && data ? (
                           <Select
                             type="text"
@@ -1165,7 +1127,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             required
                             // isDisabled
 
-                            defaultValue={recordRoom === data.assign_to[1]}
+                            defaultValue={recordRoom}
                           />
                         ) : (
                           <p>Loading....</p>
@@ -1175,11 +1137,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <>
                         <div className="col-md-3">
                           {/* {data && data.is_assign_to == 0 && ( */}
-                          <input
+                          {/* <input
                             type="hidden"
                             name="assign_to"
                             value={data && data.assign_to}
-                          />
+                          /> */}
                           {/* )} */}
 
                           <label className="col-form-label">
@@ -1187,7 +1149,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                               Assign To : <Astrick color="red" size="13px" />
                             </b>
                           </label>
-                          {console.log("userDropdown", userDropdown)}
+                        
+                        {console.log("userSessionData",)}
 
                           {userDropdown && data ? (
                             <Select

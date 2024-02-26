@@ -55,7 +55,8 @@ export const submoduleSlice = createSlice({
 
     builder.addCase(postSubModuleMaster.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
+      console.log("payloadsub", payload);
+
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postSubModuleMaster = payload.data.data;

@@ -40,7 +40,7 @@ function TenantComponent() {
   const isMasterAdmin = localStorage.getItem("role_name");
   // const [checkRole, setCheckRole] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("")
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -250,6 +250,7 @@ function TenantComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -283,7 +284,24 @@ function TenantComponent() {
           {getAllTenantData && (
             <DataTable
               columns={columns}
-              data={getAllTenantData}
+              data={getAllTenantData.filter((customer) => {
+                if (typeof searchTerm === "string") {
+                  if (typeof customer === "string") {
+                    return customer
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase());
+                  } else if (typeof customer === "object") {
+                    return Object.values(customer).some(
+                      (value) =>
+                        typeof value === "string" &&
+                        value
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                    );
+                  }
+                }
+                return false;
+              })}
               defaultSortField="title"
               pagination
               selectableRows={false}

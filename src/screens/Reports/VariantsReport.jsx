@@ -43,8 +43,9 @@ export default function ResourcePlanningReportComponent() {
       selector: (row) => row.task_start_Date,
       sortable: true,
     },
+
     {
-      name: "Hours Scheduled",
+      name: "Task Scheduled Hours",
       selector: (row) => row.task_scheduled_Hours,
       sortable: true,
     },
@@ -300,7 +301,7 @@ export default function ResourcePlanningReportComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
-      <h1>Hellp</h1>
+
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm}>
