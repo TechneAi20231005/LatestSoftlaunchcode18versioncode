@@ -181,7 +181,7 @@ function BillCheckingTransaction() {
                   (authorities &&
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
-                  (row.level != parseInt(row.total_level) &&
+                  (row.level != parseInt(row.total_level) || row.is_active ==0 &&
                     row.is_approver == 1)) && (
                   <li>
                     <Link
@@ -194,7 +194,7 @@ function BillCheckingTransaction() {
                   </li>
                 )}
 
-{(row.is_assign_to == 1 && row.level == row.total_level) || row.is_active ==0 && (
+{(row.is_assign_to == 1 && row.level == row.total_level || row.is_active ==0)  && (
 
 <li>
                     <Link

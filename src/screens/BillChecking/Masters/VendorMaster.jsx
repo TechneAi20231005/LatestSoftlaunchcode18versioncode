@@ -6233,6 +6233,8 @@ console.log("panattachment",panattachment);
                     <label className="col-form-label">
                       <b> GST Attachment : </b>
                     </label>
+
+                  
                     {modal.modalData && modal.modalData.gst_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.gst_attachment}`}

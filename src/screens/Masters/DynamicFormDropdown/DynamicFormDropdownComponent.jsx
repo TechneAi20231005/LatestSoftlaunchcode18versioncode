@@ -165,6 +165,8 @@ export default function DynamicFormDropdownComponent() {
                     Status: data[key].is_active ? 'Active' : 'Deactive',
                     updated_at: data[key].updated_at,
                     updated_by: data[key].updated_by,
+                    created_at: temp[key].updated_at,
+                    created_by: temp[key].updated_by,
                 })
             }
 
