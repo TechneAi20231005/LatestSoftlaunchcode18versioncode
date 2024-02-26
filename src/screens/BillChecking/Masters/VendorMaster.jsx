@@ -6017,13 +6017,14 @@ console.log("panattachment",panattachment);
                       </small>
                     )}
                   </div>
+                  {console.log("modal",modal.modalData._attachmentUrl)}
 
-                  <div className=" col-sm-3 mt-2">
+                    <div className=" col-sm-3 mt-2">
                     <label className="col-form-label" htmlFor="attachment">
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
-                      {/* {JSON.stringify(modal.modalData.pan_attachment)} */}
+                   
                       {modal.modalData && modal.modalData.pan_attachment && (
                         <a
                           href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
