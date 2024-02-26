@@ -20,6 +20,7 @@ export default function CustomerMappingComponent() {
 
   const dispatch=useDispatch()
   const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
+  console.log("data",data)
 
   const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.exportTempData)
   const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
@@ -90,7 +91,7 @@ export default function CustomerMappingComponent() {
           </Link>
         </div>
     },
-    { name: 'Sr.No', selector: row => row.counter, sortable: true,width: "60px", },
+    { name: 'Sr.No', selector: row => row.Sro, sortable: true,width: "60px", },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
     {

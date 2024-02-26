@@ -222,7 +222,7 @@ export default function BasketComponent({ match }) {
     return (
         <div className="container-xxl">
             <PageHeader headerTitle="Manage Basket" />
-            <h1>Hello</h1>
+
             {notify && <Alert alertData={notify} />}
             <div className='card mt-2' style={{ zIndex: 0 }}>
                 <div className='card-body' >

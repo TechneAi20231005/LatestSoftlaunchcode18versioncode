@@ -23,8 +23,8 @@ export default function EditProjectComponent({ match }) {
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22));
   const getproject = useSelector((ProjectMasterSlice) => ProjectMasterSlice.projectMaster.getprojectByID);
-  console.log(getproject?.customer_id
-    );
+
+  
   // const notify=useSelector(ProjectMasterSlice=>ProjectMasterSlice.projectMaster.notify)
 
 
@@ -35,7 +35,7 @@ export default function EditProjectComponent({ match }) {
   const projectId = id;
 
   const [data, setData] = useState(null);
-  const [customer, setCustomer] = useState(null);
+  const [customer, setCustomer] = useState([]);
   console.log(customer?.filter((d)=>d.value==getproject?.customer_id));
   const [ba, setBa] = useState(null);
 
@@ -125,7 +125,7 @@ export default function EditProjectComponent({ match }) {
     //     }
     //   });
 
-    dispatch(getprojectByID({ id: projectId }));
+    
 
     dispatch(getRoles());
 
@@ -227,6 +227,7 @@ export default function EditProjectComponent({ match }) {
   };
 
   useEffect(() => {
+    dispatch(getprojectByID({ id: projectId }));
     loadData();
   }, []);
 
@@ -260,11 +261,13 @@ export default function EditProjectComponent({ match }) {
                         required={true}
                         isMulti={true}
                         options={customer}
-                        defaultValue={
-                          customer?.filter((d)=>d.value==getproject?.customer_id)
+                        value={
+                         customer && customer.filter((d)=>d.value ==  getproject?.customer_id)
                         }
                       />
                     </div>
+
+
 
                     <label
                       className="col-sm-2 col-form-label"

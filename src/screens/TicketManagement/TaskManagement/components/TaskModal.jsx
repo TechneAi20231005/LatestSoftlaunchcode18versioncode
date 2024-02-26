@@ -349,7 +349,8 @@ export default function TaskModal(props) {
         alert("Please select End Date Greater than Start date");
       } else {
         if (formData.get("id")) {
-          const taskTypeId = typeRef.current.props.value.map((d) => {
+
+          const taskTypeId = typeRef?.current?.props?.value.map((d) => {
             return d.value;
           });
           formData.append("task_type_id", taskTypeId);

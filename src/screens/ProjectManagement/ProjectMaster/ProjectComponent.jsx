@@ -198,27 +198,27 @@ function ProjectComponent() {
     // { name: 'Assigned BA', selector: row => row.assigned_ba, sortable: true, },
     // { name: 'Assigned DEV', selector: row => row.assigned_dev, sortable: true, },
     // { name: 'Assigned TESTER', selector: row => row.assigned_tester, sortable: true, },
-    {
-      name: "Remark",
-      width: "10%",
-      selector: (row) => row.remark,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.remark && (
-            <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
-              <div>
-                <span className="ms-1"> {row.remark ? row.remark : ""}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-    },
+    // {
+    //   name: "Remark",
+    //   width: "10%",
+    //   selector: (row) => row.remark,
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.remark && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1"> {row.remark ? row.remark : ""}</span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   ),
+    // },
     {
       name: "created at",
       width: "150px",
@@ -490,7 +490,7 @@ function ProjectComponent() {
             <ExportToExcel
               className="btn btn-sm btn-danger"
               apiData={exportData}
-              fileName="Designation master Records"
+              fileName="Project master Records"
             />
           </div>
         </div>

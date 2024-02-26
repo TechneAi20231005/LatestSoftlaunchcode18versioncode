@@ -272,6 +272,7 @@ const EditTemplateComponent = ({ match, props }) => {
 
     const formData = new FormData();
     formData.append("basket_name", modal.modalData.basket_name);
+    formData.append("basket_owner", modal.modalData.basket_owner);
 
     dispatch(
       updateBasketModalData({
@@ -923,6 +924,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       );
                     })}
                 </div>
+                
                 {modal && modal.shown && (
                   <Modal show={modal.shown} onHide={handleHideModal}>
                     <Modal.Header closeButton>
@@ -965,6 +967,11 @@ const EditTemplateComponent = ({ match, props }) => {
                         </div>
                       </div>
                     </Modal.Body>
+                    {console.log("pp",userData&& userData.filter((d)=>d.value))}
+                    {console.log("modalData",modal&&modal.modalData.basket_owner
+)}
+
+{console.log("p",userData&& userData.filter((d)=>d.value===modal&&modal?.modalData?.basket_owner))}
 
                     <Modal.Footer>
                       <button

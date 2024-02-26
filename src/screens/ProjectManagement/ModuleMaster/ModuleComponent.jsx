@@ -18,9 +18,7 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 function ModuleComponent() {
   const location = useLocation();
   const dispatch = useDispatch();
-  const moduleData = useSelector(
-    (ModuleSlice) => ModuleSlice.moduleMaster.moduleMaster
-  );
+  const moduleData = useSelector((ModuleSlice) => ModuleSlice.moduleMaster.moduleMaster);
 
 console.log(moduleData)
   const exportData = useSelector(
@@ -133,12 +131,12 @@ console.log(moduleData)
       selector: (row) => row.description,
       sortable: true,
     },
-    {
-      name: "Remark",
-      width: "10%",
-      selector: (row) => row.remark,
-      sortable: true,
-    },
+    // {
+    //   name: "Remark",
+    //   width: "10%",
+    //   selector: (row) => row.remark,
+    //   sortable: true,
+    // },
 
     {
       name: "created at",
@@ -328,7 +326,7 @@ console.log(moduleData)
             <ExportToExcel
               className="btn btn-sm btn-danger"
               apiData={exportData}
-              fileName="Designation master Records"
+              fileName="Module master Records"
             />
           </div>
         </div>
