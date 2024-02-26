@@ -88,7 +88,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [netPayment, setNetPayment] = useState(null);
 
-  const [tdsAmount, setTdsAmount] = useState(null);
+  const [tdsAmount, setTdsAmount] = useState(0);
 
   const [tdsData, setTdsData] = useState(null);
 
@@ -125,6 +125,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const pastFinancialYear = (e) => {
     const date = new Date(`04/31/${new Date().getFullYear() - 1}`);
   };
+
+  
 
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
@@ -310,6 +312,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
+            setTdsPercentage(0)
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
             setConstitutionDropdown(
@@ -325,9 +328,8 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (selectTdsPercentageRef.current.value != null) {
             document.getElementById("tds_percentage").value = "";
           }
-          setTD("");
 
-          setTdsAmount("");
+         
         }
       });
   };
@@ -1247,6 +1249,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultValue={data.bill_date}
                       />
                     </div>
+               
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1267,6 +1270,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             : true
                         }
                         min={data.bill_date}
+                        max="2025-02-24"
                       />
                     </div>
                   </div>
@@ -2022,10 +2026,10 @@ value={igst=== true ?1 :0} */}
                           key={Math.random()}
                           ref={selecttdsAmountRef}
                           name="tds_amount"
-                          defaultValue={data.tds_amount && data.tds_amount}
+                          defaultValue={data.tds_amount? data.tds_amount : 0  }
                           // defaultValue={data.tds_amount}
-                          value={tdsAmount}
-                          // readOnly={true}
+                          value={tdsAmount ? tdsAmount :0}
+                          readOnly={true}
                         />
                       </div>
 
@@ -2075,6 +2079,7 @@ value={igst=== true ?1 :0} */}
                             TDS % : <Astrick color="red" size="13px" />
                           </b>
                         </label>
+
                         {tdsPercentage && tdsPercentage ? (
                           <input
                             type="text"
