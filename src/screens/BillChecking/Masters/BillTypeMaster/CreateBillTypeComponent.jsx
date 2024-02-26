@@ -624,6 +624,7 @@ const requiredUserRef = useRef();
                         type="button"
                         variant="primary"
                         className="sm"
+                        disabled={!item.amount ? true : false}
                         onClick={(e) => handleIncrement(e, index)}
                       >
                         <i className="icofont-plus-circle" />
