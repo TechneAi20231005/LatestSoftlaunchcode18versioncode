@@ -88,7 +88,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [netPayment, setNetPayment] = useState(null);
 
-  const [tdsAmount, setTdsAmount] = useState(null);
+  const [tdsAmount, setTdsAmount] = useState(0);
 
   const [tdsData, setTdsData] = useState(null);
 
@@ -314,6 +314,7 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.status === 200) {
          
           if (res.data.status == 1) {
+            setTdsPercentage(0)
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
             setConstitutionDropdown(
@@ -330,9 +331,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (selectTdsPercentageRef.current.value != null) {
             document.getElementById("tds_percentage").value = "";
           }
-          setTD("")
 
-          setTdsAmount("")
          
         }
       });
@@ -2034,10 +2033,10 @@ value={igst=== true ?1 :0} */}
                           key={Math.random()}
                           ref={selecttdsAmountRef}
                           name="tds_amount"
-                          defaultValue={data.tds_amount && data.tds_amount }
+                          defaultValue={data.tds_amount? data.tds_amount : 0  }
                           // defaultValue={data.tds_amount}
-                          value={tdsAmount}
-                          // readOnly={true}
+                          value={tdsAmount ? tdsAmount :0}
+                          readOnly={true}
                         />
                       </div>
 
@@ -2087,6 +2086,7 @@ value={igst=== true ?1 :0} */}
                             TDS % : <Astrick color="red" size="13px" />
                           </b>
                         </label>
+
                         {tdsPercentage && tdsPercentage ? (
                           <input
                             type="text"
