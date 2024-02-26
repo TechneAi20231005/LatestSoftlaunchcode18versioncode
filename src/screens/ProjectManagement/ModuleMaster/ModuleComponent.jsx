@@ -326,7 +326,7 @@ console.log(moduleData)
             <ExportToExcel
               className="btn btn-sm btn-danger"
               apiData={exportData}
-              fileName="Designation master Records"
+              fileName="Module master Records"
             />
           </div>
         </div>
