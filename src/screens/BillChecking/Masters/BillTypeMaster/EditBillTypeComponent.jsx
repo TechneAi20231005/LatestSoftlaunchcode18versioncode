@@ -915,6 +915,8 @@ const EditBillTypeComponent = ({ match }) => {
                           type="button"
                           variant="primary"
                           className="sm"
+                        disabled={!item.amount ? true : false}
+
                           onClick={(e) => {
                             handleIncrement(e, index);
                           }}
