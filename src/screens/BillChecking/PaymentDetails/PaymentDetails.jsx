@@ -1121,14 +1121,14 @@ function PaymentDetails({ location, match }) {
       cell: (row) => (
         <span>
           {/* {row.payment_status_name!="Paid" && */}
-
+          {console.log("ff",row)}
           {row.payment_status_name === "Paid" ? (
             <button
               type="button"
               className="btn btn-sm btn-info "
               data-bs-toggle="modal"
               disabled={
-                authorities && authorities.Allow_Paid_Entry_Change === false
+                authorities && authorities.Allow_Paid_Entry_Change === false  
                   ? true
                   : false
               }
@@ -1154,7 +1154,7 @@ function PaymentDetails({ location, match }) {
                 authorities.Update_Payment_Details === false &&
                 authorities.Prepone_Payment_Date === false &&
                 authorities &&
-                authorities.Payment_Status_Release === false
+                authorities.Payment_Status_Release === false  || row.payment_status_name == "Confirmation Pending"
                   ? true
                   : false
               }
