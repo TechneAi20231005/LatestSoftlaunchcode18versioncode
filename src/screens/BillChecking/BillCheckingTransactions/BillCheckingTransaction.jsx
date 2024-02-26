@@ -835,7 +835,7 @@ function BillCheckingTransaction() {
             "Taxable Amount": temp[key].taxable_amount,
             "Debit Advance": temp[key].debit_advance,
             "Bill date": temp[key].bill_date,
-            "Rejected By": temp[key].rejectedBy,
+            // "Rejected By": temp[key].rejectedBy,
 
             // "Bill Status": temp[key].bill_status,
             "Bill Status": temp[key].payment_status,
@@ -848,7 +848,7 @@ function BillCheckingTransaction() {
             // "Levels of approval": temp[key].levels_of_approval,
             levels_of_approval: temp[key].level + 1,
 
-            "Approve By": temp[key].approved_by,
+            "Approve By": temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
 
             "Assign From": temp[key].created_by,
