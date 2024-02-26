@@ -36,7 +36,7 @@
 
 
 
- 
+
 
 //   const handleModal = (data) => {
 //     setModal(data);
@@ -280,7 +280,7 @@
 //         } else {
 //           console.error(error);
 //         }
-        
+
 //         });
 
 //     await new ManageMenuService().getRole(roleId).then((res) => {
@@ -513,7 +513,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { _base,  } from "../../../settings/constants";
+import { _base, } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
 
 import UserService from "../../../services/MastersService/UserService";
@@ -526,12 +526,12 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import CountryService from "../../../services/MastersService/CountryService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Spinner } from "react-bootstrap";
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { dashboardSlice } from "../../Dashboard/DashbordSlice";
 import { getEmployeeData, getRoles } from "../../Dashboard/DashboardAction";
 import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
 
-function UserComponent( ) {
+function UserComponent() {
   const location = useLocation()
   const [data, setData] = useState(null);
   const dispatch = useDispatch()
@@ -549,10 +549,10 @@ function UserComponent( ) {
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3));
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3));
 
 
-  const employeeData = useSelector(dashboardSlice=>dashboardSlice.dashboard.employeeData);
+  const employeeData = useSelector(dashboardSlice => dashboardSlice.dashboard.employeeData);
   // const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportUserData)
 
   // const Notify = useSelector(
@@ -591,13 +591,13 @@ function UserComponent( ) {
   //   setSearchTerm(e.target.value);
   // };
   const [filteredData, setFilteredData] = useState([]);
-  
+
   const handleSearch = (value) => {
   };
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "80px",
       cell: (row) => (
@@ -706,7 +706,7 @@ function UserComponent( ) {
 
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-          
+
     //     }
     //   }
     // });
@@ -719,54 +719,54 @@ function UserComponent( ) {
         // setExportData(res.data)
         const temp = res.data.data;
 
-              for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
+        for (const i in temp) {
+          exportTempData.push({
+            SrNo: exportTempData.length + 1,
 
-              Account_for: temp[i].account_for,
-              customer_name: temp[i].customer,
-              Name:
-                temp[i].first_name +
-                " " +
-                temp[i].middle_name +
-                " " +
-                temp[i].last_name,
-              Email: temp[i].email_id,
-              ContactNo: temp[i].contact_no,
-              WhatsappNo: temp[i].whats_app_contact_no,
-              User_Name: temp[i].user_name,
-              Role: temp[i].role,
-              Designation: temp[i].designation,
-              Address: temp[i].address,
-              Pincode: temp[i].pincode,
-              Country: temp[i].country,
-              State: temp[i].state,
-              City: temp[i].city,
-              Department: temp[i].department,
-              Ticket_Show_Type: temp[i].ticket_show_type,
-              all_department: temp[i].all_department,
-              Ticket_Passing_Authority: temp[i].ticket_passing_authority
-                ? "Yes"
-                : "No",
-              Make_Default: temp[i].is_default ? "yes" : "No",
-              Status: temp[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
+            Account_for: temp[i].account_for,
+            customer_name: temp[i].customer,
+            Name:
+              temp[i].first_name +
+              " " +
+              temp[i].middle_name +
+              " " +
+              temp[i].last_name,
+            Email: temp[i].email_id,
+            ContactNo: temp[i].contact_no,
+            WhatsappNo: temp[i].whats_app_contact_no,
+            User_Name: temp[i].user_name,
+            Role: temp[i].role,
+            Designation: temp[i].designation,
+            Address: temp[i].address,
+            Pincode: temp[i].pincode,
+            Country: temp[i].country,
+            State: temp[i].state,
+            City: temp[i].city,
+            Department: temp[i].department,
+            Ticket_Show_Type: temp[i].ticket_show_type,
+            all_department: temp[i].all_department,
+            Ticket_Passing_Authority: temp[i].ticket_passing_authority
+              ? "Yes"
+              : "No",
+            Make_Default: temp[i].is_default ? "yes" : "No",
+            Status: temp[i].is_active ? "Active" : "Deactive",
+            created_at: temp[i].created_at,
+            created_by: temp[i].created_by,
+            updated_at: temp[i].updated_at,
 
-              updated_by: temp[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-          setExportData(exportTempData);
+            updated_by: temp[i].updated_by,
+          });
         }
-      
-      
+
+        setExportData(null);
+        setExportData(exportTempData);
+      }
+
+
     });
 
 
-   
+
     // const data = [];
     //  **************************Country load data**************************************
     // await new CountryService().getCountry().then((res) => {
@@ -878,7 +878,7 @@ function UserComponent( ) {
     //     } else {
     //       console.error(error);
     //     }
-        
+
     //     });
 
 
@@ -915,25 +915,23 @@ function UserComponent( ) {
     // employeeData
   };
   var flag = 1;
-useEffect(()=>{
-  loadData();
-  if(!employeeData.length  || !checkRole.length){
-   dispatch(getEmployeeData())
-   dispatch(getRoles())
-   dispatch(departmentData())
+  useEffect(() => {
+    loadData();
+
+    dispatch(getEmployeeData())
+    dispatch(getRoles())
+    dispatch(departmentData())
 
 
-  }
-
-},[])
-useEffect(() => {
-  if (location && location.state) {
-    setNotify(location.state);
-  }
-  return () => {
-    setNotify(null);
-  };
-}, [location.state]);
+  }, [])
+  useEffect(() => {
+    if (location && location.state) {
+      setNotify(location.state);
+    }
+    return () => {
+      setNotify(null);
+    };
+  }, [location.state]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -1004,7 +1002,7 @@ useEffect(() => {
               className="btn btn-sm btn-warning text-white"
               type="button"
               // onClick={handleSearch}
-              value={searchTerm} 
+              value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
@@ -1031,8 +1029,8 @@ useEffect(() => {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-             {employeeData && (
-            // <DataTableExtensions {...tableData}>
+              {employeeData && (
+                // <DataTableExtensions {...tableData}>
                 <DataTable
                   columns={columns}
                   // data={employeeData}
@@ -1055,7 +1053,7 @@ useEffect(() => {
                   highlightOnHover={true}
                 />
                 // </DataTableExtensions>
-              )} 
+              )}
               {/* {data && data.length && (
                 <DataTableExtensions {...tableData}>
                   <DataTable
@@ -1070,7 +1068,7 @@ useEffect(() => {
                 </DataTableExtensions>
               )} */}
             </div>
-{/* 
+            {/* 
             <Modal show={showLoaderModal} centered>
               <Modal.Body className="text-center">
                 <Spinner animation="grow" variant="primary" />
