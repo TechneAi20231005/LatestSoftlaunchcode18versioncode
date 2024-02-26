@@ -48,7 +48,7 @@ export default function BasketDetails(props) {
     setNotify(null);
     const formData = new FormData(e.target);
 
-    formData.append("ticket_id", props.ticketId);
+    // formData.append("ticket_id", props.ticketId);
     formData.append("source", "AFTER_TICKET_INSERT");
     if (formData.get("id")) {
       console.log("update vasket", formData.get("id"))

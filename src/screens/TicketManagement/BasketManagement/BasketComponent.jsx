@@ -19,7 +19,7 @@ export default function BasketComponent({ match }) {
     const currentDate = new Date();
     const [userData, setUserData] = useState(null);
     const [notify, setNotify] = useState(null);
-    const { id: ticketId } = useParams()
+    const { id: ticketId } = useParams();
     const history = useNavigate();
     const mainJson = {
         ticket_id: ticketId,
