@@ -6678,7 +6678,7 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {localStorage.getItem("account_for") === "SELF" && (
+                {(
                   <Tab
                     eventKey="departmenyourTaskt"
                     title="Departmentwise Tickets"

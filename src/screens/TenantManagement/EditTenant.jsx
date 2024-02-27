@@ -24,21 +24,23 @@ export default function EditTenant({ match }) {
   const dispatch = useDispatch();
   const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
-  const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  // const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
   const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
   // const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [toggleRadio, setToggleRadio] = useState(false);
+  const [clearFlag, setClearFlag] = useState(false);
   const { id } = useParams();
   const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify)
   const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
   // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
-  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
+  // console.log("country dat", CountryData)
 
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.cityData
@@ -80,7 +82,7 @@ export default function EditTenant({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
-    console.log(contactValidation);
+
 
     if (contactValidation.length === 0) {
       setInputState({
@@ -130,27 +132,18 @@ export default function EditTenant({ match }) {
   };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      // setStateDropdown(
-      //   state
-      //     .filter((d) => d.country_id == e.value)
-      //     .map((d) => ({ value: d.id, label: d.state }))
-      // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
-
+      setClearFlag(true)
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.is_active === 1 && filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
     }
     if (type == "STATE") {
-      // setCityDropdown(
-      //   city
-      //     .filter((d) => d.state_id == e.value)
-      //     .map((d) => ({ value: d.id, label: d.city }))
-      // );
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.is_active === 1 && filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
 
     }
   };
   const loadData = async () => {
 
     dispatch(getCountryDataSort());
+
     dispatch(getRoles());
     dispatch(getStateDataSort())
     dispatch(getStateData());
@@ -251,10 +244,10 @@ export default function EditTenant({ match }) {
       setToggleRadio(false);
     }
   };
+  const useDataState = stateDropdown.filter((d) => d.id === data?.state_id);
 
   useEffect(() => {
-    const countryData = CountryData.filter((d) => console.log("d", d.value));
-    console.log("countryData", data)
+
     dispatch(handleError(null))
     loadData();
   }, []);
@@ -416,7 +409,7 @@ export default function EditTenant({ match }) {
                 >
                   <b>Country : </b>
                 </label>
-
+                {console.log("Country data", CountryData)}
                 <div className="col-sm-4">
                   {CountryData && data && (
                     <Select
@@ -426,7 +419,7 @@ export default function EditTenant({ match }) {
                       defaultValue={
                         data &&
                         CountryData &&
-                        CountryData.filter((d) => d.value == data.country)
+                        CountryData.filter((d) => data?.country_id == d.value)
                       }
                       onChange={(e) => handleDependentChange(e, "COUNTRY")}
                     />
@@ -438,16 +431,21 @@ export default function EditTenant({ match }) {
                 <label className="col-sm-2 col-form-label">
                   <b>State : </b>
                 </label>
+                {console.log('state drop down data', stateDropdownData)}
+                {console.log('state drop down data', data)}
                 <div className="col-sm-4">
-                  {stateDropdownData && data && (
+
+                  {stateDropdown && data && (
                     <Select
                       options={stateDropdownData}
                       id="state_id"
                       name="state_id"
-                      defaultValue={
+                      defaultValue={clearFlag ? { label: "" } :
                         data &&
                         stateDropdown &&
-                        stateDropdown.filter((d) => d.value == data.state)
+                        stateDropdown
+                          .filter((d) => d.id === data.state_id)
+                          .map((stateName) => ({ value: stateName.id, label: stateName.state }))
                       }
                       onChange={(e) => handleDependentChange(e, "STATE")}
                     />
@@ -462,15 +460,16 @@ export default function EditTenant({ match }) {
                 </label>
 
                 <div className="col-sm-4">
-                  {cityDropdown && data && (
+
+                  {AllcityDropDownData && data && (
                     <Select
-                      options={cityDropdown}
+                      options={cityDropdownData}
                       id="city_id"
                       name="city_id"
                       defaultValue={
                         data &&
-                        cityDropdown &&
-                        cityDropdown.filter((d) => d.value == data.city)
+                        AllcityDropDownData &&
+                        AllcityDropDownData.filter((d) => d.id == data.city_id).map(city => ({ value: city.id, label: city.city }))
                       }
                       onChange={(e) => handleDependentChange(e, "CITY")}
                     />
