@@ -45,11 +45,11 @@ export default function ViewTicketComponent({ match }) {
       setChartData(res.data.data["series"]);
     });
     await new MyTicketService().getTicketById(ticketId).then((res) => {
-      setRows(res.data.data.dynamic_form);
+      setRows(res?.data?.data?.dynamic_form);
       setShowLoaderModal(null);
 
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res?.data?.data;
         if (data.status_id == 3) {
           setIsSolved(true);
         }
@@ -179,7 +179,7 @@ export default function ViewTicketComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-  
+
       <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ""}`} />
 
       {notify && <Alert alertData={notify} />}
@@ -187,7 +187,7 @@ export default function ViewTicketComponent({ match }) {
       <div className="row g-3 mt-2">
         <div className="col-xxl-8 col-xl-8 col-lg-12 col-md-12">
           <div className="row g-3 mb-3">
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.status_name : ""}
                 progressBg="bg-warning"
@@ -197,7 +197,7 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
 
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_by_name : ""}
                 progressBg="bg-info"
@@ -207,7 +207,7 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
 
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
                 progressBg="bg-info"
@@ -217,7 +217,7 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
 
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.priority : ""}
                 progressBg="bg-danger"
@@ -236,7 +236,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
-            <div className="col-md-4">
+            {/* <div className="col-md-4">
               <StatusCard
                 progress={data ? data.parent_name : ""}
                 progressBg="bg-success"
@@ -244,7 +244,7 @@ export default function ViewTicketComponent({ match }) {
                 iconbg="bg-lightblue"
                 title="Parent Task Type "
               />
-            </div>
+            </div> */}
 
             <div className="col-md-4">
               <StatusCard
@@ -256,7 +256,8 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
           </div>
-          {rows && rows.length > 0 && (
+          {console.log("rows.length", rows)}
+          {rows && (
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
@@ -274,8 +275,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -289,8 +290,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -314,8 +315,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -329,8 +330,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -346,8 +347,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -504,7 +505,7 @@ export default function ViewTicketComponent({ match }) {
                       User 2
                     </label>
                   </div>
-                  {chartDataa && chartDataa?.length > 0 && chartOptions && (
+                  {chartDataa?.data?.length && chartOptions && (
                     <Chart
                       options={chartOptions}
                       data={chartDataa}

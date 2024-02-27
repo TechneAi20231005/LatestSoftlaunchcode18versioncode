@@ -32,7 +32,6 @@ export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const { id } = useParams()
   const ticketId = id
-
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
@@ -134,7 +133,6 @@ export default function TaskComponent({ match }) {
     const taskDataa = [];
     const tasksDataa = [];
     setIsLoading(true);
-
     await new BasketService()
 
       .getBasketTaskData(ticketId)
@@ -712,8 +710,9 @@ export default function TaskComponent({ match }) {
                           className="badge bg-success text-end mt-2 p-1 px-3"
                           style={{ fontSize: "14px" }}
                         >
+
                           {ele.total_worked ? ele.total_worked : 0}/
-                          {ele.total_hours}
+                          {ele?.total_hours}
                         </span>
                       </div>
 
