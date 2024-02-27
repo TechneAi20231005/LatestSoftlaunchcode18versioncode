@@ -8,7 +8,7 @@ import { postDataa } from "../../services/ForgetPasswordService/OtpService";
 import { postData } from "../../services/ForgetPasswordService/ForgotPasswordService";
 
 
-export default function StepAuthentication( ) {
+export default function StepAuthentication() {
   const location = useLocation()
 
   const history = useNavigate();
@@ -25,23 +25,23 @@ export default function StepAuthentication( ) {
   };
 
   const submitHandler = (e) => {
-    if(e){
-    e.preventDefault();
-    // setShowAlert(prevState => ({...prevState,show:false}));
-    postDataa(userData).then((res) => {
-      if (res.status == 200) {
-        if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/reset-password`,
-      
-          },{      state: { email: userData.email, otp: userData.otp },});
-        } else {
-          setNotify();
-          setNotify({ type: "danger", message: res.data.message });
+    if (e) {
+      e.preventDefault();
+      // setShowAlert(prevState => ({...prevState,show:false}));
+      postDataa(userData).then((res) => {
+        if (res.status == 200) {
+          if (res.data.status === 1) {
+            history({
+              pathname: `/${_base}/reset-password`,
+
+            }, { state: { email: userData.email, otp: userData.otp }, });
+          } else {
+            setNotify();
+            setNotify({ type: "danger", message: res.data.message });
+          }
         }
-      }
-    });
-  }
+      });
+    }
   };
 
   const submitOtpHandler = (e) => {
@@ -50,14 +50,14 @@ export default function StepAuthentication( ) {
     postData(userData).then((res) => {
       if (res.status == 200) {
         if (res.data.status === 1) {
-          setNotify({type: 'success', message:res.data.message});
+          setNotify({ type: 'success', message: res.data.message });
 
         } else {
-            setNotify({type: 'danger', message:res.data.message});
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
         setNotify();
-        setNotify({type: 'danger', message:"Request Error"});
+        setNotify({ type: 'danger', message: "Request Error" });
       }
     });
   };
@@ -69,28 +69,28 @@ export default function StepAuthentication( ) {
   };
 
 
-  useEffect(() => {
-    if (location && location.state) {
-      setUserData((prevState) => ({
-        ...prevState,
-        email: location.state.email,
-      }));
-    }
-  }, []);
-  useEffect(() => {
-    // Countdown logic
-    let timer = null;
-    if (resendTimer > 0 && resendDisabled) {
-      timer = setInterval(() => {
-        setResendTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    } else {
-      setResendDisabled(false);
-      setResendTimer(60);
-    }
+  // useEffect(() => {
+  //   if (location && location.state) {
+  //     setUserData((prevState) => ({
+  //       ...prevState,
+  //       email: location.state.email,
+  //     }));
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   // Countdown logic
+  //   let timer = null;
+  //   if (resendTimer > 0 && resendDisabled) {
+  //     timer = setInterval(() => {
+  //       setResendTimer((prevTimer) => prevTimer - 1);
+  //     }, 1000);
+  //   } else {
+  //     setResendDisabled(false);
+  //     setResendTimer(60);
+  //   }
 
-    return () => clearInterval(timer);
-  }, [resendTimer, resendDisabled]);
+  //   return () => clearInterval(timer);
+  // }, [resendTimer, resendDisabled]);
 
   return (
     <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">
@@ -133,25 +133,25 @@ export default function StepAuthentication( ) {
               Verify Me
             </button>
           </div>
-          </form>
-          
-          <div className="col-12 text-center mt-4">
-              Haven't received it?..
-            <span className="text-muted">
-              {resendDisabled ? (
-                `Resend the code in ${resendTimer} seconds.`
-              ) : (
-                <button
+        </form>
+
+        <div className="col-12 text-center mt-4">
+          Haven't received it?..
+          <span className="text-muted">
+            {resendDisabled ? (
+              `Resend the code in ${resendTimer} seconds.`
+            ) : (
+              <button
                 type="submit"
-                onClick={e=>{handleResendClick(e);submitOtpHandler(e)}}
-                  style={{ border: "none", background: "none" }}
-                  className="text-secondary"
-                >
-                  Resend a new code.
-                </button>
-              )}
-            </span>
-          </div>
+                onClick={e => { handleResendClick(e); submitOtpHandler(e) }}
+                style={{ border: "none", background: "none" }}
+                className="text-secondary"
+              >
+                Resend a new code.
+              </button>
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );

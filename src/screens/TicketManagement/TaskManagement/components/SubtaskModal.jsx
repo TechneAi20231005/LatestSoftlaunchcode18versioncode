@@ -84,10 +84,11 @@ export default function SubtaskModal(props) {
 
 
 
-        await new SubtaskService().deleteSubtask(subtaskId, formData).then(res => {
+        await new SubtaskService().deleteSubtask(subtaskId, formData).then(async res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
-                    loadSubtask();
+                   await  loadSubtask();
+                    alert(`${res.data.message}`)
                 }
             }
         });

@@ -1075,27 +1075,27 @@ export default function EditTicketComponent({ match }) {
                           Module : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {/* {moduleDropdown && ( */}
+                      {moduleDropdown && (
 
-                      <Select
-                        id="module_id"
-                        name="module_id"
-                        options={moduleDropdown}
-                        ref={moduleIdRef}
-                        clearValue={true}
-                        onChange={handleModuleChange}
-                        defaultValue={moduleDropdown && moduleDropdown.filter(
-                          (d) => d.value == data.module_id
-                        )}
-                      />
-                      {/* )} */}
+                        <Select
+                          id="module_id"
+                          name="module_id"
+                          options={moduleDropdown}
+                          ref={moduleIdRef}
+                          clearValue={true}
+                          onChange={handleModuleChange}
+                          defaultValue={moduleDropdown && moduleDropdown.filter(
+                            (d) => d.value == data.module_id
+                          )}
+                        />)}
+
                     </div>
 
                     <div className="col-sm-3">
                       <label className=" col-form-label">
                         <b>Sub Module :</b>
                       </label>
-                      {
+                      {subModuleDropdown && (
                         <Select
                           options={subModuleDropdown}
                           id="submodule_id"
@@ -1105,7 +1105,7 @@ export default function EditTicketComponent({ match }) {
                             (d) => d.value == data.submodule_id
                           )}
                         />
-                      }
+                      )}
                     </div>
 
                     <div className="col-sm-3">
@@ -1234,17 +1234,17 @@ export default function EditTicketComponent({ match }) {
                                                 getChangeValue={e => handleTicketStatus(e)}
                                             /> */}
 
-                        {/* {statusData && ( */}
-                        <Select
-                          id="status_id"
-                          name="status_id"
-                          options={statusData}
-                          onChange={(e) => handleTicketStatus(e)}
-                          defaultValue={statusData && statusData.filter(
-                            (d) => d.value == data.status_id
-                          )}
-                        />
-                        {/* )} */}
+                        {statusData && (
+                          <Select
+                            id="status_id"
+                            name="status_id"
+                            options={statusData}
+                            onChange={(e) => handleTicketStatus(e)}
+                            defaultValue={statusData && statusData.filter(
+                              (d) => d.value == data.status_id
+                            )}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>

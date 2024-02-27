@@ -3786,7 +3786,7 @@ export default function MyTicketComponent() {
   const Notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
 
-
+  const account_for = localStorage.getItem("account_for")
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -3929,6 +3929,7 @@ export default function MyTicketComponent() {
   // };
 
   const actionComponent = (data, type) => {
+    { console.log("data of my tickt", data) }
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
         return (
@@ -3945,14 +3946,14 @@ export default function MyTicketComponent() {
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
-                (data.status_name != "Solved" && (
+                (data.status_name !== "Solved" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: "100" }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit"></i> Editt
                     </Link>
                   </li>
                 ))}
@@ -5345,7 +5346,7 @@ export default function MyTicketComponent() {
           const tempData = [];
           const temp = res.data.data;
           if (res.data.status == 1) {
-            const data = res.data.data.filter((d) => d.is_active == 1);
+            const data = res.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
             setUser(temp);
           }
           for (const key in temp) {
@@ -5454,7 +5455,7 @@ export default function MyTicketComponent() {
     await new MyTicketService().getUserTicketsTest().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          console.log("assigned to me data", res.data.data)
+
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
@@ -5520,7 +5521,7 @@ export default function MyTicketComponent() {
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
-      // setNotify(null);
+      setNotify(null);
 
       const formData = new FormData(e.target);
 
@@ -5531,7 +5532,7 @@ export default function MyTicketComponent() {
 
       if (response.status === 200) {
         const { status, message } = response.data;
-
+        console.log("message", message)
         if (status === 1) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
           // window.location.reload(false)
@@ -5543,7 +5544,7 @@ export default function MyTicketComponent() {
             typeOf: "UnPassed",
             page: 1,
           };
-
+          setNotify({ type: "success", message })
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
               if (res.data.status == 1) {
@@ -5564,90 +5565,99 @@ export default function MyTicketComponent() {
       setNotify({ type: "danger", message: "An error occurred." });
     }
   };
+  const searchThroughEnter = () => {
+
+  }
 
   const handleForm = async (e) => {
     // e.preventDefault();
     // const formData = new FormData(e.target);
     // var flag = 1;
+    console.log("just e", e)
     try {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      var flag = 1;
-      await new ReportService()
-        .getTicketReport(formData)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
-              setSearchResult(null);
-              setSearchResult(res.data.data);
-              const temp = res.data.data;
+      if (e) {
 
-              var counter = 1;
-              var searchResultExport = [];
-              for (const key in temp) {
-                searchResultExport.push({
-                  Sr: counter++,
-                  TICKET_ID: temp[key].ticket_id,
-                  TICKET_DATE: temp[key].ticket_date,
-                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                  ASSIGN_TO_USER: temp[key].assign_to_user,
-                  QUERY_TYPE_NAME: temp[key].query_type_name,
-                  PRIORITY: temp[key].priority,
-                  STATUS: temp[key].status_name,
-                  DESCRIPTION: temp[key].description,
-                  CREATED_BY: temp[key].created_by_name,
+        e.preventDefault();
+        const form = document.getElementById('your_form_id');
+        const formData = new FormData(form);
+        // const formData = new FormData(e.target.value);
+        var flag = 1;
+        await new ReportService()
+          .getTicketReport(formData)
+          .then((res) => {
+            if (res.status === 200) {
+              if (res.data.status == 1) {
+                setSearchResult(null);
+                setSearchResult(res.data.data);
+                const temp = res.data.data;
 
-                  Basket_Configured: temp[key].basket_configured,
-                  Confirmation_Required: temp[key].confirmation_required
-                    ? "YES"
-                    : "NO",
-                  Ref_id: temp[key].cuid,
-                  from_department_name: temp[key].from_department_name,
-                  id: temp[key].id,
-                  Status: temp[key].is_active ? "Active" : "Deactive",
-                  module_name: temp[key].module_name,
-                  Passed_Status: temp[key].passed_status,
-                  Passed_Status_Changed_At: temp[key].passed_status_changed_at,
-                  Passed_Status_Changed_By_Name:
-                    temp[key].passed_status_changed_by_name,
-                  Passed_Status_Remark: temp[key].passed_status_remark,
-                  project_name: temp[key].project_name,
-                  // query_type_name: dataCreatedByMe[key].query_type_name,
-                  Status_name: temp[key].status_name,
-                  sub_module_name: temp[key].sub_module_name,
-                  Template_id: temp[key].template_id,
-                  Tenant_id: temp[key].tenant_id,
-                  ticket_solved_date: temp[key].ticket_solved_date,
-                  ticket_solved_by: temp[key].ticket_solved_by,
-                });
+                var counter = 1;
+                var searchResultExport = [];
+                for (const key in temp) {
+                  searchResultExport.push({
+                    Sr: counter++,
+                    TICKET_ID: temp[key].ticket_id,
+                    TICKET_DATE: temp[key].ticket_date,
+                    EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                    ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
+                    ASSIGN_TO_USER: temp[key].assign_to_user,
+                    QUERY_TYPE_NAME: temp[key].query_type_name,
+                    PRIORITY: temp[key].priority,
+                    STATUS: temp[key].status_name,
+                    DESCRIPTION: temp[key].description,
+                    CREATED_BY: temp[key].created_by_name,
+
+                    Basket_Configured: temp[key].basket_configured,
+                    Confirmation_Required: temp[key].confirmation_required
+                      ? "YES"
+                      : "NO",
+                    Ref_id: temp[key].cuid,
+                    from_department_name: temp[key].from_department_name,
+                    id: temp[key].id,
+                    Status: temp[key].is_active ? "Active" : "Deactive",
+                    module_name: temp[key].module_name,
+                    Passed_Status: temp[key].passed_status,
+                    Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                    Passed_Status_Changed_By_Name:
+                      temp[key].passed_status_changed_by_name,
+                    Passed_Status_Remark: temp[key].passed_status_remark,
+                    project_name: temp[key].project_name,
+                    // query_type_name: dataCreatedByMe[key].query_type_name,
+                    Status_name: temp[key].status_name,
+                    sub_module_name: temp[key].sub_module_name,
+                    Template_id: temp[key].template_id,
+                    Tenant_id: temp[key].tenant_id,
+                    ticket_solved_date: temp[key].ticket_solved_date,
+                    ticket_solved_by: temp[key].ticket_solved_by,
+                  });
+                }
+                setKey("Search_Result");
+                setSearchResultExport(searchResultExport);
+              } else {
+                alert("No Data Found");
+                // setNotify({ type: 'danger', message: "No data Found" });
               }
-              setKey("Search_Result");
-              setSearchResultExport(searchResultExport);
             } else {
-              alert("No Data Found");
-              // setNotify({ type: 'danger', message: "No data Found" });
+              new ErrorLogService().sendErrorLog(
+                "UserTask",
+                "Get_UserTask",
+                "INSERT",
+                res.message
+              );
             }
-          } else {
+          })
+          .catch((error) => {
+            const { response } = error;
+            const { request, ...errorObject } = response;
             new ErrorLogService().sendErrorLog(
               "UserTask",
               "Get_UserTask",
               "INSERT",
-              res.message
+              errorObject.data.message
             );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "UserTask",
-            "Get_UserTask",
-            "INSERT",
-            errorObject.data.message
-          );
-          setIsLoading(false);
-        });
+            setIsLoading(false);
+          });
+      }
     } catch (error) {
       // Handle errors that may occur during the getTicketReport call
       console.error("Error:", error);
@@ -6126,26 +6136,44 @@ export default function MyTicketComponent() {
     },
   };
 
+  // useEffect(() => {
+  //   const listener = (event) => {
+  //     if (event.code === "Enter") {
+  //       // callMyFunction();
+  //       console.log("enter called")
+  //       handleForm();
+  //     }
+  //   };
+  //   document.addEventListener("keydown", listener);
+  //   return () => {
+  //     document.removeEventListener("keydown", listener);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const listener = (event) => {
-      if (event.code === "Enter") {
-        // callMyFunction();
-        handleForm();
+    const listener = (e) => {
+      if (e && e.code === "Enter") {
+        e.preventDefault();
+        handleForm(e);
       }
     };
+
     document.addEventListener("keydown", listener);
+
     return () => {
       document.removeEventListener("keydown", listener);
     };
-  }, []);
+  }, [handleForm]);
+
 
   useEffect(() => {
+    setNotify(null);
     loadData();
     // if (location && location.state) {
     //   setNotify(location.state);
     // }
     // return () => {
-    //   setNotify(null);
+    // 
     // };
   }, []);
 
@@ -6174,7 +6202,7 @@ export default function MyTicketComponent() {
       {/* {userData && JSON.stringify(userData)} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
+          <form onSubmit={handleForm} id="your_form_id">
             <div className="row">
               <div className="col-md-3">
                 <label className="">
@@ -6257,7 +6285,11 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   type="button"
                   id="openFilter"
+                  styleName={
+                    account_for === "CUSTOMER" ? { display: "none" } : { display: "block" }
+                  }
                   onClick={handleShow}
+
                   style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   {" "}
