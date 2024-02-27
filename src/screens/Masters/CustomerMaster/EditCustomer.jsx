@@ -171,8 +171,6 @@
 //   const [contactErr, setContactErr] = useState(false);
 //   const [contactNumber, setContactNumber] = useState(null);
 
-
-
 //   const handleMobileValidation = (e) => {
 //     const contactNumber = e.target.value;
 //     setContactNumber(contactNumber);
@@ -261,12 +259,12 @@
 //       //       if (res.data.status === 1) {
 //       //         history({
 //       //           pathname: `/${_base}/Customer`,
-             
+
 //       //         },
 //       //        { state: {
 //       //           type: "success", message: res.data.message ,
 //       //        }
-//       //       } 
+//       //       }
 //       //         );
 //       //       } else {
 //       //         setNotify({ type: "danger", message: res.data.message });
@@ -294,8 +292,6 @@
 //       //   });
 //     }
 //   };
-
-
 
 //   const handleDependentChange = (e, type) => {
 //     if (type == "COUNTRY") {
@@ -347,7 +343,6 @@
 //     setCityDropdown(null);
 //   };
 
-
 //   console.log("s",stateDropdownData);
 
 //   const handleStateChange = (e) => {
@@ -356,10 +351,9 @@
 //     //   city
 //     //     .filter((d) => d.state_id == e.value)
 //     //     .map((d) => ({ value: d.id, label: d.city }))
-//     // 
+//     //
 //     // setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id===e.value).map((d) => ({ value: d.id, label: d.city })))
 
-    
 //     // const newStatus = { ...updateStatus, citydrp: 1 };
 //     // setUpdateStatus(newStatus);
 //     // setStateName(e);
@@ -371,7 +365,6 @@
 //     setStateName(e);
 //     setCityName(null);
 //   }
-  
 
 //   console.log("city",cityDropdownData);
 //   // useEffect(() => {
@@ -390,23 +383,23 @@
 //       dispatch(getCustomerType())}
 //       if( !countryDropdown.length){
 //         dispatch(getCountryDataSort())
-  
+
 //       }
 
 //       dispatch(getStateDataSort())
 //       if(!stateDropdown.length){
 //         dispatch(getStateData());
-    
+
 //         }
-        
+
 //         if(!checkRole.length){
 //           dispatch(getRoles())
-    
+
 //         }
 
 //         if(!AllcityDropDownData.length){
 //           dispatch(getCityData())
-    
+
 //         }
 
 //   }, []);
@@ -712,7 +705,7 @@
 //                       </b>
 //                     </label>
 //                     {console.log("countryDropdown",countryDropdown)}
-                    
+
 //                     <div className="col-sm-4">
 //                       {countryDropdown && (
 //                         <Select
@@ -756,7 +749,6 @@
 //                     </div>
 //                     {console.log("sss",stateDropdown)}
 //                     {console.log("ddd",data)}
-
 
 //                     <label
 //                       className="col-sm-2 col-form-label"
@@ -817,7 +809,6 @@
 
 // export default EditCustomer;
 
-
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -842,8 +833,10 @@ function EditCustomer({ match }) {
 
   const { id } = useParams();
   const customerId = id;
-  const dispatch =useDispatch()
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+  );
 
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
@@ -957,8 +950,8 @@ function EditCustomer({ match }) {
         }
       }
     });
-    
-    dispatch(getRoles())
+
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -969,8 +962,6 @@ function EditCustomer({ match }) {
     //   }
     // });
   };
-
-
 
   const [emailError, setEmailError] = useState("");
   const [mailError, setMailError] = useState(false);
@@ -1016,11 +1007,16 @@ function EditCustomer({ match }) {
     // var a = JSON.stringify(Object.fromEntries(formData))
     // console.log(a)
 
+
+    
+
     var customerType = formData.getAll("customer_type_id");
     var selectEmail = formData.getAll("email_id");
     var selectCountry = formData.getAll("country_id");
     var selectState = formData.getAll("state_id");
     var selectCity = formData.getAll("city_id");
+
+    
 
     if (
       customerType == "" ||
@@ -1065,14 +1061,16 @@ function EditCustomer({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Customer`,
-             
-              },
-             { state: {
-                type: "success", message: res.data.message ,
-             }
-            } 
+              history(
+                {
+                  pathname: `/${_base}/Customer`,
+                },
+                {
+                  state: {
+                    type: "success",
+                    message: res.data.message,
+                  },
+                }
               );
             } else {
               setNotify({ type: "danger", message: res.data.message });
@@ -1100,10 +1098,6 @@ function EditCustomer({ match }) {
         });
     }
   };
-
-  
-
-
 
   const handleCountryChange = (e) => {
     setStateDropdown(
@@ -1257,16 +1251,14 @@ function EditCustomer({ match }) {
                         placeholder="Email Address"
                         required
                         onChange={handleEmail}
-                        
                         onKeyPress={(e) => {
                           Validation.emailOnly(e);
                         }}
                         defaultValue={data.email_id}
-                        
                       />
-                       {mailError && (
-            <div className="text-danger">{emailError}</div>
-          )}
+                      {mailError && (
+                        <div className="text-danger">{emailError}</div>
+                      )}
                     </div>
                   </div>
 

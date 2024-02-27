@@ -785,6 +785,8 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
+
+    
     {
       name: "Rejected by",
       selector: (row) => row.is_rejected_by,

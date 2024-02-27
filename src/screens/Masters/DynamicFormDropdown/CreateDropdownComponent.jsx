@@ -322,7 +322,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
         name="dropdown_values[]"
         id={`dropdown_values_${idx}`}
         className="form-control form-control-sm"
-        onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
+        onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
         value={item.value} // Bind the input value to the row's data
         onChange={(e) => {
           const updatedData = [...data];

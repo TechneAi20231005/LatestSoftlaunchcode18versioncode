@@ -462,6 +462,17 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
         // }
     }
 
+    
+    const [items, setItems] = useState(data); // Initialize items state with data
+
+    const handleInputChange = (e, index) => {
+        const { value } = e.target;
+        const updatedItems = [...items]; // Create a copy of the state array
+        updatedItems[index] = { ...updatedItems[index], label: value }; // Update the label property of the specific item
+        setItems(updatedItems); // Update the state with the modified array
+    };
+
+
     useEffect(() => {
         loadData();
         if(!checkRole.length){
@@ -564,23 +575,45 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                                 />
 
                                             </td>
+                                           
+
                                             {/* <td>
-                                                <input
-                                                    type="text"
-                                                    name="value[]"
-                                                    className="form-control form-control-sm"
-                                                    required
-                                                    defaultValue={item.value}
-                                                />
-                                            </td> */}
-                                            <td>
                                                 <input
                                                     type="text"
                                                     name="dropdown_values[]"
                                                     className="form-control form-control-sm"
-                                                    value={item.label}
+                                                    defaultValue={item.label}
                                                 />
-                                            </td>
+                                            </td> */}
+
+{/* <td>
+                    <input
+                        type="text"
+                        name="dropdown_values[]"
+                        className="form-control form-control-sm"
+                        value={items[idx]?.label || item.label} // Use items[idx]?.label as value
+                        onChange={(e) => handleInputChange(e, idx)}
+                    />
+                </td> */}
+
+<td>
+<input
+        type="text"
+        key={idx}
+        name="dropdown_values[]"
+        id={`dropdown_values_${idx}`}
+        className="form-control form-control-sm"
+        onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
+        value={item.value} // Bind the input value to the row's data
+        onChange={(e) => {
+          const updatedData = [...data];
+          updatedData[idx].value = e.target.value;
+          setData(updatedData);
+        }}
+      />
+      </td>
+
+
                                             <td>
                                                 {idx == 0 &&
                                                     <button type="button" className="btn btn-sm btn-outline-primary pull-left"

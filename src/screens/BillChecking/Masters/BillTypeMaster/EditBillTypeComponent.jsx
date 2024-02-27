@@ -884,6 +884,8 @@ const EditBillTypeComponent = ({ match }) => {
                             ? { backgroundColor: "#D1D1D9" }
                             : null
                         }
+                      // min = { approverData && index >0 &&approverData.data?.filter((d)=>d.slab ==1).map((i)=>i.amount + 1)}
+
                         type="number" // Change type to text
                         key={index}
                         value={item.amount ? item.amount : ""}
@@ -913,6 +915,8 @@ const EditBillTypeComponent = ({ match }) => {
                           type="button"
                           variant="primary"
                           className="sm"
+                        disabled={!item.amount ? true : false}
+
                           onClick={(e) => {
                             handleIncrement(e, index);
                           }}

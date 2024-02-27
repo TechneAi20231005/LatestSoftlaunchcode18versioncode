@@ -576,6 +576,8 @@ const requiredUserRef = useRef();
             </div>
             {approverData.data.map((item, index) => (
               <div key={index}>
+              {console.log("item",approverData&&approverData.data?.filter((d)=>d.slab ==1).map((i)=>i.amount))}
+
                 <Row>
                   <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                   <Col className="mt-2">
@@ -592,7 +594,9 @@ const requiredUserRef = useRef();
                           : null
                       }
                       type="number"
+                      required
                       key={index}
+                      min = { approverData && index >0 &&approverData.data?.filter((d)=>d.slab ==1).map((i)=>i.amount + 1)}
                       maxLength="10"
                       value={item.amount ? item.amount : ""}
                       onKeyPress={(e) => {
@@ -620,6 +624,7 @@ const requiredUserRef = useRef();
                         type="button"
                         variant="primary"
                         className="sm"
+                        disabled={!item.amount ? true : false}
                         onClick={(e) => handleIncrement(e, index)}
                       >
                         <i className="icofont-plus-circle" />

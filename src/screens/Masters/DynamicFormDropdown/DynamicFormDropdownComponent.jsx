@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import DynamicFormDropDownSlice from "./Slices/DynamicFormDropDownSlice";
 import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 export default function DynamicFormDropdownComponent() {
   const location = useLocation();
@@ -101,11 +103,38 @@ export default function DynamicFormDropdownComponent() {
       ),
     },
     { name: "Sr", selector: (row) => row.counter, sortable: true },
+
+
+   
+
     {
       name: "Dropdown Name",
       selector: (row) => row.dropdown_name,
       sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.dropdown_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.dropdown_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.dropdown_name && row.dropdown_name.length < 10
+                    ? row.dropdown_name
+                    : row.dropdown_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
+
+
+
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -140,6 +169,7 @@ export default function DynamicFormDropdownComponent() {
 
             let counter = 1;
             const temp = res.data.data
+            console.log("temp",temp)
             for (const key in temp) {
                 data.push({
                     counter: counter++,
@@ -147,8 +177,8 @@ export default function DynamicFormDropdownComponent() {
                     dropdown_name: temp[key].dropdown_name,
                     is_active: temp[key].is_active,
                     updated_at: temp[key].updated_at,
-                    created_at: temp[key].updated_at,
-                    created_by: temp[key].updated_by,
+                    created_at: temp[key].created_at,
+                    created_by: temp[key].created_by,
 
                     updated_by: temp[key].updated_by,
                 })
@@ -165,6 +195,8 @@ export default function DynamicFormDropdownComponent() {
                     Status: data[key].is_active ? 'Active' : 'Deactive',
                     updated_at: data[key].updated_at,
                     updated_by: data[key].updated_by,
+                    created_at: temp[key].created_at,
+                    created_by: temp[key].created_by,
                 })
             }
 

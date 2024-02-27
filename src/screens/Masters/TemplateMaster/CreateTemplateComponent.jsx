@@ -872,7 +872,7 @@ const CreateTemplateComponent = () => {
                                       </b>
                                     </label>
                                     <input
-                                      type="time"
+                                      type="number"
                                       id="hours_required"
                                       name="total_time"
                                       onChange={(e) =>
@@ -1049,7 +1049,7 @@ const CreateTemplateComponent = () => {
 
                               <label>
                                 <b>
-                                  Days Required:
+                                  Day Required:
                                   <Astrick color="red" size="13px" />
                                 </b>
                               </label>
@@ -1070,14 +1070,14 @@ const CreateTemplateComponent = () => {
                                 </b>
                               </label>
                               <input
-                                type="time"
+                                type="number"
                                 className="form-control form-control-sm mb-2"
                                 name="hours"
                                 id="hours_add"
                                 min="1"
                                 max="100"
                                 placeholder="Days Required"
-                                // defaultValue="00.00"
+                                defaultValue="00.00"
                                 required
                               />
                               <label>
