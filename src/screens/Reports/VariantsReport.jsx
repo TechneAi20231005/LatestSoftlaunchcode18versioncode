@@ -89,7 +89,7 @@ export default function ResourcePlanningReportComponent() {
     const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,

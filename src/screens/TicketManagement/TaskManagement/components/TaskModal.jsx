@@ -96,7 +96,7 @@ export default function TaskModal(props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         const data1 = res.data.data;
-        const data = data1.filter((d) => d.is_active === 1);
+        const data = data1.filter((d) => d.is_active === 1 && d.account_for === "SELF");
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,

@@ -73,8 +73,8 @@ export default function HrDashboard(props) {
   );
 
 
-  const {id} = useParams()
-  console.log("id0000",id)
+  const { id } = useParams()
+
 
 
   const data = props.data;
@@ -251,27 +251,24 @@ export default function HrDashboard(props) {
 
 
 
-// dispatch(getmoduleSetting({module_name:"Ticket",submodule_name:"Task"}))
+    // dispatch(getmoduleSetting({module_name:"Ticket",submodule_name:"Task"}))
 
 
 
-// dispatch(getmoduleSetting("Ticket","Task"))
+    // dispatch(getmoduleSetting("Ticket","Task"))
 
-dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
+    dispatch(getmoduleSetting({ module_name: "Ticket", submodule_name: "Task" }))
 
-
-
-  //  dispatch(getAllUserById())
-   dispatch(departmentData());
-   dispatch(getRoleData());
-   dispatch(getStatusData())
-   dispatch(getCustomerTypeData())
-   dispatch(templateData())
-   dispatch(testingData());
-   dispatch(taskAndTicketMaster ())
-   dispatch(getParentDropdown())
-  //  dispatch(getBasketByIdData(id))
-  // dispatch(getBasketTaskData(ticketId))
+    dispatch(departmentData());
+    dispatch(getRoleData());
+    dispatch(getStatusData())
+    dispatch(getCustomerTypeData())
+    dispatch(templateData())
+    dispatch(testingData());
+    dispatch(taskAndTicketMaster())
+    dispatch(getParentDropdown())
+    //  dispatch(getBasketByIdData(id))
+    // dispatch(getBasketTaskData(ticketId))
 
 
 
@@ -288,8 +285,12 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
   };
 
   useEffect(() => {
-    get();
+    const account_for = localStorage.getItem("account_for");
 
+    if (account_for === "CUSTOMER") {
+      window.location.href = `${process.env.PUBLIC_URL}/Ticket`
+    }
+    get();
     loadData();
   }, []);
 
@@ -1211,5 +1212,5 @@ dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
       </div>
     </div>
   );
-                
-                }
+
+}
