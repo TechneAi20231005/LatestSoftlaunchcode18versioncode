@@ -2936,6 +2936,7 @@ function CreateUserComponent({ match }) {
                           name="check1"
                           onChange={copyTextValue}
                           style={{ position: "absolute", top: "32%" }}
+                         
                         />
                         {/* <b>Whats App Number :</b> */}
                       </label>
@@ -2966,6 +2967,8 @@ function CreateUserComponent({ match }) {
                             Validation.mobileNumbersOnly(e);
                           }}
                           onChange={handleWhatsappValidation}
+                          maxLength="10"
+                          minLength="10"
                         />
                         {inputState && (
                           <small
