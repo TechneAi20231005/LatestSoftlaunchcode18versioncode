@@ -4101,7 +4101,6 @@ function VendorMaster({ match }) {
     modalHeader: "",
   });
 
-
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
     modalData: "",
@@ -4188,10 +4187,10 @@ function VendorMaster({ match }) {
                 modalHeader: "Edit Vendor",
               });
               setError(null);
-              setMSMESelectedFiles(null);
-              setSelectedFiles(null);
-              setChequeAttachmentSelectedFiles(null);
-              setPassBookSelectedFiles(null);
+              // setMSMESelectedFiles(null);
+              // setSelectedFiles(null);
+              // setChequeAttachmentSelectedFiles(null);
+              // setPassBookSelectedFiles(null);
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -4334,7 +4333,7 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
-      console.log("res",res)
+      console.log("res", res);
       if (res.status === 200) {
         let counter = 1;
         const temp = res.data.data;
@@ -4510,10 +4509,7 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
- 
-   
-    
-    
+
     setError(null);
     setNotify(null);
     var flag = 1;
@@ -4591,34 +4587,31 @@ function VendorMaster({ match }) {
       alert("Invalid Referance Nubmer");
     }
 
- // Append file attachments
- if (panattachment?.length > 0) {
-  form.append('pan_attachment[0]', panattachment[0].file);
-}
-if (selectedFiles?.length > 0) {
-  form.append('gst_attachment[0]', selectedFiles[0].file);
-}
-if (MSMEselectedFiles?.length > 0) {
-  form.append('msme_attachment[0]', MSMEselectedFiles[0].file);
-}
-if (passBookSelectedFiles?.length > 0) {
-  form.append('bank_passbook_attachment[0]', passBookSelectedFiles[0].file);
-}
+ 
+    if (panattachment?.length > 0) {
+      form.append("pan_attachment[0]", panattachment[0].file);
+    }
+    if (selectedFiles?.length > 0) {
+      form.append("gst_attachment[0]", selectedFiles[0].file);
+    }
+    if (MSMEselectedFiles?.length > 0) {
+      form.append("msme_attachment[0]", MSMEselectedFiles[0].file);
+    }
+    if (passBookSelectedFiles?.length > 0) {
+      form.append("bank_passbook_attachment[0]", passBookSelectedFiles[0].file);
+    }
 
-if (chequeAttachmentSelectedFiles?.length > 0) {
-  form.append('cheque_attachment[0]', chequeAttachmentSelectedFiles[0].file);
-}
-if (panattachment?.length > 0) {
-  form.append('adhar_attachment[0]', panattachment[0].file);
-}
+    if (chequeAttachmentSelectedFiles?.length > 0) {
+      form.append(
+        "cheque_attachment[0]",
+        chequeAttachmentSelectedFiles[0].file
+      );
+    }
+    if (panattachment?.length > 0) {
+      form.append("adhar_attachment[0]", panattachment[0].file);
+    }
 
-
-
-
-
-console.log("panattachment",panattachment);
-
-  
+    console.log("panattachment", panattachment);
 
     if (!id) {
       if (
@@ -5092,7 +5085,7 @@ console.log("panattachment",panattachment);
           <tr>
             <td>1</td>
             <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
-            {console.log("attchment",data)}
+            {console.log("attchment", data)}
 
             {data.adhar_attachment ? (
               <td>
@@ -5263,8 +5256,8 @@ console.log("panattachment",panattachment);
     const file = e.target.elements.attachment.files[0]; // Access the file from the event target
 
     if (!file) {
-        alert("Please choose a file.");
-        return;
+      alert("Please choose a file.");
+      return;
     }
 
     const form = new FormData();
@@ -5274,20 +5267,19 @@ console.log("panattachment",panattachment);
     setError(null);
 
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
-        if (res.status === 200) {
-            if (res.data.status == 1) {
-                setNotify({ type: "success", message: res.data.message });
-                handleBulkModal({ showModal: false });
-                loadData();
-            } else {
-                setError({ type: "danger", message: res.data.message });
-                URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
-                window.open(URL, "_blank")?.focus();
-            }
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setNotify({ type: "success", message: res.data.message });
+          handleBulkModal({ showModal: false });
+          loadData();
+        } else {
+          setError({ type: "danger", message: res.data.message });
+          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          window.open(URL, "_blank")?.focus();
         }
+      }
     });
-};
-
+  };
 
   return (
     <>
@@ -6017,14 +6009,14 @@ console.log("panattachment",panattachment);
                       </small>
                     )}
                   </div>
-                  {console.log("modal",modal.modalData._attachmentUrl)}
+                  {console.log("modal", modal.modalData)}
 
-                    <div className=" col-sm-3 mt-2">
+                  <div className=" col-sm-3 mt-2">
                     <label className="col-form-label" htmlFor="attachment">
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
-                   
+
                       {modal.modalData && modal.modalData.pan_attachment && (
                         <a
                           href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
@@ -6071,7 +6063,6 @@ console.log("panattachment",panattachment);
                         </a>
                       )}
                     </label>
-                    
 
                     <input
                       // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
@@ -6183,10 +6174,6 @@ console.log("panattachment",panattachment);
                       defaultValue={
                         modal.modalData ? modal.modalData.gst_no : ""
                       }
-                      // onKeyPress={(e) => {
-                      //   Validation.GSTNumberOnly(e);
-                      // }}
-                      // required={true}
                       onChange={(event) => {
                         event.target.value = event.target.value.toUpperCase();
                         const gstNumber = event.target.value;
@@ -6235,7 +6222,6 @@ console.log("panattachment",panattachment);
                       <b> GST Attachment : </b>
                     </label>
 
-                  
                     {modal.modalData && modal.modalData.gst_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.gst_attachment}`}
