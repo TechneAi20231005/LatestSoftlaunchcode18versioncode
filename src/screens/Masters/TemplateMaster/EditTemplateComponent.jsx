@@ -596,6 +596,8 @@ const EditTemplateComponent = ({ match, props }) => {
               <label className="form-label font-weight-bold">
                 Status :<Astrick color="red" size="13px" />
               </label>
+
+             {console.log("vv",data)}
               <div className="row">
                 <div className="col-md-2">
                   <div className="form-check">
@@ -606,11 +608,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       id="is_active_1"
                       value="1"
                       defaultChecked={
-                        newData && newData.is_active === 1
-                          ? true
-                          : !newData
-                          ? true
-                          : false
+                      data && data.is_active == 1?true :false
                       }
                     />
                     <label className="form-check-label" htmlFor="is_active_1">
@@ -628,10 +626,8 @@ const EditTemplateComponent = ({ match, props }) => {
                       value="0"
                       readOnly={modal.modalData ? false : true}
                       defaultChecked={
-                        newData && newData.is_active === 0
-                          ? true
-                          : false
-                      }
+                        data && data.is_active == 0?true :false
+                        }
                     />
                     <label className="form-check-label" htmlFor="is_active_0">
                       Deactive
