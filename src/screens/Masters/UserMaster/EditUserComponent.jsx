@@ -1270,6 +1270,7 @@ function EditUserComponent({ match }) {
                                   e.preventDefault();
                                   return false;
                                 }}
+                                
                                 onCopy={(e) => {
                                   e.preventDefault();
                                   return false;

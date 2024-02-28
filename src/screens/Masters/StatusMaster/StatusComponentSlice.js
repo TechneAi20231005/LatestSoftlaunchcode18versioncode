@@ -15,7 +15,8 @@ const initialState = {
   getStatusData: [],
   sortStatusData:[],
   filterStatus:[],
-  postStatusData:''
+  postStatusData:'',
+  filterStatusData:[]
 };
 
 export const statusMasterSlice = createSlice({
@@ -43,6 +44,8 @@ export const statusMasterSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getStatusData = payload.data.data;
+let filterStatusData= payload.data.data.filter((d)=>d.tenant_id != 0)
+state.filterStatusData=[...filterStatusData]
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;

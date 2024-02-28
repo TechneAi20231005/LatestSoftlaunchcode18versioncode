@@ -568,6 +568,7 @@ export default function EditTicketComponent({ match }) {
     await new StatusService().getStatus().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
+
           const temp = res.data.data.filter((d) => d.is_active == 1);
           setStatusValue(temp);
           const select = temp.map((d) => ({ value: d.id, label: d.status }));
@@ -575,6 +576,8 @@ export default function EditTicketComponent({ match }) {
         }
       }
     });
+
+
 
     loadComments();
     setShowLoaderModal(false);

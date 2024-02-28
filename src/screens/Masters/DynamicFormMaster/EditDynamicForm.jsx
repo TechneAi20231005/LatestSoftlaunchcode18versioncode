@@ -1654,11 +1654,15 @@ console.log("dro",dropdown)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            console.log("dataEdit",res)
             setData(res.data.data);
             setRows(res.data.data.data)
           }
         }
       });
+
+
+    
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {

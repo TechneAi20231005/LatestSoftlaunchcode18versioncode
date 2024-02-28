@@ -3929,6 +3929,7 @@ export default function MyTicketComponent() {
   // };
 
   const actionComponent = (data, type) => {
+    { console.log("data of my tickt", data) }
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
         return (
@@ -3945,14 +3946,14 @@ export default function MyTicketComponent() {
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
-                (data.status_name != "Solved" && (
+                (data.status_name !== "Solved" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: "100" }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit"></i> Editt
                     </Link>
                   </li>
                 ))}
@@ -5454,7 +5455,7 @@ export default function MyTicketComponent() {
     await new MyTicketService().getUserTicketsTest().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          console.log("assigned to me data", res.data.data)
+
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
@@ -5520,7 +5521,7 @@ export default function MyTicketComponent() {
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
-      // setNotify(null);
+      setNotify(null);
 
       const formData = new FormData(e.target);
 
@@ -5531,7 +5532,7 @@ export default function MyTicketComponent() {
 
       if (response.status === 200) {
         const { status, message } = response.data;
-
+        console.log("message", message)
         if (status === 1) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
           // window.location.reload(false)
@@ -5543,7 +5544,7 @@ export default function MyTicketComponent() {
             typeOf: "UnPassed",
             page: 1,
           };
-
+          setNotify({ type: "success", message })
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
               if (res.data.status == 1) {
@@ -6166,12 +6167,13 @@ export default function MyTicketComponent() {
 
 
   useEffect(() => {
+    setNotify(null);
     loadData();
     // if (location && location.state) {
     //   setNotify(location.state);
     // }
     // return () => {
-    //   setNotify(null);
+    // 
     // };
   }, []);
 

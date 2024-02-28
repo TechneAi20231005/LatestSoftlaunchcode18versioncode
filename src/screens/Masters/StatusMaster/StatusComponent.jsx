@@ -20,12 +20,12 @@ import { handleModalClose ,handleModalOpen} from "./StatusComponentSlice";
 
 function StatusComponent() {
     const dispatch =useDispatch()
-    const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.getStatusData)
+    const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.filterStatusData)
     const exportData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.exportStatusData)
     const checkRole=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
     const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
     const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
-    console.log("notify",notify);
+    console.log("notify",statusData);
  
     
  
