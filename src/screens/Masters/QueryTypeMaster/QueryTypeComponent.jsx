@@ -2292,7 +2292,6 @@ console.log("exportQueryGroupData",exportQueryGroupData)
     await new QueryTypeService()
       .getQueryType()
       .then((res) => {
-        console.log(res)
         if (res.status === 200) {
           setShowLoaderModal(false);
 
@@ -2332,7 +2331,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
               updated_by: data[i].updated_by,
-              query_group_name  : temp[i].query_group_name,
+              query_group_data: temp[i].query_group_data,
             });
           }
 

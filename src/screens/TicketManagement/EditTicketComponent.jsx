@@ -931,7 +931,6 @@ export default function EditTicketComponent({ match }) {
                         readOnly={true}
                       />
                     </div>
-                    {expectedTrue && JSON.stringify(expectedTrue)}
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>
@@ -1057,10 +1056,11 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {projectDropdown && (
+                      {projectDropdown  &&  data && (
                         <Select
                           id="project_id"
                           name="project_id"
+                          required
                           options={projectDropdown}
                           onChange={handleProjectChange}
                           defaultValue={projectDropdown.filter(
@@ -1075,13 +1075,14 @@ export default function EditTicketComponent({ match }) {
                           Module : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {moduleDropdown && (
+                      {moduleDropdown && data&& (
 
                         <Select
                           id="module_id"
                           name="module_id"
                           options={moduleDropdown}
                           ref={moduleIdRef}
+                          required
                           clearValue={true}
                           onChange={handleModuleChange}
                           defaultValue={moduleDropdown && moduleDropdown.filter(
@@ -1617,6 +1618,7 @@ export default function EditTicketComponent({ match }) {
                     className="form-control form-control-sm"
                     name="otp"
                     id="otp"
+                    required
                     minLength={6}
                     maxLength={6}
                     onKeyPress={(e) => {

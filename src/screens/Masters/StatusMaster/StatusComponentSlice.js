@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getStatusData ,postStatusData,updateStatusData} from "./StatusComponentAction";
+import {
+  getStatusData,
+  postStatusData,
+  updateStatusData,
+} from "./StatusComponentAction";
 
 const initialState = {
   status: "",
@@ -10,13 +14,13 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
-  exportStatusData:[],
+  exportStatusData: [],
 
   getStatusData: [],
-  sortStatusData:[],
-  filterStatus:[],
-  postStatusData:'',
-  filterStatusData:[]
+  sortStatusData: [],
+  filterStatus: [],
+  postStatusData: "",
+  filterStatusData: [],
 };
 
 export const statusMasterSlice = createSlice({
@@ -44,17 +48,19 @@ export const statusMasterSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getStatusData = payload.data.data;
-let filterStatusData= payload.data.data.filter((d)=>d.tenant_id != 0)
-state.filterStatusData=[...filterStatusData]
+        let filterStatusData = payload.data.data.filter(
+          (d) => d.tenant_id != 0
+        );
+        state.filterStatusData = [...filterStatusData];
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < getStatusData.length; i++) {
-            getStatusData[i].counter = count++;
+          getStatusData[i].counter = count++;
         }
         state.getStatusData = [...getStatusData];
 
-        let sortStatusData=[]
+        let sortStatusData = [];
         for (const key in getStatusData) {
           // if (temp[key].is_active == 1) {
           if (getStatusData[key].id) {
@@ -65,12 +71,14 @@ state.filterStatusData=[...filterStatusData]
           }
         }
 
-        let filerStatus=payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.status }))
-        state.filterStatus=filerStatus
-        state.sortStatusData=sortStatusData
+        let filerStatus = payload.data.data
+          .filter((d) => d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.status }));
+        state.filterStatus = filerStatus;
+        state.sortStatusData = sortStatusData;
         let exportStatusData = [];
         for (const i in getStatusData) {
-            exportStatusData.push({
+          exportStatusData.push({
             Sr: getStatusData[i].counter,
             Role: getStatusData[i].role,
             Status: getStatusData[i].is_active ? "Active" : "Deactive",
@@ -81,7 +89,7 @@ state.filterStatusData=[...filterStatusData]
             updated_by: getStatusData[i].updated_by,
           });
         }
-        state.exportStatusData=exportStatusData
+        state.exportStatusData = exportStatusData;
       }
     });
     builder.addCase(getStatusData.rejected, (state) => {
@@ -98,10 +106,8 @@ state.filterStatusData=[...filterStatusData]
       const { payload } = action;
       console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
- 
-
         let postStatusData = payload.data.data;
-   
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postStatusData = postStatusData;
@@ -124,18 +130,14 @@ state.filterStatusData=[...filterStatusData]
     builder.addCase(updateStatusData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
-
     });
     builder.addCase(updateStatusData.fulfilled, (state, action) => {
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-   
-
         let updateStatusData = payload.data.data;
         state.notify = null;
-    
-     
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateStatusData = updateStatusData;

@@ -1984,7 +1984,7 @@ export default function CreateTicketComponent() {
                     <Select
                       id="parent_id"
                       name="parent_id"
-                      required
+                      // required
                       onChange={(e) => handleParentchange(e)}
                       options={parent}
                     />

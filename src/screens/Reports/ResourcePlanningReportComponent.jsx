@@ -225,6 +225,7 @@ export default function ResourcePlanningReportComponent() {
             <th>Task Hour</th>
           </tr>
         </thead>
+          {console.log("ff",data)}
         <tbody>
           {data.tasks &&
             data.tasks.length > 0 &&
@@ -234,7 +235,7 @@ export default function ResourcePlanningReportComponent() {
                   <td>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
                   <td >
-                    <Link  to={`/${_base}/Ticket/Task/${task.ticket_id}`}> 
+                    <Link  to={`/${_base}/Ticket/Task/${task.id}`}> 
                       <span style={{fontWeight:'bold'}}> {task.ticket_id} </span>
                       
                     </Link>

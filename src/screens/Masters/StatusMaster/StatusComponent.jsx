@@ -93,7 +93,7 @@ function StatusComponent() {
                     <button type="button" className="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#edit"
                         onClick={(e) => {
                             dispatch(
-                            handleModalOpen({ showModal: true, modalData: row, modalHeader: 'Edit Designation' }))
+                            handleModalOpen({ showModal: true, modalData: row, modalHeader: 'Edit Status' }))
                         }}
                     ><i className="icofont-edit text-success"></i>
                     </button>
