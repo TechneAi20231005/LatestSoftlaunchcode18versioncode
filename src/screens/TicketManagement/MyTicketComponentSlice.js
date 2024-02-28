@@ -12,9 +12,10 @@ const initialState = {
   getUserTicketTestData: [],
   createdByMe: [],
   getUserForMyTicket: [],
-  getAssignedUserData:[],
-  user:[],
-  alluserTickettest:[]
+  getAssignedUserData: [],
+  user: [],
+  alluserTickettest: [],
+  sortAssigntoSelfUser:[],
 };
 
 export const MyTicketComponentSlice = createSlice({
@@ -56,7 +57,7 @@ export const MyTicketComponentSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getUserTicketTestData = payload.data.data;
-        console.log("da,,,",getUserTicketTestData)
+        console.log("da,,,", getUserTicketTestData);
         state.status = "succeded";
         // let current_page = 0
         // let alluserTickettest=[getUserTicketTestData,current_page=payload.data.data.current_page]
@@ -75,54 +76,65 @@ export const MyTicketComponentSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getUserForMyTicket = payload.data.data;
-let user = payload.data.data;
-        console.log("s1",getUserForMyTicket)
-        let sortedData = getUserForMyTicket.filter((d) => d.is_active == 1).map((i) => ({
+
+        let sortAssigntoSelfUser = getUserForMyTicket
+        .filter((d) => d.account_for == "SELF")
+        .map((i) => ({
+          value: i.id,
+          label: i.first_name + " " + i.last_name,
+        }));
+
+        console.log("sortAssigntoSelfUser",sortAssigntoSelfUser)
+
+        state.sortAssigntoSelfUser = sortAssigntoSelfUser
+        console.log("getUserForMyTicket", getUserForMyTicket);
+        let user = payload.data.data;
+        console.log("s1", getUserForMyTicket);
+        let sortedData = getUserForMyTicket
+          .filter((d) => d.is_active == 1)
+          .map((i) => ({
             value: i.id,
             label: i.first_name + " " + i.last_name,
           }));
 
-          const select = payload.data.data.filter((d) => d.is_active == 1).map((d) => ({
+        const select = payload.data.data
+          .filter((d) => d.is_active == 1)
+          .map((d) => ({
             value: d.id,
             label: d.first_name + " " + d.last_name,
           }));
-          console.log("s2",select )
 
+        if (payload?.data?.status == 1) {
+          const data = user.sort((a, b) => {
+            if (a.first_name && b.first_name) {
+              return a.first_name.localeCompare(b.first_name);
+            }
+            return 0;
+          });
 
-          if (payload?.data?.status == 1) {
-            const data = user.sort((a, b) => {
-              if (a.first_name && b.first_name) {
-                return a.first_name.localeCompare(b.first_name);
-              }
-              return 0;
-            });
+          let userData = data.map((d) => ({
+            value: d.id,
+            label: d.first_name + " " + d.last_name,
+          }));
 
-            let userData =  data.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
+          state.user = userData;
+          console.log("uD", userData);
+          // setUser(
+          //   data.map((d) => ({
+          //     value: d.id,
+          //     label: d.first_name + " " + d.last_name,
+          //   }))
+          // );
+        }
 
-            state.user = userData
-            console.log("uD",userData)
-            // setUser(
-            //   data.map((d) => ({
-            //     value: d.id,
-            //     label: d.first_name + " " + d.last_name,
-            //   }))
-            // );
-          }
+        state.getAssignedUserData = getUserForMyTicket;
 
-
-          state.getAssignedUserData = getUserForMyTicket
-
-          
         const aa = sortedData.sort(function (a, b) {
           return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
         });
         state.status = "succeded";
 
         state.getUserForMyTicket = aa;
-
       }
     });
     builder.addCase(getUserForMyTicketsData.rejected, (state) => {

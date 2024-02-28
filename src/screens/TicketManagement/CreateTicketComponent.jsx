@@ -1376,6 +1376,8 @@ export default function CreateTicketComponent() {
     submodule_id: null,
   };
 
+
+  var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -1450,6 +1452,7 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
               history({
                 pathname: `/${_base}/Ticket`,
               }
@@ -1460,6 +1463,7 @@ export default function CreateTicketComponent() {
                   }
                 }
               );
+
               // window.location.reload(false)
               setIsSubmitted(false);
             } else {
@@ -2132,6 +2136,7 @@ export default function CreateTicketComponent() {
                       <option value="Very High">Very High</option>
                     </select>
                   </div>
+                  {console.log("expectedSolveDate",expectedSolveDate)}
 
                   <div className="col-sm-3">
                     <label className="col-form-label">
@@ -2146,7 +2151,7 @@ export default function CreateTicketComponent() {
                       name="expected_solve_date"
                       id="expected_solve_date"
                       required
-                      min={expectedSolveDate ? expectedSolveDate : ""}
+                      min={today}
                     />
                   </div>
                 </div>

@@ -126,6 +126,7 @@ function UserTaskReportComponent() {
                     const exportTempData = [];
 
                     let counter = 1;
+                  
                     var temp = res.data.data
                     for (const key in temp) {
                         tempData.push({
@@ -140,9 +141,10 @@ function UserTaskReportComponent() {
                     }
                     setData(null);
                     setData(tempData);
+                    let count= 1
                     for (const key in temp) {
                         exportTempData.push({
-                            // sr: counter++,
+                            sr:count++,
                             ticket_id: temp[key].ticket_id,
                             task_name: temp[key].task_name,
                             user_name: temp[key].employee_name,

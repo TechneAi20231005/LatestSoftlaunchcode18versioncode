@@ -26,7 +26,7 @@ import { _base } from "../../../settings/constants";
 import { Table } from "react-bootstrap";
 
 const ViewVendorDetails = ({ match }) => {
-  const {id} =useParams() 
+  const { id } = useParams();
   const [data, setData] = useState(null);
   console.log(data);
 
@@ -88,6 +88,9 @@ const ViewVendorDetails = ({ match }) => {
   useEffect(() => {
     loadData();
   }, []);
+  {
+    console.log(data);
+  }
 
   return (
     <div>
@@ -152,7 +155,6 @@ const ViewVendorDetails = ({ match }) => {
                   />
                 </div>
 
-              
                 {CountryDropdown && (
                   <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
@@ -232,7 +234,7 @@ const ViewVendorDetails = ({ match }) => {
 
                 <div className="col-sm-3">
                   <label className="form-label font-weight-bold">
-                  Aadhaar  No :
+                    Aadhaar No :
                   </label>
 
                   <input
@@ -244,7 +246,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
+                {/* 
                 <div className=" col-sm-3 mt-3">
                   <label className="col-form-label">
                     <b>Aadhaar  Attachment :</b>
@@ -264,6 +266,43 @@ const ViewVendorDetails = ({ match }) => {
                   ):(
                     <p>Attachment Not Available</p>
                   )}
+                </div> */}
+
+                <div className="col-sm-3 mt-3">
+                  <label className="col-form-label">
+                    <b>Aadhaar Attachment:</b>
+                  </label>
+                  {data &&
+                  data.adhar_attachment &&
+                  data.adhar_attachment.length > 0 ? (
+                    <div>
+                      {data.adhar_attachment.map((attachment, index) => (
+                        <div
+                          key={index}
+                          className="d-flex align-items-center mb-2"
+                        >
+                          <div className="mr-2">
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`}
+                              target="_blank"
+                              download
+                              className="btn btn-info btn-sm p-0 mr-2"
+                              accept="image/jpg,image/jpeg,image/png,application/pdf"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "15px" }}
+                              ></i>{" "}
+                              {/* Use a download icon */}
+                            </a>
+                          </div>
+                          <div>{attachment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Attachment Not Available</p>
+                  )}
                 </div>
 
                 <div className="col-sm-3 ">
@@ -279,7 +318,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
+                {/* 
                 <div className=" col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
                     <b>PAN Attachment :</b>
@@ -304,6 +343,43 @@ const ViewVendorDetails = ({ match }) => {
                       </div>
                     )}
                   </label>
+                </div> */}
+
+                <div className="col-sm-3 mt-5">
+                  <label className="col-form-label" htmlFor="attachment">
+                    <b>PAN Attachment :</b>
+                  </label>
+                  {data && data.pan_attachment ? (
+                    <div>
+                      {data.pan_attachment.map((attachment, index) => (
+                        <div
+                          key={index}
+                          className="d-flex align-items-center mb-2"
+                        >
+                          <div className="mr-2">
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`}
+                              target="_blank"
+                              download
+                              className="btn btn-info btn-sm p-0 mr-2"
+                              accept="image/jpg,image/jpeg,image/png,application/pdf"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "15px" }}
+                              ></i>{" "}
+                              {/* Use a download icon */}
+                            </a>
+                          </div>
+                          <div>{attachment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="col-sm-3 mt-5">
+                      <p>Attachment Not available</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="col-sm-3 mt-3">
@@ -319,7 +395,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
+                {/* 
                 <div className=" col-sm-3 mt-3 ">
                   <label className="col-form-label">
                     <b>GST Attachment :</b>
@@ -344,6 +420,38 @@ const ViewVendorDetails = ({ match }) => {
                     
                     <p>Attachment Not available</p>
                   )}
+                </div> */}
+                <div className="col-sm-3 mt-3">
+                  <label className="col-form-label">
+                    <b>GST Attachment :</b>
+                  </label>
+                  {data &&
+                  data.gst_attachment &&
+                  data.gst_attachment.length > 0 ? (
+                    <div>
+                      {data.gst_attachment.map((attachment, index) => (
+                        <div
+                          key={index}
+                          className="d-flex align-items-center mb-2"
+                        >
+                          <div className="mr-2">
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`}
+                              target="_blank"
+                              download
+                              className="btn btn-info btn-sm p-0 mr-2 attachment-link"
+                              accept="image/jpg,image/jpeg,image/png,application/pdf"
+                            >
+                                  <i className="icofont-download" style={{ fontSize: "15px" }}></i>
+                            </a>
+                          </div>
+                          <div>{attachment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Attachment Not Available</p>
+                  )}
                 </div>
 
                 <div className="col-sm-3 ">
@@ -360,7 +468,7 @@ const ViewVendorDetails = ({ match }) => {
                   />
                 </div>
 
-                <div className=" col-sm-3 mt-3">
+                {/* <div className=" col-sm-3 mt-3">
                   <label className="col-form-label" htmlFor="msme_attachment">
                     <b> MSME Attachment : </b>
                   </label>
@@ -378,6 +486,43 @@ const ViewVendorDetails = ({ match }) => {
                       </i>
                     </a>
                   ):(
+                    <p>Attachment Not Available</p>
+                  )}
+                </div> */}
+
+                <div className="col-sm-3 mt-3">
+                  <label className="col-form-label" htmlFor="msme_attachment">
+                    <b>MSME Attachment:</b>
+                  </label>
+                  {data &&
+                  data.msme_attachment &&
+                  data.msme_attachment.length > 0 ? (
+                    <div>
+                      {data.msme_attachment.map((attachment, index) => (
+                        <div
+                          key={index}
+                          className="d-flex align-items-center mb-2"
+                        >
+                          <div className="mr-2">
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`}
+                              target="_blank"
+                              download
+                              className="btn btn-info btn-sm p-0 mr-2"
+                              accept="image/jpg,image/jpeg,image/png,application/pdf"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "15px" }}
+                              ></i>{" "}
+                              {/* Use a download icon */}
+                            </a>
+                          </div>
+                          <div>{attachment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
                     <p>Attachment Not Available</p>
                   )}
                 </div>
@@ -451,7 +596,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
+                {/* 
                 <div className=" col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
                     <b>Passbook Attachment : </b>
@@ -475,9 +620,47 @@ const ViewVendorDetails = ({ match }) => {
                   ):(
                     <p>Attachment Not available</p>
                   )}
+                </div> */}
+                <div className="col-sm-3 mt-5">
+                  <label className="col-form-label" htmlFor="attachment">
+                    <b>Passbook Attachment:</b>
+                  </label>
+                  {data &&
+                  data.bank_passbook_attachment &&
+                  data.bank_passbook_attachment.length > 0 ? (
+                    <div>
+                      {data.bank_passbook_attachment.map(
+                        (attachment, index) => (
+                          <div
+                            key={index}
+                            className="d-flex align-items-center mb-2"
+                          >
+                            <div className="mr-2">
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0 mr-2"
+                                accept="image/jpg,image/jpeg,image/png,application/pdf"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                ></i>{" "}
+                                {/* Add an icon for download */}
+                              </a>
+                            </div>
+                            <div>{attachment}</div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    <p>Attachment Not Available</p>
+                  )}
                 </div>
 
-                <div className=" col-sm-3 mt-5">
+                {/* <div className=" col-sm-3 mt-5">
                   <label className="col-form-label">
                     <b>Cheque Attachment :</b>
                   </label>
@@ -496,7 +679,43 @@ const ViewVendorDetails = ({ match }) => {
                   ):(
                     <p>Attachment Not available</p>
                   )}
+                </div> */}
+
+                <div className="col-sm-3 mt-5">
+                  <label className="col-form-label">
+                    <b>Cheque Attachment:</b>
+                  </label>
+                  {data &&
+                  data.cheque_attachment &&
+                  data.cheque_attachment.length > 0 ? (
+                    <div>
+                      {data.cheque_attachment.map((attachment, index) => (
+                        <div
+                          key={index}
+                          className="d-flex align-items-center mb-2"
+                        >
+                          <a
+                            href={`${_attachmentUrl}/${attachment}`}
+                            target="_blank"
+                            download
+                            className="btn btn-info btn-sm p-0 mr-2"
+                            accept="image/jpg,image/jpeg,image/png,application/pdf"
+                          >
+                            <i
+                              className="icofont-download"
+                              style={{ fontSize: "15px" }}
+                            ></i>{" "}
+                            {/* Use a download icon */}
+                          </a>
+                          <p>{attachment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Attachment Not Available</p>
+                  )}
                 </div>
+
                 <div className="col-sm-3 mt-4 ">
                   <label className="form-label font-weight-bold">
                     Consider In Payment :
@@ -610,12 +829,12 @@ const ViewVendorDetails = ({ match }) => {
                 </div>
 
                 <div className="col-sm-3 mt-4">
-                <div className="row">
+                  <div className="row">
                     <div className="col-sm-3 mt-4">
-                  <label className="form-label font-weight-bold">
-                    Status :
-                  </label>
-                  </div>
+                      <label className="form-label font-weight-bold">
+                        Status :
+                      </label>
+                    </div>
                     <div className="col-md-2 mt-4">
                       <div className="form-check">
                         <input
@@ -654,19 +873,16 @@ const ViewVendorDetails = ({ match }) => {
                       </div>
                     </div>
                     <div className="mt-3" style={{ textAlign: "right" }}>
-                  {/* <button type="submit" className="btn btn-primary">
+                      {/* <button type="submit" className="btn btn-primary">
                                     Update
                                 </button> */}
-                  <Link
-                    to={`/${_base}/vendorMaster`}
-                    className="btn btn-danger text-white"
-                  >
-                    back
-                  </Link>
-                </div>
-
-
-
+                      <Link
+                        to={`/${_base}/vendorMaster`}
+                        className="btn btn-danger text-white"
+                      >
+                        back
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>

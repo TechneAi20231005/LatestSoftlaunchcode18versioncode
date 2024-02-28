@@ -763,7 +763,7 @@ function PaymentTemplateMaster() {
                     >
                       <option value="">Select Bill Type</option>
                       <option value="Bill Date">Bill Date</option>
-                      <option value="Received Date">Recieved Date</option>
+                      <option value="Received Date">Received Date</option>
                     </select>
                   )}
                 </div>

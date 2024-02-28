@@ -78,15 +78,25 @@ export const statusMasterSlice = createSlice({
         state.sortStatusData = sortStatusData;
         let exportStatusData = [];
         for (const i in getStatusData) {
-          exportStatusData.push({
-            Sr: getStatusData[i].counter,
-            Role: getStatusData[i].role,
-            Status: getStatusData[i].is_active ? "Active" : "Deactive",
-            Remark: getStatusData[i].remark,
-            created_at: getStatusData[i].created_at,
-            created_by: getStatusData[i].created_by,
-            updated_at: getStatusData[i].updated_at,
-            updated_by: getStatusData[i].updated_by,
+            exportStatusData.push({
+            // Sr: getStatusData[i].counter,
+            // Role: getStatusData[i].role,
+            // Status: getStatusData[i].is_active ? "Active" : "Deactive",
+            // Remark: getStatusData[i].remark,
+            // created_at: getStatusData[i].created_at,
+            // created_by: getStatusData[i].created_by,
+            // updated_at: getStatusData[i].updated_at,
+            // updated_by: getStatusData[i].updated_by,
+
+
+                             Sr: getStatusData[i].counter,
+                        status_Name: getStatusData[i].status,
+                        Status: getStatusData[i].is_active ? 'Active' : 'Deactive',
+                        // Remark:getStatusData[i].remark,
+                        created_at: getStatusData[i].created_at,
+                        created_by: getStatusData[i].created_by,
+                        updated_at: getStatusData[i].updated_at,
+                        updated_by: getStatusData[i].updated_by,
           });
         }
         state.exportStatusData = exportStatusData;

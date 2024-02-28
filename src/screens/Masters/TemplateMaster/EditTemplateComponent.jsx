@@ -532,7 +532,9 @@ const EditTemplateComponent = ({ match, props }) => {
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         {/* {data && JSON.stringify(data)} */}
-        {/* {newData && JSON.stringify(newData)} */}
+      {console.log(data)}
+      {console.log("newData",newData)}
+     
 
         <div className="card-body">
           <form onSubmit={updateTemplate}>
@@ -594,6 +596,8 @@ const EditTemplateComponent = ({ match, props }) => {
               <label className="form-label font-weight-bold">
                 Status :<Astrick color="red" size="13px" />
               </label>
+
+             {console.log("vv",data)}
               <div className="row">
                 <div className="col-md-2">
                   <div className="form-check">
@@ -604,11 +608,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       id="is_active_1"
                       value="1"
                       defaultChecked={
-                        modal.modalData && modal.modalData.is_active === 1
-                          ? true
-                          : !modal.modalData
-                          ? true
-                          : false
+                      data && data.is_active == 1?true :false
                       }
                     />
                     <label className="form-check-label" htmlFor="is_active_1">
@@ -626,10 +626,8 @@ const EditTemplateComponent = ({ match, props }) => {
                       value="0"
                       readOnly={modal.modalData ? false : true}
                       defaultChecked={
-                        modal.modalData && modal.modalData.is_active === 0
-                          ? true
-                          : false
-                      }
+                        data && data.is_active == 0?true :false
+                        }
                     />
                     <label className="form-check-label" htmlFor="is_active_0">
                       Deactive
@@ -656,7 +654,7 @@ const EditTemplateComponent = ({ match, props }) => {
               Create Basket
             </button>
             {/* )} */}
-            <Link to={`/${_base}/Template`} class="btn btn-sm btn-primary">
+            <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
               Cancel
             </Link>
           </div>
@@ -775,7 +773,8 @@ const EditTemplateComponent = ({ match, props }) => {
                 </div>
                 <label>
                   <b>
-                    Task Type :<Astrick color="red" size="13px" />
+                    Task Type :
+                    {/* <Astrick color="red" size="13px" /> */}
                   </b>
                 </label>
                 <Select

@@ -73,8 +73,6 @@ const CreateTemplateComponent = () => {
   };
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
-
-
     template_name: null,
     calculate_from: null,
     template_data: [
@@ -185,19 +183,16 @@ const CreateTemplateComponent = () => {
     }
   };
 
- const handleRemoveSpecificRow = (idx) => {
-  setRows(prevState => {
-    const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
-    console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
-    return {
-      ...prevState,
-      template_data: updatedRows,
-    };
-  });
-};
-
-  
-  
+  const handleRemoveSpecificRow = (idx) => {
+    setRows((prevState) => {
+      const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
+      console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
+      return {
+        ...prevState,
+        template_data: updatedRows,
+      };
+    });
+  };
 
   const handleRemoveTask = (basketIndex, taskIndex) => {
     setRows((prevRows) => {
@@ -550,7 +545,7 @@ const CreateTemplateComponent = () => {
                               <input
                                 type="text"
                                 name="basket_name"
-                                defaultValue={item.basket_name}
+                                value={item.basket_name}
                                 onChange={(e) => {
                                   handleChange(e, idx, "select1");
                                 }}
@@ -1070,14 +1065,12 @@ const CreateTemplateComponent = () => {
                                 </b>
                               </label>
                               <input
-                                type="number"
+                                type="text"
                                 className="form-control form-control-sm mb-2"
                                 name="hours"
                                 id="hours_add"
-                                min="1"
-                                max="100"
-                                placeholder="Days Required"
-                                defaultValue="00.00"
+                                // placeholder="Days Required"
+                                defaultValue="00:00"
                                 required
                               />
                               <label>

@@ -1724,6 +1724,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
+  console.log(queryGroupData)
   const [editData, setEditData] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState(modal.modalData);
   const [modalEditPopup, setModalEditPopup] = useState({
@@ -2325,13 +2326,14 @@ console.log("exportQueryGroupData",exportQueryGroupData)
             exportTempData.push({
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
+              query_group_name  : temp[i].query_group_name,
               Status: data[i].is_active ? "Active" : "Deactive",
               Remark: data[i].remark,
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
               updated_by: data[i].updated_by,
-              query_group_data: temp[i].query_group_data,
+             
             });
           }
 
@@ -2655,7 +2657,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
               <div className="deadline-form">
                 <div className="row g-3 mb-3">
                   <div className="col-sm-12">
-                    {/* {modal.modalData && JSON.stringify(modal.modalData)} */}
+                  
                     <label className="form-label font-weight-bold">
                       Query Type Name : <Astrick color="red" size="13px" />
                     </label>
@@ -2705,7 +2707,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
                       name="customer_id"
                       defaultValue={
                         modal.modalData &&
-                        customerDropdown.filter(
+                        customerDropdown?.filter(
                           (d) => d.value == modal.modalData.customer_id
                         )
                       }
@@ -3011,10 +3013,11 @@ console.log("exportQueryGroupData",exportQueryGroupData)
                   )}
                 </div>
               </div>
+          
               {modalQueryGroup.modalDataQueryGroup && (
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Status : <Astrick color="red" size="13px" />
+                    Status: <Astrick color="red" size="13px" />
                   </label>
                   <div className="row">
                     <div className="col-md-2">
@@ -3104,7 +3107,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleFormQueryGroup({
+                handleModalQueryGroup({
                   showModalQueryGroup: false,
                   modalDataQueryGroup: "",
                   modalHeaderQueryGroup: "",

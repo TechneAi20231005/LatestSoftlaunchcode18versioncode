@@ -291,10 +291,10 @@ export default function TaskComponent(props) {
                           defaultValue={
                             props.taskData.total_hours
                               ? props.taskData.total_hours
-                              : "00.00"
+                              : "00:00"
                           }
                           name="total_time"
-                           type="time"
+                           type="text"
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />

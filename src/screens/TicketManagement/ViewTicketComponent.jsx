@@ -220,7 +220,7 @@ export default function ViewTicketComponent({ match }) {
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.priority : ""}
-                progressBg={data?.priority === "High" ? "bg-danger" : data?.priority === "Medium" ? "bg-warning" : "bg-success"}
+                progressBg={data?.priority === "High" ? "bg-warning" : data?.priority === "Medium" ? "bg-info" : "bg-success"}
                 details=""
                 iconClass="icofont-price fs-4"
                 iconbg="bg-lightgreen"
@@ -246,7 +246,7 @@ export default function ViewTicketComponent({ match }) {
               />
             </div> */}
 
-            <div className="col-md-4">
+            {/* <div className="col-md-4">
               <StatusCard
                 progress={data ? data.type_name : ""}
                 progressBg="bg-success"
@@ -254,9 +254,9 @@ export default function ViewTicketComponent({ match }) {
                 iconbg="bg-lightblue"
                 title="Ticket Type"
               />
-            </div>
+            </div> */}
           </div>
-          {console.log("rows.length", rows)}
+        
           {rows && (
             <div className="card mt-2">
               <div className="card-body">
