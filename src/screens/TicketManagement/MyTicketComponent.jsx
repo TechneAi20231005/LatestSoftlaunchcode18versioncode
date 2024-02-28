@@ -3781,7 +3781,8 @@ export default function MyTicketComponent() {
   });
 
   const location = useLocation();
-
+  console.log("location state", location.state)
+  const [locationState, setLocationState] = useState(location.state)
   const { state } = location;
   const Notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
@@ -3929,7 +3930,7 @@ export default function MyTicketComponent() {
   // };
 
   const actionComponent = (data, type) => {
-    { console.log("data of my tickt", data) }
+
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
         return (
@@ -5532,7 +5533,7 @@ export default function MyTicketComponent() {
 
       if (response.status === 200) {
         const { status, message } = response.data;
-        console.log("message", message)
+
         if (status === 1) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
           // window.location.reload(false)
@@ -5544,6 +5545,7 @@ export default function MyTicketComponent() {
             typeOf: "UnPassed",
             page: 1,
           };
+          console.log("pass message", message)
           setNotify({ type: "success", message })
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
@@ -5554,7 +5556,7 @@ export default function MyTicketComponent() {
             }
           });
 
-          setNotify({ type: "success", message });
+          // setNotify({ type: "success", message });
         } else {
           setNotify({ type: "danger", message });
         }
@@ -5570,10 +5572,7 @@ export default function MyTicketComponent() {
   }
 
   const handleForm = async (e) => {
-    // e.preventDefault();
-    // const formData = new FormData(e.target);
-    // var flag = 1;
-    console.log("just e", e)
+
     try {
       if (e) {
 
@@ -5949,7 +5948,7 @@ export default function MyTicketComponent() {
 
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      console.log("r1", res)
+
       if (res.status === 200) {
         if (res.data.status == 1) {
           setAssignedToMe(
@@ -6136,19 +6135,13 @@ export default function MyTicketComponent() {
     },
   };
 
-  // useEffect(() => {
-  //   const listener = (event) => {
-  //     if (event.code === "Enter") {
-  //       // callMyFunction();
-  //       console.log("enter called")
-  //       handleForm();
-  //     }
-  //   };
-  //   document.addEventListener("keydown", listener);
-  //   return () => {
-  //     document.removeEventListener("keydown", listener);
-  //   };
-  // }, []);
+  useEffect(() => {
+
+    const timeoutId = setTimeout(() => {
+      setLocationState(null);
+    }, 3000);
+    return () => clearTimeout(timeoutId);
+  }, [location.state]);
 
   useEffect(() => {
     const listener = (e) => {
@@ -6198,7 +6191,8 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {/* <LoadingSpinner/> */}
-      {state && <Alert alertData={state} />}
+      {locationState && <Alert alertData={locationState} />}
+      {notify && <Alert alertData={notify} />}
       {/* {userData && JSON.stringify(userData)} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">

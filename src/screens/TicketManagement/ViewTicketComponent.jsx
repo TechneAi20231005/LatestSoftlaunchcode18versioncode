@@ -220,7 +220,7 @@ export default function ViewTicketComponent({ match }) {
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.priority : ""}
-                progressBg={data?.priority === "High" ? "bg-danger" : data?.priority === "Medium" ? "bg-warning" : "bg-success"}
+                progressBg={data?.priority === "High" ? "bg-warning" : data?.priority === "Medium" ? "bg-info" : "bg-success"}
                 details=""
                 iconClass="icofont-price fs-4"
                 iconbg="bg-lightgreen"
