@@ -17,16 +17,20 @@ import * as Validation from "../../../components/Utilities/Validation";
 import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import { getAllRoles, getRoles } from "../../Dashboard/DashboardAction";
 import DynamicFormDropDownSlice from "../DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
 import {
   dynamicFormData,
   getAllDropDownData,
 } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
+import { masterURL } from "../../../settings/constants";
+import DynamicComponent from "./DynamicComponent";
+import UserService from "../../../services/MastersService/UserService";
+import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
-//   const history = useNavigate();
+  //   const history = useNavigate();
 
   const mainJson = {
     inputWidth: "col-sm-6",
@@ -54,7 +58,21 @@ function CreateDynamicForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const roleDropdown = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getAllRoles
+      ?.filter((d) => d.is_active === 1)
+      .map((d) => ({
+        value: d.id,
+        label: d.role,
+      }))
+  );
 
+  const departmentDropdown = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
+  );
+
+  console.log("role", departmentDropdown);
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
@@ -62,7 +80,6 @@ function CreateDynamicForm() {
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
-
 
   const [rows, setRows] = useState([mainJson]);
   const [labelNames, setLabelNames] = useState([]);
@@ -79,9 +96,232 @@ function CreateDynamicForm() {
   const [radioSelect, setRadioSelect] = useState();
   const [checkboxSelect, setCheckboxSelect] = useState();
 
-  const handleChange = (idx) => async (e) => {
+  //   const handleChange = (idx) => async (e) => {
+  //     setIndex({ index: idx });
+  //     const { name, value } = e.target;
+  //     const notAllowed = [
+  //       "ref_id",
+  //       "created_at",
+  //       "updated_at",
+  //       "attachment",
+  //       "query_type_id",
+  //       "query_type",
+  //       "object_id",
+  //       "tenant_id",
+  //       "ticket_id",
+  //       "user_id",
+  //       "confirmation_required",
+  //       "project_id",
+  //       "module_id",
+  //       "submodule_id",
+  //       "cuid",
+  //       "ticket_date",
+  //       "expected_solve_date",
+  //       "assign_to_department_id",
+  //       "assign_to_user_id",
+  //       "type_id",
+  //       "priority",
+  //       "status_id",
+  //       "description",
+  //       "from_department_id",
+  //       "remark",
+  //       "is_active",
+  //       "created_by",
+  //       "updated_by",
+  //       "passed_status",
+  //       "passed_status_changed_by",
+  //       "passed_status_changed_at",
+  //       "passed_status_remark",
+  //       "ticket_confirmation_otp",
+  //       "ticket_confirmation_otp_created_at",
+  //     ];
+
+  //     if (
+  //       !notAllowed.includes(
+  //         e.target.value
+  //           .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+  //           .toLowerCase()
+  //       )
+  //     ) {
+  //       if (e.target.name === "inputWidth") {
+  //         rows[idx].inputWidth = e.target.value;
+  //       } else if (e.target.name === "inputType") {
+  //         rows[idx].inputType = e.target.value;
+  //         if (e.target.value == "date") {
+  //           rows[idx].inputFormat = "y-MM-dd";
+  //         } else {
+  //           rows[idx].inputFormat = null;
+  //         }
+  //       }
+  //        else if (e.target.name === "inputLabel") {
+  //         rows[idx].inputLabel = e.target.value;
+  //         rows[idx].inputName = e.target.value
+  //           .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+  //           .toLowerCase();
+
+  //         labelNames[idx] = rows[idx].inputName;
+  //       }
+  //       else if (e.target.name === "inputDefaultValue") {
+  //         rows[idx].inputDefaultValue = e.target.value;
+  //       } else if (e.target.name === "inputMandatory") {
+  //         rows[idx].inputMandatory = e.target.checked;
+  //       } else if (e.target.name === "inputMultiple") {
+  //         rows[idx].inputMultiple = e.target.checked;
+  //       } else if (e.target.name === "inputDataOption") {
+  //         rows[idx].inputOption = e.target.value;
+  //       } else if (e.target.name == "inputRange") {
+  //         rows[idx].inputAddOn.inputRange = e.target.value;
+  //       } else if (e.target.name == "inputRangeMin") {
+  //         rows[idx].inputAddOn.inputRangeMin = e.target.value;
+  //       } else if (e.target.name == "inputRangeMax") {
+  //         if (rows[idx].inputAddOn.inputRangeMin > e.target.value) {
+  //           alert("Please select grater value");
+  //           return false;
+  //         }
+  //         rows[idx].inputAddOn.inputRangeMax = e.target.value;
+  //       } else if (e.target.name == "datetime-local") {
+  //         rows[idx].inputAddOn.inputDateTime = e.target.value;
+  //       } else if (e.target.name == "inputFormat") {
+  //         rows[idx].inputFormat = e.target.value;
+  //       } else if (e.target.name == "inputRadio") {
+  //         setFormShow(formShow == true ? false : true);
+  //         const test = e.target.value;
+  //         rows[idx].inputAddOn.inputRadio = test;
+  // console.log("test",test)
+
+  //         await new DynamicFormDropdownMasterService()
+  //           .getDropdownById(test)
+  //           .then((res) => {
+  //             console.log("temp",res)
+  //             if (res.status == 200) {
+  //               if (res.data.status == 1) {
+  //                 const dropNames = res.data.data;
+  //                 setRadioSelect(dropNames.master.dropdown_name);
+  //                 console.log("hello",dropNames.master.dropdown_name)
+  //                 const temp = [];
+  //                 res.data.data.dropdown.forEach((d) => {
+  //                   temp.push({ label: d.label, value: d.id });
+  //                 });
+  //                 rows[idx].inputAddOn.inputRadio = temp;
+  //                 // setInputDataSource(temp)
+  //               }
+  //             }
+  //           });
+  //       }
+
+  //       else if (e.target.name == "inputCheckbox") {
+  //         setFormShow(formShow == true ? false : true);
+  //         const test = e.target.value;
+  //         rows[idx].inputAddOn.inputCheckbox = test;
+
+  //         await new DynamicFormDropdownMasterService()
+  //           .getDropdownById(test)
+  //           .then((res) => {
+  //             if (res.status == 200) {
+  //               if (res.data.status == 1) {
+  //                 const dropNames = res.data.data;
+  //                 setCheckboxSelect(dropNames.master.dropdown_name);
+  //                 const temp = [];
+  //                 res.data.data.dropdown.forEach((d) => {
+  //                   temp.push({ label: d.label, value: d.id });
+  //                 });
+  //                 rows[idx].inputAddOn.inputCheckbox = temp;
+  //                 // setInputDataSource(temp)
+  //               }
+  //             }
+  //           });
+  //       } else if (e.target.name == "inputDataSource") {
+  //             var test = e.target.value.split('|');
+  //             const _URL = dynamicURL[test[0]];
+  //            const newURL=(_URL+test[2])
+  //             const _Value = test[1];
+  //             const _Label = test[2];
+  //             // console.log(_Value)
+  //             // console.log(_Label)
+  //             getData(_URL).then(res => {
+  //               console.log("rrr",res.data)
+  //                 let counter = 1;
+  //                 var tempData = [];
+  //                 res.data.map((d,i)=>{
+  //                     tempData.push({ 'label': d.department, 'value': d.id });
+  //                 })
+  //                 for (const key in res.data) {
+  //                     const t = res.data[key];
+  //                     tempData.push({
+  //                         value: t[_Value],
+  //                         label: t[_Label]
+  //                     })
+  //                 }
+  //                 rows[idx].inputAddOn.inputDataSourceData = tempData
+  //             });
+  //             rows[idx].inputAddOn.inputDataSource = e.target.value;
+  //                     console.log(e.target.value);
+  //             //  test = e.target.value;
+  //             rows[idx].inputAddOn.inputDataSource = test;
+  //             console.log(e.target.name);
+  //         //     // if(test){
+  //         //     //     await new DynamicFormDropdownMasterService().getDropdownById(test).then((res) => {
+  //         //     //         if (res.status == 200) {
+  //         //     //             if (res.data.status == 1) {
+  //         //     //                 const temp = [];
+  //         //     //                 res.data.data.dropdown.forEach(d => {
+  //         //     //                     temp.push({ 'value': d.id,'label': d.label });
+  //         //     //                 })
+  //         //     //                 rows[idx].inputAddOn.inputDataSourceData = temp;
+  //         //     //                 setInputDataSource(temp)
+  //         //     //             }
+  //         //     //         }
+  //         //     //     })
+  //         //     // }
+  //       } else if (e.target.name == "inputOnChangeSource") {
+  //         rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
+  //       }
+  //     } else {
+  //       alert("Not Allowed to use entered Keywork");
+  //       rows[idx].inputLabel = "";
+  //     }
+  //     // const rows = [...rows];
+  //     // rows[idx] = {
+  //     //     [name]: value
+  //     // };
+  //     // setRows({
+  //     //     rows
+  //     // });
+  //   };
+
+  // loadDynamicData = (_URL) =>{
+  // getData(_URL).then(res =>{
+  //     let counter=1;
+  //     for (const key in res.data) {
+  //         tempData.push({
+  //           counter:counter++,
+  //           id: res.data[key].id,
+  //           city: res.data[key].city
+  //         })
+  //     }
+  //     setData(tempData);
+  // });
+  // }
+
+  const [userData, setUserData] = useState(null);
+
+  const [user, setUser] = useState([]);
+
+  const [selectedValue, setSelectedValue] = useState();
+
+  console.log("selectedValue", selectedValue);
+
+  const handleChangee = (e) => {
+    console.log("e000", e.target.value);
+    setSelectedValue(e.target.value);
+  };
+
+  console.log("use", userData);
+  const handleChange = (idx, type) => async (e) => {
     setIndex({ index: idx });
     const { name, value } = e.target;
+
+    console.log("e==", e);
     const notAllowed = [
       "ref_id",
       "created_at",
@@ -164,119 +404,197 @@ function CreateDynamicForm() {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name == "inputFormat") {
         rows[idx].inputFormat = e.target.value;
-      } else if (e.target.name == "inputRadio") {
-        setFormShow(formShow == true ? false : true);
-        const test = e.target.value;
-        rows[idx].inputAddOn.inputRadio = test;
-
-        await new DynamicFormDropdownMasterService()
-          .getDropdownById(test)
-          .then((res) => {
-            if (res.status == 200) {
-              if (res.data.status == 1) {
-                const dropNames = res.data.data;
-                setRadioSelect(dropNames.master.dropdown_name);
-                const temp = [];
-                res.data.data.dropdown.forEach((d) => {
-                  temp.push({ label: d.label, value: d.id });
-                });
-                rows[idx].inputAddOn.inputRadio = temp;
-                // setInputDataSource(temp)
-              }
-            }
-          });
-      } else if (e.target.name == "inputCheckbox") {
-        setFormShow(formShow == true ? false : true);
-        const test = e.target.value;
-        rows[idx].inputAddOn.inputCheckbox = test;
-
-        await new DynamicFormDropdownMasterService()
-          .getDropdownById(test)
-          .then((res) => {
-            if (res.status == 200) {
-              if (res.data.status == 1) {
-                const dropNames = res.data.data;
-                setCheckboxSelect(dropNames.master.dropdown_name);
-                const temp = [];
-                res.data.data.dropdown.forEach((d) => {
-                  temp.push({ label: d.label, value: d.id });
-                });
-                rows[idx].inputAddOn.inputCheckbox = temp;
-                // setInputDataSource(temp)
-              }
-            }
-          });
-      } else if (e.target.name == "inputDataSource") {
-        //     var test = e.target.value.split('|');
-        //     const _URL = dynamicURL[test[0]];
-        //    const newURL=(_URL+test[2])
-        //     const _Value = test[1];
-        //     const _Label = test[2];
-        //     // console.log(_Value)
-        //     // console.log(_Label)
-        //     getData(newURL).then(res => {
-        //         let counter = 1;
-        //         var tempData = [];
-        //         res.data.map((d,i)=>{
-        //             tempData.push({ 'label': d.department, 'value': d.id });
-        //         })
-        //         // for (const key in res.data) {
-        //         //     const t = res.data[key];
-        //         //     tempData.push({
-        //         //         value: t[_Value],
-        //         //         label: t[_Label]
-        //         //     })
-        //         // }
-        //         rows[idx].inputAddOn.inputDataSourceData = tempData
-        //     });
-        //     rows[idx].inputAddOn.inputDataSource = e.target.value;
-        //             console.log(e.target.value);
-        //     //  test = e.target.value;
-        //     rows[idx].inputAddOn.inputDataSource = test;
-        //     console.log(e.target.name);
-        //     // if(test){
-        //     //     await new DynamicFormDropdownMasterService().getDropdownById(test).then((res) => {
-        //     //         if (res.status == 200) {
-        //     //             if (res.data.status == 1) {
-        //     //                 const temp = [];
-        //     //                 res.data.data.dropdown.forEach(d => {
-        //     //                     temp.push({ 'value': d.id,'label': d.label });
-        //     //                 })
-        //     //                 rows[idx].inputAddOn.inputDataSourceData = temp;
-        //     //                 setInputDataSource(temp)
-        //     //             }
-        //     //         }
-        //     //     })
-        //     // }
-      } else if (e.target.name == "inputOnChangeSource") {
-        rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
       }
-    } else {
-      alert("Not Allowed to use entered Keywork");
-      rows[idx].inputLabel = "";
-    }
-    // const rows = [...rows];
-    // rows[idx] = {
-    //     [name]: value
-    // };
-    // setRows({
-    //     rows
-    // });
-  };
+      // setFormShow(formShow == true ? false : true);
+      // const test1 = e.target.value;
+      // rows[idx].inputAddOn.inputRadio = test1;
 
-  // loadDynamicData = (_URL) =>{
-  // getData(_URL).then(res =>{
-  //     let counter=1;
-  //     for (const key in res.data) {
-  //         tempData.push({
-  //           counter:counter++,
-  //           id: res.data[key].id,
-  //           city: res.data[key].city
-  //         })
+      // if (e.target.name === "inputWidth") {
+      //   rows[idx].inputWidth = e.target.value;
+      // } else if (e.target.name === "inputName") {
+      //   rows[idx].inputName = e.target.value;
+      // } else if (e.target.name === "inputType") {
+      //   rows[idx].inputType = e.target.value;
+      // } else if (e.target.name === "inputLabel") {
+      //   rows[idx].inputLabel = e.target.value;
+      // } else if (e.target.name === "inputDefaultValue") {
+      //   rows[idx].inputDefaultValue = e.target.value;
+      // } else if (e.target.name === "inputDataOption") {
+      //   rows[idx].inputOption = e.target.value;
+      // } else if (e.target.name == "inputRange") {
+      //   rows[idx].inputAddOn.inputRange = e.target.value;
+      // } else if (e.target.name == "inputDataSource")
+
+      {
+        const test = e.target.value.split("|");
+        const _URL = masterURL[test[0]];
+        const _Value = test[1];
+        const _Label = test[2];
+
+        getData(_URL).then((res) => {
+          console.log("res@", res);
+          let counter = 1;
+          const tempData = [];
+          for (const key in res.data) {
+            const t = res.data[key];
+            tempData.push({
+              value: t[_Value],
+              label: t[_Label],
+            });
+          }
+
+          console.log("tempData", tempData);
+          rows[idx].inputAddOn.inputDataSourceData = tempData;
+        });
+        rows[idx].inputAddOn.inputDataSource = e.target.value;
+      }
+
+      const tempUserData = [];
+
+      const inputRequired =
+        "id,employee_id,first_name,last_name,middle_name,is_active";
+      await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data.filter((d) => d.is_active === 1);
+          for (const key in data) {
+            tempUserData.push({
+              value: data[key].id,
+              label:
+                data[key].first_name +
+                " " +
+                data[key].last_name +
+                " (" +
+                data[key].id +
+                ")",
+            });
+          }
+          const aa = tempUserData.sort(function (a, b) {
+            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+          });
+          setUserData(aa);
+        }
+      });
+
+      // else if (e.target.name == "inputRadio") {
+      setFormShow(formShow == true ? false : true);
+      const test = e.target.value;
+
+      rows[idx].inputAddOn.inputRadio = test;
+      await new DynamicFormDropdownMasterService()
+        .getDropdownById(test)
+        .then((res) => {
+          console.log("temp",res)
+          if (res.status == 200) {
+            if (res.data.status == 1) {
+              const dropNames = res.data.data;
+              setRadioSelect(dropNames.master.dropdown_name);
+              console.log("hello",dropNames.master.dropdown_name)
+              const temp = [];
+              res.data.data.dropdown.forEach((d) => {
+                temp.push({ label: d.label, value: d.id });
+              });
+              rows[idx].inputAddOn.inputRadio = temp;
+              setInputDataSource(temp)
+            }
+          }
+        });
+    }
+  };
+  //     // console.log(rows);
+  //     // const rows = [...rows];
+  //     // rows[idx] = {
+  //     //     [name]: value
+  //     // };
+  //     // setRows({
+  //     //     rows
+  //     // });
+  //   // };
+
+  //   // loadDynamicData = (_URL) =>{
+  //   // getData(_URL).then(res =>{
+  //   //     let counter=1;
+  //   //     for (const key in res.data) {
+  //   //         tempData.push({
+  //   //           counter:counter++,
+  //   //           id: res.data[key].id,
+  //   //           city: res.data[key].city
+  //   //         })
+  //   //     }
+  //   //     setData(tempData);
+  //   // });
+  //   // }
+
+  //   const handleAddRow = async () => {
+  //     setShowAlert({ show: false, type: null, message: null });
+  //     let flag = 1;
+  //     let last = rows.length - 1;
+
+  //     if (
+  //       !rows[last].inputType ||
+  //       !rows[last].inputLabel ||
+  //       !rows[last].inputName
+  //     ) {
+  //       flag = 0;
+  //       setShowAlert({ show: false, type: null, message: null });
   //     }
-  //     setData(tempData);
-  // });
-  // }
+
+  //     const item = {
+  //       inputWidth: null,
+  //       inputType: null,
+  //       inputName: null,
+  //       inputLabel: null,
+  //       inputDefaultValue: null,
+  //       inputAddOn: {
+  //         inputRange: null,
+  //         inputDataSource: null,
+  //         inputDataSourceData: null,
+  //         inputDateRange: null,
+  //       },
+  //     };
+
+  //     if (flag === 1) {
+  //       await setRows([...rows, item]);
+  //     } else {
+  //       setShowAlert({
+  //         show: true,
+  //         type: "warning",
+  //         message: "Please Fill Previous Row Values",
+  //       });
+  //     }
+  //   };
+
+  //   const handleRemoveSpecificRow = (idx) => () => {
+  //     if (idx > 0) {
+  //       setRows(rows.filter((_, i) => i !== idx));
+  //     }
+  //   };
+
+  //   const handldeFormShow = () => {
+  //     setFormShow(formShow == true ? false : true);
+  //   };
+
+  //   const handleSubmit = async (e) => {
+  //     e.preventDefault();
+  //     // const data=new FormData(e.target);
+  //     const data = {
+  //       template_name: e.target.template_name.value,
+  //       data: JSON.stringify(rows),
+  //     };
+
+  //     await new DynamicFormService().postDynamicForm(data).then((res) => {
+  //       if (res.status == 200) {
+  //         const data = res.data;
+  //         var returnValue = { show: true, type: "danger", message: data.message };
+  //         if (data.status == 1) {
+  //           returnValue.type = "success";
+  //         }
+  //         // history.push({
+  //         //     pathname:`/${_base}/DynamicForm`,
+  //         //     state: { showAlert : true, alertData:returnValue }
+  //         // });
+  //       }
+  //     });
+  //   };
 
   const handleUserSelect = (selectedOptions, index) => {
     // const selectedUserIds = selectedOptions.filter((option) => option.value);
@@ -360,10 +678,8 @@ function CreateDynamicForm() {
   // };
 
   const handleRemoveSpecificRow = (index) => async () => {
-    console.log("index", index);
 
     const updatedAssign = [...rows];
-    console.log("up", updatedAssign);
     updatedAssign.splice(index, 1);
 
     // Update the state
@@ -379,29 +695,31 @@ function CreateDynamicForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // const data=new FormData(e.target);
-
+console.log("rowsForm",rows)
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows),
+      // inputDataSource: selectedValue 
     };
-    console.log("dataj", data);
+    // data.append("selectedValue":selectedValue)
     // var a = JSON.stringify(Object.fromEntries(data))
     // console.log(a)
     await new DynamicFormService().postDynamicForm(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-        //   history(
-        //     {
-        //       pathname: `/${_base}/DynamicForm`,
-        //     },
-        //     { state: { alert: { type: "success", message: res.data.message } } }
-        //   );
+          //   history(
+          //     {
+          //       pathname: `/${_base}/DynamicForm`,
+          //     },
+          //     { state: { alert: { type: "success", message: res.data.message } } }
+          //   );
           dispatch(dynamicFormData());
 
-
-          setNotify({ type: 'success', message: res.data.message })
+          setNotify({ type: "success", message: res.data.message });
           setTimeout(() => {
-              navigate(`/${_base}/DynamicForm`, { state: { alert: { type: "success", message: res.data.message } } });
+            navigate(`/${_base}/DynamicForm`, {
+              state: { alert: { type: "success", message: res.data.message } },
+            });
           }, 3000);
           // window.location.reload(true)
         } else {
@@ -450,6 +768,9 @@ function CreateDynamicForm() {
 
   useEffect(() => {
     loadData();
+
+    dispatch(getAllRoles());
+    dispatch(departmentData());
 
     if (!checkRole.length) {
       dispatch(getRoles());
@@ -616,7 +937,9 @@ function CreateDynamicForm() {
                                     <option value="select">SELECT</option>
                                     <option value="radio">RADIO</option>
                                     <option value="checkbox">CHECKBOX</option>
-                                    {/* <option value="select-master">SELECT MASTER</option> */}
+                                    <option value="select-master">
+                                      SELECT MASTER
+                                    </option>
                                   </select>
                                 </td>
                                 <td>
@@ -678,7 +1001,7 @@ function CreateDynamicForm() {
                                   />
                                 </td>
                                 <td>
-                                  {rows[idx].inputType == "select" && (
+                                  {rows[idx].inputType == "select-master" && (
                                     <input
                                       type="checkbox"
                                       name="inputMultiple"
@@ -687,6 +1010,7 @@ function CreateDynamicForm() {
                                     />
                                   )}
                                 </td>
+
                                 <td>
                                   {rows[idx].inputType == "date" && (
                                     <select
@@ -709,7 +1033,7 @@ function CreateDynamicForm() {
                                     </select>
                                   )}
                                 </td>
-                                <td>
+                                {/* <td> 
                                   {rows && (
                                     <AddOn
                                       id={idx}
@@ -722,13 +1046,41 @@ function CreateDynamicForm() {
                                       key={Math.random()}
                                     />
                                   )}
-                                  {/* {rows && <AddOn id={idx}
+                                  </td> */}
+
+                                <td>
+                                  {rows && (
+                                    <DynamicComponent
+                                      // id={idx}
+                                      // data={rows[idx]}
+                                      // onGetChange={handleChange(idx)}
+                                      // radioSelect={radioSelect}
+                                      id={idx}
+                                      labelNames={labelNames}
+                                      data={rows[idx]}
+                                      radioSelect={radioSelect}
+                                      checkboxSelect={checkboxSelect}
+                                      // onGetChange={{handleChange(idx)}}
+                                      onGetChange={(e) => {
+                                        handleChange(idx);
+                                        handleChangee(e);
+                                      }}
+
+                                      selectData={selectedValue}
+                                      // onGetChange={(selectedValue) => handleChange(idx, selectedValue)}
+                                      dropdown={dropdown}
+                                     
+                                      // key={Math.random()}
+                                    />
+                                  )}
+                                </td>
+
+                                {/* {rows && <AddOn id={idx}
                                                                  data={rows[idx]}
                                                                 onGetChange={handleChange(idx)} dropdown={dropdown}
                                                                 key={Math.random()}
                                                                 />
                                                                 } */}
-                                </td>
 
                                 {/* <td>
                                                                 {idx == 0 &&
@@ -753,7 +1105,6 @@ function CreateDynamicForm() {
                                       <i className="icofont-plus-circle"></i>
                                     </button>
                                   )}
-                                  
 
                                   {idx != 0 && (
                                     <button
@@ -807,6 +1158,9 @@ function CreateDynamicForm() {
               </div>
               {/* Card */}
             </div>
+
+
+
 
             {formShow && rows && (
               <div className="row">
@@ -862,7 +1216,7 @@ function CreateDynamicForm() {
                           </textarea>
                         )}
 
-                        {/* {data.inputType === 'date' &&                                                    
+                        {/* {data.inputType === 'date' &&
                                                     <input
                                                         type={data.inputType}
                                                         id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
@@ -941,39 +1295,120 @@ function CreateDynamicForm() {
                           />
                         )}
 
+
+                        {data.inputType === "select-master" &&
+                          selectedValue &&
+                          selectedValue === "user" && (
+                            // <select
+                            //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
+                            //     name={data.inputName}
+                            //     className="form-control form-control-sm"
+
+                            // >
+                            //     <option>Select {data.inputName}</option>
+                            //     {
+                            //         data.inputAddOn.inputDataSourceData &&
+                            //         data.inputAddOn.inputDataSourceData.map((option) => {
+                            //             return <option value={option.value}>{option.label}</option>
+                            //         })
+                            //     }
+                            // </select>
+
+                            <Select
+                              options={userData}
+                              isMulti={
+                                data.inputMultiple == true ? true : false
+                              }
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              name={data.inputName}
+                              defaultValue={data.inputDefaultValue}
+                              className="form-control form-control-sm"
+                              required={true}
+                            />
+                          )}
+
+
+                        {data.inputType === "select-master" &&
+                          selectedValue &&
+                          selectedValue === "role" && (
+                            // <select
+                            //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
+                            //     name={data.inputName}
+                            //     className="form-control form-control-sm"
+
+                            // >
+                            //     <option>Select {data.inputName}</option>
+                            //     {
+                            //         data.inputAddOn.inputDataSourceData &&
+                            //         data.inputAddOn.inputDataSourceData.map((option) => {
+                            //             return <option value={option.value}>{option.label}</option>
+                            //         })
+                            //     }
+                            // </select>
+
+                            <Select
+                              options={roleDropdown}
+                              isMulti={
+                                data.inputMultiple == true ? true : false
+                              }
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              name={data.inputName}
+                              defaultValue={data.inputDefaultValue}
+                              className="form-control form-control-sm"
+                              required={true}
+                            />
+                          )}
+
+                        {data.inputType === "select-master" &&
+                          selectedValue &&
+                          selectedValue === "department" && (
+                            // <select
+                            //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
+                            //     name={data.inputName}
+                            //     className="form-control form-control-sm"
+
+                            // >
+                            //     <option>Select {data.inputName}</option>
+                            //     {
+                            //         data.inputAddOn.inputDataSourceData &&
+                            //         data.inputAddOn.inputDataSourceData.map((option) => {
+                            //             return <option value={option.value}>{option.label}</option>
+                            //         })
+                            //     }
+                            // </select>
+
+                            <Select
+                              options={departmentDropdown}
+                              isMulti={
+                                data.inputMultiple == true ? true : false
+                              }
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              name={data.inputName}
+                              defaultValue={data.inputDefaultValue}
+                              className="form-control form-control-sm"
+                              required={true}
+                            />
+                          )}
+
                         {data.inputType === "select" && (
-                          // <select
-                          //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                          //     name={data.inputName}
-                          //     className="form-control form-control-sm"
-
-                          // >
-                          //     <option>Select {data.inputName}</option>
-                          //     {
-                          //         data.inputAddOn.inputDataSourceData &&
-                          //         data.inputAddOn.inputDataSourceData.map((option) => {
-                          //             return <option value={option.value}>{option.label}</option>
-                          //         })
-                          //     }
-                          // </select>
-
-                          <Select
-                            options={inputDataSource}
-                            isMulti
-                            id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
-                            }
-                            name={data.inputName}
-                            className="form-control form-control-sm"
-                            required={true}
-                          />
-                        )}
-
-                        {data.inputType === "select-master" && (
                           <Select
                             options={data.inputAddOn.inputDataSourceData}
                             isMulti
@@ -990,7 +1425,81 @@ function CreateDynamicForm() {
                           />
                         )}
 
-                        {data.inputType == "radio" && data.inputAddOn.inputRadio
+                        {data.inputType === "radio" && (
+                          // <select
+                          //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
+                          //     name={data.inputName}
+                          //     className="form-control form-control-sm"
+
+                          // >
+                          //     <option>Select {data.inputName}</option>
+                          //     {
+                          //         data.inputAddOn.inputDataSourceData &&
+                          //         data.inputAddOn.inputDataSourceData.map((option) => {
+                          //             return <option value={option.value}>{option.label}</option>
+                          //         })
+                          //     }
+                          // </select>
+
+                          // <Select
+                          //   options={inputDataSource}
+                          //   isMulti
+                          //   id={
+                          //     data.inputName
+                          //       ? data.inputName
+                          //           .replace(/ /g, "_")
+                          //           .toLowerCase()
+                          //       : ""
+                          //   }
+                          //   name={data.inputName}
+                          //   className="form-control form-control-sm"
+                          //   required={true}
+                          // />
+
+
+                          <div className="col-sm-10">
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                                // defaultChecked={data && data.is_active === 1}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_1"
+                              >
+                                Active
+                              </label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                                // defaultChecked={data && data.is_active === 0}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_0"
+                              >
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        )}
+
+                        {/* {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
                               return (
                                 <div>
@@ -999,14 +1508,36 @@ function CreateDynamicForm() {
                                 </div>
                               );
                             })
-                          : ""}
+                          : ""} */}
+{data.inputType=="checkbox" &&
+<div>
+<input
+                      className="sm-1"
+                      type="checkbox"
+                      style={{ marginRight: "8px", marginLeft: "10px" }}
+                     
+                      
+                    />
+  </div>
+
+}
+
+
                         {data.inputType == "checkbox" &&
                         data.inputAddOn.inputCheckbox
                           ? data.inputAddOn.inputCheckbox.map((d) => {
                               return (
                                 <div>
-                                  <input type="checkbox" />
-                                  <label for={d.value}>{d.label}</label>
+                                  {/* <input type="checkbox" />
+                                  <label for={d.value}>{d.label}</label> */}
+
+<input
+                      className="sm-1"
+                      type="checkbox"
+                      style={{ marginRight: "8px", marginLeft: "10px" }}
+                     
+                      
+                    />
                                 </div>
                               );
                             })
@@ -1032,7 +1563,7 @@ export default CreateDynamicForm;
 // import React, { useState, useEffect } from 'react'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal';
-// import { useNavigate } from 'react-router-dom'
+// import { useNavigate, useParams } from 'react-router-dom'
 // import { Link } from 'react-router-dom'
 // import { _base } from '../../../settings/constants'
 // import ErrorLogService from "../../../services/ErrorLogService";
@@ -1059,11 +1590,12 @@ export default CreateDynamicForm;
 //     const [dynamicForm, setDynamicForm] = useState([]);
 //     const [currentForm, setCurrentForm] = useState();
 
+//     const id = useParams()
 //     const [dropdown, setDropdown] = useState();
 //     const loadData = async () => {
 //         // match.params.id
-//         if (match.params.id) {
-//             await new DynamicFormService().getDynamicFormById(match.params.id).then(res => {
+//         if (id) {
+//             await new DynamicFormService().getDynamicFormById(id).then(res => {
 //                 if (res.status === 200) {
 //                     if (res.data.data) {
 //                         setData(res.data.data)
@@ -1705,3 +2237,620 @@ export default CreateDynamicForm;
 // }
 
 // export default CreateDynamicForm
+
+// import React, { useState, useEffect } from "react";
+// import { useHistory } from "react-router-dom";
+// import { Link } from "react-router-dom";
+// import { _base } from "../../../settings/constants";
+// // import { ButtonComponent, InputComponent } from "../../../.."
+// // '../../Utilities/Button/Button'
+
+// import {
+//   ButtonComponent,
+//   InputComponent,
+// } from "../../../components/Utilities/Button/Button";
+// import * as Validation from "../../../components/Utilities/Validation";
+// // import DynamicComponent from './DynamicComponent/DynamicComponent';
+// import DynamicComponent from "./DynamicComponent";
+// import { masterURL } from "../../../settings/constants";
+// import { getData } from "../../../services/DynamicService/DynamicService";
+// // import { postData } from '../../../services/MastersService/DynamicFormService';
+// import DynamicFormService from "../../../services/MastersService/DynamicFormService";
+// // import RenderDynamicForm from '../../TicketComponent/RenderDynamicForm';
+// // import Alert from '../../NotificationComponent/Alert';
+// import Alert from "../../../components/Common/Alert";
+// // import { Astrick } from '../../Utilities/Style'
+// import { Astrick } from "../../../components/Utilities/Style";
+// import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
+// function CreateDynamicForm() {
+//   const [showAlert, setShowAlert] = useState({
+//     show: false,
+//     type: null,
+//     message: null,
+//   });
+//   // const history = useHistory();
+//   const mainJson = {
+//     inputWidth: null,
+//     inputType: null,
+//     inputName: null,
+//     inputLabel: null,
+//     inputDefaultValue: null,
+//     inputAddOn: {
+//       inputRange: null,
+//       inputDataSource: null,
+//       inputDataSourceData: null,
+//       inputDateRange: null,
+//       inputRadio:null
+//     },
+//   };
+
+//   const [rows, setRows] = useState([mainJson]);
+
+//   const [formShow, setFormShow] = useState(false);
+//   const [radioSelect, setRadioSelect] = useState();
+
+//   const [index, setIndex] = useState({ index: 0 });
+
+//   const handleChange =  (idx) => async(e) => {
+//     console.log("eee",e.target.name)
+//     setIndex({ index: idx });
+//     const { name, value } = e.target;
+
+//     if (e.target.name === "inputWidth") {
+//       rows[idx].inputWidth = e.target.value;
+//     } else if (e.target.name === "inputName") {
+//       rows[idx].inputName = e.target.value;
+//     } else if (e.target.name === "inputType") {
+//       rows[idx].inputType = e.target.value;
+//     } else if (e.target.name === "inputLabel") {
+//       rows[idx].inputLabel = e.target.value;
+//     } else if (e.target.name === "inputDefaultValue") {
+//       rows[idx].inputDefaultValue = e.target.value;
+//     } else if (e.target.name === "inputDataOption") {
+//       rows[idx].inputOption = e.target.value;
+//     } else if (e.target.name == "inputRange") {
+//       rows[idx].inputAddOn.inputRange = e.target.value;
+//     } else if (e.target.name == "inputDataSource")
+
+//     {
+//       const test = e.target.value.split("|");
+//       const _URL = masterURL[test[0]];
+//       const _Value = test[1];
+//       const _Label = test[2];
+
+//       getData(_URL).then((res) => {
+//         console.log("res@", res);
+//         let counter = 1;
+//         const tempData = [];
+//         for (const key in res.data) {
+//           const t = res.data[key];
+//           tempData.push({
+//             value: t[_Value],
+//             label: t[_Label],
+//           });
+//         }
+//         rows[idx].inputAddOn.inputDataSourceData = tempData;
+//       });
+//       rows[idx].inputAddOn.inputDataSource = e.target.value;
+//     }
+
+//     // else if (e.target.name == "inputRadio") {
+//               setFormShow(formShow == true ? false : true);
+//               const test = e.target.value;
+//       console.log("ggggg",test)
+
+//               rows[idx].inputAddOn.inputRadio = test;
+//               await new DynamicFormDropdownMasterService()
+//                 .getDropdownById(test)
+//                 .then((res) => {
+//                   console.log("temp",res)
+//                   if (res.status == 200) {
+//                     if (res.data.status == 1) {
+//                       const dropNames = res.data.data;
+//                       setRadioSelect(dropNames.master.dropdown_name);
+//                       console.log("hello",dropNames.master.dropdown_name)
+//                       const temp = [];
+//                       res.data.data.dropdown.forEach((d) => {
+//                         temp.push({ label: d.label, value: d.id });
+//                       });
+//                       rows[idx].inputAddOn.inputRadio = temp;
+//                       // setInputDataSource(temp)
+//                     }
+//                   }
+//                 });
+//     }
+//     // console.log(rows);
+//     // const rows = [...rows];
+//     // rows[idx] = {
+//     //     [name]: value
+//     // };
+//     // setRows({
+//     //     rows
+//     // });
+//   // };
+
+//   // loadDynamicData = (_URL) =>{
+//   // getData(_URL).then(res =>{
+//   //     let counter=1;
+//   //     for (const key in res.data) {
+//   //         tempData.push({
+//   //           counter:counter++,
+//   //           id: res.data[key].id,
+//   //           city: res.data[key].city
+//   //         })
+//   //     }
+//   //     setData(tempData);
+//   // });
+//   // }
+
+//   const handleAddRow = async () => {
+//     setShowAlert({ show: false, type: null, message: null });
+//     let flag = 1;
+//     let last = rows.length - 1;
+
+//     if (
+//       !rows[last].inputType ||
+//       !rows[last].inputLabel ||
+//       !rows[last].inputName
+//     ) {
+//       flag = 0;
+//       setShowAlert({ show: false, type: null, message: null });
+//     }
+
+//     const item = {
+//       inputWidth: null,
+//       inputType: null,
+//       inputName: null,
+//       inputLabel: null,
+//       inputDefaultValue: null,
+//       inputAddOn: {
+//         inputRange: null,
+//         inputDataSource: null,
+//         inputDataSourceData: null,
+//         inputDateRange: null,
+//       },
+//     };
+
+//     if (flag === 1) {
+//       await setRows([...rows, item]);
+//     } else {
+//       setShowAlert({
+//         show: true,
+//         type: "warning",
+//         message: "Please Fill Previous Row Values",
+//       });
+//     }
+//   };
+
+//   const handleRemoveSpecificRow = (idx) => () => {
+//     if (idx > 0) {
+//       setRows(rows.filter((_, i) => i !== idx));
+//     }
+//   };
+
+//   const handldeFormShow = () => {
+//     setFormShow(formShow == true ? false : true);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     // const data=new FormData(e.target);
+//     const data = {
+//       template_name: e.target.template_name.value,
+//       data: JSON.stringify(rows),
+//     };
+
+//     await new DynamicFormService().postDynamicForm(data).then((res) => {
+//       if (res.status == 200) {
+//         const data = res.data;
+//         var returnValue = { show: true, type: "danger", message: data.message };
+//         if (data.status == 1) {
+//           returnValue.type = "success";
+//         }
+//         // history.push({
+//         //     pathname:`/${_base}/DynamicForm`,
+//         //     state: { showAlert : true, alertData:returnValue }
+//         // });
+//       }
+//     });
+//   };
+
+//   useEffect(() => {
+//     // return () => {
+//     // }
+//   }, [rows]);
+//   return (
+//     <>
+//       <div className="body d-flex py-3">
+//         <div className="container-xxl">
+//           <div className="row clearfix g-3">
+//             <div className="col-xl-12 col-lg-12 col-md-12 flex-column">
+//               {/*************** HEADING ***************/}
+//               <div className="card">
+//                 <div
+//                   className="card-header d-flex justify-content-between bg-transparent
+//                                 border-bottom-0"
+//                 >
+//                   <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
+//                   {/* <Link to="Country/Create/" className="btn btn-dark btn-sm btn-set-task w-sm-100">
+//                                         <i className="icofont-plus-circle me-2 fs-6" />
+//                                         Add
+//                                     </Link> */}
+//                 </div>
+//               </div>
+
+//               {/*************** TABLE ***************/}
+//               <div className="card mt-2">
+//                 <div className="card-body">
+//                   <form onSubmit={handleSubmit}>
+//                     <div className="row">
+//                       <div className="col-md-2">
+//                         <label>
+//                           <b>
+//                             Template Name :<Astrick color="red" />
+//                           </b>
+//                         </label>
+//                       </div>
+//                       <div className="col-md-4">
+//                         <input
+//                           type="text"
+//                           className="form-control form-control-sm"
+//                           name="template_name"
+//                           id="template_name"
+//                           required
+//                           onKeyPress={(e) => {
+//                             Validation.CharactersOnly(e);
+//                           }}
+//                         />
+//                       </div>
+//                     </div>
+
+//                     <div className="mt-2">
+//                       {showAlert.show && (
+//                         <Alert
+//                           type={showAlert.type}
+//                           message={showAlert.message}
+//                         />
+//                       )}
+//                     </div>
+
+//                     <div className="table-responsive">
+//                       <table
+//                         className="table table-bordered mt-3 table-responsive"
+//                         id="tab_logic"
+//                       >
+//                         <thead>
+//                           <tr>
+//                             <th className="text-center"> # </th>
+//                             <th className="text-center"> Type </th>
+//                             <th className="text-center"> Width </th>
+//                             <th className="text-center"> Name </th>
+//                             <th className="text-center"> Label </th>
+//                             <th className="text-center"> Def. Value </th>
+//                             <th className="text-center"> Add-Ons</th>
+//                             <th className="text-center"> Action</th>
+//                           </tr>
+//                         </thead>
+//                         <tbody>
+//                           {rows &&
+//                             rows.map((item, idx) => (
+//                               <tr id={`addr_${idx}`} key={idx}>
+//                                 <td>{idx + 1}</td>
+//                                 <td>
+//                                   <select
+//                                     name="inputType"
+//                                     defaultValue={item.inputType}
+//                                     onChange={handleChange(idx)}
+//                                     className="form-control form-control-sm"
+//                                     required
+//                                   >
+//                                     <option value="">Select Type</option>
+//                                     <option value="text">TEXT</option>
+//                                     <option value="textarea">TEXTAREA</option>
+//                                     <option value="number">NUMBER</option>
+//                                     <option value="date">DATE</option>
+//                                     <option value="select">SELECT</option>
+//                                     <option value="radio">RADIO</option>
+//                                   </select>
+//                                 </td>
+//                                 <td>
+//                                   <select
+//                                     name="inputWidth"
+//                                     defaultValue={item.inputWidth}
+//                                     onChange={handleChange(idx)}
+//                                     className="form-control form-control-sm"
+//                                     required
+//                                   >
+//                                     <option>Select Width</option>
+//                                     <option value="col-sm-2">Very Small</option>
+//                                     <option value="col-sm-4">Small</option>
+//                                     <option value="col-sm-6">Medium</option>
+//                                     <option value="col-sm-8">Large</option>
+//                                     <option value="col-sm-10">X-Large</option>
+//                                     <option value="col-sm-12">XX-Large</option>
+//                                   </select>
+//                                 </td>
+
+//                                 <td>
+//                                   <input
+//                                     type="text"
+//                                     name="inputName"
+//                                     defaultValue={item.inputName}
+//                                     onChange={handleChange(idx)}
+//                                     onKeyPress={(e) => {
+//                                       Validation.CharactersOnly(e);
+//                                     }}
+//                                     className="form-control form-control-sm"
+//                                     required
+//                                   />
+//                                 </td>
+//                                 <td>
+//                                   <input
+//                                     type="text"
+//                                     name="inputLabel"
+//                                     defaultValue={item.inputLabel}
+//                                     onChange={handleChange(idx)}
+//                                     onKeyPress={(e) => {
+//                                       Validation.CharactersOnly(e);
+//                                     }}
+//                                     className="form-control form-control-sm"
+//                                     required
+//                                   />
+//                                 </td>
+//                                 <td>
+//                                   <input
+//                                     type="text"
+//                                     name="inputDefaultValue"
+//                                     defaultValue={item.inputDefaultValue}
+//                                     onChange={handleChange(idx)}
+//                                     onKeyPress={(e) => {
+//                                       Validation.CharactersNumbersOnly(e);
+//                                     }}
+//                                     className="form-control form-control-sm"
+//                                   />
+//                                 </td>
+
+//                                 <td>
+//                                   {rows && (
+//                                     <DynamicComponent
+//                                       id={idx}
+//                                       data={rows[idx]}
+//                                       onGetChange={handleChange(idx)}
+//                                     />
+//                                   )}
+//                                   {/* {rows[idx].inputType==="number" && JSON.stringify(rows[idx]) } */}
+//                                 </td>
+
+//                                 <td>
+//                                   {idx == 0 && (
+//                                     <span>
+//                                       <button
+//                                         type="button"
+//                                         onClick={handleAddRow}
+//                                         className="btn btn-sm btn-outline-primary pull-left"
+//                                       >
+//                                         <i className="icofont-plus-circle"></i>
+//                                       </button>
+//                                     </span>
+//                                   )}
+
+//                                   {rows.length == idx + 1 && idx != 0 && (
+//                                     <span>
+//                                       <button
+//                                         type="button"
+//                                         className="btn btn-outline-danger btn-sm"
+//                                         onClick={handleRemoveSpecificRow(idx)}
+//                                       >
+//                                         <i className="icofont-ui-delete"></i>
+//                                       </button>
+//                                     </span>
+//                                   )}
+//                                 </td>
+//                               </tr>
+//                             ))}
+//                         </tbody>
+//                       </table>
+//                     </div>
+
+//                     {!formShow && (
+//                       <button
+//                         type="button"
+//                         className="btn btn-sm btn-info pull-left"
+//                         onClick={handldeFormShow}
+//                       >
+//                         View Form
+//                       </button>
+//                     )}
+
+//                     <button
+//                       type="button"
+//                       className="btn btn-sm btn-danger pull-left"
+//                       onClick={handldeFormShow}
+//                     >
+//                       Hide Form
+//                     </button>
+
+//                     <div className="pull-right">
+//                       <ButtonComponent
+//                         type="Submit"
+//                         buttonColor="primary"
+//                         textColor="white"
+//                         text="Submit"
+//                       />
+
+//                       <ButtonComponent
+//                         type="Link"
+//                         url="/Dynamic"
+//                         buttonColor="danger"
+//                         textColor="white"
+//                         text="Cancel"
+//                       />
+//                     </div>
+//                   </form>
+//                 </div>{" "}
+//                 {/* Card Body */}
+//               </div>
+//               {/* Card */}
+//             </div>
+
+//             {console.log("rows", rows)}
+//             {console.log("formshow", formShow)}
+
+//             {formShow && rows && (
+//               <div>
+//                 {rows.map((data, index) => {
+//                   if (data.inputType && data.inputName && data.inputLabel) {
+//                     if (data.inputAddOn.inputRange) {
+//                       var range = data.inputAddOn.inputRange.split("|");
+//                     } else if (data.inputAddOn.inputDateRange) {
+//                       var range = data.inputAddOn.inputDateRange.split("|");
+//                     }
+
+//                     return (
+//                       <div key={index} className="row">
+//                         <div className={`${data.inputWidth} mt-2`}>
+//                           <label>
+//                             <b>{data.inputLabel} :</b>
+//                           </label>
+
+//                           {data.inputType === "text" && (
+//                             <input
+//                               type={data.inputType}
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               defaultValue={data.inputDefaultValue}
+//                               className="form-control form-control-sm"
+//                             />
+//                           )}
+//                           {data.inputType === "textarea" && (
+//                             <textarea
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               className="form-control form-control-sm"
+//                             >
+//                               {data.inputDefaultValue}
+//                             </textarea>
+//                           )}
+//                           {data.inputType === "date" && (
+//                             <input
+//                               type={data.inputType}
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               defaultValue={data.inputDefaultValue}
+//                               min={
+//                                 data.inputAddOn.inputDateRange ? range[0] : ""
+//                               }
+//                               max={
+//                                 data.inputAddOn.inputDateRange ? range[1] : ""
+//                               }
+//                               className="form-control form-control-sm"
+//                             />
+//                           )}
+
+//                           {data.inputType === "number" && (
+//                             <input
+//                               type="number"
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               defaultValue={data.inputDefaultValue}
+//                               min={data.inputAddOn.inputRange ? range[0] : ""}
+//                               max={data.inputAddOn.inputRange ? range[1] : ""}
+//                               className="form-control form-control-sm"
+//                             />
+//                           )}
+// {console.log("ddd",data)}
+//                           {data.inputType === "select" && (
+//                             <select
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               className="form-control form-control-sm"
+//                             >
+//                               <option>Select {data.inputName}</option>
+//                               {console.log("iii", data.inputName)}
+//                               {data.inputAddOn.inputDataSourceData &&
+//                                 data.inputAddOn.inputDataSourceData.map(
+//                                   (option, index) => {
+//                                     return (
+//                                       <option value={option.value}>
+//                                         {option.label}
+//                                       </option>
+//                                     );
+//                                   }
+//                                 )}
+//                             </select>
+//                           )}
+
+//                           {data.inputType === "radio" && (
+//                             <select
+//                               id={
+//                                 data.inputName
+//                                   ? data.inputName
+//                                       .replace(/ /g, "_")
+//                                       .toLowerCase()
+//                                   : ""
+//                               }
+//                               name={data.inputName}
+//                               className="form-control form-control-sm"
+//                             >
+//                               <option>Select {data.inputName}</option>
+//                               {console.log("iii", data)}
+//                               {data.inputAddOn.inputRadio &&
+//                                 data.inputAddOn.inputRadio.map(
+//                                   (option, index) => {
+//                                     return (
+//                                       <option value={option.value}>
+//                                         {option.label}
+//                                       </option>
+//                                     );
+//                                   }
+//                                 )}
+//                             </select>
+//                           )}
+//                         </div>
+//                       </div>
+//                     );
+//                   }
+//                 })}
+//               </div>
+//             )}
+//           </div>{" "}
+//           {/*ROW*/}
+//         </div>
+//         {/*CONTAINER*/}
+//       </div>
+//       {/*BODY*/}
+//     </>
+//   );
+// }
+
+// export default CreateDynamicForm;

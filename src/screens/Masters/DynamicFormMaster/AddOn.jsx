@@ -557,15 +557,17 @@ function AddOn(props) {
                     </div>
                 }
 
+                {console.log("hiii",
+                 props.radioSelect)}
+
                 { props.data.inputType === "radio" &&
                     <span>
                         <select className="form-control form-control-sm"
                             onChange={props.onGetChange}
                             id="inputRadio"
-                            name="inputRadio"
-                        >
+                            name="inputRadio">
                             <option>Select Data Source</option>
-                            {props.dropdown && props.dropdown.map((d, i) => {
+                            {props.radioSelect && props.radioSelect.map((d, i) => {
                                 if (selectedDropdown == d.value) {
                                     return <option value={d.value} >{d.label}</option>
                                 } else {
@@ -653,7 +655,7 @@ function AddOn(props) {
                         </select>
                         <small style={{ 'color': 'red' }}><b>Select On Change Variable</b></small> */}
                         <select className="form-control form-control-sm"
-                            // onChange={props.onGetChange}
+                            onChange={props.onGetChange}
                             // id="inputDataSource"
                             // name="inputDataSource"
                             id="inputOnChangeSource"

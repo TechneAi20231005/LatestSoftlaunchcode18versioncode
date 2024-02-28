@@ -2161,6 +2161,8 @@ export default function CreateTicketComponent() {
 
         {/* {selectedDropdown && JSON.stringify(selectedDropdown)} */}
 
+        {console.log("dataC",rows)}
+
         {data.ticket_uploading === "REGULAR" && rows && rows.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">
@@ -2189,11 +2191,13 @@ export default function CreateTicketComponent() {
                               : ""
                           }
                           name={data.inputName}
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
-                          }
+                          // defaultValue={
+                          //   selectedDropdown
+                          //     ? selectedDropdown[data.inputName]
+                          //     : ""
+                          // }
+                          defaultValue={data.inputDefaultValue}
+                          required={data.inputMandatory == true ? true : false}
                           onChange={dynamicChangeHandle}
                           className="form-control form-control-sm"
                         />
@@ -2213,6 +2217,8 @@ export default function CreateTicketComponent() {
                               : ""
                           }
                           onChange={dynamicChangeHandle}
+                          required={data.inputMandatory == true ? true : false}
+
                         >
                           {data.inputDefaultValue}
                         </textarea>
@@ -2228,6 +2234,7 @@ export default function CreateTicketComponent() {
                             value={dateValue}
                             format={data.inputFormat}
                             style={{ width: "100%" }}
+                            
                           />
                         </div>
                       )}
@@ -2263,6 +2270,8 @@ export default function CreateTicketComponent() {
                               : ""
                           }
                           onChange={dynamicChangeHandle}
+                          required={data.inputMandatory == true ? true : false}
+
                           className="form-control form-control-sm"
                         />
                       )}
@@ -2302,6 +2311,8 @@ export default function CreateTicketComponent() {
                                       .toLowerCase()
                                     : ""
                                 }
+                          required={data.inputMandatory == true ? true : false}
+
                                 name={data.inputName}
                                 className="mx-2"
                                 type="checkbox"
@@ -2324,7 +2335,11 @@ export default function CreateTicketComponent() {
                             selectedDropdown
                               ? selectedDropdown[data.inputName]
                               : ""
+
                           }
+
+                          required={data.inputMandatory == true ? true : false}
+
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRange ? range[0] : ""}
                           max={data.inputAddOn.inputRange ? range[1] : ""}
@@ -2339,6 +2354,8 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
+                          required={data.inputMandatory == true ? true : false}
+
                           name={data.inputName}
                           onChange={dynamicChangeHandle}
                           minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -2359,6 +2376,7 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
+
                           name={data.inputName}
                           onChange={(e) => {
                             dynamicDependancyHandle(
