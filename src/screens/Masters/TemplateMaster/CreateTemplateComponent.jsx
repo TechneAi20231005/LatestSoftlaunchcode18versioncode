@@ -73,8 +73,6 @@ const CreateTemplateComponent = () => {
   };
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
-
-
     template_name: null,
     calculate_from: null,
     template_data: [
@@ -185,19 +183,16 @@ const CreateTemplateComponent = () => {
     }
   };
 
- const handleRemoveSpecificRow = (idx) => {
-  setRows(prevState => {
-    const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
-    console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
-    return {
-      ...prevState,
-      template_data: updatedRows,
-    };
-  });
-};
-
-  
-  
+  const handleRemoveSpecificRow = (idx) => {
+    setRows((prevState) => {
+      const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
+      console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
+      return {
+        ...prevState,
+        template_data: updatedRows,
+      };
+    });
+  };
 
   const handleRemoveTask = (basketIndex, taskIndex) => {
     setRows((prevRows) => {
@@ -1070,13 +1065,11 @@ const CreateTemplateComponent = () => {
                                 </b>
                               </label>
                               <input
-                                type="number"
+                                type="text"
                                 className="form-control form-control-sm mb-2"
                                 name="hours"
                                 id="hours_add"
-                                min="1"
-                                max="100"
-                                placeholder="Days Required"
+                                // placeholder="Days Required"
                                 defaultValue="00:00"
                                 required
                               />

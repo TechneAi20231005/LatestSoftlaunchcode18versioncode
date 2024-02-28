@@ -532,7 +532,9 @@ const EditTemplateComponent = ({ match, props }) => {
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         {/* {data && JSON.stringify(data)} */}
-        {/* {newData && JSON.stringify(newData)} */}
+      {console.log(data)}
+      {console.log("newData",newData)}
+     
 
         <div className="card-body">
           <form onSubmit={updateTemplate}>
@@ -604,9 +606,9 @@ const EditTemplateComponent = ({ match, props }) => {
                       id="is_active_1"
                       value="1"
                       defaultChecked={
-                        modal.modalData && modal.modalData.is_active === 1
+                        newData && newData.is_active === 1
                           ? true
-                          : !modal.modalData
+                          : !newData
                           ? true
                           : false
                       }
@@ -626,7 +628,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       value="0"
                       readOnly={modal.modalData ? false : true}
                       defaultChecked={
-                        modal.modalData && modal.modalData.is_active === 0
+                        newData && newData.is_active === 0
                           ? true
                           : false
                       }
@@ -775,7 +777,8 @@ const EditTemplateComponent = ({ match, props }) => {
                 </div>
                 <label>
                   <b>
-                    Task Type :<Astrick color="red" size="13px" />
+                    Task Type :
+                    {/* <Astrick color="red" size="13px" /> */}
                   </b>
                 </label>
                 <Select

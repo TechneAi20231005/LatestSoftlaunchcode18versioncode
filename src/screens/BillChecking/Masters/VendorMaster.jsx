@@ -4154,7 +4154,7 @@ function VendorMaster({ match }) {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
-  console.log(cityDropdown)
+  console.log(cityDropdown);
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
@@ -5127,78 +5127,78 @@ function VendorMaster({ match }) {
             )}
           </tr>
           <tr>
-  <td>2</td>
-  <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
-  {data.pan_attachment && data.pan_attachment.length > 0 ? (
-    <td>
-      {data.pan_attachment.map((attachment, index) => (
-        <a
-          key={index}
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          className="btn btn-primary btn-sm p-1 mr-1"
-          style={{ marginBottom: "5px" }}
-        >
-          <i
-            className="icofont-eye"
-            style={{ fontSize: "15px", height: "15px" }}
-          ></i>
-        </a>
-      ))}
-    </td>
-  ) : (
-    <td>NA</td>
-  )}
-</tr>
-<tr>
-  <td>3</td>
-  <td style={{ fontWeight: "bold" }}>GST Attachment</td>
-  {data.gst_attachment && data.gst_attachment.length > 0 ? (
-    <td>
-      {data.gst_attachment.map((attachment, index) => (
-        <a
-          key={index}
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          className="btn btn-primary btn-sm p-1 mr-1"
-          style={{ marginBottom: "5px" }}
-        >
-          <i
-            className="icofont-eye"
-            style={{ fontSize: "15px", height: "15px" }}
-          ></i>
-        </a>
-      ))}
-    </td>
-  ) : (
-    <td>NA</td>
-  )}
-</tr>
+            <td>2</td>
+            <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
+            {data.pan_attachment && data.pan_attachment.length > 0 ? (
+              <td>
+                {data.pan_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
+              </td>
+            ) : (
+              <td>NA</td>
+            )}
+          </tr>
+          <tr>
+            <td>3</td>
+            <td style={{ fontWeight: "bold" }}>GST Attachment</td>
+            {data.gst_attachment && data.gst_attachment.length > 0 ? (
+              <td>
+                {data.gst_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
+              </td>
+            ) : (
+              <td>NA</td>
+            )}
+          </tr>
 
-<tr>
-  <td>4</td>
-  <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
-  {data.msme_attachment && data.msme_attachment.length > 0 ? (
-    <td>
-      {data.msme_attachment.map((attachment, index) => (
-        <a
-          key={index}
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          className="btn btn-primary btn-sm p-1 mr-1"
-          style={{ marginBottom: "5px" }}
-        >
-          <i
-            className="icofont-eye"
-            style={{ fontSize: "15px", height: "15px" }}
-          ></i>
-        </a>
-      ))}
-    </td>
-  ) : (
-    <td>NA</td>
-  )}
-</tr>
+          <tr>
+            <td>4</td>
+            <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
+            {data.msme_attachment && data.msme_attachment.length > 0 ? (
+              <td>
+                {data.msme_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
+              </td>
+            ) : (
+              <td>NA</td>
+            )}
+          </tr>
 
           <tr>
             <td>5</td>
@@ -5932,16 +5932,18 @@ function VendorMaster({ match }) {
                                   Download
                                 </i>
                               </a>
-                              <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
+                              <OverlayTrigger
+                                overlay={<Tooltip>{attachment} </Tooltip>}
+                              >
+                                <div>
+                                  <span title={attachment} className="ms-1">
+                                    {" "}
+                                    {attachment && attachment < 30
+                                      ? attachment
+                                      : attachment.substring(0, 20) + "...."}
+                                  </span>
+                                </div>
+                              </OverlayTrigger>
                             </div>
                           )
                         )}
@@ -6134,7 +6136,6 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-                  {console.log("modal", modal.modalData)}
 
                   <div className=" col-sm-3 mt-2">
                     <label className="col-form-label" htmlFor="attachment">
@@ -6205,16 +6206,18 @@ function VendorMaster({ match }) {
                                   Download
                                 </i>
                               </a>
-                              <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
+                              <OverlayTrigger
+                                overlay={<Tooltip>{attachment} </Tooltip>}
+                              >
+                                <div>
+                                  <span title={attachment} className="ms-1">
+                                    {" "}
+                                    {attachment && attachment < 30
+                                      ? attachment
+                                      : attachment.substring(0, 20) + "...."}
+                                  </span>
+                                </div>
+                              </OverlayTrigger>
                             </div>
                           )
                         )}
@@ -6281,11 +6284,7 @@ function VendorMaster({ match }) {
                           >
                             <div className="card-header">
                               <span>{attachment.fileName}</span>
-                              {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
+
                               <div className="d-flex justify-content-between p-0 mt-1">
                                 <a
                                   href={`${attachment.tempUrl}`}
@@ -6442,16 +6441,18 @@ function VendorMaster({ match }) {
                                 Download
                               </i>
                             </a>
-                            <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
+                            <OverlayTrigger
+                              overlay={<Tooltip>{attachment} </Tooltip>}
+                            >
+                              <div>
+                                <span title={attachment} className="ms-1">
+                                  {" "}
+                                  {attachment && attachment < 30
+                                    ? attachment
+                                    : attachment.substring(0, 20) + "...."}
+                                </span>
+                              </div>
+                            </OverlayTrigger>
                           </div>
                         )
                       )}
@@ -6493,6 +6494,8 @@ function VendorMaster({ match }) {
                         maxLengthCheck(e, "GST");
                       }}
                     />
+                     </div>
+                    
 
                     {/* <div className="d-flex"> */}
                     {selectedFiles &&
@@ -6548,7 +6551,7 @@ function VendorMaster({ match }) {
                           </div>
                         );
                       })}
-                  </div>
+                 
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
@@ -6756,36 +6759,42 @@ function VendorMaster({ match }) {
                       </a>
                     )} */}
 
-
-{modal.modalData && modal.modalData.msme_attachment && (
-  <div>
-    {modal.modalData.msme_attachment.map((attachment, index) => (
-      <div key={index}>
-        <a
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          download
-          className="btn btn-info btn-sm p-0 mr-2"
-          accept="image/jpg,image/jpeg,image/png,application/pdf"
-        >
-          <i className="icofont-download" style={{ fontSize: "15px" }}>
-            Download
-          </i>
-        </a>
-        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
-      </div>
-    ))}
-  </div>
-)}
+                    {modal.modalData && modal.modalData.msme_attachment && (
+                      <div>
+                        {modal.modalData.msme_attachment.map(
+                          (attachment, index) => (
+                            <div key={index}>
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0 mr-2"
+                                accept="image/jpg,image/jpeg,image/png,application/pdf"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                >
+                                  Download
+                                </i>
+                              </a>
+                              <OverlayTrigger
+                                overlay={<Tooltip>{attachment} </Tooltip>}
+                              >
+                                <div>
+                                  <span title={attachment} className="ms-1">
+                                    {" "}
+                                    {attachment && attachment < 30
+                                      ? attachment
+                                      : attachment.substring(0, 20) + "...."}
+                                  </span>
+                                </div>
+                              </OverlayTrigger>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
 
                     <input
                       type="file"
@@ -6824,13 +6833,10 @@ function VendorMaster({ match }) {
                         maxLengthCheck(e, "MSME");
                       }}
                     />
-                    {/* 
-                  <p style={{ fontSize: "10px" }}>
-                    {" "}
-                    Note :-Accept only png, jpeg, jpp and pdf file.
-                  </p> */}
+                      </div>
+                
 
-                    <div className="d-flex">
+                  
                       {MSMEselectedFiles &&
                         MSMEselectedFiles.map((attachment, index) => {
                           return (
@@ -6884,8 +6890,8 @@ function VendorMaster({ match }) {
                             </div>
                           );
                         })}
-                    </div>
-                  </div>
+                  
+                
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -6978,110 +6984,244 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-
-                  <div className="col-sm-3 mt-3">
-                    <label className="form-label font-weight-bold">
-                      Bank Branch Name :<Astrick color="red" size="13px" />
+                  
+                  <div className=" col-sm-3 mt-2">
+                    <label className="col-form-label" htmlFor="attachment">
+                      <b>Passbook Attachment :</b>
                     </label>
+
+                    {/* {modal.modalData &&
+                      modal.modalData.bank_passbook_attachment && (
+                        <a
+                          href={`${_attachmentUrl}/${modal.modalData.bank_passbook_attachment}`}
+                          target="_blank"
+                          downlaod
+                          multiple={true}
+                          className="btn btn-info btn-sm p-0"
+                          accept="image/jpg,image/jpeg,image/png,application/pdf"
+                          onChange={(e) => {
+                            const selectedFile = e.target.files[0];
+
+                            // Check if the file type is one of the allowed types
+                            if (
+                              selectedFile.type === "image/jpg" ||
+                              selectedFile.type === "image/jpeg" ||
+                              selectedFile.type === "image/png" ||
+                              selectedFile.type === "application/pdf"
+                            ) {
+                              // File type is allowed
+                            } else {
+                              // Check if the file type is BMP
+                              if (selectedFile.type === "image/bmp") {
+                                alert(
+                                  "Invalid file format. BMP files are not allowed."
+                                );
+                              } else {
+                                alert(
+                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                                );
+                              }
+                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                            }
+                            uploadPassBookAttachmentHandler(e, "UPLOAD", "");
+                            maxLengthCheck(e, "PASSBOOK");
+                          }}
+                          // onClick={(e)=>{if(userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"){
+                          //   e.preventDefault()
+                          // }}}
+
+                          // disabled={userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"?true:false}
+                        >
+                          <i
+                            className="icofont-download"
+                            style={{ fontSize: "15px" }}
+                          >
+                            Download
+                          </i>
+                        </a>
+                      )} */}
+
+                    {modal.modalData &&
+                      modal.modalData.bank_passbook_attachment && (
+                        <div>
+                          {modal.modalData.bank_passbook_attachment.map(
+                            (attachment, index) => (
+                              <div key={index}>
+                                <a
+                                  href={`${_attachmentUrl}/${attachment}`}
+                                  target="_blank"
+                                  download
+                                  className="btn btn-info btn-sm p-0 mr-2"
+                                  accept="image/jpg,image/jpeg,image/png,application/pdf"
+                                >
+                                  <i
+                                    className="icofont-download"
+                                    style={{ fontSize: "15px" }}
+                                  >
+                                    Download
+                                  </i>
+                                </a>
+                                <OverlayTrigger
+                                  overlay={<Tooltip>{attachment} </Tooltip>}
+                                >
+                                  <div>
+                                    <span title={attachment} className="ms-1">
+                                      {" "}
+                                      {attachment && attachment < 30
+                                        ? attachment
+                                        : attachment.substring(0, 20) + "...."}
+                                    </span>
+                                  </div>
+                                </OverlayTrigger>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+
                     {modal.modalData && (
                       <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="bank_branch_name"
-                        name="bank_branch_name"
-                        maxLength={25}
-                        onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        readOnly={
+                        type="file"
+                        name="bank_passbook_attachment"
+                        id="bank_passbook_attachment"
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        ref={fileInputRef}
+                        multiple={true}
+                        disabled={
                           authorities &&
                           authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
-                        // readOnly={
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
+                          ) {
+                            // File type is allowed
+                          } else {
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          }
+                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "PASSBOOK");
+                        }}
+                        // disabled={
                         //   deta && deta.Bank_Details == false ? true : false
                         // }
-                        defaultValue={
-                          modal.modalData
-                            ? modal.modalData.bank_branch_name
-                            : ""
-                        }
-                        // onKeyPress={(e) => {
-                        //   Validation.CharactersNumbersSpeicalOnly(e);
-                        // }}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === "") {
-                            setInputState({
-                              branchNameError: "",
-                            });
-                          } else if (
-                            !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
-                            )
-                          ) {
-                            setInputState({
-                              branchNameError: "Invalid Branch Name",
-                            });
-                          } else if (value.length > 25) {
-                            setInputState({
-                              branchNameError:
-                                "Bank name can be up to 50 characters long.",
-                            });
-                          } else {
-                            setInputState("");
-                          }
-                        }}
-                        required={true}
+                        className="form-control"
                       />
                     )}
+
                     {!modal.modalData && (
                       <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="bank_branch_name"
-                        name="bank_branch_name"
-                        maxLength={25}
-                        // onKeyPress={(e) => {
-                        //   Validation.CharactersNumbersSpeicalOnly(e);
-                        // }}
-                        onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === "") {
-                            setInputState({
-                              branchNameError: "",
-                            });
-                          } else if (
-                            !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
-                            )
+                        type="file"
+                        name="bank_passbook_attachment[]"
+                        id="bank_passbook_attachment"
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        className="form-control"
+                        multiple={true}
+                        ref={passbookInputRef}
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
                           ) {
-                            setInputState({
-                              branchNameError: "Invalid Branch Name",
-                            });
-                          } else if (value.length > 25) {
-                            setInputState({
-                              branchNameError:
-                                "Bank name can be up to 50 characters long.",
-                            });
+                            // File type is allowed
                           } else {
-                            setInputState("");
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                           }
+                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "PASSBOOK");
                         }}
-                        required={true}
                       />
                     )}
-                    {inputState.branchNameError && (
-                      <small style={{ color: "red" }}>
-                        {inputState.branchNameError}
-                      </small>
-                    )}
-                  </div>
+                         </div>
 
+                    {passBookSelectedFiles &&
+                      passBookSelectedFiles.map((attachment, index) => {
+                        return (
+                          <div
+                            key={index}
+                            className="justify-content-start"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="card-header">
+                                <span>{attachment.fileName}</span>
+                                {/* <img
+                                src={attachment.tempUrl}
+                                style={{ height: "100%", width: "100%" }}
+                              />{" "} */}
+                                *
+                                <div className="d-flex justify-content-between p-0 mt-1">
+                                  <a
+                                    href={`${attachment.tempUrl}`}
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadPassBookAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
                       Account No :<Astrick color="red" size="13px" />
@@ -7188,6 +7328,237 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
+                  <div className=" col-sm-3 mt-2">
+                    <label className="col-form-label">
+                      <b>Cheque Attachment :</b>
+                    </label>
+                    {/* {modal.modalData && modal.modalData.cheque_attachment && (
+                      <a
+                        href={`${_attachmentUrl}/${modal.modalData.cheque_attachment}`}
+                        target="_blank"
+                        downlaod
+                        className="btn btn-info btn-sm p-0"
+                        ref={fileInputRef}
+                        multiple={true}
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
+                          ) {
+                            // File type is allowed
+                          } else {
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          }
+                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "CHEQUE");
+                        }}
+                      >
+                        <i
+                          class="icofont-download"
+                          style={{ fontSize: "15px" }}
+                        >
+                          Download
+                        </i>
+                      </a>
+                    )} */}
+
+                    {modal.modalData && modal.modalData.cheque_attachment && (
+                      <div>
+                        {modal.modalData.cheque_attachment.map(
+                          (attachment, index) => (
+                            <div key={index}>
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0 mr-2"
+                                accept="image/jpg,image/jpeg,image/png,application/pdf"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                >
+                                  Download
+                                </i>
+                              </a>
+                              {/* <p>{attachment}</p> */}
+                              <OverlayTrigger
+                                overlay={<Tooltip>{attachment} </Tooltip>}
+                              >
+                                <div>
+                                  <span title={attachment} className="ms-1">
+                                    {" "}
+                                    {attachment && attachment < 30
+                                      ? attachment
+                                      : attachment.substring(0, 20) + "...."}
+                                  </span>
+                                </div>
+                              </OverlayTrigger>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+
+                    {modal.modalData && (
+                      <input
+                        type="file"
+                        name="cheque_attachment"
+                        ref={chequeInputRef}
+                        id="cheque_attachment"
+                        multiple={true}
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        disabled={
+                          authorities &&
+                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            ? true
+                            : false
+                        }
+                        className="form-control"
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
+                          ) {
+                            // File type is allowed
+                          } else {
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          }
+                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "CHEQUE");
+                        }}
+                      />
+                    )}
+                    {!modal.modalData && (
+                      <input
+                        type="file"
+                        name="cheque_attachment[]"
+                        id="cheque_attachment"
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        className="form-control"
+                        ref={chequeInputRef}
+                        multiple={true}
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+
+                          // Check if the file type is one of the allowed types
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
+                          ) {
+                            // File type is allowed
+                          } else {
+                            // Check if the file type is BMP
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          }
+                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "CHEQUE");
+                        }}
+                      />
+                    )}
+                    </div>
+
+                
+                    {chequeAttachmentSelectedFiles &&
+                      chequeAttachmentSelectedFiles.map((attachment, index) => {
+                        return (
+                          <div
+                            key={index}
+                            // className="justify-content-start"
+                         style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="card-header">
+                                <span>{attachment.fileName}</span>
+                                {/* <img
+                              src={attachment.tempUrl}
+                              style={{ height: "100%", width: "100%" }}
+                            />{" "}
+                            * */}
+                                *
+                                <div className="d-flex justify-content-between p-0 mt-1">
+                                  <a
+                                    href={`${attachment.tempUrl}`}
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadPassChequeAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+             
+
+
+
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -7389,467 +7760,115 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-
-                  <div className=" col-sm-3 mt-2">
-                    <label className="col-form-label" htmlFor="attachment">
-                      <b>Passbook Attachment :</b>
+                  <div className="col-sm-3 mt-3">
+                    <label className="form-label font-weight-bold">
+                      Bank Branch Name :<Astrick color="red" size="13px" />
                     </label>
-
-                    {/* {modal.modalData &&
-                      modal.modalData.bank_passbook_attachment && (
-                        <a
-                          href={`${_attachmentUrl}/${modal.modalData.bank_passbook_attachment}`}
-                          target="_blank"
-                          downlaod
-                          multiple={true}
-                          className="btn btn-info btn-sm p-0"
-                          accept="image/jpg,image/jpeg,image/png,application/pdf"
-                          onChange={(e) => {
-                            const selectedFile = e.target.files[0];
-
-                            // Check if the file type is one of the allowed types
-                            if (
-                              selectedFile.type === "image/jpg" ||
-                              selectedFile.type === "image/jpeg" ||
-                              selectedFile.type === "image/png" ||
-                              selectedFile.type === "application/pdf"
-                            ) {
-                              // File type is allowed
-                            } else {
-                              // Check if the file type is BMP
-                              if (selectedFile.type === "image/bmp") {
-                                alert(
-                                  "Invalid file format. BMP files are not allowed."
-                                );
-                              } else {
-                                alert(
-                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                                );
-                              }
-                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                            }
-                            uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                            maxLengthCheck(e, "PASSBOOK");
-                          }}
-                          // onClick={(e)=>{if(userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"){
-                          //   e.preventDefault()
-                          // }}}
-
-                          // disabled={userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"?true:false}
-                        >
-                          <i
-                            className="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                        </a>
-                      )} */}
-
-{modal.modalData && modal.modalData.bank_passbook_attachment && (
-  <div>
-    {modal.modalData.bank_passbook_attachment.map((attachment, index) => (
-      <div key={index}>
-        <a
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          download
-          className="btn btn-info btn-sm p-0 mr-2"
-          accept="image/jpg,image/jpeg,image/png,application/pdf"
-        >
-          <i className="icofont-download" style={{ fontSize: "15px" }}>
-            Download
-          </i>
-        </a>
-        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
-      </div>
-    ))}
-  </div>
-)}
-
-
-                
-
                     {modal.modalData && (
                       <input
-                        type="file"
-                        name="bank_passbook_attachment"
-                        id="bank_passbook_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        ref={fileInputRef}
-                        multiple={true}
-                        disabled={
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="bank_branch_name"
+                        name="bank_branch_name"
+                        maxLength={25}
+                        onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
+                        readOnly={
                           authorities &&
                           authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "PASSBOOK");
-                        }}
-                        // disabled={
+                        // readOnly={
                         //   deta && deta.Bank_Details == false ? true : false
                         // }
-                        className="form-control"
-                      />
-                    )}
-
-                    {!modal.modalData && (
-                      <input
-                        type="file"
-                        name="bank_passbook_attachment[]"
-                        id="bank_passbook_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        className="form-control"
-                        multiple={true}
-                        ref={passbookInputRef}
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "PASSBOOK");
-                        }}
-                      />
-                    )}
-
-                    {/* <div className="d-flex"> */}
-                    {passBookSelectedFiles &&
-                      passBookSelectedFiles.map((attachment, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="justify-content-start"
-                            style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
-                          >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
-                                src={attachment.tempUrl}
-                                style={{ height: "100%", width: "100%" }}
-                              />{" "} */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassBookAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    {/* </div> */}
-                    {/* <p style={{ fontSize: "12px" }}>
-                    {" "}
-                    Note :-Accept only png, jpeg, jpp and pdf file.
-                  </p> */}
-                  </div>
-
-                  <div className=" col-sm-3 mt-2">
-                    <label className="col-form-label">
-                      <b>Cheque Attachment :</b>
-                    </label>
-                    {/* {modal.modalData && modal.modalData.cheque_attachment && (
-                      <a
-                        href={`${_attachmentUrl}/${modal.modalData.cheque_attachment}`}
-                        target="_blank"
-                        downlaod
-                        className="btn btn-info btn-sm p-0"
-                        ref={fileInputRef}
-                        multiple={true}
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
-                        }}
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    )} */}
-
-{modal.modalData && modal.modalData.cheque_attachment && (
-  <div>
-    {modal.modalData.cheque_attachment.map((attachment, index) => (
-      <div key={index}>
-        <a
-          href={`${_attachmentUrl}/${attachment}`}
-          target="_blank"
-          download
-          className="btn btn-info btn-sm p-0 mr-2"
-          accept="image/jpg,image/jpeg,image/png,application/pdf"
-        >
-          <i className="icofont-download" style={{ fontSize: "15px" }}>
-            Download
-          </i>
-        </a>
-        {/* <p>{attachment}</p> */}
-        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
-              <div>
-                <span title={attachment} className="ms-1">
-                  {" "}
-                  {attachment && attachment < 30
-                    ? attachment
-                    : attachment.substring(0, 20) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
-      </div>
-    ))}
-  </div>
-)}
-
-
-
-                    {modal.modalData && (
-                      <input
-                        type="file"
-                        name="cheque_attachment"
-                        ref={chequeInputRef}
-                        id="cheque_attachment"
-                        multiple={true}
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        disabled={
-                          authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
-                            ? true
-                            : false
+                        defaultValue={
+                          modal.modalData
+                            ? modal.modalData.bank_branch_name
+                            : ""
                         }
-                        className="form-control"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
+                        // onKeyPress={(e) => {
+                        //   Validation.CharactersNumbersSpeicalOnly(e);
+                        // }}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === "") {
+                            setInputState({
+                              branchNameError: "",
+                            });
+                          } else if (
+                            !value.match(
+                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                            )
                           ) {
-                            // File type is allowed
+                            setInputState({
+                              branchNameError: "Invalid Branch Name",
+                            });
+                          } else if (value.length > 25) {
+                            setInputState({
+                              branchNameError:
+                                "Bank name can be up to 50 characters long.",
+                            });
                           } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                            setInputState("");
                           }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
                         }}
+                        required={true}
                       />
                     )}
                     {!modal.modalData && (
                       <input
-                        type="file"
-                        name="cheque_attachment[]"
-                        id="cheque_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        className="form-control"
-                        ref={chequeInputRef}
-                        multiple={true}
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="bank_branch_name"
+                        name="bank_branch_name"
+                        maxLength={25}
+                        // onKeyPress={(e) => {
+                        //   Validation.CharactersNumbersSpeicalOnly(e);
+                        // }}
+                        onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
                         }}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === "") {
+                            setInputState({
+                              branchNameError: "",
+                            });
+                          } else if (
+                            !value.match(
+                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                            )
+                          ) {
+                            setInputState({
+                              branchNameError: "Invalid Branch Name",
+                            });
+                          } else if (value.length > 25) {
+                            setInputState({
+                              branchNameError:
+                                "Bank name can be up to 50 characters long.",
+                            });
+                          } else {
+                            setInputState("");
+                          }
+                        }}
+                        required={true}
                       />
                     )}
-
-                    {/* <div className="d-flex"> */}
-                    {chequeAttachmentSelectedFiles &&
-                      chequeAttachmentSelectedFiles.map((attachment, index) => {
-                        return (
-                          <div
-                            key={index}
-                            // className="justify-content-start"
-                            style={{
-                              // marginRight: "20px",
-                              // padding: "5px",
-                              maxWidth: "200px",
-                            }}
-                          >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassChequeAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    {inputState.branchNameError && (
+                      <small style={{ color: "red" }}>
+                        {inputState.branchNameError}
+                      </small>
+                    )}
                   </div>
-                  {/* </div> */}
+
+
+                  
+             
+
+                
+                 
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
