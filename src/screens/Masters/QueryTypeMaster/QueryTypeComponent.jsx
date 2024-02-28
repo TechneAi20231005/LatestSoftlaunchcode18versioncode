@@ -2706,7 +2706,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
                       name="customer_id"
                       defaultValue={
                         modal.modalData &&
-                        customerDropdown.filter(
+                        customerDropdown?.filter(
                           (d) => d.value == modal.modalData.customer_id
                         )
                       }

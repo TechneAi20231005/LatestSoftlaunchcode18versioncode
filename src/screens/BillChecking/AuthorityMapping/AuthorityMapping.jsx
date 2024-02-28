@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Modal } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import DataTable from "react-data-table-component";
 
@@ -194,11 +194,42 @@ const AuthorityMapping = () => {
       ),
     },
 
+    // {
+    //   name: "Authority Name",
+    //   selector: (row) => row.setting_name,
+    //   sortable: true,
+    //   width: "175px",
+    // },
+
+   
+
+
+    
     {
       name: "Authority Name",
-      selector: (row) => row.setting_name,
+      selector: (row) => row["Authority Name"],
       sortable: true,
       width: "175px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.setting_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.setting_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.setting_name && row.setting_name.length < 10
+                    ? row.setting_name
+                    : row.setting_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
 
     {
@@ -1314,7 +1345,7 @@ const AuthorityMapping = () => {
                 );
               }}
             >
-              Cancel
+              Cancle
             </button>
           </Modal.Footer>
         </form>

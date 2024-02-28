@@ -228,8 +228,15 @@ function DepartmentComponent() {
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postdepartment(form));
-      dispatch(departmentData());
+      dispatch(postdepartment(form)).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+       
+          dispatch(departmentData());
+
+        } else {
+        }
+      });
+    
       // await new DepartmentService()
       //   .postDepartment(form)
       //   .then((res) => {
@@ -263,8 +270,15 @@ function DepartmentComponent() {
       //     );
       //   });
     } else {
-      dispatch(updateDepartment({ id: id, payload: form }));
+      dispatch(updateDepartment({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+       
       dispatch(departmentData());
+
+        } else {
+        }
+      });
+
       // await new DepartmentService()
       //   .updateDepartment(id, form)
       //   .then((res) => {
@@ -315,8 +329,6 @@ function DepartmentComponent() {
   //     };
   // }, [data]);
 
-
-  
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleSearch();
@@ -325,10 +337,10 @@ function DepartmentComponent() {
 
   useEffect(() => {
     loadData();
-    dispatch(departmentData());
 
     if (!department.length) {
-     
+      dispatch(departmentData());
+
       dispatch(getRoles());
     }
   }, []);
@@ -431,7 +443,6 @@ function DepartmentComponent() {
                     }
                     return false;
                   })}
-                  
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

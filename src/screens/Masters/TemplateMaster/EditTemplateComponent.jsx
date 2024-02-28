@@ -656,7 +656,7 @@ const EditTemplateComponent = ({ match, props }) => {
               Create Basket
             </button>
             {/* )} */}
-            <Link to={`/${_base}/Template`} class="btn btn-sm btn-primary">
+            <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
               Cancel
             </Link>
           </div>

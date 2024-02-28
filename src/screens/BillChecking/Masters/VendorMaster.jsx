@@ -4154,6 +4154,7 @@ function VendorMaster({ match }) {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
+  console.log(cityDropdown)
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
@@ -4587,7 +4588,6 @@ function VendorMaster({ match }) {
       alert("Invalid Referance Nubmer");
     }
 
- 
     if (panattachment?.length > 0) {
       form.append("pan_attachment[0]", panattachment[0].file);
     }
@@ -4822,6 +4822,28 @@ function VendorMaster({ match }) {
         (item, index) => id !== index
       );
       setPanAttachment(filteredFileArray);
+    }
+  };
+
+  const [adharattachment, setAdharattachment] = useState();
+
+  const uploadAdharAttachmentHandler = (e, type, id = null) => {
+    if (type === "UPLOAD") {
+      var tempSelectedFile = [];
+      for (var i = 0; i < e.target.files.length; i++) {
+        tempSelectedFile.push({
+          file: e.target.files[i],
+          fileName: e.target.files[i].name,
+          tempUrl: URL.createObjectURL(e.target.files[i]),
+        });
+      }
+      setAdharattachment(tempSelectedFile);
+    } else if (type === "DELETE") {
+      gstInputRef.current.value = "";
+      let filteredFileArray = adharattachment.filter(
+        (item, index) => id !== index
+      );
+      setAdharattachment(filteredFileArray);
     }
   };
 
@@ -5105,66 +5127,79 @@ function VendorMaster({ match }) {
             )}
           </tr>
           <tr>
-            <td>2</td>
-            <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
-            {data.pan_attachment ? (
-              <td>
-                <a
-                  href={`${_attachmentUrl}/${data.pan_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
-              </td>
-            ) : (
-              <p>NA</p>
-            )}
-          </tr>
-          <tr>
-            <td>3</td>
-            <td style={{ fontWeight: "bold" }}>GST Attachment</td>
-            {data.gst_attachment ? (
-              <td>
-                <a
-                  href={`${_attachmentUrl}/${data.gst_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
-              </td>
-            ) : (
-              <p>NA</p>
-            )}
-          </tr>
-          <tr>
-            <td>4</td>
-            <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
+  <td>2</td>
+  <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
+  {data.pan_attachment && data.pan_attachment.length > 0 ? (
+    <td>
+      {data.pan_attachment.map((attachment, index) => (
+        <a
+          key={index}
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          className="btn btn-primary btn-sm p-1 mr-1"
+          style={{ marginBottom: "5px" }}
+        >
+          <i
+            className="icofont-eye"
+            style={{ fontSize: "15px", height: "15px" }}
+          ></i>
+        </a>
+      ))}
+    </td>
+  ) : (
+    <td>NA</td>
+  )}
+</tr>
+<tr>
+  <td>3</td>
+  <td style={{ fontWeight: "bold" }}>GST Attachment</td>
+  {data.gst_attachment && data.gst_attachment.length > 0 ? (
+    <td>
+      {data.gst_attachment.map((attachment, index) => (
+        <a
+          key={index}
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          className="btn btn-primary btn-sm p-1 mr-1"
+          style={{ marginBottom: "5px" }}
+        >
+          <i
+            className="icofont-eye"
+            style={{ fontSize: "15px", height: "15px" }}
+          ></i>
+        </a>
+      ))}
+    </td>
+  ) : (
+    <td>NA</td>
+  )}
+</tr>
 
-            {data.msme_attachment ? (
-              <td>
-                <a
-                  href={`${_attachmentUrl}/${data.msme_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
-              </td>
-            ) : (
-              <p>NA</p>
-            )}
-          </tr>
+<tr>
+  <td>4</td>
+  <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
+  {data.msme_attachment && data.msme_attachment.length > 0 ? (
+    <td>
+      {data.msme_attachment.map((attachment, index) => (
+        <a
+          key={index}
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          className="btn btn-primary btn-sm p-1 mr-1"
+          style={{ marginBottom: "5px" }}
+        >
+          <i
+            className="icofont-eye"
+            style={{ fontSize: "15px", height: "15px" }}
+          ></i>
+        </a>
+      ))}
+    </td>
+  ) : (
+    <td>NA</td>
+  )}
+</tr>
+
           <tr>
             <td>5</td>
             <td style={{ fontWeight: "bold" }}>Pasbook Attachment</td>
@@ -5835,7 +5870,7 @@ function VendorMaster({ match }) {
                     <label className="col-form-label">
                       <b>Aadhaar Attachment :</b>
                     </label>
-                    {modal.modalData && modal.modalData.adhar_attachment && (
+                    {/* {modal.modalData && modal.modalData.adhar_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.adhar_attachment}`}
                         target="_blank"
@@ -5877,7 +5912,42 @@ function VendorMaster({ match }) {
                           Download
                         </i>
                       </a>
+                    )} */}
+
+                    {modal.modalData && modal.modalData.adhar_attachment && (
+                      <div>
+                        {modal.modalData.adhar_attachment.map(
+                          (attachment, index) => (
+                            <div key={index}>
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0 mr-2"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                >
+                                  Download
+                                </i>
+                              </a>
+                              <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+                            </div>
+                          )
+                        )}
+                      </div>
                     )}
+
                     <input
                       type="file"
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
@@ -5910,13 +5980,68 @@ function VendorMaster({ match }) {
                           }
                           e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         }
+                        // Check if attachment is required and input field is empty
 
-                        maxLengthCheck(e, "ADHAR");
+                        uploadAdharAttachmentHandler(e, "UPLOAD", "");
+                        maxLengthCheck(e, "PAN");
                       }}
                       capture="camera"
                     />
                   </div>
 
+                  {adharattachment &&
+                    adharattachment.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="justify-content-end"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
+                          <div
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
+                          >
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
+                              src={attachment.tempUrl}
+                              style={{ height: "100%", width: "100%" }}
+                            />{" "}
+                            * */}
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadAdharAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   {/* <div className="col-sm-3 ">
                   <label className="form-label font-weight-bold">
                     PAN No :<Astrick color="red" size="13px" />
@@ -6017,7 +6142,7 @@ function VendorMaster({ match }) {
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
 
-                      {modal.modalData && modal.modalData.pan_attachment && (
+                      {/* {modal.modalData && modal.modalData.pan_attachment && (
                         <a
                           href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                           target="_blank"
@@ -6027,7 +6152,6 @@ function VendorMaster({ match }) {
                           onChange={(e) => {
                             const selectedFile = e.target.files[0];
 
-                            // Check if the file type is one of the allowed types
                             if (
                               selectedFile.type === "image/jpg" ||
                               selectedFile.type === "image/jpeg" ||
@@ -6061,7 +6185,39 @@ function VendorMaster({ match }) {
                           </i>
                           <p>{modal.modalData._attachmentUrl}</p>
                         </a>
-                      )}
+                      )} */}
+
+                      {modal.modalData &&
+                        modal.modalData.pan_attachment &&
+                        modal.modalData.pan_attachment.map(
+                          (attachment, index) => (
+                            <div key={index}>
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                >
+                                  Download
+                                </i>
+                              </a>
+                              <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+                            </div>
+                          )
+                        )}
                     </label>
 
                     <input
@@ -6222,7 +6378,7 @@ function VendorMaster({ match }) {
                       <b> GST Attachment : </b>
                     </label>
 
-                    {modal.modalData && modal.modalData.gst_attachment && (
+                    {/* {modal.modalData && modal.modalData.gst_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.gst_attachment}`}
                         target="_blank"
@@ -6265,7 +6421,41 @@ function VendorMaster({ match }) {
                           Download
                         </i>
                       </a>
-                    )}
+                    )} */}
+
+                    {modal.modalData &&
+                      modal.modalData.gst_attachment &&
+                      modal.modalData.gst_attachment.map(
+                        (attachment, index) => (
+                          <div key={index}>
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`}
+                              target="_blank"
+                              download
+                              className="btn btn-info btn-sm p-0"
+                              accept="image/jpg,image/jpeg,image/png,application/pdf"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "15px" }}
+                              >
+                                Download
+                              </i>
+                            </a>
+                            <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+                          </div>
+                        )
+                      )}
+
                     <input
                       type="file"
                       name="gst_attachment[]"
@@ -6519,7 +6709,7 @@ function VendorMaster({ match }) {
                     <label className="col-form-label" htmlFor="msme_attachment">
                       <b> MSME Attachment : </b>
                     </label>
-                    {modal.modalData && modal.modalData.msme_attachment && (
+                    {/* {modal.modalData && modal.modalData.msme_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.msme_attachment}`}
                         target="_blank"
@@ -6562,8 +6752,41 @@ function VendorMaster({ match }) {
                         >
                           Download
                         </i>
+
                       </a>
-                    )}
+                    )} */}
+
+
+{modal.modalData && modal.modalData.msme_attachment && (
+  <div>
+    {modal.modalData.msme_attachment.map((attachment, index) => (
+      <div key={index}>
+        <a
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          download
+          className="btn btn-info btn-sm p-0 mr-2"
+          accept="image/jpg,image/jpeg,image/png,application/pdf"
+        >
+          <i className="icofont-download" style={{ fontSize: "15px" }}>
+            Download
+          </i>
+        </a>
+        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+      </div>
+    ))}
+  </div>
+)}
+
                     <input
                       type="file"
                       name="msme_attachment[]"
@@ -7172,7 +7395,7 @@ function VendorMaster({ match }) {
                       <b>Passbook Attachment :</b>
                     </label>
 
-                    {modal.modalData &&
+                    {/* {modal.modalData &&
                       modal.modalData.bank_passbook_attachment && (
                         <a
                           href={`${_attachmentUrl}/${modal.modalData.bank_passbook_attachment}`}
@@ -7221,7 +7444,41 @@ function VendorMaster({ match }) {
                             Download
                           </i>
                         </a>
-                      )}
+                      )} */}
+
+{modal.modalData && modal.modalData.bank_passbook_attachment && (
+  <div>
+    {modal.modalData.bank_passbook_attachment.map((attachment, index) => (
+      <div key={index}>
+        <a
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          download
+          className="btn btn-info btn-sm p-0 mr-2"
+          accept="image/jpg,image/jpeg,image/png,application/pdf"
+        >
+          <i className="icofont-download" style={{ fontSize: "15px" }}>
+            Download
+          </i>
+        </a>
+        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+      </div>
+    ))}
+  </div>
+)}
+
+
+                
+
                     {modal.modalData && (
                       <input
                         type="file"
@@ -7374,7 +7631,7 @@ function VendorMaster({ match }) {
                     <label className="col-form-label">
                       <b>Cheque Attachment :</b>
                     </label>
-                    {modal.modalData && modal.modalData.cheque_attachment && (
+                    {/* {modal.modalData && modal.modalData.cheque_attachment && (
                       <a
                         href={`${_attachmentUrl}/${modal.modalData.cheque_attachment}`}
                         target="_blank"
@@ -7418,7 +7675,41 @@ function VendorMaster({ match }) {
                           Download
                         </i>
                       </a>
-                    )}
+                    )} */}
+
+{modal.modalData && modal.modalData.cheque_attachment && (
+  <div>
+    {modal.modalData.cheque_attachment.map((attachment, index) => (
+      <div key={index}>
+        <a
+          href={`${_attachmentUrl}/${attachment}`}
+          target="_blank"
+          download
+          className="btn btn-info btn-sm p-0 mr-2"
+          accept="image/jpg,image/jpeg,image/png,application/pdf"
+        >
+          <i className="icofont-download" style={{ fontSize: "15px" }}>
+            Download
+          </i>
+        </a>
+        {/* <p>{attachment}</p> */}
+        <OverlayTrigger overlay={<Tooltip>{attachment} </Tooltip>}>
+              <div>
+                <span title={attachment} className="ms-1">
+                  {" "}
+                  {attachment && attachment < 30
+                    ? attachment
+                    : attachment.substring(0, 20) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+      </div>
+    ))}
+  </div>
+)}
+
+
+
                     {modal.modalData && (
                       <input
                         type="file"

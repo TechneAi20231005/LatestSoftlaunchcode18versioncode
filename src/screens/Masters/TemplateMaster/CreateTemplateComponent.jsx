@@ -550,7 +550,7 @@ const CreateTemplateComponent = () => {
                               <input
                                 type="text"
                                 name="basket_name"
-                                defaultValue={item.basket_name}
+                                value={item.basket_name}
                                 onChange={(e) => {
                                   handleChange(e, idx, "select1");
                                 }}
@@ -1077,7 +1077,7 @@ const CreateTemplateComponent = () => {
                                 min="1"
                                 max="100"
                                 placeholder="Days Required"
-                                defaultValue="00.00"
+                                defaultValue="00:00"
                                 required
                               />
                               <label>
