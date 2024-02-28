@@ -1452,6 +1452,7 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
               history({
                 pathname: `/${_base}/Ticket`,
               }
@@ -1462,6 +1463,7 @@ export default function CreateTicketComponent() {
                   }
                 }
               );
+
               // window.location.reload(false)
               setIsSubmitted(false);
             } else {
