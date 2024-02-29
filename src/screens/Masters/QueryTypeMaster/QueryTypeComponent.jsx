@@ -1709,7 +1709,7 @@ function QueryTypeComponent() {
 
   const [exportData, setExportData] = useState(null);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
-console.log("exportQueryGroupData",exportQueryGroupData)
+
 
   const [dynamicForm, setDynamicForm] = useState(null);
 
@@ -1718,13 +1718,13 @@ console.log("exportQueryGroupData",exportQueryGroupData)
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
-  console.log(checkRole);
+
 
   
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
-  console.log(queryGroupData)
+
   const [editData, setEditData] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState(modal.modalData);
   const [modalEditPopup, setModalEditPopup] = useState({
@@ -2293,7 +2293,7 @@ console.log("exportQueryGroupData",exportQueryGroupData)
     await new QueryTypeService()
       .getQueryType()
       .then((res) => {
-        console.log(res)
+  
         if (res.status === 200) {
           setShowLoaderModal(false);
 

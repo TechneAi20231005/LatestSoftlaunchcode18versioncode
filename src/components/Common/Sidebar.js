@@ -85,7 +85,7 @@ class Sidebar extends React.Component {
 
       window.document.children[0].setAttribute('data-theme', 'light')
     } catch (error) {
-      console.log('API call failed:', error)
+   
     } finally {
       // window.location.reload(false)
     }

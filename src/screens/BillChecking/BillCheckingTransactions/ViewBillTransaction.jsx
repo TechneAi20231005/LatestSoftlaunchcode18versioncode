@@ -98,7 +98,7 @@ export default function ViewBillTransaction({ match }, props) {
         if (res.data.status == 1) {
           sectionId = res.data.data.tds_section;
           setData(res.data.data);
-          console.log("resV",res.data.data)
+        
           // handleSectionDropDownChange1(res.data.data.tds_section);
           // if (res.data.data.is_tds_applicable == 1) {
           //   setShowTdsFileds(true);
@@ -420,7 +420,7 @@ export default function ViewBillTransaction({ match }, props) {
                         }}
                       />
                     </div>
-{console.log("dataoo",data)}
+
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
@@ -603,7 +603,7 @@ export default function ViewBillTransaction({ match }, props) {
                         <b>Original Bill Needed</b>
                       </label>
                     </div>
-                    {console.log("d1",data)}
+              
 
                     <div className="col-md-3  ">
                       <label className="col-form-label">

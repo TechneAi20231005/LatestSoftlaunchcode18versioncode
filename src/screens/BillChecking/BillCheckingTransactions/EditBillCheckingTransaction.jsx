@@ -916,7 +916,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const formattedDate = `${year}-${month}-${day}`;
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
-  console.log("recordRoomuser", recordRoom);
+
 
   return (
     <div className="container-xxl">
@@ -1175,7 +1175,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                         }
                                     </div> */}
                   </div>
-                  {console.log("for", formattedStartDate)}
+                
 
                   <div className="form-group row mt-3">
                     {/* <div className="col-md-3">
@@ -1682,9 +1682,7 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                    {console.log("is", isTcsApplicable)}
-
-                    {/* { isTcsApplicable && isTcsApplicable === true && */}
+                
 
                     {isTcsApplicable === true ? (
                       <div className=" col-md-3 ">

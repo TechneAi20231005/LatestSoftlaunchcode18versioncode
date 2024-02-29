@@ -13,7 +13,7 @@ import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { templateData } from "./TemplateComponetAction";
+import { exportTempateData, templateData } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import TemplateComponetSlice, { hideNotification } from "./TemplateComponetSlice";
 
@@ -23,10 +23,14 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
-  const exportData = useSelector(
-    (TemplateComponetSlice) =>
-      TemplateComponetSlice.tempateMaster.exportTemplateData
-  );
+  // const exportData = useSelector(
+  //   (TemplateComponetSlice) =>
+  //     TemplateComponetSlice.tempateMaster.exportTemplateData
+  // );
+  const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportTempateData)
+
+
+
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
@@ -266,6 +270,7 @@ function TemplateComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(exportTempateData())
 
     if (!templatedata.length) {
       dispatch(templateData());

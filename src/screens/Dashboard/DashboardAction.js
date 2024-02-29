@@ -417,7 +417,7 @@ export const getAllUserById = createAsyncThunk(
     try {
       const service = new UserService();
       const response = await service.getUserById(config);
-      console.log("r", response)
+
       return response;
     } catch (error) {
       throw error;

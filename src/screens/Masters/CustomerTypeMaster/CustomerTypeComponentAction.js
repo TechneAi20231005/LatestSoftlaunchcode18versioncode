@@ -32,7 +32,7 @@ export const updateCustomerData = createAsyncThunk(
     try {
       const service = new CustomerTypeService();
       const response = await service.updateCustomerType(config.id, config.payload);
-      console.log("updateDepartment",response);
+    
       return response;
     } catch (error) {
       throw error;

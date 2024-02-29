@@ -68,8 +68,7 @@ const AuthorityMapping = () => {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.modal
   );
-  console.log("modal", modal);
-  console.log("authorities", authorities);
+
   // console.log("submodule",submodule);
 
   const [error, setError] = useState("");
@@ -290,7 +289,7 @@ const AuthorityMapping = () => {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+  
   };
 
   const handleChanges = (e) => {

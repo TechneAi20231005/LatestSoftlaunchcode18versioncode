@@ -31,7 +31,7 @@ function PaymentTemplateMaster() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 45)
   );
 
-  console.log("paymentdata", checkRole);
+
 
   const [paymentType, setPaymentType] = useState("Weekly");
 
@@ -132,7 +132,7 @@ function PaymentTemplateMaster() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+   
   };
 
   const [country, setCountry] = useState();

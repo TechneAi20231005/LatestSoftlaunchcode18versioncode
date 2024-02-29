@@ -69,7 +69,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
-      console.log("first", firstAmount);
+    
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(

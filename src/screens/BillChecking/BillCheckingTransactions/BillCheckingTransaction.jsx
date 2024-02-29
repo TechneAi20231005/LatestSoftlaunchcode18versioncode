@@ -755,7 +755,7 @@ function BillCheckingTransaction() {
     // dispatch(getBillcheckingData())
 
     await new BillCheckingService().getBillCheckData().then((res) => {
-      console.log(res)
+
       if (res.status === 200) {
         setIsLoading(false);
 
@@ -957,7 +957,7 @@ function BillCheckingTransaction() {
     //   });
 
     await new DropdownService().getMappedEmp().then((res) => {
-      console.log("restau",res);
+    
       if (res.status === 200) {
         
         setIsLoading(false);
@@ -1050,7 +1050,7 @@ function BillCheckingTransaction() {
           const tempData = [];
           let counter = 1;
           const temp = res.data.data;
-          console.log("temF",temp)
+         
           for (const key in temp) {
             tempData.push({
               "Sr No": counter++,
@@ -1338,7 +1338,7 @@ function BillCheckingTransaction() {
                       />
                     )}
                   </div>
-{console.log("user",userDropdown)}
+
                   <div className="col-sm-2 ">
                     <label>
                       <b>Assigned To:</b>

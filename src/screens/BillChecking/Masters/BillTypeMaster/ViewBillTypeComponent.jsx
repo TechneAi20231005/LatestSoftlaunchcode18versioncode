@@ -184,7 +184,7 @@ const ViewBillTypeComponent = ({ match }) => {
   };
 
 
-  console.log("bil",billTypeData)
+
   const handleUserSelection = (sectionIndex, rowIndex, selectedOptions) => {
     const updatedSelectedUsersArray = [...selectedUsersArray];
     const newData = [...approverData.data];
@@ -491,7 +491,7 @@ const transformData = (billTypeData) => {
                       />
                     )}
 
-                    {console.log("bill",billTypeData && billTypeData)}
+                  
                     <label className="form-check-label" htmlFor="is_active_1">
                       Active
                     </label>

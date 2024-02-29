@@ -17,6 +17,21 @@ export const templateData = createAsyncThunk(
     }
   );
 
+
+  export const exportTempateData = createAsyncThunk(
+    "exportTempateData",
+    async (config, thunkapi) => {
+      try {
+        const service = new TemplateService();
+        const response = await service.exporttempData();
+        console.log("tempalate", response);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
   export const getParentData = createAsyncThunk(
     "getParentData",
     async (config, thunkapi) => {

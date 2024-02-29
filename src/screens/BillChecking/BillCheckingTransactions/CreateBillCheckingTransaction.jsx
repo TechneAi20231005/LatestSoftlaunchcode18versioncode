@@ -2442,7 +2442,7 @@ export default function CreateBillCheckingTransaction({ match }) {
             setTdsPercentage(0);
             setConstitutionDropdown(null);
             setConstitution(res.data.data);
-            console.log("constires",res.data.data)
+           
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
@@ -3401,7 +3401,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       }}
                     />
                   </div>
-                  {console.log("for", formattedStartDate)}
+                 
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
@@ -4202,7 +4202,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                    {console.log("tds",constitutionDropdown)}
+                
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">

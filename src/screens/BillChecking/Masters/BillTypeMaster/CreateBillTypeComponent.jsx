@@ -83,7 +83,7 @@ const requiredUserRef = useRef();
         }
       }
     }
-    console.log("fff",firstAmount)
+
 
     // Calculate the new amount based on the previous section
     const previousSection = newData[newData.length - 1];
@@ -576,7 +576,7 @@ const requiredUserRef = useRef();
             </div>
             {approverData.data.map((item, index) => (
               <div key={index}>
-              {console.log("item",approverData&&approverData.data?.filter((d)=>d.slab ==1).map((i)=>i.amount))}
+             
 
                 <Row>
                   <h6 className="fw-bold">SLAB :- {item.slab}</h6>

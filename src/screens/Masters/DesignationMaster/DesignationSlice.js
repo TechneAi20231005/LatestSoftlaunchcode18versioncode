@@ -26,7 +26,7 @@ export const desegnationSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+   
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -91,7 +91,6 @@ export const desegnationSlice = createSlice({
     });
     builder.addCase(postDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
       if (payload?.status === 200 && payload?.data?.status === 1) {
       
 
@@ -122,7 +121,7 @@ export const desegnationSlice = createSlice({
     });
     builder.addCase(updatedDesignationData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+      
       if (payload?.status === 200 && payload?.data?.status === 1) {
        let updatedDesignationData = payload.data.data;
        

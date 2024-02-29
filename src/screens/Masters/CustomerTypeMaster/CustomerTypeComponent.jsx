@@ -35,7 +35,7 @@ function CustomerTypeComponent() {
   // console.log("customerData",Datasss);
   const modal = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal);
   const notify = useSelector( (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify);
-  console.log("notify",notify);
+
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
@@ -92,7 +92,7 @@ function CustomerTypeComponent() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+  
   };
 
   const columns = [

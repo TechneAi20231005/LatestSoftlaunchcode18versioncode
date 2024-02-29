@@ -126,7 +126,7 @@ export const getModuleSettingData = createAsyncThunk(
       try {
         const service = new BillCheckingTransactionService();
         const response = await service.getModuleSetting();
-        console.log("r",response);
+      
   
         return response;
       } catch (error) {

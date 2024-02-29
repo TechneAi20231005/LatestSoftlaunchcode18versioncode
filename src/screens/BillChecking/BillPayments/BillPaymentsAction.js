@@ -8,7 +8,7 @@ export const getBillPayment = createAsyncThunk(
     try {
       const service = new BillPaymentServices();
       const response = await service.getBillPayments(config);
-      console.log("rB",response)
+     
       return response;
     } catch (error) {
       throw error;
@@ -20,11 +20,11 @@ export const getBillPayment = createAsyncThunk(
 export const getBillDetailsOfPaymentGridData = createAsyncThunk(
     "getBillDetailsOfPaymentGridData",
     async (config, thunkapi) => {
-        console.log("config",config)
+   
       try {
         const service = new BillTransactionService();
         const response = await service.getBillDetailsOfPaymentGrid(config.id, config.payload);
-        console.log("rg",response)
+     
         return response;
       } catch (error) {
         throw error;

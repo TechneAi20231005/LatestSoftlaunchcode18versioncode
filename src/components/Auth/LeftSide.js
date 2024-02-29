@@ -15,12 +15,12 @@ class LeftSide extends React.Component{
       
         if(Object.keys(localStorage).length < Object.keys(sessionStorage).length){
             for(var a in sessionStorage){
-                // console.log(a, " = ", sessionStorage[a]);
+          
                 localStorage.setItem(a, sessionStorage[a]);
             }
         }else{
             for(var a in localStorage){
-                // console.log(a, " = ", localStorage[a]);
+            
                 sessionStorage.setItem(a, localStorage[a]);
             }
         }

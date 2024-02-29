@@ -92,7 +92,7 @@ function DesignationComponent() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+   
   };
 
   const columns = [

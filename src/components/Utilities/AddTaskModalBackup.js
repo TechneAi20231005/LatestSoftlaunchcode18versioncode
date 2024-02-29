@@ -21,7 +21,7 @@ function AddTaskModalBackup(props) {
         e.preventDefault();
 
         // putData(props.modalData[0]._id,form).then(res=>{
-        //     console.log(res);
+   
         // })    
     }
     

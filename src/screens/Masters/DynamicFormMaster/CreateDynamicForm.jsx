@@ -72,7 +72,7 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
-  console.log("role", departmentDropdown);
+  
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
@@ -309,19 +309,18 @@ function CreateDynamicForm() {
 
   const [selectedValue, setSelectedValue] = useState();
 
-  console.log("selectedValue", selectedValue);
+
 
   const handleChangee = (e) => {
-    console.log("e000", e.target.value);
+
     setSelectedValue(e.target.value);
   };
 
-  console.log("use", userData);
   const handleChange = (idx, type) => async (e) => {
     setIndex({ index: idx });
     const { name, value } = e.target;
 
-    console.log("e==", e);
+  
     const notAllowed = [
       "ref_id",
       "created_at",
@@ -432,7 +431,7 @@ function CreateDynamicForm() {
         const _Label = test[2];
 
         getData(_URL).then((res) => {
-          console.log("res@", res);
+   
           let counter = 1;
           const tempData = [];
           for (const key in res.data) {
@@ -443,7 +442,7 @@ function CreateDynamicForm() {
             });
           }
 
-          console.log("tempData", tempData);
+        
           rows[idx].inputAddOn.inputDataSourceData = tempData;
         });
         rows[idx].inputAddOn.inputDataSource = e.target.value;
@@ -483,12 +482,12 @@ function CreateDynamicForm() {
       await new DynamicFormDropdownMasterService()
         .getDropdownById(test)
         .then((res) => {
-          console.log("temp",res)
+         
           if (res.status == 200) {
             if (res.data.status == 1) {
               const dropNames = res.data.data;
               setRadioSelect(dropNames.master.dropdown_name);
-              console.log("hello",dropNames.master.dropdown_name)
+           
               const temp = [];
               res.data.data.dropdown.forEach((d) => {
                 temp.push({ label: d.label, value: d.id });
@@ -598,7 +597,7 @@ function CreateDynamicForm() {
 
   const handleUserSelect = (selectedOptions, index) => {
     // const selectedUserIds = selectedOptions.filter((option) => option.value);
-    console.log("ss", selectedOptions);
+  
     const selectedUserIds = selectedOptions.value;
 
     const updatedAssign = [...rows];
@@ -695,7 +694,7 @@ function CreateDynamicForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // const data=new FormData(e.target);
-console.log("rowsForm",rows)
+
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows),

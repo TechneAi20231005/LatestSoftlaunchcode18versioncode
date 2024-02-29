@@ -28,7 +28,7 @@ import { Table } from "react-bootstrap";
 const ViewVendorDetails = ({ match }) => {
   const { id } = useParams();
   const [data, setData] = useState(null);
-  console.log(data);
+
 
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
@@ -88,9 +88,7 @@ const ViewVendorDetails = ({ match }) => {
   useEffect(() => {
     loadData();
   }, []);
-  {
-    console.log(data);
-  }
+
 
   return (
     <div>

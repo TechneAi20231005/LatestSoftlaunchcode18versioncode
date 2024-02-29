@@ -250,7 +250,7 @@ export default function SignIn() {
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
   const notify = useSelector(loginSlice=>loginSlice.login.notify)
-console.log("n---",notify)
+
   const submitHandler = (e) => {
     e.preventDefault();
     if (isLoading) {
@@ -261,7 +261,7 @@ console.log("n---",notify)
     const data = new FormData(e.target);
     dispatch(postLoginUser(data))
       .then((success) => {
-      console.log("su",success)
+  
         if (success.payload?.status === 1) {
           const token = localStorage.getItem("jwt_token")
           const tokenExpirationTime = decodeToken(token).exp * 1000;
@@ -275,7 +275,7 @@ console.log("n---",notify)
         }
       });
 
-      console.log("n",notify)
+ 
     // postData(data).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status === 1) {

@@ -8,7 +8,7 @@ export const getPaymentDetails = createAsyncThunk(
     try {
       const service = new PaymentDetailsService();
       const response = await service.getPaymentDetails(config);
-      console.log("rp",response)
+   
       return response;
     } catch (error) {
       throw error;

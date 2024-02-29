@@ -13,7 +13,7 @@ export const ConsolidatedSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+   
     },
   },
   extraReducers: (builder) => {
@@ -22,10 +22,10 @@ export const ConsolidatedSlice = createSlice({
     });
     builder.addCase(consolidatedData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log(payload);
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let consolidatedData = payload.data.data;
-        console.log("getRoleData", consolidatedData);
+      
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;

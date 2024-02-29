@@ -239,7 +239,7 @@ function TestCase({ match }) {
     new TestCaseService()
       .deleteTestcase(id)
       .then((res) => {
-        console.log('deleted');
+    
         //     if(res.status===200){
         //         if(data.status===1){
         //             setShowAlert({show:true,type:"success",message:"Record Deleted"});
