@@ -2293,7 +2293,6 @@ function QueryTypeComponent() {
     await new QueryTypeService()
       .getQueryType()
       .then((res) => {
-  
         if (res.status === 200) {
           setShowLoaderModal(false);
 

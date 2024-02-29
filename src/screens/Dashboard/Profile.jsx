@@ -513,7 +513,7 @@ function Profile() {
                                                     id="password"
                                                     name="password"
                                                     type={passwordShown1 ? "text" : "password"}
-                                                    required={true}
+                                                    // required={true}
                                                     minLength={6}
                                                     maxLength={12}
                                                     onChange={e => handlePasswordValidation(e)}
@@ -542,7 +542,7 @@ function Profile() {
                                                     className="form-control"
                                                     id="confirm_password"
                                                     name="confirm_password"
-                                                    required={true}
+                                                    // required={true}
                                                     minLength={6}
                                                     maxLength={12}
                                                     onChange={handleConfirmedPassword}
