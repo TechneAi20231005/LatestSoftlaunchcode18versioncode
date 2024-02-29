@@ -2,12 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import loginReducer from "../../components/Auth/AuthSices/loginSlice";
 import MyTicketComponentSlice from "../../screens/TicketManagement/MyTicketComponentSlice";
-import  TaskcomponentSlice from "../../screens/TicketManagement/TaskManagement/TaskComponentSlice";
+import TaskcomponentSlice from "../../screens/TicketManagement/TaskManagement/TaskComponentSlice";
 import SettingSlice from "../../screens/Settings/SettingSlice";
-import  PaymentDetailsSilce  from "../../screens/BillChecking/PaymentDetails/PaymentDetailsSlice";
+import PaymentDetailsSilce from "../../screens/BillChecking/PaymentDetails/PaymentDetailsSlice";
 
 import BillpaymentSlice from "../../screens/BillChecking/BillPayments/BillPaymentsSlice";
-import  SubTaskSlice  from "../../screens/TicketManagement/BasketManagement/Slices/SubtaskSlice";
+import SubTaskSlice from "../../screens/TicketManagement/BasketManagement/Slices/SubtaskSlice";
 import TaskHistorySlice from "../../screens/TicketManagement/BasketManagement/Slices/TaskHistorySlice";
 import PlannerSlice from "../../screens/TicketManagement/BasketManagement/Slices/PlannerSlice";
 import TimeRegularizationSlice from "../../screens/TicketManagement/BasketManagement/Slices/TimeRegularizationSlice";
@@ -33,9 +33,8 @@ import TenantComponentSlice from "../../screens/TenantManagement/TenantComponent
 import CustomerTypeComponentSlice from "../../screens/Masters/CustomerTypeMaster/CustomerTypeComponentSlice";
 import TicketSlices from "../../screens/TicketManagement/Slices/TicketSlices";
 import CustomerMappingSlice from "../../screens/Settings/CustomerMapping/Slices/CustomerMappingSlice";
-import  DashbordSlice  from "../../screens/Dashboard/DashbordSlice";
+import DashbordSlice from "../../screens/Dashboard/DashbordSlice";
 import DynamicFormDropDownSlice from "../../screens/Masters/DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
-
 
 export const store = configureStore({
   reducer: {
@@ -46,10 +45,10 @@ export const store = configureStore({
     generalSetting: SettingSlice,
     paymentDetails: PaymentDetailsSilce,
     Billpayment: BillpaymentSlice,
-    subTask:SubTaskSlice,
-    taskHistory:TaskHistorySlice,
-    timeRegularization:TimeRegularizationSlice,
-    planner:PlannerSlice,
+    subTask: SubTaskSlice,
+    taskHistory: TaskHistorySlice,
+    timeRegularization: TimeRegularizationSlice,
+    planner: PlannerSlice,
     rolemaster: rolemasterSlice,
     department: DepartmentMasterSlice,
     taskandticket: TaskAndTicketTypeMasterSlice,
@@ -61,17 +60,21 @@ export const store = configureStore({
     queryTypeMaster: QueryTypeComponetSlice,
     designationMaster: DesignationSlice,
     statusMaster: statusMasterSlice,
-    projectMaster:ProjectMasterSlice,
-    billChecking:BillCheckingTransactionSlice,
-    vendorMaster:VendorMasterSlice,
-    tenantMaster:TenantComponentSlice,
-customerTypeMaster:CustomerTypeComponentSlice,
-ticket:TicketSlices,
-customerMaster:CustomerMappingSlice,
-dynamicFormDropDown:DynamicFormDropDownSlice,
+    projectMaster: ProjectMasterSlice,
+    billChecking: BillCheckingTransactionSlice,
+    vendorMaster: VendorMasterSlice,
+    tenantMaster: TenantComponentSlice,
+    customerTypeMaster: CustomerTypeComponentSlice,
+    ticket: TicketSlices,
+    customerMaster: CustomerMappingSlice,
+    dynamicFormDropDown: DynamicFormDropDownSlice,
 
     consolidatedData: ConsolidatedSlice,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 
