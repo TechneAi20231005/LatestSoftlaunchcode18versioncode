@@ -1608,13 +1608,14 @@ import RoleMasterSlice from "../RoleMaster/RoleMasterSlice";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
 import DepartmentMasterSlice from "../DepartmentMaster/DepartmentMasterSlice";
 import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
+import { getRoleData } from "../RoleMaster/RoleMasterAction";
 
 function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
   const roleDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.getAllRoles
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
   const departmentDropdown = useSelector(
     (DepartmentMasterSlice) =>
@@ -2407,6 +2408,9 @@ function CreateUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
+
+  console.log("clg",roleDropdown)
+
   const accountForChange = async (account_for) => {
     setAccountFor(account_for);
     const accountFor = account_for;
@@ -2600,6 +2604,7 @@ function CreateUserComponent({ match }) {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
+    dispatch(getRoleData())
     if (!designationDropdown.length) {
       dispatch(getDesignationData());
     }

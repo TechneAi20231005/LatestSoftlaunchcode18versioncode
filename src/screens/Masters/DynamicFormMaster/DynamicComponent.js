@@ -65,15 +65,15 @@ function DynamicComponent(props) {
             </span>   
         }   
 
-        {props.data.inputType==="select" &&
+        {props.data.inputType==="select-master" &&
             <span>
                 <select className="form-control form-control-sm" 
                 onChange={props.onGetChange}
                 // onChange={(e) => {
                 //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
                 // }}
-                id="inputDataSource[]"
-                name="inputDataSource[]"
+                id="inputDataSourceData"
+                name="inputDataSourceData"
                 // value={props.selectData}
                 >
                     <option>Select Data Source</option>
@@ -128,14 +128,7 @@ function DynamicComponent(props) {
                             id="inputOnChangeSource"
                             name="inputOnChangeSource">
                             <option>Select Data Source</option>
-                            {/* {props.radioSelect && props.radioSelect.map((d, i) => {
-                                if (selectedDropdown == d.value) {
-                                    return <option value={d.value} >{d.label}</option>
-                                } else {
-                                    return <option value={d.value}>{d.label}</option>
-                                }
-                            })
-                            } */}
+
                                 {props&&props.dropdown && props.dropdown.map((d, i) => {
                                 if (selectedDropdown == d.id) {
                                     return <option value={d.id} selected>{d.dropdown_name}</option>

@@ -715,6 +715,7 @@ function UserComponent() {
     const exportTempData = [];
 
     await new UserService().getExportTicket().then((res) => {
+      console.log("resExport",res)
       if (res.status == 200) {
         // setExportData(res.data)
         const temp = res.data.data;

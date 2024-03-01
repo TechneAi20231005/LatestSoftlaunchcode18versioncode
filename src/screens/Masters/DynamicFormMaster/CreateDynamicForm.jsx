@@ -72,7 +72,6 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
-  
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
@@ -310,17 +309,19 @@ function CreateDynamicForm() {
   const [selectedValue, setSelectedValue] = useState();
 
 
-
   const handleChangee = (e) => {
-
     setSelectedValue(e.target.value);
   };
 
   const handleChange = (idx, type) => async (e) => {
+
+    // setFormShow(formShow == true ? false : true);
+    setFormShow(false)
+
     setIndex({ index: idx });
+
     const { name, value } = e.target;
 
-  
     const notAllowed = [
       "ref_id",
       "created_at",
@@ -431,7 +432,6 @@ function CreateDynamicForm() {
         const _Label = test[2];
 
         getData(_URL).then((res) => {
-   
           let counter = 1;
           const tempData = [];
           for (const key in res.data) {
@@ -442,7 +442,6 @@ function CreateDynamicForm() {
             });
           }
 
-        
           rows[idx].inputAddOn.inputDataSourceData = tempData;
         });
         rows[idx].inputAddOn.inputDataSource = e.target.value;
@@ -474,26 +473,25 @@ function CreateDynamicForm() {
         }
       });
 
+
       // else if (e.target.name == "inputRadio") {
-      setFormShow(formShow == true ? false : true);
+      // setFormShow(formShow == true ? false : true);
       const test = e.target.value;
 
       rows[idx].inputAddOn.inputRadio = test;
       await new DynamicFormDropdownMasterService()
         .getDropdownById(test)
         .then((res) => {
-         
           if (res.status == 200) {
             if (res.data.status == 1) {
               const dropNames = res.data.data;
               setRadioSelect(dropNames.master.dropdown_name);
-           
               const temp = [];
               res.data.data.dropdown.forEach((d) => {
                 temp.push({ label: d.label, value: d.id });
               });
               rows[idx].inputAddOn.inputRadio = temp;
-              setInputDataSource(temp)
+              setInputDataSource(temp);
             }
           }
         });
@@ -597,7 +595,6 @@ function CreateDynamicForm() {
 
   const handleUserSelect = (selectedOptions, index) => {
     // const selectedUserIds = selectedOptions.filter((option) => option.value);
-  
     const selectedUserIds = selectedOptions.value;
 
     const updatedAssign = [...rows];
@@ -677,7 +674,6 @@ function CreateDynamicForm() {
   // };
 
   const handleRemoveSpecificRow = (index) => async () => {
-
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
 
@@ -688,17 +684,17 @@ function CreateDynamicForm() {
   };
 
   const handldeFormShow = () => {
+    
     setFormShow(formShow == true ? false : true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // const data=new FormData(e.target);
-
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows),
-      // inputDataSource: selectedValue 
+      // inputDataSource: selectedValue
     };
     // data.append("selectedValue":selectedValue)
     // var a = JSON.stringify(Object.fromEntries(data))
@@ -1046,8 +1042,263 @@ function CreateDynamicForm() {
                                     />
                                   )}
                                   </td> */}
-
                                 <td>
+                                  {rows[idx].inputType == "select-master" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+
+                                        // onChange={(e) => {
+                                        //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
+                                        // }}
+
+                                        onChange={handleChange(idx)}
+                                        id="inputDataSource"
+                                        name="inputDataSource"
+                                        // value={props.selectData}
+                                      >
+                                        <option>Select Data Source</option>
+                                        <option value="user">
+                                          User Master
+                                        </option>
+                                        <option value="department">
+                                          Department Master
+                                        </option>
+                                        <option value="role">
+                                          Role Master
+                                        </option>
+                                        {/* <option value="department|id|department">Department Master</option> */}
+                                        {/* <option value="role|id|role">Role Master</option> */}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+                                  {/* </td>
+
+<td> */}
+                                  {rows[idx].inputType == "radio" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                      >
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+                                            
+                                          })}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+
+
+{rows[idx].inputType == "checkbox" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                      >
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+                                            
+                                          })}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+
+
+{rows[idx].inputType == "select" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                      >
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+                                            
+                                          })}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+
+
+
+
+{rows[idx].inputType==="number" &&
+            <span>
+            <input
+            type="text"
+            placeholder='Eg. 0|100'
+            className="form-control form-control-sm"
+            onChange={handleChange(idx)}
+
+            id="inputRange"
+            name="inputRange"
+            min={rows[idx].inputAddOn.inputRange }
+            max={rows[idx].inputAddOn.inputRange }
+            />
+            <small style={{'color':'red'}}><b>Min|Max(Range)</b></small>
+            </span>   
+        } 
+
+
+
+        {rows[idx].inputType === "decimal" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Min Number:</label>
+                            <input
+                                type="number"
+            onChange={handleChange(idx)}
+                                
+                                id="inputRangeMin"
+                                name="inputRangeMin"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                min={rows[idx].inputAddOn.inputRangeMin}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Max Number:</label>
+                            <input
+                                type="number"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMax"
+                                name="inputRangeMax"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                max={rows[idx].inputAddOn.inputRangeMax}
+
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+                  
+        {rows[idx].inputType==="date" &&
+            <span>
+                <input
+                    type="text"
+                    onChange={handleChange(idx)}
+                  
+                    id="inputDateRange"
+                    name="inputDateRange"
+                    placeholder='Eg. 2022-01-01|2022-02-01'
+                    className="form-control form-control-sm"
+                    min={rows[idx].inputAddOn.inputDateRange }
+                    max={rows[idx].inputAddOn.inputDateRange}
+                />
+                <small style={{'color':'red'}}><b>Min|Max (YYYY-MM-DD)</b></small>
+            </span>   
+        }        
+
+
+{rows[idx].inputType === "time" &&
+                    <div className="d-flex justify-content-between" key={rows[idx].key}>
+                        <div class="form-group">
+                            <label>Min Time:</label>
+                            <input
+                                type="time"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMin"
+                                name="inputRangeMin"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                min={rows[idx].inputAddOn.inputRangeMin}
+                            // max={props.data.inputAddOn.inputRangeMax ? props.data.inputAddOn.inputRangeMax : ''}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Max Time:</label>
+                            <input
+                                type="time"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMax"
+                                name="inputRangeMax"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                // min={props.data.inputAddOn.inputRangeMin ? props.data.inputAddOn.inputRangeMin : ''}
+                                max={rows[idx].inputAddOn.inputRangeMax}
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+{
+                    rows[idx].inputType === "datetime-local" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Date-time:</label>
+                            <input
+                                type="datetime-local"
+                                onChange={handleChange(idx)}
+
+                                id="datetime-local"
+                                name="datetime-local"
+                                className="form-control form-control-sm"
+                                min={rows[idx].inputAddOn.inputDateTime}
+                            />
+                        </div>
+                    </div>
+                }
+
+  
+
+
+                                </td>
+
+                                {/* <td>
                                   {rows && (
                                     <DynamicComponent
                                       // id={idx}
@@ -1072,7 +1323,7 @@ function CreateDynamicForm() {
                                       // key={Math.random()}
                                     />
                                   )}
-                                </td>
+                                </td> */}
 
                                 {/* {rows && <AddOn id={idx}
                                                                  data={rows[idx]}
@@ -1158,12 +1409,11 @@ function CreateDynamicForm() {
               {/* Card */}
             </div>
 
-
-
-
-            {formShow && rows && (
+            {formShow && rows  && (
               <div className="row">
                 {rows.map((data, index) => {
+                  {
+                  }
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
                       var range = data.inputAddOn.inputRange.split("|");
@@ -1228,7 +1478,7 @@ function CreateDynamicForm() {
                                                     />
                                                 } */}
 
-                        {data.inputType === "date" && (
+                        {/* {data.inputType === "date" && (
                           <div className="form-control">
                             <DatePicker
                               onChange={onChangeDate}
@@ -1237,7 +1487,25 @@ function CreateDynamicForm() {
                               style={{ width: "100%" }}
                             />
                           </div>
-                        )}
+                        )} */}
+
+{data.inputType === "date" && (
+  <div className="form-control">
+    <DatePicker
+      onChange={onChangeDate}
+      value={dateValue}
+      format={data.inputFormat}
+      style={{
+        width: "100%",
+        fontFamily: "Arial, sans-serif",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        fontSize: "16px",
+      }}
+    />
+  </div>
+)}
+
 
                         {data.inputType === "datetime-local" && (
                           <input
@@ -1294,7 +1562,6 @@ function CreateDynamicForm() {
                           />
                         )}
 
-
                         {data.inputType === "select-master" &&
                           selectedValue &&
                           selectedValue === "user" && (
@@ -1331,7 +1598,6 @@ function CreateDynamicForm() {
                               required={true}
                             />
                           )}
-
 
                         {data.inputType === "select-master" &&
                           selectedValue &&
@@ -1409,7 +1675,7 @@ function CreateDynamicForm() {
 
                         {data.inputType === "select" && (
                           <Select
-                            options={data.inputAddOn.inputDataSourceData}
+                            options={data.inputAddOn.inputRadio}
                             isMulti
                             id={
                               data.inputName
@@ -1424,79 +1690,65 @@ function CreateDynamicForm() {
                           />
                         )}
 
+
                         {data.inputType === "radio" && (
-                          // <select
-                          //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                          //     name={data.inputName}
-                          //     className="form-control form-control-sm"
-
-                          // >
-                          //     <option>Select {data.inputName}</option>
-                          //     {
-                          //         data.inputAddOn.inputDataSourceData &&
-                          //         data.inputAddOn.inputDataSourceData.map((option) => {
-                          //             return <option value={option.value}>{option.label}</option>
-                          //         })
-                          //     }
-                          // </select>
-
-                          // <Select
-                          //   options={inputDataSource}
-                          //   isMulti
-                          //   id={
-                          //     data.inputName
-                          //       ? data.inputName
-                          //           .replace(/ /g, "_")
-                          //           .toLowerCase()
-                          //       : ""
-                          //   }
-                          //   name={data.inputName}
-                          //   className="form-control form-control-sm"
-                          //   required={true}
-                          // />
+                         
+                          <div className="row mt-3">
+  {data && data.inputAddOn.inputRadio.map((i, index) => (
+    <div key={index} className="col">
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="radio"
+          name="is_active"
+          id={`is_active_${index}`}
+          value="1"
+        />
+        <label
+          className="form-check-label"
+          htmlFor={`is_active_${index}`}
+        >
+          {i.label}
+        </label>
+      </div>
+    </div>
+  ))}
 
 
-                          <div className="col-sm-10">
-                        <div className="row">
-                          <div className="col-md-2">
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="is_active"
-                                id="is_active_1"
-                                value="1"
-                                // defaultChecked={data && data.is_active === 1}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="is_active_1"
-                              >
-                                Active
-                              </label>
-                            </div>
-                          </div>
-                          <div className="col-md-1">
-                            <div className="form-check">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="is_active"
-                                id="is_active_0"
-                                value="0"
-                                // defaultChecked={data && data.is_active === 0}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="is_active_0"
-                              >
-                                Deactive
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                        </div>
+
+
+</div>
+
+                          
                         )}
+
+{console.log("bb",rows)}
+
+
+{data.inputType === "checkbox" && (
+                         
+                         <div className="row mt-3">
+ {data && data.inputAddOn.inputRadio.map((i, index) => (
+   <div key={index} className="col">
+     <div className="form-check">
+     <input
+                              className="sm-1"
+                              type="checkbox"
+                              style={{ marginRight: "8px", marginLeft: "10px" }}
+                            />
+       <label
+         className="form-check-label"
+         htmlFor={`is_active_${index}`}
+       >
+         {i.label}
+       </label>
+     </div>
+   </div>
+))} 
+</div>
+
+                         
+                       )}
 
                         {/* {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
@@ -1508,19 +1760,15 @@ function CreateDynamicForm() {
                               );
                             })
                           : ""} */}
-{data.inputType=="checkbox" &&
-<div>
-<input
-                      className="sm-1"
-                      type="checkbox"
-                      style={{ marginRight: "8px", marginLeft: "10px" }}
-                     
-                      
-                    />
-  </div>
-
-}
-
+                        {/* {data.inputType == "checkbox" && (
+                          <div>
+                            <input
+                              className="sm-1"
+                              type="checkbox"
+                              style={{ marginRight: "8px", marginLeft: "10px" }}
+                            />
+                          </div>
+                        )} */}
 
                         {data.inputType == "checkbox" &&
                         data.inputAddOn.inputCheckbox
@@ -1530,13 +1778,14 @@ function CreateDynamicForm() {
                                   {/* <input type="checkbox" />
                                   <label for={d.value}>{d.label}</label> */}
 
-<input
-                      className="sm-1"
-                      type="checkbox"
-                      style={{ marginRight: "8px", marginLeft: "10px" }}
-                     
-                      
-                    />
+                                  <input
+                                    className="sm-1"
+                                    type="checkbox"
+                                    style={{
+                                      marginRight: "8px",
+                                      marginLeft: "10px",
+                                    }}
+                                  />
                                 </div>
                               );
                             })

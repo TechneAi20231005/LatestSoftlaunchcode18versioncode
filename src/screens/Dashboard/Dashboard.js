@@ -1681,7 +1681,7 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -1943,7 +1943,8 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                                
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -2083,7 +2084,7 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
