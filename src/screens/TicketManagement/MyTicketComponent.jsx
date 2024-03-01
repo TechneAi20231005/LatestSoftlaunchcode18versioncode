@@ -3944,8 +3944,10 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
 
+            {console.log("dataC",data)}
+
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
+              {/* {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
                 (data.status_name !== "Solved" && (
                   <li>
@@ -3954,7 +3956,23 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: "100" }}
                     >
-                      <i className="icofont-ui-edit"></i> Editt
+                      <i className="icofont-ui-edit"></i> Edit
+                    </Link>
+                  </li>
+                ))} */}
+
+
+{
+(data.created_by == localStorage.getItem("id") ||
+                data.assign_to_user_id == localStorage.getItem("id") ||
+                (data.status_name !== "Solved") && (data.passed_status !== "REJECT") && (
+                  <li>
+                    <Link
+                      to={`/${_base}/Ticket/Edit/` + data.id}
+                      className="btn btn-sm btn-warning text-white"
+                      style={{ width: "100%", zIndex: "100" }}
+                    >
+                      <i className="icofont-ui-edit"></i> Edit
                     </Link>
                   </li>
                 ))}
@@ -3970,10 +3988,11 @@ export default function MyTicketComponent() {
                 </Link>{" "}
               </li>
 
-              {data.created_by != localStorage.getItem("id") &&
+              {
+              (data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0 &&
                 localStorage.getItem("account_for") === "SELF" &&
-                data.status_name != "Solved" && (
+                data.status_name != "Solved")&& (data.passed_status !== "REJECT") && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}

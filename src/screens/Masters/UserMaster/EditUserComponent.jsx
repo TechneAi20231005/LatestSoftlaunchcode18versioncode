@@ -1781,6 +1781,7 @@ function EditUserComponent({ match }) {
                           />
                         </div>
                       </div>
+                      {console.log("ss",stateDropdown)}
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">

@@ -1982,7 +1982,9 @@ console.log("fff",data)
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+
                                                     {rows && rows.map((item, idx) => (
+                                                      
 
                                                         <tr id={`addr_${idx}`} key={idx}>
                                                         {/* // <tr id={`addr_${item.id}`} key={item.id}> */}
@@ -2094,7 +2096,7 @@ console.log("fff",data)
                                                                 }
                                                             </td>
 {console.log("rowrow",rows)}
-                                                            <td>
+                                                            {/* <td>
                                                                 {rows &&
 
                                                                     // <AddOn id={idx} 
@@ -2114,7 +2116,46 @@ console.log("fff",data)
                                                                   />
                                                                 }
 
-                                                            </td>
+                                                            </td> */}
+
+
+<td>
+
+{rows[idx].inputType == "radio" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                      >
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+                                            // if (selectedDropdown == d.id) {
+                                            //     return <option value={d.id} selected>{d.dropdown_name}</option>
+                                            // } else {
+                                            //     return <option value={d.id}>{d.dropdown_name}</option>
+                                            // }
+                                          })}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+                                </td>
+
+
+
 
                                                             {/* <td>
                                                                 {idx == 0 &&

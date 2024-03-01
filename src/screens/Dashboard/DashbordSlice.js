@@ -831,6 +831,8 @@ state.FilterCity=FilterCity
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllRoles = payload.data.data;
+        console.log("get ",getAllRoles)
+
         state.status = "succeded";
         state.showLoaderModal = false;
         // let count = 1;.

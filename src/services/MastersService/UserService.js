@@ -21,7 +21,27 @@ export default class UserService {
     return axios.get(_URL, config);
   }
 
-  getExportTicket() {
+  // getExportTicket() {
+  //   const token = localStorage.getItem("jwt_token");
+
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json",
+  //     },
+  //   };
+
+  //   const url = `${_URL}?type=EXPORT`
+      
+  //   return axios.get(url, config);
+
+  // }
+
+
+  
+
+getExportTicket() {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -32,11 +52,15 @@ export default class UserService {
       },
     };
 
-    const url = `${_URL}?type=EXPORT`
+    // const url = `${_URL}?type=EXPORT`
       
-    return axios.get(url, config);
+    return axios.get(_URL + "/export" +"/getData", config);
 
   }
+
+
+
+  
   getUserForMyTickets(queryParams) {
     const token = localStorage.getItem("jwt_token");
     const config = {
