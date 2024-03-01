@@ -1344,7 +1344,7 @@ const AuthorityMapping = () => {
                 );
               }}
             >
-              Cancle
+              Cancel
             </button>
           </Modal.Footer>
         </form>

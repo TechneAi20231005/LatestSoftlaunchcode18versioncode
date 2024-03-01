@@ -811,7 +811,7 @@ function PaymentTemplateMaster() {
                 {paymentType && paymentType === "Monthly" && (
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
-                      Bill Day :<Astrick color="red" size="13px" />
+                      Bill Date :<Astrick color="red" size="13px" />
                     </label>
                  
                     {modal.modalData && (

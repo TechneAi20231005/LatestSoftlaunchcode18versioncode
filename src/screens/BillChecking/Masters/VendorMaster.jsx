@@ -4227,7 +4227,39 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+    // { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+
+
+
+    {
+      name: "Vendor Name",
+      selector: (row) => row["Vendor Name"],
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.vendor_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.vendor_name && row.vendor_name.length < 15
+                    ? row.vendor_name
+                    : row.vendor_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+
 
     {
       name: "Address",
@@ -4804,6 +4836,7 @@ function VendorMaster({ match }) {
     });
   };
   const [panattachment, setPanAttachment] = useState();
+  console.log("panattachment",panattachment)
 
   const uploadPanAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -6188,6 +6221,8 @@ function VendorMaster({ match }) {
                         </a>
                       )} */}
 
+
+{console.log("pp",modal.modalData)}
                       {modal.modalData &&
                         modal.modalData.pan_attachment &&
                         modal.modalData.pan_attachment.map(
@@ -6315,6 +6350,9 @@ function VendorMaster({ match }) {
                         </div>
                       );
                     })}
+
+
+
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
