@@ -617,7 +617,7 @@ state.FilterCity=FilterCity
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
-        console.log("no", state.notify);
+     
 
         state.updateState = updateState;
 
@@ -810,7 +810,7 @@ state.FilterCity=FilterCity
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoles = payload.data.data;
-        console.log("get", getRoles);
+      
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -978,7 +978,7 @@ state.FilterCity=FilterCity
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
         state.customerByIdData = customerByIdData;
-        console.log("c", customerByIdData);
+     
       } else {
         // let notify = { type: "danger", message: payload.data.message };
         // state.notify = null;
@@ -1045,7 +1045,7 @@ state.FilterCity=FilterCity
 
     builder.addCase(getAllUserById.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
+
       state.notify = null;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {

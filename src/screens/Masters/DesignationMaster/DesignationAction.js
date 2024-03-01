@@ -21,7 +21,7 @@ export const postDesignationData = createAsyncThunk(
     try {
       const service = new DesignationService();
       const response = await service.postDesignation(config);
-      console.log("dd", response);
+   
       return response;
     } catch (error) {
       throw error;
@@ -32,7 +32,7 @@ export const postDesignationData = createAsyncThunk(
 export const updatedDesignationData = createAsyncThunk(
   "updatedDesignationData",
   async (config, thunkapi) => {
-    console.log("c", config);
+
     try {
       const service = new DesignationService();
       const response = await service.updateDesignation(config.id, config.payload);

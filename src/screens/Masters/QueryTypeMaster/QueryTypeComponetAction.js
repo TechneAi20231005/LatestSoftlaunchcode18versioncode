@@ -9,7 +9,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.getAllQueryGroup();
-        console.log("resss", response);
+       
         return response;
       } catch (error) {
         throw error;
@@ -23,7 +23,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.getQueryType();
-        console.log("resss", response);
+
         return response;
       } catch (error) {
         throw error;
@@ -37,7 +37,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.postQueryGroup(config);
-        console.log("resss", response);
+     
         return response;
       } catch (error) {
         throw error;
@@ -51,7 +51,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.updateQueryGroup(config.id,config.payload);
-        console.log("resss", response);
+        
         return response;
       } catch (error) {
         throw error;
@@ -66,7 +66,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.updateQueryType(config.id,config.payload);
-        console.log("resss", response);
+    
         return response;
       } catch (error) {
         throw error;
@@ -82,7 +82,7 @@ export const queryTypeData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.postQueryType(config);
-        console.log("resss", response);
+    
         return response;
       } catch (error) {
         throw error;

@@ -22,7 +22,7 @@ export const customerMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+    
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -37,7 +37,7 @@ export const customerMasterSlice = createSlice({
     });
     builder.addCase(getCustomerTypeData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
+   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getCustomerTypeData = payload.data.data;
         state.status = "succeded";
@@ -91,7 +91,7 @@ export const customerMasterSlice = createSlice({
     });
     builder.addCase(postCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+    
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
@@ -116,13 +116,13 @@ export const customerMasterSlice = createSlice({
     });
     builder.addCase(updateCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let updateCustomerData = payload.data.data;
-        console.log(updateCustomerData);
+    
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateCustomerData = updateCustomerData;

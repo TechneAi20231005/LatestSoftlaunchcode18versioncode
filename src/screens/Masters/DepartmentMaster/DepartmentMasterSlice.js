@@ -24,7 +24,7 @@ export const departmentMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+      
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -40,7 +40,7 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(departmentData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
+  
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let departmentData = payload.data.data;
         state.status = "succeded";
@@ -92,10 +92,10 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(postdepartment.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postdepartment = payload.data.data;
-        console.log(postdepartment);
+   
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postdepartment = postdepartment;
@@ -120,10 +120,10 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(updateDepartment.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+     
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateDepartment = payload.data.data;
-        console.log(updateDepartment);
+  
         state.status = "succeded";
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };

@@ -67,7 +67,7 @@ export const BillCheckingTransactionSlice = createSlice({
     builder.addCase(getBillcheckingData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        console.log("payloadbillchecking", payload);
+        
         let getAllbillCheckingData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -236,7 +236,7 @@ export const BillCheckingTransactionSlice = createSlice({
     builder.addCase(getUpdatedAuthoritiesData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === true) {
-        console.log("payloadAuthorites", payload);
+    
         let authoritiesData = payload.data.data;
         state.status = "succeded";
         state.showLoaderModal = false;

@@ -28,7 +28,7 @@ export const DynamicFormDropDownSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+    
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -96,7 +96,7 @@ export const DynamicFormDropDownSlice = createSlice({
         let counter = 1;
         let getDynamicFormDropDownData = [];
         const temp = payload.data.data;
-        console.log("res---", temp);
+     
         for (const key in temp) {
           getDynamicFormDropDownData.push({
             counter: counter++,

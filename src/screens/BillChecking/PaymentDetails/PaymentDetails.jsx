@@ -946,7 +946,7 @@ function PaymentDetails({ location, match }) {
     (PaymentDetailsSilce) =>
       PaymentDetailsSilce.paymentDetails.paymentDetailsData
   );
-  console.log("pay", getPaymentDetailsData);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1005,7 +1005,7 @@ function PaymentDetails({ location, match }) {
 
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+  
   };
 
   // Assuming modal.modalData.payment_date is a valid date string
@@ -1026,7 +1026,7 @@ function PaymentDetails({ location, match }) {
     }
   }
 
-  console.log("formattedMaxDate",formattedMaxDate)
+
   const [country, setCountry] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
@@ -1036,7 +1036,7 @@ function PaymentDetails({ location, match }) {
   const fileInputRef = useRef(null);
   const userId = sessionStorage.getItem("id");
   const [exportData, setExportData] = useState();
-  console.log("dataDp", data);
+
   const loadData = async () => {
     dispatch(getPaymentDetails(id, userId));
     const data = [];
@@ -1044,7 +1044,7 @@ function PaymentDetails({ location, match }) {
     await new PaymentDetailsService()
       .getPaymentDetails(id, userId)
       .then((res) => {
-        console.log("res",res)
+  
         if (res.status === 200) {
           let counter = 1;
 
@@ -1121,7 +1121,7 @@ function PaymentDetails({ location, match }) {
       cell: (row) => (
         <span>
           {/* {row.payment_status_name!="Paid" && */}
-          {console.log("ff",row)}
+      
           {row.payment_status_name === "Paid" ? (
             <button
               type="button"
@@ -1764,7 +1764,7 @@ function PaymentDetails({ location, match }) {
                         </>
                       )} */}
                     </div>
-                    {console.log("pp",authorities&& authorities)}
+                 
 
                   <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">

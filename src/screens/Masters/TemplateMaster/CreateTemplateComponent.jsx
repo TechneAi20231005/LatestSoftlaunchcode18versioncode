@@ -711,7 +711,7 @@ const CreateTemplateComponent = () => {
                               {" "}
                               Start Task After Days :{" " +
                                 task.start_days}{" "}
-                              Days
+                              Day
                             </b>
                           ) : (
                             <b>
@@ -859,6 +859,7 @@ const CreateTemplateComponent = () => {
                                       className="form-control form-control-sm"
                                     />
                                   </div>
+                        
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>
@@ -867,7 +868,7 @@ const CreateTemplateComponent = () => {
                                       </b>
                                     </label>
                                     <input
-                                      type="number"
+                                      type="text"
                                       id="hours_required"
                                       name="total_time"
                                       onChange={(e) =>
@@ -1044,7 +1045,7 @@ const CreateTemplateComponent = () => {
 
                               <label>
                                 <b>
-                                  Day Required:
+                                  Days Required:
                                   <Astrick color="red" size="13px" />
                                 </b>
                               </label>

@@ -1437,8 +1437,8 @@ export default function HrDashboard(props) {
         setUpcomingTask(res.data.data.upcomingTask);
 
         const temp = chartData;
-        console.log('temp', temp)
-        console.log("res", res.data.data.pieCharData.pendingTask)
+    
+      
         temp.series[0] = res.data.data.pieCharData.pendingTask;
         temp.series[1] = res.data.data.pieCharData.workingTask;
         temp.series[2] = res.data.data.pieCharData.completedTask;

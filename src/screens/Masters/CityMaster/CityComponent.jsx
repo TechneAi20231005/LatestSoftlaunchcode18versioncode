@@ -925,7 +925,7 @@ function CityComponent() {
  
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
+
   };
   
 
@@ -1563,7 +1563,7 @@ function CityComponent() {
                 </div>
 
 
-{console.log("c",StateData)}
+
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
                     Select State :<Astrick color="red" size="13px" />

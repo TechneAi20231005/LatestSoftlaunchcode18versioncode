@@ -46,6 +46,7 @@ export default function CreateCustomerMappingComponent() {
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
+  console.log(dynamicFormDropdown)
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
 
@@ -176,7 +177,7 @@ const getDynamicForm = async () =>{
     if (res.status == 200) {
       if (res.data.status == 1) {
         const data = res.data.data.filter((d) => d.is_active == 1);
-        const select = res.data.data.map((d) => ({ value: d.id,label: d.template_name}));
+        const select = res.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id,label: d.template_name}));
         setDynamicForm(data);
         setDynamicFormDropdown(select);
       }

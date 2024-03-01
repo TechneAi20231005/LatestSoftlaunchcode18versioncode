@@ -25,7 +25,7 @@ export const queryTypeSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+     
     },
 
     handleModalOpen: (state, action) => {
@@ -117,13 +117,13 @@ export const queryTypeSlice = createSlice({
     });
     builder.addCase(QueryGroupForm.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+ 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let QueryGroupForm = payload.data.data;
-        console.log(QueryGroupForm);
+     
         state.status = "succeded";
         state.showLoaderModal = false;
         state.QueryGroupForm = QueryGroupForm;
@@ -146,13 +146,13 @@ export const queryTypeSlice = createSlice({
     });
     builder.addCase(QueryGroupFormUpdate.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+  
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let QueryGroupFormUpdate = payload.data.data;
-        console.log(QueryGroupFormUpdate);
+  
         state.status = "succeded";
         state.showLoaderModal = false;
         state.QueryGroupFormUpdate = QueryGroupFormUpdate;
@@ -174,13 +174,13 @@ export const queryTypeSlice = createSlice({
     });
     builder.addCase(updateQueryTypeData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let updateQueryTypeData = payload.data.data;
-        console.log(updateQueryTypeData);
+    
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateQueryTypeData = updateQueryTypeData;
@@ -201,13 +201,13 @@ export const queryTypeSlice = createSlice({
     });
     builder.addCase(postqueryTypeForm.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+    
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let postqueryTypeForm = payload.data.data;
-        console.log(postqueryTypeForm);
+      
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postqueryTypeForm = postqueryTypeForm;

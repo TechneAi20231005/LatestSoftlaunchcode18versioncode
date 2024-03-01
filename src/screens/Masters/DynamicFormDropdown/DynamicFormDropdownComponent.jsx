@@ -169,7 +169,7 @@ export default function DynamicFormDropdownComponent() {
 
             let counter = 1;
             const temp = res.data.data
-            console.log("temp",temp)
+           
             for (const key in temp) {
                 data.push({
                     counter: counter++,

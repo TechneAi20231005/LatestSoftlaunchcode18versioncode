@@ -23,7 +23,7 @@ export const loginSlice = createSlice({
             });
             builder.addCase(postLoginUser.fulfilled, (state, action) => {
                 const { payload } = action;
-                console.log("payload Role", payload);
+           
                 if (payload?.status === 200 && payload?.data?.status === 1) {
                 state.status = 'succeded';
         state.notify = { type: "success", message: payload};

@@ -556,9 +556,7 @@ function AddOn(props) {
                     </div>
                 }
 
-                {console.log("hiii",
-                 props.radioSelect)}
-
+             
                 { props.data.inputType === "radio" &&
                     <span>
                         <select className="form-control form-control-sm"

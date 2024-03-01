@@ -9,7 +9,7 @@ export const dynamicFormDropDownData = createAsyncThunk(
     try {
       const service = new DynamicFormDropdownMasterService();
       const response = await service.getAllDynamicFormDropdown();
-console.log("payload",response)
+
       return response;
     } catch (error) {
       throw error;

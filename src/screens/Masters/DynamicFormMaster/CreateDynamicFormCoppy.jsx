@@ -107,7 +107,7 @@ function CreateDynamicForm() {
                 rows[idx].inputAddOn.inputRangeMin = e.target.value;
             }
             else if (e.target.name == "inputRangeMax") {
-                console.log(rows[idx].inputAddOn.inputRangeMin)
+               
                 if (rows[idx].inputAddOn.inputRangeMin > e.target.value) {
                     alert("Please select grater value");
                     return false;
@@ -166,7 +166,7 @@ function CreateDynamicForm() {
                 rows[idx].inputAddOn.inputDataSource = test;
                 if(test){
                     await new DynamicFormDropdownMasterService().getDropdownById(test).then((res) => {
-                        console.log(res.data.data.dropdown)
+                       
                         if (res.status == 200) {
                             if (res.data.status == 1) {
                                 const temp = [];

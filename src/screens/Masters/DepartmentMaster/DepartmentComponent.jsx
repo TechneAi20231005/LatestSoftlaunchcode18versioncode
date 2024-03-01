@@ -38,7 +38,7 @@ function DepartmentComponent() {
     (DepartmentMasterSlice) =>
       DepartmentMasterSlice.department.exportDepartmentData
   );
-  console.log("exportData", exportData);
+ 
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
@@ -82,7 +82,7 @@ function DepartmentComponent() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+   
   };
   const columns = [
     {

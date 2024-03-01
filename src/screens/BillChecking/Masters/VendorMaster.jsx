@@ -4154,7 +4154,7 @@ function VendorMaster({ match }) {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
-  console.log(cityDropdown);
+ 
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
@@ -4334,7 +4334,7 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
-      console.log("res", res);
+   
       if (res.status === 200) {
         let counter = 1;
         const temp = res.data.data;
@@ -4611,7 +4611,7 @@ function VendorMaster({ match }) {
       form.append("adhar_attachment[0]", panattachment[0].file);
     }
 
-    console.log("panattachment", panattachment);
+
 
     if (!id) {
       if (
@@ -4847,6 +4847,9 @@ function VendorMaster({ match }) {
     }
   };
 
+  
+  
+
   const [MSMEselectedFiles, setMSMESelectedFiles] = useState();
   const uploadMSMEAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -4889,8 +4892,8 @@ function VendorMaster({ match }) {
     }
   };
 
-  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =
-    useState();
+  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =useState();
+   
   const uploadPassChequeAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       var tempSelectedFile1 = [];
@@ -5107,7 +5110,7 @@ function VendorMaster({ match }) {
           <tr>
             <td>1</td>
             <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
-            {console.log("attchment", data)}
+   
 
             {data.adhar_attachment ? (
               <td>
@@ -5285,6 +5288,8 @@ function VendorMaster({ match }) {
   //     }
   //   });
   // };
+
+  
 
   const handleBulkUpload = async (e) => {
     e.preventDefault();

@@ -170,6 +170,8 @@ const EditTemplateComponent = ({ match, props }) => {
           template_data: [...res.data.data.template_data],
         };
         setData(res.data.data);
+        console.log("ppp==",res);
+        setSatrtEndValue(res.data.data.AB)
         setNewData(null);
         setNewData((prevData) => ({ ...prevData, ...newData }));
       }
@@ -326,12 +328,18 @@ const EditTemplateComponent = ({ match, props }) => {
     // }));
   };
 
+
+  const [startEndValue,setSatrtEndValue] = useState("")
+  console.log("start",startEndValue);
+
   const handleShow = () => {
     setShow((prev) => !prev);
   };
 
   const handleNewChange = (e, idx, type, name) => {
+    console.log("target",e.target.value);
     const value = type === "select1" ? e.target.value : e.value;
+    setSatrtEndValue(e.target.value)
 
     setNewData((prevData) => {
       const newDataCopy = { ...prevData };
@@ -478,6 +486,8 @@ const EditTemplateComponent = ({ match, props }) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+
+    
     console.log("e", formData);
     // Add your form data to the `formData` object here
 
@@ -532,8 +542,9 @@ const EditTemplateComponent = ({ match, props }) => {
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         {/* {data && JSON.stringify(data)} */}
-      {console.log(data)}
-      {console.log("newData",newData)}
+        {console.log("newData",newData)}
+        {console.log("data",data)}
+
      
 
         <div className="card-body">
@@ -592,12 +603,13 @@ const EditTemplateComponent = ({ match, props }) => {
               </div>
             </div>
             <br></br>
+            {}
             <div className="col-sm-12">
               <label className="form-label font-weight-bold">
                 Status :<Astrick color="red" size="13px" />
               </label>
 
-             {console.log("vv",data)}
+           {/* {console.log("active",data?.is_active)}
               <div className="row">
                 <div className="col-md-2">
                   <div className="form-check">
@@ -605,10 +617,10 @@ const EditTemplateComponent = ({ match, props }) => {
                       className="form-check-input"
                       type="radio"
                       name="is_active"
-                      id="is_active_1"
+                      id="is_active"
                       value="1"
                       defaultChecked={
-                      data && data.is_active == 1?true :false
+                      data&&data?.is_active === 1 ? true:false
                       }
                     />
                     <label className="form-check-label" htmlFor="is_active_1">
@@ -634,7 +646,43 @@ const EditTemplateComponent = ({ match, props }) => {
                     </label>
                   </div>
                 </div>
-              </div>
+              </div> */}
+
+{console.log("active", data?.is_active)}
+<div className="row">
+  <div className="col-md-2">
+    <div className="form-check">
+      <input
+        className="form-check-input"
+        type="radio"
+        name="is_active"
+        id="is_active"
+        value="1"
+        defaultChecked={data && data.is_active === 1}
+      />
+      <label className="form-check-label" htmlFor="is_active_1">
+        Active
+      </label>
+    </div>
+  </div>
+  <div className="col-md-1">
+    <div className="form-check">
+      <input
+        className="form-check-input"
+        type="radio"
+        name="is_active"
+        id="is_active_0"
+        value="0"
+        readOnly={modal.modalData ? false : true}
+        defaultChecked={data && data.is_active === 0}
+      />
+      <label className="form-check-label" htmlFor="is_active_0">
+        Deactive
+      </label>
+    </div>
+  </div>
+</div>
+
             </div>
             <div className="pull-right mt-4">
               <button type="submit" className="btn btn-sm btn-primary">
@@ -754,6 +802,7 @@ const EditTemplateComponent = ({ match, props }) => {
           {" "}
           <Modal.Header></Modal.Header>
           <Modal.Body>
+            {console.log("ab",data?.AB)}
             <form method="post" onSubmit={handleAddTask}>
               <div className="form-group row">
                 <div className="col-sm-12">
@@ -817,20 +866,43 @@ const EditTemplateComponent = ({ match, props }) => {
                 </div>
 
                 
+
+
+
+                {startEndValue&&startEndValue == 'START_FROM'?
                 <div className="col-sm-12">
-                  <label className="col-form-label">
-                    <b>
-                      Start Task:
-                      <Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <input
-                    type="number"
-                    id="start_days"
-                    name="start_days"
-                    className="form-control form-control-sm"
-                  />
-                </div>
+                <label className="col-form-label">
+                  <b>
+                  Start Task After Days 
+                    <Astrick color="red" size="13px" />
+                  </b>
+                </label>
+                <input
+                  type="number"
+                  id="start_days"
+                  name="start_days"
+                  className="form-control form-control-sm"
+                />
+              </div>:
+                <div className="col-sm-12">
+                <label className="col-form-label">
+                  <b>
+                  End Task before Days :
+                    <Astrick color="red" size="13px" />
+                  </b>
+                </label>
+                <input
+                  type="number"
+                  id="start_days"
+                  name="start_days"
+                  className="form-control form-control-sm"
+                />
+              </div>
+                
+              
+              
+              }
+                
 
 
               </div>

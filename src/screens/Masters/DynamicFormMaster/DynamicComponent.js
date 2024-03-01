@@ -16,7 +16,7 @@ function DynamicComponent(props) {
         if (props && props.data.inputType == "select" && props.data.inputAddOn.inputDataSource) 
         {
             await new DynamicFormDropdownMasterService().getDropdownById(props.data.inputAddOn.inputDataSource).then((res) => {
-              console.log("lll",res)
+            
                 if (res.status == 200) {
                     if (res.data.status == 1) {
                         setSelectedDropdown(res.data.data.master.id)

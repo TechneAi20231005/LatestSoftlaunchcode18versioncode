@@ -76,7 +76,7 @@ export default function CreateCustomer({ match }) {
     (DashbordSlice) => DashbordSlice.dashboard.FilterCity
   );
 
-  console.log("s", AllcityDropDownData);
+ 
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
@@ -195,7 +195,7 @@ export default function CreateCustomer({ match }) {
         // })
 
         dispatch(postCustomerData(formData)).then((res) => {
-          console.log(res);
+       
           if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
             setNotify({
               type: "success",

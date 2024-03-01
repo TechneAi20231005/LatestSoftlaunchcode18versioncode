@@ -15,7 +15,7 @@ export const BillpaymentSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+     
     },
   },
   extraReducers: (builder) => {
@@ -61,7 +61,7 @@ export const BillpaymentSlice = createSlice({
             bill_amount: temp[key].bill_amount,
           });
         }
-        console.log("bill", billPaymentData);
+      
 
         state.sortBillPaymentData = sortBillPaymentData;
       }
@@ -81,7 +81,7 @@ export const BillpaymentSlice = createSlice({
           let billPaymentGridData = payload.data.data;
          
        
-          console.log("bill", billPaymentGridData);
+         
   
           state.billPaymentGridData = billPaymentGridData;
         }

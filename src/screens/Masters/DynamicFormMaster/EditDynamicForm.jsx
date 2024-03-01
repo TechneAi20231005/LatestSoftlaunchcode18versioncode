@@ -1341,7 +1341,7 @@ function EditDynamicForm({ match }) {
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
-console.log("dro",dropdown)
+
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
@@ -1568,10 +1568,10 @@ console.log("dro",dropdown)
   // };
 
   const handleRemoveSpecificRow = (index) => async () => {
-    console.log("index", index);
+  
 
     const updatedAssign = [...rows];
-    console.log("up", updatedAssign);
+   
     updatedAssign.splice(index, 1);
 
     // Update the state
@@ -1654,7 +1654,7 @@ console.log("dro",dropdown)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            console.log("dataEdit",res)
+          
             setData(res.data.data);
             setRows(res.data.data.data)
           }
@@ -1700,7 +1700,7 @@ console.log("dro",dropdown)
   }, [checkRole]);
 
 
-console.log("fff",data)
+
   return (
     <>
       <div className="body d-flex py-3">
@@ -2070,7 +2070,7 @@ console.log("fff",data)
                                                                     className="center"
                                                                 />
                                                             </td>
-                                                            {console.log("i",item.inputMandatory)}
+                                                           
                                                             <td>
                                                                 {rows[idx].inputType == "select" &&
                                                                 <input
