@@ -650,7 +650,7 @@ const requiredUserRef = useRef();
                       <th>Sr</th>
                       <th>Assinged Approvers</th>
                       <th>Required Approvers </th>
-                      <th>Required Numbers</th>
+                      <th>Required Members</th>
                       <th>Actions</th>
                     </tr>
                   </thead>

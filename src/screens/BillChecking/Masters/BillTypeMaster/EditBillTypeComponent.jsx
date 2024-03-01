@@ -969,7 +969,7 @@ const EditBillTypeComponent = ({ match }) => {
                           Required Approvers <Astrick color="red" size="13px" />{" "}
                         </th>
                         <th>
-                          Required Numbers <Astrick color="red" size="13px" />
+                          Required Members <Astrick color="red" size="13px" />
                         </th>
                         <th>Actions</th>
                       </tr>

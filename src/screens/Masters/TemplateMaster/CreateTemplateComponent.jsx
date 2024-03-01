@@ -572,7 +572,7 @@ const CreateTemplateComponent = () => {
                               )}
                             </td>
 
-                            <td>
+                            {/* <td>
                               {idx === 0 && (
                                 <span>
                                   <button
@@ -594,6 +594,29 @@ const CreateTemplateComponent = () => {
                                   <i className="icofont-ui-delete"></i>
                                 </button>
                               </td>
+                            </td> */}
+
+                            <td>
+                              {idx === 0 ? ( // Conditional rendering for the first row
+                                <span>
+                                  <button
+                                    type="button"
+                                    onClick={handleAddRow}
+                                    className="btn btn-sm btn-outline-primary pull-left"
+                                  >
+                                    <i className="icofont-plus-circle"></i>
+                                  </button>
+                                </span>
+                              ) : (
+                                // Render delete button for other rows
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-danger btn-sm"
+                                  onClick={() => handleRemoveSpecificRow(idx)}
+                                >
+                                  <i className="icofont-ui-delete"></i>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -607,7 +630,7 @@ const CreateTemplateComponent = () => {
                   </button>
                   <Link
                     to={`/${_base}/Template`}
-                    class="btn btn-sm btn-primary"
+                    class="btn btn-sm btn-danger"
                   >
                     Cancel
                   </Link>
@@ -709,9 +732,7 @@ const CreateTemplateComponent = () => {
                           iscalulatedFromTaken === "START_FROM" ? (
                             <b>
                               {" "}
-                              Start Task After Days :{" " +
-                                task.start_days}{" "}
-                              Day
+                              Start Task After Days :{" " + task.start_days} Day
                             </b>
                           ) : (
                             <b>
@@ -859,7 +880,7 @@ const CreateTemplateComponent = () => {
                                       className="form-control form-control-sm"
                                     />
                                   </div>
-                        
+
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>

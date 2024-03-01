@@ -857,11 +857,11 @@ const EditTemplateComponent = ({ match, props }) => {
                     </b>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     id="hours_required"
                     name="total_hours"
                     className="form-control form-control-sm"
-                    defaultValue={"00:00"}
+                    defaultValue="00:00"
                   />
                 </div>
 

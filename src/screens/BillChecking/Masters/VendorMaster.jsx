@@ -4154,7 +4154,7 @@ function VendorMaster({ match }) {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
- 
+  console.log(cityDropdown);
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
@@ -4227,7 +4227,39 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+    // { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+
+
+
+    {
+      name: "Vendor Name",
+      selector: (row) => row["Vendor Name"],
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.vendor_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.vendor_name && row.vendor_name.length < 15
+                    ? row.vendor_name
+                    : row.vendor_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+
 
     {
       name: "Address",
@@ -4334,7 +4366,7 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
-   
+      console.log("res", res);
       if (res.status === 200) {
         let counter = 1;
         const temp = res.data.data;
@@ -4611,7 +4643,7 @@ function VendorMaster({ match }) {
       form.append("adhar_attachment[0]", panattachment[0].file);
     }
 
-
+    console.log("panattachment", panattachment);
 
     if (!id) {
       if (
@@ -4804,6 +4836,7 @@ function VendorMaster({ match }) {
     });
   };
   const [panattachment, setPanAttachment] = useState();
+  console.log("panattachment",panattachment)
 
   const uploadPanAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -4847,9 +4880,6 @@ function VendorMaster({ match }) {
     }
   };
 
-  
-  
-
   const [MSMEselectedFiles, setMSMESelectedFiles] = useState();
   const uploadMSMEAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -4892,8 +4922,8 @@ function VendorMaster({ match }) {
     }
   };
 
-  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =useState();
-   
+  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =
+    useState();
   const uploadPassChequeAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       var tempSelectedFile1 = [];
@@ -5110,7 +5140,7 @@ function VendorMaster({ match }) {
           <tr>
             <td>1</td>
             <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
-   
+            {console.log("attchment", data)}
 
             {data.adhar_attachment ? (
               <td>
@@ -5288,8 +5318,6 @@ function VendorMaster({ match }) {
   //     }
   //   });
   // };
-
-  
 
   const handleBulkUpload = async (e) => {
     e.preventDefault();
@@ -6193,6 +6221,8 @@ function VendorMaster({ match }) {
                         </a>
                       )} */}
 
+
+{console.log("pp",modal.modalData)}
                       {modal.modalData &&
                         modal.modalData.pan_attachment &&
                         modal.modalData.pan_attachment.map(
@@ -6320,6 +6350,9 @@ function VendorMaster({ match }) {
                         </div>
                       );
                     })}
+
+
+
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">

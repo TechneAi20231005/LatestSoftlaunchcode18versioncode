@@ -625,12 +625,14 @@ import { Spinner } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
 function ProjectComponent() {
   const location = useLocation();
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
+  const [exportData, setExportData] = useState(null);
   const searchRef = useRef();
 
   const roleId = sessionStorage.getItem("role_id");
@@ -934,13 +936,29 @@ function ProjectComponent() {
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
-              // assigned_ba: temp[key].assigned_ba,
-              // assigned_dev: temp[key].assigned_dev,
-              // assigned_tester: temp[key].assigned_tester,
             });
           }
           setData(null);
           setData(data);
+
+          let exportData = [];
+          let count = 1;
+          for (const key in data) {
+            exportData.push({
+              counter: count++,
+              // id: data[key].id,
+              project_name: data[key].project_name,
+              projectReviewer: data[key].projectReviewer,
+              is_active: data[key].is_active ==1 ?"Active":"Deactive",
+              description: data[key].description,
+              remark: data[key].remark,
+              created_at: data[key].created_at,
+              created_by: data[key].created_by,
+              updated_at: data[key].updated_at,
+              updated_by: data[key].updated_by,
+            });
+          }
+          setExportData(exportData);
         }
       })
       .catch((error) => {
@@ -1033,6 +1051,11 @@ function ProjectComponent() {
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
+            <ExportToExcel
+              className="btn btn-sm btn-danger"
+              apiData={exportData}
+              fileName="Project master Records"
+            />
           </div>
         </div>
       </div>

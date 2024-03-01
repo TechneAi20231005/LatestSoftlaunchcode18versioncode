@@ -419,6 +419,19 @@ function SubModuleComponent() {
     },
     { name: "Remark", selector: (row) => row.remark, sortable: true },
     { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    {
+      name: "Created By",
+      width: "10%",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
+    {
+      name: "Created At",
+      width: "10%",
+      selector: (row) => row.created_at,
+      sortable: true,
+    },
+
     { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
   ];
 
@@ -445,6 +458,8 @@ function SubModuleComponent() {
               project_name: temp[key].project_name,
               is_active: temp[key].is_active,
               remark: temp[key].remark,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
             });
@@ -461,6 +476,8 @@ function SubModuleComponent() {
               project_name: temp[key].project_name,
               is_active: temp[key].is_active,
               remark: temp[key].remark,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
             });

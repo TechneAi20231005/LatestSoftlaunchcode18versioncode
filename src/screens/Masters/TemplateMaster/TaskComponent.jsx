@@ -225,8 +225,7 @@ export default function TaskComponent(props) {
                 </div>
                 <div className="modal-body">
                   <div className="mb-3">
-                    {console.log("show",show)}
-                    {console.log("props",props)}
+                   
                     {show && (
                       <div className="">
                         <label>Task Name</label>
@@ -296,7 +295,7 @@ export default function TaskComponent(props) {
                               : "00:00"
                           }
                           name="total_time"
-                           type="time"
+                           type="text"
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
