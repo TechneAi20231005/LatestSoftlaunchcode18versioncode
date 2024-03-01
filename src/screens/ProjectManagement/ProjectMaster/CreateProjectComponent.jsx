@@ -553,6 +553,7 @@ export default function CreateProjectComponent({ match }) {
   const history = useNavigate()
   const [notify, setNotify] = useState(null)
   const [customer, setCustomer] = useState(null)
+  console.log("customer",customer)
   const customerRef = useRef("")
   const fileInputRef = useRef(null);
 
@@ -641,9 +642,11 @@ export default function CreateProjectComponent({ match }) {
   const [dev, setDev] = useState(null)
   const [tester, setTester] = useState(null)
   const [users, setUsers] = useState(null)
+  console.log("users",users)
 
   const loadData = async () => {
     await new CustomerService().getCustomer().then((res) => {
+      console.log(res)
       if (res.status == 200) {
         if (res.data.status == 1) {
           // const data=res.data.data.filter(d=>d.is_active==1);
@@ -682,7 +685,10 @@ export default function CreateProjectComponent({ match }) {
     // })
 
     await new UserService().getUser().then((res) => {
+      console.log("userssss",res)
+    
       if (res.status === 200) {
+     
         if (res.data.status == 1) {
           const user = res.data.data.filter(d => d.is_active == 1)
           setBa( res.data.data.filter(d=> d.is_active == 1 && d.account_for == "SELF" ).map(d=> ({value:d.id, label:d.first_name + " " + d.last_name})))
@@ -692,7 +698,7 @@ export default function CreateProjectComponent({ match }) {
             }
             return 0;
           });  
-          setUsers(user.map(d => ({ value: d.id, label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")" })))
+          setUsers( res.data.data.filter(d=> d.is_active == 1 && d.account_for == "SELF" ).map(d=> ({value:d.id, label:d.first_name + " " + d.last_name})))
         }
       }
     });

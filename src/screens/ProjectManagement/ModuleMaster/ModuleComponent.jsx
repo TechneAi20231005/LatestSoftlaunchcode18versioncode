@@ -547,6 +547,18 @@ function ModuleComponent() {
     },
 
     {
+      name: "Created By",
+      width: "10%",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
+    {
+      name: "Created At",
+      width: "10%",
+      selector: (row) => row.created_at,
+      sortable: true,
+    },
+    {
       name: "Updated By",
       width: "10%",
       selector: (row) => row.updated_by,
@@ -580,6 +592,9 @@ function ModuleComponent() {
               project_name: temp[key].project_name,
               is_active: temp[key].is_active,
               remark: temp[key].remark,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
+
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
               description: temp[key].description,
@@ -596,10 +611,13 @@ function ModuleComponent() {
               id: data[key].id,
               module_name: data[key].module_name,
               project_name: data[key].project_name,
-              is_active: data[key].is_active,
+              is_active: data[key].is_active == 1 ? "Active" : "Deactive",
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
+              created_by: temp[key].created_by,
+
+              updated_at: temp[key].updated_at,
               description: data[key].description,
             });
           }

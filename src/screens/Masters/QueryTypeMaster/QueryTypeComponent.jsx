@@ -1699,6 +1699,7 @@ function QueryTypeComponent() {
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
+ 
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -3013,11 +3014,12 @@ function QueryTypeComponent() {
                   )}
                 </div>
               </div>
+              {console.log("heySS",modalQueryGroup.modalDataQueryGroup)}
           
               {modalQueryGroup.modalDataQueryGroup && (
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Status: <Astrick color="red" size="13px" />
+                    StatusSS: <Astrick color="red" size="13px" />
                   </label>
                   <div className="row">
                     <div className="col-md-2">
@@ -3029,6 +3031,7 @@ function QueryTypeComponent() {
                           id="is_active_1"
                           value="1"
                           // key={Math.random()}
+                          onClick={(e)=>handleIsActive(e)}
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 1
@@ -3058,6 +3061,8 @@ function QueryTypeComponent() {
                           readOnly={
                             modalQueryGroup.modalDataQueryGroup ? false : true
                           }
+                          onClick={(e)=>handleIsActive(e)}
+
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 0
