@@ -1342,6 +1342,9 @@ function EditDynamicForm({ match }) {
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
 
+
+  const sortDropDownData= dropdown&&dropdown.map((d)=>({value:d.id,lable:d.dropdown_name}))
+  console.log("sort",sortDropDownData)
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
@@ -1982,10 +1985,9 @@ function EditDynamicForm({ match }) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
+{console.log("input",rows)}
                                                     {rows && rows.map((item, idx) => (
-                                                      
-
+                                                    
                                                         <tr id={`addr_${idx}`} key={idx}>
                                                         {/* // <tr id={`addr_${item.id}`} key={item.id}> */}
                                                             <td>{idx + 1}</td>
@@ -2008,7 +2010,7 @@ function EditDynamicForm({ match }) {
                                                                     <option value="select">SELECT</option>
                                                                     <option value="radio">RADIO</option>
                                                                     <option value="checkbox">CHECKBOX</option>
-                                                                    {/* <option value="select-master">SELECT MASTER</option> */}
+                                                                    <option value="select-master">SELECT MASTER</option>
                                                                 </select>
                                                             </td>
                                                             <td>
@@ -2119,9 +2121,51 @@ function EditDynamicForm({ match }) {
                                                             </td> */}
 
 
+
+{console.log("value",rows)}
+
 <td>
 
 {rows[idx].inputType == "radio" && (
+  <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                        defaultValue={rows && rows[idx]?.inputAddOn?.inputDataSource}
+
+                                        // defaultValue={sortDropDownData&& sortDropDownData.filter((d)=>d.value === parseInt(rows&& rows[idx]?.inputAddOn?.inputDataSource)) }
+                                      >
+                                        
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}
+                                              selected={
+                                                parseInt(rows && rows[idx]?.inputAddOn?.inputDataSource) === d.value
+                                              }
+                                              >
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+
+                                          })}
+                                      </select>
+                                      {/* <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small> */}
+                                    </span>
+                                  )}
+
+
+
+
+                                  
+{rows[idx].inputType == "checkbox" && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -2129,22 +2173,98 @@ function EditDynamicForm({ match }) {
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
                                         name="inputOnChangeSource"
+                                        defaultValue={rows && rows[idx]?.inputAddOn?.inputDataSource}
                                       >
                                         <option>Select Data Source</option>
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
                                             return (
-                                              <option value={d.id}>
+                                              <option value={d.id}
+                                              selected={
+                                                parseInt(rows && rows[idx]?.inputAddOn?.inputDataSource) === d.value
+                                              }
+                                              >
                                                 {d.dropdown_name}
                                               </option>
                                             );
 
-                                            // if (selectedDropdown == d.id) {
-                                            //     return <option value={d.id} selected>{d.dropdown_name}</option>
-                                            // } else {
-                                            //     return <option value={d.id}>{d.dropdown_name}</option>
-                                            // }
+                                            
+                                          })}
+                                      </select>
+                                      {/* <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small> */}
+                                    </span>
+                                  )}
+
+
+
+{rows[idx].inputType == "select-master" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        defaultValue={rows && rows[idx]?.inputAddOn?.inputDataSource}
+                                        
+
+                                        // onChange={(e) => {
+                                        //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
+                                        // }}
+                                        
+                                        onChange={handleChange(idx)}
+                                        id="inputDataSource"
+                                        name="inputDataSource"
+                                        // value={props.selectData}
+                                      >
+                                        <option>Select Data Source</option>
+                                        <option value="user">
+                                          User Master
+                                        </option>
+                                        <option value="department">
+                                          Department Master
+                                        </option>
+                                        <option value="role">
+                                          Role Master
+                                        </option>
+                                        {/* <option value="department|id|department">Department Master</option> */}
+                                        {/* <option value="role|id|role">Role Master</option> */}
+                                      </select>
+                                      <small style={{ color: "red" }}>
+                                        <b>Select Data Source</b>
+                                      </small>
+                                    </span>
+                                  )}
+
+
+
+
+{rows[idx].inputType == "select" && (
+                                    <span>
+                                      <select
+                                        className="form-control form-control-sm"
+                                        // onChange={props.onGetChange}
+                                        onChange={handleChange(idx)}
+                                        id="inputOnChangeSource"
+                                        name="inputOnChangeSource"
+                                        defaultValue={rows && rows[idx]?.inputAddOn?.inputDataSource}
+
+                                      >
+                                        <option>Select Data Source</option>
+
+                                        {dropdown &&
+                                          dropdown.map((d, i) => {
+                                            return (
+                                              <option value={d.id}
+                                              selected={
+                                                parseInt(rows && rows[idx]?.inputAddOn?.inputDataSource) === d.value
+                                              }
+                                              >
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
+
+                                            
                                           })}
                                       </select>
                                       <small style={{ color: "red" }}>
@@ -2152,6 +2272,146 @@ function EditDynamicForm({ match }) {
                                       </small>
                                     </span>
                                   )}
+
+
+
+
+{rows[idx].inputType==="number" &&
+            <span>
+            <input
+            type="text"
+            placeholder='Eg. 0|100'
+            className="form-control form-control-sm"
+            onChange={handleChange(idx)}
+defaultValue={rows[idx].inputAddOn.inputRange}
+            id="inputRange"
+            name="inputRange"
+            min={rows[idx].inputAddOn.inputRange }
+            max={rows[idx].inputAddOn.inputRange }
+            />
+            <small style={{'color':'red'}}><b>Min|Max(Range)</b></small>
+            </span>   
+        } 
+
+
+
+        {rows[idx].inputType === "decimal" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Min Number:</label>
+                            <input
+                                type="number"
+            onChange={handleChange(idx)}
+                                
+                                id="inputRangeMin"
+                                name="inputRangeMin"
+                                className="form-control form-control-sm"
+                                defaultValue={rows[idx].inputAddOn.inputRangeMin}
+                                min={rows[idx].inputAddOn.inputRangeMin}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Max Number:</label>
+                            <input
+                                type="number"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMax"
+                                name="inputRangeMax"
+                                className="form-control form-control-sm"
+                                defaultValue={rows[idx].inputAddOn.inputRangeMax}
+                                max={rows[idx].inputAddOn.inputRangeMax}
+
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+                  
+        {rows[idx].inputType==="date" &&
+            <span>
+                <input
+                    type="text"
+                    onChange={handleChange(idx)}
+                  
+                    id="inputDateRange"
+                    name="inputDateRange"
+                    placeholder='Eg. 2022-01-01|2022-02-01'
+                    className="form-control form-control-sm"
+                    min={rows[idx].inputAddOn.inputDateRange }
+                    max={rows[idx].inputAddOn.inputDateRange}
+                    defaultValue={rows[idx].inputAddOn.inputRadio}
+
+                />
+                <small style={{'color':'red'}}><b>Min|Max (YYYY-MM-DD)</b></small>
+            </span>   
+        }        
+
+
+{rows[idx].inputType === "time" &&
+                    <div className="d-flex justify-content-between" key={rows[idx].key}>
+                        <div class="form-group">
+                            <label>Min Time:</label>
+                            <input
+                                type="time"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMin"
+                                name="inputRangeMin"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                defaultValue={rows[idx].inputAddOn.inputRangeMin}
+
+                                min={rows[idx].inputAddOn.inputRangeMin}
+                            // max={props.data.inputAddOn.inputRangeMax ? props.data.inputAddOn.inputRangeMax : ''}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Max Time:</label>
+                            <input
+                                type="time"
+                                onChange={handleChange(idx)}
+
+                                id="inputRangeMax"
+                                name="inputRangeMax"
+                                className="form-control form-control-sm"
+                                defaultValue={rows[idx].inputAddOn.inputRangeMax}
+
+                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                // min={props.data.inputAddOn.inputRangeMin ? props.data.inputAddOn.inputRangeMin : ''}
+                                max={rows[idx].inputAddOn.inputRangeMax}
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+{
+                    rows[idx].inputType === "datetime-local" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Date-time:</label>
+                            <input
+                                type="datetime-local"
+                                onChange={handleChange(idx)}
+                                defaultValue={rows[idx].inputAddOn.inputDateTime}
+
+                                id="datetime-local"
+                                name="datetime-local"
+                                className="form-control form-control-sm"
+                                min={rows[idx].inputAddOn.inputDateTime}
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+
+
                                 </td>
 
 
@@ -2250,6 +2510,7 @@ function EditDynamicForm({ match }) {
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
+                  {console.log("dataF==>",data)}
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
                       var range = data.inputAddOn.inputRange.split("|");

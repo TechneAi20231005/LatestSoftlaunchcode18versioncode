@@ -64,7 +64,6 @@ export default function EditTicketComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
-  const dispatch = useDispatch()
   // const projectDropdown = useSelector(ProjectMasterSlice => ProjectMasterSlice.projectMaster.projectDropDownData)
   // const moduleData = useSelector(ModuleSlice => ModuleSlice.moduleMaster.sortModuleData)
   // const subModuleData = useSelector(SubModuleMasterSlice => SubModuleMasterSlice.subModuleMaster.sortSubModuleData)
@@ -83,9 +82,14 @@ export default function EditTicketComponent({ match }) {
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
+  const dispatch = useDispatch();
+
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 16));
+
+console.log("c===>",checkRole)
   const [projectDropdown, setProjectDropdown] = useState();
 
   const [moduleData, setModuleData] = useState();
@@ -448,14 +452,17 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   console.log("res==>",res)
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       {console.log("getRoleID",getRoleId)}
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new DesignationService().getdesignatedDropdown().then((res) => {
       if (res.status === 200) {
@@ -760,6 +767,8 @@ export default function EditTicketComponent({ match }) {
     loadData();
     setConfirmationModal(false, null);
     loadAttachment();
+    dispatch(getRoles())
+
     // if (!projectDropdown.length) {
     //   dispatch(getprojectData())
     // }

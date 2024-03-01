@@ -315,7 +315,8 @@ function CreateDynamicForm() {
 
   const handleChange = (idx, type) => async (e) => {
 
-    setFormShow(formShow == true ? false : true);
+    // setFormShow(formShow == true ? false : true);
+    setFormShow(false)
 
     setIndex({ index: idx });
 
@@ -683,6 +684,7 @@ function CreateDynamicForm() {
   };
 
   const handldeFormShow = () => {
+    
     setFormShow(formShow == true ? false : true);
   };
 
@@ -1272,6 +1274,25 @@ function CreateDynamicForm() {
                 }
 
 
+
+{
+                    rows[idx].inputType === "datetime-local" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Date-time:</label>
+                            <input
+                                type="datetime-local"
+                                onChange={handleChange(idx)}
+
+                                id="datetime-local"
+                                name="datetime-local"
+                                className="form-control form-control-sm"
+                                min={rows[idx].inputAddOn.inputDateTime}
+                            />
+                        </div>
+                    </div>
+                }
+
   
 
 
@@ -1457,7 +1478,7 @@ function CreateDynamicForm() {
                                                     />
                                                 } */}
 
-                        {data.inputType === "date" && (
+                        {/* {data.inputType === "date" && (
                           <div className="form-control">
                             <DatePicker
                               onChange={onChangeDate}
@@ -1466,7 +1487,25 @@ function CreateDynamicForm() {
                               style={{ width: "100%" }}
                             />
                           </div>
-                        )}
+                        )} */}
+
+{data.inputType === "date" && (
+  <div className="form-control">
+    <DatePicker
+      onChange={onChangeDate}
+      value={dateValue}
+      format={data.inputFormat}
+      style={{
+        width: "100%",
+        fontFamily: "Arial, sans-serif",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        fontSize: "16px",
+      }}
+    />
+  </div>
+)}
+
 
                         {data.inputType === "datetime-local" && (
                           <input
@@ -1674,6 +1713,10 @@ function CreateDynamicForm() {
       </div>
     </div>
   ))}
+
+
+
+
 </div>
 
                           

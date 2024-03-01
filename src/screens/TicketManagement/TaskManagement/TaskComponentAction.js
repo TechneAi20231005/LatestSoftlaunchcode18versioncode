@@ -195,7 +195,7 @@ export const getmoduleSetting = createAsyncThunk(
       const service = new ModuleSetting();
       const response = await service.getSettingByName(module_name,submodule_name);
 
-      console.log("reBpm", response);
+      console.log("reBpmm", response);
       return response;
     } catch (error) {
       throw error;

@@ -158,6 +158,7 @@ export default function TaskComponent({ match }) {
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
+            console.log("resTask",res.data.data)
 
             res.data.data.map((tasks, index) => {
               tasks.taskData.forEach((d, i) => {
