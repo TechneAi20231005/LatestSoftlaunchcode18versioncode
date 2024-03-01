@@ -973,6 +973,21 @@ function CreateDynamicForm() {
                                   />
                                 </td>
                                 <td>
+
+                                  {item.inputType === "date" ?
+                                   <input
+                                   type="date"
+                                   name="inputDefaultValue"
+                                   defaultValue={item.inputDefaultValue}
+                                   onChange={handleChange(idx)}
+                                   className="form-control form-control-sm"
+                                   onKeyPress={(e) => {
+                                     Validation.CharactersNumbersSpeicalOnly(
+                                       e
+                                     );
+                                   }}
+                                 /> :
+                                
                                   <input
                                     type="text"
                                     name="inputDefaultValue"
@@ -985,6 +1000,7 @@ function CreateDynamicForm() {
                                       );
                                     }}
                                   />
+}
                                 </td>
                                 <td>
                                   <input
@@ -1181,7 +1197,7 @@ function CreateDynamicForm() {
             min={rows[idx].inputAddOn.inputRange }
             max={rows[idx].inputAddOn.inputRange }
             />
-            <small style={{'color':'red'}}><b>Min|Max(Range)</b></small>
+            <small style={{'color':'black'}}><b>Min|Max(Range)</b></small>
             </span>   
         } 
 

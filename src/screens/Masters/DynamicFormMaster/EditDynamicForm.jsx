@@ -1985,7 +1985,7 @@ function EditDynamicForm({ match }) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-{console.log("input",rows)}
+{console.log("input===>",rows)}
                                                     {rows && rows.map((item, idx) => (
                                                     
                                                         <tr id={`addr_${idx}`} key={idx}>
@@ -2063,11 +2063,13 @@ function EditDynamicForm({ match }) {
                                                                     }}
                                                                 />
                                                             </td>
+
+                                                            {console.log("man==",item)}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMandatory"
-                                                                    defaultValue={item.inputMandatory}
+                                                                    defaultChecked={item.inputMandatory === true ? true : false}
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
@@ -2078,7 +2080,7 @@ function EditDynamicForm({ match }) {
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMultiple"
-                                                                    defaultValue={item.inputMultiple}
+                                                                    defaultChecked={item.inputMultiple === true ? true : false}
                                                                     onChange={handleChange(idx)}
 
                                                                 />
@@ -2097,7 +2099,6 @@ function EditDynamicForm({ match }) {
                                                                     </select>
                                                                 }
                                                             </td>
-{console.log("rowrow",rows)}
                                                             {/* <td>
                                                                 {rows &&
 
@@ -2333,15 +2334,15 @@ defaultValue={rows[idx].inputAddOn.inputRange}
         {rows[idx].inputType==="date" &&
             <span>
                 <input
-                    type="text"
+                    type="date"
                     onChange={handleChange(idx)}
                   
                     id="inputDateRange"
                     name="inputDateRange"
                     placeholder='Eg. 2022-01-01|2022-02-01'
                     className="form-control form-control-sm"
-                    min={rows[idx].inputAddOn.inputDateRange }
-                    max={rows[idx].inputAddOn.inputDateRange}
+                    // min={rows[idx].inputAddOn.inputDateRange }
+                    // max={rows[idx].inputAddOn.inputDateRange}
                     defaultValue={rows[idx].inputAddOn.inputRadio}
 
                 />
@@ -2539,6 +2540,8 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                             className="form-control form-control-sm"
                           />
                         )}
+
+                        
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
