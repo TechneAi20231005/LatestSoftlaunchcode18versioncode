@@ -2064,12 +2064,12 @@ function EditDynamicForm({ match }) {
                                                                 />
                                                             </td>
 
-                                                            {console.log("man==",item)}
+                                                            {console.log("man==",item.inputMandatory)}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMandatory"
-                                                                    defaultChecked={item.inputMandatory === true ? true : false}
+                                                                    checked={item &&item?.inputMandatory === true ? true : false}
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
