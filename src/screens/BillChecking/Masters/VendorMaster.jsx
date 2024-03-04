@@ -4229,9 +4229,6 @@ function VendorMaster({ match }) {
     },
     // { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
 
-
-
-
     {
       name: "Vendor Name",
       selector: (row) => row["Vendor Name"],
@@ -4257,9 +4254,6 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-
-
-
 
     {
       name: "Address",
@@ -4492,10 +4486,11 @@ function VendorMaster({ match }) {
     });
 
     await new VendorMasterService().getActivePaymentTemplate().then((res) => {
-      if (res.status === 200) {
-        setPayment(res.data.data);
+      if (res?.status === 200) {
+        console.log("filter data payment" ,res.data.data )
+        setPayment(res?.data?.data);
         setPaymentDropdown(
-          res.data.data
+          res?.data?.data
             .filter((d) => d.is_active === 1)
             .map((i) => ({ value: i.id, label: i.template_name }))
 
@@ -4836,7 +4831,7 @@ function VendorMaster({ match }) {
     });
   };
   const [panattachment, setPanAttachment] = useState();
-  console.log("panattachment",panattachment)
+  console.log("panattachment", panattachment);
 
   const uploadPanAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -5951,20 +5946,25 @@ function VendorMaster({ match }) {
                       <div>
                         {modal.modalData.adhar_attachment.map(
                           (attachment, index) => (
-                            <div key={index}>
-                              <a
-                                href={`${_attachmentUrl}/${attachment}`}
-                                target="_blank"
-                                download
-                                className="btn btn-info btn-sm p-0 mr-2"
-                              >
-                                <i
-                                  className="icofont-download"
-                                  style={{ fontSize: "15px" }}
+                            <div
+                              className="d-flex align-items-center mb-2"
+                              key={index}
+                            >
+                              <div className="mr-2">
+                                <a
+                                  href={`${_attachmentUrl}/${attachment}`}
+                                  target="_blank"
+                                  download
+                                  className="btn btn-info btn-sm p-0 mr-2"
                                 >
-                                  Download
-                                </i>
-                              </a>
+                                  <i
+                                    className="icofont-download"
+                                    style={{ fontSize: "15px" }}
+                                  >
+                                    Download
+                                  </i>
+                                </a>
+                              </div>
                               <OverlayTrigger
                                 overlay={<Tooltip>{attachment} </Tooltip>}
                               >
@@ -6176,53 +6176,7 @@ function VendorMaster({ match }) {
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
 
-                      {/* {modal.modalData && modal.modalData.pan_attachment && (
-                        <a
-                          href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
-                          target="_blank"
-                          downlaod
-                          className="btn btn-info btn-sm p-0"
-                          accept="image/jpg,image/jpeg,image/png,application/pdf"
-                          onChange={(e) => {
-                            const selectedFile = e.target.files[0];
-
-                            if (
-                              selectedFile.type === "image/jpg" ||
-                              selectedFile.type === "image/jpeg" ||
-                              selectedFile.type === "image/png" ||
-                              selectedFile.type === "application/pdf"
-                            ) {
-                              // File type is allowed
-                            } else {
-                              // Check if the file type is BMP
-                              if (selectedFile.type === "image/bmp") {
-                                alert(
-                                  "Invalid file format. BMP files are not allowed."
-                                );
-                              } else {
-                                alert(
-                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                                );
-                              }
-                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                            }
-
-                            uploadPanAttachmentHandler(e, "UPLOAD", "");
-                            maxLengthCheck(e, "PAN");
-                          }}
-                        >
-                          <i
-                            class="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                          <p>{modal.modalData._attachmentUrl}</p>
-                        </a>
-                      )} */}
-
-
-{console.log("pp",modal.modalData)}
+                      {console.log("pp", modal.modalData)}
                       {modal.modalData &&
                         modal.modalData.pan_attachment &&
                         modal.modalData.pan_attachment.map(
@@ -6301,6 +6255,7 @@ function VendorMaster({ match }) {
                     />
                   </div>
 
+{console.log("panattachment",panattachment)}
                   {panattachment &&
                     panattachment.map((attachment, index) => {
                       return (
@@ -6350,9 +6305,6 @@ function VendorMaster({ match }) {
                         </div>
                       );
                     })}
-
-
-
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -6532,64 +6484,58 @@ function VendorMaster({ match }) {
                         maxLengthCheck(e, "GST");
                       }}
                     />
-                     </div>
-                    
+                  </div>
 
-                    {/* <div className="d-flex"> */}
-                    {selectedFiles &&
-                      selectedFiles.map((attachment, index) => {
-                        return (
+                  {/* <div className="d-flex"> */}
+                  {selectedFiles &&
+                    selectedFiles.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="justify-content-end"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
                           <div
-                            key={index}
-                            className="justify-content-end"
-                            style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
                               src={attachment.tempUrl}
                               style={{ height: "100%", width: "100%" }}
                             />{" "}
                             * */}
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadAttachmentHandler(e, "DELETE", index);
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                 
+                        </div>
+                      );
+                    })}
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
@@ -6871,65 +6817,61 @@ function VendorMaster({ match }) {
                         maxLengthCheck(e, "MSME");
                       }}
                     />
-                      </div>
-                
+                  </div>
 
-                  
-                      {MSMEselectedFiles &&
-                        MSMEselectedFiles.map((attachment, index) => {
-                          return (
-                            <div
-                              key={index}
-                              className="justify-content-start"
-                              style={{
-                                marginRight: "20px",
-                                padding: "5px",
-                                maxWidth: "250px",
-                              }}
-                            >
-                              <div
-                                className="card"
-                                style={{ backgroundColor: "#EBF5FB" }}
-                              >
-                                <div className="card-header">
-                                  <span>{attachment.fileName}</span>
-                                  {/* <img
+                  {MSMEselectedFiles &&
+                    MSMEselectedFiles.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="justify-content-start"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
+                          <div
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
+                          >
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
                                 src={attachment.tempUrl}
                                 style={{ height: "100%", width: "100%" }}
                               />{" "} */}
-                                  *
-                                  <div className="d-flex justify-content-between p-0 mt-1">
-                                    <a
-                                      href={`${attachment.tempUrl}`}
-                                      target="_blank"
-                                      className="btn btn-warning btn-sm p-0 px-1"
-                                    >
-                                      <i class="icofont-ui-zoom-out"></i>
-                                    </a>
-                                    <button
-                                      className="btn btn-danger text-white btn-sm p-1"
-                                      type="button"
-                                      onClick={(e) => {
-                                        uploadMSMEAttachmentHandler(
-                                          e,
-                                          "DELETE",
-                                          index
-                                        );
-                                      }}
-                                    >
-                                      <i
-                                        class="icofont-ui-delete"
-                                        style={{ fontSize: "15px" }}
-                                      ></i>
-                                    </button>
-                                  </div>
-                                </div>
+                              *
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadMSMEAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
-                          );
-                        })}
-                  
-                
+                          </div>
+                        </div>
+                      );
+                    })}
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -7022,7 +6964,7 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-                  
+
                   <div className=" col-sm-3 mt-2">
                     <label className="col-form-label" htmlFor="attachment">
                       <b>Passbook Attachment :</b>
@@ -7203,63 +7145,62 @@ function VendorMaster({ match }) {
                         }}
                       />
                     )}
-                         </div>
+                  </div>
 
-                    {passBookSelectedFiles &&
-                      passBookSelectedFiles.map((attachment, index) => {
-                        return (
+                  {passBookSelectedFiles &&
+                    passBookSelectedFiles.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="justify-content-start"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
                           <div
-                            key={index}
-                            className="justify-content-start"
-                            style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
                                 src={attachment.tempUrl}
                                 style={{ height: "100%", width: "100%" }}
                               />{" "} */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassBookAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
+                              *
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadPassBookAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
+                        </div>
+                      );
+                    })}
 
-                 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
                       Account No :<Astrick color="red" size="13px" />
@@ -7536,67 +7477,62 @@ function VendorMaster({ match }) {
                         }}
                       />
                     )}
-                    </div>
+                  </div>
 
-                
-                    {chequeAttachmentSelectedFiles &&
-                      chequeAttachmentSelectedFiles.map((attachment, index) => {
-                        return (
+                  {chequeAttachmentSelectedFiles &&
+                    chequeAttachmentSelectedFiles.map((attachment, index) => {
+                      return (
+                        <div
+                          key={index}
+                          // className="justify-content-start"
+                          style={{
+                            marginRight: "20px",
+                            padding: "5px",
+                            maxWidth: "250px",
+                          }}
+                        >
                           <div
-                            key={index}
-                            // className="justify-content-start"
-                         style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
+                            className="card"
+                            style={{ backgroundColor: "#EBF5FB" }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
+                            <div className="card-header">
+                              <span>{attachment.fileName}</span>
+                              {/* <img
                               src={attachment.tempUrl}
                               style={{ height: "100%", width: "100%" }}
                             />{" "}
                             * */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassChequeAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
+                              *
+                              <div className="d-flex justify-content-between p-0 mt-1">
+                                <a
+                                  href={`${attachment.tempUrl}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                >
+                                  <i class="icofont-ui-zoom-out"></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    uploadPassChequeAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
+                                  }}
+                                >
+                                  <i
+                                    class="icofont-ui-delete"
+                                    style={{ fontSize: "15px" }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-             
-
-
-
+                        </div>
+                      );
+                    })}
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -7900,13 +7836,6 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-
-
-                  
-             
-
-                
-                 
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">

@@ -1311,6 +1311,7 @@ function EditCustomer({ match }) {
                       />
                     </div>
                   </div>
+                {console.log("data",data)}
 
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
@@ -1327,7 +1328,7 @@ function EditCustomer({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active
+                                data && data.is_active ==1
                                   ? true
                                   : !data
                                   ? true
@@ -1352,7 +1353,7 @@ function EditCustomer({ match }) {
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              //defaultChecked={data && data.is_active==1 ? true :false}
+                              defaultChecked={data && data.is_active==0 ? true :false}
                             />
                             <label
                               className="form-check-label"
