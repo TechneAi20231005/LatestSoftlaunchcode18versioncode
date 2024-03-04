@@ -47,7 +47,7 @@ const EditTemplateComponent = ({ match, props }) => {
   );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+      MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
   );
   // const notify = useSelector(
   //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify

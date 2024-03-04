@@ -2008,7 +2008,7 @@ setIsOriginalBillReceived(false);
                     </button>
                   </div>
                   <span className="fw-bold mt-2" style={{ color: "red" }}>
-                    Note:- If you are selecting any from date selection of to
+                    Note:- If you are selecting any from date selection, then to
                     date is Mandatory
                   </span>
                 </div>

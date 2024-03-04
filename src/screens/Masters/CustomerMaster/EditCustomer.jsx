@@ -983,6 +983,7 @@ function EditCustomer({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
+  
     setContactNumber(contactNumber);
     if (
       contactNumber.charAt(0) == "9" ||
@@ -1006,17 +1007,17 @@ function EditCustomer({ match }) {
     var flag = 1;
     // var a = JSON.stringify(Object.fromEntries(formData))
     // console.log(a)
-
-
-    
+    if(!contactNumber){
+      alert('Enter the Contact Number')
+      return
+    }
+   
 
     var customerType = formData.getAll("customer_type_id");
     var selectEmail = formData.getAll("email_id");
     var selectCountry = formData.getAll("country_id");
     var selectState = formData.getAll("state_id");
     var selectCity = formData.getAll("city_id");
-
-    
 
     if (
       customerType == "" ||
@@ -1311,7 +1312,7 @@ function EditCustomer({ match }) {
                       />
                     </div>
                   </div>
-                {console.log("data",data)}
+                  {console.log("data", data)}
 
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
@@ -1328,7 +1329,7 @@ function EditCustomer({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active ==1
+                                data && data.is_active == 1
                                   ? true
                                   : !data
                                   ? true
@@ -1353,7 +1354,9 @@ function EditCustomer({ match }) {
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              defaultChecked={data && data.is_active==0 ? true :false}
+                              defaultChecked={
+                                data && data.is_active == 0 ? true : false
+                              }
                             />
                             <label
                               className="form-check-label"

@@ -4420,14 +4420,6 @@ function VendorMaster({ match }) {
       }
     });
 
-    // await new VendorMasterService().getVendorMasterById().then((res)=>{
-    //     if(res.status === 200){
-    //         if(res,data.status == 1){
-    //             setData(res.data.data)
-    //         }
-    //     }
-    // })
-
     await new BillCheckingTransactionService()
       .getUpdatedAuthorities()
       .then((res) => {
@@ -4487,7 +4479,7 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActivePaymentTemplate().then((res) => {
       if (res?.status === 200) {
-        console.log("filter data payment" ,res.data.data )
+        console.log("filter data payment", res.data.data);
         setPayment(res?.data?.data);
         setPaymentDropdown(
           res?.data?.data
@@ -6255,7 +6247,7 @@ function VendorMaster({ match }) {
                     />
                   </div>
 
-{console.log("panattachment",panattachment)}
+                  {console.log("panattachment", panattachment)}
                   {panattachment &&
                     panattachment.map((attachment, index) => {
                       return (
