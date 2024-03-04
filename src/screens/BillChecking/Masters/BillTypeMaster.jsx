@@ -6,6 +6,8 @@ import BillTypeMasterService from "../../../services/Bill Checking/Masters/BillT
 import {_base, userSessionData } from "../../../settings/constants";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Link, useLocation } from "react-router-dom";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 function BillTypeMaster() {
   const location = useLocation()
@@ -79,7 +81,36 @@ function BillTypeMaster() {
       ),
     },
   
-    { name: "Bill Type", selector: (row) => row.bill_type, sortable: true },
+    // { name: "Bill Type", selector: (row) => row.bill_type, sortable: true },
+
+
+    {
+      name: "Bill Type",
+      selector: (row) => row.bill_type,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.bill_type && (
+            <OverlayTrigger overlay={<Tooltip>{row.bill_type} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.bill_type && row.bill_type.length < 10
+                    ? row.bill_type
+                    : row.bill_type.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -95,11 +126,150 @@ function BillTypeMaster() {
         </div>
       ),
     },
-    { name: "Remark", selector: (row) => row.remark, sortable: true },
-    { name: "Created At", selector: (row) => row.created_at, sortable: true },
-    { name: "Created By", selector: (row) => row.created_by, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    // { name: "Remark", selector: (row) => row.remark, sortable: true },
+
+    {
+      name: "Remark",
+      selector: (row) => row.remark,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.remark && (
+            <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.remark && row.remark.length < 10
+                    ? row.remark
+                    : row.remark.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+    // { name: "Created At", selector: (row) => row.created_at, sortable: true },
+
+    
+    {
+      name: "Created At",
+      selector: (row) => row.created_at,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.created_at && row.created_at.length < 10
+                    ? row.created_at
+                    : row.created_at.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+
+    {
+      name:"Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.created_by && row.created_by.length < 10
+                    ? row.created_by
+                    : row.created_by.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+    {
+      name: "Updated At",
+      selector: (row) => row.updated_at,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.updated_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.updated_at && row.updated_at.length < 10
+                    ? row.updated_at
+                    : row.updated_at.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+
+
+    {
+      name: "Updated By",
+      selector: (row) => row.updated_by,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.updated_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.updated_by && row.updated_by.length < 10
+                    ? row.updated_by
+                    : row.updated_by.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+    // { name: "Created By", selector: (row) => row.created_by, sortable: true },
+    // { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    // { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
   ];
 
   const loadData = async () => {

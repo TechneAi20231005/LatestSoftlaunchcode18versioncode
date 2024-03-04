@@ -1255,7 +1255,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <label className=" col-form-label">
                         <b>
                           {" "}
-                          Recieved Date: <Astrick color="red" size="13px" />
+                          Received Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
                       <input
