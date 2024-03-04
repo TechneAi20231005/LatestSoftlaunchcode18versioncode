@@ -6693,7 +6693,7 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {localStorage.getItem("account_for") === "SELF" && (
+                {/* {localStorage.getItem("account_for") === "SELF" && ( */}
                   <Tab
                     eventKey="departmenyourTaskt"
                     title="Departmentwise Tickets"
@@ -6757,7 +6757,7 @@ export default function MyTicketComponent() {
                       </div>
                     </div>
                   </Tab>
-                )}
+                {/* )} */}
 
                 {localStorage.getItem("account_for") === "SELF" && (
                   <Tab eventKey="your_task" title="Your Task">

@@ -1179,9 +1179,11 @@ function CreateDynamicForm() {
                                             );
                                           })}
                                       </select>
-                                      <small style={{ color: "red" }}>
-                                        <b>Select Data Source</b>
-                                      </small>
+                                      {!selectedValue && (
+                                        <small style={{ color: "red" }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )}
                                     </span>
                                   )}
 
@@ -1205,9 +1207,11 @@ function CreateDynamicForm() {
                                             );
                                           })}
                                       </select>
-                                      <small style={{ color: "red" }}>
-                                        <b>Select Data Source</b>
-                                      </small>
+                                      {!selectedValue && (
+                                        <small style={{ color: "red" }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )}
                                     </span>
                                   )}
 
