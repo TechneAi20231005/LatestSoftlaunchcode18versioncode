@@ -1985,7 +1985,7 @@ function EditDynamicForm({ match }) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-{console.log("input",rows)}
+{console.log("input===>",rows)}
                                                     {rows && rows.map((item, idx) => (
                                                     
                                                         <tr id={`addr_${idx}`} key={idx}>
@@ -2063,11 +2063,13 @@ function EditDynamicForm({ match }) {
                                                                     }}
                                                                 />
                                                             </td>
+
+                                                            {console.log("man==",item)}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMandatory"
-                                                                    defaultValue={item.inputMandatory}
+                                                                    defaultChecked={item.inputMandatory === true ? true : false}
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
@@ -2078,7 +2080,7 @@ function EditDynamicForm({ match }) {
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMultiple"
-                                                                    defaultValue={item.inputMultiple}
+                                                                    defaultChecked={item.inputMultiple === true ? true : false}
                                                                     onChange={handleChange(idx)}
 
                                                                 />
@@ -2097,7 +2099,6 @@ function EditDynamicForm({ match }) {
                                                                     </select>
                                                                 }
                                                             </td>
-{console.log("rowrow",rows)}
                                                             {/* <td>
                                                                 {rows &&
 
@@ -2333,15 +2334,15 @@ defaultValue={rows[idx].inputAddOn.inputRange}
         {rows[idx].inputType==="date" &&
             <span>
                 <input
-                    type="text"
+                    type="date"
                     onChange={handleChange(idx)}
                   
                     id="inputDateRange"
                     name="inputDateRange"
                     placeholder='Eg. 2022-01-01|2022-02-01'
                     className="form-control form-control-sm"
-                    min={rows[idx].inputAddOn.inputDateRange }
-                    max={rows[idx].inputAddOn.inputDateRange}
+                    // min={rows[idx].inputAddOn.inputDateRange }
+                    // max={rows[idx].inputAddOn.inputDateRange}
                     defaultValue={rows[idx].inputAddOn.inputRadio}
 
                 />
@@ -2510,7 +2511,7 @@ defaultValue={rows[idx].inputAddOn.inputRange}
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
-                  {console.log("dataF==>",data)}
+                  {console.log("dataF==>",data.inputAddOn.inputRange)}
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
                       var range = data.inputAddOn.inputRange.split("|");
@@ -2539,6 +2540,8 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                             className="form-control form-control-sm"
                           />
                         )}
+
+                        
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
@@ -2554,28 +2557,27 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                             {data.inputDefaultValue}
                           </textarea>
                         )}
-                        {/* {data.inputType === 'date' &&
-                                                <input
-                                                    type={data.inputType}
-                                                    id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                                                    name={data.inputName}
-                                                    defaultValue={data.inputDefaultValue}
-                                                    min={data.inputAddOn.inputDateRange ? range[0] : ''}
-                                                    max={data.inputAddOn.inputDateRange ? range[1] : ''}
-                                                    className="form-control form-control-sm"
-                                                />
-                                            } */}
+                      
 
-                        {data.inputType === "date" && (
-                          <div className="form-control">
-                            <DatePicker
-                              onChange={onChangeDate}
-                              value={dateValue}
-                              format={data.inputFormat}
-                              style={{ width: "100%" }}
-                            />
-                          </div>
-                        )}
+{data.inputType === "date" && (
+        <div className="form-control" style={{ width: "100%", position: "relative" }}>
+          <DatePicker
+            selected={dateValue}
+            onChange={onChangeDate}
+            dateFormat={data.inputFormat}
+            style={{
+              width: "100%",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              padding: "8px",
+              fontSize: "16px",
+              boxSizing: "border-box",
+            }}
+            className="custom-datepicker"
+          />
+        </div>
+      )}
+
 
                         {data.inputType === "datetime-local" && (
                           <input
@@ -2588,7 +2590,7 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.inputAddOn.inputDateTime}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -2606,16 +2608,17 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.inputAddOn.inputRadio}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
                           />
-                        )}
 
+                        )}
                         {data.inputType === "number" && (
+                        
                           <input
-                            type="number"
+                            type="text"
                             id={
                               data.inputName
                                 ? data.inputName
@@ -2624,12 +2627,15 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            // defaultValue={data.inputAddOn.inputRange}
+                            defaultValue={data.inputAddOn.inputRange}
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
                             className="form-control form-control-sm"
                           />
                         )}
+
+                        {console.log("input==>",data.inputAddOn.inputDataSource)}
 
                         {
                           data.inputType === "select" && (
@@ -2641,34 +2647,162 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                                       .toLowerCase()
                                   : ""
                               }
+                              defaultValue={data.inputAddOn.inputDataSource}
                               name={data.inputName}
                               className="form-control form-control-sm"
                             >
-                              <option>Select {data.inputName}</option>
-                              {data.inputAddOn.inputDataSourceData &&
-                                data.inputAddOn.inputDataSourceData.map(
+                              <option
+                              
+                              > {data.inputName}</option>
+                              {data.inputAddOn.inputRadio &&
+                                data.inputAddOn.inputRadio.map(
                                   (option) => {
                                     return (
-                                      <option value={option.value}>
+                                      <option
+                                      selected={
+                                        parseInt(data && data?.inputAddOn?.inputDataSource) === option.value
+                                      }
+                                      value={option.value}>
                                         {option.label}
                                       </option>
                                     );
                                   }
                                 )}
-                              z
+                            
                             </select>
                           )
 
-                          // <Select
-                          //     options={inputDataSource}
-                          //     isMulti
-                          //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                          //     name={data.inputName}
-                          //     className="form-control form-control-sm"
-                          //     required={true}
-                          //     value={data.inputName}
-                          // />
+                     
                         }
+
+
+
+{data.inputType === "radio" && (
+                         
+                         <div className="row mt-3">
+ {data && data.inputAddOn.inputRadio.map((i, index) => (
+   <div key={index} className="col">
+     <div className="form-check">
+       <input
+         className="form-check-input"
+         type="radio"
+         name="is_active"
+         id={`is_active_${index}`}
+         value="1"
+       />
+       <label
+         className="form-check-label"
+         htmlFor={`is_active_${index}`}
+       >
+         {i.label}
+       </label>
+     </div>
+   </div>
+ ))}
+ </div>
+
+                          
+)}
+
+
+
+{data.inputType === "checkbox" && (
+                         
+                         <div className="row mt-3">
+ {data && data.inputAddOn.inputRadio.map((i, index) => (
+   <div key={index} className="col">
+     <div className="form-check">
+     <input
+                              className="sm-1"
+                              type="checkbox"
+                              style={{ marginRight: "8px", marginLeft: "10px" }}
+                            />
+       <label
+         className="form-check-label"
+         htmlFor={`is_active_${index}`}
+       >
+         {i.label}
+       </label>
+     </div>
+   </div>
+))} 
+</div>
+
+                         
+                       )}
+
+
+
+{data.inputType === "decimal" &&
+                    <div className="d-flex justify-content-between">
+                        <div class="form-group">
+                            <label>Min Number:</label>
+                            <input
+                                type="number"
+            // onChange={handleChange(idx)}
+                                
+                                id="inputRangeMin"
+                                name="inputRangeMin"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                min={data.inputAddOn.inputRangeMin}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Max Number:</label>
+                            <input
+                                type="number"
+                                // onChange={handleChange(idx)}
+
+                                id="inputRangeMax"
+                                name="inputRangeMax"
+                                className="form-control form-control-sm"
+                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                max={data.inputAddOn.inputRangeMax}
+
+                            />
+                        </div>
+                    </div>
+                }
+
+
+
+{
+                          data.inputType === "select-master" && (
+                            <select
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              defaultValue={data.inputAddOn.inputDataSource}
+                              name={data.inputName}
+                              className="form-control form-control-sm"
+                            >
+                              <option
+                              
+                              > {data.inputName}</option>
+                              {data.inputAddOn.inputDataSourceData &&
+                                data.inputAddOn.inputDataSourceData.map(
+                                  (option) => {
+                                    return (
+                                      <option
+                                      selected={
+                                        parseInt(data && data?.inputAddOn?.inputDataSourceData) === option.value
+                                      }
+                                      value={option.value}>
+                                        {option.label}
+                                      </option>
+                                    );
+                                  }
+                                )}
+                            
+                            </select>
+                          )
+                                }
+
                       </div>
                     );
                   }
