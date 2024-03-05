@@ -681,7 +681,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
       // Check if the maximum 10 attachments condition is met
 
-      if (tempSelectedFile.length + data.attachment.length <= 10) {
+      if (tempSelectedFile?.length + data?.attachment?.length <= 10) {
         fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
       } else {

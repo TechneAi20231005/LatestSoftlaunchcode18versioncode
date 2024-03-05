@@ -12766,6 +12766,9 @@ function VendorMaster({ match }) {
     });
 
     await new VendorMasterService().getActiveCity().then((res) => {
+        console.log(res.data.data
+            .filter((d) => d.is_active == 1))
+
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
@@ -12830,13 +12833,20 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    console.log("form",form)
+    
+    if (selectedFiles) {
+        selectedFiles.forEach((file, index) => {
+          form.append(`pan_attachment[${index}]`, file.file, file.file.name);
+        });
+      }
+  
+    console.log("form", form);
+    form.delete("pan_attachment[]");
 
     setError(null);
     setNotify(null);
     var flag = 1;
     var msg = "";
-
 
     if (panattachment?.length > 0) {
       for (let i = 0; i < panattachment.length; i++) {
@@ -13102,26 +13112,67 @@ function VendorMaster({ match }) {
     }
   };
 
-  const [selectedFiles, setSelectedFiles] = useState();
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
+      var totalSize = 0; // Initialize total size
+
+      // Calculate the total size of all files in tempSelectedFile
+      for (var i = 0; i < tempSelectedFile.length; i++) {
+        totalSize += tempSelectedFile[i].file.size;
       }
-      setSelectedFiles(tempSelectedFile);
+
+      // Check if the total size of all files does not exceed 5MB
+      for (var i = 0; i < e.target.files.length; i++) {
+        const file = e.target.files[i];
+        const fileType = file.type;
+        const fileSize = file.size; // Get the file size in bytes
+
+        // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
+        if (validFileTypes.includes(fileType)) {
+          // Check if the total size of all files is less than or equal to 5MB
+          if (totalSize + fileSize <= 5 * 1024 * 1024) {
+            tempSelectedFile.push({
+              file: file,
+              fileName: file.name,
+              tempUrl: URL.createObjectURL(file),
+            });
+
+            totalSize += fileSize; // Update the total size
+          } else {
+            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+            alert("Total file size exceeds 5MB. Please select smaller files.");
+            break; // Stop processing more files
+          }
+        } else {
+          // Handle the case where an invalid file type is selected (e.g., show an error message)
+          alert(
+            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+          );
+        }
+      }
+
+      if (tempSelectedFile.length <= 10) {
+        fileInputRef.current.value = "";
+        setSelectedFiles(prevSelectedFiles => {
+            let tempSelectedFile = [...prevSelectedFiles];
+            // Your logic to modify tempSelectedFile
+            return tempSelectedFile;
+          });
+          
+      } else {
+        alert("You can only upload a maximum of 10 attachments.");
+      }
     } else if (type === "DELETE") {
-      gstInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
+    e.target.value = ""; // Reset the input field
   };
+
   const handleDeleteAttachment = (e, type, id) => {
     deleteAttachment(id).then((res) => {
       if (res.status === 200) {
@@ -13361,7 +13412,11 @@ function VendorMaster({ match }) {
     if (e) {
       const a = city.filter((d) => d.state_id == e.value);
       setCityDropdown((prev) => null);
-      setCityDropdown(a.map((d) => ({ value: d.id, label: d.city })));
+      setCityDropdown(a.filter((d) => d.is_active == 1)
+      .map((i) => ({
+        value: i.id,
+        label: i.city,
+      })));
     }
   };
 
@@ -14036,6 +14091,7 @@ function VendorMaster({ match }) {
                   <div className="col-sm-2">
                     <label className="form-label font-weight-bold">
                       City :<Astrick color="red" size="13px" />
+                      {console.log(cityDropdown)}
                     </label>
                     {cityDropdown && (
                       <Select
@@ -14469,85 +14525,6 @@ function VendorMaster({ match }) {
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
-
-                      {/* {modal.modalData && modal.modalData.pan_attachment && (
-                        <a
-                          href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
-                          target="_blank"
-                          downlaod
-                          className="btn btn-info btn-sm p-0"
-                          accept="image/jpg,image/jpeg,image/png,application/pdf"
-                          onChange={(e) => {
-                            const selectedFile = e.target.files[0];
-
-                            if (
-                              selectedFile.type === "image/jpg" ||
-                              selectedFile.type === "image/jpeg" ||
-                              selectedFile.type === "image/png" ||
-                              selectedFile.type === "application/pdf"
-                            ) {
-                              // File type is allowed
-                            } else {
-                              // Check if the file type is BMP
-                              if (selectedFile.type === "image/bmp") {
-                                alert(
-                                  "Invalid file format. BMP files are not allowed."
-                                );
-                              } else {
-                                alert(
-                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                                );
-                              }
-                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                            }
-
-                            uploadPanAttachmentHandler(e, "UPLOAD", "");
-                            maxLengthCheck(e, "PAN");
-                          }}
-                        >
-                          <i
-                            class="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                          <p>{modal.modalData._attachmentUrl}</p>
-                        </a>
-                      )} */}
-
-                      {modal.modalData &&
-                        modal.modalData.pan_attachment &&
-                        modal.modalData.pan_attachment.map(
-                          (attachment, index) => (
-                            <div key={index}>
-                              <a
-                                href={`${_attachmentUrl}/${attachment}`}
-                                target="_blank"
-                                download
-                                className="btn btn-info btn-sm p-0"
-                              >
-                                <i
-                                  className="icofont-download"
-                                  style={{ fontSize: "15px" }}
-                                >
-                                  Download
-                                </i>
-                              </a>
-                              <OverlayTrigger
-                                overlay={<Tooltip>{attachment} </Tooltip>}
-                              >
-                                <div>
-                                  <span title={attachment} className="ms-1">
-                                    {" "}
-                                    {attachment && attachment < 30
-                                      ? attachment
-                                      : attachment.substring(0, 20) + "...."}
-                                  </span>
-                                </div>
-                              </OverlayTrigger>
-                            </div>
-                          )
-                        )}
                     </label>
 
                     <input
@@ -14584,8 +14561,8 @@ function VendorMaster({ match }) {
                         }
                         // Check if attachment is required and input field is empty
 
-                        uploadPanAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "PAN");
+                        uploadAttachmentHandler(e, "UPLOAD", "");
+                        maxLengthCheck(e, "UPLOAD");
                       }}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
                       ref={fileInputRef}
@@ -14593,12 +14570,121 @@ function VendorMaster({ match }) {
                     />
                   </div>
 
-                  {panattachment &&
-                    panattachment.map((attachment, index) => {
+                  {modal.modalData &&
+                    modal.modalData.pan_attachment &&
+                    modal.modalData.pan_attachment.map((attachment, index) => (
+                      <div key={index}>
+                        <a
+                          href={`${_attachmentUrl}/${attachment}`}
+                          target="_blank"
+                          download
+                          className="btn btn-info btn-sm p-0"
+                        >
+                          <i
+                            className="icofont-download"
+                            style={{ fontSize: "15px" }}
+                          >
+                            Download
+                          </i>
+                        </a>
+                        <OverlayTrigger
+                          overlay={<Tooltip>{attachment} </Tooltip>}
+                        >
+                          <div>
+                            <span title={attachment} className="ms-1">
+                              {" "}
+                              {attachment && attachment < 30
+                                ? attachment
+                                : attachment.substring(0, 20) + "...."}
+                            </span>
+                          </div>
+                        </OverlayTrigger>
+                      </div>
+                    ))}
+                 <div
+                  //  className="d-flex"
+                  className="attachments-container"
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    maxWidth: "100%",
+                    maxHeight: "400px", // Example maximum height
+                    overflowY: "auto", // Enable vertical scrolling if needed
+                  }}
+                >
+                  {selectedFiles &&
+                    selectedFiles.map((attachment, index) => {
+                      return (
+                      
+                        <div
+                          key={index}
+                          style={{
+                            marginRight: "20px",
+                            marginBottom: "20px", // Add margin bottom for spacing between attachments
+                            width: "100px", // Set a fixed width for consistency
+                          }}
+                        >
+                          <div
+                            className="card"
+                            style={{
+                              backgroundColor: "#EBF5FB",
+                              height: "100%", // Set the height of the card to fill the container
+                              display: "flex", // Use flexbox to align content vertically
+                              flexDirection: "column", // Align content in a column layout
+                            }}
+                          >
+                            <div
+                              className="card-header"
+                              style={{ padding: "10px", overflow: "hidden" }}
+                            >
+                              <span
+                                // style={{
+                                //   overflow: "hidden",
+                                //   textOverflow: "ellipsis",
+                                //   whiteSpace: "nowrap",
+                                // }}
+                                style={{
+                                  display: "inline-block",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  maxWidth: "100%", // Ensure the span does not exceed the container width
+                                }}
+                              >
+                                {attachment.fileName}
+                              </span>
+                            </div>
+                            <div className="d-flex justify-content-between p-3">
+                              <a
+                                href={`${attachment.tempUrl}`}
+                                target="_blank"
+                                className="btn btn-warning btn-sm p-0 px-1"
+                              >
+                                <i className="icofont-ui-zoom-out"></i>
+                              </a>
+                              <button
+                                className="btn btn-danger text-white btn-sm p-1"
+                                type="button"
+                                onClick={(e) => {
+                                  uploadAttachmentHandler(e, "DELETE", index);
+                                }}
+                              >
+                                <i
+                                  className="icofont-ui-delete"
+                                  style={{ fontSize: "15px" }}
+                                ></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* {selectedFiles &&
+                    selectedFiles.map((attachment, index) => {
                       return (
                         <div
                           key={index}
-                          className="justify-content-end"
+                          className="justify-content-start"
                           style={{
                             marginRight: "20px",
                             padding: "5px",
@@ -14611,24 +14697,27 @@ function VendorMaster({ match }) {
                           >
                             <div className="card-header">
                               <span>{attachment.fileName}</span>
-
+                                                            <img
+                                src={attachment.tempUrl}
+                                style={{ height: "100%", width: "100%" }}
+                              />{" "}
+                              *
                               <div className="d-flex justify-content-between p-0 mt-1">
                                 <a
                                   href={`${attachment.tempUrl}`}
                                   target="_blank"
                                   className="btn btn-warning btn-sm p-0 px-1"
                                 >
-                                  <i class="icofont-ui-zoom-out"></i>
+                                  <i
+                                    className="icofont-download"
+                                    style={{ fontSize: "10px", height: "15px" }}
+                                  ></i>
                                 </a>
                                 <button
                                   className="btn btn-danger text-white btn-sm p-1"
                                   type="button"
                                   onClick={(e) => {
-                                    uploadPanAttachmentHandler(
-                                      e,
-                                      "DELETE",
-                                      index
-                                    );
+                                    handleDeleteAttachment(e, index);
                                   }}
                                 >
                                   <i
@@ -14641,7 +14730,8 @@ function VendorMaster({ match }) {
                           </div>
                         </div>
                       );
-                    })}
+                    })} */}
+                </div>
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">

@@ -307,8 +307,7 @@ export default function CreateModuleComponent({match}) {
               new ErrorLogService().sendErrorLog("Module", "Create_Module", "INSERT", errorObject.data.message);
             } else {
               console.error("Error object does not contain expected 'response' property:", error);
-              // Handle cases where 'response' is not available
-              // You may want to log or handle this case accordingly
+        
             }
           });
           
