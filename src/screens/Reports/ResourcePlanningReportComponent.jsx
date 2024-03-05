@@ -54,9 +54,9 @@ export default function ResourcePlanningReportComponent() {
     const tempUserData = [];
     const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-         if (res.status === 200) {
+      if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1);
+        const data = res.data.data.filter((d) => d.is_active === 1 && d.account_for === "SELF");
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -136,6 +136,7 @@ export default function ResourcePlanningReportComponent() {
               setShowLoaderModal(false);
               let sr = 1;
               const data = res.data.data;
+              console.log("data resource planing", data)
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -225,7 +226,6 @@ export default function ResourcePlanningReportComponent() {
             <th>Task Hour</th>
           </tr>
         </thead>
-          {console.log("ff",data)}
         <tbody>
           {data.tasks &&
             data.tasks.length > 0 &&
@@ -235,9 +235,9 @@ export default function ResourcePlanningReportComponent() {
                   <td>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
                   <td >
-                    <Link  to={`/${_base}/Ticket/Task/${task.id}`}> 
-                      <span style={{fontWeight:'bold'}}> {task.ticket_id} </span>
-                      
+                    <Link to={`/${_base}/Ticket/Task/${task.id}`}>
+                      <span style={{ fontWeight: 'bold' }}> {task.ticket_id} </span>
+
                     </Link>
                     - {task.task_name}
                   </td>
@@ -287,7 +287,7 @@ export default function ResourcePlanningReportComponent() {
               </div>
 
               <div className="col-md-3">
-                <label htmlFor="" className=""> 
+                <label htmlFor="" className="">
                   <b>
                     From Date :<Astrick color="red" size="13px" />
                   </b>
