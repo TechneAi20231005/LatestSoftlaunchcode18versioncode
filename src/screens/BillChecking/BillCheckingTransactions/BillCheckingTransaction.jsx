@@ -61,6 +61,7 @@ function BillCheckingTransaction() {
 
 
 
+
   
 
 
@@ -94,6 +95,185 @@ function BillCheckingTransaction() {
     setData(result);
   };
 
+  const selectInputRef = useRef();
+  const selectVendorRef = useRef();
+  const selectVendorNameRef = useRef();
+  const selectBillStatusRef = useRef();
+  const selectBillTypeRef = useRef();
+  const selectAssignToRef = useRef();
+  const selectFromBillRef = useRef();
+  const selectToBillRef = useRef();
+  const selectFromReceivedRef = useRef();
+  const selectToReceivedRef = useRef();
+  const selectFromPaymentRef = useRef();
+  const selectToPaymentRef = useRef();
+  const selectFromBillAmountRef = useRef();
+
+  const selectToBillAmountRef = useRef();
+  const selectFromHoldAmountRef = useRef();
+
+  const selectToHoldAmountRef = useRef();
+  const selectIsOriginalBillRef = useRef();
+
+  
+  const [isOriginalBillReceived, setIsOriginalBillReceived] = useState(false);
+
+  const handleCheckboxChange = () => {
+    // Toggle the state of isOriginalBillReceived
+    setIsOriginalBillReceived(!isOriginalBillReceived);
+  };
+
+
+  const handleClearSearchData=(e)=>{
+    if (searchRef.current.value != null) {
+      document.getElementById("search").value = "";
+  }
+  }
+
+
+
+  const handleClearData = (e) => {
+    if (selectInputRef.current.value != null) {
+        document.getElementById("id").value = "";
+    }
+    if (selectVendorRef.current.value != null) {
+      document.getElementById("vendor_bill_no").value = "";
+  }
+    if (selectVendorNameRef.current.commonProps.hasValue != null) {
+      selectVendorNameRef.current.clearValue();
+      selectVendorNameRef.current.clearValue();
+    }
+
+    if (selectBillStatusRef.current.commonProps.hasValue != null) {
+      selectBillStatusRef.current.clearValue();
+      selectBillStatusRef.current.clearValue();
+    }
+
+    if (selectBillTypeRef.current.commonProps.hasValue != null) {
+      selectBillTypeRef.current.clearValue();
+      selectBillTypeRef.current.clearValue();
+    }
+
+    if (selectAssignToRef.current.commonProps.hasValue != null) {
+      selectAssignToRef.current.clearValue();
+      selectAssignToRef.current.clearValue();
+    }
+  
+
+    if (selectFromBillRef.current.value != null) {
+      document.getElementById("from_bill_date").value = "";
+    }
+
+    if (selectToBillRef.current.value != null) {
+      document.getElementById("to_bill_date").value = "";
+    }
+
+    if (selectFromReceivedRef.current.value != null) {
+      document.getElementById("from_received_date").value = "";
+    }
+
+    if (selectToReceivedRef.current.value != null) {
+      document.getElementById("to_received_date").value = "";
+    }
+
+
+    if (selectFromPaymentRef.current.value != null) {
+      document.getElementById("from_payment_date").value = "";
+    }
+
+    if (selectToPaymentRef.current.value != null) {
+      document.getElementById("to_payment_date").value = "";
+    }
+
+   
+    
+    // if (selectFromReceivedRef.current.commonProps.hasValue != null) {
+    //   selectFromReceivedRef.current.clearValue();
+    //   selectFromReceivedRef.current.clearValue();
+    // }
+
+    // if (selectToReceivedRef.current.commonProps.hasValue != null) {
+    //   selectToReceivedRef.current.clearValue();
+    //   selectToReceivedRef.current.clearValue();
+    // }
+
+
+    // if (selectFromPaymentRef.current.commonProps.hasValue != null) {
+    //   selectFromPaymentRef.current.clearValue();
+    //   selectFromPaymentRef.current.clearValue();
+    // }
+
+
+    // if (selectToPaymentRef.current.commonProps.hasValue != null) {
+    //   selectToPaymentRef.current.clearValue();
+    //   selectToPaymentRef.current.clearValue();
+    // }
+
+
+    if (selectFromBillAmountRef.current.value != null) {
+      document.getElementById("from_bill_amount").value = "";
+  }
+
+  if (selectToBillAmountRef.current.value != null) {
+    document.getElementById("to_bill_amount").value = "";
+}
+
+if (selectFromHoldAmountRef.current.value != null) {
+  document.getElementById("from_hold_amount").value = "";
+}
+
+
+if (selectToHoldAmountRef.current.value != null) {
+  document.getElementById("to_hold_amount").value = "";
+}
+
+// if (selectIsOriginalBillRef.current.value != null) {
+//   document.getElementById("is_original_bill_needed").value = "";
+// }
+
+
+setIsOriginalBillReceived(false);
+
+    // if (selectFromBillAmountRef.current.commonProps.hasValue != null) {
+    //   selectFromBillAmountRef.current.clearValue();
+    //   selectFromBillAmountRef.current.clearValue();
+    // }
+
+
+    // if (selectToBillAmountRef.current.commonProps.hasValue != null) {
+    //   selectToBillAmountRef.current.clearValue();
+    //   selectToBillAmountRef.current.clearValue();
+    // }
+
+    // if (selectFromHoldAmountRef.current.commonProps.hasValue != null) {
+    //   selectFromHoldAmountRef.current.clearValue();
+    //   selectFromHoldAmountRef.current.clearValue();
+    // }
+
+    // if (selectToHoldAmountRef.current.commonProps.hasValue != null) {
+    //   selectToHoldAmountRef.current.clearValue();
+    //   selectToHoldAmountRef.current.clearValue();
+    // }
+
+
+    // if (selectIsOriginalBillRef.current.commonProps.hasValue != null) {
+    //   selectIsOriginalBillRef.current.clearValue();
+    //   selectIsOriginalBillRef.current.clearValue();
+    // }
+
+    // selectEntryDeptRef.current.clearValue();
+    // selectStatusRef.current.clearValue();
+    // if (selectFromDateRef.current.value != null) {
+    //   document.getElementById("from_date").value = "";
+    // }
+    // if (selectToDateRef.current.value != null) {
+    //   document.getElementById("to_date").value = "";
+    // }
+    // if (selectTicketRef.current.value != null) {
+    //   document.getElementById("ticket_id").value = "";
+    // }
+  };
+
 
 
 
@@ -117,6 +297,13 @@ function BillCheckingTransaction() {
  
   const [userDropdown, setUserDropdown] = useState();
   // const [authorities, SetAuthorities] = useState();
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+
 
 
   const columns = [
@@ -256,7 +443,7 @@ function BillCheckingTransaction() {
             </Dropdown.Menu>
           </Dropdown>
         );
-      },
+      }
     },
 
     { name: "Sr", selector: (row) => row.counter, sortable: true },
@@ -839,8 +1026,8 @@ function BillCheckingTransaction() {
 
             // "Bill Status": temp[key].bill_status,
             "Bill Status": temp[key].payment_status,
-
-            "Recieved Date": temp[key].received_date,
+            
+            "Received Date": temp[key].received_date,
             // total_level: temp[key].total_level,
             // last_approved_by: temp[key].last_approved_by,
             // is_editable_for_creator: temp[key].is_editable_for_creator,
@@ -1122,6 +1309,10 @@ function BillCheckingTransaction() {
           setData(tempData);
         } else {
           setNotify({ type: "danger", message: res.data.message });
+          console.log("msg",res.data.message)
+          console.log("res",res)
+
+
         }
       });
   };
@@ -1146,12 +1337,77 @@ function BillCheckingTransaction() {
   const [billDatedatee, setBillDatee] = useState();
   const [receivedate, setReceive] = useState();
   const [isBillDateRequired, setIsBillDateRequired] = useState();
+  const [fromBillAmount, setFromBillAmount] = useState("")
+  const [toBillAmount, setToBillAmount] = useState("")
+  const [toBillAmountErr,setToBillAmountErr]=useState("")
+
+
+  const [fromHoldlAmount, setFromHoldAmount] = useState("")
+  const [toHoldAmount, setToHoldAmount] = useState("")
+  const [toHoldAmountErr,setToHoldAmountErr]=useState("")
+
+
+  const handleToBillAmount = (e) => {
+    const value = e.target.value;
+    setToBillAmount(value);
+
+    // Check if toBillAmount is less than fromBillAmount
+    if (parseFloat(value) < parseFloat(fromBillAmount)) {
+      setToBillAmountErr("To bill amount should be greater than from bill amount");
+    } else {
+      setToBillAmountErr("");
+    }
+  }
+
+  const handleFromBillAmount = (e) => {
+    const value = e.target.value;
+    setFromBillAmount(value);
+
+    // Check if fromBillAmount is greater than toBillAmount
+    if (parseFloat(value) > parseFloat(toBillAmount)) {
+      setToBillAmountErr("To bill amount should be greater than from bill amount");
+    } else {
+      setToBillAmountErr("");
+    }
+  }
+
+
+  const handleToHoldAmount = (e) => {
+    const value = e.target.value;
+    setToHoldAmount(value);
+
+    // Check if toBillAmount is less than fromBillAmount
+    if (parseFloat(value) < parseFloat(fromHoldlAmount)) {
+      setToHoldAmountErr("To hold amount should be greater than from hold amount");
+    } else {
+      setToHoldAmountErr("");
+    }
+  }
+
+
+  const handleFromHoldAmount = (e) => {
+    const value = e.target.value;
+    setFromHoldAmount(value);
+
+    // Check if fromBillAmount is greater than toBillAmount
+    if (parseFloat(value) > parseFloat(toHoldAmount)) {
+      setToHoldAmountErr("To hold amount should be greater than from hold amount");
+    } else {
+      setToHoldAmountErr("");
+    }
+  }
+
+  console.log("fromBill",fromBillAmount)
+  console.log("to",toBillAmount)
+
 
   const handleFromDate = (e) => {
     setDatee(e.target.value);
   };
   const handleReceiveDate = (e) => {
     setReceive(e.target.value);
+
+
   };
 
   const isReceivedDate = !!receivedate;
@@ -1277,6 +1533,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="id"
                       id="id"
+                      ref={selectInputRef}
+                      
                     />
                   </div>
 
@@ -1289,6 +1547,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="vendor_bill_no"
                       id="vendor_bill_no"
+                      ref={selectVendorRef}
+
                     />
                   </div>
 
@@ -1303,6 +1563,8 @@ function BillCheckingTransaction() {
                         name="vendor_name[]"
                         isMulti
                         options={vendorDropdown}
+                      ref={selectVendorNameRef}
+
                         placeholder="Vendor Name"
                       />
                     )}
@@ -1320,6 +1582,8 @@ function BillCheckingTransaction() {
                         isMulti
                         options={statusDropdown}
                         placeholder="bill_status"
+                      ref={selectBillStatusRef}
+
                       />
                     )}
                   </div>
@@ -1335,6 +1599,8 @@ function BillCheckingTransaction() {
                         isMulti
                         name="bill_type[]"
                         placeholder="Bill Type"
+                      ref={selectBillTypeRef}
+
                       />
                     )}
                   </div>
@@ -1351,6 +1617,8 @@ function BillCheckingTransaction() {
                         name="assign_to[]"
                         isMulti
                         placeholder="Assign To"
+                      ref={selectAssignToRef}
+
                       />
                     )}
                   </div>
@@ -1383,6 +1651,10 @@ function BillCheckingTransaction() {
                       name="from_bill_date"
                       id="from_bill_date"
                       onChange={(e) => handleBillDate(e)}
+                      max={formattedDate}
+                      ref={selectFromBillRef}
+
+
                     />
                   </div>
 
@@ -1397,6 +1669,10 @@ function BillCheckingTransaction() {
                       id="to_bill_date"
                       min={billDatedatee}
                       required={isBillDateRequired}
+                      max={formattedDate}
+                      ref={selectToBillRef}
+
+
                     />
                   </div>
 
@@ -1409,6 +1685,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="from_received_date"
                       id="from_received_date"
+                      ref={selectFromReceivedRef}
+
                       onChange={(e) => handleReceiveDate(e)}
                     />
                   </div>
@@ -1422,6 +1700,8 @@ function BillCheckingTransaction() {
                       name="to_received_date"
                       id="to_received_date"
                       min={receivedate}
+                      ref={selectToReceivedRef}
+
                       required={isReceivedDate}
                     />
                   </div>
@@ -1436,6 +1716,8 @@ function BillCheckingTransaction() {
                       name="from_payment_date"
                       id="from_payment_date"
                       onChange={(e) => handleFromDate(e)}
+                      ref={selectFromPaymentRef}
+
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1448,6 +1730,8 @@ function BillCheckingTransaction() {
                       name="to_payment_date"
                       id="to_payment_date"
                       min={datee}
+                      ref={selectToPaymentRef}
+
                       required={isToPaymentDateRequired}
                     />
                   </div>
@@ -1463,6 +1747,9 @@ function BillCheckingTransaction() {
                       id="from_bill_amount"
                       name="from_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                      onChange={(e)=>handleFromBillAmount(e)}
+                      ref={selectFromBillAmountRef}
+
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1503,6 +1790,8 @@ function BillCheckingTransaction() {
                         }
                       }}
                     />
+
+
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1515,6 +1804,9 @@ function BillCheckingTransaction() {
                       id="to_bill_amount"
                       name="to_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                      onChange={(e)=>handleToBillAmount(e)}
+                      ref={selectToBillAmountRef}
+
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1555,6 +1847,15 @@ function BillCheckingTransaction() {
                         }
                       }}
                     />
+
+                  <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {toBillAmountErr}
+                  </small>
+              
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1565,6 +1866,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="from_hold_amount"
                       id="from_hold_amount"
+                      ref={selectFromHoldAmountRef}
+
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1604,6 +1907,8 @@ function BillCheckingTransaction() {
                           e.preventDefault();
                         }
                       }}
+                      onChange={(e)=>handleFromHoldAmount(e)}
+
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1615,6 +1920,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="to_hold_amount"
                       id="to_hold_amount"
+                      ref={selectToHoldAmountRef}
+
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1654,7 +1961,16 @@ function BillCheckingTransaction() {
                           e.preventDefault();
                         }
                       }}
+                      onChange={(e)=>handleToHoldAmount(e)}
+
                     />
+                     <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {toHoldAmountErr}
+                  </small>
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1665,6 +1981,10 @@ function BillCheckingTransaction() {
                       className="sm-1 mx-2"
                       id="is_original_bill_needed"
                       name="is_original_bill_needed"
+                      onChange={handleCheckboxChange}
+                      checked={isOriginalBillReceived}
+                      ref={selectIsOriginalBillRef}
+
                     />
                   </div>
 
@@ -1679,14 +1999,16 @@ function BillCheckingTransaction() {
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                      onClick={() => window.location.reload(false)}
+                onClick={handleClearData}
+
+                      // onClick={() => window.location.reload(false)}
                       style={{ marginTop: "20px", fontWeight: "600" }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset
                     </button>
                   </div>
                   <span className="fw-bold mt-2" style={{ color: "red" }}>
-                    Note:- If you are selecting any from date selection of to
+                    Note:- If you are selecting any from date selection, then to
                     date is Mandatory
                   </span>
                 </div>
@@ -1703,6 +2025,7 @@ function BillCheckingTransaction() {
             <div className="col-md-10">
               <input
                 type="text"
+                id="search"
                 className="form-control"
                 placeholder="Search By Bill ID...."
                 onClick={(e) => handleSearch(e)}
@@ -1722,7 +2045,9 @@ function BillCheckingTransaction() {
               <button
                 className="btn btn-sm btn-info text-white"
                 type="button"
-                onClick={() => window.location.reload(false)}
+                onClick={handleClearSearchData}
+                
+                // onClick={() => window.location.reload(false)}
                 style={{ marginTop: "0px", fontWeight: "600" }}
               >
                 <i className="icofont-refresh text-white"></i> Reset

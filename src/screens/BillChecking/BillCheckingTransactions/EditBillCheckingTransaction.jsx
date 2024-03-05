@@ -681,7 +681,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
       // Check if the maximum 10 attachments condition is met
 
-      if (tempSelectedFile.length + data.attachment.length <= 10) {
+      if (tempSelectedFile?.length + data?.attachment?.length <= 10) {
         fileInputRef.current.value = "";
         setSelectedFiles(tempSelectedFile);
       } else {
@@ -1255,7 +1255,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <label className=" col-form-label">
                         <b>
                           {" "}
-                          Recieved Date: <Astrick color="red" size="13px" />
+                          Received Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
                       <input
@@ -1295,13 +1295,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1394,13 +1394,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1516,13 +1516,13 @@ value={igst=== true ?1 :0} */}
                         onChange={(e) => handleGst(e)}
                         required
                         readOnly={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1590,13 +1590,13 @@ value={igst=== true ?1 :0} */}
                         //     : true
                         // }
                         readOnly={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1894,13 +1894,13 @@ value={igst=== true ?1 :0} */}
                             options={sectionDropdown}
                             ref={sectionRef}
                             isDisabled={
-                              (data.is_assign_to == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (data.is_assign_to == 1 &&
+                              //   authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              (authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -1978,13 +1978,13 @@ value={igst=== true ?1 :0} */}
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
                               isDisabled={
-                                (data.is_assign_to == 1 &&
-                                  authorities &&
-                                  authorities.All_Update_Bill == true) ||
+                                // (data.is_assign_to == 1 &&
+                                //   authorities &&
+                                //   authorities.All_Update_Bill == true) ||
                                 data.is_rejected == 1 ||
                                 data.created_by == localStorage.getItem("id") ||
-                                (authorities &&
-                                  authorities.All_Update_Bill == true) ||
+                                // (authorities &&
+                                //   authorities.All_Update_Bill == true) ||
                                 (data.current_user_is_approver == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true &&
@@ -2089,13 +2089,13 @@ value={igst=== true ?1 :0} */}
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
-                              (data.is_assign_to == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (data.is_assign_to == 1 &&
+                              //   authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              (authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&

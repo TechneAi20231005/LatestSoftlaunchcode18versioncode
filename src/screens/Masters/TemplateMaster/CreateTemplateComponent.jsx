@@ -46,8 +46,9 @@ const CreateTemplateComponent = () => {
   );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+      MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
   );
+  console.log("userData",userData)
   // const notify = useSelector(
   //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
   // );

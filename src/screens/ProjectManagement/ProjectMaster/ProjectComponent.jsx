@@ -925,7 +925,7 @@ function ProjectComponent() {
           const temp = res.data.data;
           for (const key in temp) {
             data.push({
-              counter: counter++,
+              SrNo: counter++,
               id: temp[key].id,
               project_name: temp[key].project_name,
               projectReviewer: temp[key].projectReviewer,
@@ -945,9 +945,9 @@ function ProjectComponent() {
           let count = 1;
           for (const key in data) {
             exportData.push({
-              counter: count++,
+              SrNo: count++,
               // id: data[key].id,
-              project_name: data[key].project_name,
+              "Project Name": data[key].project_name,
               projectReviewer: data[key].projectReviewer,
               is_active: data[key].is_active ==1 ?"Active":"Deactive",
               description: data[key].description,
@@ -1025,7 +1025,7 @@ function ProjectComponent() {
 
       <div className="card card-body">
         <div className="row">
-          <div className="col-md-10">
+          <div className="col-md-9">
             <input
               type="text"
               className="form-control"
@@ -1034,7 +1034,7 @@ function ProjectComponent() {
               onKeyDown={handleKeyDown}
             />
           </div>
-          <div className="col-md-2">
+          <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"

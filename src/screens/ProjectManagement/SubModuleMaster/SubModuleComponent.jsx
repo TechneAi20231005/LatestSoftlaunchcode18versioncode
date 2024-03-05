@@ -418,21 +418,25 @@ function SubModuleComponent() {
       ),
     },
     { name: "Remark", selector: (row) => row.remark, sortable: true },
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
-    {
-      name: "Created By",
-      width: "10%",
-      selector: (row) => row.created_by,
-      sortable: true,
-    },
     {
       name: "Created At",
       width: "10%",
       selector: (row) => row.created_at,
       sortable: true,
     },
-
+    {
+      name: "Created By",
+      width: "10%",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
     { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+
+    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    
+    
+
+
   ];
 
   const loadData = async () => {
@@ -470,11 +474,11 @@ function SubModuleComponent() {
           for (const key in temp) {
             exportTempData.push({
               count: count++,
-              id: temp[key].id,
+              // id: temp[key].id,
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active,
+              is_active: temp[key].is_active==1?"Active":"Deactive",
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,

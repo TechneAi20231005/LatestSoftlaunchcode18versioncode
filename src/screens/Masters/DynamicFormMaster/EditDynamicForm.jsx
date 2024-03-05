@@ -1365,6 +1365,10 @@ function EditDynamicForm({ match }) {
   };
 
   const [rows, setRows] = useState([mainJson]);
+  const [isInputMandatory, setIsInputMandatory] = useState(false);
+
+
+  console.log("isinput",isInputMandatory)
 
   const [formShow, setFormShow] = useState(false);
 
@@ -1373,9 +1377,76 @@ function EditDynamicForm({ match }) {
   // const [dropdown, setDropdown] = useState({ index: 0 });
 
   const [inputDataSource, setInputDataSource] = useState();
+  const [inputLabelValue, setInputLabelValue] = useState();
+
+
+  const [labelErr, setLabelErr] = useState();
+  const [selectedValueErr, setSelectedValueErr] = useState("");
+  const [selectedNumberErr, setSelectedNumbereErr] = useState(null);
+
+  const [selectedValue, setSelectedValue] = useState();
+  const [minNuber, setMinNuber] = useState();
+  const [maxNuber, setMaxNuber] = useState();
+
+
+console.log("min",minNuber)
+console.log("max",maxNuber)
+
+console.log("se",selectedNumberErr)
+
 
   const handleChange = (idx) => async (e) => {
     setIndex({ index: idx });
+    console.log("ss==>",selectedValue)
+
+    // if(e.target.name === "inputMandatory"){
+    //  const newValue = e.target.checked;
+    //  setIsInputMandatory(newValue);
+    // }
+
+
+
+    if (e.target.name === "inputMandatory" && e.target.checked === true) {
+    setIsInputMandatory(true);
+  } else {
+    setIsInputMandatory(false);
+  }
+
+
+  if (e.target.name === "inputRangeMin" ) {
+   setMinNuber(e.target.value)
+  } else {
+    setMinNuber("");
+  }
+
+  if (e.target.name === "inputRangeMax" ) {
+    setMaxNuber(e.target.value)
+   } else {
+     setMaxNuber("");
+   }
+
+  if (minNuber > maxNuber ) {
+
+    setSelectedNumbereErr("Value should be grater than min number");
+  } else {
+    setSelectedNumbereErr("");
+  }
+
+   
+    if (e.target.name === "inputLabel") {
+      setInputLabelValue(e.target.value);
+    }
+    if (e.target.name === "inputOnChangeSource") {
+      setSelectedValue(e.target.value);
+    }
+
+    if (selectedValue) {
+      setSelectedValueErr("");
+    } else {
+      setSelectedValueErr("Select Data Source");
+    }
+     
+    setFormShow(false);
 
     // alert(e.target.value);
     const notAllowed = [
@@ -1475,12 +1546,20 @@ function EditDynamicForm({ match }) {
         // });
         // rows[idx].inputAddOn.inputDataSource=e.target.value;
 
-        const test = e.target.value;
-        rows[idx].inputAddOn.inputDataSource = test;
 
+      
+
+        const test = e.target.value;
+        const newValue = e.target.name
+        if (newValue === "inputOnChangeSource") {
+          const dropDownValue = e.target.value
+          setSelectedValue(dropDownValue);
+        rows[idx].inputAddOn.inputDataSource = test;
+        }
         await new DynamicFormDropdownMasterService()
           .getDropdownById(test)
           .then((res) => {
+            console.log("cc==",res)
             if (res.status == 200) {
               if (res.data.status == 1) {
                 const temp = [];
@@ -1497,6 +1576,11 @@ function EditDynamicForm({ match }) {
       alert("Not Allowed to use entered Keywork");
       rows[idx].inputLabel = "";
     }
+
+    
+  
+
+  
 
     
     // const rows = [...rows];
@@ -1583,7 +1667,14 @@ function EditDynamicForm({ match }) {
     // });
   };
 
+ 
+
   const handldeFormShow = () => {
+    if (!inputLabelValue) {
+      setLabelErr("Label Is Required");
+    } else {
+      setLabelErr("");
+    }
     setFormShow(formShow === true ? false : true);
   };
 
@@ -1660,6 +1751,8 @@ function EditDynamicForm({ match }) {
           
             setData(res.data.data);
             setRows(res.data.data.data)
+            // setIsInputMandatory(res.data.data.data.isInputMandatory?.map((i)=>i.inputMandatory))
+            console.log("dataIS",res.data.data.data?.map((i)=>i.inputMandatory))
           }
         }
       });
@@ -2050,9 +2143,18 @@ function EditDynamicForm({ match }) {
                                                                         Validation.CharactersNumbersOnly(e)
                                                                     }}
                                                                 />
+                                                                                                  {labelErr && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                      }}
+                                    >
+                                      {labelErr}
+                                    </p>
+                                  )}
                                                             </td>
                                                             <td>
-                                                                <input
+                                                                {/* <input
                                                                     type="text"
                                                                     name="inputDefaultValue"
                                                                     value={item.inputDefaultValue}
@@ -2061,30 +2163,60 @@ function EditDynamicForm({ match }) {
                                                                     onKeyPress={e => {
                                                                         Validation.CharactersNumbersOnly(e)
                                                                     }}
-                                                                />
+                                                                /> */}
+
+{item.inputType === "date" || item.inputType === "time" ? (
+                                    <input
+                                      type={item.inputType === "date" ? "date": "time"}
+                                      name="inputDefaultValue"
+                                      value={item.inputDefaultValue}
+                                      onChange={handleChange(idx)}
+                                      className="form-control form-control-sm"
+                                      onKeyPress={(e) => {
+                                        Validation.CharactersNumbersSpeicalOnly(
+                                          e
+                                        );
+                                      }}
+                                    />
+                                  ) : (
+                                    <input
+                                      type={item.inputType === "datetime-local" ? "datetime-local" : "text" }
+                                      name="inputDefaultValue"
+                                      value={item.inputDefaultValue}
+                                      onChange={handleChange(idx)}
+                                      className="form-control form-control-sm"
+                                      onKeyPress={(e) => {
+                                        item.inputType === "number" || item.inputType === "decimal" ? Validation.NumbersSpecialOnlyDecimal(e) : Validation.CharactersNumbersSpeicalOnly(e);
+                                      }}
+                                    />
+                                  )}
+
                                                             </td>
 
-                                                            {console.log("man==",item)}
+                                                            {console.log("man==",item.inputMandatory)}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMandatory"
-                                                                    defaultChecked={item.inputMandatory === true ? true : false}
+                                                                    id="inputMandatory"
+                                                                    // value={isInputMandatory}
+                                                                    defaultChecked={item.inputMandatory}
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
                                                             </td>
                                                            
                                                             <td>
-                                                                {rows[idx].inputType == "select" &&
+                                                                {/* {rows[idx].inputType == "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "radio" ||  rows[idx].inputType == "checkbox"  && */}
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMultiple"
-                                                                    defaultChecked={item.inputMultiple === true ? true : false}
+                                                                    id="inputMultiple"
+                                                                    defaultChecked={item.inputMultiple}
                                                                     onChange={handleChange(idx)}
 
                                                                 />
-                                                                }
+                                                                {/* } */}
                                                             </td>
                                                             <td>
                                                                 {rows[idx].inputType == "date" &&
@@ -2156,6 +2288,11 @@ function EditDynamicForm({ match }) {
 
                                           })}
                                       </select>
+                                      {/* {!selectedValue && (
+                                        <small style={{ color: "red" }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )} */}
                                       {/* <small style={{ color: "red" }}>
                                         <b>Select Data Source</b>
                                       </small> */}
@@ -2193,9 +2330,11 @@ function EditDynamicForm({ match }) {
                                             
                                           })}
                                       </select>
-                                      {/* <small style={{ color: "red" }}>
-                                        <b>Select Data Source</b>
-                                      </small> */}
+                                      {!selectedValue && (
+                                        <small style={{ color: "red" }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )}
                                     </span>
                                   )}
 
@@ -2268,30 +2407,72 @@ function EditDynamicForm({ match }) {
                                             
                                           })}
                                       </select>
-                                      <small style={{ color: "red" }}>
-                                        <b>Select Data Source</b>
-                                      </small>
+                                      {!selectedValue && (
+                                        <small style={{ color: "red" }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )}
                                     </span>
                                   )}
 
+{console.log("dds",rows)}
 
 
 
 {rows[idx].inputType==="number" &&
-            <span>
-            <input
-            type="text"
-            placeholder='Eg. 0|100'
-            className="form-control form-control-sm"
-            onChange={handleChange(idx)}
-defaultValue={rows[idx].inputAddOn.inputRange}
-            id="inputRange"
-            name="inputRange"
-            min={rows[idx].inputAddOn.inputRange }
-            max={rows[idx].inputAddOn.inputRange }
-            />
-            <small style={{'color':'red'}}><b>Min|Max(Range)</b></small>
-            </span>   
+//             <span>
+//             <input
+//             type="text"
+//             placeholder='Eg. 0|100'
+//             className="form-control form-control-sm"
+//             onChange={handleChange(idx)}
+// defaultValue={rows[idx].inputAddOn.inputRange}
+//             id="inputRange"
+//             name="inputRange"
+//             min={rows[idx].inputAddOn.inputRange }
+//             max={rows[idx].inputAddOn.inputRange }
+//             />
+//             <small style={{'color':'red'}}><b>Min|Max(Range)</b></small>
+//             </span>   
+<div className="d-flex justify-content-between">
+<div class="form-group">
+  <label>Min Number:</label>
+  <input
+    type="number"
+    onChange={handleChange(idx)}
+    id="inputRangeMin"
+    name="inputRangeMin"
+    className="form-control form-control-sm"
+    defaultValue={rows[idx].inputAddOn.inputRangeMin}
+    min={
+      rows[idx].inputAddOn.inputRangeMin
+    }
+  />
+</div>
+<div className="form-group">
+  <label>Max Number:</label>
+  <input
+    type="number"
+    onChange={handleChange(idx)}
+    id="inputRangeMax"
+    name="inputRangeMax"
+    className="form-control form-control-sm"
+    defaultValue={rows[idx].inputAddOn.inputRangeMax}
+    max={
+      rows[idx].inputAddOn.inputRangeMax
+    }
+  />
+      {selectedNumberErr && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                      }}
+                                    >
+                                      {selectedNumberErr}
+                                    </p>
+                                  )}
+</div>
+</div>
         } 
 
 
@@ -2332,22 +2513,25 @@ defaultValue={rows[idx].inputAddOn.inputRange}
 
                   
         {rows[idx].inputType==="date" &&
-            <span>
-                <input
-                    type="date"
-                    onChange={handleChange(idx)}
-                  
-                    id="inputDateRange"
-                    name="inputDateRange"
-                    placeholder='Eg. 2022-01-01|2022-02-01'
-                    className="form-control form-control-sm"
-                    // min={rows[idx].inputAddOn.inputDateRange }
-                    // max={rows[idx].inputAddOn.inputDateRange}
-                    defaultValue={rows[idx].inputAddOn.inputRadio}
-
-                />
-                <small style={{'color':'red'}}><b>Min|Max (YYYY-MM-DD)</b></small>
-            </span>   
+             <span>
+             <input
+               type="text"
+               onChange={handleChange(idx)}
+               id="inputDateRange"
+               name="inputDateRange"
+               placeholder="Eg. 2022-01-01|2022-02-01"
+               className="form-control form-control-sm"
+               min={
+                 rows[idx].inputAddOn.inputDateRange
+               }
+               max={
+                 rows[idx].inputAddOn.inputDateRange
+               }
+             />
+             <small style={{ color: "red" }}>
+               <b>Min|Max (YYYY-MM-DD)</b>
+             </small>
+           </span>
         }        
 
 
@@ -2522,7 +2706,13 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                     return (
                       <div key={index} className={`${data.inputWidth} mt-2`}>
                         <label>
-                          <b>{data.inputLabel} : </b>
+                          <b>{data.inputLabel} :
+                          {data.inputMandatory === true ? (
+                              <Astrick color="red" size="13px" />
+                            ) : (
+                              ""
+                            )}
+                           </b>
                         </label>
 
                         {data.inputType === "text" && (
@@ -2560,22 +2750,38 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                       
 
 {data.inputType === "date" && (
-        <div className="form-control" style={{ width: "100%", position: "relative" }}>
-          <DatePicker
-            selected={dateValue}
-            onChange={onChangeDate}
-            dateFormat={data.inputFormat}
-            style={{
-              width: "100%",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-              padding: "8px",
-              fontSize: "16px",
-              boxSizing: "border-box",
-            }}
-            className="custom-datepicker"
-          />
-        </div>
+        // <div className="form-control" style={{ width: "100%", position: "relative" }}>
+        //   <DatePicker
+        //     selected={dateValue}
+        //     onChange={onChangeDate}
+        //     dateFormat={data.inputFormat}
+        //     style={{
+        //       width: "100%",
+        //       borderRadius: "4px",
+        //       border: "1px solid #ccc",
+        //       padding: "8px",
+        //       fontSize: "16px",
+        //       boxSizing: "border-box",
+        //     }}
+        //     className="custom-datepicker"
+        //   />
+        // </div>
+      
+        <input
+        type={data.inputType}
+        id={
+          data.inputName
+            ? data.inputName
+                .replace(/ /g, "_")
+                .toLowerCase()
+            : ""
+        }
+        name={data.inputName}
+        defaultValue={data.inputDefaultValue}
+        min={data.inputAddOn.inputDateRange ? range[0] : ""}
+        max={data.inputAddOn.inputDateRange ? range[1] : ""}
+        className="form-control form-control-sm"
+      />
       )}
 
 
@@ -2676,33 +2882,33 @@ defaultValue={rows[idx].inputAddOn.inputRange}
                         }
 
 
+{console.log("dd",data)}
 
-{data.inputType === "radio" && (
-                         
-                         <div className="row mt-3">
- {data && data.inputAddOn.inputRadio.map((i, index) => (
-   <div key={index} className="col">
-     <div className="form-check">
-       <input
-         className="form-check-input"
-         type="radio"
-         name="is_active"
-         id={`is_active_${index}`}
-         value="1"
-       />
-       <label
-         className="form-check-label"
-         htmlFor={`is_active_${index}`}
-       >
-         {i.label}
-       </label>
-     </div>
-   </div>
- ))}
- </div>
+{data?.inputType === "radio" && (
+                          <div className="row mt-3">
+                            {/* {data &&
+                              data?.inputAddOn?.inputRadio.map((i, index) => (
+                                <div key={index} className="col">
+                                  <div className="form-check">
+                                    <input
+                                      className="form-check-input"
+                                      type="radio"
+                                      name="is_active"
+                                      id={`is_active_${index}`}
+                                      value="1"
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`is_active_${index}`}
+                                    >
+                                      {i.label}
+                                    </label>
+                                  </div>
+                                </div>
+                              ))} */}
+                          </div>
+                        )}
 
-                          
-)}
 
 
 
