@@ -35,7 +35,7 @@ const Chatbox = props => {
         const res = await new UserService().getUserForMyTickets(inputRequired)
 
         if (res.status === 200 && res.data.status === 1) {
-          const data = res.data.data.filter(d => d.is_active === 1)
+          const data = res.data.data.filter(d => d.is_active === 1 && d.account_for === "SELF")
           const select = data.map(d => ({
             id: d.id,
             display: `${d.first_name} ${d.last_name}`
@@ -86,16 +86,16 @@ const Chatbox = props => {
               {commentData?.comments?.map((comment, index) => (
                 <ListGroup.Item key={index}>
                   <div>
-                 <p className='fw-bold'> {highlightMentions(comment.cmt)}</p>
+                    <p className='fw-bold'> {highlightMentions(comment?.cmt ? comment?.cmt : "")}</p>
                   </div>
-            
+
                   <div className='d-flex justify-content-between mt-4'>
-                     <p>
-                      {comment.user_id}
-                      </p>
-                      <p>
-                     {comment.time}
-                      </p>
+                    <p>
+                      {comment?.user_id}
+                    </p>
+                    <p>
+                      {comment?.time}
+                    </p>
                   </div>
                 </ListGroup.Item>
               ))}
@@ -119,7 +119,7 @@ const highlightMentions = comment => {
   // Iterate through all matches of mentionRegex in the comment
   while ((match = mentionRegex.exec(comment)) !== null) {
     // Push the text before the mention
-    parts.push(comment.slice(lastIndex, match.index))
+    parts.push(comment?.slice(lastIndex, match.index))
 
     // Extract the username from the match
     const userName = match[1]
@@ -127,15 +127,15 @@ const highlightMentions = comment => {
     parts.push(
       <span
         key={match.index}
-        style={{  color: '#15198f' }}
+        style={{ color: '#15198f' }}
       >{`@${userName}`}</span>
     )
 
     lastIndex = mentionRegex.lastIndex
   }
-
+  console.log('comments', comment)
   // Push the remaining text
-  parts.push(comment.slice(lastIndex))
+  parts.push(comment?.slice(lastIndex))
 
   return parts
 }
