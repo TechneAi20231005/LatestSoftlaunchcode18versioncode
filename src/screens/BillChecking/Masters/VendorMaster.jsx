@@ -12473,6 +12473,7 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
+  console.log(CountryDropdown)
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
 
@@ -12733,10 +12734,14 @@ function VendorMaster({ match }) {
       });
 
     await new VendorMasterService().getActiveCountry().then((res) => {
+        console.log("dropdown",res)
       if (res.status === 200) {
         setCountry(res.data.data);
         setCountryDropdown(
-          res.data.data.map((d) => ({
+          res.data.data
+          
+          .filter((d) => d.is_active == 1)
+          .map((d) => ({
             value: d.id,
             label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
           }))
@@ -12766,6 +12771,7 @@ function VendorMaster({ match }) {
     });
 
     await new VendorMasterService().getActiveCity().then((res) => {
+        console.log("active city" , res)
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
