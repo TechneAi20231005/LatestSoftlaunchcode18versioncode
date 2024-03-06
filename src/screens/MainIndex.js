@@ -184,7 +184,7 @@ class MainIndex extends React.Component {
 
         <div className="body d-flex py-lg-3 py-md-2">
           <Routes>
-            <Route path={`/${_base}/Dashboard`} element={<Dashboard />} />
+            <Route exact path={`/${_base}/Dashboard`} element={<Dashboard />} />
             <Route
               exact
               path={`/${_base}/InsightsTasks`}
@@ -742,7 +742,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CalendarMaster`}
               element={<CalenderMaster />}
             />
-            <Route
+            {/* <Route
               exact
               path={`/${_base}/forget-password`}
               element={<ForgetPassword />}
@@ -751,7 +751,7 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/otp`}
               element={<StepAuthentication />}
-            />
+            /> */}
           </Routes>
         </div>
       </div>

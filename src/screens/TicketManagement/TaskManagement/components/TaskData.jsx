@@ -24,14 +24,14 @@ import {
   getTaskRegularizationTime,
 } from "../../../../services/TicketService/TaskService";
 import PlannerModal from './PlannerModal'
-import { useDispatch,useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getmoduleSetting } from '../TaskComponentAction'
 import TaskComponentSlice from '../TaskComponentSlice'
 
-export default function TaskData (props) {
+export default function TaskData(props) {
   var priorityColor = 'bg-default'
-  const data = props.data
+  const data = props?.data
   const isRegularisedData = props.data.regularized_data
   const allData = props
 
@@ -40,7 +40,7 @@ export default function TaskData (props) {
   const dispatch = useDispatch()
 
 
-  const moduleSetting = useSelector(TaskComponentSlice=>TaskComponentSlice.taskComponent.moduleSettingData)
+  // const moduleSetting = useSelector(TaskComponentSlice => TaskComponentSlice.taskComponent.moduleSettingData)
 
   const [userTypeData, setUserTypeData] = useState(null)
   const [loading, setLoading] = useState(false);
@@ -78,9 +78,9 @@ export default function TaskData (props) {
         if (res.data.status === 1) {
           setTimerState(res.data.data)
           // window.location.reload(true)
-setLoading(false)
+          setLoading(false)
           loadBasket()
-        
+
         } else {
           // alert('Failed')
         }
@@ -89,19 +89,21 @@ setLoading(false)
   }
 
 
-  // const [moduleSetting, setModuleSetting] = useState();
+  const [moduleSetting, setModuleSetting] = useState();
 
 
 
   const loadData = async () => {
-    // await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       setModuleSetting(res.data.data);
-          
-    //     }
-    //   }
-    // });
+    console.log("loadData called")
+    await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+
+          setModuleSetting(res.data.data);
+
+        }
+      }
+    });
   }
 
 
@@ -133,23 +135,6 @@ setLoading(false)
   const handleClosePlannerModal = () => {
     setShowPlannerModal(false);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //SUBTASK MANAGEMENT
   const [subtaskModal, setSubtaskModal] = useState(false)
@@ -204,15 +189,15 @@ setLoading(false)
 
   const [taskOwner, setTaskOwner] = useState()
   // const loadData = async () => {
-    
-    //   await new TestCasesService()
-    //     .getTestCases(userSessionData.userId, data.ticketId)
-    //     .then((res) => {
-    //       if (res.status === 200) {
-    //         setUserTypeData(res.data.data.type);
-    //       }
-    //     });
-    // };
+
+  //   await new TestCasesService()
+  //     .getTestCases(userSessionData.userId, data.ticketId)
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         setUserTypeData(res.data.data.type);
+  //       }
+  //     });
+  // };
   // }
   const current = new Date()
   // const todayDate = `${current.getFullYear()}-${(current.getMonth() + 1 < 10) ? "0" + current.getMonth() + 1 : current.getMonth() + 1}-${current.getDate()}`;
@@ -240,14 +225,14 @@ setLoading(false)
 
   }
   useEffect(() => {
+    console.log("useffect called")
     loadData()
-    if(!moduleSetting.length)
-    dispatch(getmoduleSetting({module_name : "Ticket",submodule_name:"Task"}))
+
     setTimerState(null)
     if (
       props.data.time_status === 'START' ||
       props.data.time_status === 'Start'
-    ) { 
+    ) {
       setTimerState('START')
     } else if (
       props.data.time_status === 'STOP' ||
@@ -386,34 +371,34 @@ setLoading(false)
           // props.moduleSetting &&
           // props.moduleSetting["PlayPause"] == 1 &&
           props.data.taskOwnersId &&
-            props.data.taskOwnersId.indexOf(
-              parseInt(localStorage.getItem('id'))
-            ) >= 0 &&
-            props.data.type == 'TASK' &&
-            props.data.status !== 'COMPLETED' && (
-              <div>
-                {(timerState === 'START' || timerState == null) && (
-                  <button
-                    type='button'
-                    style={{
-                      border: 'none',
-                      borderRadius: '25%',
-                      height: '35px',
-                      width: '35px',
-                      textAlign: 'center',
-                      margin: '0px',
-                      padding: '0px'
-                    }}
-                    title='Start Task'
-                    onClick={handleTimer}
-                  >
+          props.data.taskOwnersId.indexOf(
+            parseInt(localStorage.getItem('id'))
+          ) >= 0 &&
+          props.data.type == 'TASK' &&
+          props.data.status !== 'COMPLETED' && (
+            <div>
+              {(timerState === 'START' || timerState == null) && (
+                <button
+                  type='button'
+                  style={{
+                    border: 'none',
+                    borderRadius: '25%',
+                    height: '35px',
+                    width: '35px',
+                    textAlign: 'center',
+                    margin: '0px',
+                    padding: '0px'
+                  }}
+                  title='Start Task'
+                  onClick={handleTimer}
+                >
 
-{loading ? (
-          <span>
-            <i className="fa fa-spinner fa-spin" />
-          </span>
-        ) : (
-          <i
+                  {loading ? (
+                    <span>
+                      <i className="fa fa-spinner fa-spin" />
+                    </span>
+                  ) : (
+                    <i
                       className='icofont-ui-play'
                       style={{
                         fontSize: '20px',
@@ -421,46 +406,46 @@ setLoading(false)
                         margin: 'auto'
                       }}
                     ></i>
-        )}
-                    
-                  </button>
-                )}
+                  )}
 
-                {(timerState === 'STOP' || timerState == null) && (
-                  <button
-                    type='button'
-                    style={{
-                      border: 'none',
-                      borderRadius: '25%',
-                      height: '35px',
-                      width: '35px',
-                      textAlign: 'center',
-                      margin: '0px',
-                      padding: '0px'
-                    }}
-                    title='Start Task'
-                    onClick={handleTimer}
-                  >
+                </button>
+              )}
 
-{loading ? (
-          <span>
-            <i className="fa fa-spinner fa-spin" />
-          </span>
-        ) : (
-         
-          <i
-          className='icofont-ui-pause'
-          style={{
-            fontSize: '20px',
-            color: '#EC7063',
-            margin: 'auto'
-          }}
-        ></i>
-        )}
-                  </button>
-                )}
-              </div>
-            )
+              {(timerState === 'STOP' || timerState == null) && (
+                <button
+                  type='button'
+                  style={{
+                    border: 'none',
+                    borderRadius: '25%',
+                    height: '35px',
+                    width: '35px',
+                    textAlign: 'center',
+                    margin: '0px',
+                    padding: '0px'
+                  }}
+                  title='Start Task'
+                  onClick={handleTimer}
+                >
+
+                  {loading ? (
+                    <span>
+                      <i className="fa fa-spinner fa-spin" />
+                    </span>
+                  ) : (
+
+                    <i
+                      className='icofont-ui-pause'
+                      style={{
+                        fontSize: '20px',
+                        color: '#EC7063',
+                        margin: 'auto'
+                      }}
+                    ></i>
+                  )}
+                </button>
+              )}
+            </div>
+          )
         }
         {props.data.type == 'GROUP_ACTIVITY' &&
           props.data.status !== 'COMPLETED' && (
@@ -549,8 +534,7 @@ setLoading(false)
 
         {data.status == 'COMPLETED' ? (
           <>
-
-            <Dropdown   className="d-inline-flex m-1">
+            <Dropdown className="d-inline-flex m-1">
               <Dropdown.Toggle
                 as="button"
                 variant=""
@@ -568,11 +552,9 @@ setLoading(false)
               </Dropdown.Menu>
 
             </Dropdown>
-
-
           </>
         ) : (
-          <Dropdown  className='d-inline-flex m-1' onClick={loadData}>
+          <Dropdown className='d-inline-flex m-1' onClick={loadData}>
             <Dropdown.Toggle
               as='button'
               variant=''
@@ -596,7 +578,7 @@ setLoading(false)
                     <i className='icofont-calendar'></i> Planner
                   </button>
                 </li>
-              )} 
+              )}
               {props && props.isReviewer == 0 &&
 
                 <li>
@@ -614,7 +596,7 @@ setLoading(false)
                   </Link>
                 </li>
               }
-              {props && 
+              {props &&
                 <li>
                   <Link
                     to={
@@ -636,37 +618,39 @@ setLoading(false)
                 </button>
               </li>
 
-              {props.data.status != "COMPLETED" && 
-            // (new Date(props.data.start_date) > new Date(todayDate)) == false &&
-                 props.data.time_status !== "STOP" && (
-                <li onClick={e => {  handleRequestModal();
-                  RegularizaLoadData(); }}>
-                  {data &&
-                    data.taskOwners.map((d) => {
-                      if (d.id == localStorage.getItem("id")) {
-                        return (<button 
-                          className="btn btn-sm text-white w-100" style={{ backgroundColor: "#d63384" }}
+              {props.data.status != "COMPLETED" &&
+                // (new Date(props.data.start_date) > new Date(todayDate)) == false &&
+                props.data.time_status !== "STOP" && (
+                  <li onClick={e => {
+                    handleRequestModal();
+                    RegularizaLoadData();
+                  }}>
+                    {data &&
+                      data.taskOwners.map((d) => {
+                        if (d.id == localStorage.getItem("id")) {
+                          return (<button
+                            className="btn btn-sm text-white w-100" style={{ backgroundColor: "#d63384" }}
 
                           // className="btn btn-sm btn-danger text-white w-100"
                           // disabled={(new Date(props.data.start_date) > new Date(todayDate))}
-                        >
-                          <i className="icofont-listing-number"></i> {" "}
-                          Time
-                          Regularization
-                        </button>);
-                      }
-                    })}
+                          >
+                            <i className="icofont-listing-number"></i> {" "}
+                            Time
+                            Regularization
+                          </button>);
+                        }
+                      })}
 
-                </li>
-              )}
+                  </li>
+                )}
 
 
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
                   <i className="icofont-listing-number"></i> Task History
                 </button>
-              </li> 
-                <li onClick={handleTaskRegularizationModal}>
+              </li>
+              <li onClick={handleTaskRegularizationModal}>
                 <button className="btn btn-sm btn-danger text-white w-100">
                   <i className="icofont-listing-number"></i> Task Regularization
                 </button>
@@ -677,73 +661,67 @@ setLoading(false)
         )}
       </div>
       {showPlannerModal && (
-              <PlannerModal
-                show={handleShowPlannerModal}
-                handleClose={handleClosePlannerModal}
-                plannerData={plannerData}
-                moduleSetting={moduleSetting}
-              />
-            )}
-{subtaskModal &&(
-            
-            <SubtaskModal
-        taskId={data.id}
-        ticketId={data.ticket_id}
-        show={subtaskModal}
-        data={data}
-        hide={handleSubtaskModal}
-      />
+        <PlannerModal
+          show={handleShowPlannerModal}
+          handleClose={handleClosePlannerModal}
+          plannerData={plannerData}
+          moduleSetting={moduleSetting}
+        />
+      )}
+      {subtaskModal && (
+
+        <SubtaskModal
+          taskId={data.id}
+          ticketId={data.ticket_id}
+          show={subtaskModal}
+          data={data}
+          hide={handleSubtaskModal}
+        />
       )}
 
       {requestModal && (
-<RequestModal
-        taskId={data.id}
-        ticketId={data.ticket_id}
-        data={data}
-        isRegularisedData={isRegularisedData}
-        show={requestModal}
-        hide={handleRequestModal}
-        regularizeTimeData={regularizeTimeData}
-        close={handleCloseRequestModal}
+        <RequestModal
+          taskId={data.id}
+          ticketId={data.ticket_id}
+          data={data}
+          isRegularisedData={isRegularisedData}
+          show={requestModal}
+          hide={handleRequestModal}
+          regularizeTimeData={regularizeTimeData}
+          close={handleCloseRequestModal}
 
-      />
+        />
       )}
 
-{taskHistoryModal && (
-<TaskHistoryModal
-        taskId={data.id}
-        show={taskHistoryModal}
-        data={data}
-        hide={handleTaskHistoryModal}
-      /> 
+      {taskHistoryModal && (
+        <TaskHistoryModal
+          taskId={data.id}
+          show={taskHistoryModal}
+          data={data}
+          hide={handleTaskHistoryModal}
+        />
       )}
 
       {taskRegularizationModal && (
 
-<TaskRegularizationModal
-        taskId={data.id}
-        ticketId={data.ticket_id}
-        data={data}
-        allData={allData}
-        show={taskRegularizationModal}
-        hide={handleTaskRegularizationModal}
-      />
-      )}  
-       
-     
-
-     
-
-
+        <TaskRegularizationModal
+          taskId={data.id}
+          ticketId={data.ticket_id}
+          data={data}
+          allData={allData}
+          show={taskRegularizationModal}
+          hide={handleTaskRegularizationModal}
+        />
+      )}
 
       <GroupActivityModal
         data={data}
-         show={showGroupActivityModal}
-         hide={hideGroupActivity}
-         loadBasket={loadBasket}
-       />
+        show={showGroupActivityModal}
+        hide={hideGroupActivity}
+        loadBasket={loadBasket}
+      />
 
-      
+
     </div>
   )
 }
