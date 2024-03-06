@@ -483,12 +483,19 @@ const EditTemplateComponent = ({ match, props }) => {
   };
 
   const handleAddTask = async (e) => {
-    e.preventDefault();
+    console.log("ssss",e)
 
-    const formData = new FormData(e.target);
+
+    e.preventDefault();
+    
 
     
-    console.log("e", formData);
+
+    const formData = new FormData(e.target);
+    
+
+    
+   
     // Add your form data to the `formData` object here
 
     // Print the formData entries
@@ -845,6 +852,7 @@ const EditTemplateComponent = ({ match, props }) => {
                     id="days"
                     max="100"
                     min="1"
+                    required
                     name="days"
                     className="form-control form-control-sm"
                   />
@@ -860,6 +868,7 @@ const EditTemplateComponent = ({ match, props }) => {
                     type="text"
                     id="hours_required"
                     name="total_hours"
+                    required
                     className="form-control form-control-sm"
                     defaultValue="00:00"
                   />
@@ -881,6 +890,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   type="number"
                   id="start_days"
                   name="start_days"
+                  required
                   className="form-control form-control-sm"
                 />
               </div>:
@@ -895,6 +905,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   type="number"
                   id="start_days"
                   name="start_days"
+                  required
                   className="form-control form-control-sm"
                 />
               </div>

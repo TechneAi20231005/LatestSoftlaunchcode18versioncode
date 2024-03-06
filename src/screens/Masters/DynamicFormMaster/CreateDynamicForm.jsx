@@ -327,32 +327,11 @@ function CreateDynamicForm() {
 
   const handleChange = (idx, type) => async (e) => {
     // setFormShow(formShow == true ? false : true);
-    console.log("eee",e.target)
-   
+    console.log("maxNumber", e.target.value);
+
     if (e.target.name === "inputLabel") {
       setInputLabelValue(e.target.value);
     }
-
-
-    if (e.target.name === "inputRangeMin") {
-setMin(e.target.value)
-    }
-
-    
-    if (e.target.name === "inputRangeMax") {
-      setMax(e.target.value)
-
-          }
-
-          if(min > max){
-setMaxErr("Max value should be grater than min value")
-          }
-
-          
-
-
-
-   
 
     if (selectedValue) {
       setSelectedValueErr("");
@@ -522,37 +501,35 @@ setMaxErr("Max value should be grater than min value")
       const test = e.target.value;
       console.log("testNew", rows[idx].inputAddOn.inputRadio);
       console.log("testNew=", selectedValue);
-    const dropDownID = selectedValue && selectedValue
+      const dropDownID = selectedValue && selectedValue;
 
+      const newValue = e.target.name;
+      if (newValue === "inputOnChangeSource") {
+        const dropDownValue = e.target.value;
+        setSelectedValue(dropDownValue);
 
-    const newValue = e.target.name
-    if (newValue === "inputOnChangeSource") {
-      const dropDownValue = e.target.value
-      setSelectedValue(dropDownValue);
-    
-      rows[idx].inputAddOn.inputRadio = test;
-     await new DynamicFormDropdownMasterService()
-        .getDropdownById(dropDownValue)
-        .then((res) => {
-          console.log("res==>",res)
-          console.log("res==>",dropDownID)
+        rows[idx].inputAddOn.inputRadio = test;
+        await new DynamicFormDropdownMasterService()
+          .getDropdownById(dropDownValue)
+          .then((res) => {
+           
 
-          if (res.status == 200) {
-            if (res.data.status == 1) {
-              const dropNames = res.data.data;
-              setRadioSelect(dropNames.master.dropdown_name);
-              const temp = [];
-              res.data.data.dropdown.forEach((d) => {
-                temp.push({ label: d.label, value: d.id });
-              });
-              rows[idx].inputAddOn.inputRadio = temp;
-              setInputDataSource(temp);
+            if (res.status == 200) {
+              if (res.data.status == 1) {
+                const dropNames = res.data.data;
+                setRadioSelect(dropNames.master.dropdown_name);
+                const temp = [];
+                res.data.data.dropdown.forEach((d) => {
+                  temp.push({ label: d.label, value: d.id });
+                });
+                rows[idx].inputAddOn.inputRadio = temp;
+                setInputDataSource(temp);
+              }
             }
-          }
-        });
+          });
+      }
     }
   };
-}
   //     // console.log(rows);
   //     // const rows = [...rows];
   //     // rows[idx] = {
@@ -1045,9 +1022,14 @@ setMaxErr("Max value should be grater than min value")
                                   )}
                                 </td>
                                 <td>
-                                  {item.inputType === "date" || item.inputType === "time" ? (
+                                  {item.inputType === "date" ||
+                                  item.inputType === "time" ? (
                                     <input
-                                      type={item.inputType === "date" ? "date": "time"}
+                                      type={
+                                        item.inputType === "date"
+                                          ? "date"
+                                          : "time"
+                                      }
                                       name="inputDefaultValue"
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
@@ -1060,18 +1042,27 @@ setMaxErr("Max value should be grater than min value")
                                     />
                                   ) : (
                                     <input
-                                      type={item.inputType === "datetime-local" ? "datetime-local" : "text" }
+                                      type={
+                                        item.inputType === "datetime-local"
+                                          ? "datetime-local"
+                                          : "text"
+                                      }
                                       name="inputDefaultValue"
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
                                       className="form-control form-control-sm"
                                       onKeyPress={(e) => {
-                                        item.inputType === "number" ||  item.inputType === "decimal" ? Validation.NumbersSpecialOnlyDecimal(e) : Validation.CharactersNumbersSpeicalOnly(e);
+                                        item.inputType === "number" ||
+                                        item.inputType === "decimal"
+                                          ? Validation.NumbersSpecialOnlyDecimal(
+                                              e
+                                            )
+                                          : Validation.CharactersNumbersSpeicalOnly(
+                                              e
+                                            );
                                       }}
                                     />
                                   )}
-
-                                 
                                 </td>
                                 <td>
                                   <input
@@ -1082,7 +1073,12 @@ setMaxErr("Max value should be grater than min value")
                                     className="center"
                                   />
                                 </td>
-                                {console.log("rr",rows[idx].inputType === "select-master" ?"j":"k")}
+                                {console.log(
+                                  "rr",
+                                  rows[idx].inputType === "select-master"
+                                    ? "j"
+                                    : "k"
+                                )}
                                 <td>
                                   {(rows[idx].inputType === "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "checkbox")  &&  (
                                     <input
@@ -1296,7 +1292,20 @@ setMaxErr("Max value should be grater than min value")
                                             rows[idx].inputAddOn.inputRangeMax
                                           }
                                         />
+                                        {parseFloat(
+                                          rows[idx].inputAddOn.inputRangeMin
+                                        ) >
+                                          parseFloat(
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          ) && (
+                                          <div className="text-danger">
+                                            {" "}
+                                            Max number should be greater than
+                                            Min number
+                                          </div>
+                                        )}
                                       </div>
+
                                     </div>
                                   )}
 
@@ -1329,9 +1338,30 @@ setMaxErr("Max value should be grater than min value")
                                             rows[idx].inputAddOn.inputRangeMax
                                           }
                                         />
+
+                                      <>
+                                      {parseFloat(
+                                          rows[idx].inputAddOn.inputRangeMin
+                                        ) >
+                                          parseFloat(
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          ) && (
+                                          <div className="text-danger">
+                                            {" "}
+                                            Max number should be greater than
+                                            Min number
+                                          </div>
+                                        )}
+                                        </>
+                                          
+                                      
                                       </div>
+                                     
                                     </div>
+                                    
                                   )}
+
+                                  {console.log("item",item)}
 
                                   {rows[idx].inputType === "date" && (
                                     <span>
@@ -1852,7 +1882,7 @@ setMaxErr("Max value should be grater than min value")
                             {data.inputDefaultValue}
                           </textarea>
                         )}
-                        {console.log("d4",data)}
+                        {console.log("d4", data)}
 
                         {data.inputType === "date" && (
                           <input

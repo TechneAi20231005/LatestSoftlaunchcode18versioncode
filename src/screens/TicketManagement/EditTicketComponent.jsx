@@ -87,9 +87,9 @@ export default function EditTicketComponent({ match }) {
 
   const dispatch = useDispatch();
 
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 16));
+  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 16));
 
-console.log("c===>",checkRole)
+
   const [projectDropdown, setProjectDropdown] = useState();
 
   const [moduleData, setModuleData] = useState();
@@ -354,9 +354,9 @@ console.log("c===>",checkRole)
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active == 1);
+          const data = res.payload.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
           const select = res.payload.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active == 1 && d.account_for === "SELF")
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name,
@@ -696,11 +696,11 @@ console.log("c===>",checkRole)
     if (e) {
       setSubModuleDropdown(null);
       console.log("moduleData", subModuleData)
-      // const data = subModuleData
-      //   .filter((d) => d.module_id == e.value)
-      //   .map((d) => ({ value: d.id, label: d.sub_module_name }))
-      // console.log("data", data)
-      // setSubModuleDropdown()
+      const data = subModuleData
+        .filter((d) => d.module_id == e.value)
+        .map((d) => ({ value: d.id, label: d.sub_module_name }))
+
+      setSubModuleDropdown(data)
 
     }
   };
@@ -1065,7 +1065,7 @@ console.log("c===>",checkRole)
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {projectDropdown  &&  data && (
+                      {projectDropdown && data && (
                         <Select
                           id="project_id"
                           name="project_id"
@@ -1084,7 +1084,7 @@ console.log("c===>",checkRole)
                           Module : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {moduleDropdown && data&& (
+                      {moduleDropdown && data && (
 
                         <Select
                           id="module_id"

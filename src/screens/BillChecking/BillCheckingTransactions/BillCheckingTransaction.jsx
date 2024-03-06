@@ -1336,6 +1336,8 @@ setIsOriginalBillReceived(false);
 
   const [datee, setDatee] = useState();
   const [billDatedatee, setBillDatee] = useState();
+  console.log("billDatedatee",billDatedatee)
+  console.log("formattedDate",formattedDate)
   const [receivedate, setReceive] = useState();
   const [isBillDateRequired, setIsBillDateRequired] = useState();
   const [fromBillAmount, setFromBillAmount] = useState("")
@@ -1668,7 +1670,7 @@ setIsOriginalBillReceived(false);
                       className="form-control"
                       name="to_bill_date"
                       id="to_bill_date"
-                      min={billDatedatee}
+                      // min={billDatedatee}
                       required={isBillDateRequired}
                       max={formattedDate}
                       ref={selectToBillRef}
