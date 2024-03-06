@@ -1317,13 +1317,14 @@ function CityComponent() {
   
   useEffect(() => {
     // loadData();
+    dispatch(getCityData());
+    dispatch(getRoles())
+    dispatch(getCountryData())
+   dispatch(getStateDataSort())
+   dispatch(getCountryDataSort())
+  
 
     if(!cityData.length || !checkRole.length || !StateData.length || !CountryData.length){
-      dispatch(getCityData());
-       dispatch(getRoles())
-       dispatch(getCountryData())
-      dispatch(getStateDataSort())
-      dispatch(getCountryDataSort())
      
     }
     

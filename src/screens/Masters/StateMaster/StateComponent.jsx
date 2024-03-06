@@ -1085,15 +1085,17 @@ function StateComponent() {
 
   useEffect(() => {
     loadData();
+    
+    dispatch(getCountryDataSort());
+    dispatch(getStateData());
     // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
     if (!stateData.length || !checkRole.length) {
-      dispatch(getStateData());
+     
      
       dispatch(getRoles());
     }
     if(!CountryData.length){
 
-      dispatch(getCountryDataSort());
     }
   }, []);
 

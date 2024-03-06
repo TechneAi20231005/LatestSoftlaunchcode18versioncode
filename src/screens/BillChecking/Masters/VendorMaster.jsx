@@ -12473,8 +12473,12 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
+  
+
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
+
+
 
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
@@ -12548,7 +12552,38 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+
+    
+    // { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+    {
+        name: "Vendor Name",
+        selector: (row) => row.vendor_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.vendor_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.vendor_name && row.vendor_name.length < 30
+                      ? row.vendor_name
+                      : row.vendor_name.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
 
     {
       name: "Address",
@@ -12582,24 +12617,222 @@ function VendorMaster({ match }) {
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Pincode", selector: (row) => row.pincode, sortable: true },
     { name: "Mobile", selector: (row) => row.mobile_no, sortable: true },
-    { name: "Email", selector: (row) => row.email, sortable: true },
-    { name: "Aadhaar", selector: (row) => row.adhar_no, sortable: true },
-    { name: " PAN ", selector: (row) => row.pan_no, sortable: true },
+    // { name: "Email", selector: (row) => row.email, sortable: true },
+
+    {
+        name: "Email",
+        selector: (row) => row.email,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.email && (
+              <OverlayTrigger overlay={<Tooltip>{row.email} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.email && row.email.length < 20
+                      ? row.email
+                      : row.email.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
+      {
+        name: "Aadhaar",
+        selector: (row) => row.adhar_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.adhar_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.adhar_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.adhar_no && row.adhar_no.length < 20
+                      ? row.adhar_no
+                      : row.adhar_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+    // { name: "Aadhaar", selector: (row) => row.adhar_no, sortable: true },
+    // { name: " PAN ", selector: (row) => row.pan_no, sortable: true },
+
+    {
+        name:  " PAN ",
+        selector: (row) => row.pan_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.pan_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.pan_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.pan_no && row.pan_no.length < 20
+                      ? row.pan_no
+                      : row.pan_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     { name: " MSME NO ", selector: (row) => row.msme_no, sortable: true },
-    { name: " GST NO ", selector: (row) => row.gst_no, sortable: true },
+    // { name: " GST NO ", selector: (row) => row.gst_no, sortable: true },
+    {
+        name:  " GST NO ",
+        selector: (row) => row.gst_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.gst_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.gst_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.gst_no && row.gst_no.length < 20
+                      ? row.gst_no
+                      : row.gst_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     { name: " Bank Name ", selector: (row) => row.bank_name, sortable: true },
     {
       name: " Bank Branch Name ",
       selector: (row) => row.bank_branch_name,
       sortable: true,
     },
-    { name: " Account No ", selector: (row) => row.account_no, sortable: true },
-    { name: " IFSC Code ", selector: (row) => row.ifsc_code, sortable: true },
+    // { name: " Account No ", selector: (row) => row.account_no, sortable: true },
+
     {
-      name: " Benificiary Name ",
-      selector: (row) => row.beneficiary_name,
-      sortable: true,
-    },
+        name: " Account No ",
+        selector: (row) => row.account_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.account_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.account_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.account_no && row.account_no.length < 20
+                      ? row.account_no
+                      : row.account_no.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
+
+    // { name: " IFSC Code ", selector: (row) => row.ifsc_code, sortable: true },
+
+    {
+        name:  " IFSC Code ",
+        selector: (row) => row.ifsc_code,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.ifsc_code && (
+              <OverlayTrigger overlay={<Tooltip>{row.ifsc_code} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.ifsc_code && row.ifsc_code.length < 20
+                      ? row.ifsc_code
+                      : row.ifsc_code.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+    // {
+    //   name: " Benificiary Name ",
+    //   selector: (row) => row.beneficiary_name,
+    //   sortable: true,
+    // },
+
+    {
+        name:  " Benificiary Name ",
+        selector: (row) => row.beneficiary_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.beneficiary_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.beneficiary_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.beneficiary_name && row.beneficiary_name.length < 20
+                      ? row.beneficiary_name
+                      : row.beneficiary_name.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
     {
       name: " Consider In Pay ",
       selector: (row) => row.consider_in_payment,
@@ -12621,11 +12854,38 @@ function VendorMaster({ match }) {
       sortable: true,
     },
     { name: " Narration ", selector: (row) => row.narration, sortable: true },
+    // {
+    //   name: " Template Name ",
+    //   selector: (row) => row.template_name,
+    //   sortable: true,
+    // },
     {
-      name: " Template Name ",
-      selector: (row) => row.template_name,
-      sortable: true,
-    },
+        name: " Template Name ",
+        selector: (row) => row.template_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.template_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.template_name && row.template_name.length < 20
+                      ? row.template_name
+                      : row.template_name.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     {
       name: " Created At ",
       width: "200px",
@@ -12733,13 +12993,16 @@ function VendorMaster({ match }) {
       });
 
     await new VendorMasterService().getActiveCountry().then((res) => {
+
+
       if (res.status === 200) {
         setCountry(res.data.data);
         setCountryDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
-          }))
+          res.data.data.filter((d) => d.is_active === 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
+            }))
         );
       }
     });
@@ -12766,14 +13029,19 @@ function VendorMaster({ match }) {
     });
 
     await new VendorMasterService().getActiveCity().then((res) => {
-        console.log(res.data.data
-            .filter((d) => d.is_active == 1))
-
+      console.log("activecity", res.data.data);
+      console.log("fiterCity",  res.data.data
+      .filter((d) => d.is_active === 1)
+      .map((i) => ({
+        value: i.id,
+        label: i.city,
+      })))
+      console.log("ff==",res.data.data.filter((d)=>d.state_id==178));
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
               label: i.city,
@@ -12833,15 +13101,7 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    
-    if (selectedFiles) {
-        selectedFiles.forEach((file, index) => {
-          form.append(`pan_attachment[${index}]`, file.file, file.file.name);
-        });
-      }
-  
-    console.log("form", form);
-    form.delete("pan_attachment[]");
+
 
     setError(null);
     setNotify(null);
@@ -13112,67 +13372,26 @@ function VendorMaster({ match }) {
     }
   };
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState();
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
-      var totalSize = 0; // Initialize total size
-
-      // Calculate the total size of all files in tempSelectedFile
-      for (var i = 0; i < tempSelectedFile.length; i++) {
-        totalSize += tempSelectedFile[i].file.size;
-      }
-
-      // Check if the total size of all files does not exceed 5MB
+      var tempSelectedFile = [];
       for (var i = 0; i < e.target.files.length; i++) {
-        const file = e.target.files[i];
-        const fileType = file.type;
-        const fileSize = file.size; // Get the file size in bytes
-
-        // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-        if (validFileTypes.includes(fileType)) {
-          // Check if the total size of all files is less than or equal to 5MB
-          if (totalSize + fileSize <= 5 * 1024 * 1024) {
-            tempSelectedFile.push({
-              file: file,
-              fileName: file.name,
-              tempUrl: URL.createObjectURL(file),
-            });
-
-            totalSize += fileSize; // Update the total size
-          } else {
-            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-            alert("Total file size exceeds 5MB. Please select smaller files.");
-            break; // Stop processing more files
-          }
-        } else {
-          // Handle the case where an invalid file type is selected (e.g., show an error message)
-          alert(
-            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-          );
-        }
+        tempSelectedFile.push({
+          file: e.target.files[i],
+          fileName: e.target.files[i].name,
+          tempUrl: URL.createObjectURL(e.target.files[i]),
+        });
       }
-
-      if (tempSelectedFile.length <= 10) {
-        fileInputRef.current.value = "";
-        setSelectedFiles(prevSelectedFiles => {
-            let tempSelectedFile = [...prevSelectedFiles];
-            // Your logic to modify tempSelectedFile
-            return tempSelectedFile;
-          });
-          
-      } else {
-        alert("You can only upload a maximum of 10 attachments.");
-      }
+      setSelectedFiles(tempSelectedFile);
     } else if (type === "DELETE") {
+      gstInputRef.current.value = "";
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-    e.target.value = ""; // Reset the input field
   };
-
   const handleDeleteAttachment = (e, type, id) => {
     deleteAttachment(id).then((res) => {
       if (res.status === 200) {
@@ -13411,12 +13630,10 @@ function VendorMaster({ match }) {
   const handleStateChange = (e) => {
     if (e) {
       const a = city.filter((d) => d.state_id == e.value);
+      const aa = a.filter((i)=>i.is_active==1)
+     
       setCityDropdown((prev) => null);
-      setCityDropdown(a.filter((d) => d.is_active == 1)
-      .map((i) => ({
-        value: i.id,
-        label: i.city,
-      })));
+      setCityDropdown(aa.map((d) => ({ value: d.id, label: d.city })));
     }
   };
 
@@ -13823,7 +14040,7 @@ function VendorMaster({ match }) {
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {console.log("tau", modal.modalData)}
+           
               {error && <Alert alertData={error} />}
               <div className="deadline-form">
                 <div className="row g-3 mb-3">
@@ -14036,8 +14253,10 @@ function VendorMaster({ match }) {
 
                   <div className="col-sm-2">
                     <label className="form-label font-weight-bold">
-                      Country :<Astrick color="red" size="13px" />
+                      Countryss :<Astrick color="red" size="13px" />
                     </label>
+                    {console.log("pp",modal.modalData)}
+                    {console.log("CountryDropdown",CountryDropdown)}
                     {CountryDropdown && data ? (
                       <Select
                         id="country"
@@ -14048,13 +14267,14 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? CountryDropdown.filter(
-                                (d) => d.label == modal.modalData.country
+                                (d) => d.label === modal.modalData.country
                               )
                             : CountryDropdown.filter(
                                 (d) =>
-                                  d.value == parseInt(modal.modalData.country)
+                                  d.value === parseInt(modal.modalData.country)
                               )
                         }
+                        // value={modal?.modalData?.country}
                         required={true}
                       />
                     ) : (
@@ -14088,10 +14308,10 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
+
                   <div className="col-sm-2">
                     <label className="form-label font-weight-bold">
                       City :<Astrick color="red" size="13px" />
-                      {console.log(cityDropdown)}
                     </label>
                     {cityDropdown && (
                       <Select
@@ -14525,6 +14745,85 @@ function VendorMaster({ match }) {
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
+
+                      {/* {modal.modalData && modal.modalData.pan_attachment && (
+                        <a
+                          href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
+                          target="_blank"
+                          downlaod
+                          className="btn btn-info btn-sm p-0"
+                          accept="image/jpg,image/jpeg,image/png,application/pdf"
+                          onChange={(e) => {
+                            const selectedFile = e.target.files[0];
+
+                            if (
+                              selectedFile.type === "image/jpg" ||
+                              selectedFile.type === "image/jpeg" ||
+                              selectedFile.type === "image/png" ||
+                              selectedFile.type === "application/pdf"
+                            ) {
+                              // File type is allowed
+                            } else {
+                              // Check if the file type is BMP
+                              if (selectedFile.type === "image/bmp") {
+                                alert(
+                                  "Invalid file format. BMP files are not allowed."
+                                );
+                              } else {
+                                alert(
+                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                                );
+                              }
+                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                            }
+
+                            uploadPanAttachmentHandler(e, "UPLOAD", "");
+                            maxLengthCheck(e, "PAN");
+                          }}
+                        >
+                          <i
+                            class="icofont-download"
+                            style={{ fontSize: "15px" }}
+                          >
+                            Download
+                          </i>
+                          <p>{modal.modalData._attachmentUrl}</p>
+                        </a>
+                      )} */}
+
+                      {modal.modalData &&
+                        modal.modalData.pan_attachment &&
+                        modal.modalData.pan_attachment.map(
+                          (attachment, index) => (
+                            <div key={index}>
+                              <a
+                                href={`${_attachmentUrl}/${attachment}`}
+                                target="_blank"
+                                download
+                                className="btn btn-info btn-sm p-0"
+                              >
+                                <i
+                                  className="icofont-download"
+                                  style={{ fontSize: "15px" }}
+                                >
+                                  Download
+                                </i>
+                              </a>
+                              <OverlayTrigger
+                                overlay={<Tooltip>{attachment} </Tooltip>}
+                              >
+                                <div>
+                                  <span title={attachment} className="ms-1">
+                                    {" "}
+                                    {attachment && attachment < 30
+                                      ? attachment
+                                      : attachment.substring(0, 20) + "...."}
+                                  </span>
+                                </div>
+                              </OverlayTrigger>
+                            </div>
+                          )
+                        )}
                     </label>
 
                     <input
@@ -14561,8 +14860,8 @@ function VendorMaster({ match }) {
                         }
                         // Check if attachment is required and input field is empty
 
-                        uploadAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "UPLOAD");
+                        uploadPanAttachmentHandler(e, "UPLOAD", "");
+                        maxLengthCheck(e, "PAN");
                       }}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
                       ref={fileInputRef}
@@ -14570,121 +14869,12 @@ function VendorMaster({ match }) {
                     />
                   </div>
 
-                  {modal.modalData &&
-                    modal.modalData.pan_attachment &&
-                    modal.modalData.pan_attachment.map((attachment, index) => (
-                      <div key={index}>
-                        <a
-                          href={`${_attachmentUrl}/${attachment}`}
-                          target="_blank"
-                          download
-                          className="btn btn-info btn-sm p-0"
-                        >
-                          <i
-                            className="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                        </a>
-                        <OverlayTrigger
-                          overlay={<Tooltip>{attachment} </Tooltip>}
-                        >
-                          <div>
-                            <span title={attachment} className="ms-1">
-                              {" "}
-                              {attachment && attachment < 30
-                                ? attachment
-                                : attachment.substring(0, 20) + "...."}
-                            </span>
-                          </div>
-                        </OverlayTrigger>
-                      </div>
-                    ))}
-                 <div
-                  //  className="d-flex"
-                  className="attachments-container"
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    maxWidth: "100%",
-                    maxHeight: "400px", // Example maximum height
-                    overflowY: "auto", // Enable vertical scrolling if needed
-                  }}
-                >
-                  {selectedFiles &&
-                    selectedFiles.map((attachment, index) => {
-                      return (
-                      
-                        <div
-                          key={index}
-                          style={{
-                            marginRight: "20px",
-                            marginBottom: "20px", // Add margin bottom for spacing between attachments
-                            width: "100px", // Set a fixed width for consistency
-                          }}
-                        >
-                          <div
-                            className="card"
-                            style={{
-                              backgroundColor: "#EBF5FB",
-                              height: "100%", // Set the height of the card to fill the container
-                              display: "flex", // Use flexbox to align content vertically
-                              flexDirection: "column", // Align content in a column layout
-                            }}
-                          >
-                            <div
-                              className="card-header"
-                              style={{ padding: "10px", overflow: "hidden" }}
-                            >
-                              <span
-                                // style={{
-                                //   overflow: "hidden",
-                                //   textOverflow: "ellipsis",
-                                //   whiteSpace: "nowrap",
-                                // }}
-                                style={{
-                                  display: "inline-block",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  maxWidth: "100%", // Ensure the span does not exceed the container width
-                                }}
-                              >
-                                {attachment.fileName}
-                              </span>
-                            </div>
-                            <div className="d-flex justify-content-between p-3">
-                              <a
-                                href={`${attachment.tempUrl}`}
-                                target="_blank"
-                                className="btn btn-warning btn-sm p-0 px-1"
-                              >
-                                <i className="icofont-ui-zoom-out"></i>
-                              </a>
-                              <button
-                                className="btn btn-danger text-white btn-sm p-1"
-                                type="button"
-                                onClick={(e) => {
-                                  uploadAttachmentHandler(e, "DELETE", index);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "15px" }}
-                                ></i>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {/* {selectedFiles &&
-                    selectedFiles.map((attachment, index) => {
+                  {panattachment &&
+                    panattachment.map((attachment, index) => {
                       return (
                         <div
                           key={index}
-                          className="justify-content-start"
+                          className="justify-content-end"
                           style={{
                             marginRight: "20px",
                             padding: "5px",
@@ -14697,27 +14887,24 @@ function VendorMaster({ match }) {
                           >
                             <div className="card-header">
                               <span>{attachment.fileName}</span>
-                                                            <img
-                                src={attachment.tempUrl}
-                                style={{ height: "100%", width: "100%" }}
-                              />{" "}
-                              *
+
                               <div className="d-flex justify-content-between p-0 mt-1">
                                 <a
                                   href={`${attachment.tempUrl}`}
                                   target="_blank"
                                   className="btn btn-warning btn-sm p-0 px-1"
                                 >
-                                  <i
-                                    className="icofont-download"
-                                    style={{ fontSize: "10px", height: "15px" }}
-                                  ></i>
+                                  <i class="icofont-ui-zoom-out"></i>
                                 </a>
                                 <button
                                   className="btn btn-danger text-white btn-sm p-1"
                                   type="button"
                                   onClick={(e) => {
-                                    handleDeleteAttachment(e, index);
+                                    uploadPanAttachmentHandler(
+                                      e,
+                                      "DELETE",
+                                      index
+                                    );
                                   }}
                                 >
                                   <i
@@ -14730,8 +14917,7 @@ function VendorMaster({ match }) {
                           </div>
                         </div>
                       );
-                    })} */}
-                </div>
+                    })}
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
