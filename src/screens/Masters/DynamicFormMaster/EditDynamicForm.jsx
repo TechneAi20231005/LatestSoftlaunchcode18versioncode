@@ -1319,6 +1319,7 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 import { dynamicFormData, getAllDropDownData } from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
 
 import *  as Validation from '../../../components/Utilities/Validation';
+import UserService from "../../../services/MastersService/UserService";
 
 function EditDynamicForm({ match }) {
   const [showAlert, setShowAlert] = useState({
@@ -1380,217 +1381,454 @@ function EditDynamicForm({ match }) {
   const [inputLabelValue, setInputLabelValue] = useState();
 
 
-  const [labelErr, setLabelErr] = useState();
+  const [labelErr, setLabelErr] = useState(null);
   const [selectedValueErr, setSelectedValueErr] = useState("");
   const [selectedNumberErr, setSelectedNumbereErr] = useState(null);
 
   const [selectedValue, setSelectedValue] = useState();
   const [minNuber, setMinNuber] = useState();
   const [maxNuber, setMaxNuber] = useState();
+  const [userData, setUserData] = useState(null);
+  const [radioSelect, setRadioSelect] = useState();
 
 
-console.log("min",minNuber)
+console.log("min",inputLabelValue)
 console.log("max",maxNuber)
 
 console.log("se",selectedNumberErr)
-
-
-  const handleChange = (idx) => async (e) => {
-    setIndex({ index: idx });
-    console.log("ss==>",selectedValue)
-
-    // if(e.target.name === "inputMandatory"){
-    //  const newValue = e.target.checked;
-    //  setIsInputMandatory(newValue);
-    // }
+const [labelNames, setLabelNames] = useState([]);
 
 
 
-    if (e.target.name === "inputMandatory" && e.target.checked === true) {
-    setIsInputMandatory(true);
-  } else {
-    setIsInputMandatory(false);
+const handleChange = (idx, type) => async (e) => {
+  // setFormShow(formShow == true ? false : true);
+  console.log("eee",e.target)
+ 
+  if (e.target.name === "inputLabel") {
+    setInputLabelValue(e.target.value);
   }
 
+ 
 
-  if (e.target.name === "inputRangeMin" ) {
-   setMinNuber(e.target.value)
+  if (selectedValue) {
+    setSelectedValueErr("");
   } else {
-    setMinNuber("");
+    setSelectedValueErr("Select Data Source");
   }
 
-  if (e.target.name === "inputRangeMax" ) {
-    setMaxNuber(e.target.value)
-   } else {
-     setMaxNuber("");
-   }
+  setFormShow(false);
 
-  if (minNuber > maxNuber ) {
+  setIndex({ index: idx });
 
-    setSelectedNumbereErr("Value should be grater than min number");
-  } else {
-    setSelectedNumbereErr("");
+  const { name, value } = e.target;
+
+  const notAllowed = [
+    "ref_id",
+    "created_at",
+    "updated_at",
+    "attachment",
+    "query_type_id",
+    "query_type",
+    "object_id",
+    "tenant_id",
+    "ticket_id",
+    "user_id",
+    "confirmation_required",
+    "project_id",
+    "module_id",
+    "submodule_id",
+    "cuid",
+    "ticket_date",
+    "expected_solve_date",
+    "assign_to_department_id",
+    "assign_to_user_id",
+    "type_id",
+    "priority",
+    "status_id",
+    "description",
+    "from_department_id",
+    "remark",
+    "is_active",
+    "created_by",
+    "updated_by",
+    "passed_status",
+    "passed_status_changed_by",
+    "passed_status_changed_at",
+    "passed_status_remark",
+    "ticket_confirmation_otp",
+    "ticket_confirmation_otp_created_at",
+  ];
+
+  if (
+    !notAllowed.includes(
+      e.target.value
+        .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+        .toLowerCase()
+    )
+  ) {
+    if (e.target.name === "inputWidth") {
+      rows[idx].inputWidth = e.target.value;
+    } else if (e.target.name === "inputType") {
+      rows[idx].inputType = e.target.value;
+      if (e.target.value == "date") {
+        rows[idx].inputFormat = "y-MM-dd";
+      } else {
+        rows[idx].inputFormat = null;
+      }
+    } else if (e.target.name === "inputLabel") {
+      rows[idx].inputLabel = e.target.value;
+      rows[idx].inputName = e.target.value
+        .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+        .toLowerCase();
+
+      labelNames[idx] = rows[idx].inputName;
+    } else if (e.target.name === "inputDefaultValue") {
+      rows[idx].inputDefaultValue = e.target.value;
+    } else if (e.target.name === "inputMandatory") {
+      rows[idx].inputMandatory = e.target.checked;
+    } else if (e.target.name === "inputMultiple") {
+      rows[idx].inputMultiple = e.target.checked;
+    } else if (e.target.name === "inputDataOption") {
+      rows[idx].inputOption = e.target.value;
+    } else if (e.target.name == "inputRange") {
+      rows[idx].inputAddOn.inputRange = e.target.value;
+    } else if (e.target.name == "inputRangeMin") {
+      rows[idx].inputAddOn.inputRangeMin = e.target.value;
+    } else if (e.target.name == "inputRangeMax") {
+      // if (rows[idx].inputAddOn.inputRangeMin > e.target.value) {
+      //   alert("Please select grater value");
+      //   return false;
+      // }
+      rows[idx].inputAddOn.inputRangeMax = e.target.value;
+    } else if (e.target.name == "datetime-local") {
+      rows[idx].inputAddOn.inputDateTime = e.target.value;
+    } else if (e.target.name == "inputFormat") {
+      rows[idx].inputFormat = e.target.value;
+    }
+    // setFormShow(formShow == true ? false : true);
+    // const test1 = e.target.value;
+    // rows[idx].inputAddOn.inputRadio = test1;
+
+    // if (e.target.name === "inputWidth") {
+    //   rows[idx].inputWidth = e.target.value;
+    // } else if (e.target.name === "inputName") {
+    //   rows[idx].inputName = e.target.value;
+    // } else if (e.target.name === "inputType") {
+    //   rows[idx].inputType = e.target.value;
+    // } else if (e.target.name === "inputLabel") {
+    //   rows[idx].inputLabel = e.target.value;
+    // } else if (e.target.name === "inputDefaultValue") {
+    //   rows[idx].inputDefaultValue = e.target.value;
+    // } else if (e.target.name === "inputDataOption") {
+    //   rows[idx].inputOption = e.target.value;
+    // } else if (e.target.name == "inputRange") {
+    //   rows[idx].inputAddOn.inputRange = e.target.value;
+    // } else if (e.target.name == "inputDataSource")
+
+    {
+      const test = e.target.value.split("|");
+      const _URL = masterURL[test[0]];
+      const _Value = test[1];
+      const _Label = test[2];
+
+      getData(_URL).then((res) => {
+        let counter = 1;
+        const tempData = [];
+        for (const key in res.data) {
+          const t = res.data[key];
+          tempData.push({
+            value: t[_Value],
+            label: t[_Label],
+          });
+        }
+
+        rows[idx].inputAddOn.inputDataSourceData = tempData;
+      });
+      rows[idx].inputAddOn.inputDataSource = e.target.value;
+    }
+
+    const tempUserData = [];
+
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
+    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+      if (res.status === 200) {
+        const data = res.data.data.filter((d) => d.is_active === 1);
+        for (const key in data) {
+          tempUserData.push({
+            value: data[key].id,
+            label:
+              data[key].first_name +
+              " " +
+              data[key].last_name +
+              " (" +
+              data[key].id +
+              ")",
+          });
+        }
+        const aa = tempUserData.sort(function (a, b) {
+          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+        });
+        setUserData(aa);
+      }
+    });
+
+    // else if (e.target.name == "inputRadio") {
+    // setFormShow(formShow == true ? false : true);
+    const test = e.target.value;
+    console.log("testNew", rows[idx].inputAddOn.inputRadio);
+    console.log("testNew=", selectedValue);
+  const dropDownID = selectedValue && selectedValue
+
+
+  const newValue = e.target.name
+  if (newValue === "inputOnChangeSource") {
+    const dropDownValue = e.target.value
+    setSelectedValue(dropDownValue);
+  
+    rows[idx].inputAddOn.inputRadio = test;
+   await new DynamicFormDropdownMasterService()
+      .getDropdownById(dropDownValue)
+      .then((res) => {
+        console.log("res==>",res)
+        console.log("res==>",dropDownID)
+
+        if (res.status == 200) {
+          if (res.data.status == 1) {
+            const dropNames = res.data.data;
+            setRadioSelect(dropNames.master.dropdown_name);
+            const temp = [];
+            res.data.data.dropdown.forEach((d) => {
+              temp.push({ label: d.label, value: d.id });
+            });
+            rows[idx].inputAddOn.inputRadio = temp;
+            setInputDataSource(temp);
+          }
+        }
+      });
   }
+};
+}
+
+
+  // const handleChange = (idx) => async (e) => {
+  //   setIndex({ index: idx });
+  //   console.log("ss==>",selectedValue)
+
+  //   // if(e.target.name === "inputMandatory"){
+  //   //  const newValue = e.target.checked;
+  //   //  setIsInputMandatory(newValue);
+  //   // }
+
+
+
+  //   if (e.target.name === "inputMandatory" && e.target.checked === true) {
+  //   setIsInputMandatory(true);
+  // } else {
+  //   setIsInputMandatory(false);
+  // }
+
+
+  // if (e.target.name === "inputRangeMin" ) {
+  //  setMinNuber(e.target.value)
+  // } else {
+  //   setMinNuber("");
+  // }
+
+  // if (e.target.name === "inputRangeMax" ) {
+  //   setMaxNuber(e.target.value)
+  //  } else {
+  //    setMaxNuber("");
+  //  }
+
+  // if (minNuber > maxNuber ) {
+
+  //   setSelectedNumbereErr("Value should be grater than min number");
+  // } else {
+  //   setSelectedNumbereErr("");
+  // }
 
    
-    if (e.target.name === "inputLabel") {
-      setInputLabelValue(e.target.value);
-    }
-    if (e.target.name === "inputOnChangeSource") {
-      setSelectedValue(e.target.value);
-    }
+  //   if (e.target.name === "inputLabel") {
+  //     setInputLabelValue(e.target.value);
+  //   }
+  //   if (e.target.name === "inputOnChangeSource") {
+  //     setSelectedValue(e.target.value);
+  //   }
 
-    if (selectedValue) {
-      setSelectedValueErr("");
-    } else {
-      setSelectedValueErr("Select Data Source");
-    }
+  //   if (selectedValue) {
+  //     setSelectedValueErr("");
+  //   } else {
+  //     setSelectedValueErr("Select Data Source");
+  //   }
      
-    setFormShow(false);
+  //   setFormShow(false);
 
-    // alert(e.target.value);
-    const notAllowed = [
-      "ref_id",
-      "created_at",
-      "updated_at",
-      "attachment",
-      "query_type_id",
-      "query_type",
-      "object_id",
-      "tenant_id",
-      "ticket_id",
-      "user_id",
-      "confirmation_required",
-      "project_id",
-      "module_id",
-      "submodule_id",
-      "cuid",
-      "ticket_date",
-      "expected_solve_date",
-      "assign_to_department_id",
-      "assign_to_user_id",
-      "type_id",
-      "priority",
-      "status_id",
-      "description",
-      "from_department_id",
-      "remark",
-      "is_active",
-      "created_by",
-      "updated_by",
-      "passed_status",
-      "passed_status_changed_by",
-      "passed_status_changed_at",
-      "passed_status_remark",
-      "ticket_confirmation_otp",
-      "ticket_confirmation_otp_created_at",
-    ];
+  //   // alert(e.target.value);
+  //   const notAllowed = [
+  //     "ref_id",
+  //     "created_at",
+  //     "updated_at",
+  //     "attachment",
+  //     "query_type_id",
+  //     "query_type",
+  //     "object_id",
+  //     "tenant_id",
+  //     "ticket_id",
+  //     "user_id",
+  //     "confirmation_required",
+  //     "project_id",
+  //     "module_id",
+  //     "submodule_id",
+  //     "cuid",
+  //     "ticket_date",
+  //     "expected_solve_date",
+  //     "assign_to_department_id",
+  //     "assign_to_user_id",
+  //     "type_id",
+  //     "priority",
+  //     "status_id",
+  //     "description",
+  //     "from_department_id",
+  //     "remark",
+  //     "is_active",
+  //     "created_by",
+  //     "updated_by",
+  //     "passed_status",
+  //     "passed_status_changed_by",
+  //     "passed_status_changed_at",
+  //     "passed_status_remark",
+  //     "ticket_confirmation_otp",
+  //     "ticket_confirmation_otp_created_at",
+  //   ];
 
-    if (
-      !notAllowed.includes(
-        e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
-          .toLowerCase()
-      )
-    ) {
-      if (e.target.name === "inputWidth") {
-        rows[idx].inputWidth = e.target.value;
-      }
-      // else if(e.target.name==="inputName")
-      // {
-      //     rows[idx].inputName=e.target.value;
-      // }
-      else if (e.target.name === "inputType") {
-        rows[idx].inputType = e.target.value;
+  //   if (
+  //     !notAllowed.includes(
+  //       e.target.value
+  //         .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+  //         .toLowerCase()
+  //     )
+  //   ) {
+  //     if (e.target.name === "inputWidth") {
+  //       rows[idx].inputWidth = e.target.value;
+  //     }
+  //     // else if(e.target.name==="inputName")
+  //     // {
+  //     //     rows[idx].inputName=e.target.value;
+  //     // }
+  //     else if (e.target.name === "inputType") {
+  //       rows[idx].inputType = e.target.value;
 
-        if (e.target.value == "date") {
-          rows[idx].inputFormat = "y-MM-dd";
-        } else {
-          rows[idx].inputFormat = null;
-        }
-      } else if (e.target.name === "inputLabel") {
-        rows[idx].inputLabel = e.target.value;
-        rows[idx].inputName = e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
-          .toLowerCase();
-      } else if (e.target.name === "inputFormat") {
-        rows[idx].inputFormat = e.target.value;
-      } else if (e.target.name === "inputDefaultValue") {
-        rows[idx].inputDefaultValue = e.target.value;
-      } else if (e.target.name === "inputDataOption") {
-        rows[idx].inputOption = e.target.value;
-      } else if (e.target.name === "inputRange") {
-        rows[idx].inputAddOn.inputRange = e.target.value;
-      } else if (e.target.name === "inputRangeMin") {
-        rows[idx].inputAddOn.inputRangeMin = e.target.value;
-      } else if (e.target.name === "inputRangeMax") {
-        rows[idx].inputAddOn.inputRangeMax = e.target.value;
-      } else if (e.target.name === "inputDataSource") {
-        // const test=e.target.value.split('|');
-        // const _URL=masterURL.dynamicFormDropdownMaster[test[0]];
-        // console.log(_URL)
-        // const _Value=test[1];
-        // const _Label=test[2];
+  //       if (e.target.value == "date") {
+  //         rows[idx].inputFormat = "y-MM-dd";
+  //       } else {
+  //         rows[idx].inputFormat = null;
+  //       }
+  //     } else if (e.target.name === "inputLabel") {
+  //       rows[idx].inputLabel = e.target.value;
+  //       rows[idx].inputName = e.target.value
+  //         .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+  //         .toLowerCase();
+  //     } else if (e.target.name === "inputFormat") {
+  //       rows[idx].inputFormat = e.target.value;
+  //     } else if (e.target.name === "inputDefaultValue") {
+  //       rows[idx].inputDefaultValue = e.target.value;
+  //     } else if (e.target.name === "inputDataOption") {
+  //       rows[idx].inputOption = e.target.value;
+  //     } else if (e.target.name === "inputRange") {
+  //       rows[idx].inputAddOn.inputRange = e.target.value;
+  //     } else if (e.target.name === "inputRangeMin") {
+  //       rows[idx].inputAddOn.inputRangeMin = e.target.value;
+  //     } else if (e.target.name === "inputRangeMax") {
+  //       rows[idx].inputAddOn.inputRangeMax = e.target.value;
+  //     } else if (e.target.name === "inputDataSource") {
+  //       // const test=e.target.value.split('|');
+  //       // const _URL=masterURL.dynamicFormDropdownMaster[test[0]];
+  //       // console.log(_URL)
+  //       // const _Value=test[1];
+  //       // const _Label=test[2];
 
-        // getData(_URL).then(res =>{
-        //     console.log(res)
-        //     const tempData=[];
-        //     for (const key in res.data) {
-        //         const t=res.data[key];
-        //         tempData.push({
-        //             value: t[_Value],
-        //             label: t[_Label]
-        //         })
-        //     }
-        //     rows[idx].inputAddOn.inputDataSourceData=tempData
-        // });
-        // rows[idx].inputAddOn.inputDataSource=e.target.value;
+  //       // getData(_URL).then(res =>{
+  //       //     console.log(res)
+  //       //     const tempData=[];
+  //       //     for (const key in res.data) {
+  //       //         const t=res.data[key];
+  //       //         tempData.push({
+  //       //             value: t[_Value],
+  //       //             label: t[_Label]
+  //       //         })
+  //       //     }
+  //       //     rows[idx].inputAddOn.inputDataSourceData=tempData
+  //       // });
+  //       // rows[idx].inputAddOn.inputDataSource=e.target.value;
 
 
       
 
-        const test = e.target.value;
-        const newValue = e.target.name
-        if (newValue === "inputOnChangeSource") {
-          const dropDownValue = e.target.value
-          setSelectedValue(dropDownValue);
-        rows[idx].inputAddOn.inputDataSource = test;
-        }
-        await new DynamicFormDropdownMasterService()
-          .getDropdownById(test)
-          .then((res) => {
-            console.log("cc==",res)
-            if (res.status == 200) {
-              if (res.data.status == 1) {
-                const temp = [];
-                res.data.data.dropdown.forEach((d) => {
-                  temp.push({ label: d.label, value: d.id });
-                });
-                rows[idx].inputAddOn.inputDataSourceData = temp;
-                setInputDataSource(temp);
-              }
-            }
-          });
-      }
-    } else {
-      alert("Not Allowed to use entered Keywork");
-      rows[idx].inputLabel = "";
-    }
+  //       // const test = e.target.value;
+  //       // const newValue = e.target.name
+  //       // if (newValue === "inputOnChangeSource") {
+  //       //   const dropDownValue = e.target.value
+  //       //   setSelectedValue(dropDownValue);
+  //       // rows[idx].inputAddOn.inputDataSource = test;
+  //       // }
+  //       // console.log("tt==>",test)
+  //       // await new DynamicFormDropdownMasterService()
+  //       //   .getDropdownById(test)
+  //       //   .then((res) => {
+  //       //     console.log("cc==",res)
+  //       const test = e.target.value;
+  //       console.log("testNew", rows[idx].inputAddOn.inputRadio);
+  //       console.log("testNew=", selectedValue);
+  //     // const dropDownID = selectedValue && selectedValue
+  
+  
+  //     const newValue = e.target.name
+  //     console.log("newValue",newValue)
+  //     if (newValue === "inputOnChangeSource") {
+  //       const dropDownValue = e.target.value
+  //       setSelectedValue(dropDownValue);
+      
+  //       rows[idx].inputAddOn.inputRadio = test;
+  //     console.log("dropDownValue",dropDownValue)
+  //      await new DynamicFormDropdownMasterService()
+  //         .getDropdownById(dropDownValue)
+  //         .then((res) => {
+  //           console.log("res==>",res)
+  
+  //           if (res.status == 200) {
+  //             if (res.data.status == 1) {
+  //               const temp = [];
+  //               res.data.data.dropdown.forEach((d) => {
+  //                 temp.push({ label: d.label, value: d.id });
+  //               });
+  //               rows[idx].inputAddOn.inputDataSourceData = temp;
+  //               setInputDataSource(temp);
+  //             }
+  //           }
+  //         });
+  //     }
+  //   } 
+  // }
+  //   // else {
+  //   //   alert("Not Allowed to use entered Keywork");
+  //   //   rows[idx].inputLabel = "";
+  //   // }
 
-    
+  
   
 
   
 
     
-    // const rows = [...rows];
-    // rows[idx] = {
-    //     [name]: value
-    // };
-    // setRows({
-    //     rows
-    // });
-  };
+  //   // const rows = [...rows];
+  //   // rows[idx] = {
+  //   //     [name]: value
+  //   // };
+  //   // setRows({
+  //   //     rows
+  //   // });
+  // };
 
   // loadDynamicData = (_URL) =>{
   // getData(_URL).then(res =>{
@@ -1668,9 +1906,11 @@ console.log("se",selectedNumberErr)
   };
 
  
-
+console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
   const handldeFormShow = () => {
-    if (!inputLabelValue) {
+    const hasEmptyLabel = rows.some(row => row.inputLabel === '')
+    console.log("has",hasEmptyLabel)
+    if (hasEmptyLabel) {
       setLabelErr("Label Is Required");
     } else {
       setLabelErr("");
@@ -1748,7 +1988,7 @@ console.log("se",selectedNumberErr)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-          
+          console.log("res==>",res.data.data)
             setData(res.data.data);
             setRows(res.data.data.data)
             // setIsInputMandatory(res.data.data.data.isInputMandatory?.map((i)=>i.inputMandatory))
@@ -2078,7 +2318,6 @@ console.log("se",selectedNumberErr)
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-{console.log("input===>",rows)}
                                                     {rows && rows.map((item, idx) => (
                                                     
                                                         <tr id={`addr_${idx}`} key={idx}>
@@ -2193,7 +2432,7 @@ console.log("se",selectedNumberErr)
 
                                                             </td>
 
-                                                            {console.log("man==",item.inputMandatory)}
+                                                            {console.log("man==",item )}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
@@ -2207,7 +2446,7 @@ console.log("se",selectedNumberErr)
                                                             </td>
                                                            
                                                             <td>
-                                                                {/* {rows[idx].inputType == "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "radio" ||  rows[idx].inputType == "checkbox"  && */}
+                                                                {(item.inputType === "select-master"  || item.inputType === "checkbox" || item.inputType === "select" ) &&
                                                                 <input
                                                                     type="checkbox"
                                                                     name="inputMultiple"
@@ -2216,7 +2455,7 @@ console.log("se",selectedNumberErr)
                                                                     onChange={handleChange(idx)}
 
                                                                 />
-                                                                {/* } */}
+                                                                } 
                                                             </td>
                                                             <td>
                                                                 {rows[idx].inputType == "date" &&
@@ -2330,11 +2569,11 @@ console.log("se",selectedNumberErr)
                                             
                                           })}
                                       </select>
-                                      {!selectedValue && (
+                                      {/* {!selectedValue && (
                                         <small style={{ color: "red" }}>
                                           <b>Select Data Source</b>
                                         </small>
-                                      )}
+                                      )} */}
                                     </span>
                                   )}
 
@@ -2370,9 +2609,9 @@ console.log("se",selectedNumberErr)
                                         {/* <option value="department|id|department">Department Master</option> */}
                                         {/* <option value="role|id|role">Role Master</option> */}
                                       </select>
-                                      <small style={{ color: "red" }}>
+                                      {/* <small style={{ color: "red" }}>
                                         <b>Select Data Source</b>
-                                      </small>
+                                      </small> */}
                                     </span>
                                   )}
 
@@ -2407,11 +2646,11 @@ console.log("se",selectedNumberErr)
                                             
                                           })}
                                       </select>
-                                      {!selectedValue && (
+                                      {/* {!selectedValue && (
                                         <small style={{ color: "red" }}>
                                           <b>Select Data Source</b>
                                         </small>
-                                      )}
+                                      )} */}
                                     </span>
                                   )}
 
@@ -2695,7 +2934,7 @@ console.log("se",selectedNumberErr)
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
-                  {console.log("dataF==>",data.inputAddOn.inputRange)}
+                  {console.log("dataF==>",rows)}
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
                       var range = data.inputAddOn.inputRange.split("|");
@@ -2796,7 +3035,7 @@ console.log("se",selectedNumberErr)
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputAddOn.inputDateTime}
+                            defaultValue={data.inputDefaultValue}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -2814,7 +3053,7 @@ console.log("se",selectedNumberErr)
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputAddOn.inputRadio}
+                            defaultValue={data.inputDefaultValue}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -2823,25 +3062,56 @@ console.log("se",selectedNumberErr)
                         )}
                         {data.inputType === "number" && (
                         
-                          <input
-                            type="text"
-                            id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
-                            }
-                            name={data.inputName}
-                            // defaultValue={data.inputAddOn.inputRange}
-                            defaultValue={data.inputAddOn.inputRange}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
-                            className="form-control form-control-sm"
-                          />
+                          // <input
+                          //   type="text"
+                          //   id={
+                          //     data.inputName
+                          //       ? data.inputName
+                          //           .replace(/ /g, "_")
+                          //           .toLowerCase()
+                          //       : ""
+                          //   }
+                          //   name={data.inputName}
+                          //   // defaultValue={data.inputAddOn.inputRange}
+                          //   defaultValue={data.inputAddOn.inputRange}
+                          //   min={data.inputAddOn.inputRange ? range[0] : ""}
+                          //   max={data.inputAddOn.inputRange ? range[1] : ""}
+                          //   className="form-control form-control-sm"
+                          // />
+                          <div className="d-flex justify-content-between">
+<div class="form-group">
+  <label>Min Number:</label>
+  <input
+    type="number"
+    // onChange={handleChange(idx)}
+    id="inputRangeMin"
+    name="inputRangeMin"
+    className="form-control form-control-sm"
+    defaultValue={data.inputAddOn.inputRangeMin}
+    min={
+      data.inputAddOn.inputRangeMin
+    }
+  />
+</div>
+<div className="form-group">
+  <label>Max Number:</label>
+  <input
+    type="number"
+    // onChange={handleChange(idx)}
+    id="inputRangeMax"
+    name="inputRangeMax"
+    className="form-control form-control-sm"
+    defaultValue={data.inputAddOn.inputRangeMax}
+    max={
+    data.inputAddOn.inputRangeMax
+    }
+  />
+  </div>
+  </div>
                         )}
+                        
 
-                        {console.log("input==>",data.inputAddOn.inputDataSource)}
+                        {console.log("input==>",data)}
 
                         {
                           data.inputType === "select" && (
@@ -2853,27 +3123,28 @@ console.log("se",selectedNumberErr)
                                       .toLowerCase()
                                   : ""
                               }
-                              defaultValue={data.inputAddOn.inputDataSource}
+                              // defaultValue={data.inputAddOn.inputDataSource}
                               name={data.inputName}
                               className="form-control form-control-sm"
                             >
-                              <option
-                              
-                              > {data.inputName}</option>
-                              {data.inputAddOn.inputRadio &&
-                                data.inputAddOn.inputRadio.map(
-                                  (option) => {
-                                    return (
-                                      <option
-                                      selected={
-                                        parseInt(data && data?.inputAddOn?.inputDataSource) === option.value
-                                      }
-                                      value={option.value}>
-                                        {option.label}
-                                      </option>
-                                    );
-                                  }
-                                )}
+                                                          <option> {data.inputDefaultValue}</option>
+                            {data.inputAddOn.inputRadio &&
+                              data.inputAddOn.inputRadio.map((option) => {
+                                return (
+                                  <option
+                                    selected={
+                                      parseInt(
+                                        data &&
+                                          data?.inputAddOn?.inputDataSource
+                                      ) === option.value
+                                    }
+                                    
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                );
+                              })}
                             
                             </select>
                           )
@@ -2950,7 +3221,7 @@ console.log("se",selectedNumberErr)
                                 id="inputRangeMin"
                                 name="inputRangeMin"
                                 className="form-control form-control-sm"
-                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                defaultValue={data.inputAddOn.inputRangeMin}
                                 min={data.inputAddOn.inputRangeMin}
                             />
                         </div>
@@ -2963,7 +3234,7 @@ console.log("se",selectedNumberErr)
                                 id="inputRangeMax"
                                 name="inputRangeMax"
                                 className="form-control form-control-sm"
-                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
 
                             />
