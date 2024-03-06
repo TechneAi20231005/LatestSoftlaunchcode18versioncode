@@ -12473,9 +12473,12 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
-  console.log(CountryDropdown)
+  
+
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
+
+
 
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
@@ -12549,7 +12552,38 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+
+    
+    // { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+    {
+        name: "Vendor Name",
+        selector: (row) => row.vendor_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.vendor_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.vendor_name && row.vendor_name.length < 30
+                      ? row.vendor_name
+                      : row.vendor_name.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
 
     {
       name: "Address",
@@ -12583,24 +12617,222 @@ function VendorMaster({ match }) {
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Pincode", selector: (row) => row.pincode, sortable: true },
     { name: "Mobile", selector: (row) => row.mobile_no, sortable: true },
-    { name: "Email", selector: (row) => row.email, sortable: true },
-    { name: "Aadhaar", selector: (row) => row.adhar_no, sortable: true },
-    { name: " PAN ", selector: (row) => row.pan_no, sortable: true },
+    // { name: "Email", selector: (row) => row.email, sortable: true },
+
+    {
+        name: "Email",
+        selector: (row) => row.email,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.email && (
+              <OverlayTrigger overlay={<Tooltip>{row.email} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.email && row.email.length < 20
+                      ? row.email
+                      : row.email.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
+      {
+        name: "Aadhaar",
+        selector: (row) => row.adhar_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.adhar_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.adhar_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.adhar_no && row.adhar_no.length < 20
+                      ? row.adhar_no
+                      : row.adhar_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+    // { name: "Aadhaar", selector: (row) => row.adhar_no, sortable: true },
+    // { name: " PAN ", selector: (row) => row.pan_no, sortable: true },
+
+    {
+        name:  " PAN ",
+        selector: (row) => row.pan_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.pan_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.pan_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.pan_no && row.pan_no.length < 20
+                      ? row.pan_no
+                      : row.pan_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     { name: " MSME NO ", selector: (row) => row.msme_no, sortable: true },
-    { name: " GST NO ", selector: (row) => row.gst_no, sortable: true },
+    // { name: " GST NO ", selector: (row) => row.gst_no, sortable: true },
+    {
+        name:  " GST NO ",
+        selector: (row) => row.gst_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.gst_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.gst_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.gst_no && row.gst_no.length < 20
+                      ? row.gst_no
+                      : row.gst_no.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     { name: " Bank Name ", selector: (row) => row.bank_name, sortable: true },
     {
       name: " Bank Branch Name ",
       selector: (row) => row.bank_branch_name,
       sortable: true,
     },
-    { name: " Account No ", selector: (row) => row.account_no, sortable: true },
-    { name: " IFSC Code ", selector: (row) => row.ifsc_code, sortable: true },
+    // { name: " Account No ", selector: (row) => row.account_no, sortable: true },
+
     {
-      name: " Benificiary Name ",
-      selector: (row) => row.beneficiary_name,
-      sortable: true,
-    },
+        name: " Account No ",
+        selector: (row) => row.account_no,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.account_no && (
+              <OverlayTrigger overlay={<Tooltip>{row.account_no} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.account_no && row.account_no.length < 20
+                      ? row.account_no
+                      : row.account_no.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
+
+    // { name: " IFSC Code ", selector: (row) => row.ifsc_code, sortable: true },
+
+    {
+        name:  " IFSC Code ",
+        selector: (row) => row.ifsc_code,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.ifsc_code && (
+              <OverlayTrigger overlay={<Tooltip>{row.ifsc_code} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.ifsc_code && row.ifsc_code.length < 20
+                      ? row.ifsc_code
+                      : row.ifsc_code.substring(0, 10) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+    // {
+    //   name: " Benificiary Name ",
+    //   selector: (row) => row.beneficiary_name,
+    //   sortable: true,
+    // },
+
+    {
+        name:  " Benificiary Name ",
+        selector: (row) => row.beneficiary_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.beneficiary_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.beneficiary_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.beneficiary_name && row.beneficiary_name.length < 20
+                      ? row.beneficiary_name
+                      : row.beneficiary_name.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
+
     {
       name: " Consider In Pay ",
       selector: (row) => row.consider_in_payment,
@@ -12622,11 +12854,38 @@ function VendorMaster({ match }) {
       sortable: true,
     },
     { name: " Narration ", selector: (row) => row.narration, sortable: true },
+    // {
+    //   name: " Template Name ",
+    //   selector: (row) => row.template_name,
+    //   sortable: true,
+    // },
     {
-      name: " Template Name ",
-      selector: (row) => row.template_name,
-      sortable: true,
-    },
+        name: " Template Name ",
+        selector: (row) => row.template_name,
+        sortable: true,
+        width: "160px",
+  
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.template_name && (
+              <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {" "}
+                    {row.template_name && row.template_name.length < 20
+                      ? row.template_name
+                      : row.template_name.substring(0, 15) + "...."}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        ),
+      },
     {
       name: " Created At ",
       width: "200px",
@@ -12734,17 +12993,16 @@ function VendorMaster({ match }) {
       });
 
     await new VendorMasterService().getActiveCountry().then((res) => {
-        console.log("dropdown",res)
+
+
       if (res.status === 200) {
         setCountry(res.data.data);
         setCountryDropdown(
-          res.data.data
-          
-          .filter((d) => d.is_active == 1)
-          .map((d) => ({
-            value: d.id,
-            label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
-          }))
+          res.data.data.filter((d) => d.is_active === 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
+            }))
         );
       }
     });
@@ -12771,12 +13029,19 @@ function VendorMaster({ match }) {
     });
 
     await new VendorMasterService().getActiveCity().then((res) => {
-        console.log("active city" , res)
+      console.log("activecity", res.data.data);
+      console.log("fiterCity",  res.data.data
+      .filter((d) => d.is_active === 1)
+      .map((i) => ({
+        value: i.id,
+        label: i.city,
+      })))
+      console.log("ff==",res.data.data.filter((d)=>d.state_id==178));
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
               label: i.city,
@@ -12836,13 +13101,12 @@ function VendorMaster({ match }) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    console.log("form",form)
+
 
     setError(null);
     setNotify(null);
     var flag = 1;
     var msg = "";
-
 
     if (panattachment?.length > 0) {
       for (let i = 0; i < panattachment.length; i++) {
@@ -13366,8 +13630,10 @@ function VendorMaster({ match }) {
   const handleStateChange = (e) => {
     if (e) {
       const a = city.filter((d) => d.state_id == e.value);
+      const aa = a.filter((i)=>i.is_active==1)
+     
       setCityDropdown((prev) => null);
-      setCityDropdown(a.map((d) => ({ value: d.id, label: d.city })));
+      setCityDropdown(aa.map((d) => ({ value: d.id, label: d.city })));
     }
   };
 
@@ -13774,7 +14040,7 @@ function VendorMaster({ match }) {
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {console.log("tau", modal.modalData)}
+           
               {error && <Alert alertData={error} />}
               <div className="deadline-form">
                 <div className="row g-3 mb-3">
@@ -13987,8 +14253,10 @@ function VendorMaster({ match }) {
 
                   <div className="col-sm-2">
                     <label className="form-label font-weight-bold">
-                      Country :<Astrick color="red" size="13px" />
+                      Countryss :<Astrick color="red" size="13px" />
                     </label>
+                    {console.log("pp",modal.modalData)}
+                    {console.log("CountryDropdown",CountryDropdown)}
                     {CountryDropdown && data ? (
                       <Select
                         id="country"
@@ -13999,13 +14267,14 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? CountryDropdown.filter(
-                                (d) => d.label == modal.modalData.country
+                                (d) => d.label === modal.modalData.country
                               )
                             : CountryDropdown.filter(
                                 (d) =>
-                                  d.value == parseInt(modal.modalData.country)
+                                  d.value === parseInt(modal.modalData.country)
                               )
                         }
+                        // value={modal?.modalData?.country}
                         required={true}
                       />
                     ) : (
@@ -14038,6 +14307,7 @@ function VendorMaster({ match }) {
                       />
                     )}
                   </div>
+
 
                   <div className="col-sm-2">
                     <label className="form-label font-weight-bold">
