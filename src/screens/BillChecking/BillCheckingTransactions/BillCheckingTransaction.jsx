@@ -134,6 +134,7 @@ function BillCheckingTransaction() {
 
   const handleClearData = (e) => {
     if (selectInputRef.current.value != null) {
+      selectToBillRef.current.value = "";
         document.getElementById("id").value = "";
     }
     if (selectVendorRef.current.value != null) {

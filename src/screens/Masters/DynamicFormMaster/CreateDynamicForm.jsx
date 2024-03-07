@@ -309,9 +309,17 @@ function CreateDynamicForm() {
   const [selectedValue, setSelectedValue] = useState();
   const [inputLabelValue, setInputLabelValue] = useState();
   const [selectedValueErr, setSelectedValueErr] = useState("");
+  const [min, setMin] = useState();
+  const [max, setMax] = useState();
+  const [maxErr, setMaxErr] = useState();
 
-  console.log("inputLabel", inputLabelValue);
-  console.log("selectedValue", selectedValue);
+
+
+
+  console.log("min", min);
+  console.log("max", max);
+  console.log("maxErr", maxErr);
+
 
   // const handleChangee = (e) => {
   //   setSelectedValue(e.target.value);
@@ -1072,14 +1080,14 @@ function CreateDynamicForm() {
                                     : "k"
                                 )}
                                 <td>
-                                  {/* {rows[idx].inputType === "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "radio" || rows[idx].inputType == "checkbox"  &&  ( */}
-                                  <input
-                                    type="checkbox"
-                                    name="inputMultiple"
-                                    defaultValue={item.inputMultiple}
-                                    onChange={handleChange(idx)}
-                                  />
-                                  {/* )} */}
+                                  {(rows[idx].inputType === "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "checkbox")  &&  (
+                                    <input
+                                      type="checkbox"
+                                      name="inputMultiple"
+                                      defaultValue={item.inputMultiple}
+                                      onChange={handleChange(idx)}
+                                    />
+                                   )} 
                                 </td>
 
                                 <td>
@@ -1878,20 +1886,20 @@ function CreateDynamicForm() {
 
                         {data.inputType === "date" && (
                           <input
-                            type={data.inputType}
-                            id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
-                            }
-                            name={data.inputName}
-                            defaultValue={data.inputAddOn.inputRadio}
-                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
-                            className="form-control form-control-sm"
-                          />
+                          type={data.inputType}
+                          id={
+                            data.inputName
+                              ? data.inputName
+                                  .replace(/ /g, "_")
+                                  .toLowerCase()
+                              : ""
+                          }
+                          name={data.inputName}
+                          defaultValue={data.inputDefaultValue}
+                          min={data.inputAddOn.inputDateRange ? range[0] : ""}
+                          max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                          className="form-control form-control-sm"
+                        />
                           // <div
                           //   className="form-control"
                           //   style={{ width: "100%", position: "relative" }}
@@ -1924,7 +1932,7 @@ function CreateDynamicForm() {
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputAddOn.inputDateTime}
+                            defaultValue={data.inputDefaultValue}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -1942,7 +1950,7 @@ function CreateDynamicForm() {
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputAddOn.inputRadio}
+                            defaultValue={data.inputDefaultValue}
                             min={data.inputAddOn.inputDateRange ? range[0] : ""}
                             max={data.inputAddOn.inputDateRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -1960,7 +1968,7 @@ function CreateDynamicForm() {
                             }
                             name={data.inputName}
                             // defaultValue={data.inputAddOn.inputRange}
-                            defaultValue={data.inputAddOn.inputRange}
+                            defaultValue={data.inputDefaultValue}
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -1981,11 +1989,11 @@ function CreateDynamicForm() {
                                     .toLowerCase()
                                 : ""
                             }
-                            defaultValue={data.inputAddOn.inputDataSource}
+                            // defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
-                            <option> {data.inputName}</option>
+                            <option> {data.inputDefaultValue}</option>
                             {data.inputAddOn.inputRadio &&
                               data.inputAddOn.inputRadio.map((option) => {
                                 return (
@@ -1996,6 +2004,7 @@ function CreateDynamicForm() {
                                           data?.inputAddOn?.inputDataSource
                                       ) === option.value
                                     }
+                                    
                                     value={option.value}
                                   >
                                     {option.label}
@@ -2019,6 +2028,7 @@ function CreateDynamicForm() {
                                       name="is_active"
                                       id={`is_active_${index}`}
                                       value="1"
+                                      
                                     />
                                     <label
                                       className="form-check-label"
@@ -2069,7 +2079,7 @@ function CreateDynamicForm() {
                                 id="inputRangeMin"
                                 name="inputRangeMin"
                                 className="form-control form-control-sm"
-                                // defaultValue={props.data.inputAddOn.inputRangeMin}
+                                defaultValue={data.inputAddOn.inputRangeMin}
                                 min={data.inputAddOn.inputRangeMin}
                               />
                             </div>
@@ -2082,7 +2092,7 @@ function CreateDynamicForm() {
                                 id="inputRangeMax"
                                 name="inputRangeMax"
                                 className="form-control form-control-sm"
-                                // defaultValue={props.data.inputAddOn.inputRangeMax}
+                                defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
                               />
                             </div>
