@@ -1223,6 +1223,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
+                      {console.log("data==>",data)}
+                      {console.log("datas==>",formattedStartDate)}
+
                       <input
                         type="date"
                         className="form-control form-control-sm"
