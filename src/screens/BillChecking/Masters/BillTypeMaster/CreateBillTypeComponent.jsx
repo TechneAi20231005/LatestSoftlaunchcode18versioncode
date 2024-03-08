@@ -218,6 +218,7 @@ const requiredUserRef = useRef();
   };
 
   const handleRemoveSection = (indexToRemove) => {
+    setAmountErr("")
     const newData = [...approverData.data];
 
     // Remove the section at the specified index
