@@ -140,6 +140,7 @@ function VendorMaster({ match }) {
                         onClick={(e) => {
                             console.log("row clicked", row)
                             setVendorId(row?.id)
+                            setConsider(row?.consider_in_payment);
                             setPanAttachment(row?.pan_attachment)
                             setAdharattachment(row?.adhar_attachment)
                             setMSMESelectedFiles(row?.msme_attachment)
@@ -1350,6 +1351,9 @@ function VendorMaster({ match }) {
     };
 
     const handleStateChange = (e) => {
+        if (cityRef.current.commonProps.hasValue != null) {
+            cityRef.current.clearValue();
+        }
         if (e) {
             const a = city.filter((d) => d.state_id == e.value);
             const aa = a.filter((i) => i.is_active == 1)
@@ -1820,7 +1824,7 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
-                                    <div className="col-sm-4">
+                                    <div className={modal?.modalData ? "col-sm-3" : "col-sm-4"}>
                                         <label className="form-label font-weight-bold">
                                             Email Id :<Astrick color="red" size="13px" />
                                         </label>
@@ -1853,9 +1857,7 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
-
-
-                                    <div className="col-sm-3">
+                                    <div className={modal?.modalData ? "col-sm-3" : "col-sm-3"}>
                                         <label className="form-label font-weight-bold">
                                             Address :<Astrick color="red" size="13px" />
                                         </label>
@@ -2721,7 +2723,7 @@ function VendorMaster({ match }) {
                                         {modal.modalData && (
                                             <input
                                                 type="text"
-                                                className="form-control form-control-sm"
+                                                className="form-control form-controlF-sm"
                                                 id="bank_name"
                                                 name="bank_name"
                                                 maxLength={50}
