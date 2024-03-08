@@ -1366,26 +1366,76 @@ export default function HrDashboard(props) {
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
 
+  // const [chartData, setChartData] = useState({
+  //   series: [0, 0, 0],
+  //   Chart: {
+  //     height: "auto",
+  //   },
+  //   options: {
+  //     chart: {
+  //       type: "donut",
+  //     },
+  //     labels: ["Pending Task", "Working Tasks", "Completed Task"],
+
+  //     colors: ["#ff1843", "#ffc107", "#198754", "#FBFBFB"],
+
+  //     dataLables: {
+  //       style: {
+  //         textColor: "white",
+  //         colors: ["#333", "#fff"],
+  //       },
+  //     },
+  //   },
+  //   // theme: {
+  //   //   // mode: "dark",
+  //   //   palette: "palette7",
+  //   //   // monochrome: {
+  //   //   //   enabled: false,
+  //   //   //   shadeTo: "light",
+  //   //   //   color:"black",
+  //   //   //   shadeIntensity: 0.65,
+  //   //   // },
+  //   // },
+  //   // plotOptions: {
+  //   //   pie: {
+  //   //     // expandOnClick: true,
+  //   //     donut: {
+  //   //       size: "65%",
+
+  //   //       labels: {
+  //   //         show: true,
+  //   //         // total: {
+  //   //         //   show: true,
+  //   //         //   showAlways: true,
+  //   //         // },
+  //   //       },
+  //   //     },
+  //   //   },
+
+  //   // },
+  // });
+
+
   const [chartData, setChartData] = useState({
-    series: [0, 0, 0],
+    series: [50, 59, 40,],
     Chart: {
       height: "auto",
     },
-    options: {
-      chart: {
-        type: "donut",
+    options:{
+      chart:{
+        type:'donut',
       },
       labels: ["Pending Task", "Working Tasks", "Completed Task"],
 
-      colors: ["#ff1843", "#ffc107", "#198754", "#FBFBFB"],
+      colors:['#ff1843','#ffc107','#198754','#FBFBFB'],
 
-      dataLables: {
-        style: {
-          textColor: "white",
-          colors: ["#333", "#fff"],
-        },
-      },
-    },
+    dataLables:{
+      style:{
+        textColor:"white",
+        colors:['#333', '#fff'],
+      }
+    }
+  },
     // theme: {
     //   // mode: "dark",
     //   palette: "palette7",
@@ -1428,26 +1478,26 @@ export default function HrDashboard(props) {
   };
 
   async function get() {
-    await getData().then((res) => {
+    const id = sessionStorage.getItem('id')
+    await getData(id).then((res) => {
       if (res.status == 200) {
         setCount(res.data.data.count);
-
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
         setUpcomingTask(res.data.data.upcomingTask);
 
         const temp = chartData;
-    
-      
+
         temp.series[0] = res.data.data.pieCharData.pendingTask;
         temp.series[1] = res.data.data.pieCharData.workingTask;
         temp.series[2] = res.data.data.pieCharData.completedTask;
 
-        setChartData(null)
+        setChartData(null);
         setChartData(temp);
       }
     });
   }
+
 
   const [timerState, setTimerState] = useState();
 
@@ -1533,15 +1583,23 @@ export default function HrDashboard(props) {
     //  dispatch(getBasketByIdData(id))
   };
 
+
+  useEffect(() => {
+    get();
+  }, []);
+
   useEffect(() => {
     const account_for = localStorage.getItem("account_for");
 
     if (account_for === "CUSTOMER") {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`
     }
-    get();
+  
     loadData();
   }, []);
+
+
+
 
   // useEffect(() => {
   //   setChartData(prevChartData => ({
