@@ -144,6 +144,7 @@ function VendorMaster({ match }) {
                             setAdharattachment(row?.adhar_attachment)
                             setMSMESelectedFiles(row?.msme_attachment)
                             setPassBookSelectedFiles(row?.bank_passbook_attachment)
+                            setGstAttachment(row?.gst_attachment)
                             setChequeAttachmentSelectedFiles(row?.cheque_attachment)
                             handleModal({
                                 showModal: true,
@@ -629,7 +630,6 @@ function VendorMaster({ match }) {
 
         await new VendorMasterService().getActiveCountry().then((res) => {
 
-
             if (res.status === 200) {
                 setCountry(res.data.data);
                 setCountryDropdown(
@@ -1018,7 +1018,7 @@ function VendorMaster({ match }) {
                 await new VendorMasterService().deleteAttachmentById(attachmentId);
                 await new VendorMasterService().getVendorMasterById(vendorId).then(response => {
                     if (response?.data?.data?.status === 1) {
-                        setGstAttachment(response?.data?.data?.data?.adhar_attachment);
+                        setGstAttachment(response?.data?.data?.data?.gst_attachment);
                     }
                 })
             }
@@ -1378,7 +1378,7 @@ function VendorMaster({ match }) {
             if (e.target.files.length > 2) {
                 alert("You Can Upload Only 2 Attachments");
                 document.getElementById("pan_attachment").value = null;
-                setPanAttachment(null);
+                setPanAttachment([]);
             }
         }
 
@@ -1628,6 +1628,12 @@ function VendorMaster({ match }) {
                                             modalData: "",
                                             modalHeader: "Add Vendor",
                                         });
+
+                                        setPanAttachment([])
+                                        setAdharattachment([])
+                                        setMSMESelectedFiles([])
+                                        setPassBookSelectedFiles([])
+                                        setChequeAttachmentSelectedFiles([])
                                         setMSMESelectedFiles([]);
                                         setPassBookSelectedFiles([]);
                                         setChequeAttachmentSelectedFiles([]);
@@ -2192,9 +2198,6 @@ function VendorMaster({ match }) {
                                             })}
                                     </div>
 
-
-
-
                                     <div className="col-sm-3 ">
                                         <label className="form-label font-weight-bold">
                                             PAN No :<Astrick color="red" size="13px" />
@@ -2256,8 +2259,6 @@ function VendorMaster({ match }) {
                                             <b>
                                                 PAN Attachment :<Astrick color="red" size="13px" />
                                             </b>
-
-
 
                                             {/* {modal.modalData &&
                                                 modal.modalData.pan_attachment &&
