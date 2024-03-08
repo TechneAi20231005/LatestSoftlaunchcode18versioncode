@@ -2105,6 +2105,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
       remark: e.target.remark.value,
       data: JSON.stringify(rows),
     };
+    console.log("rowsH",rows)
 
     await new DynamicFormService()
       .updateDynamicForm(formId, data)
@@ -2644,7 +2645,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
 
                                 {console.log("man==", item.inputMandatory)}
                                 <td>
-                                  <input
+                                  {/* <input
                                     type="checkbox"
                                     name="inputMandatory"
                                     id="inputMandatory"
@@ -2652,10 +2653,20 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                     defaultChecked={item.inputMandatory}
                                     onChange={handleChange(idx)}
                                     className="center"
-                                  />
+                                  /> */}
+                                  {console.log("item",item)}
+                                    <input
+                                                                    type="checkbox"
+                                                                    name="inputMandatory"
+                                                                    id="inputMandatory"
+                                                                    defaultChecked={item.inputMandatory}
+                                                                    onChange={handleChange(idx)}
+
+                                                                />
+
                                 </td>
 
-                                                            {console.log("man==",item )}
+                                                            {/* {console.log("man==",item )}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
@@ -2666,7 +2677,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
-                                                            </td>
+                                                            </td> */}
                                                            
                                                             <td>
                                                                 {(item.inputType === "select-master"  || item.inputType === "checkbox" || item.inputType === "select" ) &&

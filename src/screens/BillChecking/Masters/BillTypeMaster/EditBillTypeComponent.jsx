@@ -197,6 +197,8 @@ const EditBillTypeComponent = ({ match }) => {
   };
   //Created By Rushikesh harkare 12/10/2023
 
+const [amountErr,setAmountErr]=useState("")
+
   //Function for on Changing amount update in state
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
@@ -217,6 +219,15 @@ const EditBillTypeComponent = ({ match }) => {
       newData[index + 1].amount = amountValue;
       setApproverData({ data: newData });
     }
+
+    if ( newData[index + 1]?.amount <= newData[index - 1]?.amount) {
+      setAmountErr(`Amount in section ${index + 1} should be greater than the previous tab.`)
+      // alert(`Amount in section ${index + 1} should be greater than the previous tab.`);
+      // return; // Exit the function without adding a new slab
+  }
+  else{
+    setAmountErr("")
+  }
   };
   //Created By Rushikesh harkare 12/10/2023
 
@@ -641,6 +652,12 @@ const EditBillTypeComponent = ({ match }) => {
       return;
     }
 
+    if (amountErr) {
+      alert("Please fix the error before submitting the form.");
+      return;
+  }
+
+
     // Proceed with the API request
     formData.append("approverData", JSON.stringify(approverData));
     formData.append("user_id", sessionStorage.getItem("id"));
@@ -910,7 +927,8 @@ const EditBillTypeComponent = ({ match }) => {
                         }
                       />
                      
-                      {index + 1 === item.slab && index === 0 ? (
+                      {/* {index + 1 === item.slab && index === 0 ? ( */}
+                      {index === 0 || index !== approverData.data.length - 1 ? (
                         <Button
                           type="button"
                           variant="primary"
@@ -955,7 +973,9 @@ const EditBillTypeComponent = ({ match }) => {
                       }
                        {console.log("am",item.amount)}
                       {console.log("apdata",approverData.data[0].amount)}  */}
-
+  {index > 0 && index === approverData.data.length - 2 &&
+                  <small style={{ color: 'red',   display: 'block' }}>{amountErr}</small>
+                  }
                   </Row>
 
                   <Table className="mt-2">
