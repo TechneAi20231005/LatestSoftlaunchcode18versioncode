@@ -320,6 +320,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
         type="text"
         key={idx}
         name="dropdown_values[]"
+        required
         id={`dropdown_values_${idx}`}
         className="form-control form-control-sm"
         onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}

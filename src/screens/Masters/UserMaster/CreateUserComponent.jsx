@@ -2338,6 +2338,30 @@ function CreateUserComponent({ match }) {
   
 
 
+  const handleTicketTypeShow = (selectedTicketOption, index) => {
+    const selectedTicketID = selectedTicketOption.value;
+  
+    // Check if the selected department is already present in the rows
+    const isDepartmentAlreadySelected = rows.some(row => row.ticket_show_type === selectedTicketID);
+  
+    // if (isDepartmentAlreadySelected) {
+    //   // If the department is already selected, show an error message
+    //   // You can handle the error message display as per your UI design
+    //   alert("This Department is already selected. Please select another Department.");
+    //   return;
+    // }
+  
+    // Update the state with the selected department if it's not already selected
+    const updatedAssign = [...rows];
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      ticket_show_type: selectedTicketID,
+    };
+    setRows(updatedAssign);
+  };
+  
+
+
 
 
   
@@ -3486,10 +3510,18 @@ function CreateUserComponent({ match }) {
                             options={options}
                             id={`ticket_show_type_id_` + idx}
                             name="ticket_show_type[]"
-                            defaultValue={item.ticket_show_type}
+                            // value={item.ticket_show_type}
                             onChange={(e) =>
                               handleCheckInput(e, idx, "TICKET_SHOW")
                             }
+                            value={options.filter((d) =>
+                              Array.isArray(item.ticket_show_type)
+                                ? item.ticket_show_type.includes(d.value)
+                                : item.ticket_show_type === d.value
+                            )}
+                            // onChange={(selectedTicketOption) =>
+                            //   handleTicketTypeShow(selectedTicketOption, idx)
+                            // }
                             required
 
                           />
