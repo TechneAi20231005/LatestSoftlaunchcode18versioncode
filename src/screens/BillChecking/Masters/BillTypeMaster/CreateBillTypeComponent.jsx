@@ -49,74 +49,144 @@ const CreateBillTypeComponent = () => {
 const requiredUserRef = useRef();
 
 
+  // const handleIncrement = (e, index) => {
+  //   const newData = [...approverData.data];
+  //   var firstAmount = newData[index].amount ;
+  //   if (isNaN(firstAmount)) {
+  //     firstAmount = 0.0;
+  //   }
+  //   if (firstAmount === null || firstAmount === 0) {
+  //     alert("Please enter an amount first.");
+  //     return;
+  //   }
+
+  //   // Use a for loop to check the new amount against all existing amounts
+  //   for (let i = 0; i < newData.length; i++) {
+  //     if (i === index) {
+  //       // Skip the current slab
+  //       continue;
+  //     }
+
+  //     // Check if the new amount is greater than or equal to the previous amount
+  //     if (i === newData.length - 1 && firstAmount >= newData[i].amount) {
+  //       // The last slab can have the same amount as the previous one
+  //       continue;
+  //     }
+  //     if (firstAmount <= newData[i].amount) {
+  //       if (firstAmount >= newData[i].amount) {
+  //         alert(
+  //           `Amount in section ${
+  //             index + 1
+  //           } should be greater than the previous tab.`
+  //         );
+  //         return; // Exit the function without adding a new slab
+  //       }
+  //     }
+  //   }
+
+
+  //   // Calculate the new amount based on the previous section
+  //   const previousSection = newData[newData.length - 1];
+  //   const newAmount = previousSection ? previousSection.amount || 0 : 1;
+
+  //   // Create a new section with the calculated amount
+  //   const newSection = {
+  //     amount: firstAmount,
+  //     slab: newData.length + 1,
+  //     level: [
+  //       {
+  //         bill_approval_level: 1,
+  //         employee_id: null,
+  //         required_users: null,
+  //         required_numbers: null,
+  //       },
+  //     ],
+  //   };
+
+  //   // Insert the new section in between the current and the next section
+  //   if (index < newData.length - 1) {
+  //     newData.splice(index + 1, 0, newSection);
+  //   } else {
+  //     // If index is the last section, simply add the new section to the end
+  //     newData.push(newSection);
+  //   }
+
+  //   // Reindex the sections
+  //   for (let i = 0; i < newData.length; i++) {
+  //     newData[i].slab = i + 1;
+  //   }
+  //   setApproverData({ data: newData });
+  // };
+
+
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
-    var firstAmount = newData[index].amount + 1;
+
+    // Extract the amount from the current slab
+    let firstAmount = newData[index].amount;
+
+    // If the amount is not a number or null, set it to 0
     if (isNaN(firstAmount)) {
-      firstAmount = 0.0;
+        firstAmount = 0.0;
     }
+
+    // On the first click, if the amount is 0 or null, show an alert
     if (firstAmount === null || firstAmount === 0) {
-      alert("Please enter an amount first.");
-      return;
+        alert("Please enter an amount first.");
+        return;
     }
 
-    // Use a for loop to check the new amount against all existing amounts
+    // If this is not the first click, increment the amount by 1
+    if (newData.length > 1) {
+        firstAmount += 1;
+    }
+
+    // Use a for loop to validate the new amount against all existing amounts
     for (let i = 0; i < newData.length; i++) {
-      if (i === index) {
-        // Skip the current slab
-        continue;
-      }
-
-      // Check if the new amount is greater than or equal to the previous amount
-      if (i === newData.length - 1 && firstAmount >= newData[i].amount) {
-        // The last slab can have the same amount as the previous one
-        continue;
-      }
-      if (firstAmount <= newData[i].amount) {
-        if (firstAmount >= newData[i].amount) {
-          alert(
-            `Amount in section ${
-              index + 1
-            } should be greater than the previous tab.`
-          );
-          return; // Exit the function without adding a new slab
+        if (i === index) {
+            // Skip the current slab
+            continue;
         }
-      }
+
+        // Check if the new amount is greater than or equal to the previous amount
+        if (firstAmount <= newData[i].amount) {
+            alert(`Amount in section ${index + 1} should be greater than the previous tab.`);
+            return; // Exit the function without adding a new slab
+        }
     }
-
-
-    // Calculate the new amount based on the previous section
-    const previousSection = newData[newData.length - 1];
-    const newAmount = previousSection ? previousSection.amount || 0 : 1;
 
     // Create a new section with the calculated amount
     const newSection = {
-      amount: firstAmount,
-      slab: newData.length + 1,
-      level: [
-        {
-          bill_approval_level: 1,
-          employee_id: null,
-          required_users: null,
-          required_numbers: null,
-        },
-      ],
+        amount: firstAmount,
+        slab: newData.length + 1,
+        level: [{
+            bill_approval_level: 1,
+            employee_id: null,
+            required_users: null,
+            required_numbers: null,
+        }],
     };
 
     // Insert the new section in between the current and the next section
     if (index < newData.length - 1) {
-      newData.splice(index + 1, 0, newSection);
+        newData.splice(index + 1, 0, newSection);
     } else {
-      // If index is the last section, simply add the new section to the end
-      newData.push(newSection);
+        // If index is the last section, simply add the new section to the end
+        newData.push(newSection);
     }
 
     // Reindex the sections
     for (let i = 0; i < newData.length; i++) {
-      newData[i].slab = i + 1;
+        newData[i].slab = i + 1;
     }
+
+    // Update the last amount after adding new sections
+    newData[newData.length - 1].amount = firstAmount;
+
+    // Update state with the modified data
     setApproverData({ data: newData });
-  };
+};
+
 
   const handleAddRow = (sectionIndex) => {
     const newData = [...approverData.data];
