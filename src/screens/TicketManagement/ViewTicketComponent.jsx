@@ -445,6 +445,7 @@ export default function ViewTicketComponent({ match }) {
           </div>
         </div>{" "}
         {/*  COL */}
+
         <div className="col-xxl-4 col-xl-4 col-lg-12 col-md-12">
           {isLoading ? (
             <Shimmer count={10} />
@@ -453,6 +454,7 @@ export default function ViewTicketComponent({ match }) {
               ticketId={ticketId}
               loadComment={loadCommentsCallback}
               commentData={commentData}
+              statusName={data}
             />
           )}
         </div>
