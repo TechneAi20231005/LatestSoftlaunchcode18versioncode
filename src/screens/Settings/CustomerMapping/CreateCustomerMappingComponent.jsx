@@ -487,7 +487,7 @@ const getDynamicForm = async () =>{
                     <Select
                       id="template_id"
                       name="template_id"
-                      options={templateDropdown}
+                      options={[{label:"Select Template",value:''},...templateDropdown]}
                       onChange={e => handleAutoChanges(e, 'Select2', 'template_id')}
                     />
                   </div>
@@ -615,27 +615,35 @@ const getDynamicForm = async () =>{
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
+                      {/* <option value="Self">Self</option>
+                      <option value="AU">Assign to User</option> */}
                     </select>
                   </div>
                 </div>
+                {console.log("p",data.approach)}
+                {data.approach !=='Self'&&(
+                       <div className="form-group row mt-3">
+                       <label className="col-sm-2 col-form-label">
+                         <b>Select Department :<Astrick color="red" size="13px" /></b>
+                       </label>
+                       <div className="col-sm-4">
+                         {departmentDropdown && <Select
+                           ref={departmentDropdownRef}
+                           id="department_id"
+                           name="department_id"
+                           defaultValue={departmentDropdown[0]}
+                           options={departmentDropdown}
+                           onChange={e => { handleAutoChanges(e, 'Select2', 'department_id'); handleGetDepartmentUsers(e) }}
+                         />
+                         }
+                         {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>}
+                       </div>
+                     </div>
 
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Department :<Astrick color="red" size="13px" /></b>
-                  </label>
-                  <div className="col-sm-4">
-                    {departmentDropdown && <Select
-                      ref={departmentDropdownRef}
-                      id="department_id"
-                      name="department_id"
-                      defaultValue={departmentDropdown[0]}
-                      options={departmentDropdown}
-                      onChange={e => { handleAutoChanges(e, 'Select2', 'department_id'); handleGetDepartmentUsers(e) }}
-                    />
-                    }
-                    {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>}
-                  </div>
-                </div>
+
+                )}
+
+           
                       
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">

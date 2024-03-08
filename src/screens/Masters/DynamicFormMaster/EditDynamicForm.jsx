@@ -1315,7 +1315,7 @@ import Select from "react-select";
 import DatePicker from "react-date-picker";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import { getAllRoles, getCityData, getCountryDataSort, getCustomerData, getRoles, getStateDataSort } from "../../Dashboard/DashboardAction";
 import {
   dynamicFormData,
   getAllDropDownData,
@@ -1323,6 +1323,9 @@ import {
 
 import *  as Validation from '../../../components/Utilities/Validation';
 import UserService from "../../../services/MastersService/UserService";
+import { getDesignationData } from "../DesignationMaster/DesignationAction";
+import { getStatusData } from "../StatusMaster/StatusComponentAction";
+import QueryTypeService from "../../../services/MastersService/QueryTypeService";
 
 function EditDynamicForm({ match }) {
   const [showAlert, setShowAlert] = useState({
@@ -1402,6 +1405,73 @@ console.log("max",maxNuber)
 
 console.log("se",selectedNumberErr)
 const [labelNames, setLabelNames] = useState([]);
+
+
+const roleDropdown = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getAllRoles
+      ?.filter((d) => d.is_active === 1)
+      .map((d) => ({
+        value: d.id,
+        label: d.role,
+      }))
+  );
+
+  const departmentDropdown = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
+  );
+
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+
+  const CustomerData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getCustomerData
+  );
+
+  
+
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+
+  const designationDropdown = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
+  );
+
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredStateData
+  );
+
+  // const dropdown = useSelector(
+  //   (DynamicFormDropDownSlice) =>
+  //     DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
+  // );
+
+  const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.filterStatusData.filter((d) => d.is_active == 1)
+  .map((d) => ({ value: d.id, label: d.status })))
+
+
+const dataSourceOptions = [
+  { value: "", label: "Select Data Source" },
+  { value: "user", label: "User Master" },
+  { value: "department", label: "Department Master" },
+  { value: "role", label: "Role Master" },
+  { value: "country", label: "Country Master" },
+  { value: "state", label: "State Master" },
+  { value: "city", label: "City Master" },
+  { value: "designation", label: "Designation Master" },
+  { value: "customer", label: "Customer Master" },
+  { value: "status", label: "Status Master" },
+  { value: "query", label: "Query Type Master" },
+
+
+  
+
+
+];
+console.log("roleData==>",roleDropdown)
 
 
 
@@ -1530,53 +1600,158 @@ const handleChange = (idx, type) => async (e) => {
     //   rows[idx].inputAddOn.inputRange = e.target.value;
     // } else if (e.target.name == "inputDataSource")
 
-    {
-      const test = e.target.value.split("|");
-      const _URL = masterURL[test[0]];
-      const _Value = test[1];
-      const _Label = test[2];
+    // {
+    //   const test = e.target.value.split("|");
+    //   const _URL = masterURL[test[0]];
+    //   const _Value = test[1];
+    //   const _Label = test[2];
 
-      getData(_URL).then((res) => {
-        let counter = 1;
-        const tempData = [];
-        for (const key in res.data) {
-          const t = res.data[key];
-          tempData.push({
-            value: t[_Value],
-            label: t[_Label],
-          });
-        }
+    //   getData(_URL).then((res) => {
+    //     let counter = 1;
+    //     const tempData = [];
+    //     for (const key in res.data) {
+    //       const t = res.data[key];
+    //       tempData.push({
+    //         value: t[_Value],
+    //         label: t[_Label],
+    //       });
+    //     }
 
-        rows[idx].inputAddOn.inputDataSourceData = tempData;
-      });
-      rows[idx].inputAddOn.inputDataSource = e.target.value;
-    }
+    //     rows[idx].inputAddOn.inputDataSourceData = tempData;
+    //   });
+    //   rows[idx].inputAddOn.inputDataSource = e.target.value;
+    // }
 
-    const tempUserData = [];
+    // const tempUserData = [];
 
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data.filter((d) => d.is_active === 1);
-        for (const key in data) {
-          tempUserData.push({
-            value: data[key].id,
-            label:
-              data[key].first_name +
-              " " +
-              data[key].last_name +
-              " (" +
-              data[key].id +
-              ")",
-          });
-        }
-        const aa = tempUserData.sort(function (a, b) {
-          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    // const inputRequired =
+    //   "id,employee_id,first_name,last_name,middle_name,is_active";
+    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    //   if (res.status === 200) {
+    //     const data = res.data.data.filter((d) => d.is_active === 1);
+    //     for (const key in data) {
+    //       tempUserData.push({
+    //         value: data[key].id,
+    //         label:
+    //           data[key].first_name +
+    //           " " +
+    //           data[key].last_name +
+    //           " (" +
+    //           data[key].id +
+    //           ")",
+    //       });
+    //     }
+    //     const aa = tempUserData.sort(function (a, b) {
+    //       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    //     });
+    //     setUserData(aa);
+    //   }
+    // });
+
+
+    if (e.target.name === "inputDataSource" && e.target.value === "user") {
+      const tempUserData = [];
+      const test1 = e.target.value;
+      rows[idx].inputAddOn.inputDataSourceData = test1;
+      const inputRequired =
+        "id,employee_id,first_name,last_name,middle_name,is_active";
+      await new UserService()
+        .getUserForMyTickets(inputRequired)
+        .then((res) => {
+          if (res.status === 200) {
+            const data = res.data.data.filter((d) => d.is_active === 1);
+
+            // const dropNames = res.data.data;
+            // setRadioSelect(data.master.dropdown_name);
+            // const temp = [];
+            // res.data.data.forEach((d) => {
+            //   temp.push({ label: d.label, value: d.id });
+            // });
+            // rows[idx].inputAddOn.inputRadio = temp;
+            // setInputDataSource(temp);
+
+            for (const key in data) {
+              tempUserData.push({
+                value: data[key].id,
+                label:
+                  data[key].first_name +
+                  " " +
+                  data[key].last_name +
+                  " (" +
+                  data[key].id +
+                  ")",
+              });
+            }
+            const aa = tempUserData.sort(function (a, b) {
+              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            });
+            setUserData(aa);
+            rows[idx].inputAddOn.inputDataSourceData = aa;
+            setInputDataSource(aa);
+          }
         });
-        setUserData(aa);
-      }
-    });
+    } else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "city"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData;
+      setInputDataSource(AllcityDropDownData);
+      console.log("allC",AllcityDropDownData)
+    } else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "role"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = roleDropdown;
+      setInputDataSource(roleDropdown);
+      console.log("roleDataE==>",e.target.name)
+      console.log("roleDataEN==>",roleDropdown)
+      console.log("rowsF",rows)
+
+
+    } else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "country"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = CountryData;
+      setInputDataSource(CountryData);
+    } else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "state"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = stateDropdown;
+      setInputDataSource(stateDropdown);
+    } else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "designation"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = designationDropdown;
+      setInputDataSource(designationDropdown);
+    }else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "customer"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = CustomerData;
+      setInputDataSource(CustomerData);
+    }
+    else if (
+      e.target.name === "inputDataSource" &&
+      e.target.value === "status"
+    ) {
+      rows[idx].inputAddOn.inputDataSourceData = statusData;
+      setInputDataSource(statusData);
+    }else if(  e.target.name === "inputDataSource" &&
+    e.target.value === "query"){
+      await new QueryTypeService().getQueryType().then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data.filter((d) => d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }))
+         
+          rows[idx].inputAddOn.inputDataSourceData = data;
+          console.log("ttt",data)
+      setInputDataSource(data);
+        }
+    }
+      )}
 
     // else if (e.target.name == "inputRadio") {
     // setFormShow(formShow == true ? false : true);
@@ -1608,6 +1783,7 @@ const handleChange = (idx, type) => async (e) => {
             });
             rows[idx].inputAddOn.inputRadio = temp;
             setInputDataSource(temp);
+
           }
         }
       });
@@ -2028,7 +2204,26 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
     if (!dropdown.length) {
       dispatch(getAllDropDownData());
     }
+
+    if (!designationDropdown.length) {
+      dispatch(getDesignationData());
+    }
+
+    if (!AllcityDropDownData.length) {
+      dispatch(getCityData());
+    }
+
+    dispatch(getCountryDataSort());
+    if (!stateDropdown.length) {
+      dispatch(getStateDataSort());
+    }
+    dispatch(getCustomerData())
+    dispatch(getStatusData())
+    dispatch(getAllRoles());
+
   }, []);
+
+  console.log("role",roleDropdown)
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
@@ -2614,10 +2809,10 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                       <select
                                         className="form-control form-control-sm"
                                         // onChange={props.onGetChange}
-                                        defaultValue={
-                                          rows &&
-                                          rows[idx]?.inputAddOn?.inputDataSource
-                                        }
+                                        // defaultValue={
+                                        //   rows &&
+                                        //   rows[idx]?.inputAddOn?.inputDataSource
+                                        // }
                                         // onChange={(e) => {
                                         //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
                                         // }}
@@ -2627,7 +2822,15 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                         name="inputDataSource"
                                         // value={props.selectData}
                                       >
-                                        <option>Select Data Source</option>
+                                        {dataSourceOptions.map((option) => (
+                                          <option
+                                            key={option.value}
+                                            value={option.value}
+                                          >
+                                            {option.label}
+                                          </option>
+                                        ))}
+                                        {/* <option>Select Data Source</option>
                                         <option value="user">
                                           User Master
                                         </option>
@@ -2636,7 +2839,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                         </option>
                                         <option value="role">
                                           Role Master
-                                        </option>
+                                        </option> */}
                                         {/* <option value="department|id|department">Department Master</option> */}
                                         {/* <option value="role|id|role">Role Master</option> */}
                                       </select>
@@ -3258,7 +3461,47 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                           </div>
                         )}
 
-                        {data.inputType === "select-master" && (
+                        {/* {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={data.inputAddOn.inputDataSource}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )} */}
+
+                        {console.log("daat55",data)}
+                        {console.log("rows==>",rows)}
+
+
+{data.inputType === "select-master" && (
                           <select
                             id={
                               data.inputName

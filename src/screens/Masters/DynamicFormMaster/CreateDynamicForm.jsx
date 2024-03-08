@@ -17,7 +17,15 @@ import * as Validation from "../../../components/Utilities/Validation";
 import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import { getAllRoles, getRoles } from "../../Dashboard/DashboardAction";
+import {
+  getAllRoles,
+  getCityData,
+  getCountryDataSort,
+  getCustomerData,
+  getRoles,
+  getStateData,
+  getStateDataSort,
+} from "../../Dashboard/DashboardAction";
 import DynamicFormDropDownSlice from "../DynamicFormDropdown/Slices/DynamicFormDropDownSlice";
 import {
   dynamicFormData,
@@ -27,6 +35,10 @@ import { masterURL } from "../../../settings/constants";
 import DynamicComponent from "./DynamicComponent";
 import UserService from "../../../services/MastersService/UserService";
 import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
+import { getDesignationData } from "../DesignationMaster/DesignationAction";
+import { statusMasterSlice } from "../StatusMaster/StatusComponentSlice";
+import { getStatusData } from "../StatusMaster/StatusComponentAction";
+import QueryTypeService from "../../../services/MastersService/QueryTypeService";
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
@@ -72,6 +84,31 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+
+  const CustomerData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getCustomerData
+  );
+
+  
+
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+
+  const designationDropdown = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
+  );
+
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredStateData
+  );
+
+  console.log("ci", AllcityDropDownData);
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
@@ -80,6 +117,10 @@ function CreateDynamicForm() {
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
 
+  const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.filterStatusData.filter((d) => d.is_active == 1)
+  .map((d) => ({ value: d.id, label: d.status })))
+
+console.log("statusData",statusData)
   const [rows, setRows] = useState([mainJson]);
   const [labelNames, setLabelNames] = useState([]);
 
@@ -304,7 +345,7 @@ function CreateDynamicForm() {
 
   const [userData, setUserData] = useState(null);
 
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
 
   const [selectedValue, setSelectedValue] = useState();
   const [inputLabelValue, setInputLabelValue] = useState();
@@ -312,14 +353,13 @@ function CreateDynamicForm() {
   const [min, setMin] = useState();
   const [max, setMax] = useState();
   const [maxErr, setMaxErr] = useState();
+  const [selectMasterValue, setSelectMasterValue] = useState();
 
-
-
+  console.log("all", AllcityDropDownData);
 
   console.log("min", min);
   console.log("max", max);
-  console.log("maxErr", maxErr);
-
+  console.log("selectMasterValue", selectMasterValue);
 
   // const handleChangee = (e) => {
   //   setSelectedValue(e.target.value);
@@ -327,10 +367,14 @@ function CreateDynamicForm() {
 
   const handleChange = (idx, type) => async (e) => {
     // setFormShow(formShow == true ? false : true);
-    console.log("maxNumber", e.target.value);
+    console.log("maxNumber", e.target.name);
 
     if (e.target.name === "inputLabel") {
       setInputLabelValue(e.target.value);
+    }
+
+    if (e.target.name === "inputDataSource") {
+      setSelectMasterValue(e.target.value);
     }
 
     if (selectedValue) {
@@ -428,6 +472,10 @@ function CreateDynamicForm() {
       } else if (e.target.name == "inputFormat") {
         rows[idx].inputFormat = e.target.value;
       }
+
+
+
+      
       // setFormShow(formShow == true ? false : true);
       // const test1 = e.target.value;
       // rows[idx].inputAddOn.inputRadio = test1;
@@ -448,53 +496,141 @@ function CreateDynamicForm() {
       //   rows[idx].inputAddOn.inputRange = e.target.value;
       // } else if (e.target.name == "inputDataSource")
 
-      {
-        const test = e.target.value.split("|");
-        const _URL = masterURL[test[0]];
-        const _Value = test[1];
-        const _Label = test[2];
+      // {
+      //   const test = e.target.value.split("|");
+      //   const _URL = masterURL[test[0]];
+      //   const _Value = test[1];
+      //   const _Label = test[2];
 
-        getData(_URL).then((res) => {
-          let counter = 1;
-          const tempData = [];
-          for (const key in res.data) {
-            const t = res.data[key];
-            tempData.push({
-              value: t[_Value],
-              label: t[_Label],
-            });
-          }
+      //   getData(_URL).then((res) => {
+      //     let counter = 1;
+      //     const tempData = [];
+      //     for (const key in res.data) {
+      //       const t = res.data[key];
+      //       tempData.push({
+      //         value: t[_Value],
+      //         label: t[_Label],
+      //       });
+      //     }
 
-          rows[idx].inputAddOn.inputDataSourceData = tempData;
-        });
-        rows[idx].inputAddOn.inputDataSource = e.target.value;
-      }
+      //     rows[idx].inputAddOn.inputDataSourceData = tempData;
+      //   });
+      //   rows[idx].inputAddOn.inputDataSource = e.target.value;
+      // }
 
-      const tempUserData = [];
+      console.log("ss", selectMasterValue === "user" ? 1 : 0);
+      if (e.target.name === "inputDataSource" && e.target.value === "user") {
+        const tempUserData = [];
+        const test1 = e.target.value;
+        rows[idx].inputAddOn.inputDataSourceData = test1;
+        const inputRequired =
+          "id,employee_id,first_name,last_name,middle_name,is_active";
+        await new UserService()
+          .getUserForMyTickets(inputRequired)
+          .then((res) => {
+            if (res.status === 200) {
+              const data = res.data.data.filter((d) => d.is_active === 1);
 
-      const inputRequired =
-        "id,employee_id,first_name,last_name,middle_name,is_active";
-      await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
-          for (const key in data) {
-            tempUserData.push({
-              value: data[key].id,
-              label:
-                data[key].first_name +
-                " " +
-                data[key].last_name +
-                " (" +
-                data[key].id +
-                ")",
-            });
-          }
-          const aa = tempUserData.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+              // const dropNames = res.data.data;
+              // setRadioSelect(data.master.dropdown_name);
+              // const temp = [];
+              // res.data.data.forEach((d) => {
+              //   temp.push({ label: d.label, value: d.id });
+              // });
+              // rows[idx].inputAddOn.inputRadio = temp;
+              // setInputDataSource(temp);
+
+              for (const key in data) {
+                tempUserData.push({
+                  value: data[key].id,
+                  label:
+                    data[key].first_name +
+                    " " +
+                    data[key].last_name +
+                    " (" +
+                    data[key].id +
+                    ")",
+                });
+              }
+              const aa = tempUserData.sort(function (a, b) {
+                return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+              });
+              setUserData(aa);
+              rows[idx].inputAddOn.inputDataSourceData = aa;
+              setInputDataSource(aa);
+            }
           });
-          setUserData(aa);
-        }
-      });
+      } else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "city"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData;
+        setInputDataSource(AllcityDropDownData);
+      } else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "role"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = roleDropdown;
+        setInputDataSource(roleDropdown);
+      } else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "country"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = CountryData;
+        setInputDataSource(CountryData);
+      } else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "state"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = stateDropdown;
+        setInputDataSource(stateDropdown);
+      } else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "designation"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = designationDropdown;
+        setInputDataSource(designationDropdown);
+      }else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "customer"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = CustomerData;
+        setInputDataSource(CustomerData);
+      }
+      else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "status"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = statusData;
+        setInputDataSource(statusData);
+      }else if(  e.target.name === "inputDataSource" &&
+      e.target.value === "query"){
+        await new QueryTypeService().getQueryType().then((res) => {
+          if (res.status === 200) {
+            const data = res.data.data.filter((d) => d.is_active == 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }))
+         
+          rows[idx].inputAddOn.inputDataSourceData = data;
+          console.log("ttt",data)
+      setInputDataSource(data);
+          }
+      }
+        )}
+
+      // rows[idx].inputAddOn.inputDataSourceData = departmentDropdown
+      // setInputDataSource(departmentDropdown)
+
+      // rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData
+      // setInputDataSource(AllcityDropDownData)
+
+      // rows[idx].inputAddOn.inputDataSourceData = stateDropdown
+      // setInputDataSource(stateDropdown)
+
+      // rows[idx].inputAddOn.inputDataSourceData = CountryData
+      // setInputDataSource(CountryData)
+
+      // rows[idx].inputAddOn.inputDataSourceData = designationDropdown
+      // setInputDataSource(designationDropdown)
 
       // else if (e.target.name == "inputRadio") {
       // setFormShow(formShow == true ? false : true);
@@ -504,6 +640,7 @@ function CreateDynamicForm() {
       const dropDownID = selectedValue && selectedValue;
 
       const newValue = e.target.name;
+      console.log("newV", newValue);
       if (newValue === "inputOnChangeSource") {
         const dropDownValue = e.target.value;
         setSelectedValue(dropDownValue);
@@ -512,8 +649,6 @@ function CreateDynamicForm() {
         await new DynamicFormDropdownMasterService()
           .getDropdownById(dropDownValue)
           .then((res) => {
-           
-
             if (res.status == 200) {
               if (res.data.status == 1) {
                 const dropNames = res.data.data;
@@ -708,6 +843,25 @@ function CreateDynamicForm() {
 
   const [labelErr, setLabelErr] = useState();
 
+  const dataSourceOptions = [
+    { value: "", label: "Select Data Source" },
+    { value: "user", label: "User Master" },
+    { value: "department", label: "Department Master" },
+    { value: "role", label: "Role Master" },
+    { value: "country", label: "Country Master" },
+    { value: "state", label: "State Master" },
+    { value: "city", label: "City Master" },
+    { value: "designation", label: "Designation Master" },
+    { value: "customer", label: "Customer Master" },
+    { value: "status", label: "Status Master" },
+    { value: "query", label: "Query Type Master" },
+
+
+    
+
+
+  ];
+
   const handleRemoveSpecificRow = (index) => async () => {
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
@@ -814,6 +968,22 @@ function CreateDynamicForm() {
     if (!dropdown.length) {
       dispatch(getAllDropDownData());
     }
+
+    if (!designationDropdown.length) {
+      dispatch(getDesignationData());
+    }
+
+    if (!AllcityDropDownData.length) {
+      dispatch(getCityData());
+    }
+
+    dispatch(getCountryDataSort());
+    if (!stateDropdown.length) {
+      dispatch(getStateDataSort());
+    }
+    dispatch(getCustomerData())
+    dispatch(getStatusData())
+
   }, [rows]);
 
   useEffect(() => {
@@ -1080,14 +1250,16 @@ function CreateDynamicForm() {
                                     : "k"
                                 )}
                                 <td>
-                                  {(rows[idx].inputType === "select-master" ||  rows[idx].inputType == "select" || rows[idx].inputType == "checkbox")  &&  (
+                                  {(rows[idx].inputType === "select-master" ||
+                                    rows[idx].inputType == "select" ||
+                                    rows[idx].inputType == "checkbox") && (
                                     <input
                                       type="checkbox"
                                       name="inputMultiple"
                                       defaultValue={item.inputMultiple}
                                       onChange={handleChange(idx)}
                                     />
-                                   )} 
+                                  )}
                                 </td>
 
                                 <td>
@@ -1142,7 +1314,15 @@ function CreateDynamicForm() {
                                         name="inputDataSource"
                                         // value={props.selectData}
                                       >
-                                        <option>Select Data Source</option>
+                                        {dataSourceOptions.map((option) => (
+                                          <option
+                                            key={option.value}
+                                            value={option.value}
+                                          >
+                                            {option.label}
+                                          </option>
+                                        ))}
+                                        {/* <option>Select Data Source</option>
                                         <option value="user">
                                           User Master
                                         </option>
@@ -1152,6 +1332,20 @@ function CreateDynamicForm() {
                                         <option value="role">
                                           Role Master
                                         </option>
+                                        <option value="country">
+                                          Country Master
+                                        </option>
+                                        <option value="state">
+                                          State Master
+                                        </option>
+                                        <option value="city">
+                                          City Master
+                                        </option>
+                                       
+                                        <option value="designation">
+                                          Designation Master
+                                        </option> */}
+
                                         {/* <option value="department|id|department">Department Master</option> */}
                                         {/* <option value="role|id|role">Role Master</option> */}
                                       </select>
@@ -1305,7 +1499,6 @@ function CreateDynamicForm() {
                                           </div>
                                         )}
                                       </div>
-
                                     </div>
                                   )}
 
@@ -1339,29 +1532,25 @@ function CreateDynamicForm() {
                                           }
                                         />
 
-                                      <>
-                                      {parseFloat(
-                                          rows[idx].inputAddOn.inputRangeMin
-                                        ) >
-                                          parseFloat(
-                                            rows[idx].inputAddOn.inputRangeMax
-                                          ) && (
-                                          <div className="text-danger">
-                                            {" "}
-                                            Max number should be greater than
-                                            Min number
-                                          </div>
-                                        )}
+                                        <>
+                                          {parseFloat(
+                                            rows[idx].inputAddOn.inputRangeMin
+                                          ) >
+                                            parseFloat(
+                                              rows[idx].inputAddOn.inputRangeMax
+                                            ) && (
+                                            <div className="text-danger">
+                                              {" "}
+                                              Max number should be greater than
+                                              Min number
+                                            </div>
+                                          )}
                                         </>
-                                          
-                                      
                                       </div>
-                                     
                                     </div>
-                                    
                                   )}
 
-                                  {console.log("item",item)}
+                                  {console.log("item", item)}
 
                                   {rows[idx].inputType === "date" && (
                                     <span>
@@ -1886,20 +2075,20 @@ function CreateDynamicForm() {
 
                         {data.inputType === "date" && (
                           <input
-                          type={data.inputType}
-                          id={
-                            data.inputName
-                              ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
-                              : ""
-                          }
-                          name={data.inputName}
-                          defaultValue={data.inputDefaultValue}
-                          min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                          max={data.inputAddOn.inputDateRange ? range[1] : ""}
-                          className="form-control form-control-sm"
-                        />
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            defaultValue={data.inputDefaultValue}
+                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
+                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                            className="form-control form-control-sm"
+                          />
                           // <div
                           //   className="form-control"
                           //   style={{ width: "100%", position: "relative" }}
@@ -2004,7 +2193,6 @@ function CreateDynamicForm() {
                                           data?.inputAddOn?.inputDataSource
                                       ) === option.value
                                     }
-                                    
                                     value={option.value}
                                   >
                                     {option.label}
@@ -2028,7 +2216,6 @@ function CreateDynamicForm() {
                                       name="is_active"
                                       id={`is_active_${index}`}
                                       value="1"
-                                      
                                     />
                                     <label
                                       className="form-check-label"

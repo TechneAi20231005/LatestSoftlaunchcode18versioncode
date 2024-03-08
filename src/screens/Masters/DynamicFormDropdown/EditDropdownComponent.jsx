@@ -610,6 +610,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
           updatedData[idx].value = e.target.value;
           setData(updatedData);
         }}
+        required
       />
       </td>
 
