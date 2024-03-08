@@ -6,7 +6,9 @@ import classNames from './example.module.css'
 import MyTicketService from '../../services/TicketService/MyTicketService'
 
 const Chatbox = props => {
-  const { ticketId, loadComment, commentData } = props
+  const { ticketId, loadComment, commentData,statusName } = props
+  // console.log("props",props.statusName.status_name)
+
   const [message, setMessage] = useState('')
   const [users, setUsers] = useState([])
   const [mentionId, setMentionId] = useState([])
@@ -50,6 +52,7 @@ const Chatbox = props => {
     fetchData()
   }, [])
 
+  {console.log("p",props.statusName?.status_name)}
   return (
     <div style={{ maxWidth: '500px', margin: 'auto' }}>
       <form method='post' onSubmit={handleComment}>
@@ -58,10 +61,15 @@ const Chatbox = props => {
             <h6 className='mb-0 fw-bold mb-3'>Ticket Chat</h6>
             <div className='card mb-2'>
               <div className='card-body'>
+              
                 <MentionsInput
                   className='mentions'
                   classNames={classNames}
                   value={message}
+                  disabled={props.statusName?.status_name==='Solved' || props.statusName?.status_name==='Rejected'}
+                  
+                
+                  
                   onChange={e => setMessage(e.target.value)}
                 >
                   <Mention
@@ -74,6 +82,7 @@ const Chatbox = props => {
                     displayTransform={(id, display) => `@${display}`}
                   />
                 </MentionsInput>
+              
                 <Button variant='primary' className='mt-2' type='submit'>
                   Send
                 </Button>

@@ -1233,6 +1233,7 @@ export default function EditTicketComponent({ match }) {
 
                       <div className="col-sm-3">
                         <label className=" col-form-label">
+                          {console.log(statusData)}
                           <b>
                             Status : <Astrick color="red" size="13px" />
                           </b>
