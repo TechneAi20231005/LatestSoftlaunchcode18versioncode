@@ -257,7 +257,7 @@ export default function EditTicketComponent({ match }) {
                 },
                 {
                   state: {
-                    alert: { type: "success", message: res.data.message },
+                    type: "success", message: res.data.message,
                   },
                 }
               );
@@ -836,6 +836,14 @@ export default function EditTicketComponent({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  // useEffect(() => {
+
+  //   const timeoutId = setTimeout(() => {
+  //     setLocationState(null);
+  //   }, 3000);
+  //   return () => clearTimeout(timeoutId);
+  // }, [location.state]);
 
   return (
     <div className="container-xxl">

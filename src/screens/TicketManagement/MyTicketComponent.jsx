@@ -3781,8 +3781,8 @@ export default function MyTicketComponent() {
   });
 
   const location = useLocation();
-  console.log("location state", location.state)
-  const [locationState, setLocationState] = useState(location.state)
+
+  const [locationState, setLocationState] = useState(location?.state)
   const { state } = location;
   const Notify = useSelector(TicketSlices => TicketSlices.ticket.notify)
 
@@ -3960,12 +3960,7 @@ export default function MyTicketComponent() {
                   </li>
                 ))} */}
 
-              {
-                console.log('data.created_by == localStorage.getItem("id")', data.created_by == localStorage.getItem("id"))
 
-              }
-              {console.log('data.assign_to_user_id == localStorage.getItem("id")', data.assign_to_user_id == localStorage.getItem("id"))}
-              {console.log("")}
               {
                 (data.created_by == localStorage.getItem("id") ||
                   data.assign_to_user_id == localStorage.getItem("id") ||
@@ -5379,7 +5374,7 @@ export default function MyTicketComponent() {
             });
           }
           const select = res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active == 1 && d.account_for === "SELF")
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name,
@@ -5535,7 +5530,7 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+          setCheckRole(res.data.data.filter((d) => d.menu_id == 17));
         }
       }
     });
@@ -5599,6 +5594,8 @@ export default function MyTicketComponent() {
       if (e) {
 
         e.preventDefault();
+
+
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
         // const formData = new FormData(e.target.value);
@@ -5606,6 +5603,8 @@ export default function MyTicketComponent() {
         await new ReportService()
           .getTicketReport(formData)
           .then((res) => {
+            console.log("created By check", res.data.data)
+
             if (res.status === 200) {
               if (res.data.status == 1) {
                 setSearchResult(null);
@@ -6164,7 +6163,7 @@ export default function MyTicketComponent() {
       setLocationState(null);
     }, 3000);
     return () => clearTimeout(timeoutId);
-  }, [location.state]);
+  }, []);
 
   useEffect(() => {
     const listener = (e) => {
@@ -6194,7 +6193,7 @@ export default function MyTicketComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_read === 0) {
+    if (checkRole && checkRole[0].can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -6698,69 +6697,69 @@ export default function MyTicketComponent() {
                   </div>
                 </Tab>
                 {/* {localStorage.getItem("account_for") === "SELF" && ( */}
-                  <Tab
-                    eventKey="departmenyourTaskt"
-                    title="Departmentwise Tickets"
-                  >
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {departmentwiseTicket && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Departmentwise Ticket"
-                            typeOf="DepartmentWise"
-                          />
+                <Tab
+                  eventKey="departmenyourTaskt"
+                  title="Departmentwise Tickets"
+                >
+                  <div className="card mb-3 mt-3">
+                    <div className="card-body">
+                      {departmentwiseTicket && (
+                        <ExportAllTicketsToExcel
+                          className="btn btn-sm btn-danger mt-3"
+                          fileName="Departmentwise Ticket"
+                          typeOf="DepartmentWise"
+                        />
+                      )}
+                      {departmentwiseTicket && (
+                        <DataTable
+                          columns={departmentwisetTicketColumns}
+                          data={departmentwiseTicket}
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={"500px"}
+                          selectableRows={false}
+                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                          highlightOnHover={true}
+                        />
+                      )}
+                      <div className="back-to-top pull-right mt-2 mx-2">
+                        <label className="mx-2">rows per page</label>
+                        <select
+                          onChange={(e) => {
+                            handleDepartmentWiseRowChanged(e, "LIMIT");
+                          }}
+                          className="mx-2"
+                        >
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="40">40</option>
+                        </select>
+                        {departmentWiseData && (
+                          <small>
+                            {departmentWiseData.from}-{departmentWiseData.to}{" "}
+                            of {departmentWiseData.total}
+                          </small>
                         )}
-                        {departmentwiseTicket && (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"500px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleDepartmentWiseRowChanged(e, "LIMIT");
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {departmentWiseData && (
-                            <small>
-                              {departmentWiseData.from}-{departmentWiseData.to}{" "}
-                              of {departmentWiseData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "MINUS");
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "PLUS");
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            handleDepartmentWiseRowChanged(e, "MINUS");
+                          }}
+                          className="mx-2"
+                        >
+                          <i className="icofont-arrow-left"></i>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            handleDepartmentWiseRowChanged(e, "PLUS");
+                          }}
+                        >
+                          <i className="icofont-arrow-right"></i>
+                        </button>
                       </div>
                     </div>
-                  </Tab>
+                  </div>
+                </Tab>
                 {/* )} */}
 
                 {localStorage.getItem("account_for") === "SELF" && (

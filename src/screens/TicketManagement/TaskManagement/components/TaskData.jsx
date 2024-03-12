@@ -35,11 +35,6 @@ export default function TaskData(props) {
   const isRegularisedData = props.data.regularized_data
   const allData = props
 
-
-
-  const dispatch = useDispatch()
-
-
   // const moduleSetting = useSelector(TaskComponentSlice => TaskComponentSlice.taskComponent.moduleSettingData)
 
   const [userTypeData, setUserTypeData] = useState(null)
@@ -94,7 +89,6 @@ export default function TaskData(props) {
 
 
   const loadData = async () => {
-    console.log("loadData called")
     await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -725,3 +719,4 @@ export default function TaskData(props) {
     </div>
   )
 }
+

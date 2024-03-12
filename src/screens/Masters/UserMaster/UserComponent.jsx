@@ -715,7 +715,7 @@ function UserComponent() {
     const exportTempData = [];
 
     await new UserService().getExportTicket().then((res) => {
-      console.log("resExport",res)
+      console.log("resExport", res)
       if (res.status == 200) {
         // setExportData(res.data)
         const temp = res.data.data;
@@ -936,8 +936,6 @@ function UserComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
