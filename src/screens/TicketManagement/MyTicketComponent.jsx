@@ -6701,7 +6701,7 @@ export default function MyTicketComponent() {
                   eventKey="departmenyourTaskt"
                   title="Departmentwise Tickets"
                 >
-                  <div className="card mb-3 mt-3">
+                  <div className="card mb-3 ">
                     <div className="card-body">
                       {departmentwiseTicket && (
                         <ExportAllTicketsToExcel
@@ -6716,7 +6716,7 @@ export default function MyTicketComponent() {
                           data={departmentwiseTicket}
                           defaultSortField="title"
                           fixedHeader={true}
-                          fixedHeaderScrollHeight={"500px"}
+                          fixedHeaderScrollHeight={"800px"}
                           selectableRows={false}
                           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                           highlightOnHover={true}
