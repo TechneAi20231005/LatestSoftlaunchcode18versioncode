@@ -1742,7 +1742,7 @@ export default function CreateTicketComponent() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+          setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
         }
       }
     });
@@ -1843,7 +1843,8 @@ export default function CreateTicketComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_create === 0) {
+
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -2136,8 +2137,6 @@ export default function CreateTicketComponent() {
                       <option value="Very High">Very High</option>
                     </select>
                   </div>
-                  {console.log("expectedSolveDate",expectedSolveDate)}
-
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -2164,7 +2163,7 @@ export default function CreateTicketComponent() {
 
         {/* {selectedDropdown && JSON.stringify(selectedDropdown)} */}
 
-        {console.log("dataC",rows)}
+        {console.log("dataC", rows)}
 
         {data.ticket_uploading === "REGULAR" && rows && rows.length > 0 && (
           <div className="card mt-2">
@@ -2238,6 +2237,7 @@ export default function CreateTicketComponent() {
                             defaultValue={data.inputDefaultValue}
                             format={data.inputFormat}
                             style={{ width: "100%" }}
+<<<<<<< HEAD
                             
                           /> */}
 
@@ -2252,6 +2252,8 @@ export default function CreateTicketComponent() {
                             defaultValue={data.inputDefaultValue}
                             // format={data.inputFormat}
                             style={{ width: "100%" }}
+
+
                           />
                         </div>
                       )}
@@ -2329,7 +2331,7 @@ export default function CreateTicketComponent() {
                                       .toLowerCase()
                                     : ""
                                 }
-                          required={data.inputMandatory == true ? true : false}
+                                required={data.inputMandatory == true ? true : false}
 
                                 name={data.inputName}
                                 className="mx-2"
