@@ -522,6 +522,8 @@ console.log("statusData",statusData)
       if (e.target.name === "inputDataSource" && e.target.value === "user") {
         const tempUserData = [];
         const test1 = e.target.value;
+        rows[idx].inputAddOn.inputDataSource =test1;
+console.log("test1",test1)
         rows[idx].inputAddOn.inputDataSourceData = test1;
         const inputRequired =
           "id,employee_id,first_name,last_name,middle_name,is_active";
@@ -659,6 +661,8 @@ console.log("statusData",statusData)
                 });
                 rows[idx].inputAddOn.inputRadio = temp;
                 setInputDataSource(temp);
+                rows[idx].inputAddOn.inputOnChangeSource = dropDownValue
+                
               }
             }
           });
@@ -1175,10 +1179,13 @@ console.log("statusData",statusData)
                                     onChange={handleChange(idx)}
                                     className="form-control form-control-sm"
                                     // required
+                                    // onKeyPress={(e) => {
+                                    //   Validation.CharactersNumbersSpeicalOnly(
+                                    //     e
+                                    //   );
+                                    // }}
                                     onKeyPress={(e) => {
-                                      Validation.CharactersNumbersSpeicalOnly(
-                                        e
-                                      );
+                                      Validation.CharactersNumbersOnly(e);
                                     }}
                                   />
                                   {labelErr && (
@@ -1298,6 +1305,7 @@ console.log("statusData",statusData)
                                     />
                                   )}
                                   </td> */}
+                                  {console.log("rows7",rows)}
                                 <td>
                                   {rows[idx].inputType == "select-master" && (
                                     <span>
@@ -1365,6 +1373,7 @@ console.log("statusData",statusData)
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
                                         name="inputOnChangeSource"
+                                        value={selectedValue}
                                       >
                                         <option>Select Data Source</option>
 

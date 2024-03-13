@@ -1470,6 +1470,7 @@ function CityComponent() {
           </div>
         </div>
       </div>
+      {console.log("city==>",cityData)}
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">

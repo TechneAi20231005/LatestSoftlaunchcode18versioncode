@@ -1007,10 +1007,10 @@ function EditCustomer({ match }) {
     var flag = 1;
     // var a = JSON.stringify(Object.fromEntries(formData))
     // console.log(a)
-    if(!contactNumber){
-      alert('Enter the Contact Number')
-      return
-    }
+    // if(!contactNumber){
+    //   alert('Enter the Contact Number')
+    //   return
+    // }
    
 
     var customerType = formData.getAll("customer_type_id");
@@ -1284,6 +1284,7 @@ function EditCustomer({ match }) {
                         }}
                         onChange={handleMobileValidation}
                         autoComplete="off"
+                        required
                       />
                     </div>
                   </div>

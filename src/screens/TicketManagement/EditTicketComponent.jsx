@@ -257,7 +257,7 @@ export default function EditTicketComponent({ match }) {
                 },
                 {
                   state: {
-                    alert: { type: "success", message: res.data.message },
+                    type: "success", message: res.data.message,
                   },
                 }
               );
@@ -837,6 +837,14 @@ export default function EditTicketComponent({ match }) {
     }
   }, [checkRole]);
 
+  // useEffect(() => {
+
+  //   const timeoutId = setTimeout(() => {
+  //     setLocationState(null);
+  //   }, 3000);
+  //   return () => clearTimeout(timeoutId);
+  // }, [location.state]);
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle={`Edit Ticket - ${data ? data.ticket_id : ""}`} />
@@ -1261,7 +1269,7 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
-              {rows && rows.length > 0 && (
+              {/* {rows && rows.length > 0 && (
                 <div className="card mt-2">
                   <div className="card-body">
                     <div className="row">
@@ -1388,7 +1396,301 @@ export default function EditTicketComponent({ match }) {
                     </div>
                   </div>
                 </div>
+              )} */}
+
+
+              {rows && rows.length>0 &&(
+                  <div className="row">
+                  {rows.map((data, index) => {
+                    var range = "";
+                    return (
+                      <div className={`${data.inputWidth} mt-2`}>
+                        <label>
+                          <b>
+                            {data.inputLabel}{" "}
+                            {data.inputMandatory == true ? (
+                              <Astrick color="red" size="13px" />
+                            ) : (
+                              ""
+                            )}
+                            :
+                          </b>
+                        </label>
+                        {data.inputType === "text" && (
+                          <input
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            // defaultValue={
+                            //   selectedDropdown
+                            //     ? selectedDropdown[data.inputName]
+                            //     : ""
+                            // }
+                            defaultValue={data.inputDefaultValue}
+                            required={data.inputMandatory == true ? true : false}
+                            onChange={dynamicChangeHandle}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "textarea" && (
+                          <textarea
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                            defaultValue={
+                              selectedDropdown
+                                ? selectedDropdown[data.inputName]
+                                : ""
+                            }
+                            onChange={dynamicChangeHandle}
+                            required={data.inputMandatory == true ? true : false}
+  
+                          >
+                            {data.inputDefaultValue}
+                          </textarea>
+                        )}
+  
+                        {data.inputType === "date" && (
+                          <div className="form-control">
+                            {/* <DatePicker
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
+                              // onChange={onChangeDate}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
+                              format={data.inputFormat}
+                              style={{ width: "100%" }}
+                              
+                            /> */}
+  
+  <input
+                              type="date"
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
+                              // onChange={dynamicChangeHandle}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
+                              // format={data.inputFormat}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        )}
+  
+                        {data.inputType === "datetime-local" && (
+                          <div className="form-control">
+                            <input
+                              type="datetime-local"
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
+                              onChange={dynamicChangeHandle}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
+                              // format={data.inputFormat}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        )}
+  
+                        {data.inputType === "time" && (
+                          <input
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            defaultValue={
+                              selectedDropdown
+                                ? selectedDropdown[data.inputName]
+                                : ""
+                            }
+                            onChange={dynamicChangeHandle}
+                            required={data.inputMandatory == true ? true : false}
+  
+                            className="form-control form-control-sm"
+                          />
+                        )}
+  
+                        {data.inputType == "radio" && data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                            return (
+                              <div>
+                                <input
+                                  id={
+                                    data.inputName
+                                      ? data.inputName
+                                        .replace(/ /g, "_")
+                                        .toLowerCase()
+                                      : ""
+                                  }
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="radio"
+                                />
+                                <label for={d.value}>{d.label}</label>
+                              </div>
+                            );
+                          })
+                          : ""}
+  
+                        {data.inputType == "checkbox" &&
+                          data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                            return (
+                              <div>
+                                <input
+                                  id={
+                                    data.inputName
+                                      ? data.inputName
+                                        .replace(/ /g, "_")
+                                        .toLowerCase()
+                                      : ""
+                                  }
+                            required={data.inputMandatory == true ? true : false}
+  
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="checkbox"
+                                />
+                                <label for={d.value}> {d.label}</label>
+                              </div>
+                            );
+                          })
+                          : ""}
+  
+                          {console.log("df",data.inputDefaultValue)}
+  
+                        {data.inputType === "number" && (
+                          <input
+                            type={data.inputType}
+                            // type="date"
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            // defaultValue={
+                            //   selectedDropdown
+                            //     ? selectedDropdown[data.inputName]
+                            //     : ""
+  
+                            // }
+  
+                            defaultValue={data.inputDefaultValue}
+  
+                            required={data.inputMandatory == true ? true : false}
+  
+                            onChange={dynamicChangeHandle}
+                            min={data.inputAddOn.inputRange ? range[0] : ""}
+                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "decimal" && (
+                          <input
+                            type="number"
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+                            required={data.inputMandatory == true ? true : false}
+  
+                            name={data.inputName}
+                            onChange={dynamicChangeHandle}
+                            minLength={parseInt(data.inputAddOn.inputRangeMin)}
+                            maxLength={parseInt(data.inputAddOn.inputRangeMax)}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "select" && (
+                          <Select
+                            defaultValue={
+                              selectedDropdown
+                                ? selectedDropdown[data.inputName]
+                                : ""
+                            }
+                            options={data.inputAddOn.inputRadio}
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+  
+                            name={data.inputName}
+                            onChange={(e) => {
+                              dynamicDependancyHandle(
+                                data.inputName,
+                                e,
+                                data.inputAddOn.inputOnChangeSource
+                              );
+                            }}
+                            className="form-control form-control-sm"
+                            required={data.inputMandatory ? true : false}
+                          />
+                        )}
+  
+  
+  {data.inputType === "select-master" && (
+                            <select
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              defaultValue={data.inputAddOn.inputDataSource}
+                              name={data.inputName}
+                              className="form-control form-control-sm"
+                            >
+                              <option> {data.inputName}</option>
+                              {data.inputAddOn.inputDataSourceData &&
+                                data.inputAddOn.inputDataSourceData.map(
+                                  (option) => {
+                                    return (
+                                      <option
+                                        selected={
+                                          parseInt(
+                                            data &&
+                                              data?.inputAddOn
+                                                ?.inputDataSourceData
+                                          ) === option.value
+                                        }
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </option>
+                                    );
+                                  }
+                                )}
+                            </select>
+                          )}
+  
+  
+                        
+                      </div>
+                    );
+                  })}
+                </div>
               )}
+
+              
 
               <div className="card mt-2">
                 <div className="card-body">

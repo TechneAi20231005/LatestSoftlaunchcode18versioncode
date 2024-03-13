@@ -1688,6 +1688,8 @@ const handleChange = (idx, type) => async (e) => {
             setUserData(aa);
             rows[idx].inputAddOn.inputDataSourceData = aa;
             setInputDataSource(aa);
+
+            
           }
         });
     } else if (
@@ -2105,6 +2107,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
       remark: e.target.remark.value,
       data: JSON.stringify(rows),
     };
+    console.log("rowsH",rows)
 
     await new DynamicFormService()
       .updateDynamicForm(formId, data)
@@ -2644,7 +2647,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
 
                                 {console.log("man==", item.inputMandatory)}
                                 <td>
-                                  <input
+                                  {/* <input
                                     type="checkbox"
                                     name="inputMandatory"
                                     id="inputMandatory"
@@ -2652,10 +2655,20 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                     defaultChecked={item.inputMandatory}
                                     onChange={handleChange(idx)}
                                     className="center"
-                                  />
+                                  /> */}
+                                  {console.log("item",item)}
+                                    <input
+                                                                    type="checkbox"
+                                                                    name="inputMandatory"
+                                                                    id="inputMandatory"
+                                                                    defaultChecked={item.inputMandatory}
+                                                                    onChange={handleChange(idx)}
+
+                                                                />
+
                                 </td>
 
-                                                            {console.log("man==",item )}
+                                                            {/* {console.log("man==",item )}
                                                             <td>
                                                                 <input
                                                                     type="checkbox"
@@ -2666,7 +2679,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                                                     onChange={handleChange(idx)}
                                                                     className="center"
                                                                 />
-                                                            </td>
+                                                            </td> */}
                                                            
                                                             <td>
                                                                 {(item.inputType === "select-master"  || item.inputType === "checkbox" || item.inputType === "select" ) &&
@@ -2715,7 +2728,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
 
                                                             </td> */}
 
-                                {console.log("value", rows)}
+                                {console.log("value", rows[idx]?.inputAddOn?.inputOnChangeSource)}
 
                                 <td>
                                   {rows[idx].inputType == "radio" && (
@@ -2727,13 +2740,12 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                         name="inputOnChangeSource"
                                         defaultValue={
                                           rows &&
-                                          rows[idx]?.inputAddOn?.inputDataSource
+                                          rows[idx]?.inputAddOn?.inputOnChangeSource
                                         }
 
                                         // defaultValue={sortDropDownData&& sortDropDownData.filter((d)=>d.value === parseInt(rows&& rows[idx]?.inputAddOn?.inputDataSource)) }
                                       >
                                         <option>Select Data Source</option>
-
                                         {dropdown &&
                                           dropdown.map((d, i) => {
                                             return (
@@ -2743,8 +2755,8 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                                   parseInt(
                                                     rows &&
                                                       rows[idx]?.inputAddOn
-                                                        ?.inputDataSource
-                                                  ) === d.value
+                                                        ?.inputOnChangeSource
+                                                  ) === d.id
                                                 }
                                               >
                                                 {d.dropdown_name}
@@ -2787,8 +2799,8 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                                   parseInt(
                                                     rows &&
                                                       rows[idx]?.inputAddOn
-                                                        ?.inputDataSource
-                                                  ) === d.value
+                                                        ?.inputOnChangeSource
+                                                  ) === d.id
                                                 }
                                               >
                                                 {d.dropdown_name}
@@ -2809,10 +2821,10 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                       <select
                                         className="form-control form-control-sm"
                                         // onChange={props.onGetChange}
-                                        // defaultValue={
-                                        //   rows &&
-                                        //   rows[idx]?.inputAddOn?.inputDataSource
-                                        // }
+                                        defaultValue={
+                                          rows &&
+                                          rows[idx]?.inputAddOn?.inputDataSource
+                                        }
                                         // onChange={(e) => {
                                         //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
                                         // }}
@@ -2822,10 +2834,18 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                         name="inputDataSource"
                                         // value={props.selectData}
                                       >
+
                                         {dataSourceOptions.map((option) => (
                                           <option
                                             key={option.value}
                                             value={option.value}
+                                            selected={
+                                              parseInt(
+                                                rows &&
+                                                  rows[idx]?.inputAddOn
+                                                    ?.inputDataSource
+                                              ) === option.value
+                                            }
                                           >
                                             {option.label}
                                           </option>
@@ -2859,7 +2879,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                         name="inputOnChangeSource"
                                         defaultValue={
                                           rows &&
-                                          rows[idx]?.inputAddOn?.inputDataSource
+                                          rows[idx]?.inputAddOn?.inputOnChangeSource
                                         }
                                       >
                                         <option>Select Data Source</option>
@@ -2873,8 +2893,8 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                                   parseInt(
                                                     rows &&
                                                       rows[idx]?.inputAddOn
-                                                        ?.inputDataSource
-                                                  ) === d.value
+                                                        ?.inputOnChangeSource
+                                                  ) === d.id
                                                 }
                                               >
                                                 {d.dropdown_name}
@@ -3177,7 +3197,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
 
                     <div className="pull-right">
                       <button type="submit" className="btn btn-sm btn-primary">
-                        Submit
+                        Update
                       </button>
                       <Link
                         to={`/${_base}/DynamicForm`}
@@ -3381,7 +3401,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
 
                         {data?.inputType === "radio" && (
                           <div className="row mt-3">
-                            {/* {data &&
+                            {data &&
                               data?.inputAddOn?.inputRadio.map((i, index) => (
                                 <div key={index} className="col">
                                   <div className="form-check">
@@ -3400,7 +3420,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                                     </label>
                                   </div>
                                 </div>
-                              ))} */}
+                              ))}
                           </div>
                         )}
 
@@ -3497,10 +3517,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                           </select>
                         )} */}
 
-                        {console.log("daat55",data)}
-                        {console.log("rows==>",rows)}
-
-
+                      
 {data.inputType === "select-master" && (
                           <select
                             id={

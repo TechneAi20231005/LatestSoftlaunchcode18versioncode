@@ -218,6 +218,7 @@ const requiredUserRef = useRef();
   };
 
   const handleRemoveSection = (indexToRemove) => {
+    setAmountErr("")
     const newData = [...approverData.data];
 
     // Remove the section at the specified index
@@ -246,6 +247,7 @@ const requiredUserRef = useRef();
     setApproverData({ data: newData });
   };
 
+const [amountErr,setAmountErr]=useState("")
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
     var amountValue = parseFloat(value);
@@ -257,15 +259,29 @@ const requiredUserRef = useRef();
     // Round the amount to two decimal places
     amountValue = parseFloat(amountValue.toFixed(2));
 
-    newData[index].amount = amountValue;
+   newData[index].amount = amountValue;
     setApproverData({ data: newData });
 
     if (index === newData.length - 2) {
       // Automatically set the last section's amount to the same value
       newData[index + 1].amount = amountValue;
       setApproverData({ data: newData });
+    // console.log("index", newData[index + 1].amount)
+    // console.log("indexa", newData[index -1].amount)
+
+
     }
+
+    if ( newData[index + 1]?.amount <= newData[index - 1]?.amount) {
+      setAmountErr(`Amount in section ${index + 1} should be greater than the previous tab.`)
+      // alert(`Amount in section ${index + 1} should be greater than the previous tab.`);
+      // return; // Exit the function without adding a new slab
+  }
+  else{
+    setAmountErr("")
+  }
   };
+
 
 
 
@@ -522,6 +538,7 @@ const requiredUserRef = useRef();
       alert("Please select at least one user in the 'Assigned To' field");
       return;
     }
+    
 
     if (
       requiredUserRef &&
@@ -531,6 +548,11 @@ const requiredUserRef = useRef();
       alert("Please select at least one user in the 'Required To' field");
       return;
     }
+
+    if (amountErr) {
+      alert("Please fix the error before submitting the form.");
+      return;
+  }
     // Check if any field is empty
     const isEmpty = approverData.data.some((section) => {
       return section.level.some((levelItem) => {
@@ -544,6 +566,7 @@ const requiredUserRef = useRef();
         );
       });
     });
+    // handleAmountChange()
     if (isEmpty) {
       // Show an alert or error message
       alert("Please fill in all fields");
@@ -700,7 +723,6 @@ const requiredUserRef = useRef();
                         <i className="icofont-plus-circle" />
                       </Button>
                     ) : null}
-
                     {approverData.data.length > 1 &&
                     index !== approverData.data.length - 1 ? (
                       <Button
@@ -712,6 +734,9 @@ const requiredUserRef = useRef();
                       </Button>
                     ) : null}
                   </Col>
+                  {index > 0 && index === approverData.data.length - 2 &&
+                  <small style={{ color: 'red',   display: 'block' }}>{amountErr}</small>
+                  }
                 </Row>
 
                 <Table className="mt-2">

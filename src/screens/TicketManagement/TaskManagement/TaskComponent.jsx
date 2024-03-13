@@ -44,7 +44,6 @@ export default function TaskComponent({ match }) {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
-        console.log("resT==>",res)
         if (res.status === 200) {
           if (res.data.status === 1) {
             setTicketData(res.data.data);
@@ -82,7 +81,7 @@ export default function TaskComponent({ match }) {
   };
 
   const handleShowBasketModal = async (id) => {
-    
+
     setBasketData(null);
     if (id) {
       await new BasketService()
@@ -152,13 +151,13 @@ export default function TaskComponent({ match }) {
             sortingArr = res.data.basket_id_array;
             setIsReviewer(res.data.is_reviewer);
             setOwnership(res.data.ownership);
-            console.log("resB",res.data)
+            console.log("resB", res.data)
             setBasketIdArray(res.data.basket_id_array);
             // setIsRegularised(res.data.is_regularized)
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
-            console.log("resTask",res.data.data)
+            console.log("resTask", res.data.data)
 
             res.data.data.map((tasks, index) => {
               tasks.taskData.forEach((d, i) => {
@@ -169,8 +168,8 @@ export default function TaskComponent({ match }) {
                   ticket_id_name: d.ticket_id_name,
                   Task_Names: d.task_name,
                   Task_Hours: d.task_hours,
-                  Start_Date: d.start_date,
-                  End_Date: d.end_date,
+                  Start_Date: tasks.start_date,
+                  End_Date: tasks.end_date,
                   Status: d.status,
                   Priority: d.priority,
                   Total_Worked: d.total_worked,
@@ -687,7 +686,7 @@ export default function TaskComponent({ match }) {
           })}
       </div>
 
-      {console.log("dataB",data)}
+      {console.log("dataB", data)}
       <div>
         {isLoading == true ? (
           <LoaderComponent />
@@ -722,11 +721,11 @@ export default function TaskComponent({ match }) {
                         </span>
                       </div>
 
-                      {console.log("new",ele)}
 
                       <div className="p-0 m-0 d-flex justify-content-between mt-1">
-                       {/* {ownership && (ownership === "TICKET" || ownership === "BASKET" || ownership === "PROJECT" )  */}
-                       {ele && (ele.ownership === "TICKET" || ele.ownership === "BASKET" || ele.ownership === "PROJECT" ) 
+
+                        {/* {ownership && (ownership === "TICKET" || ownership === "BASKET" || ownership === "PROJECT" )  */}
+                        {ele && (ele.ownership === "TICKET" || ele.ownership === "BASKET" || ele.ownership === "PROJECT")
 
                           // ownership.some(
                           //   (i) =>
@@ -735,7 +734,7 @@ export default function TaskComponent({ match }) {
                           //     i.ownership === "PROJECT"
                           // ) 
 
-                          && (  
+                          && (
                             <button
                               type="button"
                               key={`newTaskBtn_${index}`}
@@ -852,7 +851,7 @@ export default function TaskComponent({ match }) {
                   data={basketData}
                   loadData={getBasketData}
                 />
-               )}
+              )}
 
               {approveRequestModal && (
                 <ApproveRequestModal

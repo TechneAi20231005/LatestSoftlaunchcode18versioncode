@@ -35,11 +35,6 @@ export default function TaskData(props) {
   const isRegularisedData = props.data.regularized_data
   const allData = props
 
-
-
-  const dispatch = useDispatch()
-
-
   // const moduleSetting = useSelector(TaskComponentSlice => TaskComponentSlice.taskComponent.moduleSettingData)
 
   const [userTypeData, setUserTypeData] = useState(null)
@@ -94,7 +89,6 @@ export default function TaskData(props) {
 
 
   const loadData = async () => {
-    console.log("loadData called")
     await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -447,6 +441,9 @@ export default function TaskData(props) {
             </div>
           )
         }
+
+
+
         {props.data.type == 'GROUP_ACTIVITY' &&
           props.data.status !== 'COMPLETED' && (
             // props.data.canStartStop == 1 &&
@@ -465,6 +462,8 @@ export default function TaskData(props) {
                     margin: '0px',
                     padding: '0px'
                   }}
+                  // disabled={props.data.taskOwners.filter((d)=>d.id == sessionStorage.getItem("id")) ? false : true}
+                  disabled={!props?.data?.taskOwners.some(owner => owner.id === parseInt(sessionStorage.getItem("id"), 10))}
                   title='Start Group Activity Task'
                   onClick={e =>
                     showGroupActivity(
@@ -725,3 +724,4 @@ export default function TaskData(props) {
     </div>
   )
 }
+

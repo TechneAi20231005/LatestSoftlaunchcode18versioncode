@@ -422,6 +422,7 @@ function Profile() {
                                                 name="email_id"
                                                 onChange={handleEmail}
                                                 defaultValue={data && data.email_id}
+                                                required
                                             />
                                         </div>
                                         {emailError && <small style={{ color: "red", position: 'absolute', right: '85%' }}>{emailError}</small>}

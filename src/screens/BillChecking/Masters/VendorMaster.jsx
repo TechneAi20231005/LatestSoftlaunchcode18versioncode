@@ -138,12 +138,14 @@ function VendorMaster({ match }) {
                         data-bs-toggle="modal"
                         data-bs-target="#depedit"
                         onClick={(e) => {
-                            console.log("row clicked", row)
+
                             setVendorId(row?.id)
+                            setConsider(row?.consider_in_payment);
                             setPanAttachment(row?.pan_attachment)
                             setAdharattachment(row?.adhar_attachment)
                             setMSMESelectedFiles(row?.msme_attachment)
                             setPassBookSelectedFiles(row?.bank_passbook_attachment)
+                            setGstAttachment(row?.gst_attachment)
                             setChequeAttachmentSelectedFiles(row?.cheque_attachment)
                             handleModal({
                                 showModal: true,
@@ -629,7 +631,6 @@ function VendorMaster({ match }) {
 
         await new VendorMasterService().getActiveCountry().then((res) => {
 
-
             if (res.status === 200) {
                 setCountry(res.data.data);
                 setCountryDropdown(
@@ -664,14 +665,6 @@ function VendorMaster({ match }) {
         });
 
         await new VendorMasterService().getActiveCity().then((res) => {
-            console.log("activecity", res.data.data);
-            console.log("fiterCity", res.data.data
-                .filter((d) => d.is_active === 1)
-                .map((i) => ({
-                    value: i.id,
-                    label: i.city,
-                })))
-
             if (res.status === 200) {
                 setCity(res.data.data);
                 setCityDropdown(
@@ -689,8 +682,7 @@ function VendorMaster({ match }) {
             if (res.status === 200) {
                 setPayment(res.data.data);
                 setPaymentDropdown(
-                    res.data.data
-                        .filter((d) => d.is_active === 1)
+                    res.data.data?.filter((d) => d.is_active === 1)
                         .map((i) => ({ value: i.id, label: i.template_name }))
 
                     //  res.data.data.filter((d) => d.is_active == 1).map((i)=> ({ value: i.id, label: i.template_name }))
@@ -1018,7 +1010,7 @@ function VendorMaster({ match }) {
                 await new VendorMasterService().deleteAttachmentById(attachmentId);
                 await new VendorMasterService().getVendorMasterById(vendorId).then(response => {
                     if (response?.data?.data?.status === 1) {
-                        setGstAttachment(response?.data?.data?.data?.adhar_attachment);
+                        setGstAttachment(response?.data?.data?.data?.gst_attachment);
                     }
                 })
             }
@@ -1350,6 +1342,9 @@ function VendorMaster({ match }) {
     };
 
     const handleStateChange = (e) => {
+        if (cityRef.current.commonProps.hasValue != null) {
+            cityRef.current.clearValue();
+        }
         if (e) {
             const a = city.filter((d) => d.state_id == e.value);
             const aa = a.filter((i) => i.is_active == 1)
@@ -1378,7 +1373,7 @@ function VendorMaster({ match }) {
             if (e.target.files.length > 2) {
                 alert("You Can Upload Only 2 Attachments");
                 document.getElementById("pan_attachment").value = null;
-                setPanAttachment(null);
+                setPanAttachment([]);
             }
         }
 
@@ -1421,7 +1416,7 @@ function VendorMaster({ match }) {
                     <tr>
                         <th>Sr</th>
                         <th>Attachment Name</th>
-                        <th>Acton</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1429,18 +1424,23 @@ function VendorMaster({ match }) {
                         <td>1</td>
                         <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
 
-                        {data.adhar_attachment ? (
+                        {data?.adhar_attachment?.length ? (
+
                             <td>
-                                <a
-                                    href={`${_attachmentUrl}/${data.adhar_attachment}`}
-                                    target="_blank"
-                                    className="btn btn-primary btn-sm p-1"
-                                >
-                                    <i
-                                        class="icofont-eye"
-                                        style={{ fontSize: "15px", height: "15px" }}
-                                    ></i>
-                                </a>
+                                {data?.adhar_attachment.map((attachment, index) => (
+                                    <a
+                                        key={index}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
+                                        target="_blank"
+                                        className="btn btn-primary btn-sm p-1 mr-1"
+                                        style={{ marginBottom: "5px" }}
+                                    >
+                                        <i
+                                            className="icofont-eye"
+                                            style={{ fontSize: "15px", height: "15px" }}
+                                        ></i>
+                                    </a>
+                                ))}
                             </td>
                         ) : (
                             <p>NA</p>
@@ -1454,7 +1454,7 @@ function VendorMaster({ match }) {
                                 {data.pan_attachment.map((attachment, index) => (
                                     <a
                                         key={index}
-                                        href={`${_attachmentUrl}/${attachment}`}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
                                         target="_blank"
                                         className="btn btn-primary btn-sm p-1 mr-1"
                                         style={{ marginBottom: "5px" }}
@@ -1478,7 +1478,7 @@ function VendorMaster({ match }) {
                                 {data.gst_attachment.map((attachment, index) => (
                                     <a
                                         key={index}
-                                        href={`${_attachmentUrl}/${attachment}`}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
                                         target="_blank"
                                         className="btn btn-primary btn-sm p-1 mr-1"
                                         style={{ marginBottom: "5px" }}
@@ -1503,7 +1503,7 @@ function VendorMaster({ match }) {
                                 {data.msme_attachment.map((attachment, index) => (
                                     <a
                                         key={index}
-                                        href={`${_attachmentUrl}/${attachment}`}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
                                         target="_blank"
                                         className="btn btn-primary btn-sm p-1 mr-1"
                                         style={{ marginBottom: "5px" }}
@@ -1523,18 +1523,22 @@ function VendorMaster({ match }) {
                     <tr>
                         <td>5</td>
                         <td style={{ fontWeight: "bold" }}>Pasbook Attachment</td>
-                        {data.bank_passbook_attachment ? (
+                        {data?.bank_passbook_attachment?.length ? (
                             <td>
-                                <a
-                                    href={`${_attachmentUrl}/${data.bank_passbook_attachment}`}
-                                    target="_blank"
-                                    className="btn btn-primary btn-sm p-1"
-                                >
-                                    <i
-                                        class="icofont-eye"
-                                        style={{ fontSize: "15px", height: "15px" }}
-                                    ></i>
-                                </a>
+                                {data?.bank_passbook_attachment.map((attachment, index) => (
+                                    <a
+                                        key={index}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
+                                        target="_blank"
+                                        className="btn btn-primary btn-sm p-1 mr-1"
+                                        style={{ marginBottom: "5px" }}
+                                    >
+                                        <i
+                                            className="icofont-eye"
+                                            style={{ fontSize: "15px", height: "15px" }}
+                                        ></i>
+                                    </a>
+                                ))}
                             </td>
                         ) : (
                             <p>NA</p>
@@ -1544,18 +1548,23 @@ function VendorMaster({ match }) {
                         <td>6</td>
                         <td style={{ fontWeight: "bold" }}>Cheque Attachment</td>
 
-                        {data.cheque_attachment ? (
+                        {data?.cheque_attachment ? (
+
                             <td>
-                                <a
-                                    href={`${_attachmentUrl}/${data.cheque_attachment}`}
-                                    target="_blank"
-                                    className="btn btn-primary btn-sm p-1"
-                                >
-                                    <i
-                                        class="icofont-eye"
-                                        style={{ fontSize: "15px", height: "15px" }}
-                                    ></i>
-                                </a>
+                                {data?.cheque_attachment.map((attachment, index) => (
+                                    <a
+                                        key={index}
+                                        href={`${_attachmentUrl}/${attachment?.path}`}
+                                        target="_blank"
+                                        className="btn btn-primary btn-sm p-1 mr-1"
+                                        style={{ marginBottom: "5px" }}
+                                    >
+                                        <i
+                                            className="icofont-eye"
+                                            style={{ fontSize: "15px", height: "15px" }}
+                                        ></i>
+                                    </a>
+                                ))}
                             </td>
                         ) : (
                             <p>NA</p>
@@ -1628,6 +1637,12 @@ function VendorMaster({ match }) {
                                             modalData: "",
                                             modalHeader: "Add Vendor",
                                         });
+
+                                        setPanAttachment([])
+                                        setAdharattachment([])
+                                        setMSMESelectedFiles([])
+                                        setPassBookSelectedFiles([])
+                                        setChequeAttachmentSelectedFiles([])
                                         setMSMESelectedFiles([]);
                                         setPassBookSelectedFiles([]);
                                         setChequeAttachmentSelectedFiles([]);
@@ -1814,7 +1829,7 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
-                                    <div className="col-sm-4">
+                                    <div className={modal?.modalData ? "col-sm-3" : "col-sm-4"}>
                                         <label className="form-label font-weight-bold">
                                             Email Id :<Astrick color="red" size="13px" />
                                         </label>
@@ -1847,9 +1862,7 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
-
-
-                                    <div className="col-sm-3">
+                                    <div className={modal?.modalData ? "col-sm-3" : "col-sm-3"}>
                                         <label className="form-label font-weight-bold">
                                             Address :<Astrick color="red" size="13px" />
                                         </label>
@@ -1892,8 +1905,7 @@ function VendorMaster({ match }) {
                                         <label className="form-label font-weight-bold">
                                             Country :<Astrick color="red" size="13px" />
                                         </label>
-                                        {console.log("pp", modal.modalData)}
-                                        {console.log("CountryDropdown", CountryDropdown)}
+
                                         {CountryDropdown && data ? (
                                             <Select
                                                 id="country"
@@ -2192,9 +2204,6 @@ function VendorMaster({ match }) {
                                             })}
                                     </div>
 
-
-
-
                                     <div className="col-sm-3 ">
                                         <label className="form-label font-weight-bold">
                                             PAN No :<Astrick color="red" size="13px" />
@@ -2256,8 +2265,6 @@ function VendorMaster({ match }) {
                                             <b>
                                                 PAN Attachment :<Astrick color="red" size="13px" />
                                             </b>
-
-
 
                                             {/* {modal.modalData &&
                                                 modal.modalData.pan_attachment &&
@@ -2720,7 +2727,7 @@ function VendorMaster({ match }) {
                                         {modal.modalData && (
                                             <input
                                                 type="text"
-                                                className="form-control form-control-sm"
+                                                className="form-control form-controlF-sm"
                                                 id="bank_name"
                                                 name="bank_name"
                                                 maxLength={50}

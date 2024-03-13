@@ -1366,25 +1366,26 @@ export default function HrDashboard(props) {
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
 
+
   const [chartData, setChartData] = useState({
-    series: [0, 0, 0],
+    series: [50, 59, 40,],
     Chart: {
       height: "auto",
     },
     options: {
       chart: {
-        type: "donut",
+        type: 'donut',
       },
       labels: ["Pending Task", "Working Tasks", "Completed Task"],
 
-      colors: ["#ff1843", "#ffc107", "#198754", "#FBFBFB"],
+      colors: ['#ff1843', '#ffc107', '#198754', '#FBFBFB'],
 
       dataLables: {
         style: {
           textColor: "white",
-          colors: ["#333", "#fff"],
-        },
-      },
+          colors: ['#333', '#fff'],
+        }
+      }
     },
     // theme: {
     //   // mode: "dark",
@@ -1428,26 +1429,26 @@ export default function HrDashboard(props) {
   };
 
   async function get() {
-    await getData().then((res) => {
+    const id = sessionStorage.getItem('id')
+    await getData(id).then((res) => {
       if (res.status == 200) {
         setCount(res.data.data.count);
-
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
         setUpcomingTask(res.data.data.upcomingTask);
-
-        const temp = chartData;
-    
-      
-        temp.series[0] = res.data.data.pieCharData.pendingTask;
-        temp.series[1] = res.data.data.pieCharData.workingTask;
-        temp.series[2] = res.data.data.pieCharData.completedTask;
-
-        setChartData(null)
-        setChartData(temp);
+        const updatedChartData = {
+          ...chartData,
+          series: [
+            res.data.data.count.pendingTask,
+            res.data.data.count.workingTask,
+            res.data.data.count.completedTask
+          ]
+        };
+        setChartData(updatedChartData);
       }
     });
   }
+
 
   const [timerState, setTimerState] = useState();
 
@@ -1533,15 +1534,23 @@ export default function HrDashboard(props) {
     //  dispatch(getBasketByIdData(id))
   };
 
+
+  useEffect(() => {
+    get();
+  }, []);
+
   useEffect(() => {
     const account_for = localStorage.getItem("account_for");
 
     if (account_for === "CUSTOMER") {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`
     }
-    get();
+
     loadData();
   }, []);
+
+
+
 
   // useEffect(() => {
   //   setChartData(prevChartData => ({
@@ -1681,7 +1690,7 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -1943,8 +1952,8 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
-                                
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -2084,7 +2093,7 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                            <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}
@@ -2210,11 +2219,10 @@ export default function HrDashboard(props) {
                 style={{ height: "250px", overflowY: "scroll" }}
               >
                 {chartData &&
-                  chartData.series &&
-                  chartData.series.length > 0 && (
+                  chartData.series && (
                     <Chart
                       options={chartData.options}
-                      series={chartData.series}
+                      series={chartData?.series}
                       type="donut"
                       height="250"
                     />
@@ -2244,7 +2252,9 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                              <Link
+                              to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                              >
                                 <h6 className="fw-bold mb-0 small-14">
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
@@ -2452,7 +2462,9 @@ export default function HrDashboard(props) {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link to={`Ticket/Task/${ele.ticket_id}`}>
+                              <Link 
+                              to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                              >
                                 <h6
                                   className="fw-bold mb-0 small-14"
                                   title={ele.task_name}

@@ -2594,9 +2594,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new BillCheckingTransactionService()
       .getVendorsDropdown()
       .then((res) => {
+       
+        const filterData=res?.data?.data.filter((d)=>d.consider_in_payment==="YES")
         if (res.status === 200) {
           if (res.data.status == 1) {
-            const temp = res.data.data.filter((d) => d.is_active == 1);
+            const temp = filterData.filter((d) => d.is_active == 1);
             setVendor(res.data.data);
             setVendorDropdown(
               temp.map((d) => ({

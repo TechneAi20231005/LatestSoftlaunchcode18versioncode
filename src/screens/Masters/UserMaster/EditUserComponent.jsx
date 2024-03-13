@@ -1078,7 +1078,22 @@ function EditUserComponent({ match }) {
                             name="email_id"
                             placeholder="Email Address"
                             defaultValue={data.email_id ? data.email_id : ""}
-                            onChange={handleEmail}
+                            // onChange={handleEmail}
+                            onChange={(event) => {
+                              const email = event.target.value;
+                              if (
+                                !email.match(
+                                  /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                )
+                              ) {
+                                setInputState({
+                                  ...state,
+                                  emailErr: "Please enter a valid email address",
+                                });
+                              } else {
+                                setInputState({ ...state, emailErr: "" });
+                              }
+                            }}
                             //onKeyPress={e => { Validation.password(e) }}
                           />
                           {inputState && (

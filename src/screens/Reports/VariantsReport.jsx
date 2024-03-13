@@ -308,7 +308,7 @@ export default function ResourcePlanningReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label htmlFor="" className="">
-                  <b>Select User :</b>
+                  <b>Select User :<Astrick color="red" size="13px" /></b>
                 </label>
                 {userData && (
                   <Select

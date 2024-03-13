@@ -1819,7 +1819,7 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
       if (res.status === 200) {
         if (res.data.status == 1) {
           const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+          setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
         }
       }
     });
@@ -1952,7 +1952,8 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_create === 0) {
+
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -2295,8 +2296,6 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                       <option value="Very High">Very High</option>
                     </select>
                   </div>
-                  {console.log("expectedSolveDate", expectedSolveDate)}
-
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -2361,7 +2360,7 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
 
         {/* {selectedDropdown && JSON.stringify(selectedDropdown)} */}
 
-        {console.log("dataC", rows)}
+
 
         {data.ticket_uploading === "REGULAR" && rows && rows.length > 0 && (
           <div className="card mt-2">
@@ -2418,6 +2417,7 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                           }
                           onChange={dynamicChangeHandle}
                           required={data.inputMandatory == true ? true : false}
+
                         >
                           {data.inputDefaultValue}
                         </textarea>
@@ -2425,14 +2425,32 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
 
                       {data.inputType === "date" && (
                         <div className="form-control">
-                          <DatePicker
+                          {/* <DatePicker
                             required={
                               data && data.inputMandatory == true ? true : false
                             }
                             // onChange={onChangeDate}
-                            value={dateValue}
+                            // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
                             format={data.inputFormat}
                             style={{ width: "100%" }}
+<<<<<<< HEAD
+                            
+                          /> */}
+
+<input
+                            type="date"
+                            name={data.inputName}
+                            required={
+                              data && data.inputMandatory == true ? true : false
+                            }
+                            // onChange={dynamicChangeHandle}
+                            // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
+                            // format={data.inputFormat}
+                            style={{ width: "100%" }}
+
+
                           />
                         </div>
                       )}
@@ -2447,6 +2465,7 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                             }
                             onChange={dynamicChangeHandle}
                             // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
                             // format={data.inputFormat}
                             style={{ width: "100%" }}
                           />
@@ -2469,72 +2488,81 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                           }
                           onChange={dynamicChangeHandle}
                           required={data.inputMandatory == true ? true : false}
+
                           className="form-control form-control-sm"
                         />
                       )}
 
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="radio"
-                                />
-                                <label for={d.value}>{d.label}</label>
-                              </div>
-                            );
-                          })
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                name={data.inputName}
+                                className="mx-2"
+                                type="radio"
+                              />
+                              <label for={d.value}>{d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
 
                       {data.inputType == "checkbox" &&
-                      data.inputAddOn.inputCheckbox
-                        ? data.inputAddOn.inputCheckbox.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  required={
-                                    data.inputMandatory == true ? true : false
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="checkbox"
-                                />
-                                <label for={d.value}> {d.label}</label>
-                              </div>
-                            );
-                          })
+                        data.inputAddOn.inputRadio
+                        ? data.inputAddOn.inputRadio.map((d) => {
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                required={data.inputMandatory == true ? true : false}
+
+                                name={data.inputName}
+                                className="mx-2"
+                                type="checkbox"
+                              />
+                              <label for={d.value}> {d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
+
+                        {console.log("df",data.inputDefaultValue)}
+
                       {data.inputType === "number" && (
                         <input
                           type={data.inputType}
+                          // type="date"
                           id={
                             data.inputName
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
                           name={data.inputName}
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
-                          }
+                          // defaultValue={
+                          //   selectedDropdown
+                          //     ? selectedDropdown[data.inputName]
+                          //     : ""
+
+                          // }
+
+                          defaultValue={data.inputDefaultValue}
+
                           required={data.inputMandatory == true ? true : false}
+
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRange ? range[0] : ""}
                           max={data.inputAddOn.inputRange ? range[1] : ""}
@@ -2550,6 +2578,7 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                               : ""
                           }
                           required={data.inputMandatory == true ? true : false}
+
                           name={data.inputName}
                           onChange={dynamicChangeHandle}
                           minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -2564,12 +2593,13 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                               ? selectedDropdown[data.inputName]
                               : ""
                           }
-                          options={data.inputAddOn.inputDataSourceData}
+                          options={data.inputAddOn.inputRadio}
                           id={
                             data.inputName
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
+
                           name={data.inputName}
                           onChange={(e) => {
                             dynamicDependancyHandle(
@@ -2582,6 +2612,46 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
                           required={data.inputMandatory ? true : false}
                         />
                       )}
+
+
+{data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={data.inputAddOn.inputDataSource}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
+
+
+                      
                     </div>
                   );
                 })}
@@ -2589,6 +2659,12 @@ if (selectQueryGroup && selectQueryGroup.length> 0){
             </div>
           </div>
         )}
+
+
+
+       
+
+       
 
         {data.ticket_uploading === "REGULAR" && (
           <span>
