@@ -33,60 +33,37 @@ function PlannerModal(props) {
         while (hours <= 23);
 
         setTimes(times);
-
-        // await getTaskUser(props.plannerData.taskId).then(res => {
-        //     if (res.status === 200) {
-        //         setTaskUsers(null);
-
-        //         // res.data.data.forEach
-        //         setTaskUsers(res.data.data);
-        //     }
-        // })
-
-
         setPlannerData(props.plannerData);
-
-        // if(props.plannerData.data){
-        //     let tempTotalHours=0;
-
-        //     plannerData.data.forEach(ele=>{
-        //             var t=ele.total_hours.replace(':', '.');
-        //             tempTotalHours+=parseFloat(t)*60;  
-        //     })
-        //     var Hours = Math.floor(tempTotalHours /60);
-        //     var minutes = tempTotalHours % 60;
-        //     setTotalHours(Hours+":"+minutes);
-
-        // }
-
         const sumHoras = [0, 0];
+        let totalMinute = ""
         for (let i = 0; i < props.plannerData?.data?.length; i++) {
-            const [hours, minutes] = props.plannerData.data[i].total_hours.split(':').map(s => parseInt(s, 10));
-
-            // console.log(hours+" "+minutes);
-
-            //// hours
-            //sumHoras[0] += hours;
-
-            //// minutes
-            // if ((sumHoras[i] + minutes) > 59) {
-            //   const diff = sumHoras[1] + minutes - 60;
-            //   sumHoras[0] += 1;
-            //   sumHoras[1] = diff;
-            // } else {
-            //   sumHoras[1] += minutes ;
-            // }
-
-            sumHoras[0] += hours;
-            sumHoras[1] += minutes;
-            if (sumHoras[1] >= 60) {
-                sumHoras[0] += 1;
-                sumHoras[1] = 0;
-            }
+            let splittedTime = props.plannerData?.data[i]?.total_hours?.split(":");
+            let hours = splittedTime[0];
+            let minutes = splittedTime[1];
+            totalMinute = (Number(hours) * 60) + Number(minutes);
+            totalMinute = totalMinute++
 
         }
-        var t = (sumHoras[0] < 10 ? "0" + sumHoras[0] : sumHoras[0]) + ":" + (sumHoras[1] < 10 ? "0" + sumHoras[1] : sumHoras[1]);
-        setTotalHours(t);
+        let totalHoursInMinute = totalMinute * props.plannerData?.data?.length;
+        let remainingMin = (totalHoursInMinute % 60);
+        let hour = Math.floor(totalHoursInMinute / 60);
+        setTotalHours(`${hour}:${remainingMin} `);
+
+
+        // for (let i = 0; i < props.plannerData?.data?.length; i++) {
+        //     const [hours, minutes] = props.plannerData.data[i].total_hours.split(':').map(s => parseInt(s, 10));
+
+        //     sumHoras[0] += hours;
+        //     sumHoras[1] += minutes;
+        //     if (sumHoras[1] >= 60) {
+        //         sumHoras[0] += 1;
+        //         sumHoras[1] = 0;
+        //     }
+
+        // }
+        // var t = (sumHoras[0] < 10 ? "0" + sumHoras[0] : sumHoras[0]) + ":" + (sumHoras[1] < 10 ? "0" + sumHoras[1] : sumHoras[1]);
+        // console.log(' t t times', t)
+        // setTotalHours(t);
     }
 
     const handleChange = (e, index) => {
@@ -117,9 +94,6 @@ function PlannerModal(props) {
         e.preventDefault();
         const data = new FormData(e.target);
 
-        //  for(var pair of data.entries()) {
-        //     console.log(pair[0]+ ', '+ pair[1]);
-        //  }
         setNotify(null);
         await updateTaskPlanner(plannerData.taskId, data).then(res => {
             if (res.status === 200) {
@@ -202,14 +176,6 @@ function PlannerModal(props) {
                                                 </td>
 
                                                 <td className="p-1">
-                                                    {/* <input type="text" className="form-control form-control-sm"
-                                                name="total_hours[]" 
-                                                min="0"
-                                                step="00.00"
-                                                defaultValue={ele.total_hours}
-                                                autoComplete="off"
-                                                onKeyPress={(e)=>{Validation.NumbersSpeicalOnly(e);handleChange(e,index)}}
-                                                /> */}
                                                     <Select
                                                         options={times}
                                                         defaultValue={times.filter(d => d.value === ele.total_hours).map(d => ({ "label": d.label, "value": d.value }))}
