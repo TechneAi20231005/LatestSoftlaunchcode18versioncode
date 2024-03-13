@@ -1102,8 +1102,9 @@ function ProjectDropdown(props) {
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        var data = res.data.data;
-        data.filter((d) => d.is_active);
+        var data = res.data.data.filter((d)=>d.is_active==1)
+        console.log("data",data.filter((d)=>d.is_active==1))
+        data.filter((d) => d.is_active==1);
         for (const key in data) {
           tempData.push({
             counter: counter++,

@@ -27,7 +27,8 @@ function TemplateComponent() {
   //   (TemplateComponetSlice) =>
   //     TemplateComponetSlice.tempateMaster.exportTemplateData
   // );
-  const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportTempateData)
+  const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportData)
+  console.log("exportData",exportData)
 
 
 

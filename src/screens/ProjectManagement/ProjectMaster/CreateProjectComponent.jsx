@@ -879,6 +879,7 @@ export default function CreateProjectComponent({ match }) {
                       className="form-control form-control-sm"
                       id="logo"
                       name="logo"
+                      accept=".png, .jpeg, .jpg" // Accept only specific image file formats
                       //  accept="image/*"
                       ref={fileInputRef}
                       onChange={handleFileChange}

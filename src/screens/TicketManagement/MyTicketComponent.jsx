@@ -3996,7 +3996,7 @@ export default function MyTicketComponent() {
                 (data.created_by != localStorage.getItem("id") &&
                   data.basket_configured === 0 &&
                   localStorage.getItem("account_for") === "SELF" &&
-                  data.status_name != "Solved") && (data.passed_status !== "REJECT") && (
+                  data.status_name != "Solved") && (data.passed_status !== "REJECT") && (data.passed_status !== "UNPASS") &&(
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}

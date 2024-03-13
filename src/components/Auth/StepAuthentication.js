@@ -69,28 +69,28 @@ export default function StepAuthentication() {
   };
 
 
-  // useEffect(() => {
-  //   if (location && location.state) {
-  //     setUserData((prevState) => ({
-  //       ...prevState,
-  //       email: location.state.email,
-  //     }));
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   // Countdown logic
-  //   let timer = null;
-  //   if (resendTimer > 0 && resendDisabled) {
-  //     timer = setInterval(() => {
-  //       setResendTimer((prevTimer) => prevTimer - 1);
-  //     }, 1000);
-  //   } else {
-  //     setResendDisabled(false);
-  //     setResendTimer(60);
-  //   }
+  useEffect(() => {
+    if (location && location.state) {
+      setUserData((prevState) => ({
+        ...prevState,
+        email: location.state.email,
+      }));
+    }
+  }, []);
+  useEffect(() => {
+    // Countdown logic
+    let timer = null;
+    if (resendTimer > 0 && resendDisabled) {
+      timer = setInterval(() => {
+        setResendTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      setResendDisabled(false);
+      setResendTimer(60);
+    }
 
-  //   return () => clearInterval(timer);
-  // }, [resendTimer, resendDisabled]);
+    return () => clearInterval(timer);
+  }, [resendTimer, resendDisabled]);
 
   return (
     <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">

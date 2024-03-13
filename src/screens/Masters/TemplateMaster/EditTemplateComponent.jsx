@@ -170,8 +170,8 @@ const EditTemplateComponent = ({ match, props }) => {
           template_data: [...res.data.data.template_data],
         };
         setData(res.data.data);
-        console.log("ppp==",res);
-        setSatrtEndValue(res.data.data.AB)
+        console.log("ppp==", res);
+        setSatrtEndValue(res.data.data.AB);
         setNewData(null);
         setNewData((prevData) => ({ ...prevData, ...newData }));
       }
@@ -328,18 +328,17 @@ const EditTemplateComponent = ({ match, props }) => {
     // }));
   };
 
-
-  const [startEndValue,setSatrtEndValue] = useState("")
-  console.log("start",startEndValue);
+  const [startEndValue, setSatrtEndValue] = useState("");
+  console.log("start", startEndValue);
 
   const handleShow = () => {
     setShow((prev) => !prev);
   };
 
   const handleNewChange = (e, idx, type, name) => {
-    console.log("target",e.target.value);
+    console.log("target", e.target.value);
     const value = type === "select1" ? e.target.value : e.value;
-    setSatrtEndValue(e.target.value)
+    setSatrtEndValue(e.target.value);
 
     setNewData((prevData) => {
       const newDataCopy = { ...prevData };
@@ -421,7 +420,6 @@ const EditTemplateComponent = ({ match, props }) => {
     if (flag == 1) {
       dispatch(basketinEditData({ id: templateId, payload: formData }));
       loadData();
-      
 
       // await new TemplateService()
       //   .addBasketinEdit(templateId, formData)
@@ -483,33 +481,31 @@ const EditTemplateComponent = ({ match, props }) => {
   };
 
   const handleAddTask = async (e) => {
-    console.log("ssss",e)
-
+    console.log("ssss", e);
 
     e.preventDefault();
-    
-
-    
 
     const formData = new FormData(e.target);
-    
 
-    
-   
     // Add your form data to the `formData` object here
 
     // Print the formData entries
     for (const entry of formData.entries(formData)) {
       // console.log(entry[0], entry[1])
     }
-    dispatch(
-      addTaskinBasketData({
-        templateId: templateId,
-        basketId: basketId,
-        payload: formData,
-      })
-    );
-    loadData();
+    dispatch(addTaskinBasketData({templateId: templateId,basketId: basketId,payload: formData,})).then((res)=>{
+      console.log("addtask",res.payload.data.data)
+      if(res.payload.data.data){
+        loadData();
+
+      }else{
+        setNotify({type: 'danger', message:res.payload.data.message});
+
+      }
+    })
+
+
+
     // await new TemplateService()
     //   .addTaskinBasket(templateId, basketId, formData)
     //   .then((res) => {
@@ -549,10 +545,8 @@ const EditTemplateComponent = ({ match, props }) => {
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         {/* {data && JSON.stringify(data)} */}
-        {console.log("newData",newData)}
-        {console.log("data",data)}
-
-     
+        {console.log("newData", newData)}
+        {console.log("data", data)}
 
         <div className="card-body">
           <form onSubmit={updateTemplate}>
@@ -616,7 +610,7 @@ const EditTemplateComponent = ({ match, props }) => {
                 Status :<Astrick color="red" size="13px" />
               </label>
 
-           {/* {console.log("active",data?.is_active)}
+              {/* {console.log("active",data?.is_active)}
               <div className="row">
                 <div className="col-md-2">
                   <div className="form-check">
@@ -655,41 +649,40 @@ const EditTemplateComponent = ({ match, props }) => {
                 </div>
               </div> */}
 
-{console.log("active", data?.is_active)}
-<div className="row">
-  <div className="col-md-2">
-    <div className="form-check">
-      <input
-        className="form-check-input"
-        type="radio"
-        name="is_active"
-        id="is_active"
-        value="1"
-        defaultChecked={data && data.is_active === 1}
-      />
-      <label className="form-check-label" htmlFor="is_active_1">
-        Active
-      </label>
-    </div>
-  </div>
-  <div className="col-md-1">
-    <div className="form-check">
-      <input
-        className="form-check-input"
-        type="radio"
-        name="is_active"
-        id="is_active_0"
-        value="0"
-        readOnly={modal.modalData ? false : true}
-        defaultChecked={data && data.is_active === 0}
-      />
-      <label className="form-check-label" htmlFor="is_active_0">
-        Deactive
-      </label>
-    </div>
-  </div>
-</div>
-
+              {console.log("active", data?.is_active)}
+              <div className="row">
+                <div className="col-md-2">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="is_active"
+                      id="is_active"
+                      value="1"
+                      defaultChecked={data && data.is_active === 1}
+                    />
+                    <label className="form-check-label" htmlFor="is_active_1">
+                      Active
+                    </label>
+                  </div>
+                </div>
+                <div className="col-md-1">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="is_active"
+                      id="is_active_0"
+                      value="0"
+                      readOnly={modal.modalData ? false : true}
+                      defaultChecked={data && data.is_active === 0}
+                    />
+                    <label className="form-check-label" htmlFor="is_active_0">
+                      Deactive
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="pull-right mt-4">
               <button type="submit" className="btn btn-sm btn-primary">
@@ -809,7 +802,7 @@ const EditTemplateComponent = ({ match, props }) => {
           {" "}
           <Modal.Header></Modal.Header>
           <Modal.Body>
-            {console.log("ab",data?.AB)}
+            {console.log("ab", data?.AB)}
             <form method="post" onSubmit={handleAddTask}>
               <div className="form-group row">
                 <div className="col-sm-12">
@@ -828,10 +821,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   />
                 </div>
                 <label>
-                  <b>
-                    Task Type :
-                    {/* <Astrick color="red" size="13px" /> */}
-                  </b>
+                  <b>Task Type :{/* <Astrick color="red" size="13px" /> */}</b>
                 </label>
                 <Select
                   id="task_type_id"
@@ -874,48 +864,39 @@ const EditTemplateComponent = ({ match, props }) => {
                   />
                 </div>
 
-                
-
-
-
-                {startEndValue&&startEndValue == 'START_FROM'?
-                <div className="col-sm-12">
-                <label className="col-form-label">
-                  <b>
-                  Start Task After Days 
-                    <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="number"
-                  id="start_days"
-                  name="start_days"
-                  required
-                  className="form-control form-control-sm"
-                />
-              </div>:
-                <div className="col-sm-12">
-                <label className="col-form-label">
-                  <b>
-                  End Task before Days :
-                    <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="number"
-                  id="start_days"
-                  name="start_days"
-                  required
-                  className="form-control form-control-sm"
-                />
-              </div>
-                
-              
-              
-              }
-                
-
-
+                {startEndValue && startEndValue == "START_FROM" ? (
+                  <div className="col-sm-12">
+                    <label className="col-form-label">
+                      <b>
+                        Start Task After Days
+                        <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <input
+                      type="number"
+                      id="start_days"
+                      name="start_days"
+                      required
+                      className="form-control form-control-sm"
+                    />
+                  </div>
+                ) : (
+                  <div className="col-sm-12">
+                    <label className="col-form-label">
+                      <b>
+                        End Task before Days :
+                        <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <input
+                      type="number"
+                      id="start_days"
+                      name="start_days"
+                      required
+                      className="form-control form-control-sm"
+                    />
+                  </div>
+                )}
               </div>
               <Modal.Footer>
                 <div>
@@ -1006,7 +987,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       );
                     })}
                 </div>
-                
+
                 {modal && modal.shown && (
                   <Modal show={modal.shown} onHide={handleHideModal}>
                     <Modal.Header closeButton>
@@ -1049,11 +1030,23 @@ const EditTemplateComponent = ({ match, props }) => {
                         </div>
                       </div>
                     </Modal.Body>
-                    {console.log("pp",userData&& userData.filter((d)=>d.value))}
-                    {console.log("modalData",modal&&modal.modalData.basket_owner
-)}
+                    {console.log(
+                      "pp",
+                      userData && userData.filter((d) => d.value)
+                    )}
+                    {console.log(
+                      "modalData",
+                      modal && modal.modalData.basket_owner
+                    )}
 
-{console.log("p",userData&& userData.filter((d)=>d.value===modal&&modal?.modalData?.basket_owner))}
+                    {console.log(
+                      "p",
+                      userData &&
+                        userData.filter(
+                          (d) =>
+                            d.value === modal && modal?.modalData?.basket_owner
+                        )
+                    )}
 
                     <Modal.Footer>
                       <button

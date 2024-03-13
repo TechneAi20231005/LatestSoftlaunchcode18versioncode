@@ -1857,9 +1857,9 @@ value={igst=== true ?1 :0} */}
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
                           authorities &&
-                          authorities.TCS_Applicable === false &&
-                          authorities &&
-                          authorities.All_Update_Bill === false
+                          authorities.TCS_Applicable === false 
+                          // authorities &&
+                          // authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -2239,9 +2239,9 @@ value={igst=== true ?1 :0} */}
                         }
                         disabled={
                           authorities &&
-                          authorities.Original_Bill_Needed === false &&
-                          authorities &&
-                          authorities.All_Update_Bill === false
+                          authorities.Original_Bill_Needed === false
+                          // authorities &&
+                          // authorities.All_Update_Bill === false
                             ? true
                             : false
                         }

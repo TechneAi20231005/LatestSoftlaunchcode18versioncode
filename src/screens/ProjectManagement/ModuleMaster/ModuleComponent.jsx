@@ -607,8 +607,8 @@ function ModuleComponent() {
           let exportData = [];
           for (const key in data) {
             exportData.push({
-              counter: exportData.length,
-              id: data[key].id,
+              SrNo: exportData.length,
+              // id: data[key].id,
               module_name: data[key].module_name,
               project_name: data[key].project_name,
               is_active: data[key].is_active == 1 ? "Active" : "Deactive",

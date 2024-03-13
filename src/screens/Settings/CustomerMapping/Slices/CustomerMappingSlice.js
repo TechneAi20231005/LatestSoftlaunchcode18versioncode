@@ -84,14 +84,16 @@ export const CustomerMappingSlice = createSlice({
             Priority: data[i].priority,
             Approach: data[i].approach,
             remark:data[i].remark,
-            is_active: data[i].is_active,
+            is_active: data[i].is_active ==1 ?"Active": "Deactive",
             created_at: data[i].created_at,
             created_by: data[i].created_by,
             updated_at: data[i].updated_at,
             updated_by: data[i].updated_by,
-            confirmation_required:[i].confirmation_required,
+            // confirmation_required:[i].confirmation_required,
             dynamic_form_name: data[i].dynamic_form_name,
-            customer_type_name:data[i].customer_type_name
+            customer_type_name:data[i].customer_type_name,
+            confirmation_required:data[i].confirmation_required==1 ?'Yes':'no'
+          
             
           });
         }

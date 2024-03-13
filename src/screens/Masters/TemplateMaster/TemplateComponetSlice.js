@@ -44,7 +44,7 @@ const initialState = {
     modalAddData: null,
     modalAddHeader: null,
   },
-  exportTempateData: [],
+  exportData: [],
   addTaskModal: {
     showModal: false,
     modalAddData: null,
@@ -100,25 +100,6 @@ export const templateSlice = createSlice({
         }
         state.templateData = [...templateData];
         console.log("templateData", templateData);
-
-        let exportTemplateData = [];
-        console.log("exportTemplateData", exportTemplateData);
-        for (const i in templateData) {
-          exportTemplateData.push({
-            Sr: templateData[i].counter,
-            calculate_from: templateData[i].calculate_from,
-            template_name: templateData[i].template_name,
-
-            remark: templateData[i].remark,
-
-            Status: templateData[i].is_active ? "Active" : "Deactive",
-            created_at: templateData[i].created_at,
-            created_by: templateData[i].created_by,
-            updated_at: templateData[i].updated_at,
-            updated_by: templateData[i].updated_by,
-          });
-          state.exportTemplateData = exportTemplateData;
-        }
       }
     });
     builder.addCase(templateData.rejected, (state) => {
@@ -137,14 +118,38 @@ export const templateSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
+        console.log("exportTempateData", exportTempateData);
 
         state.status = "succeded";
         state.showLoaderModal = false;
+
+        let exportData = [];
         let count = 1;
         for (let i = 0; i < exportTempateData.length; i++) {
           exportTempateData[i].counter = count++;
         }
-        state.exportTempateData = [...exportTempateData];
+
+        for (const i in exportTempateData) {
+          exportData.push({
+            Sr: exportTempateData[i].counter,
+            template_name: exportTempateData[i].template_name,
+            calculate_from: exportTempateData[i].calculate_from,
+            basket_name: exportTempateData[i].basket_name,
+            task: exportTempateData[i].task,
+
+            days: exportTempateData[i].days,
+            total_hours: exportTempateData[i].total_hours,
+
+            remark: exportTempateData[i].remark,
+
+            Status: exportTempateData[i].is_active ? "Active" : "Deactive",
+            created_at: exportTempateData[i].created_at,
+            created_by: exportTempateData[i].created_by,
+            updated_at: exportTempateData[i].updated_at,
+            updated_by: exportTempateData[i].updated_by,
+          });
+          state.exportData = exportData;
+        }
         console.log("exportTempateData", exportTempateData);
       }
     });
