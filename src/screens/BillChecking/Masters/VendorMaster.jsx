@@ -2812,6 +2812,9 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
+                                    {console.log(authorities&& authorities)}
+                                    {console.log("modal",modal.modalData.bank_passbook_attachment)}
+
 
 
                                     <div className=" col-sm-3 mt-2">
@@ -2827,6 +2830,7 @@ function VendorMaster({ match }) {
                                                 className="form-control"
                                                 multiple={true}
                                                 ref={passbookInputRef}
+                                                disabled={modal.modalData.bank_passbook_attachment&&authorities&& authorities.Edit_Vendor_Master_Bank_Details===false?true:false}
                                                 onChange={(e) => {
                                                     const selectedFile = e.target.files[0];
                                                     if (
@@ -3037,6 +3041,9 @@ function VendorMaster({ match }) {
                                             className="form-control"
                                             ref={chequeInputRef}
                                             multiple={true}
+                                            disabled={modal.modalData.cheque_attachment
+                                                &&authorities&& authorities.Edit_Vendor_Master_Bank_Details===false?true:false}
+                                            
                                             onChange={(e) => {
                                                 const selectedFile = e.target.files[0];
 
