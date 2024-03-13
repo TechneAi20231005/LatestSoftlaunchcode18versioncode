@@ -1607,13 +1607,15 @@ function VendorMaster({ match }) {
         await new VendorMasterService().bulkUploadVendor(form).then((res) => {
             if (res.status === 200) {
                 if (res.data.status == 1) {
-                    setNotify({ type: "success", message: res.data.message });
+                  
                     handleBulkModal({ showModal: false });
                     loadData();
                 } else {
                     setError({ type: "danger", message: res.data.message });
                     URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
                     window.open(URL, "_blank")?.focus();
+                    setNotify({ type: "danger", message: res.data.message });
+                    
                 }
             }
         });
