@@ -425,8 +425,10 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
+          const filterData =res.data.data.filter((d)=>d.consider_in_payment==="YES")
+          console.log("res==>",vendorDropdown)
           setVendorDropdown(
-            res.data.data.map((d) => ({
+            filterData.filter((d)=>d.is_active==1).map((d) => ({
               value: d.id,
               label: d.vendor_name,
             }))
@@ -2418,6 +2420,7 @@ value={igst=== true ?1 :0} */}
                               <Astrick color="red" size="13px" />{" "}
                             </b>
                           </label>
+                          {console.log("data==>",data)}
                           <input
                             type="file"
                             id="attachment"
@@ -2440,6 +2443,7 @@ value={igst=== true ?1 :0} */}
                                 ? false
                                 : true
                             }
+
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
                               maxLengthCheck(e, "UPLOAD");

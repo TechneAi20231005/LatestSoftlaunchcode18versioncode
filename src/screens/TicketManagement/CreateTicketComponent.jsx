@@ -2229,15 +2229,29 @@ export default function CreateTicketComponent() {
 
                       {data.inputType === "date" && (
                         <div className="form-control">
-                          <DatePicker
+                          {/* <DatePicker
                             required={
                               data && data.inputMandatory == true ? true : false
                             }
                             // onChange={onChangeDate}
-                            value={dateValue}
+                            // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
                             format={data.inputFormat}
                             style={{ width: "100%" }}
                             
+                          /> */}
+
+<input
+                            type="date"
+                            name={data.inputName}
+                            required={
+                              data && data.inputMandatory == true ? true : false
+                            }
+                            // onChange={dynamicChangeHandle}
+                            // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
+                            // format={data.inputFormat}
+                            style={{ width: "100%" }}
                           />
                         </div>
                       )}
@@ -2252,6 +2266,7 @@ export default function CreateTicketComponent() {
                             }
                             onChange={dynamicChangeHandle}
                             // value={dateValue}
+                            defaultValue={data.inputDefaultValue}
                             // format={data.inputFormat}
                             style={{ width: "100%" }}
                           />
@@ -2302,8 +2317,8 @@ export default function CreateTicketComponent() {
                         : ""}
 
                       {data.inputType == "checkbox" &&
-                        data.inputAddOn.inputCheckbox
-                        ? data.inputAddOn.inputCheckbox.map((d) => {
+                        data.inputAddOn.inputRadio
+                        ? data.inputAddOn.inputRadio.map((d) => {
                           return (
                             <div>
                               <input
@@ -2325,21 +2340,27 @@ export default function CreateTicketComponent() {
                           );
                         })
                         : ""}
+
+                        {console.log("df",data.inputDefaultValue)}
+
                       {data.inputType === "number" && (
                         <input
                           type={data.inputType}
+                          // type="date"
                           id={
                             data.inputName
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
                           name={data.inputName}
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
+                          // defaultValue={
+                          //   selectedDropdown
+                          //     ? selectedDropdown[data.inputName]
+                          //     : ""
 
-                          }
+                          // }
+
+                          defaultValue={data.inputDefaultValue}
 
                           required={data.inputMandatory == true ? true : false}
 
@@ -2373,7 +2394,7 @@ export default function CreateTicketComponent() {
                               ? selectedDropdown[data.inputName]
                               : ""
                           }
-                          options={data.inputAddOn.inputDataSourceData}
+                          options={data.inputAddOn.inputRadio}
                           id={
                             data.inputName
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
@@ -2392,6 +2413,46 @@ export default function CreateTicketComponent() {
                           required={data.inputMandatory ? true : false}
                         />
                       )}
+
+
+{data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={data.inputAddOn.inputDataSource}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
+
+
+                      
                     </div>
                   );
                 })}

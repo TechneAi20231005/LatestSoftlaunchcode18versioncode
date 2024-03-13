@@ -1110,13 +1110,14 @@ export default function TaskModal(props) {
               style={{ backgroundColor: "#484C7F" }}
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
-              {loading ? (
+              Submit
+              {/* {loading ? (
                 <span>
                   <i className="fa fa-spinner fa-spin" /> Loading...
                 </span>
               ) : (
                 "Submit"
-              )}
+              )} */}
               {/* Submit */}
             </button>
             <button

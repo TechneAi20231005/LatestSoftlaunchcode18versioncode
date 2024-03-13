@@ -447,6 +447,9 @@ export default function TaskData(props) {
             </div>
           )
         }
+
+
+
         {props.data.type == 'GROUP_ACTIVITY' &&
           props.data.status !== 'COMPLETED' && (
             // props.data.canStartStop == 1 &&
@@ -465,6 +468,8 @@ export default function TaskData(props) {
                     margin: '0px',
                     padding: '0px'
                   }}
+                  // disabled={props.data.taskOwners.filter((d)=>d.id == sessionStorage.getItem("id")) ? false : true}
+                  disabled={!props?.data?.taskOwners.some(owner => owner.id === parseInt(sessionStorage.getItem("id"), 10))}
                   title='Start Group Activity Task'
                   onClick={e =>
                     showGroupActivity(

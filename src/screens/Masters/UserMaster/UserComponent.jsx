@@ -710,6 +710,7 @@ function UserComponent() {
     //     }
     //   }
     // });
+    console.log("resExport",exportData)
 
 
     const exportTempData = [];

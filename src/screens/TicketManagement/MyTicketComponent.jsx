@@ -5593,15 +5593,53 @@ export default function MyTicketComponent() {
 
   }
 
+
+
   const handleForm = async (e) => {
 
-    try {
-      if (e) {
 
+   
+    try {
+
+      if (e) {
+        e.preventDefault();
+        const form = document.getElementById('your_form_id');
+        const formData = new FormData(form);
+        
+        // Check if any form field is filled
+        let isAnyFieldFilled = false;
+        for (let [key, value] of formData.entries()) {
+          if (value) {
+            isAnyFieldFilled = true;
+            break;
+          }
+        }
+        
+        // If no field is filled, show an alert
+        if (!isAnyFieldFilled) {
+          alert("Please fill at least one field.");
+          return; // Exit the function early
+        }
+  
+        // Proceed with form submission or further processing
+        // ...
+      }
+    
+
+      if (e) {
         e.preventDefault();
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
         // const formData = new FormData(e.target.value);
+        // if(!"ticket_id" 
+        //   ){
+        //   alert("Please Select Data")
+        // }
+
+
+
+
+    
         var flag = 1;
         await new ReportService()
           .getTicketReport(formData)

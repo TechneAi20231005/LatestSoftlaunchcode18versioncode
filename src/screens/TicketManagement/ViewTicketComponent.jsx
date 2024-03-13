@@ -15,6 +15,8 @@ import CommentsData from "./CommentData";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
+import Select from "react-select";
+
 
 export default function ViewTicketComponent({ match }) {
   const history = useNavigate();
@@ -299,12 +301,31 @@ export default function ViewTicketComponent({ match }) {
                             defaultValue={data.inputDefaultValue}
                           />
                         )}
-                        {data.inputType === "date" && (
+                   
+                   {data.inputType === "date" && (
                           <div className="form-control">
-                            <DatePicker
+                            {/* <DatePicker
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
                               // onChange={onChangeDate}
-                              value={dateValue}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
                               format={data.inputFormat}
+                              style={{ width: "100%" }}
+                              
+                            /> */}
+  
+  <input
+                              type="date"
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
+                              // onChange={dynamicChangeHandle}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
+                              // format={data.inputFormat}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -324,18 +345,80 @@ export default function ViewTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "number" && (
+
+
+
+{data.inputType == "radio" && data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                            return (
+                              <div>
+                                <input
+                                  id={
+                                    data.inputName
+                                      ? data.inputName
+                                        .replace(/ /g, "_")
+                                        .toLowerCase()
+                                      : ""
+                                  }
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="radio"
+                                />
+                                <label for={d.value}>{d.label}</label>
+                              </div>
+                            );
+                          })
+                          : ""}
+
+
+{data.inputType == "checkbox" &&
+                          data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                            return (
+                              <div>
+                                <input
+                                  id={
+                                    data.inputName
+                                      ? data.inputName
+                                        .replace(/ /g, "_")
+                                        .toLowerCase()
+                                      : ""
+                                  }
+                            required={data.inputMandatory == true ? true : false}
+  
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="checkbox"
+                                />
+                                <label for={d.value}> {d.label}</label>
+                              </div>
+                            );
+                          })
+                          : ""}
+
+                         
+  
+{data.inputType === "number" && (
                           <input
                             type={data.inputType}
+                            // type="date"
                             id={
                               data.inputName
-                                ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
+                            // defaultValue={
+                            //   selectedDropdown
+                            //     ? selectedDropdown[data.inputName]
+                            //     : ""
+  
+                            // }
+  
                             defaultValue={data.inputDefaultValue}
+  
+                            required={data.inputMandatory == true ? true : false}
+  
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -346,33 +429,73 @@ export default function ViewTicketComponent({ match }) {
                             type="number"
                             id={
                               data.inputName
-                                ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
                                 : ""
                             }
+                            required={data.inputMandatory == true ? true : false}
+  
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            minLength={parseInt(data.inputAddOn.inputRangeMin)}
+                            maxLength={parseInt(data.inputAddOn.inputRangeMax)}
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "select" && (
-                          <input
-                            type="text"
-                            // defaultValue={selectedDropdown ? selectedDropdown[data.inputName] : ""}
-                            // defaultValue={data.inputDefaultValue ? data.inputAddOn.inputDataSourceData.filter(d => d.value == data.inputDefaultValue) : ""}
-                            defaultValue={data.inputDefaultValue}
-                            // options={data.inputAddOn.inputDataSourceData}
-                            // id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
+                                               {data.inputType === "select" && (
+                          <Select
+                            defaultValue={
+                            data.defaultValue
+                            }
+                            options={data.inputAddOn.inputRadio}
+                            id={
+                              data.inputName
+                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                : ""
+                            }
+  
                             name={data.inputName}
-                            // onChange={e => { dynamicDependancyHandle(data.inputName, e, data.inputAddOn.inputOnChangeSource) }}
+
                             className="form-control form-control-sm"
                             required={data.inputMandatory ? true : false}
-                            readOnly
                           />
                         )}
+  
+  
+  {data.inputType === "select-master" && (
+                            <select
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              defaultValue={data.inputAddOn.inputDataSource}
+                              name={data.inputName}
+                              className="form-control form-control-sm"
+                            >
+                              <option> {data.inputName}</option>
+                              {data.inputAddOn.inputDataSourceData &&
+                                data.inputAddOn.inputDataSourceData.map(
+                                  (option) => {
+                                    return (
+                                      <option
+                                        selected={
+                                          parseInt(
+                                            data &&
+                                              data?.inputAddOn
+                                                ?.inputDataSourceData
+                                          ) === option.value
+                                        }
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </option>
+                                    );
+                                  }
+                                )}
+                            </select>
+                          )}
+  
                       </div>
                     );
                   })}

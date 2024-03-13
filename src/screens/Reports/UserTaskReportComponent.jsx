@@ -9,6 +9,7 @@ import { Spinner, Modal } from "react-bootstrap";
 import *  as Validation from '../../components/Utilities/Validation';
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
+import { Astrick } from "../../components/Utilities/Style";
 
 function UserTaskReportComponent() {
     const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -197,7 +198,7 @@ function UserTaskReportComponent() {
 
                             <div className="col-md-3">
                                 <label>
-                                    <b>Select User :</b>
+                                    <b>Select User :<Astrick color="red" size="13px" /></b>
                                 </label>
                                 <Select
                                     isMulti

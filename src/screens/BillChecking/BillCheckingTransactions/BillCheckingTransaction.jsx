@@ -22,9 +22,17 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { UseDispatch,useDispatch,useSelector } from "react-redux";
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
 import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
-import { BillcheckingpostData, billTypeDataDropDowm, cancelBillCheckData, getBillcheckingData, getUpdatedAuthoritiesData, postBillcheckingData, statusDropDownData } from "../Slices/BillCheckingTransactionAction";
+import {
+  BillcheckingpostData,
+  billTypeDataDropDowm,
+  cancelBillCheckData,
+  getBillcheckingData,
+  getUpdatedAuthoritiesData,
+  postBillcheckingData,
+  statusDropDownData,
+} from "../Slices/BillCheckingTransactionAction";
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { getVendorMasterData } from "../Slices/VendorMasterAction";
@@ -47,23 +55,32 @@ function BillCheckingTransaction() {
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
 
-
-  const dispatch=useDispatch()
-  const AllBillCheckingData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.sortedBillCheckingData)
+  const dispatch = useDispatch();
+  const AllBillCheckingData = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.sortedBillCheckingData
+  );
   // const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
-  const authorities=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.authoritiesData)
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41));
-  const billTypeDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm)
-  const vendorDropdown=useSelector(VendorMasterSlice=>VendorMasterSlice.vendorMaster.vendorMasterDropDown)
-  const statusDropdown=useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.statusDropDownData)
-  // const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
-
-
-
-
-
+  const authorities = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.authoritiesData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
+  );
+  const billTypeDropdown = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
+  );
+  const vendorDropdown = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.vendorMasterDropDown
+  );
   
-
+  const statusDropdown = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.statusDropDownData
+  );
+  // const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
 
   const handleModal = (data) => {
     setModal(data);
@@ -89,10 +106,30 @@ function BillCheckingTransaction() {
     );
   }
 
+  // const handleSearch = () => {
+  //   const searchValue = searchRef.current.value;
+  //   const result = searchInData(data, searchValue);
+  //   setData(result);
+  //   if(searchValue.length <= 0 ){
+  //     alert("No Data Found")
+  //   }
+  //   else{
+  //     return false
+  //   }
+  //   console.log("result",searchValue.length)
+  // };
+
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     const result = searchInData(data, searchValue);
     setData(result);
+
+    if (searchValue.length <= 0) {
+      alert("No Data Found");
+      return false; // Added return statement to prevent further execution
+    } else {
+      // Do nothing or perform additional actions if needed
+    }
   };
 
   const selectInputRef = useRef();
@@ -115,7 +152,6 @@ function BillCheckingTransaction() {
   const selectToHoldAmountRef = useRef();
   const selectIsOriginalBillRef = useRef();
 
-  
   const [isOriginalBillReceived, setIsOriginalBillReceived] = useState(false);
 
   const handleCheckboxChange = () => {
@@ -123,23 +159,20 @@ function BillCheckingTransaction() {
     setIsOriginalBillReceived(!isOriginalBillReceived);
   };
 
-
-  const handleClearSearchData=(e)=>{
+  const handleClearSearchData = (e) => {
     if (searchRef.current.value != null) {
       document.getElementById("search").value = "";
-  }
-  }
-
-
+    }
+  };
 
   const handleClearData = (e) => {
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = "";
-        document.getElementById("id").value = "";
+      document.getElementById("id").value = "";
     }
     if (selectVendorRef.current.value != null) {
       document.getElementById("vendor_bill_no").value = "";
-  }
+    }
     if (selectVendorNameRef.current.commonProps.hasValue != null) {
       selectVendorNameRef.current.clearValue();
       selectVendorNameRef.current.clearValue();
@@ -159,7 +192,6 @@ function BillCheckingTransaction() {
       selectAssignToRef.current.clearValue();
       selectAssignToRef.current.clearValue();
     }
-  
 
     if (selectFromBillRef.current.value != null) {
       document.getElementById("from_bill_date").value = "";
@@ -177,7 +209,6 @@ function BillCheckingTransaction() {
       document.getElementById("to_received_date").value = "";
     }
 
-
     if (selectFromPaymentRef.current.value != null) {
       document.getElementById("from_payment_date").value = "";
     }
@@ -186,8 +217,6 @@ function BillCheckingTransaction() {
       document.getElementById("to_payment_date").value = "";
     }
 
-   
-    
     // if (selectFromReceivedRef.current.commonProps.hasValue != null) {
     //   selectFromReceivedRef.current.clearValue();
     //   selectFromReceivedRef.current.clearValue();
@@ -198,48 +227,42 @@ function BillCheckingTransaction() {
     //   selectToReceivedRef.current.clearValue();
     // }
 
-
     // if (selectFromPaymentRef.current.commonProps.hasValue != null) {
     //   selectFromPaymentRef.current.clearValue();
     //   selectFromPaymentRef.current.clearValue();
     // }
-
 
     // if (selectToPaymentRef.current.commonProps.hasValue != null) {
     //   selectToPaymentRef.current.clearValue();
     //   selectToPaymentRef.current.clearValue();
     // }
 
-
     if (selectFromBillAmountRef.current.value != null) {
       document.getElementById("from_bill_amount").value = "";
-  }
+    }
 
-  if (selectToBillAmountRef.current.value != null) {
-    document.getElementById("to_bill_amount").value = "";
-}
+    if (selectToBillAmountRef.current.value != null) {
+      document.getElementById("to_bill_amount").value = "";
+    }
 
-if (selectFromHoldAmountRef.current.value != null) {
-  document.getElementById("from_hold_amount").value = "";
-}
+    if (selectFromHoldAmountRef.current.value != null) {
+      document.getElementById("from_hold_amount").value = "";
+    }
 
+    if (selectToHoldAmountRef.current.value != null) {
+      document.getElementById("to_hold_amount").value = "";
+    }
 
-if (selectToHoldAmountRef.current.value != null) {
-  document.getElementById("to_hold_amount").value = "";
-}
+    // if (selectIsOriginalBillRef.current.value != null) {
+    //   document.getElementById("is_original_bill_needed").value = "";
+    // }
 
-// if (selectIsOriginalBillRef.current.value != null) {
-//   document.getElementById("is_original_bill_needed").value = "";
-// }
-
-
-setIsOriginalBillReceived(false);
+    setIsOriginalBillReceived(false);
 
     // if (selectFromBillAmountRef.current.commonProps.hasValue != null) {
     //   selectFromBillAmountRef.current.clearValue();
     //   selectFromBillAmountRef.current.clearValue();
     // }
-
 
     // if (selectToBillAmountRef.current.commonProps.hasValue != null) {
     //   selectToBillAmountRef.current.clearValue();
@@ -255,7 +278,6 @@ setIsOriginalBillReceived(false);
     //   selectToHoldAmountRef.current.clearValue();
     //   selectToHoldAmountRef.current.clearValue();
     // }
-
 
     // if (selectIsOriginalBillRef.current.commonProps.hasValue != null) {
     //   selectIsOriginalBillRef.current.clearValue();
@@ -275,13 +297,6 @@ setIsOriginalBillReceived(false);
     // }
   };
 
-
-
-
-
-
-
-
   const [country, setCountry] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
@@ -295,7 +310,7 @@ setIsOriginalBillReceived(false);
   // const [vendorDropdown, setVendorDropdown] = useState(null);
   const [assignToDropdown, setAssignToDropdown] = useState();
   // const [statusDropdown, setStatusDropdown] = useState();
- 
+
   const [userDropdown, setUserDropdown] = useState();
   // const [authorities, SetAuthorities] = useState();
 
@@ -304,8 +319,6 @@ setIsOriginalBillReceived(false);
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
   const day = String(currentDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
-
-
 
   const columns = [
     {
@@ -338,9 +351,9 @@ setIsOriginalBillReceived(false);
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (row.is_active == 1) && (
+                    row.is_approver == 1)) &&
+                row.is_active == 1 && (
                   <li>
-
                     <Link
                       to={`/${_base}/EditBillCheckingTransaction/` + row.id}
                       className="btn btn-sm btn-primary text-white"
@@ -369,8 +382,8 @@ setIsOriginalBillReceived(false);
                   (authorities &&
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
-                  (row.level != parseInt(row.total_level) || row.is_active ==0 &&
-                    row.is_approver == 1)) && (
+                  row.level != parseInt(row.total_level) ||
+                  // (row.is_active == 0 && row.is_approver == 1)) && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -382,26 +395,21 @@ setIsOriginalBillReceived(false);
                   </li>
                 )}
 
-{(row.is_assign_to == 1 && row.level == row.total_level || row.is_active ==0)  && (
-
-<li>
-                    <Link
-                      to={`/${_base}/PaymentHistory/` + row.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-tasks"></i> Payment History
-                    </Link>
-                  </li>
-
-
-)}
-
+              {((row.is_assign_to == 1 && row.level == row.total_level) ||
+                row.is_active == 0) && (
+                <li>
+                  <Link
+                    to={`/${_base}/PaymentHistory/` + row.id}
+                    className="btn btn-sm btn-warning text-white"
+                    style={{ width: "100%", zIndex: 100 }}
+                  >
+                    <i className="icofont-tasks"></i> Payment History
+                  </Link>
+                </li>
+              )}
 
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
-                  
-
                   <li>
                     <Link
                       to={`/${_base}/PaymentDetails/` + row.id}
@@ -411,7 +419,6 @@ setIsOriginalBillReceived(false);
                       <i className="icofont-price"></i> Payment Details
                     </Link>
                   </li>
-                 
 
                   <li>
                     <Link
@@ -425,10 +432,9 @@ setIsOriginalBillReceived(false);
                 </>
               )}
               {authorities &&
-                authorities.Is_Cancle_Bill === true && row.is_active == 1 &&
-              
-                // row.is_rejected == 0 && 
-                (
+                authorities.Is_Cancle_Bill === true &&
+                row.is_active == 1 && (
+                  // row.is_rejected == 0 &&
                   <li>
                     <button
                       className="btn btn-sm btn-danger text-white"
@@ -444,7 +450,7 @@ setIsOriginalBillReceived(false);
             </Dropdown.Menu>
           </Dropdown>
         );
-      }
+      },
     },
 
     { name: "Sr", selector: (row) => row.counter, sortable: true },
@@ -914,7 +920,6 @@ setIsOriginalBillReceived(false);
     // setNotify(null);
     if (response) {
       try {
-
         // dispatch(cancelBillCheckData({id:id}))
         // loadData()
         // Assuming 'cancelBill' returns a promise
@@ -943,7 +948,6 @@ setIsOriginalBillReceived(false);
     // dispatch(getBillcheckingData())
 
     await new BillCheckingService().getBillCheckData().then((res) => {
-
       if (res.status === 200) {
         setIsLoading(false);
 
@@ -973,7 +977,8 @@ setIsOriginalBillReceived(false);
             "Debit Advance": temp[key].debit_advance,
             "Bill date": temp[key].bill_date,
             "Bill Status": temp[key].payment_status,
-            "Is Original Bill": temp[key].is_original_bill_needed === 1 ? "Yes" :"No",
+            "Is Original Bill":
+              temp[key].is_original_bill_needed === 1 ? "Yes" : "No",
 
             "Recieved Date": temp[key].received_date,
             "Hold Amount": temp[key].hold_amount,
@@ -1016,7 +1021,8 @@ setIsOriginalBillReceived(false);
             "Bill Amount": temp[key].bill_amount,
             "Net Payment": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
-            "Is TCS applicable": temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
+            "Is TCS applicable":
+              temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
 
             bill_type_name: temp[key].bill_type_name,
 
@@ -1027,7 +1033,7 @@ setIsOriginalBillReceived(false);
 
             // "Bill Status": temp[key].bill_status,
             "Bill Status": temp[key].payment_status,
-            
+
             "Received Date": temp[key].received_date,
             // total_level: temp[key].total_level,
             // last_approved_by: temp[key].last_approved_by,
@@ -1044,14 +1050,15 @@ setIsOriginalBillReceived(false);
             // is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
             // approvedBy: temp[key].approvedBy,
-            "Is Original Bill": temp[key].is_original_bill_needed === 1 ? "Yes" :"No",
+            "Is Original Bill":
+              temp[key].is_original_bill_needed === 1 ? "Yes" : "No",
 
             // "is original Bill": temp[key].is_original_bill_needed,
             "Internal Audit": temp[key].audit_remark,
             "External Audit": temp[key].external_audit_remark,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
-            "Is cancelled": temp[key].is_active === 0 ? "Yes" : "No" ,
+            "Is cancelled": temp[key].is_active === 0 ? "Yes" : "No",
 
             "Created at": temp[key].created_at,
             "Created by": temp[key].created_by,
@@ -1067,9 +1074,6 @@ setIsOriginalBillReceived(false);
       }
     });
 
-
-
-
     const inputRequired = "id,employee_id,first_name,last_name,middle_name";
     // dispatch(getUserForMyTicketsData(inputRequired));
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
@@ -1079,8 +1083,8 @@ setIsOriginalBillReceived(false);
         if (res.data.status == 1) {
           setIsLoading(false);
           // const temp = res.data.data.filter((d) => d.is_active == 1);
-          const temp = res.data.data
-      
+          const temp = res.data.data;
+
           setUserDropdown(
             temp.map((d) => ({
               value: d.id,
@@ -1091,12 +1095,10 @@ setIsOriginalBillReceived(false);
       }
     });
 
-
-    
     // await new BillCheckingTransactionService()
     //   .getUpdatedAuthorities()
     //   .then((res) => {
-     
+
     //     if (res.status === 200) {
     //       setIsLoading(false);
 
@@ -1105,14 +1107,13 @@ setIsOriginalBillReceived(false);
     //       }
     //     }
     //   });
-      dispatch(getUpdatedAuthoritiesData())
-      dispatch(billTypeDataDropDowm())
-
+    dispatch(getUpdatedAuthoritiesData());
+    dispatch(billTypeDataDropDowm());
 
     // await new BillCheckingTransactionService()
     //   ._getBillTypeDataDropdown()
     //   .then((res) => {
-        
+
     //     if (res.status === 200) {
     //       setIsLoading(false);
 
@@ -1123,7 +1124,7 @@ setIsOriginalBillReceived(false);
     //       }
     //     }
     //   });
-    dispatch(getVendorMasterData())
+    dispatch(getVendorMasterData());
 
     // await new BillCheckingTransactionService()
     //   .getVendorsDropdown()
@@ -1145,9 +1146,7 @@ setIsOriginalBillReceived(false);
     //   });
 
     await new DropdownService().getMappedEmp().then((res) => {
-    
       if (res.status === 200) {
-        
         setIsLoading(false);
 
         if (res.data.status == 1) {
@@ -1163,8 +1162,7 @@ setIsOriginalBillReceived(false);
       }
     });
 
-
-    dispatch(statusDropDownData())
+    dispatch(statusDropDownData());
     // await new DropdownService().getBillCheckingStatus().then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -1214,7 +1212,7 @@ setIsOriginalBillReceived(false);
       }
     });
 
-  dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -1238,7 +1236,7 @@ setIsOriginalBillReceived(false);
           const tempData = [];
           let counter = 1;
           const temp = res.data.data;
-         
+
           for (const key in temp) {
             tempData.push({
               "Sr No": counter++,
@@ -1253,11 +1251,11 @@ setIsOriginalBillReceived(false);
               "Net Amount": temp[key].net_payment,
               // "Bill Status": temp[key].bill_status,
               "Bill Status": temp[key].payment_status,
-              "Net Payment":temp[key].net_payment,
+              "Net Payment": temp[key].net_payment,
               bill_type_name: temp[key].bill_type_name,
               "Assign From": temp[key].created_by,
               "Assign To": temp[key].assign_to_name,
-              "Levels of approval": temp[key].level +1 ,
+              "Levels of approval": temp[key].level + 1,
               approvedBy: temp[key].approvedBy,
               "Pending From": temp[key].level_approver,
               // rejectedBy:temp[key].rejectedBy,
@@ -1280,7 +1278,7 @@ setIsOriginalBillReceived(false);
               "Hold Amount": temp[key].hold_amount,
               "Paid Amount": temp[key].actual_paid,
               "Is cancelled": temp[key].is_active,
-              is_active:temp[key].is_active,
+              is_active: temp[key].is_active,
               "Is TCS applicable":
                 temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
               created_at: temp[key].created_at,
@@ -1310,10 +1308,8 @@ setIsOriginalBillReceived(false);
           setData(tempData);
         } else {
           setNotify({ type: "danger", message: res.data.message });
-          console.log("msg",res.data.message)
-          console.log("res",res)
-
-
+          console.log("msg", res.data.message);
+          console.log("res", res);
         }
       });
   };
@@ -1336,19 +1332,17 @@ setIsOriginalBillReceived(false);
 
   const [datee, setDatee] = useState();
   const [billDatedatee, setBillDatee] = useState();
-  console.log("billDatedatee",billDatedatee)
-  console.log("formattedDate",formattedDate)
+  console.log("billDatedatee", billDatedatee);
+  console.log("formattedDate", formattedDate);
   const [receivedate, setReceive] = useState();
   const [isBillDateRequired, setIsBillDateRequired] = useState();
-  const [fromBillAmount, setFromBillAmount] = useState("")
-  const [toBillAmount, setToBillAmount] = useState("")
-  const [toBillAmountErr,setToBillAmountErr]=useState("")
+  const [fromBillAmount, setFromBillAmount] = useState("");
+  const [toBillAmount, setToBillAmount] = useState("");
+  const [toBillAmountErr, setToBillAmountErr] = useState("");
 
-
-  const [fromHoldlAmount, setFromHoldAmount] = useState("")
-  const [toHoldAmount, setToHoldAmount] = useState("")
-  const [toHoldAmountErr,setToHoldAmountErr]=useState("")
-
+  const [fromHoldlAmount, setFromHoldAmount] = useState("");
+  const [toHoldAmount, setToHoldAmount] = useState("");
+  const [toHoldAmountErr, setToHoldAmountErr] = useState("");
 
   const handleToBillAmount = (e) => {
     const value = e.target.value;
@@ -1356,11 +1350,13 @@ setIsOriginalBillReceived(false);
 
     // Check if toBillAmount is less than fromBillAmount
     if (parseFloat(value) < parseFloat(fromBillAmount)) {
-      setToBillAmountErr("To bill amount should be greater than from bill amount");
+      setToBillAmountErr(
+        "To bill amount should be greater than from bill amount"
+      );
     } else {
       setToBillAmountErr("");
     }
-  }
+  };
 
   const handleFromBillAmount = (e) => {
     const value = e.target.value;
@@ -1368,12 +1364,13 @@ setIsOriginalBillReceived(false);
 
     // Check if fromBillAmount is greater than toBillAmount
     if (parseFloat(value) > parseFloat(toBillAmount)) {
-      setToBillAmountErr("To bill amount should be greater than from bill amount");
+      setToBillAmountErr(
+        "To bill amount should be greater than from bill amount"
+      );
     } else {
       setToBillAmountErr("");
     }
-  }
-
+  };
 
   const handleToHoldAmount = (e) => {
     const value = e.target.value;
@@ -1381,12 +1378,13 @@ setIsOriginalBillReceived(false);
 
     // Check if toBillAmount is less than fromBillAmount
     if (parseFloat(value) < parseFloat(fromHoldlAmount)) {
-      setToHoldAmountErr("To hold amount should be greater than from hold amount");
+      setToHoldAmountErr(
+        "To hold amount should be greater than from hold amount"
+      );
     } else {
       setToHoldAmountErr("");
     }
-  }
-
+  };
 
   const handleFromHoldAmount = (e) => {
     const value = e.target.value;
@@ -1394,23 +1392,22 @@ setIsOriginalBillReceived(false);
 
     // Check if fromBillAmount is greater than toBillAmount
     if (parseFloat(value) > parseFloat(toHoldAmount)) {
-      setToHoldAmountErr("To hold amount should be greater than from hold amount");
+      setToHoldAmountErr(
+        "To hold amount should be greater than from hold amount"
+      );
     } else {
       setToHoldAmountErr("");
     }
-  }
+  };
 
-  console.log("fromBill",fromBillAmount)
-  console.log("to",toBillAmount)
-
+  console.log("fromBill", fromBillAmount);
+  console.log("to", toBillAmount);
 
   const handleFromDate = (e) => {
     setDatee(e.target.value);
   };
   const handleReceiveDate = (e) => {
     setReceive(e.target.value);
-
-
   };
 
   const isReceivedDate = !!receivedate;
@@ -1537,7 +1534,6 @@ setIsOriginalBillReceived(false);
                       name="id"
                       id="id"
                       ref={selectInputRef}
-                      
                     />
                   </div>
 
@@ -1551,7 +1547,6 @@ setIsOriginalBillReceived(false);
                       name="vendor_bill_no"
                       id="vendor_bill_no"
                       ref={selectVendorRef}
-
                     />
                   </div>
 
@@ -1566,8 +1561,7 @@ setIsOriginalBillReceived(false);
                         name="vendor_name[]"
                         isMulti
                         options={vendorDropdown}
-                      ref={selectVendorNameRef}
-
+                        ref={selectVendorNameRef}
                         placeholder="Vendor Name"
                       />
                     )}
@@ -1585,8 +1579,7 @@ setIsOriginalBillReceived(false);
                         isMulti
                         options={statusDropdown}
                         placeholder="bill_status"
-                      ref={selectBillStatusRef}
-
+                        ref={selectBillStatusRef}
                       />
                     )}
                   </div>
@@ -1602,8 +1595,7 @@ setIsOriginalBillReceived(false);
                         isMulti
                         name="bill_type[]"
                         placeholder="Bill Type"
-                      ref={selectBillTypeRef}
-
+                        ref={selectBillTypeRef}
                       />
                     )}
                   </div>
@@ -1620,8 +1612,7 @@ setIsOriginalBillReceived(false);
                         name="assign_to[]"
                         isMulti
                         placeholder="Assign To"
-                      ref={selectAssignToRef}
-
+                        ref={selectAssignToRef}
                       />
                     )}
                   </div>
@@ -1656,8 +1647,6 @@ setIsOriginalBillReceived(false);
                       onChange={(e) => handleBillDate(e)}
                       max={formattedDate}
                       ref={selectFromBillRef}
-
-
                     />
                   </div>
 
@@ -1670,12 +1659,10 @@ setIsOriginalBillReceived(false);
                       className="form-control"
                       name="to_bill_date"
                       id="to_bill_date"
-                      // min={billDatedatee}
+                      min={billDatedatee}
                       required={isBillDateRequired}
                       max={formattedDate}
                       ref={selectToBillRef}
-
-
                     />
                   </div>
 
@@ -1689,7 +1676,6 @@ setIsOriginalBillReceived(false);
                       name="from_received_date"
                       id="from_received_date"
                       ref={selectFromReceivedRef}
-
                       onChange={(e) => handleReceiveDate(e)}
                     />
                   </div>
@@ -1704,7 +1690,6 @@ setIsOriginalBillReceived(false);
                       id="to_received_date"
                       min={receivedate}
                       ref={selectToReceivedRef}
-
                       required={isReceivedDate}
                     />
                   </div>
@@ -1720,7 +1705,6 @@ setIsOriginalBillReceived(false);
                       id="from_payment_date"
                       onChange={(e) => handleFromDate(e)}
                       ref={selectFromPaymentRef}
-
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1734,7 +1718,6 @@ setIsOriginalBillReceived(false);
                       id="to_payment_date"
                       min={datee}
                       ref={selectToPaymentRef}
-
                       required={isToPaymentDateRequired}
                     />
                   </div>
@@ -1750,9 +1733,8 @@ setIsOriginalBillReceived(false);
                       id="from_bill_amount"
                       name="from_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                      onChange={(e)=>handleFromBillAmount(e)}
+                      onChange={(e) => handleFromBillAmount(e)}
                       ref={selectFromBillAmountRef}
-
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1793,8 +1775,6 @@ setIsOriginalBillReceived(false);
                         }
                       }}
                     />
-
-
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1807,9 +1787,8 @@ setIsOriginalBillReceived(false);
                       id="to_bill_amount"
                       name="to_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                      onChange={(e)=>handleToBillAmount(e)}
+                      onChange={(e) => handleToBillAmount(e)}
                       ref={selectToBillAmountRef}
-
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1851,14 +1830,13 @@ setIsOriginalBillReceived(false);
                       }}
                     />
 
-                  <small
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    {toBillAmountErr}
-                  </small>
-              
+                    <small
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {toBillAmountErr}
+                    </small>
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1870,7 +1848,6 @@ setIsOriginalBillReceived(false);
                       name="from_hold_amount"
                       id="from_hold_amount"
                       ref={selectFromHoldAmountRef}
-
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1910,8 +1887,7 @@ setIsOriginalBillReceived(false);
                           e.preventDefault();
                         }
                       }}
-                      onChange={(e)=>handleFromHoldAmount(e)}
-
+                      onChange={(e) => handleFromHoldAmount(e)}
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1924,7 +1900,6 @@ setIsOriginalBillReceived(false);
                       name="to_hold_amount"
                       id="to_hold_amount"
                       ref={selectToHoldAmountRef}
-
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1964,16 +1939,15 @@ setIsOriginalBillReceived(false);
                           e.preventDefault();
                         }
                       }}
-                      onChange={(e)=>handleToHoldAmount(e)}
-
+                      onChange={(e) => handleToHoldAmount(e)}
                     />
-                     <small
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    {toHoldAmountErr}
-                  </small>
+                    <small
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {toHoldAmountErr}
+                    </small>
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1987,7 +1961,6 @@ setIsOriginalBillReceived(false);
                       onChange={handleCheckboxChange}
                       checked={isOriginalBillReceived}
                       ref={selectIsOriginalBillRef}
-
                     />
                   </div>
 
@@ -2002,8 +1975,7 @@ setIsOriginalBillReceived(false);
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                onClick={handleClearData}
-
+                      onClick={handleClearData}
                       // onClick={() => window.location.reload(false)}
                       style={{ marginTop: "20px", fontWeight: "600" }}
                     >
@@ -2049,7 +2021,6 @@ setIsOriginalBillReceived(false);
                 className="btn btn-sm btn-info text-white"
                 type="button"
                 onClick={handleClearSearchData}
-                
                 // onClick={() => window.location.reload(false)}
                 style={{ marginTop: "0px", fontWeight: "600" }}
               >

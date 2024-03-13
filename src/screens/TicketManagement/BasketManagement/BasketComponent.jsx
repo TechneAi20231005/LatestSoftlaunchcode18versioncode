@@ -96,6 +96,7 @@ export default function BasketComponent({ match }) {
             flag = 0;
         }
         const item = {
+            id :  Date.now(),
             ticket_id: ticketId,
             basket_name: null,
             basket_owner: null,
@@ -111,9 +112,14 @@ export default function BasketComponent({ match }) {
 
 
     const handleRemoveSpecificRow = (idx) => () => {
-        if (idx > 0) {
-            setData(data.filter((_, i) => i !== idx));
-        }
+         const filteredArray = data.filter(item=> item.id !== idx)
+         console.log('filterdArray' ,filteredArray);
+         console.log("idxxxxx" ,idx)
+         setData(filteredArray)
+        
+        // if (idx > 0) {
+        //     setData(data.filter((item) => item.id !== idx));
+        // }
     }
     const handleCheckInput = (e, idx) => {
         if (data.length > 1) {
@@ -250,11 +256,14 @@ export default function BasketComponent({ match }) {
                                         <tr id={`addr_${idx}`} key={idx}
                                             style={{ zIndex: 1000 }}>
                                             <td>{idx + 1}</td>
+                                            {console.log("item",item)}
                                             <td>
                                                 <input
                                                     type="text"
                                                     name="basket_name[]"
-                                                    defaultValue={item.basket_name}
+                                                    key={idx}
+
+                                                    value={item.basket_name}
                                                     onChange={e => { handleChange(e, idx) }}
                                                     // onInput={e => { handleCheckInput(e, idx) }}
                                                     className="form-control form-control-sm"
@@ -274,7 +283,8 @@ export default function BasketComponent({ match }) {
                                                 <select className="form-control form-control-sm"
                                                     name="basket_owner[]"
                                                     required={true}
-                                                    defaultValue={item.basket_owner}
+                                                    key={idx}
+                                                    value={item.basket_owner}
                                                     onChange={handleChange(idx)}
                                                 >
                                                     <option value="">Select User</option>
@@ -335,7 +345,7 @@ export default function BasketComponent({ match }) {
                                                 }
                                                 {idx != data.length - 1 &&
                                                     <span>
-                                                        <button type='button' className="btn btn-outline-danger btn-sm" onClick={handleRemoveSpecificRow(idx)}>
+                                                        <button type='button' className="btn btn-outline-danger btn-sm" onClick={handleRemoveSpecificRow(item.id)}>
                                                             <i class="icofont-ui-delete"></i>
                                                         </button>
                                                     </span>
