@@ -383,7 +383,7 @@ function BillCheckingTransaction() {
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
                   row.level != parseInt(row.total_level) ||
-                  // (row.is_active == 0 && row.is_approver == 1)) && (
+                  (row.is_active == 0 && row.is_approver == 1)) && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
