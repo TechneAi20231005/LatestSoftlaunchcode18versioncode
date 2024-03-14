@@ -1607,13 +1607,15 @@ function VendorMaster({ match }) {
         await new VendorMasterService().bulkUploadVendor(form).then((res) => {
             if (res.status === 200) {
                 if (res.data.status == 1) {
-                    setNotify({ type: "success", message: res.data.message });
+                  
                     handleBulkModal({ showModal: false });
                     loadData();
                 } else {
                     setError({ type: "danger", message: res.data.message });
                     URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
                     window.open(URL, "_blank")?.focus();
+                    setNotify({ type: "danger", message: res.data.message });
+                    
                 }
             }
         });
@@ -2812,6 +2814,9 @@ function VendorMaster({ match }) {
                                         )}
                                     </div>
 
+                                    {console.log(authorities&& authorities)}
+                                    {console.log("modal",modal.modalData.bank_passbook_attachment)}
+
 
 
                                     <div className=" col-sm-3 mt-2">
@@ -2827,6 +2832,7 @@ function VendorMaster({ match }) {
                                                 className="form-control"
                                                 multiple={true}
                                                 ref={passbookInputRef}
+                                                disabled={modal.modalData.bank_passbook_attachment&&authorities&& authorities.Edit_Vendor_Master_Bank_Details===false?true:false}
                                                 onChange={(e) => {
                                                     const selectedFile = e.target.files[0];
                                                     if (
@@ -3037,6 +3043,9 @@ function VendorMaster({ match }) {
                                             className="form-control"
                                             ref={chequeInputRef}
                                             multiple={true}
+                                            disabled={modal.modalData.cheque_attachment
+                                                &&authorities&& authorities.Edit_Vendor_Master_Bank_Details===false?true:false}
+                                            
                                             onChange={(e) => {
                                                 const selectedFile = e.target.files[0];
 

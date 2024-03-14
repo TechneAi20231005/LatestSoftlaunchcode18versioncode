@@ -47,7 +47,6 @@
 
 //   const navigate = useNavigate();
 
-
 //   const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
 //     ? "0" + current.getMonth() + 1
 //     : current.getMonth() + 1
@@ -176,7 +175,6 @@
 //             console.log(error);
 //           }
 //         });
-
 
 //       //     await new MyTicketService()
 //       //       .postTicket(formData)
@@ -381,9 +379,6 @@
 //       });
 //     })
 
-
-
-
 //     // await new CustomerMappingService()
 //     //   .getCustomerMappingSettings(query_type_id)
 //     //   .then((res) => {
@@ -434,7 +429,6 @@
 //     //   }
 //     // });
 
-
 //     // await new QueryTypeService().getAllQueryGroup().then((res) => {
 //     //   if (res.data.status == 1) {
 //     //     setQueryGroupData(res.data.data?.filter((d) => d.is_active == 1));
@@ -445,7 +439,6 @@
 //     //     );
 //     //   }
 //     // });
-
 
 //     dispatch(getParentData()).then((res) => {
 //       if (res.payload.status === 200) {
@@ -463,7 +456,6 @@
 //         }
 //       }
 //     })
-
 
 //     // await new TaskTicketTypeService().getParent().then((res) => {
 //     //   if (res.status === 200) {
@@ -512,7 +504,6 @@
 //         }
 //       }
 //     });
-
 
 //     // new DepartmentMappingService()
 //     //   .getDepartmentMappingByEmployeeId(userSessionData.userId)
@@ -641,7 +632,6 @@
 
 //   }, []);
 
-
 //   useEffect(() => {
 //     if (notify) {
 //       const timer = setTimeout(() => {
@@ -658,7 +648,6 @@
 //       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
 //     }
 //   }, [checkRole]);
-
 
 //   return (
 //     <div className="container-xxl">
@@ -1316,7 +1305,6 @@
 //   );
 // }
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -1345,16 +1333,21 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
+import { useDispatch, useSelector } from "react-redux";
+import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 export default function CreateTicketComponent() {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const departmentRef = useRef();
+  const dispatch = useDispatch();
+  const departmentDropdownRef = useRef();
   const current = new Date();
 
-  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
-    ? "0" + current.getMonth() + 1
-    : current.getMonth() + 1
-    }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${
+    current.getMonth() + 1 < 10
+      ? "0" + current.getMonth() + 1
+      : current.getMonth() + 1
+  }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
@@ -1376,8 +1369,7 @@ export default function CreateTicketComponent() {
     submodule_id: null,
   };
 
-
-  var today = new Date().toISOString().split('T')[0];
+  var today = new Date().toISOString().split("T")[0];
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -1396,6 +1388,8 @@ export default function CreateTicketComponent() {
   const [alldepartmentData, setAllDepartmentData] = useState();
   const [getAllType, setGetAllType] = useState();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [departmentDropdown, setDepartmentDropdown] = useState();
+  const [userDropdown, setUserDropdown] = useState();
 
   const [inputDataSourceData, setInputDataSourceData] = useState();
   const [dateValue, setDateValue] = useState(new Date());
@@ -1405,28 +1399,90 @@ export default function CreateTicketComponent() {
   const [parentName, setParentName] = useState();
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [userDepartments, setUserDepartments] = useState();
+  const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
+  const fileInputRef = useRef(null);
+
+
+
+  // const uploadAttachmentHandler = (e, type, id = null) => {
+  //   if (type === "UPLOAD") {
+  //     var tempSelectedFile = [];
+  //     for (var i = 0; i < e.target.files.length; i++) {
+  //       tempSelectedFile.push({
+  //         file: e.target.files[i],
+  //         fileName: e.target.files[i].name,
+  //         tempUrl: URL.createObjectURL(e.target.files[i]),
+  //       });
+  //     }
+  //     setSelectedFiles(tempSelectedFile);
+  //   } else if (type === "DELETE") {
+  //     fileInputRef.current.value = "";
+  //     let filteredFileArray = selectedFiles.filter(
+  //       (item, index) => id !== index
+  //     );
+  //     setSelectedFiles(filteredFileArray);
+  //   }
+  // };
+
+  const uploadAttachmentHandler = (e, type, id = null) => {
+    if (type === "UPLOAD") {
+      var tempSelectedFile = [];
+      for (var i = 0; i < e.target.files.length; i++) {
+        var file = e.target.files[i];
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          tempSelectedFile.push({
+            file: file,
+            fileName: file.name,
+            tempUrl: event.target.result,
+          });
+          setSelectedFiles(tempSelectedFile);
+        };
+        reader.readAsDataURL(file);
+      }
+    } else if (type === "DELETE") {
+      fileInputRef.current.value = "";
+      let filteredFileArray = selectedFiles.filter(
+        (item, index) => id !== index
+      );
+      setSelectedFiles(filteredFileArray);
+    }
+  };
+
 
   const roleId = sessionStorage.getItem("role_id");
   const ticketTypeRefs = useRef();
+  const customerMappingData = useSelector(
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.customerMappingData
+  );
+  console.log("customerMappingData", customerMappingData);
 
   const handleForm = async (e) => {
     e.preventDefault();
     if (isSubmitted) {
-      return
+      return;
     }
     setIsSubmitted(true);
 
     const formData = new FormData(e.target);
+    if (selectedFiles) {
+      for (var i = 0; i < selectedFiles.length; i++) {
+        formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
+      }
+    }
     var flag = 1;
     // var a = JSON.stringify(Object.fromEntries(formData));
-
-    // formData.append("dynamicForm", JSON.stringify(rows))
+    console.log("selectQueryGroup",selectQueryGroup);
+if (selectQueryGroup && selectQueryGroup.length> 0){
+    formData.append("dynamicForm", JSON.stringify(rows))
     var selectCountry = formData.getAll("customer_id");
     var selectQueryGroup = formData.getAll("query_group_id");
     var selectgetAll = formData.get("ticket_type_id");
@@ -1444,6 +1500,7 @@ export default function CreateTicketComponent() {
     } else {
       flag = 1;
     }
+  }
 
     setNotify(null);
     if (flag == 1) {
@@ -1453,14 +1510,15 @@ export default function CreateTicketComponent() {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setNotify({ type: "success", message: res.data.message });
-              history({
-                pathname: `/${_base}/Ticket`,
-              }
-                ,
+              history(
+                {
+                  pathname: `/${_base}/Ticket`,
+                },
                 {
                   state: {
-                    type: "success", message: res.data.message,
-                  }
+                    type: "success",
+                    message: res.data.message,
+                  },
                 }
               );
 
@@ -1475,8 +1533,7 @@ export default function CreateTicketComponent() {
                 window.open(URL, "_blank").focus();
                 setIsSubmitted(false);
 
-                setNotify({ type: "danger", message: res.message });
-
+                setNotify({ type: "danger", message: res.data.message });
               }
             }
           } else {
@@ -1495,7 +1552,7 @@ export default function CreateTicketComponent() {
           if (error.response) {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setIsSubmitted(false)
+            setIsSubmitted(false);
             setNotify({ type: "danger", message: "Request Error !!!" });
             new ErrorLogService().sendErrorLog(
               "Ticket",
@@ -1511,11 +1568,16 @@ export default function CreateTicketComponent() {
   };
 
   const queryTypeRef = useRef();
+  console.log("ssss", approch);
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
       setRows(null);
-      var data = customerMapping.filter((val) => val.query_type_id == e.value);
+
+      var data = customerMapping.filter((val) => val.query_type_id === e.value);
+      console.log("customer mapppppppp , ", data);
+      // var newData = customerMapping.filter((val) => val.approach === "AU")
+      setApproch(data[0]?.approach);
       const cmId = data.length > 0 ? data[0].id : null;
       if (cmId) {
         await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
@@ -1582,7 +1644,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => { });
+          .catch((err) => {});
         setRows(dynamicForm);
       }
     }
@@ -1620,7 +1682,7 @@ export default function CreateTicketComponent() {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-          currentData[0].inputAddOn.inputDataSource
+            currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -1643,6 +1705,7 @@ export default function CreateTicketComponent() {
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
+        console.log("res", res.data.data);
         const queryType = [];
         const department = [];
         if (res.data.status === 1) {
@@ -1685,6 +1748,20 @@ export default function CreateTicketComponent() {
             .filter((d) => d.is_active == 1)
             .map((d) => ({ value: d.id, label: d.group_name }))
         );
+      }
+    });
+
+    await new DepartmentService().getDepartment().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          setDepartment(res.data.data.filter((d) => d.is_active == 1));
+          var defaultValue = [{ value: 0, label: "Select Department" }];
+          var dropwdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({ value: d.id, label: d.department }));
+          defaultValue = [...defaultValue, ...dropwdown];
+          setDepartmentDropdown(defaultValue);
+        }
       }
     });
 
@@ -1750,21 +1827,22 @@ export default function CreateTicketComponent() {
 
   const handleDownloadFormat = async (e) => {
     setNotify(null);
-    if (data.from_department_id && data.query_type_id) {
-      const formData = new FormData();
-      formData.append("customer_mapping_id", data.customer_mapping_id);
-      formData.append("expected_solve_date", data.expected_solve_date);
-      formData.append("ticket_type_id", data.ticket_type);
-      if (departmentRef && departmentRef?.current?.props?.value) {
-        formData.append(
-          "department_id",
-          departmentRef.current.props.value.value
-        );
-      }
-      await new MyTicketService().getBulkFormat(formData).then((res) => {
+    // if (data.from_department_id && data.query_type_id) {
+    //   const formData = new FormData();
+    //   formData.append("customer_mapping_id", data.customer_mapping_id);
+    //   formData.append("expected_solve_date", data.expected_solve_date);
+    //   formData.append("ticket_type_id", data.ticket_type);
+    //   if (departmentRef && departmentRef?.current?.props?.value) {
+    //     formData.append(
+    //       "department_id",
+    //       departmentRef.current.props.value.value
+    //     );
+    //   }
+      await new MyTicketService().getBulkFormat().then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             URL = `${_attachmentUrl}` + res.data.data;
+            console.log("resD",res.data.data);
             window.open(URL, "_blank").focus();
             setIsFileGenerated(res.data.data);
           } else {
@@ -1774,12 +1852,12 @@ export default function CreateTicketComponent() {
           setNotify({ type: "danger", message: res.message });
         }
       });
-    } else {
-      setNotify({
-        type: "danger",
-        message: "Select Department & Query Type !!!",
-      });
-    }
+    // } else {
+    //   setNotify({
+    //     type: "danger",
+    //     message: "Select Department & Query Type !!!",
+    //   });
+    // }
   };
 
   const handleQueryGroupDropDown = async (e) => {
@@ -1815,7 +1893,37 @@ export default function CreateTicketComponent() {
     });
   };
 
+  const handleGetDepartmentUsers = async (e) => {
+    setUserDropdown(null);
+    await new UserService().getUserWithMultipleDepartment().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          var defaultValue = [{ value: "", label: "Select User" }];
+
+          const dropdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .filter((d) => d.multiple_department_id.includes(e.value))
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+            }));
+
+          if (data.approach == "RW") {
+            defaultValue = dropdown;
+          } else {
+            defaultValue = [...defaultValue, ...dropdown];
+          }
+          setUserDropdown(defaultValue);
+        }
+      }
+    });
+  };
+
   const handleAutoChanges = async (e, type, nameField) => {
+    console.log("mmm", e);
+    console.log("querytypeData", e);
+    console.log("customerMapping", customerMapping);
+
     if (data) {
       var value = type == "Select2" ? e && e.value : e.target.value;
       if (nameField == "query_type_id") {
@@ -1840,6 +1948,7 @@ export default function CreateTicketComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(getCustomerMappingData());
   }, []);
 
   useEffect(() => {
@@ -1907,8 +2016,9 @@ export default function CreateTicketComponent() {
             </div>
           </div>
         </div>
+        {console.log("data",data.ticket_uploading)}
 
-        {data && data.ticket_uploading && (
+        {data && data.ticket_uploading === "REGULAR"  && (
           <div className="card mt-2">
             <div className="card-body">
               <div className="form-group row ">
@@ -1935,6 +2045,7 @@ export default function CreateTicketComponent() {
                     />
                   )}
                 </div>
+                {console.log("queryGroupDropdown", queryGroupDropdown)}
 
                 <div className="col-sm-3">
                   <label className="col-form-label">
@@ -1954,6 +2065,7 @@ export default function CreateTicketComponent() {
                     />
                   )}
                 </div>
+               
 
                 {queryGroupTypeData && (
                   <div className="col-sm-3">
@@ -1975,13 +2087,59 @@ export default function CreateTicketComponent() {
                       }}
                     />
                   </div>
+                )} 
+                { departmentDropdown && approch && approch === "AU" && (
+                  <>
+                    <div className="col-sm-3">
+                      <label className="col-form-label">
+                        <b>
+                          Select Department
+                          <Astrick color="red" /> :
+                        </b>
+                      </label>
+
+                      {departmentDropdown && (
+                        <Select
+                          id="assign_to_department_id"
+                          name="assign_to_department_id"
+                          required
+                          options={departmentDropdown}
+                          onChange={(e) => {
+                            handleAutoChanges(e, "Select2", "assign_to_department_id");
+                            handleGetDepartmentUsers(e);
+                          }}
+                        />
+                      )}
+                    </div>
+                    <div className="col-sm-3">
+                      <label className="col-form-label">
+                        <b>
+                          Select User
+                          <Astrick color="red" /> :
+                        </b>
+                      </label>
+
+                      {userDropdown && (
+                        <Select
+                          id="assign_to_user_id"
+                          name="assign_to_user_id"
+                          required
+                          options={userDropdown}
+                          onChange={(e) => {
+                            handleAutoChanges(e, "Select2", "assign_to_user_id");
+                            // handleGetDepartmentUsers(e);
+                          }}
+                        />
+                      )}
+                    </div>
+                  </>
                 )}
 
                 <div className="col-sm-3">
                   <label className="col-form-label">
                     <b>
                       Parent Ticket Type
-                      {/* <Astrick color="red" /> : */}
+               
                     </b>
                   </label>
 
@@ -1989,7 +2147,7 @@ export default function CreateTicketComponent() {
                     <Select
                       id="parent_id"
                       name="parent_id"
-                      // required
+                     
                       onChange={(e) => handleParentchange(e)}
                       options={parent}
                     />
@@ -2001,7 +2159,7 @@ export default function CreateTicketComponent() {
                     <label className="col-form-label">
                       <b>
                         Ticket Type
-                        {/* <Astrick color="red" /> : */}
+             
                       </b>
                     </label>
 
@@ -2019,9 +2177,9 @@ export default function CreateTicketComponent() {
                   </div>
                 )}
 
-                {data.ticket_uploading === "BULK_UPLOADING" && (
+                {/* {data.ticket_uploading === "BULK_UPLOADING" && (
                   <>
-                    <div className="col-sm-3">
+                   <div className="col-sm-3">
                       <label className="col-form-label">
                         <b>
                           Expected Solve Date :
@@ -2054,8 +2212,9 @@ export default function CreateTicketComponent() {
                       </button>
                     </div>
                   </>
-                )}
+                )} */}
               </div>
+
 
               {data.ticket_uploading == "REGULAR" && (
                 <div className="form-group row mt-3">
@@ -2159,11 +2318,49 @@ export default function CreateTicketComponent() {
           </div>
         )}
 
+        
+{data.ticket_uploading === "BULK_UPLOADING" && (
+                  <>
+                   {/* <div className="col-sm-3">
+                      <label className="col-form-label">
+                        <b>
+                          Expected Solve Date :
+                          <Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+
+                      <input
+                        type="date"
+                        className="form-control form-control-sm"
+                        name="expected_solve_date"
+                        id="expected_solve_date"
+                        onChange={(e) => {
+                          handleAutoChanges(e, "date", "expected_solve_date");
+                        }}
+                        required
+                        min={expectedSolveDate ? expectedSolveDate : ""}
+                      />
+                    </div> */}
+                    <div className="col-sm-3">
+                      <button
+                        type="button"
+                        className="btn btn-danger text-white"
+                        style={{ marginTop: "30px" }}
+                        onClick={(e) => {
+                          handleDownloadFormat(e);
+                        }}
+                      >
+                        Generate Bulk Format
+                      </button>
+                    </div>
+                  </>
+                )}
+
         {/* {rows && JSON.stringify(rows)} */}
 
         {/* {selectedDropdown && JSON.stringify(selectedDropdown)} */}
 
-        {console.log("dataC", rows)}
+
 
         {data.ticket_uploading === "REGULAR" && rows && rows.length > 0 && (
           <div className="card mt-2">
@@ -2463,6 +2660,12 @@ export default function CreateTicketComponent() {
           </div>
         )}
 
+
+
+       
+
+       
+
         {data.ticket_uploading === "REGULAR" && (
           <span>
             <div className="card mt-2">
@@ -2540,6 +2743,53 @@ export default function CreateTicketComponent() {
                   required
                 />
               </div>
+
+              <div className="row">
+                <label className="col-form-label">
+                  <b>
+                    Upload Attachment <Astrick color="red" /> :
+                  </b>
+                </label>
+                <input
+                  type="file"
+                  className="form-control form-control-sm"
+                  id="bulk_images[]"
+                  name="bulk_images[]"
+                  multiple
+                  required
+
+                  onChange={(e) => {
+                    // const selectedFile = e.target.files[0];
+
+                    // Check if the file type is one of the allowed types
+                    // if (
+                    //   selectedFile.type === "image/jpg" ||
+                    //   selectedFile.type === "image/jpeg" ||
+                    //   selectedFile.type === "image/png" ||
+                    //   selectedFile.type === "application/pdf"
+                    // ) {
+                    //   // File type is allowed
+                    // } else {
+                    //   // Check if the file type is BMP
+                    //   if (selectedFile.type === "image/bmp") {
+                    //     alert(
+                    //       "Invalid file format. BMP files are not allowed."
+                    //     );
+                    //   } else {
+                    //     alert(
+                    //       "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                    //     );
+                    //   }
+                    //   e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                    // }
+
+                    uploadAttachmentHandler(e, "UPLOAD", "");
+                  }}
+                  
+                />
+              </div>
+
+              
             </div>
           </div>
         )}

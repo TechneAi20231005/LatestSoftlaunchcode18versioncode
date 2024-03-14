@@ -1478,16 +1478,16 @@ value={igst=== true ?1 :0} */}
                         type="checkbox"
                         style={{ marginRight: "8px" }}
                         disabled={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true &&
+                            // authorities &&
+                            // authorities.All_Update_Bill == true &&
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1529,8 +1529,8 @@ value={igst=== true ?1 :0} */}
                           // (authorities &&
                           //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true &&
+                            // authorities &&
+                            // authorities.All_Update_Bill == true &&
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1832,13 +1832,13 @@ value={igst=== true ?1 :0} */}
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                          (data.is_assign_to == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (data.is_assign_to == 1 &&
+                          //   authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          (authorities &&
-                            authorities.All_Update_Bill == true) ||
+                          // (authorities &&
+                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1859,9 +1859,9 @@ value={igst=== true ?1 :0} */}
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
                           authorities &&
-                          authorities.TCS_Applicable === false &&
-                          authorities &&
-                          authorities.All_Update_Bill === false
+                          authorities.TCS_Applicable === false 
+                          // authorities &&
+                          // authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -2241,9 +2241,9 @@ value={igst=== true ?1 :0} */}
                         }
                         disabled={
                           authorities &&
-                          authorities.Original_Bill_Needed === false &&
-                          authorities &&
-                          authorities.All_Update_Bill === false
+                          authorities.Original_Bill_Needed === false
+                          // authorities &&
+                          // authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -2429,13 +2429,13 @@ value={igst=== true ?1 :0} */}
                             ref={fileInputRef}
                             multiple
                             disabled={
-                              (data.is_assign_to == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (data.is_assign_to == 1 &&
+                              //   authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              (authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&

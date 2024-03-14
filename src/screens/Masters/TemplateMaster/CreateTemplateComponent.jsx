@@ -561,6 +561,13 @@ const CreateTemplateComponent = () => {
                                   options={userData}
                                   id="basket_owner"
                                   name="basket_owner"
+
+                                  value={userData.filter((d) =>
+                                    Array.isArray(item.basket_owner)
+                                      ? item.basket_owner.includes(d.value)
+                                      : item.basket_owner === d.value
+                                  )}
+                                  
                                   onChange={(e) =>
                                     handleChange(
                                       e,
