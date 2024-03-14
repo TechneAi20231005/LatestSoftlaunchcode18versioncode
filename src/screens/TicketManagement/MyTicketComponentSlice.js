@@ -15,7 +15,7 @@ const initialState = {
   getAssignedUserData: [],
   user: [],
   alluserTickettest: [],
-  sortAssigntoSelfUser:[],
+  sortAssigntoSelfUser: [],
 };
 
 export const MyTicketComponentSlice = createSlice({
@@ -24,7 +24,6 @@ export const MyTicketComponentSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -42,7 +41,6 @@ export const MyTicketComponentSlice = createSlice({
         state.status = "succeded";
         state.showLoaderModal = false;
         state.statusData = extractedData;
-        // state.statusData = [...statusData];
       }
     });
     builder.addCase(getStatusData.rejected, (state) => {
@@ -57,12 +55,9 @@ export const MyTicketComponentSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getUserTicketTestData = payload.data.data;
-        console.log("da,,,", getUserTicketTestData);
         state.status = "succeded";
-        // let current_page = 0
-        // let alluserTickettest=[getUserTicketTestData,current_page=payload.data.data.current_page]
+
         state.getUserTicketTestData = getUserTicketTestData;
-        // state.alluserTickettest=alluserTickettest
       }
     });
     builder.addCase(getUserTicketsTest.rejected, (state) => {
@@ -78,18 +73,14 @@ export const MyTicketComponentSlice = createSlice({
         let getUserForMyTicket = payload.data.data;
 
         let sortAssigntoSelfUser = getUserForMyTicket
-        .filter((d) => d.account_for == "SELF")
-        .map((i) => ({
-          value: i.id,
-          label: i.first_name + " " + i.last_name,
-        }));
+          .filter((d) => d.account_for == "SELF")
+          .map((i) => ({
+            value: i.id,
+            label: i.first_name + " " + i.last_name,
+          }));
 
-        console.log("sortAssigntoSelfUser",sortAssigntoSelfUser)
-
-        state.sortAssigntoSelfUser = sortAssigntoSelfUser
-        console.log("getUserForMyTicket", getUserForMyTicket);
+        state.sortAssigntoSelfUser = sortAssigntoSelfUser;
         let user = payload.data.data;
-        console.log("s1", getUserForMyTicket);
         let sortedData = getUserForMyTicket
           .filter((d) => d.is_active == 1)
           .map((i) => ({
@@ -118,13 +109,6 @@ export const MyTicketComponentSlice = createSlice({
           }));
 
           state.user = userData;
-          console.log("uD", userData);
-          // setUser(
-          //   data.map((d) => ({
-          //     value: d.id,
-          //     label: d.first_name + " " + d.last_name,
-          //   }))
-          // );
         }
 
         state.getAssignedUserData = getUserForMyTicket;

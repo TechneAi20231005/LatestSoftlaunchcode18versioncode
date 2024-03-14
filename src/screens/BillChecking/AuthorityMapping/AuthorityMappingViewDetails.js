@@ -9,9 +9,10 @@ function AuthorityMappingViewDetails() {
 
   const tempUserData = [];
   const loadData = async () => {
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-            if (res.status === 200) {
+      if (res.status === 200) {
         setShowLoaderModal(false);
         const data = res.data.data.filter((d) => d.is_active === 1);
         for (const key in data) {
@@ -62,7 +63,6 @@ function AuthorityMappingViewDetails() {
                         classNamePrefix="select"
                         options={userData}
                         defaultValue={item.employee}
-                        // onChange={handleUserSelect}
                         readOnly
                         required
                         style={{ zIndex: "100" }}
@@ -74,9 +74,6 @@ function AuthorityMappingViewDetails() {
                         type="date"
                         className="form-control form-control-sm"
                         name="from_date"
-                        //   defaultValue={item.from_date}
-                        //   readOnly={modal.modalHeader == "Details"}
-                        //   onChange={handleFromDate}
                         required
                       />
                     </td>
@@ -87,9 +84,6 @@ function AuthorityMappingViewDetails() {
                         className="form-control form-control-sm"
                         name="to_date"
                         defaultValue={item.to_date}
-                        //   readOnly={modal.modalHeader == "Details"}
-                        //   onChange={handleToDate}
-                        //   min={date}
                         required
                       />
                     </td>

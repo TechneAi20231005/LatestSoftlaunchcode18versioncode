@@ -53,14 +53,12 @@ function BillCheckingTransaction() {
   });
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
 
   const dispatch = useDispatch();
   const AllBillCheckingData = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.sortedBillCheckingData
   );
-  // const exportData = useSelector(BillCheckingTransactionSlice=>BillCheckingTransactionSlice.billChecking.exportData)
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.authoritiesData
@@ -80,7 +78,6 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.statusDropDownData
   );
-  // const userDropdown = useSelector((MyTicketComponentSlice) =>MyTicketComponentSlice.myTicketComponent.getUserForMyTicket);
 
   const handleModal = (data) => {
     setModal(data);
@@ -184,12 +181,10 @@ function BillCheckingTransaction() {
 
     if (selectFromBillRef.current.value != null) {
       document.getElementById("from_bill_date").value = "";
-      // selectFromBillRef.current.value()
     }
 
     if (selectToBillRef.current.value != null) {
       document.getElementById("to_bill_date").value = "";
-      // selectToBillRef.current.clearValue()s
     }
 
     if (selectFromReceivedRef.current.value != null) {

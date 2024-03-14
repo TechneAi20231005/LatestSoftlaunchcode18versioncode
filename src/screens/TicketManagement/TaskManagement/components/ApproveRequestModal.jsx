@@ -184,8 +184,6 @@ const ApproveRequestModal = (props) => {
                                 <th className="text-center"> To Time </th>
                                 <th className="text-center"> Actual Time </th>
 
-                                {/* <th className="text-center"> Increase Time </th> */}
-                                {/* <th className="text-center"> Decrease Time </th> */}
                                 <th className="text-center"> Remark </th>
                                 <th className="text-center"> Status</th>
                             </tr>
@@ -193,7 +191,6 @@ const ApproveRequestModal = (props) => {
                         <tbody>
                             {data && data.map((x, i) => {
                                 return <tr id={`addr_${i}`} key={i}>
-                                    {/* {x && JSON.stringify(x)} */}
                                     <td>{i + 1}</td>
                                     <td>
                                         <input type="hidden" id={`status_${i}`} name="id[]"
@@ -274,60 +271,7 @@ const ApproveRequestModal = (props) => {
                                     </td>
 
 
-                                    {/* {x.regularization_time_status === "YES" ?
-
-                                        <td>
-
-                                            <input type="checkbox"
-                                                name="regularization_time_status"
-                                                id="regularization_time_status"
-                                                value="Yes"
-                                                key={i}
-                                                checked={x.regularization_time_status}
-                                            />
-
-                                            <i className="icofont-long-arrow-up" style={{ fontSize: "34px", color: 'red' }}></i>
-
-
-                                        </td>
-                                        : <td>
-
-                                            <input type="checkbox"
-                                                name="regularization_time_status"
-                                                id="regularization_time_status"
-                                                value="No"
-                                                key={i}
-                                                disabled={true}
-                                            />
-
-                                            <i className="icofont-long-arrow-up" style={{ fontSize: "34px", color: 'red' }}></i>
-                                            </td>} */}
-
-                                    {/* {x.regularization_time_status === "NO" ?
-
-                                        <td>
-                                            <input type="checkbox"
-                                                name="regularization_time_status"
-                                                id="regularization_time_status"
-                                                value="0"
-                                                checked={x.regularization_time_status}
-                                            />
-                                            <i class="icofont-long-arrow-down" style={{ fontSize: "34px", color: 'green' }}></i>
-
-                                        </td>
-                                        :
-
-                                        <td>
-                                            <input type="checkbox"
-                                                name="regularization_time_status"
-                                                id="regularization_time_status"
-                                                value="0"
-                                                disabled={true}
-
-                                            />
-                                            <i class="icofont-long-arrow-down" style={{ fontSize: "34px", color: 'green' }}></i>
-
-                                        </td>} */}
+                                  
 
                                     <td>
                                         {x.remark}

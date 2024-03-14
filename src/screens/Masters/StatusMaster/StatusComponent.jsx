@@ -14,15 +14,15 @@ import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from "react-redux";
 import { getStatusData, postStatusData, updateStatusData } from "./StatusComponentAction";
 import { statusMasterSlice } from "./StatusComponentSlice";
-import DashboardSlice from "../../Dashboard/DashboardSlice";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleModalClose ,handleModalOpen} from "./StatusComponentSlice";
+import { DashbordSlice } from "../../Dashboard/DashbordSlice";
 
 function StatusComponent() {
     const dispatch =useDispatch()
     const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.filterStatusData)
     const exportData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.exportStatusData)
-    const checkRole=useSelector(DashboardSlice=>DashboardSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
+    const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
     const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
     const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
     console.log("notify",statusData);

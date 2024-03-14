@@ -13,7 +13,6 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import DashboardSlice from "../../Dashboard/DashboardSlice";
 import DesignationSlice from "./DesignationSlice";
 import {
   getDesignationData,
@@ -21,6 +20,7 @@ import {
   updatedDesignationData,
 } from "./DesignationAction";
 import { handleModalClose, handleModalOpen } from "./DesignationSlice";
+import { DashbordSlice } from "../../Dashboard/DashbordSlice";
 
 function DesignationComponent() {
   const [data, setData] = useState(null);
@@ -29,8 +29,8 @@ function DesignationComponent() {
 
   const dispatch = useDispatch();
   // const getDesignation = useSelector( (DashboardSlice) => DashboardSlice.dashboard.getDesignationData);
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
+  const checkRole = useSelector((Das) =>
+  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
   );
   const designationData = useSelector(
     (DesignationSlice) => DesignationSlice.designationMaster.getDesignationData

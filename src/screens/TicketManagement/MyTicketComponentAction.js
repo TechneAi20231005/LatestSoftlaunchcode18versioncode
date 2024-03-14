@@ -22,7 +22,6 @@ export const getUserTicketsTest = createAsyncThunk(
     try {
       const service = new MyTicketService();
       const response = await service.getUserTicketsTest(config);
-      console.log("respp",response)
       return response;
     } catch (error) {
       throw error;
@@ -35,7 +34,6 @@ export const getUserForMyTicketsData = createAsyncThunk("getUserForMyTicketsData
     try{
         const service=new UserService();
         const response = await service.getUserForMyTickets(config);
-        console.log("respp",response)
         return response;
 
     }

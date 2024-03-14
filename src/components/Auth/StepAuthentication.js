@@ -27,7 +27,6 @@ export default function StepAuthentication() {
   const submitHandler = (e) => {
     if (e) {
       e.preventDefault();
-      // setShowAlert(prevState => ({...prevState,show:false}));
       postDataa(userData).then((res) => {
         if (res.status == 200) {
           if (res.data.status === 1) {

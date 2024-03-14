@@ -29,7 +29,6 @@ const ViewVendorDetails = ({ match }) => {
   const { id } = useParams();
   const [data, setData] = useState(null);
 
-
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
@@ -88,7 +87,6 @@ const ViewVendorDetails = ({ match }) => {
   useEffect(() => {
     loadData();
   }, []);
-
 
   return (
     <div>
@@ -244,27 +242,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                {/* 
-                <div className=" col-sm-3 mt-3">
-                  <label className="col-form-label">
-                    <b>Aadhaar  Attachment :</b>
-                  </label>
-                  {data && data.adhar_attachment ? (
-                    <a
-                      href={`${_attachmentUrl}/${data.adhar_attachment}`}
-                      target="_blank"
-                      downlaod
-                      className="btn btn-info btn-sm  p-0"
-                      accept="image/jpg,image/jpeg,image/png,application/pdf"
-                    >
-                      <i class="icofont-download" style={{ fontSize: "15px" }}>
-                        Download
-                      </i>
-                    </a>
-                  ):(
-                    <p>Attachment Not Available</p>
-                  )}
-                </div> */}
 
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label">
@@ -291,7 +268,6 @@ const ViewVendorDetails = ({ match }) => {
                                 className="icofont-download"
                                 style={{ fontSize: "15px" }}
                               ></i>{" "}
-                              {/* Use a download icon */}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -316,32 +292,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                {/* 
-                <div className=" col-sm-3 mt-5">
-                  <label className="col-form-label" htmlFor="attachment">
-                    <b>PAN Attachment :</b>
-                    {data && data.pan_attachment ? (
-                      <a
-                        href={`${_attachmentUrl}/${data.pan_attachment}`}
-                        target="_blank"
-                        downlaod
-                        className="btn btn-info btn-sm p-0"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    ):(
-                      <div className=" col-sm-3 mt-5">
-                      <p>Attachment Not available </p>
-                      </div>
-                    )}
-                  </label>
-                </div> */}
 
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
@@ -366,7 +316,6 @@ const ViewVendorDetails = ({ match }) => {
                                 className="icofont-download"
                                 style={{ fontSize: "15px" }}
                               ></i>{" "}
-                              {/* Use a download icon */}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -393,32 +342,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                {/* 
-                <div className=" col-sm-3 mt-3 ">
-                  <label className="col-form-label">
-                    <b>GST Attachment :</b>
-                  </label>
-                  {data && data.gst_attachment ?(
-                    <a
-                      href={`${_attachmentUrl}/${data.gst_attachment}`}
-                      target="_blank"
-                      downlaod
-                      className="btn btn-info btn-sm p-0"
-                      accept="image/jpg,image/jpeg,image/png,application/pdf"
-                    > 
-                      <i class="icofont-download" style={{ fontSize: "15px" }}
-                      
-                      
-                      >
-                        Download
-                      </i>
-                    </a>
-                  ):(
-                    
-                    
-                    <p>Attachment Not available</p>
-                  )}
-                </div> */}
+
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label">
                     <b>GST Attachment :</b>
@@ -440,7 +364,10 @@ const ViewVendorDetails = ({ match }) => {
                               className="btn btn-info btn-sm p-0 mr-2 attachment-link"
                               accept="image/jpg,image/jpeg,image/png,application/pdf"
                             >
-                                  <i className="icofont-download" style={{ fontSize: "15px" }}></i>
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "15px" }}
+                              ></i>
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -465,28 +392,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
-                {/* <div className=" col-sm-3 mt-3">
-                  <label className="col-form-label" htmlFor="msme_attachment">
-                    <b> MSME Attachment : </b>
-                  </label>
-                  {data && data.msme_attachment ? (
-                    <a
-                      href={`${_attachmentUrl}/${data.msme_attachment}`}
-                      target="_blank"
-                      downlaod
-                      multiple
-                      className="btn btn-info btn-sm p-0"
-                      accept="image/jpg,image/jpeg,image/png,application/pdf"
-                    >
-                      <i class="icofont-download" style={{ fontSize: "15px" }}>
-                        Download
-                      </i>
-                    </a>
-                  ):(
-                    <p>Attachment Not Available</p>
-                  )}
-                </div> */}
 
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label" htmlFor="msme_attachment">
@@ -513,7 +418,6 @@ const ViewVendorDetails = ({ match }) => {
                                 className="icofont-download"
                                 style={{ fontSize: "15px" }}
                               ></i>{" "}
-                              {/* Use a download icon */}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -594,31 +498,7 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                {/* 
-                <div className=" col-sm-3 mt-5">
-                  <label className="col-form-label" htmlFor="attachment">
-                    <b>Passbook Attachment : </b>
-                  </label>
 
-                  {data &&data.bank_passbook_attachment? (
-                    <a
-                      href={`${_attachmentUrl}/${data.bank_passbook_attachment}`}
-                      target="_blank"
-                      downlaod
-                      className="btn btn-info btn-sm p-0"
-                      accept="image/jpg,image/jpeg,image/png,application/pdf"
-                    >
-                      <i
-                        className="icofont-download"
-                        style={{ fontSize: "15px" }}
-                      >
-                        Download
-                      </i>
-                    </a>
-                  ):(
-                    <p>Attachment Not available</p>
-                  )}
-                </div> */}
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
                     <b>Passbook Attachment:</b>
@@ -645,7 +525,6 @@ const ViewVendorDetails = ({ match }) => {
                                   className="icofont-download"
                                   style={{ fontSize: "15px" }}
                                 ></i>{" "}
-                                {/* Add an icon for download */}
                               </a>
                             </div>
                             <div>{attachment}</div>
@@ -657,27 +536,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
-                {/* <div className=" col-sm-3 mt-5">
-                  <label className="col-form-label">
-                    <b>Cheque Attachment :</b>
-                  </label>
-                  {data && data.cheque_attachment? (
-                    <a
-                      href={`${_attachmentUrl}/${data.cheque_attachment}`}
-                      target="_blank"
-                      downlaod
-                      className="btn btn-info btn-sm p-0"
-                      accept="image/jpg,image/jpeg,image/png,application/pdf"
-                    >
-                      <i class="icofont-download" style={{ fontSize: "15px" }}>
-                        Download
-                      </i>
-                    </a>
-                  ):(
-                    <p>Attachment Not available</p>
-                  )}
-                </div> */}
 
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label">
@@ -703,7 +561,6 @@ const ViewVendorDetails = ({ match }) => {
                               className="icofont-download"
                               style={{ fontSize: "15px" }}
                             ></i>{" "}
-                            {/* Use a download icon */}
                           </a>
                           <p>{attachment}</p>
                         </div>
@@ -871,9 +728,6 @@ const ViewVendorDetails = ({ match }) => {
                       </div>
                     </div>
                     <div className="mt-3" style={{ textAlign: "right" }}>
-                      {/* <button type="submit" className="btn btn-primary">
-                                    Update
-                                </button> */}
                       <Link
                         to={`/${_base}/vendorMaster`}
                         className="btn btn-danger text-white"

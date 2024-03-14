@@ -14,7 +14,6 @@ export const paymentTemplateSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
   },
   extraReducers: (builder) => {

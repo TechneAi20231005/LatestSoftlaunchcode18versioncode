@@ -24,9 +24,7 @@ export default function EditTenant({ match }) {
   const dispatch = useDispatch();
   const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
-  // const countryDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
   const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
-  // const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [toggleRadio, setToggleRadio] = useState(false);
   const [clearFlag, setClearFlag] = useState(false);
@@ -34,13 +32,11 @@ export default function EditTenant({ match }) {
   const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify)
   const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
   const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
-  // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
-  // console.log("country dat", CountryData)
 
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.cityData
@@ -65,12 +61,9 @@ export default function EditTenant({ match }) {
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  // const [cityDropdown, setCityDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
 
 
   const [inputState, setInputState] = useState({
@@ -148,37 +141,7 @@ export default function EditTenant({ match }) {
     dispatch(getStateDataSort())
     dispatch(getStateData());
     dispatch(getCityData());
-    // await new CountryService().getCountry().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       setCountry(res.data.data);
-    //       setCountryDropdown(
-    //         res.data.data.map((d) => ({ value: d.id, label: d.country }))
-    //       );
-    //     }
-    //   }
-    // });
-
-    // await new StateService().getState().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       setState(res.data.data);
-    //       setStateDropdown(
-    //         res.data.data.map((d) => ({ value: d.id, label: d.state }))
-    //       );
-    //     }
-    //   }
-    // });
-    // await new CityService().getCity().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       setCity(res.data.data);
-    //       setCityDropdown(
-    //         res.data.data.map((d) => ({ value: d.id, label: d.city }))
-    //       );
-    //     }
-    //   }
-    // });
+   
 
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
@@ -193,14 +156,7 @@ export default function EditTenant({ match }) {
       }
     });
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+    
   };
 
 
@@ -208,7 +164,6 @@ export default function EditTenant({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("is_active", toggleRadio ? 1 : 0);
-    // setNotify(null);
     dispatch(updatetenantData({ id: tenanatId, payload: formData })).then((res) => {
 
       if (res.payload.data.status === 1 && res.payload.status === 200) {
@@ -221,21 +176,7 @@ export default function EditTenant({ match }) {
       }
     })
 
-    // await new TenantService().updateTenant(tenanatId, formData).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       history(
-    //         {
-    //           pathname: `/${_base}/TenantMaster`,
-    //         },
-    //         { state: { alert: { type: "success", message: res.data.message } } }
-    //       );
-    //     } else {
-
-    //       setNotify({ type: "danger", message: res.data.message });
-    //     }
-    //   }
-    // });
+   
   };
   const handleRadios = (e) => {
     if (e === "active") {
@@ -409,7 +350,6 @@ export default function EditTenant({ match }) {
                 >
                   <b>Country : </b>
                 </label>
-                {console.log("Country data", CountryData)}
                 <div className="col-sm-4">
                   {CountryData && data && (
                     <Select
@@ -431,8 +371,7 @@ export default function EditTenant({ match }) {
                 <label className="col-sm-2 col-form-label">
                   <b>State : </b>
                 </label>
-                {console.log('state drop down data', stateDropdownData)}
-                {console.log('state drop down data', data)}
+              
                 <div className="col-sm-4">
 
                   {stateDropdown && data && (

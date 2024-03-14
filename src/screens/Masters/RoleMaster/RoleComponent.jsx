@@ -20,15 +20,15 @@ import { getRoleData, updatedRole } from "./RoleMasterAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { postRole } from "./RoleMasterAction";
 import { handleModalOpen, handleModalClose } from "./RoleMasterSlice";
-import DashboardSlice from "../../Dashboard/DashboardSlice";
+import DashbordSlice from "../../Dashboard/DashbordSlice";
 
 function RoleComponent({ location }) {
   const dispatch = useDispatch();
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
   );
   console.log("checkRole",checkRole)
 

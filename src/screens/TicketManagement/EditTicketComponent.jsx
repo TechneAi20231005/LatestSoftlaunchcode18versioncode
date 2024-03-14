@@ -51,7 +51,10 @@ import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMaster
 import ModuleSlice from "../ProjectManagement/ModuleMaster/ModuleSlice";
 import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
 import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
-import { getSubModuleById, subModuleMaster } from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
+import {
+  getSubModuleById,
+  subModuleMaster,
+} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
 import StatusComponentSlice from "../Masters/StatusMaster/StatusComponentSlice";
 import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
 import QueryTypeComponetSlice from "../Masters/QueryTypeMaster/QueryTypeComponetSlice";
@@ -64,14 +67,6 @@ export default function EditTicketComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
-  // const projectDropdown = useSelector(ProjectMasterSlice => ProjectMasterSlice.projectMaster.projectDropDownData)
-  // const moduleData = useSelector(ModuleSlice => ModuleSlice.moduleMaster.sortModuleData)
-  // const subModuleData = useSelector(SubModuleMasterSlice => SubModuleMasterSlice.subModuleMaster.sortSubModuleData)
-  // const statusData = useSelector(StatusComponentSlice => StatusComponentSlice.statusMaster.filterStatus)
-  // const queryTypes = useSelector(QueryTypeComponetSlice => QueryTypeComponetSlice.queryTypeMaster.queryTypeData)
-  // const departmentDropdown = useSelector(DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData)
-  // const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 14));
-
   const { id } = useParams();
   const ticketId = id;
   const [dateValue, setDateValue] = useState(new Date());
@@ -82,13 +77,13 @@ export default function EditTicketComponent({ match }) {
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
   const dispatch = useDispatch();
 
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 16));
-
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 16)
+  );
 
   const [projectDropdown, setProjectDropdown] = useState();
 
@@ -116,10 +111,11 @@ export default function EditTicketComponent({ match }) {
 
   const [isSolved, setIsSolved] = useState(false);
   const current = new Date();
-  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
-    ? "0" + current.getMonth() + 1
-    : current.getMonth() + 1
-    }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${
+    current.getMonth() + 1 < 10
+      ? "0" + current.getMonth() + 1
+      : current.getMonth() + 1
+  }-${current.getDate()}`;
   const [defaults, setDefaults] = useState(null);
   const [customerMapping, setCustomerMapping] = useState();
   const [userName, setUserName] = useState("");
@@ -257,7 +253,8 @@ export default function EditTicketComponent({ match }) {
                 },
                 {
                   state: {
-                    type: "success", message: res.data.message,
+                    type: "success",
+                    message: res.data.message,
                   },
                 }
               );
@@ -321,7 +318,7 @@ export default function EditTicketComponent({ match }) {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-          currentData[0].inputAddOn.inputDataSource
+            currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -354,7 +351,9 @@ export default function EditTicketComponent({ match }) {
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
+          const data = res.payload.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === "SELF"
+          );
           const select = res.payload.data.data
             .filter((d) => d.is_active == 1 && d.account_for === "SELF")
             .map((d) => ({
@@ -367,25 +366,6 @@ export default function EditTicketComponent({ match }) {
         }
       }
     });
-
-    // const inputRequired =
-    //   "id,employee_id,first_name,last_name,middle_name,is_active";
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data
-    //         .filter((d) => d.is_active == 1)
-    //         .map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }));
-    //       setUser(data);
-    //       setUserDropdown(select);
-    //       setUserdrp(select);
-    //     }
-    //   }
-    // });
 
     await new MyTicketService().getTicketById(ticketId).then((res) => {
       if (res.status === 200) {
@@ -433,7 +413,6 @@ export default function EditTicketComponent({ match }) {
                 }
               });
 
-              //Remove from array
               dynamicForm.forEach((d, i) => {
                 if (d.inputType === "select") {
                   if (tempResponse.length > 0) {
@@ -445,24 +424,10 @@ export default function EditTicketComponent({ match }) {
               });
               setRows(dynamicForm);
             })
-            .catch((err) => {
-              console.log("Error >>>>>>>>>>>>>>>>>>>>>>", err);
-            });
+            .catch((err) => {});
         }
       }
     });
-
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   console.log("res==>",res)
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       {console.log("getRoleID",getRoleId)}
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
 
     await new DesignationService().getdesignatedDropdown().then((res) => {
       if (res.status === 200) {
@@ -563,7 +528,6 @@ export default function EditTicketComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const temp = res?.data?.data?.filter((d) => d.is_active == 1);
-          console.log('tem submodule data', temp)
           setSubModuleData(temp);
           setSubModuleDropdown(
             temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
@@ -575,7 +539,6 @@ export default function EditTicketComponent({ match }) {
     await new StatusService().getStatus().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-
           const temp = res.data.data.filter((d) => d.is_active == 1);
           setStatusValue(temp);
           const select = temp.map((d) => ({ value: d.id, label: d.status }));
@@ -583,8 +546,6 @@ export default function EditTicketComponent({ match }) {
         }
       }
     });
-
-
 
     loadComments();
     setShowLoaderModal(false);
@@ -695,13 +656,11 @@ export default function EditTicketComponent({ match }) {
   const handleModuleChange = (e) => {
     if (e) {
       setSubModuleDropdown(null);
-      console.log("moduleData", subModuleData)
       const data = subModuleData
         .filter((d) => d.module_id == e.value)
-        .map((d) => ({ value: d.id, label: d.sub_module_name }))
+        .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
-      setSubModuleDropdown(data)
-
+      setSubModuleDropdown(data);
     }
   };
 
@@ -767,30 +726,7 @@ export default function EditTicketComponent({ match }) {
     loadData();
     setConfirmationModal(false, null);
     loadAttachment();
-    dispatch(getRoles())
-
-    // if (!projectDropdown.length) {
-    //   dispatch(getprojectData())
-    // }
-    // if (!moduleData.length) {
-    //   dispatch(moduleMaster())
-    // }
-    // if (!subModuleData.length) {
-    //   dispatch(subModuleMaster())
-    // }
-    // if (!statusData.length) {
-    //   dispatch(getStatusData())
-    // }
-    // if (queryTypes) {
-    //   dispatch(queryType())
-    // }
-    // if (!departmentDropdown) {
-    //   dispatch(departmentData())
-    // }
-    // if (!checkRole.length) {
-    //   dispatch(getRoles())
-    // }
-
+    dispatch(getRoles());
   }, []);
 
   useEffect(() => {
@@ -800,7 +736,6 @@ export default function EditTicketComponent({ match }) {
         label: d.first_name + " " + d.last_name,
       }));
       setUserName(userData.filter((d) => d.value == data.assign_to_user_id));
-      // setUserDropdown(user.filter(d => d.department_id == data.assign_to_department_id).map(d => ({ value: d.id, label: d.first_name + " " + d.last_name })))
       setUserDropdown(
         user
           .filter((d) => d.department_id == data.assign_to_department_id)
@@ -809,7 +744,6 @@ export default function EditTicketComponent({ match }) {
             label: d.first_name + " " + d.last_name,
           }))
       );
-      // console.log("u",data.map(d => d.department_id == data.assign_to_department_id).filter(d => ({ value: d.id, label: d.first_name + " " + d.last_name })))
     }
   }, [user]);
 
@@ -819,15 +753,15 @@ export default function EditTicketComponent({ match }) {
   )
     .toString()
     .padStart(2, "0")}-${currentDate
-      .getDate()
-      .toString()
-      .padStart(2, "0")} ${currentDate
-        .getHours()
-        .toString()
-        .padStart(2, "0")}:${currentDate
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`;
+    .getDate()
+    .toString()
+    .padStart(2, "0")} ${currentDate
+    .getHours()
+    .toString()
+    .padStart(2, "0")}:${currentDate
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`;
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
@@ -836,14 +770,6 @@ export default function EditTicketComponent({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
-  // useEffect(() => {
-
-  //   const timeoutId = setTimeout(() => {
-  //     setLocationState(null);
-  //   }, 3000);
-  //   return () => clearTimeout(timeoutId);
-  // }, [location.state]);
 
   return (
     <div className="container-xxl">
@@ -902,15 +828,15 @@ export default function EditTicketComponent({ match }) {
                         style={
                           data.passed_status == "UNPASS"
                             ? {
-                              color: "red",
-                              fontWeight: "600",
-                              fontSize: "20px",
-                            }
+                                color: "red",
+                                fontWeight: "600",
+                                fontSize: "20px",
+                              }
                             : {
-                              color: "green",
-                              fontWeight: "600",
-                              fontSize: "20px",
-                            }
+                                color: "green",
+                                fontWeight: "600",
+                                fontSize: "20px",
+                              }
                         }
                       >
                         {data.passed_status}
@@ -1063,7 +989,6 @@ export default function EditTicketComponent({ match }) {
               </div>
               {/* CARD */}
 
-              {/* {data && data.passed_status == "PASS" && */}
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row">
@@ -1093,7 +1018,6 @@ export default function EditTicketComponent({ match }) {
                         </b>
                       </label>
                       {moduleDropdown && data && (
-
                         <Select
                           id="module_id"
                           name="module_id"
@@ -1102,11 +1026,14 @@ export default function EditTicketComponent({ match }) {
                           required
                           clearValue={true}
                           onChange={handleModuleChange}
-                          defaultValue={moduleDropdown && moduleDropdown.filter(
-                            (d) => d.value == data.module_id
-                          )}
-                        />)}
-
+                          defaultValue={
+                            moduleDropdown &&
+                            moduleDropdown.filter(
+                              (d) => d.value == data.module_id
+                            )
+                          }
+                        />
+                      )}
                     </div>
 
                     <div className="col-sm-3">
@@ -1119,9 +1046,12 @@ export default function EditTicketComponent({ match }) {
                           id="submodule_id"
                           name="submodule_id"
                           ref={subModuleIdRef}
-                          defaultValue={subModuleDropdown && subModuleDropdown.filter(
-                            (d) => d.value == data.submodule_id
-                          )}
+                          defaultValue={
+                            subModuleDropdown &&
+                            subModuleDropdown.filter(
+                              (d) => d.value == data.submodule_id
+                            )
+                          }
                         />
                       )}
                     </div>
@@ -1197,7 +1127,6 @@ export default function EditTicketComponent({ match }) {
                                 (d) => d.value == data.assign_to_user_id
                               )
                             }
-                            // defaultValue={data.assign_to_user}
                             isDisabled={isSolved}
                           />
                         )}
@@ -1208,26 +1137,7 @@ export default function EditTicketComponent({ match }) {
                             Priority :<Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {/* <select className="form-control form-control-sm" 
-                                            id="priority"
-                                                name="priority" 
-                                                required={true}                                                 
-                                                disabled={data && (data.status_id==3 || data.status_id=="3")}
-                                                >
-                                                <option value="Low"
-                                                    selected={data.priority === "Low" ? true : false}>Low
-                                                </option>
-                                                <option value="Medium"
-                                                    selected={data.priority === "Medium" ? true : false}>Medium
-                                                </option>
-                                                <option value="High"
-                                                    selected={data.priority === "High" ? true : false}>High
-                                                </option>
-                                                <option value="Very High"
-                                                    selected={data.priority === "Very High" ? true : false}>Very
-                                                    High
-                                                </option>
-                                            </select> */}
+
                         <input
                           type="text"
                           className="form-control form-control-sm"
@@ -1241,17 +1151,10 @@ export default function EditTicketComponent({ match }) {
 
                       <div className="col-sm-3">
                         <label className=" col-form-label">
-                          {console.log(statusData)}
                           <b>
                             Status : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {/* <StatusDropdown id="status_id" name="status_id"
-                                                required
-                                                defaultValue={data.status_id}
-                                                // disabled={data && (data.status_id==3 || data.status_id=="3")}
-                                                getChangeValue={e => handleTicketStatus(e)}
-                                            /> */}
 
                         {statusData && (
                           <Select
@@ -1259,9 +1162,12 @@ export default function EditTicketComponent({ match }) {
                             name="status_id"
                             options={statusData}
                             onChange={(e) => handleTicketStatus(e)}
-                            defaultValue={statusData && statusData.filter(
-                              (d) => d.value == data.status_id
-                            )}
+                            defaultValue={
+                              statusData &&
+                              statusData.filter(
+                                (d) => d.value == data.status_id
+                              )
+                            }
                           />
                         )}
                       </div>
@@ -1269,138 +1175,9 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
-              {/* {rows && rows.length > 0 && (
-                <div className="card mt-2">
-                  <div className="card-body">
-                    <div className="row">
-                      {rows.map((data, index) => {
-                        var range = "";
-                        return (
-                          <div className={`${data.inputWidth} mt-2`}>
-                            <label>
-                              <b>{data.inputLabel} :</b>
-                            </label>
-                            {data.inputType === "text" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                readOnly
-                                className="form-control form-control-sm"
-                              />
-                            )}
 
-                            {data.inputType === "textarea" && (
-                              <textarea
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                className="form-control form-control-sm"
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                              />
-                            )}
-                            {data.inputType === "date" && (
-                              <div className="form-control">
-                                <DatePicker
-                                  // onChange={onChangeDate}
-                                  value={dateValue}
-                                  format={data.inputFormat}
-                                  style={{ width: "100%" }}
-                                />
-                              </div>
-                            )}
-                            {data.inputType === "time" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "number" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                min={data.inputAddOn.inputRange ? range[0] : ""}
-                                max={data.inputAddOn.inputRange ? range[1] : ""}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "decimal" && (
-                              <input
-                                type="number"
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                min={data.inputAddOn.inputRange ? range[0] : ""}
-                                max={data.inputAddOn.inputRange ? range[1] : ""}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "select" && (
-                              <input
-                                type="text"
-                                // defaultValue={selectedDropdown ? selectedDropdown[data.inputName] : ""}
-                                // defaultValue={data.inputDefaultValue ? data.inputAddOn.inputDataSourceData.filter(d => d.value == data.inputDefaultValue) : ""}
-                                defaultValue={data.inputDefaultValue}
-                                // options={data.inputAddOn.inputDataSourceData}
-                                // id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                                name={data.inputName}
-                                // onChange={e => { dynamicDependancyHandle(data.inputName, e, data.inputAddOn.inputOnChangeSource) }}
-                                className="form-control form-control-sm"
-                                required={data.inputMandatory ? true : false}
-                                readOnly
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )} */}
-
-
-              {rows && rows.length>0 &&(
-                  <div className="row">
+              {rows && rows.length > 0 && (
+                <div className="row">
                   {rows.map((data, index) => {
                     var range = "";
                     return (
@@ -1421,17 +1198,16 @@ export default function EditTicketComponent({ match }) {
                             type={data.inputType}
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
-                            // defaultValue={
-                            //   selectedDropdown
-                            //     ? selectedDropdown[data.inputName]
-                            //     : ""
-                            // }
                             defaultValue={data.inputDefaultValue}
-                            required={data.inputMandatory == true ? true : false}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             onChange={dynamicChangeHandle}
                             className="form-control form-control-sm"
                           />
@@ -1440,7 +1216,9 @@ export default function EditTicketComponent({ match }) {
                           <textarea
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -1451,65 +1229,55 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             onChange={dynamicChangeHandle}
-                            required={data.inputMandatory == true ? true : false}
-  
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                           >
                             {data.inputDefaultValue}
                           </textarea>
                         )}
-  
+
                         {data.inputType === "date" && (
                           <div className="form-control">
-                            {/* <DatePicker
-                              required={
-                                data && data.inputMandatory == true ? true : false
-                              }
-                              // onChange={onChangeDate}
-                              // value={dateValue}
-                              defaultValue={data.inputDefaultValue}
-                              format={data.inputFormat}
-                              style={{ width: "100%" }}
-                              
-                            /> */}
-  
-  <input
+                            <input
                               type="date"
                               name={data.inputName}
                               required={
-                                data && data.inputMandatory == true ? true : false
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
                               }
-                              // onChange={dynamicChangeHandle}
-                              // value={dateValue}
                               defaultValue={data.inputDefaultValue}
-                              // format={data.inputFormat}
                               style={{ width: "100%" }}
                             />
                           </div>
                         )}
-  
+
                         {data.inputType === "datetime-local" && (
                           <div className="form-control">
                             <input
                               type="datetime-local"
                               name={data.inputName}
                               required={
-                                data && data.inputMandatory == true ? true : false
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
                               }
                               onChange={dynamicChangeHandle}
-                              // value={dateValue}
                               defaultValue={data.inputDefaultValue}
-                              // format={data.inputFormat}
                               style={{ width: "100%" }}
                             />
                           </div>
                         )}
-  
+
                         {data.inputType === "time" && (
                           <input
                             type={data.inputType}
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -1519,82 +1287,77 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             onChange={dynamicChangeHandle}
-                            required={data.inputMandatory == true ? true : false}
-  
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             className="form-control form-control-sm"
                           />
                         )}
-  
+
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                      : ""
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="radio"
-                                />
-                                <label for={d.value}>{d.label}</label>
-                              </div>
-                            );
-                          })
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="radio"
+                                  />
+                                  <label for={d.value}>{d.label}</label>
+                                </div>
+                              );
+                            })
                           : ""}
-  
+
                         {data.inputType == "checkbox" &&
-                          data.inputAddOn.inputRadio
+                        data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                      : ""
-                                  }
-                            required={data.inputMandatory == true ? true : false}
-  
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="checkbox"
-                                />
-                                <label for={d.value}> {d.label}</label>
-                              </div>
-                            );
-                          })
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    required={
+                                      data.inputMandatory == true ? true : false
+                                    }
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="checkbox"
+                                  />
+                                  <label for={d.value}> {d.label}</label>
+                                </div>
+                              );
+                            })
                           : ""}
-  
-                          {console.log("df",data.inputDefaultValue)}
-  
+
+
                         {data.inputType === "number" && (
                           <input
                             type={data.inputType}
-                            // type="date"
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
-                            // defaultValue={
-                            //   selectedDropdown
-                            //     ? selectedDropdown[data.inputName]
-                            //     : ""
-  
-                            // }
-  
                             defaultValue={data.inputDefaultValue}
-  
-                            required={data.inputMandatory == true ? true : false}
-  
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             onChange={dynamicChangeHandle}
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
@@ -1606,11 +1369,14 @@ export default function EditTicketComponent({ match }) {
                             type="number"
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
-                            required={data.inputMandatory == true ? true : false}
-  
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -1628,10 +1394,11 @@ export default function EditTicketComponent({ match }) {
                             options={data.inputAddOn.inputRadio}
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
-  
                             name={data.inputName}
                             onChange={(e) => {
                               dynamicDependancyHandle(
@@ -1644,53 +1411,47 @@ export default function EditTicketComponent({ match }) {
                             required={data.inputMandatory ? true : false}
                           />
                         )}
-  
-  
-  {data.inputType === "select-master" && (
-                            <select
-                              id={
-                                data.inputName
-                                  ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                  : ""
-                              }
-                              defaultValue={data.inputAddOn.inputDataSource}
-                              name={data.inputName}
-                              className="form-control form-control-sm"
-                            >
-                              <option> {data.inputName}</option>
-                              {data.inputAddOn.inputDataSourceData &&
-                                data.inputAddOn.inputDataSourceData.map(
-                                  (option) => {
-                                    return (
-                                      <option
-                                        selected={
-                                          parseInt(
-                                            data &&
-                                              data?.inputAddOn
-                                                ?.inputDataSourceData
-                                          ) === option.value
-                                        }
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </option>
-                                    );
-                                  }
-                                )}
-                            </select>
-                          )}
-  
-  
-                        
+
+                        {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={data.inputAddOn.inputDataSource}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               )}
-
-              
 
               <div className="card mt-2">
                 <div className="card-body">
@@ -1822,26 +1583,6 @@ export default function EditTicketComponent({ match }) {
                     );
                   })}
               </div>
-
-              {/* <div className='card mt-2'>
-                            <div className='card-body'>
-                                <div className="col-sm-4 mt-3">
-                                    <label className=" col-form-label">
-                                        <b>Upload Attachment : </b>
-                                    </label>
-                                    <input type="file"
-                                        id="attachment"
-                                        name="attachment[]"
-                                        multiple
-                                    />
-                                </div>
-                            </div>
-                            <Attachment
-                                data={attachment}
-                                refId={ticketId}
-                                handleAttachment={handleAttachment}
-                            />
-                        </div> */}
 
               <div className="mt-3" style={{ textAlign: "right" }}>
                 {isSolved == false && (

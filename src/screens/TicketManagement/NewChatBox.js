@@ -47,7 +47,6 @@ const Chatbox = props => {
           setUsers(select)
         }
       } catch (error) {
-        console.error('Error fetching user data:', error)
       }
     }
 

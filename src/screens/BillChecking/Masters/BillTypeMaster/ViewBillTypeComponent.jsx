@@ -12,8 +12,8 @@ import { _base } from "../../../../settings/constants";
 
 const ViewBillTypeComponent = ({ match }) => {
   const history = useNavigate();
- const {id} =useParams()
-  const  BillId = id
+  const { id } = useParams();
+  const BillId = id;
   const [approverData, setApproverData] = useState({
     data: [
       {
@@ -144,7 +144,8 @@ const ViewBillTypeComponent = ({ match }) => {
   };
 
   const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -176,57 +177,54 @@ const ViewBillTypeComponent = ({ match }) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             let data = res.data.data;
-        
+
             setBilltypeData(data);
           }
         }
       });
   };
 
-
-
   const handleUserSelection = (sectionIndex, rowIndex, selectedOptions) => {
     const updatedSelectedUsersArray = [...selectedUsersArray];
     const newData = [...approverData.data];
-  
+
     // Extract values from selectedOptions for the first dropdown (optional users)
     const selectedValues1 = selectedOptions.map((option) => option.value);
-  
+
     // Update the selected users for the first dropdown
     updatedSelectedUsersArray[sectionIndex][rowIndex] = selectedOptions;
     newData[sectionIndex].level[rowIndex].employee_id = selectedValues1;
-  
+
     // Set the updated arrays as the new state
     setSelectedUsersArray(updatedSelectedUsersArray);
     setApproverData({ data: newData });
-  
+
     // Update the selected values in the second dropdown to match the first dropdown
     const updatedData = [...approverData.data];
-  
+
     // Get the previous selected values from the second dropdown (required users)
     const prevSelectedValues2 =
       updatedData[sectionIndex].level[rowIndex].required_users || [];
-  
+
     // Find values that were removed
     const removedValues = prevSelectedValues2.filter(
       (value) => !selectedValues1.includes(value)
     );
-  
+
     // Find values that were added
     const addedValues = selectedValues1.filter(
       (value) => !prevSelectedValues2.includes(value)
     );
-  
+
     // Update the selected values in the second dropdown
     updatedData[sectionIndex].level[rowIndex].required_users = [
       ...prevSelectedValues2.filter((value) => !removedValues.includes(value)),
       ...addedValues,
     ];
-  
+
     setApproverData({ data: updatedData });
   };
-  
-  
+
   const handleUserSelection2 = (sectionIndex, rowIndex, selectedOptions) => {
     // Copy the current selectedUsersArray to avoid mutating state directly
     const updatedSelectedUsersArray = [...selectedUsersArray];
@@ -235,23 +233,23 @@ const ViewBillTypeComponent = ({ match }) => {
     if (!updatedSelectedUsersArray[sectionIndex]) {
       updatedSelectedUsersArray[sectionIndex] = [];
     }
-  
+
     // Extract values from selectedOptions
     const selectedValues = selectedOptions.map((option) => option.value);
-  
+
     // Update the selected users for the specified row in the second dropdown
     updatedSelectedUsersArray[sectionIndex][rowIndex + 1] = selectedOptions;
     // Update the corresponding field in the approverData state with extracted values
     newData[sectionIndex].level[rowIndex].required_users = selectedValues;
-  
+
     // Set the updated array as the new state
-    setApproverData({ data: newData })
+    setApproverData({ data: newData });
     setSelectedUsersArray(updatedSelectedUsersArray);
   };
-  
+
   const getAvailableOptions = (options, sectionIndex, rowIndex) => {
     const selectedUsersInSection = selectedUsersArray[sectionIndex];
-  
+
     // If selections have been made in this section, filter the options
     if (selectedUsersInSection && selectedUsersInSection[rowIndex]) {
       const selectedOptionValues = selectedUsersInSection[rowIndex].map(
@@ -261,7 +259,7 @@ const ViewBillTypeComponent = ({ match }) => {
         selectedOptionValues.includes(option.value)
       );
     }
-  
+
     // If no selection has been made, show all options
     return options;
   };
@@ -269,14 +267,14 @@ const ViewBillTypeComponent = ({ match }) => {
     // Get the maximum length from the required_users array
     const maxLength =
       approverData.data[index].level[rowIndex].required_users?.length || 0;
-  
+
     // Ensure the new value is a positive number
     const validValue = Math.max(0, Math.min(newValue, maxLength));
-  
+
     // Update the data in a copy of the approverData state
     const newData = [...approverData.data];
     newData[index].level[rowIndex].required_numbers = validValue;
-  
+
     // Update the state with the new data
     setApproverData({ data: newData });
   };
@@ -284,9 +282,9 @@ const ViewBillTypeComponent = ({ match }) => {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-  
+
     const isEmpty = approverData.data.some((section) => {
-      return section.level.some((levelItem) => {    
+      return section.level.some((levelItem) => {
         return (
           levelItem.employee_id.length === 0 ||
           levelItem.required_users.length === 0 ||
@@ -297,37 +295,38 @@ const ViewBillTypeComponent = ({ match }) => {
         );
       });
     });
-    
-    
-    
-  
+
     // Check if assign_employee_id[] is empty
-    const assignEmployeeId = formData.getAll('assign_employee_id[]');
+    const assignEmployeeId = formData.getAll("assign_employee_id[]");
     if (assignEmployeeId == "") {
       alert("Please select Assigned User");
       return;
     }
-  
+
     // Check if any of the fields are empty or null
     if (isEmpty) {
       alert("Please fill in all required fields");
       return;
     }
-  
+
     // Proceed with the API request
     formData.append("approverData", JSON.stringify(approverData));
     formData.append("user_id", sessionStorage.getItem("id"));
     formData.append("bill_type", e.target.bill_type.value);
-  
+
     try {
-      const res = await new BillTypeMasterService().updateBillType(BillId, formData);
-  
+      const res = await new BillTypeMasterService().updateBillType(
+        BillId,
+        formData
+      );
+
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/billTypeMaster`,
-           
-          },{ state: { alert: { type: "success", message: res.data.message } }}
+          history(
+            {
+              pathname: `/${_base}/billTypeMaster`,
+            },
+            { state: { alert: { type: "success", message: res.data.message } } }
           );
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -335,50 +334,41 @@ const ViewBillTypeComponent = ({ match }) => {
       }
     } catch (error) {
       // Handle error appropriately
-      console.error("Error:", error);
     }
   };
-  
 
+  // Initialize approverData with default values from billTypeData
+  useEffect(() => {
+    if (billTypeData) {
+      const transformedData = transformData(billTypeData);
+      setApproverData({ data: transformedData });
+    }
+  }, [billTypeData]);
 
-// Initialize approverData with default values from billTypeData
-useEffect(() => {
-  if (billTypeData) {
-    const transformedData = transformData(billTypeData);
-    setApproverData({ data: transformedData });
-  }
-}, [billTypeData]);
+  // Function to transform billTypeData into the desired structure
+  const transformData = (billTypeData) => {
+    if (!billTypeData || !billTypeData.bill_type) return [];
 
+    const { bill_type, assigned_users, is_active, remark, ...approverData } =
+      billTypeData;
 
+    const transformedData = Object.keys(approverData).map((key) => {
+      const item = approverData[key];
+      const amount = item.amount || "00.00";
+      const slab = item.slab || 1;
 
-// Function to transform billTypeData into the desired structure
-const transformData = (billTypeData) => {
-  if (!billTypeData || !billTypeData.bill_type) return [];
+      const level = item.level.map((levelItem, index) => ({
+        bill_approval_level: levelItem.bil_approval_level,
+        employee_id: levelItem.employee_ids,
+        required_users: levelItem.is_required_users,
+        required_numbers: levelItem.required_numbers || null,
+      }));
 
-  const { bill_type, assigned_users, is_active, remark, ...approverData } = billTypeData;
-  
-  const transformedData = Object.keys(approverData).map((key) => {
-    const item = approverData[key];
-    const amount = item.amount || "00.00";
-    const slab = item.slab || 1;
+      return { amount, slab, level };
+    });
 
-    const level = item.level.map((levelItem, index) => ({
-      bill_approval_level: levelItem.bil_approval_level,
-      employee_id: levelItem.employee_ids,
-      required_users: levelItem.is_required_users,
-      required_numbers: levelItem.required_numbers || null,
-    }));
-
-    return { amount, slab, level };
-  });
-
-  return transformedData;
-};
-
-
-
-  
-  
+    return transformedData;
+  };
 
   useEffect(() => {
     const initialSelectedOptions = approverData.data.map((section) =>
@@ -391,11 +381,8 @@ const transformData = (billTypeData) => {
     loadData();
   }, []);
 
-
-  
-
   return (
-      <div className="container-xxl">
+    <div className="container-xxl">
       <PageHeader headerTitle="View Bill Type" />
       {notify && <Alert alertData={notify} />}
       <div className="card">
@@ -448,7 +435,7 @@ const transformData = (billTypeData) => {
               </div>
               <div className="col-sm-4 ">
                 <label className="form-label font-weight-bold">
-                Remark :<Astrick color="red" size="13px" />
+                  Remark :<Astrick color="red" size="13px" />
                 </label>
 
                 <textarea
@@ -463,10 +450,8 @@ const transformData = (billTypeData) => {
             </div>
 
             <div className="col-sm-6">
-
               <div className="row">
                 <div className="col-md-2">
-
                   <label className="form-label font-weight-bold">
                     Status :<Astrick color="red" size="13px" />
                   </label>
@@ -482,7 +467,6 @@ const transformData = (billTypeData) => {
                         value="1"
                         readOnly
                         disabled={true}
-
                         defaultChecked={
                           billTypeData && billTypeData.is_active === 1
                             ? true
@@ -491,7 +475,6 @@ const transformData = (billTypeData) => {
                       />
                     )}
 
-                  
                     <label className="form-check-label" htmlFor="is_active_1">
                       Active
                     </label>
@@ -522,8 +505,6 @@ const transformData = (billTypeData) => {
               </div>
             </div>
 
-
-
             {billTypeData &&
               approverData.data.map((item, index) => (
                 <div key={index} className="mt-3">
@@ -540,40 +521,18 @@ const transformData = (billTypeData) => {
                         className="form-control-md"
                         type="number"
                         readOnly
-                        // key={index}
                         value={item.amount != null ? item.amount : ""}
                         onChange={(e) => {
                           let inputValue = e.target.value;
-                          
-                          // Use a regex to remove any negative sign
+
                           inputValue = inputValue.replace(/-/g, "");
-                          
+
                           // Parse the input value as a number
                           const newValue = parseFloat(inputValue);
                           handleAmountChange(index, newValue);
                         }}
                         onBlur={(e) => validateAmounts(e, index)}
                       />
-                      {/* {index + 1 === item.slab && index === 0 ? (
-                        <Button
-                          type="button"
-                          variant="primary"
-                          className="sm"
-                          onClick={handleIncrement}
-                        >
-                          <i className="icofont-plus-circle" />
-                        </Button>
-                      ) : null}
-
-                      {approverData.data.length > 1 ? (
-                        <Button
-                          variant="danger"
-                          className="sm"
-                          onClick={() => handleRemoveSection(index)}
-                        >
-                          <i className="icofont-minus-circle" />
-                        </Button>
-                      ) : null} */}
                     </Col>
                   </Row>
 
@@ -588,7 +547,8 @@ const transformData = (billTypeData) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {item && item.level?.length > 0 &&
+                      {item &&
+                        item.level?.length > 0 &&
                         item.level.map((levelItem, rowIndex) => (
                           <tr key={rowIndex}>
                             <td> {rowIndex + 1}</td>
@@ -618,11 +578,13 @@ const transformData = (billTypeData) => {
                             <td>
                               {assignedUserData && (
                                 <Select
-                                 key={rowIndex}
-                                 value={
+                                  key={rowIndex}
+                                  value={
                                     levelItem.required_users &&
                                     assignedUserData.filter((user) =>
-                                      levelItem.required_users.includes(user.value)
+                                      levelItem.required_users.includes(
+                                        user.value
+                                      )
                                     )
                                   }
                                   isDisabled
@@ -649,7 +611,8 @@ const transformData = (billTypeData) => {
                                 readOnly
                                 key={rowIndex}
                                 max={
-                                  approverData.data[index].level[rowIndex].required_users?.length || ""
+                                  approverData.data[index].level[rowIndex]
+                                    .required_users?.length || ""
                                 }
                                 onKeyPress={(e) => {
                                   Validation.NumbersOnly(e);
@@ -657,41 +620,22 @@ const transformData = (billTypeData) => {
                                 value={levelItem && levelItem.required_numbers}
                                 onChange={(e) => {
                                   let inputValue = e.target.value;
-                            
+
                                   // Use a regex to remove any negative sign
                                   inputValue = inputValue.replace(/-/g, "");
-                            
+
                                   // Parse the input value as a number
                                   const newValue = parseFloat(inputValue);
-                            
+
                                   // Call the handleRequiredNumbersChange function
-                                  handleRequiredNumbersChange(index, rowIndex, newValue);
+                                  handleRequiredNumbersChange(
+                                    index,
+                                    rowIndex,
+                                    newValue
+                                  );
                                 }}
                               />
                             </td>
-
-                            {/* <td>
-                              {item.level.length > 1 && rowIndex !== 0 ? ( // Only render the button if there's more than one row
-                                <Button
-                                  type="button"
-                                  variant="danger"
-                                  onClick={() =>
-                                    handleRemoveRow(index, rowIndex)
-                                  }
-                                >
-                                  <i className="icofont-ui-delete" />
-                                </Button>
-                              ) : null}
-                              {rowIndex === 0 && (
-                                <Button
-                                  type="button"
-                                  variant="primary"
-                                  onClick={() => handleAddRow(index, rowIndex)}
-                                >
-                                  <i className="icofont-plus-circle" />
-                                </Button>
-                              )}
-                            </td> */}
                           </tr>
                         ))}
                     </tbody>
@@ -700,22 +644,12 @@ const transformData = (billTypeData) => {
                   <br />
                 </div>
               ))}
-              <Link to={`/${_base}/billTypeMaster`}
-            className="pull-right btn btn-danger text-white"
-            
+            <Link
+              to={`/${_base}/billTypeMaster`}
+              className="pull-right btn btn-danger text-white"
             >
-                   Cancel
-            
-            </Link>
-
-
-
-            {/* <Button type="button" className="pull-right" variant="danger">
               Cancel
-            </Button>
-            <Button className="pull-right" type="submit" variant="primary">
-              Update
-            </Button> */}
+            </Link>
           </div>
         </form>
       </div>

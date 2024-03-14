@@ -1,67 +1,3 @@
-// import { createSlice } from "@reduxjs/toolkit";
-// import { getAllTaskData, getBasketTaskData } from "./TaskComponentAction";
-
-
-// const initialState = {
-//   status: "",
-//   err: "",
-//   basketData:[],
-//   taskData:[]
-  
-// };
-
-// export const TaskcomponentSlice = createSlice({
-//   name: "TaskcomponentSlice",
-//   initialState,
-//   reducers: {
-//     loaderModal: (state, action) => {
-//       state.showLoaderModal = action.payload;
-//       console.log("action of modal", action.payload);
-//     },
-//   },
-//   extraReducers: (builder) => {
-//     builder.addCase(getBasketTaskData.pending, (state) => {
-//       state.status = "loading";
-//     });
-//     builder.addCase(getBasketTaskData.fulfilled,(state, action) => {
-//       const { payload } = action;
-//       console.log("p",payload)
-//       if (payload?.status === 200 && payload?.data?.status === 1) {
-//         let basketData = payload
-//         console.log("bas",basketData)
-//         state.basketData = basketData
-//         state.status = "succeded"
-//       }
-//     });
-//     builder.addCase(getBasketTaskData.rejected, (state) => {
-//       state.status = "rejected";
-//     });
-
-//     builder.addCase(getAllTaskData.pending, (state) => {
-//         state.status = "loading";
-//       });
-//       builder.addCase(getAllTaskData.fulfilled,(state, action) => {
-//         const { payload } = action;
-//         console.log("p",payload)
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let taskData = payload.data.data
-//           console.log("bas",taskData)
-
-//           state.taskData = taskData
-//           state.status = "succeded"
-//         }
-//       });
-//       builder.addCase(getAllTaskData.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-  
-
-// }
-// });
-// export default TaskcomponentSlice.reducer;
-
-
-
 import { createSlice } from "@reduxjs/toolkit";
 import {
   PostTimerDataChange,
@@ -87,8 +23,8 @@ const initialState = {
   updateBasketDetail: [],
   postTimer: [],
   timeState: null,
-  basketData:[],
-  moduleSettingData:""
+  basketData: [],
+  moduleSettingData: "",
 };
 
 export const TaskcomponentSlice = createSlice({
@@ -105,7 +41,6 @@ export const TaskcomponentSlice = createSlice({
       state.modal = action.payload;
     },
     handleTimerStatus: (state, action) => {
-     
       state.timeState = action.payload.status;
     },
   },
@@ -222,21 +157,16 @@ export const TaskcomponentSlice = createSlice({
 
     // post timer data
 
-    builder.addCase(PostTimerDataChange.pending, (state,action) => {
-      console.log("action payload pending" ,action.payload.data.data )
+    builder.addCase(PostTimerDataChange.pending, (state, action) => {
       state.status = "loading";
-     
     });
     builder.addCase(PostTimerDataChange.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-       
-        state.timeState = payload.data.data
+        state.timeState = payload.data.data;
         state.status = "succeded";
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
-        // let modal = { showModal: false, modalData: "", modalHeader: "" };
-        // state.modal = modal;
       } else {
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
@@ -247,24 +177,17 @@ export const TaskcomponentSlice = createSlice({
       state.status = "rejected";
     });
 
-
-
-    builder.addCase(getBasketByIdData.pending, (state,action) => {
-      console.log("action payload pending" ,action.payload.data.data )
+    builder.addCase(getBasketByIdData.pending, (state, action) => {
       state.status = "loading";
-     
     });
     builder.addCase(getBasketByIdData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-       
-        let basketData = payload.data.data
+        let basketData = payload.data.data;
         state.status = "succeded";
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
-        state.basketData= [...basketData]
-        // let modal = { showModal: false, modalData: "", modalHeader: "" };
-        // state.modal = modal;
+        state.basketData = [...basketData];
       } else {
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
@@ -275,25 +198,17 @@ export const TaskcomponentSlice = createSlice({
       state.status = "rejected";
     });
 
-
-
-
-    builder.addCase(getmoduleSetting.pending, (state,action) => {
+    builder.addCase(getmoduleSetting.pending, (state, action) => {
       state.status = "loading";
-     
     });
     builder.addCase(getmoduleSetting.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-       
-        let moduleSettingData = payload.data.data
-        state.moduleSettingData= moduleSettingData
-        console.log("module",moduleSettingData)
+        let moduleSettingData = payload.data.data;
+        state.moduleSettingData = moduleSettingData;
         state.status = "succeded";
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
-        // let modal = { showModal: false, modalData: "", modalHeader: "" };
-        // state.modal = modal;
       } else {
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
@@ -301,7 +216,6 @@ export const TaskcomponentSlice = createSlice({
       }
     });
     builder.addCase(getmoduleSetting.rejected, (state) => {
-      console.log("hello")
       state.status = "rejected";
     });
   },

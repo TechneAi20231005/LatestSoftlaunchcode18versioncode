@@ -1,172 +1,3 @@
-// import { createSlice } from "@reduxjs/toolkit";
-// import { getCityData, getCountryData, getEmployeeData, getStateData ,getNotifications, getAllDashboardData} from "./DashboardAction";
-
-// const initialState = {
-//   status: "",
-//   err: "",
-//   cityUserDetail: {},
-//   cityData: [],
-//   countryData:[],
-//   stateData:[],
-//   employeeData:[],
-//   showLoaderModal:false,
-//   exportData:[],
-//   checkRole:[],
-//   notificationData:[],
-//   allDashboardData:[],
-
-// };
-
-// export const dashboardSlice = createSlice({
-
-//   name: "dashboradSlice",
-//   initialState,
-//   reducers: {
-//     loaderModal:(state,action)=>{
-//         state.showLoaderModal = action.payload
-//         console.log("action of modal",action.payload)
-//     }
-//   },
-//   extraReducers: (builder) => {
-
-//     builder.addCase(getCityData.pending, (state) => {
-//       state.status = "loading";
-
-//     });
-//     builder.addCase(getCityData.fulfilled, (state, action) => {
-//       const { payload } = action;
-//       if (payload?.status === 200 && payload?.data?.status === 1) {
-//         let cityData = payload.data.data;
-//         state.status = "succeded";
-//         state.showLoaderModal = false;
-//         let count = 1;
-//         for (let i = 0; i < cityData.length; i++) {
-//             cityData[i].counter = count++;
-//         }
-//         state.cityData = [...cityData];
-//       }
-//     });
-//     builder.addCase(getCityData.rejected, (state) => {
-//       state.status = "rejected";
-//     });
-
-//     builder.addCase(getCountryData.pending, (state) => {
-//         state.status = "loading";
-
-//       });
-//       builder.addCase(getCountryData.fulfilled, (state, action) => {
-//         const { payload } = action;
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let countryData = payload.data.data;
-//           state.status = "succeded";
-//           state.showLoaderModal = false;
-//           let count = 1;
-//           for (let i = 0; i < countryData.length; i++) {
-//             countryData[i].counter = count++;
-//           }
-//           state.countryData = [...countryData];
-//         }
-//       });
-//       builder.addCase(getCountryData.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-//       builder.addCase(getStateData.pending, (state) => {
-//         state.status = "loading";
-
-//       });
-
-//       builder.addCase(getStateData.fulfilled, (state, action) => {
-//         const { payload } = action;
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let stateData = payload.data.data;
-//           state.status = "succeded";
-//           state.showLoaderModal = false;
-//           let count = 1;
-//           for (let i = 0; i < stateData.length; i++) {
-//             stateData[i].counter = count++;
-//           }
-//           state.stateData = [...stateData];
-//         }
-//       });
-//       builder.addCase(getStateData.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-
-//       builder.addCase(getEmployeeData.pending, (state) => {
-//         state.status = "loading";
-
-//       });
-
-//       builder.addCase(getEmployeeData.fulfilled, (state, action) => {
-//         const { payload } = action;
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let employeeData = payload.data.data;
-//           state.status = "succeded";
-//           state.showLoaderModal = false;
-//           let count = 1;
-//           for (let i = 0; i < employeeData.length; i++) {
-//             employeeData[i].counter = count++;
-
-//             const firstName = employeeData[i].first_name || '';
-//       const middleName = employeeData[i].middle_name || '';
-//       const lastName = employeeData[i].last_name || ''
-//       employeeData[i].name = `${firstName} ${middleName} ${lastName}`.trim();
-//           }
-
-//           state.employeeData = [...employeeData];
-//         }
-
-//       });
-//       builder.addCase(getEmployeeData.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-
-//       builder.addCase(getNotifications.pending, (state) => {
-//         state.status = "loading";
-
-//       });
-
-//       builder.addCase(getNotifications.fulfilled, (state, action) => {
-//         const { payload } = action;
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let notificationData = payload.data.data;
-//           console.log("n",notificationData)
-//           state.status = "succeded";
-//           state.showLoaderModal = false;
-//           state.notificationData = notificationData
-//         }
-
-//       });
-//       builder.addCase(getNotifications.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-
-//       builder.addCase(getAllDashboardData.pending, (state) => {
-//         state.status = "loading";
-
-//       });
-
-//       builder.addCase(getAllDashboardData.fulfilled, (state, action) => {
-//         const { payload } = action;
-//         if (payload?.status === 200 && payload?.data?.status === 1) {
-//           let allDashboardData = payload.data.data;
-
-//           state.status = "succeded";
-//           state.showLoaderModal = false;
-//           state.allDashboardData = allDashboardData
-//         }
-
-//       });
-//       builder.addCase(getAllDashboardData.rejected, (state) => {
-//         state.status = "rejected";
-//       });
-
-//   },
-
-// });
-
-// export default dashboardSlice.reducer;
-
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getCityData,
@@ -382,7 +213,6 @@ state.FilterCity=FilterCity
     // fetch country data
     builder.addCase(getCountryData.pending, (state) => {
       state.status = "loading";
-      // state.notify = null;
     });
     builder.addCase(getCountryData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -480,7 +310,6 @@ state.FilterCity=FilterCity
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCountry = payload.data.data;
         state.status = "succeeded";
-        // state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
 
@@ -593,7 +422,6 @@ state.FilterCity=FilterCity
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
       } else {
-        // let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
         state.notify = { type: "danger", message: payload.data.message };
       }
@@ -835,10 +663,7 @@ state.FilterCity=FilterCity
 
         state.status = "succeded";
         state.showLoaderModal = false;
-        // let count = 1;.
-        // for (let i = 0; i < getRoles.length; i++) {
-        //   getRoles[i].counter = count++;
-        // }
+      
         state.getAllRoles = [...getAllRoles];
       }
     });
@@ -929,10 +754,7 @@ state.FilterCity=FilterCity
         state.status = "succeded";
         state.showLoaderModal = false;
 
-        // let count = 1;.
-        // for (let i = 0; i < getRoles.length; i++) {
-        //   getRoles[i].counter = count++;
-        // }
+       
         state.customerTypeData = [...customerTypeData];
       }
     });
@@ -940,28 +762,7 @@ state.FilterCity=FilterCity
       state.status = "rejected";
     });
 
-    // builder.addCase(postCustomerData.pending, (state) => {
-    //   state.status = "loading";
-    //   state.notify=null
-    // });
-
-    // builder.addCase(postCustomerData.fulfilled, (state, action) => {
-    //   const { payload } = action;
-    //   if (payload?.data?.status === 1) {
-    //     state.status = "succeded";
-    //     state.notify = null;
-    //     state.notify = { type: "success", message: payload.data.message };
-    //     let modal = { showModal: false, modalData: "", modalHeader: "" };
-    //     state.modal = modal;
-    //   } else {
-    //     // let notify = { type: "danger", message: payload.data.message };
-    //     state.notify = null;
-    //     state.notify = { type: "danger", message: payload.data.message };
-    //   }
-    // });
-    // builder.addCase(postCustomerData.rejected, (state) => {
-    //   state.status = "rejected";
-    // });
+   
 
     builder.addCase(getCustomerByIdData.pending, (state) => {
       state.status = "loading";
@@ -974,15 +775,12 @@ state.FilterCity=FilterCity
         const customerByIdData = payload.data.data;
         state.status = "succeded";
         state.notify = null;
-        // state.notify = { type: "success", message: payload.data.message };
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
         state.customerByIdData = customerByIdData;
      
       } else {
-        // let notify = { type: "danger", message: payload.data.message };
-        // state.notify = null;
-        // state.notify = { type: "danger", message: payload.data.message };
+       
       }
     });
     builder.addCase(getCustomerByIdData.rejected, (state) => {
@@ -1003,7 +801,6 @@ state.FilterCity=FilterCity
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
       } else {
-        // let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
         state.notify = { type: "danger", message: payload.data.message };
       }
@@ -1022,7 +819,6 @@ state.FilterCity=FilterCity
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCustomer = payload.data.data;
         state.status = "succeeded";
-        // state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
 
@@ -1052,7 +848,6 @@ state.FilterCity=FilterCity
         let getAllUser = payload.data.data;
         state.status = "succeeded";
         state.notify = null;
-        // state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
 
         state.getAllUser = getAllUser;
@@ -1060,7 +855,6 @@ state.FilterCity=FilterCity
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
       } else {
-        // state.notify = { type: "danger", message: payload.data.message };
       }
     });
     builder.addCase(getAllUserById.rejected, (state) => {
@@ -1068,22 +862,7 @@ state.FilterCity=FilterCity
     });
 
 
-    // ------------------- Get User By Id--------------------
-
-    // builder.addCase(getEmployeeDataById.pending, (state) => {
-    //   state.status = "loading";
-    //   state.notify = null;
-    // });
-    // builder.addCase(getEmployeeDataById.fulfilled, (state, action) => {
-
-
-
-
-    // });
-    // builder.addCase(getCityData.rejected, (state) => {
-    //   state.status = "rejected";
-    //   state.notify = null;
-    // });
+   
   },
 });
 

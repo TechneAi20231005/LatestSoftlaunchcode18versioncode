@@ -50,7 +50,6 @@ const EditBillTypeComponent = ({ match }) => {
 
     if (isNaN(firstAmount)) {
       firstAmount = 0.0;
-      
     }
     if (firstAmount === null || firstAmount === 0) {
       alert("Please enter an amount first.");
@@ -69,7 +68,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
-    
+
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -81,8 +80,6 @@ const EditBillTypeComponent = ({ match }) => {
         }
       }
     }
-
-
 
     // Calculate the new amount based on the previous section
     const previousSection = newData[newData.length - 1];
@@ -168,7 +165,7 @@ const EditBillTypeComponent = ({ match }) => {
 
   // Function To Remove Slab
   const handleRemoveSection = (indexToRemove) => {
-    setAmountErr("")
+    setAmountErr("");
 
     const newData = [...approverData.data];
 
@@ -199,7 +196,7 @@ const EditBillTypeComponent = ({ match }) => {
   };
   //Created By Rushikesh harkare 12/10/2023
 
-const [amountErr,setAmountErr]=useState("")
+  const [amountErr, setAmountErr] = useState("");
 
   //Function for on Changing amount update in state
   const handleAmountChange = (index, value) => {
@@ -222,98 +219,16 @@ const [amountErr,setAmountErr]=useState("")
       setApproverData({ data: newData });
     }
 
-    if ( newData[index + 1]?.amount <= newData[index - 1]?.amount) {
-      setAmountErr(`Amount in section ${index + 1} should be greater than the previous tab.`)
-      // alert(`Amount in section ${index + 1} should be greater than the previous tab.`);
-      // return; // Exit the function without adding a new slab
-  }
-  else{
-    setAmountErr("")
-  }
+    if (newData[index + 1]?.amount <= newData[index - 1]?.amount) {
+      setAmountErr(
+        `Amount in section ${
+          index + 1
+        } should be greater than the previous tab.`
+      );
+    } else {
+      setAmountErr("");
+    }
   };
-  //Created By Rushikesh harkare 12/10/2023
-
-  //Validation For amount
-  // const validateAmounts = (e, index) => {
-  //   const slabsData = approverData.data;
-  //   const numSlabs = slabsData.length;
-
-  //   // Check if the input value has changed
-  //   if (e.target.value === slabsData[index].amount) {
-  //     return; // Exit the function if the value hasn't changed
-  //   }
-
-  //   // Update the current slab's amount
-  //   const newValue = parseFloat(e.target.value);
-
-  //   if (index === 0) {
-  //     // Special case for the last index
-  //     const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
-  //     if (index === 0 && newValue > previousAmount) {
-  //       alert(
-  //         `Amount in section ${
-  //           index + 1
-  //         } should not be greater than the previous tab`
-  //       );
-  //       e.target.value = previousAmount;
-  //       slabsData[index].amount = previousAmount;
-  //       newValue = previousAmount;
-  //     }else {
-  //       // Update the last slab's amount
-  //       slabsData[index].amount = newValue;
-  //     }
-  //     if (index > 0 && newValue < previousAmount) {
-  //       alert(
-  //         `Amount in section ${
-  //           index + 1
-  //         } should be greater than the previous tab`
-  //       );
-  //       e.target.value = previousAmount;
-  //       slabsData[index].amount = previousAmount;
-  //     } else {
-  //       // Update the last slab's amount
-  //       slabsData[index].amount = newValue;
-  //     }
-  //   } else {
-  //     // For all other indices
-  //     const previousAmount = slabsData[index - 1].amount;
-  //     const nextAmount = slabsData[index + 1].amount;
-
-  //     if (index === numSlabs - 2) {
-  //       // Special case for the second-last index
-  //       if (newValue < previousAmount) {
-  //         alert(
-  //           `Amount in section ${
-  //             index + 1
-  //           } should be greater than the previous tab`
-  //         );
-  //         e.target.value = previousAmount;
-  //         slabsData[index].amount = previousAmount;
-  //         slabsData[index + 1].amount = previousAmount;
-  //       } else {
-  //         // Update the current slab's amount
-  //         slabsData[index].amount = newValue;
-  //       }
-  //     } else {
-  //       // For all other indices except the last and second-last
-  //       if (newValue <= previousAmount || newValue >= nextAmount) {
-  //         alert(
-  //           `Amount in section ${
-  //             index + 1
-  //           } should be greater than the previous tab and less than the next tab`
-  //         );
-  //         e.target.value = previousAmount;
-  //         slabsData[index].amount = previousAmount;
-  //       } else {
-  //         // Update the current slab's amount
-  //         slabsData[index].amount = newValue;
-  //       }
-  //     }
-  //   }
-
-  //   // Update the state with the modified data
-  //   setApproverData({ data: slabsData });
-  // };
 
   //Validation For amount
   const validateAmounts = (e, index) => {
@@ -657,8 +572,7 @@ const [amountErr,setAmountErr]=useState("")
     if (amountErr) {
       alert("Please fix the error before submitting the form.");
       return;
-  }
-
+    }
 
     // Proceed with the API request
     formData.append("approverData", JSON.stringify(approverData));
@@ -811,16 +725,6 @@ const [amountErr,setAmountErr]=useState("")
                   onKeyPress={(e) => {
                     handleRemark(e);
                   }}
-                  // onChange={(event) => {
-                  //   if (event.target.value === "") {
-                  //     setInputState({
-                  //       ...inputState,
-                  //       remarkErr: "Remark Required",
-                  //     });
-                  //   } else {
-                  //     setInputState({ ...inputState, remarkErr: "" });
-                  //   }
-                  // }}
                 />
                 {inputState && (
                   <small
@@ -889,7 +793,6 @@ const [amountErr,setAmountErr]=useState("")
                   <Row>
                     <h6 className="fw-bold">SLAB :- {item.slab}</h6>
                     <Col className="mt-2">
-
                       <strong>
                         {index === approverData.data.length - 1
                           ? "Above Amount:"
@@ -903,8 +806,6 @@ const [amountErr,setAmountErr]=useState("")
                             ? { backgroundColor: "#D1D1D9" }
                             : null
                         }
-                      // min = { approverData && index >0 &&approverData.data?.filter((d)=>d.slab ==1).map((i)=>i.amount + 1)}
-
                         type="number" // Change type to text
                         key={index}
                         value={item.amount ? item.amount : ""}
@@ -928,15 +829,13 @@ const [amountErr,setAmountErr]=useState("")
                           index > 0 && index === approverData.data.length - 1
                         }
                       />
-                     
-                      {/* {index + 1 === item.slab && index === 0 ? ( */}
+
                       {index === 0 || index !== approverData.data.length - 1 ? (
                         <Button
                           type="button"
                           variant="primary"
                           className="sm"
-                        disabled={!item.amount ? true : false}
-
+                          disabled={!item.amount ? true : false}
                           onClick={(e) => {
                             handleIncrement(e, index);
                           }}
@@ -956,28 +855,12 @@ const [amountErr,setAmountErr]=useState("")
                         </Button>
                       ) : null}
                     </Col>
-                    {/* {console.log("i",(index>0 && !index === approverData.data.length - 1))}
-                    {console.log("index",index)}
-                    {(index > 0 ) && (!index === approverData.data.length - 1) === false &&
-                    <>
-                    {item.amount <= approverData.data[0].amount ? (
-                        <small
-                          style={{
-                            color: "red",
-                          }}
-                        >
-                          value should be greater than the previous slab
-                        </small>
-                      ) : (
-                        ""
-                      )}
-                      </>
-                      }
-                       {console.log("am",item.amount)}
-                      {console.log("apdata",approverData.data[0].amount)}  */}
-  {index > 0 && index === approverData.data.length - 2 &&
-                  <small style={{ color: 'red',   display: 'block' }}>{amountErr}</small>
-                  }
+
+                    {index > 0 && index === approverData.data.length - 2 && (
+                      <small style={{ color: "red", display: "block" }}>
+                        {amountErr}
+                      </small>
+                    )}
                   </Row>
 
                   <Table className="mt-2">
@@ -1127,9 +1010,6 @@ const [amountErr,setAmountErr]=useState("")
                   <br />
                 </div>
               ))}
-            {/* <Button type="button" className="pull-right" variant="danger">
-              Cancel
-            </Button> */}
 
             <Link
               to={`/${_base}/billTypeMaster`}

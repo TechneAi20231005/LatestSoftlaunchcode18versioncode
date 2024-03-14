@@ -54,7 +54,6 @@ export const tenantmasterSlice = createSlice({
         state.exportAllTenantData = [...getAllTenant]
         let sr = 1;
         let exportAllTenantData = [];
-        console.log('Tenant', getAllTenant)
         for (const i in getAllTenant) {
           exportAllTenantData.push({
             Sr: sr++,
@@ -117,28 +116,7 @@ export const tenantmasterSlice = createSlice({
 
     //___________________________________________UpdateRole_________________________________
 
-    // builder.addCase(updatedRole.pending, (state) => {
-    //   state.status = "loading";
-    // });
-    // builder.addCase(updatedRole.fulfilled, (state, action) => {
-    //   const { payload } = action;
-    //   console.log("payload Role", payload);
-    //   if (payload?.status === 200 && payload?.data?.status === 1) {
-    //     state.notify = { type: "success", message: payload.data.message };
-    //     state.modal = { showModal: false, modalData: null, modalHeader: "" };
-
-    //     let updatedRole = payload.data.data;
-    //     console.log(updatedRole);
-    //     state.status = "succeded";
-    //     state.showLoaderModal = false;
-    //     state.updatedRole = updatedRole;
-    //   } else {
-    //     state.notify = { type: "danger", message: payload.data.message };
-    //   }
-    // });
-    // builder.addCase(updatedRole.rejected, (state) => {
-    //   state.status = "rejected";
-    // });
+    
   },
 });
 

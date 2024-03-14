@@ -587,15 +587,7 @@ export default function ViewTicketComponent({ match }) {
               <div className="card-body">
                 <h6 className="fw-bold mb-3 text-danger">Timeline</h6>
 
-                {/* {chart && (
-                  <Chart
-                    options={chart.options}
-                    series={chart.series}
-                    type="rangeBar"
-                    height={chart.options.chart.height}
-                  />
-                
-                )} */}
+               
 
                 <div>
                   <div style={{ display: "block", flexDirection: "column" }}>
@@ -634,24 +626,13 @@ export default function ViewTicketComponent({ match }) {
                     <Chart
                       options={chartOptions}
                       data={chartDataa}
-                      // series={getTaskSeries()}
                       type="rangeBar"
                       height={chartOptions?.chart?.height}
                     />
                   )}
                 </div>
 
-                {/* {console.log("series",chart.series)} */}
-                {/* {console.log("chart",chart.options.chart.height)} */}
-
-                {/* <Chart
-          width={'700px'}
-          height={'410px'}
-          chartType="Gantt"
-          loader={<div>Loading Chart</div>}
-          data={ganttChartData}
-          rootProps={{ 'data-testid': '1' }}
-        /> */}
+              
               </div>
             </div>
           </div>

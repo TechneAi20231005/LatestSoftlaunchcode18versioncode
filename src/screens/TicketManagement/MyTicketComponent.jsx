@@ -1,6 +1,3 @@
-
-// -------------------Bug solved
-
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
@@ -31,14 +28,11 @@ import { useSelector, useDispatch } from "react-redux";
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 
 export default function MyTicketComponent() {
-  // const location = useLocation();
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-
-  // const [type, setType] = useState(null);
 
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState("");
@@ -67,12 +61,10 @@ export default function MyTicketComponent() {
     useState(null);
   const [ticketShowType, setTicketShowType] = useState(null);
 
-  // const [filterExport, setFilterExport]=useState(null)
-
   const [userDepartment, setUserDepartment] = useState();
 
   const [exportData, setExportData] = useState(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -97,9 +89,8 @@ export default function MyTicketComponent() {
   });
 
   const location = useLocation();
-  console.log("location . state", location)
-  const [locationState, setLocationState] = useState(location?.state)
-  const account_for = localStorage.getItem("account_for")
+  const [locationState, setLocationState] = useState(location?.state);
+  const account_for = localStorage.getItem("account_for");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -143,9 +134,9 @@ export default function MyTicketComponent() {
     .getHours()
     .toString()
     .padStart(2, "0")}${currentDate
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
   const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
     2,
     4
@@ -167,10 +158,8 @@ export default function MyTicketComponent() {
   };
 
   const handleSelectAllNamesChange = () => {
-    // Toggle the state of 'selectAllNames'
     setSelectAllNames(!selectAllNames);
 
-    // If 'selectAllNames' is true, select all rows; otherwise, clear the selection
     setSelectedRowss(
       selectAllNames
         ? []
@@ -199,8 +188,6 @@ export default function MyTicketComponent() {
     await new MyTicketService()
       .verifyTicketConfirmationOtp(id, form)
       .then((res) => {
-        // setShowLoaderModal(null);
-        // setShowLoaderModal(false);
         if (res.status === 200) {
           if (res.data.status == 1) {
             setNotify({ type: "success", message: res.data.message });
@@ -211,7 +198,6 @@ export default function MyTicketComponent() {
             });
             loadData();
           } else {
-            // setShowLoaderModal(false);
             setNotify({ type: "danger", message: res.data.message });
           }
         }
@@ -236,12 +222,7 @@ export default function MyTicketComponent() {
     setRemarkModal(data);
   };
 
-  // const handleBulkRemarkModal = (data) => {
-  //   setBulkRemarkModal(data);
-  // };
-
   const actionComponent = (data, type) => {
-
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
         return (
@@ -255,27 +236,11 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
 
-
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {/* {data.created_by == localStorage.getItem("id") ||
+              {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
-                (data.status_name !== "Solved" && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Edit/` + data.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: "100" }}
-                    >
-                      <i className="icofont-ui-edit"></i> Edit
-                    </Link>
-                  </li>
-                ))} */}
-
-
-              {
-                (data.created_by == localStorage.getItem("id") ||
-                  data.assign_to_user_id == localStorage.getItem("id") ||
-                  ((data.status_name !== "Solved") && (data.passed_status !== "REJECT")) && (
+                (data.status_name !== "Solved" &&
+                  data.passed_status !== "REJECT" && (
                     <li>
                       <Link
                         to={`/${_base}/Ticket/Edit/` + data.id}
@@ -298,11 +263,12 @@ export default function MyTicketComponent() {
                 </Link>{" "}
               </li>
 
-              {
-                (data.created_by != localStorage.getItem("id") &&
-                  data.basket_configured === 0 &&
-                  localStorage.getItem("account_for") === "SELF" &&
-                  data.status_name != "Solved") && (data.passed_status !== "REJECT") && (data.passed_status !== "UNPASS") && (
+              {data.created_by != localStorage.getItem("id") &&
+                data.basket_configured === 0 &&
+                localStorage.getItem("account_for") === "SELF" &&
+                data.status_name != "Solved" &&
+                data.passed_status !== "REJECT" &&
+                data.passed_status !== "UNPASS" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}
@@ -409,11 +375,6 @@ export default function MyTicketComponent() {
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
               </li>
-              {/*
-                                        {data.created_by != localStorage.getItem('id') && data.basket_configured === 0 &&
-                                            <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
-                                                <i className="icofont-bucket2"></i>Basket</Link></li>
-                                        } */}
 
               {
                 (data.created_by = localStorage.getItem("id") &&
@@ -453,11 +414,7 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-external-link "></i> View
             </Link>
-            {/*
-                                        {data.created_by != localStorage.getItem('id') && data.basket_configured === 0 &&
-                                            <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
-                                                <i className="icofont-bucket2"></i>Basket</Link></li>
-                                        } */}
+
             {localStorage.getItem("account_for") === "SELF" && (
               <Link
                 to={`/${_base}/Ticket/Task/` + data.id}
@@ -484,7 +441,6 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') && */}
               <li>
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
@@ -618,11 +574,6 @@ export default function MyTicketComponent() {
             </Dropdown.Toggle>
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1 ">
-              {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') &&
-                                                <li><Link to={`/${_base}/Ticket/Edit/` + data.id} className="btn btn-sm btn-warning text-white"
-                                                    style={{ width: "100%", zIndex: '100' }}>
-                                                    <i className="icofont-ui-edit"></i>  Edit</Link></li>
-                                            } */}
               <li>
                 {" "}
                 <Link
@@ -633,11 +584,6 @@ export default function MyTicketComponent() {
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
               </li>
-
-              {/* {data.created_by != localStorage.getItem('id') && data.basket_configured === 0 &&
-                                                <li><Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn-sm btn-primary text-white" style={{ width: "100%", zIndex: 100 }}>
-                                                    <i className="icofont-bucket2"></i>Basket</Link></li>
-                                            } */}
 
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0 &&
@@ -683,8 +629,6 @@ export default function MyTicketComponent() {
               >
                 <i className="icofont-ui-history"></i> History
               </Link>
-              {/* <Link to={`/${_base}/Ticket/Edit/` + data.id} className="btn btn-sm btn-warning text-white">
-                                            <i className="icofont-ui-edit"></i>  Edit</Link> */}
 
               <Link
                 to={`/${_base}/Ticket/View/` + data.id}
@@ -692,10 +636,6 @@ export default function MyTicketComponent() {
               >
                 <i className="icofont-external-link "></i> View
               </Link>
-
-              {/* <Link to={`/${_base}/Ticket/Basket/` + data.id} className="btn btn btn-primary text-white" >
-                                                    <i className="icofont-bucket2"></i>Basket
-                                                </Link> */}
 
               <button
                 className="btn btn-secondary"
@@ -832,7 +772,6 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {/* {data.created_by == localStorage.getItem('id') || data.assign_to_user_id == localStorage.getItem('id') && */}
               <li>
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
@@ -865,8 +804,9 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
-        }`,
+      width: `${
+        searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
+      }`,
       cell: (row) => actionComponent(row, "SEARCH_RESULT"),
     },
 
@@ -883,7 +823,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -982,8 +922,9 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
-        }`,
+      width: `${
+        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
+      }`,
       cell: (row) => actionComponent(row, "YOUR_TASK"),
     },
     {
@@ -1004,7 +945,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -1086,18 +1027,6 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    // {
-    //   name: "Solved Date",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_date,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Solved By",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_by,
-    //   sortable: true,
-    // },
   ];
 
   const assignedToMeColumns = [
@@ -1105,8 +1034,9 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
 
-      width: `${assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
-        }`,
+      width: `${
+        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
+      }`,
       cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
     },
     { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
@@ -1122,7 +1052,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -1204,18 +1134,6 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    // {
-    //   name: "Solved Date",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_date,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Solved By",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_by,
-    //   sortable: true,
-    // },
   ];
 
   const createdByMeColumns = [
@@ -1223,8 +1141,9 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
       ignoreRowClick: true,
-      width: `${createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
-        }`,
+      width: `${
+        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
+      }`,
       cell: (row) => actionComponent(row, "ADDED_BY_ME"),
     },
 
@@ -1246,7 +1165,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -1329,18 +1248,6 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    // {
-    //   name: "Solved Date",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_date,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Solved By",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_by,
-    //   sortable: true,
-    // },
   ];
 
   const handleCheckboxChangee = (row) => {
@@ -1359,21 +1266,15 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${unpassedTickets
-        ? unpassedTickets.length > 0
-          ? "4rem"
-          : "20.625rem"
-        : "auto"
-        }`,
+      width: `${
+        unpassedTickets
+          ? unpassedTickets.length > 0
+            ? "4rem"
+            : "20.625rem"
+          : "auto"
+      }`,
       cell: (row) => actionComponent(row, "UNPASSED_TICKET"),
     },
-    // {
-    //   name: "Checkbox",
-    //   selector: "checkbox", // unique key for the column
-    //   width: "4rem",
-    //   center: true,
-    //   cell: (row) => <input type="checkbox" checked={row.isSelected} onChange={() => handleCheckboxChange(row)} />,
-    // },
 
     {
       name: (
@@ -1404,19 +1305,6 @@ export default function MyTicketComponent() {
         </div>
       ),
     },
-    // {
-    //   name: "Checkbox",
-    //   selector: "checkbox", // unique key for the column
-    //   width: "4rem",
-    //   center: true,
-    //   cell: (row) => (
-    //     <input
-    //       type="checkbox"
-    //       checked={selectedRows.includes(row.id)}
-    //       onChange={() => handleCheckboxChange(row)}
-    //     />
-    //   ),
-    // },
 
     {
       name: "Sr",
@@ -1436,7 +1324,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -1539,12 +1427,13 @@ export default function MyTicketComponent() {
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${departmentwiseTicket
-        ? departmentwiseTicket.length > 0
-          ? "4rem"
-          : "20.625rem"
-        : "auto"
-        }`,
+      width: `${
+        departmentwiseTicket
+          ? departmentwiseTicket.length > 0
+            ? "4rem"
+            : "20.625rem"
+          : "auto"
+      }`,
       cell: (row) => actionComponent(row, "DEPARTMENTWISE_TICKET"),
     },
     {
@@ -1565,7 +1454,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div
@@ -1647,23 +1536,9 @@ export default function MyTicketComponent() {
     },
     { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
     { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
-    // {
-    //   name: "Solved Date",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_date,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Solved By",
-    //   maxWidth: "auto",
-    //   selector: (row) => row.ticket_solved_by,
-    //   sortable: true,
-    // },
   ];
 
   const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
     setIsLoading(true);
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
@@ -1673,9 +1548,13 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           const tempData = [];
-          const temp = res.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
+          const temp = res.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === "SELF"
+          );
           if (res.data.status == 1) {
-            const data = res.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
+            const data = res.data.data.filter(
+              (d) => d.is_active == 1 && d.account_for === "SELF"
+            );
             setUser(temp);
           }
           for (const key in temp) {
@@ -1713,7 +1592,6 @@ export default function MyTicketComponent() {
 
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
-        // setShowLoaderModal(false);
         const tempData = [];
         const temp = res.data.data;
         for (const key in temp) {
@@ -1731,13 +1609,10 @@ export default function MyTicketComponent() {
 
     await new StatusService().getStatus().then((res) => {
       if (res.status === 200) {
-        // setShowLoaderModal(false);
-
         const tempData = [];
         const temp = res.data.data;
 
         for (const key in temp) {
-          // if (temp[key].is_active == 1) {
           if (temp[key].id) {
             tempData.push({
               value: temp[key].id,
@@ -1784,7 +1659,6 @@ export default function MyTicketComponent() {
     await new MyTicketService().getUserTicketsTest().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
@@ -1823,7 +1697,6 @@ export default function MyTicketComponent() {
                 dataAssignToMe[key].passed_status_changed_by_name,
               Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
               project_name: dataAssignToMe[key].project_name,
-              // query_type_name: dataCreatedByMe[key].query_type_name,
               Status_name: dataAssignToMe[key].status_name,
               sub_module_name: dataAssignToMe[key].sub_module_name,
               Template_id: dataAssignToMe[key].template_id,
@@ -1864,7 +1737,6 @@ export default function MyTicketComponent() {
 
         if (status === 1) {
           setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
-          // window.location.reload(false)
           loadData();
           setSelectedRows([]);
           setSelectedRowss([]);
@@ -1873,8 +1745,7 @@ export default function MyTicketComponent() {
             typeOf: "UnPassed",
             page: 1,
           };
-          console.log("pass message", message)
-          setNotify({ type: "success", message })
+          setNotify({ type: "success", message });
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
               if (res.data.status == 1) {
@@ -1883,8 +1754,6 @@ export default function MyTicketComponent() {
               }
             }
           });
-
-          // setNotify({ type: "success", message });
         } else {
           setNotify({ type: "danger", message });
         }
@@ -1895,21 +1764,13 @@ export default function MyTicketComponent() {
       setNotify({ type: "danger", message: "An error occurred." });
     }
   };
-  const searchThroughEnter = () => {
-
-  }
-
-
+  const searchThroughEnter = () => {};
 
   const handleForm = async (e) => {
-
-
-
     try {
-
       if (e) {
         e.preventDefault();
-        const form = document.getElementById('your_form_id');
+        const form = document.getElementById("your_form_id");
         const formData = new FormData(form);
 
         // Check if any form field is filled
@@ -1931,29 +1792,16 @@ export default function MyTicketComponent() {
         // ...
       }
 
-
       if (e) {
         e.preventDefault();
 
-
-        const form = document.getElementById('your_form_id');
+        const form = document.getElementById("your_form_id");
         const formData = new FormData(form);
-        // const formData = new FormData(e.target.value);
-        // if(!"ticket_id" 
-        //   ){
-        //   alert("Please Select Data")
-        // }
-
-
-
-
 
         var flag = 1;
         await new ReportService()
           .getTicketReport(formData)
           .then((res) => {
-            console.log("created By check", res.data.data)
-
             if (res.status === 200) {
               if (res.data.status == 1) {
                 setSearchResult(null);
@@ -1987,12 +1835,12 @@ export default function MyTicketComponent() {
                     Status: temp[key].is_active ? "Active" : "Deactive",
                     module_name: temp[key].module_name,
                     Passed_Status: temp[key].passed_status,
-                    Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                    Passed_Status_Changed_At:
+                      temp[key].passed_status_changed_at,
                     Passed_Status_Changed_By_Name:
                       temp[key].passed_status_changed_by_name,
                     Passed_Status_Remark: temp[key].passed_status_remark,
                     project_name: temp[key].project_name,
-                    // query_type_name: dataCreatedByMe[key].query_type_name,
                     Status_name: temp[key].status_name,
                     sub_module_name: temp[key].sub_module_name,
                     Template_id: temp[key].template_id,
@@ -2005,7 +1853,6 @@ export default function MyTicketComponent() {
                 setSearchResultExport(searchResultExport);
               } else {
                 alert("No Data Found");
-                // setNotify({ type: 'danger', message: "No data Found" });
               }
             } else {
               new ErrorLogService().sendErrorLog(
@@ -2030,13 +1877,10 @@ export default function MyTicketComponent() {
       }
     } catch (error) {
       // Handle errors that may occur during the getTicketReport call
-      console.error("Error:", error);
       // You can add additional error handling logic here, such as displaying an error message to the user.
     }
   };
-  const passTicketHandler = () => {
-
-  }
+  const passTicketHandler = () => {};
   const handleChangeStatus = (e) => {
     setStatusValue(e);
   };
@@ -2159,7 +2003,6 @@ export default function MyTicketComponent() {
                     temp[key].passed_status_changed_by_name,
                   Passed_Status_Remark: temp[key].passed_status_remark,
                   project_name: temp[key].project_name,
-                  // query_type_name: dataCreatedByMe[key].query_type_name,
                   Status_name: temp[key].status_name,
                   sub_module_name: temp[key].sub_module_name,
                   Template_id: temp[key].template_id,
@@ -2199,7 +2042,6 @@ export default function MyTicketComponent() {
       const select = user
         .filter((d) => d.department_id == e[i].value)
         .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name }));
-      // const select = user.filter(d => d.is_active == 1).map(d => ({ value: d.id, label: d.first_name + " " + d.last_name }))
 
       for (var j = 0; j < select.length; j++) {
         deptAssignedUser.push(select[j]);
@@ -2218,7 +2060,7 @@ export default function MyTicketComponent() {
         limit: 10,
         typeOf: "Assigned_To_Me",
         page: 1,
-        filter: ""
+        filter: "",
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
@@ -2316,10 +2158,7 @@ export default function MyTicketComponent() {
       };
     }
 
-
-
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
-
       if (res.status === 200) {
         if (res.data.status == 1) {
           setAssignedToMe(
@@ -2358,7 +2197,6 @@ export default function MyTicketComponent() {
       };
     }
 
-
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -2387,20 +2225,16 @@ export default function MyTicketComponent() {
         page: departmentWiseData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
-        // limit: limit,
         typeOf: "DepartmentWise",
         page: departmentWiseData.current_page - 1,
       };
     } else if (type == "PLUS") {
       form = {
-        // limit: limit,
         typeOf: "DepartmentWise",
         page: departmentWiseData.current_page + 1,
       };
     }
-
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
@@ -2417,7 +2251,7 @@ export default function MyTicketComponent() {
         }
       }
     });
-  }
+  };
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
@@ -2440,7 +2274,6 @@ export default function MyTicketComponent() {
         page: yourTaskData.current_page + 1,
       };
     }
-
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
@@ -2470,7 +2303,6 @@ export default function MyTicketComponent() {
         page: unpassedData.current_page,
       };
     } else if (type == "MINUS") {
-      // const limit = parseInt(e.target.value)
       form = {
         typeOf: "UnPassed",
         page: unpassedData.current_page - 1,
@@ -2483,7 +2315,6 @@ export default function MyTicketComponent() {
     } else {
       return;
     }
-
 
     await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
@@ -2507,7 +2338,6 @@ export default function MyTicketComponent() {
   };
 
   useEffect(() => {
-
     const timeoutId = setTimeout(() => {
       setLocationState(null);
     }, 3000);
@@ -2529,16 +2359,9 @@ export default function MyTicketComponent() {
     };
   }, [handleForm]);
 
-
   useEffect(() => {
     setNotify(null);
     loadData();
-    // if (location && location.state) {
-    //   setNotify(location.state);
-    // }
-    // return () => {
-    // 
-    // };
   }, []);
 
   useEffect(() => {
@@ -2548,23 +2371,13 @@ export default function MyTicketComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  // useEffect(() => {
-  //   if (notify) {
-  //     const timer = setTimeout(() => {
-  //       dispatch(hideNotification());
-  //     }, 1500); // Adjust the timeout duration as needed
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [notify, dispatch]);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
 
-      {/* <LoadingSpinner/> */}
       {locationState && <Alert alertData={locationState} />}
       {notify && <Alert alertData={notify} />}
-      {/* {userData && JSON.stringify(userData)} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm} id="your_form_id">
@@ -2589,7 +2402,6 @@ export default function MyTicketComponent() {
                     <label className="">
                       <b>Select User :</b>
                     </label>
-                    {/* <UserDropdown id="assign_to_user_id" name="assign_to_user_id"/> */}
                     {userData && (
                       <Select
                         options={userData}
@@ -2651,10 +2463,11 @@ export default function MyTicketComponent() {
                   type="button"
                   id="openFilter"
                   styleName={
-                    account_for === "CUSTOMER" ? { display: "none" } : { display: "block" }
+                    account_for === "CUSTOMER"
+                      ? { display: "none" }
+                      : { display: "block" }
                   }
                   onClick={handleShow}
-
                   style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   {" "}
@@ -2693,7 +2506,6 @@ export default function MyTicketComponent() {
                       defaultValue={startDate}
                       required={toDateRequired}
                       ref={selectFromDateRef}
-                    // max={disableDate()}
                     />
                   </div>
                   <div className="col-md-6">
@@ -2708,7 +2520,6 @@ export default function MyTicketComponent() {
                       defaultValue={toDate}
                       ref={selectToDateRef}
                       onChange={handleToDate}
-                      // max={disableDate()}
                       required={toDateRequired}
                       min={startDate}
                     />
@@ -2727,9 +2538,6 @@ export default function MyTicketComponent() {
                         {departmentData && (
                           <Select
                             options={departmentData}
-                            // value={deptAssignedUser}
-
-                            // ref={selectInputRef}
                             isMulti={true}
                             ref={selectInputRef}
                             id="assign_to_department_id[]"
@@ -2739,12 +2547,10 @@ export default function MyTicketComponent() {
                           />
                         )}
                       </div>
-                      {/* {assignUserDropdown && assignUserDropdown.length > 0 ? <> */}
                       <div className="col-md-6">
                         <label className="">
                           <b>Assigned User :</b>
                         </label>
-                        {/* {assignUserDropdown && */}
                         <Select
                           options={assignUserDropdown}
                           isMulti={true}
@@ -2754,10 +2560,7 @@ export default function MyTicketComponent() {
                           onChange={handleChangeAssignedUser}
                           defaultValue={assignedUser}
                         />
-                        {/* } */}
                       </div>
-
-                      {/* </> : null} */}
                     </div>
                     {/* ********************************* **************** */}
 
@@ -2780,13 +2583,10 @@ export default function MyTicketComponent() {
                         )}
                       </div>
 
-                      {/* {userDropdown && userDropdown.length > 0 ? <> */}
-
                       <div className="col-md-6">
                         <label className="">
                           <b>Entry User :</b>
                         </label>
-                        {/* {userDropdown && */}
                         <Select
                           options={userDropdown}
                           isMulti={true}
@@ -2796,9 +2596,7 @@ export default function MyTicketComponent() {
                           onChange={handleChangeEntryUser}
                           defaultValue={entryUser}
                         />
-                        {/* } */}
                       </div>
-                      {/* </> : null} */}
                     </div>
                   </>
                 )}
@@ -2930,7 +2728,6 @@ export default function MyTicketComponent() {
                           />
                         )}
 
-
                         {assignedToMe && (
                           <DataTable
                             columns={assignedToMeColumns}
@@ -2991,7 +2788,6 @@ export default function MyTicketComponent() {
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
                           typeOf="CreatedByMe"
-
                         />
                       )}
                       {createdByMe && (
@@ -3086,8 +2882,8 @@ export default function MyTicketComponent() {
                         </select>
                         {departmentWiseData && (
                           <small>
-                            {departmentWiseData.from}-{departmentWiseData.to}{" "}
-                            of {departmentWiseData.total}
+                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
+                            {departmentWiseData.total}
                           </small>
                         )}
                         <button
@@ -3176,73 +2972,8 @@ export default function MyTicketComponent() {
 
                 <Tab eventKey="unpassed_columns" title="Unpassed Ticket">
                   <div className="card mb-3 mt-3">
-                    {/* <div className="card-body">
-                      {unpassedTickets && (
-                        <ExportAllTicketsToExcel
-                          className="btn btn-sm btn-danger mt-3"
-                          fileName="Unpassed Ticket"
-                          typeOf="UnPassed"
-                        />
-                      )}
-<button
-                  className="btn btn-success text-white"
-                  style={{ width: "100%", zIndex: 100 }}
-                  onClick={(e) => {
-                    handleRemarkModal({
-                      showModal: true,
-                      modalData: data,
-                      modalHeader: "Enter Remark",
-                      status: "PASS",
-                    });
-                  }}
-                >
-                  <i className="icofont-checked"></i> Pass
-                </button> */}
-
                     <div className="card-body">
                       <div className="row">
-                        {/* <div className="col-md-2 mb-3">
-                          {unpassedTickets && (
-                            <ExportAllTicketsToExcel
-                              className="btn btn-danger btn-block"
-                              fileName="Unpassed Ticket"
-                              typeOf="UnPassed"
-                            />
-                          )}
-
-
-                          <button
-                            className="btn btn-success btn-block text-white"
-
-                            onClick={(e) => {
-                              const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-                              handleBulkRemarkModal({
-                                showModal: true,
-                                modalData: selectedData,
-                                modalHeader: "Enter Remark",
-                                status: "PASS",
-                              });
-                            }}
-                          >
-                            <i className="icofont-checked"></i> Pass
-                          </button>
-
-                          <button
-                            className="btn btn-success btn-block text-white"
-
-                            onClick={(e) => {
-                              const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-                              handleBulkRemarkModal({
-                                showModal: true,
-                                modalData: selectedData,
-                                modalHeader: "Enter Remark",
-                                status: "REJECT",
-                              });
-                            }}>
-                            <i className="icofont-close-squared-alt"></i> Reject
-                          </button>
-
-                        </div> */}
                         <div className="row">
                           <div className="col-md-6 mb-1">
                             {unpassedTickets && (
@@ -3258,7 +2989,7 @@ export default function MyTicketComponent() {
                                 <button
                                   className="btn btn-success btn-block text-white"
                                   onClick={(e) => {
-                                    passTicketHandler()
+                                    passTicketHandler();
                                     const selectedData = unpassedTickets.filter(
                                       (row) => selectedRowss.includes(row.id)
                                     );
@@ -3290,79 +3021,11 @@ export default function MyTicketComponent() {
                                   <i className="icofont-close-squared-alt"></i>{" "}
                                   Reject
                                 </button>
-                                {/* {selectAllNames === true ?
-                                  <button
-                                    className="btn btn-success btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "PASS",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-checked"></i> Pass
-                                  </button> :
-
-
-
-                                  <button
-                                    className="btn btn-success btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "PASS",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-checked"></i> Pass
-                                  </button>
-                                } */}
-
-                                {/* {selectAllNames === true ?
-                                  <button
-                                    className="btn btn-danger btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRowss.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "REJECT",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-close-squared-alt"></i> Reject
-                                  </button>
-
-                                  :
-                                  <button
-                                    className="btn btn-danger btn-block text-white"
-                                    onClick={(e) => {
-                                      const selectedData = unpassedTickets.filter((row) => selectedRows.includes(row.id));
-                                      handleRemarkModal({
-                                        showModal: true,
-                                        modalData: selectedData,
-                                        modalHeader: "Enter Remark",
-                                        status: "REJECT",
-                                      });
-                                    }}
-                                  >
-                                    <i className="icofont-close-squared-alt"></i> Reject
-                                  </button>
-                                } */}
                               </>
                             )}
                           </div>
                         </div>
                       </div>
-
-
 
                       {unpassedTickets && (
                         <DataTable
@@ -3578,7 +3241,6 @@ export default function MyTicketComponent() {
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    // defaultValue={remarkModal.modalData.ticket_id}
                     defaultValue={
                       remarkModal && Array.isArray(remarkModal.modalData)
                         ? remarkModal.modalData.map((i) => i.ticket_id)
@@ -3626,95 +3288,6 @@ export default function MyTicketComponent() {
           </Modal.Footer>
         </form>
       </Modal>
-
-      {/* bulk ticket pass modal */}
-
-      {/* <Modal
-        centered
-        show={bulkRemarkModal.showModal}
-        onHide={(e) => {
-          handle({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-            status: bulkRemarkModal.status,
-          });
-        }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title className="fw-bold">
-            {bulkRemarkModal.status == "PASS" ? "PASS TICKET " : "REJECT TICKET"}
-          </Modal.Title>
-        </Modal.Header>
-        <form onSubmit={handleBulkPassTicketForm} method="post">
-          <Modal.Body>
-            <div className="deadline-form">
-              <input
-                type="hidden"
-                className="form-control form-control-sm"
-                id="pass_status"
-                name="pass_status"
-                value={bulkRemarkModal.status}
-              />
-
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Ticket Id :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                   
-                    defaultValue={
-                      bulkRemarkModal && Array.isArray(bulkRemarkModal.modalData)
-                        ? bulkRemarkModal.modalData.map((i) => i.ticket_id)
-                        : []
-                    }
-
-                    readOnly={true}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :*
-                  </label>
-                  <input
-                    type="text"
-                    name="remark"
-                    id="remark"
-                    className="form-control form-control-sm"
-                    required
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersSpeicalOnly(e);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="submit" className="btn btn-info text-white">
-              Submit
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                handleBulkRemarkModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal> */}
-
-      {/* {isLoading === true &&  <LoaderComponent/> } */}
     </div>
   );
 }

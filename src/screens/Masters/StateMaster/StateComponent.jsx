@@ -699,7 +699,6 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import { Spinner } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  dashboardSlice,
   handleModalClose,
   hideNotification,
 } from "../../Dashboard/DashbordSlice";
@@ -736,23 +735,23 @@ function StateComponent() {
   const searchRef = useRef();
 
   const dispatch = useDispatch();
-  const stateData = useSelector( (dashboardSlice) => dashboardSlice.dashboard.stateData);
+  const stateData = useSelector( (DashbordSlice) => DashbordSlice.dashboard.stateData);
   console.log("stateData",stateData);
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
+  const checkRole = useSelector((DashbordSlice) =>
+  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
   );
 
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const modal = useSelector((DashbordSlice) => DashbordSlice.dashboard.modal);
   const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
+    (DashbordSlice) => DashbordSlice.dashboard.notify
   );
 
 
   const CountryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
   );
   const ExportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportData
+    (DashbordSlice) => DashbordSlice.dashboard.exportData
   );
 
   function SearchInputData(data, search) {

@@ -38,13 +38,10 @@ import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponen
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
-  // const [userData, setUserData] = useState([]); // State to store user data
 
-  // const [authorities, SetAuthorities] = useState();
   const roleId = sessionStorage.getItem("role_id");
   const dispatch = useDispatch();
 
-  // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
   );
@@ -69,13 +66,10 @@ const AuthorityMapping = () => {
       BillCheckingTransactionSlice.billChecking.modal
   );
 
-  // console.log("submodule",submodule);
-
   const [error, setError] = useState("");
 
   const [user, setUser] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  // const [submodulename, SetSubmodulename] = useState();
 
   const [read, setRead] = useState(true);
 
@@ -92,18 +86,9 @@ const AuthorityMapping = () => {
     new Array(assign.length).fill("")
   );
 
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
-
-  // const [notify, setNotify] = useState();
   const currentDate = new Date();
 
-  const handleModal = (data) => {
-    // setModal(data);
-  };
+  const handleModal = (data) => {};
   const searchRef = useRef();
 
   const columns = [
@@ -193,17 +178,6 @@ const AuthorityMapping = () => {
       ),
     },
 
-    // {
-    //   name: "Authority Name",
-    //   selector: (row) => row.setting_name,
-    //   sortable: true,
-    //   width: "175px",
-    // },
-
-   
-
-
-    
     {
       name: "Authority Name",
       selector: (row) => row["Authority Name"],
@@ -269,28 +243,11 @@ const AuthorityMapping = () => {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
-
-  // const handleKeyDown = (event) => {
-  //   if (event.key === "Enter") {
-  //     handleSearch();
-  //   }
-  // };
-
-  
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {
-  
-  };
+  const handleSearch = (value) => {};
 
   const handleChanges = (e) => {
     const inputValue = e.target.value;
@@ -428,88 +385,6 @@ const AuthorityMapping = () => {
     }
   };
 
-  // const handleData = async (e, row) => {
-  //   if (row.id) {
-  //     await new BillCheckingTransactionService()
-  //       .getModuleAuthorityUserSetting(row.id)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             const updatedAssign = res.data.data.map((item) => {
-  //               // Modify the condition based on your logic to set readOnly for from_date
-  //               const from_dateReadOnly = item.from_date && new Date(item.from_date) < new Date();
-  //               // Modify the condition based on your logic to set readOnly for to_date
-  //               const to_dateReadOnly = item.to_date && new Date(item.to_date) < new Date();
-
-  //               return {
-  //                 ...item,
-  //                 from_dateReadOnly,
-  //                 to_dateReadOnly,
-  //               };
-  //             });
-  //             setAssign(updatedAssign);
-  //           }
-  //         }
-  //       });
-  //   }
-  // };
-
-  // const handleData = async (e, row) => {
-  //   if (row.id) {
-  //     await new BillCheckingTransactionService()
-  //       .getModuleAuthorityUserSetting(row.id)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             const updatedAssign = res.data.data.map((item) => {
-  //               // Modify the condition to set readOnly for from_date
-  //               const from_dateReadOnly =
-  //                 item.from_date && item.from_date < todayDate;
-  //               // Modify the condition to set readOnly for to_date
-  //               const to_dateReadOnly =
-  //                 item.to_date && item.to_date < todayDate;
-
-  //               return {
-  //                 ...item,
-  //                 from_dateReadOnly,
-  //                 to_dateReadOnly,
-  //               };
-  //             });
-  //             setAssign(updatedAssign);
-  //           }
-  //         }
-  //       });
-  //   }
-  // };
-
-  //   const handleData = async (e, row) => {
-  //   if (row.id) {
-  //     await new BillCheckingTransactionService()
-  //       .getModuleAuthorityUserSetting(row.id)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             const updatedAssign = res.data.data.map((item) => {
-  //               // Modify the condition to set readOnly for from_date
-  //               const from_dateReadOnly =
-  //                 item.from_date && new Date(item.from_date) >= new Date(todayDate);
-  //               // Modify the condition to set readOnly for to_date
-  //               const to_dateReadOnly =
-  //                 item.to_date && new Date(item.to_date) < new Date(todayDate);
-
-  //               return {
-  //                 ...item,
-  //                 from_dateReadOnly,
-  //                 to_dateReadOnly,
-  //               };
-  //             });
-  //             setAssign(updatedAssign);
-  //           }
-  //         }
-  //       });
-  //   }
-  // };
-
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
@@ -519,110 +394,15 @@ const AuthorityMapping = () => {
     const data = [];
     const exportTempData = [];
 
-    // await new BillCheckingTransactionService()
-    //   .getModuleSetting()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       setUser(res.data.data);
-    //       setShowLoaderModal(false);
-
-    //       let counter = 1;
-    //       const temp = res.data.data;
-
-    //       for (const key in temp) {
-    //         data.push({
-    //           counter: counter++,
-    //           id: temp[key].id,
-    //           setting_name: temp[key].setting_name,
-    //           submodule_name: temp[key].submodule_name,
-    //           sub_module_name: temp[key].sub_module_name,
-    //           is_active: temp[key].is_active,
-    //           remark: temp[key].remark,
-    //           Status: temp[key].Status,
-    //           created_at: temp[key].created_at,
-    //           created_by_name: temp[key].created_by_name,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by_name: temp[key].updated_by_name,
-    //           user_id: temp[key].user_id,
-    //           setting_id: temp[key].setting_id,
-    //           from_date: temp[key].from_date,
-    //           to_date: temp[key].to_date,
-    //         });
-    //       }
-
-    //       setData(null);
-    //       setData(data);
-
-    //       for (const i in data) {
-    //         exportTempData.push({
-    //           Sr: data[i].counter,
-    //           setting_name: data[i].setting_name,
-    //           Status: data[i].is_active ? "Active" : "Deactive",
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: data[i].updated_at,
-    //           updated_by: data[i].updated_by,
-    //         });
-    //       }
-    //     }
-    //   })
-    //   .catch((error) => {});
-
     dispatch(getRoles());
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
 
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getUserForMyTicketsData(inputRequired));
 
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setUserData(
-    //         temp.map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
-
     dispatch(updateAuthority());
-    // await new BillTransactionService().getUpdatedAuthorities().then((res) => {
-    //   console.log("res",res);
-
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const a = res.data.data;
-
-    //       // SetAuthorities(res.data.data);
-    //     }
-    //   }
-    // });
 
     dispatch(getSubmoduleData());
-
-    // await new BillCheckingTransactionService().getSubmodule(45).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       SetSubmodulename(
-    //         res.data.data.map((d) => ({ value: d.id, label: d.name }))
-    //       );
-    //     }
-    //   }
-    // });
   };
 
   function getCurrentDateString() {
@@ -651,10 +431,6 @@ const AuthorityMapping = () => {
     const specialCharacters = /[!@#$%^&*(),.?":{}|<>]/;
 
     if (specialCharacters.test(inputValue)) {
-      // setNotify({
-      //   type: "danger",
-      //   message: "Special characters are not allowed",
-      // });
       return;
     }
 
@@ -673,30 +449,6 @@ const AuthorityMapping = () => {
 
       dispatch(creteAuthority(mainJson));
       loadData();
-
-      // await new BillCheckingTransactionService()
-      //   .createModuleAuthorityUserSetting(mainJson)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       setShowLoaderModal(false);
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-
-      //         loadData();
-      //       } else {
-      //         setError({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Designation",
-      //         "Create_Designation",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   });
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];
@@ -758,7 +510,6 @@ const AuthorityMapping = () => {
               type="text"
               className="form-control"
               placeholder="Search...."
-              // onKeyDown={handleKeyDown}
               onChange={(e) => setSearchTerm(e.target.value)}
               id="searchInput"
               ref={searchRef}
@@ -794,7 +545,6 @@ const AuthorityMapping = () => {
                   columns={columns}
                   defaultSortField="title"
                   pagination
-
                   data={authorities.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
@@ -813,7 +563,6 @@ const AuthorityMapping = () => {
                     }
                     return false;
                   })}
-                  // data={authorities}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -829,13 +578,6 @@ const AuthorityMapping = () => {
         show={modal.showModal}
         aria-labelledby="contained-modal-title-vcenter"
         size="xl"
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
       >
         <form
           method="post"
@@ -870,7 +612,6 @@ const AuthorityMapping = () => {
                     id="setting_name"
                     name="setting_name"
                     defaultValue={modal?.modalData?.setting_name}
-                    // onKeyDown={handleKeyDown}
                     onChange={handleChanges}
                     ref={searchRef}
                     required={true}
@@ -1020,45 +761,6 @@ const AuthorityMapping = () => {
                           />
                         </td>
 
-                        {/* {modal.modalHeader === "Assign Authority" && (
-                          <td>
-                            {idx === 0 ? (
-                              <>
-                                <div>
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-primary pull-left"
-                                    required
-                                    onClick={(e) => {
-                                      handleAddRow(e, idx, "ASSIGNED");
-                                    }}
-                                  >
-                                    <i className="icofont-plus-circle"></i>
-                                  </button>
-                                </div>
-
-                                <div>
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-danger btn-sm"
-                                    onClick={handleRemoveSpecificRow(idx)}
-                                  >
-                                    <i className="icofont-ui-delete"></i>
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <button
-                                type="button"
-                                className="btn btn-outline-danger btn-sm"
-                                onClick={handleRemoveSpecificRow(idx)}
-                              >
-                                <i className="icofont-ui-delete"></i>
-                              </button>
-                            )}
-                          </td>
-                        )} */}
-
                         {modal.modalHeader === "Assign Authority" && (
                           <td>
                             {idx === 0 ? (
@@ -1165,7 +867,6 @@ const AuthorityMapping = () => {
                               className="form-control form-control-sm"
                               name="to_date"
                               min={date}
-                              // onChange={(event) => handleToDate(event, idx)}
                               required
                             />
                           </td>

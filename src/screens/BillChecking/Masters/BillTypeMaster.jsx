@@ -3,14 +3,14 @@ import DataTable from "react-data-table-component";
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import BillTypeMasterService from "../../../services/Bill Checking/Masters/BillTypeMasterService";
-import {_base, userSessionData } from "../../../settings/constants";
+import { _base, userSessionData } from "../../../settings/constants";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { Link, useLocation } from "react-router-dom";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 function BillTypeMaster() {
-  const location = useLocation()
+  const location = useLocation();
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const roleId = sessionStorage.getItem("role_id");
@@ -19,11 +19,7 @@ function BillTypeMaster() {
 
   const searchRef = useRef();
 
-
-
-  
   function SearchInputData(data, search) {
-
     const lowercaseSearch = search.toLowerCase();
 
     return data.filter((d) => {
@@ -39,17 +35,11 @@ function BillTypeMaster() {
     });
   }
 
-
-
-
-
   const handleSearch = () => {
     const SearchValue = searchRef.current.value;
     const result = SearchInputData(data, SearchValue);
     setData(result);
-
   };
-
 
   const columns = [
     {
@@ -63,25 +53,21 @@ function BillTypeMaster() {
           aria-label="Basic outlined example"
         >
           <Link
-                to={`/${_base + "/EditBillType/"+row.id}`}
-                className="btn btn-outline-secondary"
-
-              >
+            to={`/${_base + "/EditBillType/" + row.id}`}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
 
           <Link
-                to={`/${_base + "/ViewBillType/"+ row.id}`}
-                className="btn btn-outline-secondary"
-
-              >
+            to={`/${_base + "/ViewBillType/" + row.id}`}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-eye text-info"></i>
           </Link>
         </div>
       ),
     },
-  
-    // { name: "Bill Type", selector: (row) => row.bill_type, sortable: true },
 
 
     {
@@ -110,7 +96,6 @@ function BillTypeMaster() {
       ),
     },
 
-
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -126,7 +111,6 @@ function BillTypeMaster() {
         </div>
       ),
     },
-    // { name: "Remark", selector: (row) => row.remark, sortable: true },
 
     {
       name: "Remark",
@@ -155,9 +139,6 @@ function BillTypeMaster() {
     },
 
 
-    // { name: "Created At", selector: (row) => row.created_at, sortable: true },
-
-    
     {
       name: "Created At",
       selector: (row) => row.created_at,
@@ -184,10 +165,8 @@ function BillTypeMaster() {
       ),
     },
 
-
-
     {
-      name:"Created By",
+      name: "Created By",
       selector: (row) => row.created_by,
       sortable: true,
       cell: (row) => (
@@ -211,7 +190,6 @@ function BillTypeMaster() {
         </div>
       ),
     },
-
 
     {
       name: "Updated At",
@@ -239,8 +217,6 @@ function BillTypeMaster() {
       ),
     },
 
-
-
     {
       name: "Updated By",
       selector: (row) => row.updated_by,
@@ -266,10 +242,6 @@ function BillTypeMaster() {
         </div>
       ),
     },
-
-    // { name: "Created By", selector: (row) => row.created_by, sortable: true },
-    // { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
-    // { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
   ];
 
   const loadData = async () => {
@@ -322,20 +294,19 @@ function BillTypeMaster() {
   useEffect(() => {
     // Check if the message has been displayed before
 
-    if (location && location.state ) {
+    if (location && location.state) {
       // Display the message
       setNotify(location.state.alert);
 
       // Mark that the message has been displayed
     }
   }, [location]);
- 
-  useEffect(()=>{
-    if(checkRole && checkRole[47].can_read === 0){  
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
-    }
-  },[checkRole])
 
+  useEffect(() => {
+    if (checkRole && checkRole[47].can_read === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
@@ -390,7 +361,6 @@ function BillTypeMaster() {
         </div>
       </div>
 
-      {/* DATA TABLE */}
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
@@ -408,11 +378,8 @@ function BillTypeMaster() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
-
-
 
 export default BillTypeMaster;
