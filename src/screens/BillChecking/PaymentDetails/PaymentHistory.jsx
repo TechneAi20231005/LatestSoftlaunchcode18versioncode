@@ -8,8 +8,7 @@ import { userSessionData } from "../../../settings/constants";
 import { useParams } from "react-router-dom";
 
 const PaymentHistory = ({ match }) => {
-  // const id = match.params.id;
-  const {id}= useParams()
+  const { id } = useParams();
 
   const [data, setData] = useState();
 
@@ -143,22 +142,26 @@ const PaymentHistory = ({ match }) => {
       ],
     },
 
-    { name: "Remark", selector: (row) => row.remark, sortable: true,
-    conditionalCellStyles: [
-      {
-        when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("remark"),
-        style: {
-          color: "red",
-          fontWeight: "bold",
-          "&:hover": {
-            cursor: "pointer",
+    {
+      name: "Remark",
+      selector: (row) => row.remark,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("remark"),
+          style: {
+            color: "red",
+            fontWeight: "bold",
+            "&:hover": {
+              cursor: "pointer",
+            },
           },
         },
-      },
-    ], },
+      ],
+    },
 
     {
       name: " Actual Payment Date",
@@ -223,62 +226,66 @@ const PaymentHistory = ({ match }) => {
       ],
     },
 
-    // {
-    //   name: "Transaction Id",
-    //   selector: (row) => row.tai_bc_bill_checking_transactions_id,
-    //   sortable: true,
-    // },
-
-    // { name: "User Agent", selector: (row) => row.user_agent, sortable: true },
-
-    { name: "Created At", selector: (row) => row.created_at, sortable: true,
-    conditionalCellStyles: [
-      {
-        when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("created_at"),
-        style: {
-          color: "red",
-          fontWeight: "bold",
-          "&:hover": {
-            cursor: "pointer",
+    {
+      name: "Created At",
+      selector: (row) => row.created_at,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("created_at"),
+          style: {
+            color: "red",
+            fontWeight: "bold",
+            "&:hover": {
+              cursor: "pointer",
+            },
           },
         },
-      },
-    ], },
-    { name: "Created By", selector: (row) => row.created_by, sortable: true,
-    conditionalCellStyles: [
-      {
-        when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("created_by"),
-        style: {
-          color: "red",
-          fontWeight: "bold",
-          "&:hover": {
-            cursor: "pointer",
+      ],
+    },
+    {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("created_by"),
+          style: {
+            color: "red",
+            fontWeight: "bold",
+            "&:hover": {
+              cursor: "pointer",
+            },
           },
         },
-      },
-    ], },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true ,
-    conditionalCellStyles: [
-      {
-        when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("updated_at"),
-        style: {
-          color: "red",
-          fontWeight: "bold",
-          "&:hover": {
-            cursor: "pointer",
+      ],
+    },
+    {
+      name: "Updated At",
+      selector: (row) => row.updated_at,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("updated_at"),
+          style: {
+            color: "red",
+            fontWeight: "bold",
+            "&:hover": {
+              cursor: "pointer",
+            },
           },
         },
-      },
-    ],},
+      ],
+    },
 
     {
       name: "Updated By",
@@ -302,15 +309,6 @@ const PaymentHistory = ({ match }) => {
     },
   ];
 
-  // const conditionalRowStyles = [
-  //   {
-  //     when: row => row.operation=="UPDATE",
-  //     style: {
-  //       color: "red"
-  //     }
-  //   }
-  // ];
-
   const loadData = async () => {
     await new PaymentDetailsService()
       .getPaymentDetailsHistory(id)
@@ -320,7 +318,6 @@ const PaymentHistory = ({ match }) => {
             let counter = 1;
             const tempData = [];
             const temp = res.data.data;
-            // console.log("tt",temp)
 
             for (const key in temp) {
               tempData.push({
@@ -382,7 +379,6 @@ const PaymentHistory = ({ match }) => {
                     selectableRows={false}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
-                    // conditionalRowStyles={conditionalRowStyles}
                   />
                 )}
               </div>

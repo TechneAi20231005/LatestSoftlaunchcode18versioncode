@@ -4,7 +4,7 @@ import { getPaymentDetails } from "./PaymentDetailsAction";
 const initialState = {
   status: "",
   err: "",
- paymentDetailsData:[]
+  paymentDetailsData: [],
 };
 
 export const PaymentDetailsSilce = createSlice({
@@ -13,7 +13,6 @@ export const PaymentDetailsSilce = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -26,17 +25,15 @@ export const PaymentDetailsSilce = createSlice({
         let paymentDetailsData = payload.data.data;
         let count = 1;
         for (let i = 0; i < paymentDetailsData.length; i++) {
-            paymentDetailsData[i].counter = count++;
+          paymentDetailsData[i].counter = count++;
         }
-       
+
         state.paymentDetailsData = [...paymentDetailsData];
       }
     });
     builder.addCase(getPaymentDetails.rejected, (state) => {
       state.status = "rejected";
     });
-
-    
   },
 });
 export default PaymentDetailsSilce.reducer;
