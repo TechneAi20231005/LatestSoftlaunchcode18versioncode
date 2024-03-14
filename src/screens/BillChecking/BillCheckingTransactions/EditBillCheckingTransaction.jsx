@@ -126,8 +126,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     const date = new Date(`04/31/${new Date().getFullYear() - 1}`);
   };
 
-  
-
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
   const [gst, setGst] = useState();
@@ -312,7 +310,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setTdsPercentage(0)
+            setTdsPercentage(0);
             // setConstitutionDropdown(null);
             setConstitution(res.data.data);
             setConstitutionDropdown(
@@ -328,8 +326,6 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (selectTdsPercentageRef.current.value != null) {
             document.getElementById("tds_percentage").value = "";
           }
-
-         
         }
       });
   };
@@ -425,13 +421,17 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
-          const filterData =res.data.data.filter((d)=>d.consider_in_payment==="YES")
-          console.log("res==>",vendorDropdown)
+          const filterData = res.data.data.filter(
+            (d) => d.consider_in_payment === "YES"
+          );
+          console.log("res==>", vendorDropdown);
           setVendorDropdown(
-            filterData.filter((d)=>d.is_active==1).map((d) => ({
-              value: d.id,
-              label: d.vendor_name,
-            }))
+            filterData
+              .filter((d) => d.is_active == 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.vendor_name,
+              }))
           );
         }
       }
@@ -919,7 +919,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
 
-
   return (
     <div className="container-xxl">
       {/* {data && JSON.stringify(data)} */}
@@ -1177,7 +1176,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                                         }
                                     </div> */}
                   </div>
-                
 
                   <div className="form-group row mt-3">
                     {/* <div className="col-md-3">
@@ -1225,8 +1223,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {console.log("data==>",data)}
-                      {console.log("datas==>",formattedStartDate)}
+                      {console.log("data==>", data)}
+                      {console.log("datas==>", formattedStartDate)}
 
                       <input
                         type="date"
@@ -1254,7 +1252,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultValue={data.bill_date}
                       />
                     </div>
-               
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1687,8 +1684,6 @@ value={igst=== true ?1 :0} */}
                       />
                     </div> */}
 
-                
-
                     {isTcsApplicable === true ? (
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
@@ -1858,11 +1853,10 @@ value={igst=== true ?1 :0} */}
                         type="checkbox"
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
-                          authorities &&
-                          authorities.TCS_Applicable === false 
-                          // authorities &&
-                          // authorities.All_Update_Bill === false
-                            ? true
+                          authorities && authorities.TCS_Applicable === false
+                            ? // authorities &&
+                              // authorities.All_Update_Bill === false
+                              true
                             : false
                         }
                         id="is_tcs_applicable"
@@ -2029,9 +2023,9 @@ value={igst=== true ?1 :0} */}
                           key={Math.random()}
                           ref={selecttdsAmountRef}
                           name="tds_amount"
-                          defaultValue={data.tds_amount? data.tds_amount : 0  }
+                          defaultValue={data.tds_amount ? data.tds_amount : 0}
                           // defaultValue={data.tds_amount}
-                          value={tdsAmount ? tdsAmount :0}
+                          value={tdsAmount ? tdsAmount : 0}
                           readOnly={true}
                         />
                       </div>
@@ -2102,8 +2096,8 @@ value={igst=== true ?1 :0} */}
                               // (authorities &&
                               //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true &&
+                                // authorities &&
+                                // authorities.All_Update_Bill == true &&
                                 data.current_user_is_approver == 0)
                                 ? false
                                 : true
@@ -2125,16 +2119,16 @@ value={igst=== true ?1 :0} */}
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
-                              (data.is_assign_to == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (data.is_assign_to == 1 &&
+                              //   authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              (authorities &&
-                                authorities.All_Update_Bill == true) ||
+                              // (authorities &&
+                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true &&
+                                // authorities &&
+                                // authorities.All_Update_Bill == true &&
                                 data.current_user_is_approver == 0)
                                 ? false
                                 : true
@@ -2242,9 +2236,9 @@ value={igst=== true ?1 :0} */}
                         disabled={
                           authorities &&
                           authorities.Original_Bill_Needed === false
-                          // authorities &&
-                          // authorities.All_Update_Bill === false
-                            ? true
+                            ? // authorities &&
+                              // authorities.All_Update_Bill === false
+                              true
                             : false
                         }
                       />
@@ -2420,7 +2414,7 @@ value={igst=== true ?1 :0} */}
                               <Astrick color="red" size="13px" />{" "}
                             </b>
                           </label>
-                          {console.log("data==>",data)}
+                          {console.log("data==>", data)}
                           <input
                             type="file"
                             id="attachment"
@@ -2443,7 +2437,6 @@ value={igst=== true ?1 :0} */}
                                 ? false
                                 : true
                             }
-
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
                               maxLengthCheck(e, "UPLOAD");
