@@ -359,6 +359,7 @@ export default function CreateCustomerMappingComponent() {
         flag = 0;
       }
     }
+
     if (flag == 1) {
       await new CustomerMappingService()
         .postCustomerMapping(form)
