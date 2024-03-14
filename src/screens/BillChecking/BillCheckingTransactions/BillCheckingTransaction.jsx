@@ -119,17 +119,18 @@ function BillCheckingTransaction() {
   //   console.log("result",searchValue.length)
   // };
 
+
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     const result = searchInData(data, searchValue);
     setData(result);
 
-    if (searchValue.length <= 0) {
-      alert("No Data Found");
-      return false; // Added return statement to prevent further execution
-    } else {
-      // Do nothing or perform additional actions if needed
-    }
+    // if (searchValue.length <= 0) {
+    //   alert("No Data Found");
+    //   return false; // Added return statement to prevent further execution
+    // } else {
+    //   // Do nothing or perform additional actions if needed
+    // }
   };
 
   const selectInputRef = useRef();
@@ -166,6 +167,15 @@ function BillCheckingTransaction() {
   };
 
   const handleClearData = (e) => {
+    setFromBillDate('');
+    setToBillDate('');
+    setToReceive("")
+    setReceive("")
+    setToPaymentDate("")
+    setDatee("")
+    setIsToBillDateRequired(false);
+    setIsToReceiveRequired(false);
+    setIsPaymentRequired(false)
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = "";
       document.getElementById("id").value = "";
@@ -195,10 +205,14 @@ function BillCheckingTransaction() {
 
     if (selectFromBillRef.current.value != null) {
       document.getElementById("from_bill_date").value = "";
+      // selectFromBillRef.current.value()
+      
     }
 
     if (selectToBillRef.current.value != null) {
       document.getElementById("to_bill_date").value = "";
+      // selectToBillRef.current.clearValue()s
+
     }
 
     if (selectFromReceivedRef.current.value != null) {
@@ -297,6 +311,7 @@ function BillCheckingTransaction() {
     // }
   };
 
+
   const [country, setCountry] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
@@ -374,7 +389,7 @@ function BillCheckingTransaction() {
                 </Link>
               </li>
 
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
@@ -383,7 +398,18 @@ function BillCheckingTransaction() {
                     authorities.All_Update_Bill === true &&
                     row.is_assign_to != 1) ||
                   row.level != parseInt(row.total_level) ||
-                  // (row.is_active == 0 && row.is_approver == 1)) && (
+                  // (row.is_active == 0 && row.is_approver == 1)) && ( */}
+                  {row &&
+                ((row.level == parseInt(row.total_level) &&
+                  row.is_assign_to == 1) ||
+                  row.is_editable_for_creator == 1 ||
+                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+                  (authorities &&
+                    authorities.All_Update_Bill === true &&
+                    row.is_assign_to != 1) ||
+                  (row.level != parseInt(row.total_level) &&
+                    row.is_approver == 1)) &&
+                row.is_active == 1 && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -391,7 +417,7 @@ function BillCheckingTransaction() {
                       style={{ width: "100%", zIndex: 100 }}
                     >
                       <i className="icofont-history"></i> History
-                    </Link>
+                    </Link> 
                   </li>
                 )}
 
@@ -1314,6 +1340,8 @@ function BillCheckingTransaction() {
       });
   };
 
+
+
   const [importModal, setImportModal] = useState({
     ishowModal: false,
     imodalData: "",
@@ -1335,7 +1363,7 @@ function BillCheckingTransaction() {
   console.log("billDatedatee", billDatedatee);
   console.log("formattedDate", formattedDate);
   const [receivedate, setReceive] = useState();
-  const [isBillDateRequired, setIsBillDateRequired] = useState();
+  const [isBillDateRequired, setIsBillDateRequired] = useState(false);
   const [fromBillAmount, setFromBillAmount] = useState("");
   const [toBillAmount, setToBillAmount] = useState("");
   const [toBillAmountErr, setToBillAmountErr] = useState("");
@@ -1358,6 +1386,8 @@ function BillCheckingTransaction() {
     }
   };
 
+
+
   const handleFromBillAmount = (e) => {
     const value = e.target.value;
     setFromBillAmount(value);
@@ -1372,6 +1402,9 @@ function BillCheckingTransaction() {
     }
   };
 
+
+
+  console.log("billDatedatee",billDatedatee)
   const handleToHoldAmount = (e) => {
     const value = e.target.value;
     setToHoldAmount(value);
@@ -1399,26 +1432,52 @@ function BillCheckingTransaction() {
       setToHoldAmountErr("");
     }
   };
+  const [isToReceiveRequired, setIsToReceiveRequired] = useState(false);
 
-  console.log("fromBill", fromBillAmount);
-  console.log("to", toBillAmount);
+  const [toRecive, setToReceive] = useState('');
+  const [isToPaymentRequired, setIsPaymentRequired] = useState(false);
+
+  const [toPaymentDate, setToPaymentDate] = useState('');
+ 
 
   const handleFromDate = (e) => {
     setDatee(e.target.value);
+    setIsPaymentRequired(!!e.target.value)
+    setToPaymentDate("")
+
   };
   const handleReceiveDate = (e) => {
     setReceive(e.target.value);
+
+    setIsToReceiveRequired(!!e.target.value);
+    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
+    setToReceive('');
   };
 
   const isReceivedDate = !!receivedate;
   const isToPaymentDateRequired = !!datee;
 
-  const handleBillDate = (e) => {
-    const selectedDate = e.target.value;
-    setBillDatee(selectedDate);
+  const [fromBillDate, setFromBillDate] = useState('');
+  const [toBillDate, setToBillDate] = useState('');
+  const [isToBillDateRequired, setIsToBillDateRequired] = useState(false);
 
-    // Check if the selected date is not empty
-    setIsBillDateRequired(selectedDate !== "");
+  const handleBillDate = (e) => {
+    // const selectedDate = e.target.value;
+    // setBillDatee(selectedDate);
+
+    // // Check if the selected date is not empty
+    // if(selectedDate){
+    // setIsBillDateRequired(true);
+    // }else{
+    //   setIsBillDateRequired(false)
+    // }
+
+    const selectedDate = e.target.value;
+    setFromBillDate(selectedDate);
+    setIsToBillDateRequired(!!selectedDate);
+    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
+    setToBillDate('');
+    
   };
 
   // const isBillDateRequired = !!billDatedatee;
@@ -1647,8 +1706,11 @@ function BillCheckingTransaction() {
                       onChange={(e) => handleBillDate(e)}
                       max={formattedDate}
                       ref={selectFromBillRef}
+                      value={fromBillDate}
                     />
                   </div>
+                 
+
 
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1659,12 +1721,16 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="to_bill_date"
                       id="to_bill_date"
-                      min={billDatedatee}
-                      required={isBillDateRequired}
+                      min={billDatedatee}                                                                     
+                      required={isToBillDateRequired}
                       max={formattedDate}
                       ref={selectToBillRef}
+                      value={toBillDate}
+                      onChange={(e) => setToBillDate(e.target.value)}
                     />
                   </div>
+
+                  
 
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1676,6 +1742,7 @@ function BillCheckingTransaction() {
                       name="from_received_date"
                       id="from_received_date"
                       ref={selectFromReceivedRef}
+                      value={receivedate}
                       onChange={(e) => handleReceiveDate(e)}
                     />
                   </div>
@@ -1690,7 +1757,9 @@ function BillCheckingTransaction() {
                       id="to_received_date"
                       min={receivedate}
                       ref={selectToReceivedRef}
-                      required={isReceivedDate}
+                      value={toRecive}
+                      required={isToReceiveRequired}
+                      onChange={(e) => setToReceive(e.target.value)}
                     />
                   </div>
 
@@ -1703,6 +1772,7 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="from_payment_date"
                       id="from_payment_date"
+                      value={datee}
                       onChange={(e) => handleFromDate(e)}
                       ref={selectFromPaymentRef}
                     />
@@ -1718,7 +1788,9 @@ function BillCheckingTransaction() {
                       id="to_payment_date"
                       min={datee}
                       ref={selectToPaymentRef}
-                      required={isToPaymentDateRequired}
+                      required={isToPaymentRequired}
+                      value={toPaymentDate}
+                      onChange={(e) => setToPaymentDate(e.target.value)}
                     />
                   </div>
 
