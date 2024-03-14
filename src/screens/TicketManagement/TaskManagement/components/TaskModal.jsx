@@ -18,6 +18,7 @@ import * as Validation from "../../../../components/Utilities/Validation";
 import UserService from "../../../../services/MastersService/UserService";
 import TaskTicketTypeService from "../../../../services/MastersService/TaskTicketTypeService";
 import TestCasesService from "../../../../services/TicketService/TestCaseService";
+import { Astrick } from "../../../../components/Utilities/Style";
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -572,7 +573,8 @@ export default function TaskModal(props) {
             <div className="row mt-2">
               <div className="col-md-12">
                 <label className="form-label">
-                  <b>Task Name : </b>
+                  <b>Task Name :<Astrick color="red" size="13px" /></b>
+
                 </label>
                 {props.data.task_name === null ? (
                   <input
@@ -660,7 +662,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Start Date *:</b>
+                  <b>Start Date :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.start_date == null ? (
                   <input
@@ -698,7 +700,7 @@ export default function TaskModal(props) {
               </div>
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>End Date *:</b>
+                  <b>End Date :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.end_date == null ? (
                   <input
@@ -735,7 +737,7 @@ export default function TaskModal(props) {
                 props.moduleSetting["RequiredHour"] == 1 && ( */}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Task Hours *:</b>
+                  <b>Task Hours :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.task_hours == null ? (
                   <input
@@ -768,7 +770,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Task Priority *:</b>
+                  <b>Task Priority :<Astrick color="red" size="13px" /></b>
                 </label>
 
                 <select
@@ -894,7 +896,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Assign to user *:</b>
+                  <b>Assign to user :<Astrick color="red" size="13px" /></b>
                 </label>
 
                 {defaultUserData?.length > 0 && userData && (
