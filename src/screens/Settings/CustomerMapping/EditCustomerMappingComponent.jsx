@@ -416,14 +416,17 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
+    console.log("data",data)
     const form = new FormData(e.target);
     var flag = 1;
-    if (data.approach == "RW") {
-      if (ratioTotal > 100 || ratioTotal <= 0) {
+    if (data.approach === "RW") {
+      if (ratioTotal !== 100) {
         alert("Sum Must Be 100");
         flag = 0;
       }
     }
+  
+    console.log("ratioTotal",ratioTotal)
 
     if (flag == 1) {
       await new CustomerMappingService()
@@ -459,9 +462,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           // const { request, ...errorObject } = response;
           // new ErrorLogService().sendErrorLog("Status","Create_Status","INSERT",errorObject.data.message);
         });
-    } else {
-      alert("Error No 25");
-    }
+    } 
+    
+    // else {
+    //   alert("Error No 25");
+    // }
   };
 
   useEffect(() => {
@@ -872,7 +877,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                                ratiowiseData ? ratiowiseData[i] : 0
                                              }
                                              onInput={handleRatioInput(i)}
-                                             max="100"
+                                            //  max="100"
                                            />
                                          </td>
                                        </tr>

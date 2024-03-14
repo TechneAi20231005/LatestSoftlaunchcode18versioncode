@@ -719,7 +719,7 @@ export default function CreateCustomerMappingComponent() {
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>
-                        Selectddd User :<Astrick color="red" size="13px" />
+                        Select User :<Astrick color="red" size="13px" />
                       </b>
                     </label>
                     {userDropdown && data.approach != "RW" && (
