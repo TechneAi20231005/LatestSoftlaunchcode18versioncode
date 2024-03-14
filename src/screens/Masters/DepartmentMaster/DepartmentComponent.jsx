@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
+
 import DepartmentService from "../../../services/MastersService/DepartmentService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
+
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
@@ -16,7 +16,7 @@ import {
   postdepartment,
   updateDepartment,
 } from "./DepartmentMasterAction";
-import DepartmentMasterSlice from "./DepartmentMasterSlice";
+
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleModalClose, handleModalOpen } from "./DepartmentMasterSlice";
 
@@ -39,23 +39,15 @@ function DepartmentComponent() {
       DepartmentMasterSlice.department.exportDepartmentData
   );
  
-  const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
 
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
+  
 
-  // const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
+
 
   const searchRef = useRef();
 
@@ -76,10 +68,8 @@ function DepartmentComponent() {
   }
 
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
-  const [filteredData, setFilteredData] = useState([]);
+
+
 
   const handleSearch = (value) => {
    
@@ -171,56 +161,7 @@ function DepartmentComponent() {
   ];
 
   const loadData = async () => {
-    // const data = [];
-    // const exportTempData = [];
-    // await new DepartmentService().getDepartment().then(res => {
-    //     if (res.status === 200) {
-    //         let counter = 1;
-    //         const temp = res.data.data
-    //         for (const key in temp) {
-    //             data.push({
-    //                 counter: counter++,
-    //                 id: temp[key].id,
-    //                 department: temp[key].department,
-    //                 is_active: temp[key].is_active,
-    //                 remark: temp[key].remark,
-    //                 created_at: temp[key].created_at,
-    //                 created_by: temp[key].created_by,
-    //                 updated_at: temp[key].updated_at,
-    //                 updated_by: temp[key].updated_by
-    //             })
-    //         }
-    //         setData(null);
-    //         setData(data);
-    //         setDataa(data)
-    //         for (const i in data) {
-    //             exportTempData.push({
-    //                 Sr: data[i].counter,
-    //                 Department: data[i].department,
-    //                 Status: data[i].is_active ? 'Active' : 'Deactive',
-    //                 Remark:data[i].remark,
-    //                 created_at: temp[i].created_at,
-    //                 created_by: temp[i].created_by,
-    //                 updated_at: data[i].updated_at,
-    //                 updated_by: data[i].updated_by,
-    //             })
-    //         }
-    //         setExportData(null)
-    //         setExportData(exportTempData)
-    //     }
-    // }).catch(error => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog("Department", "Get_Department", "INSERT", errorObject.data.message);
-    // })
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //     if (res.status === 200) {
-    //         if (res.data.status == 1) {
-    //             const getRoleId = sessionStorage.getItem("role_id");
-    //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //         }
-    //     }
-    // })
+ 
   };
 
   const handleForm = (id) => async (e) => {
@@ -237,7 +178,7 @@ function DepartmentComponent() {
         }
       });
     
-      // await new DepartmentService()
+
       //   .postDepartment(form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -279,7 +220,7 @@ function DepartmentComponent() {
         }
       });
 
-      // await new DepartmentService()
+  
       //   .updateDepartment(id, form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -314,7 +255,7 @@ function DepartmentComponent() {
     }
   };
 
-  //Search As Enter key press
+
   // useEffect(() => {
   //     const listener = event => {
   //         if (event.code === "Enter") {
@@ -386,7 +327,7 @@ function DepartmentComponent() {
               className="form-control"
               placeholder="Search by Department Name...."
               ref={searchRef}
-              // onKeyDown={handleKeyDown}
+         
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -424,7 +365,7 @@ function DepartmentComponent() {
               {department && (
                 <DataTable
                   columns={columns}
-                  // data={department}
+               
                   data={department.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
@@ -458,13 +399,7 @@ function DepartmentComponent() {
       <Modal
         centered
         show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
+        
       >
         <form
           method="post"
@@ -635,9 +570,9 @@ function DepartmentComponent() {
 
 function DepartmentDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new DepartmentService().getDepartment().then((res) => {
+     new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;

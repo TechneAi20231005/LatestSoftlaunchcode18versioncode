@@ -8,7 +8,7 @@ export const taskAndTicketMaster = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.getAllType();
-        console.log("resss", response);
+  
         return response;
       } catch (error) {
         throw error;
@@ -22,7 +22,7 @@ export const taskAndTicketMaster = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.getParent();
-        console.log("resss", response);
+    
         return response;
       } catch (error) {
         throw error;
@@ -36,7 +36,7 @@ export const taskAndTicketMaster = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.postType(config);
-        console.log("resss", response);
+     
         return response;
       } catch (error) {
         throw error;
@@ -51,7 +51,7 @@ export const taskAndTicketMaster = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service._updateType(config.id,config.payload);
-        console.log("resss", response);
+     
         return response;
       } catch (error) {
         throw error;

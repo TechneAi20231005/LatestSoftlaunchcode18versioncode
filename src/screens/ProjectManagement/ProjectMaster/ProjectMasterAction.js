@@ -9,7 +9,8 @@ export const getprojectData = createAsyncThunk(
     try {
       const service = new ProjectService();
       const response = await service.getProject();
-      console.log("resss", response);
+    
+      
       return response;
     } catch (error) {
       throw error;
@@ -24,7 +25,8 @@ export const postprojectData = createAsyncThunk(
     try {
       const service = new ProjectService();
       const response = await service.postProject(config);
-      console.log("dd", response);
+     
+      
       return response;
     } catch (error) {
       throw error;
@@ -39,7 +41,8 @@ export const updateprojectMaster = createAsyncThunk(
     try {
       const service = new ProjectService();
       const response = await service.updateProject(config.id, config.payload);;
-      console.log("resss", response);
+
+      
       return response;
     } catch (error) {
       throw error;
@@ -53,7 +56,8 @@ export const getprojectByID = createAsyncThunk(
     try {
       const service = new ProjectService();
       const response = await service.getProjectById(config.id, config.payload);;
-      console.log("resss", response);
+    
+      
       return response;
     } catch (error) {
       throw error;

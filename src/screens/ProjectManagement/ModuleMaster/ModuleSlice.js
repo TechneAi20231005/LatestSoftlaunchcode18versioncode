@@ -36,7 +36,8 @@ export const moduleSlice = createSlice({
           value: moduleLabel.id,
           label: moduleLabel.module_name,
         }));
-        console.log("pp",state.filteredModuleAccordingToProject );
+      
+        
     },
 
     handleModalOpen: (state, action) => {

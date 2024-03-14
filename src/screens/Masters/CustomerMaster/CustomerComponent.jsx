@@ -1,20 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
+
 import CustomerService from "../../../services/MastersService/CustomerService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import { _base } from "../../../settings/constants";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import "react-data-table-component-extensions/dist/index.css";
-import { Spinner } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import { UseDispatch,useDispatch,useSelector } from "react-redux";
-import { dashboardSlice } from "../../Dashboard/DashbordSlice";
-import { getCustomerData, getRoles } from "../../Dashboard/DashboardAction";
 
+import { useDispatch, useSelector } from "react-redux";
+
+import { getCustomerData, getRoles } from "../../Dashboard/DashboardAction";
 
 function CustomerComponent() {
   const [notify, setNotify] = useState(null);
@@ -29,19 +27,17 @@ function CustomerComponent() {
   const searchRef = useRef();
   const location = useLocation();
 
+  const dispatch = useDispatch();
+  const getallCustomer = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllCustomerData
+  );
 
-
-
-  const dispatch = useDispatch()
-  const getallCustomer = useSelector(dashboardSlice=>dashboardSlice.dashboard.getAllCustomerData)
- 
-  const exportData = useSelector(dashboardSlice=>dashboardSlice.dashboard.exportCustomerData)
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2));
-
-
-
-
-  
+  const exportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportCustomerData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+  );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -65,16 +61,13 @@ function CustomerComponent() {
   //   setData(result);
   // };
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   // const handleSearch = (e) => {
   //   setSearchTerm(e.target.value);
   // };
   const [filteredData, setFilteredData] = useState([]);
-  
-  const handleSearch = (value) => {
-   
-  };
-  
+
+  const handleSearch = (value) => {};
 
   const columns = [
     {
@@ -154,124 +147,14 @@ function CustomerComponent() {
     columns,
     data,
   };
-  const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    // const data = [];
-    const exportTempData = [];
-    // await new CustomerService()
-    //   .getCustomer()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       setShowLoaderModal(false);
-    //       setDataa(res.data.data);
-    //       let counter = 1;
-    //       const temp = res.data.data;
+  const loadData = async () => {};
 
-    //       for (const key in temp) {
-    //         data.push({
-    //           counter: counter++,
-    //           id: temp[key].id,
-    //           name: temp[key].name,
-    //           type: temp[key].type_name,
-    //           email_id: temp[key].email_id,
-    //           contact_no: temp[key].contact_no,
-    //           address: temp[key].address,
-    //           pincode: temp[key].pincode,
-    //           country: temp[key].country,
-    //           state: temp[key].state,
-    //           City: temp[key].city,
-    //           is_active: temp[key].is_active,
-    //           created_at: temp[key].created_at,
-    //           created_by: temp[key].created_by,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by: temp[key].updated_by,
-    //         });
-    //       }
-    //       setData(null);
-    //       setData(data);
-    //       for (const i in temp) {
-    //         exportTempData.push({
-    //           counter: counter++,
-    //           Name: temp[i].name,
-    //           Customer_Type: temp[i].type_name,
-    //           Email: temp[i].email_id,
-    //           Contact_Number: temp[i].contact_no,
-    //           Address: temp[i].address,
-    //           Pincode: temp[i].pincode,
-    //           Country: temp[i].country,
-    //           State: temp[i].state,
-    //           City: temp[i].city,
-    //           Status: temp[i].is_active ? "Active" : "Deactive",
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: temp[i].updated_at,
-    //           updated_by: temp[i].updated_by,
-    //         });
-    //       }
-    //       setExportData(null);
-    //       setExportData(exportTempData);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     if (error.message) {
-    //       const { response } = error;
-    //       const { request, ...errorObject } = response;
-    //       new ErrorLogService().sendErrorLog(
-    //         "Customer Master",
-    //         "Get_Customer",
-    //         "INSERT",
-    //         errorObject.data.message
-    //       );
-    //     } else {
-    //       console.log(error);
-    //     }
-    //   });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
-  // useEffect(() => {
-  //   const listener = event => {
-  //     if (event.code === "Enter") {
-  //       event.preventDefault();
-  //       // callMyFunction();
-  //       handleSearch()
-  //     }
-  //   };
-  //   document.addEventListener("keydown", listener);
-  //   return () => {
-  //     document.removeEventListener("keydown", listener);
-  //   };
-  // }, [data]);
-
-  // const handleKeyDown = (event) => {
-  //   if (event.key === "Enter") {
-  //     handleSearch();
-  //   }
-  // };
-  // const handleKeyDown = (event, searchTerm) => {
-  //   if (event.key === "Enter") {
-  //     handleSearch(searchTerm);
-  //   }
-  // };
   useEffect(() => {
     loadData();
-    dispatch(getCustomerData())
+    dispatch(getCustomerData());
 
-    // if(!getallCustomer.length){
-     
-    // }
-    if(!checkRole.length){
-      dispatch(getRoles())
-
+    if (!checkRole.length) {
+      dispatch(getRoles());
     }
     if (location && location.state) {
       setNotify(location.state);
@@ -281,20 +164,23 @@ function CustomerComponent() {
     };
   }, []);
 
-
   useEffect(() => {
-    setFilteredData(getallCustomer.filter(customer => {
-      if (typeof searchTerm === 'string') {
-        if (typeof customer === 'string') {
-          return customer.toLowerCase().includes(searchTerm.toLowerCase());
-        } else if (typeof customer === 'object') {
-          return Object.values(customer).some(value =>
-            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-          );
+    setFilteredData(
+      getallCustomer.filter((customer) => {
+        if (typeof searchTerm === "string") {
+          if (typeof customer === "string") {
+            return customer.toLowerCase().includes(searchTerm.toLowerCase());
+          } else if (typeof customer === "object") {
+            return Object.values(customer).some(
+              (value) =>
+                typeof value === "string" &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }
         }
-      }
-      return false;
-    }));
+        return false;
+      })
+    );
   }, [searchTerm, getallCustomer]);
 
   useEffect(() => {
@@ -334,7 +220,6 @@ function CustomerComponent() {
               className="form-control"
               placeholder="Search by customer Name...."
               ref={searchRef}
-              // onKeyDown={handleKeyDown}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -342,7 +227,7 @@ function CustomerComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              value={searchTerm} 
+              value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
@@ -372,31 +257,24 @@ function CustomerComponent() {
               {getallCustomer && (
                 <DataTable
                   columns={columns}
-                  // data={getallCustomer}
-
-                  // data={getallCustomer.filter(customer => {
-                  //   if (customer && typeof customer === 'string') {
-                  //     return customer?.toLowerCase()?.includes(searchTerm?.toLowerCase());
-                  //   } else if (customer && typeof customer === 'object') {
-                  //     return Object.values(customer).some(value =>
-                  //       value && value?.toString()?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-                  //     );
-                  //   }
-                  //   return false;
-                  // })}
-                  data={getallCustomer.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(value =>
-                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                  data={getallCustomer.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
                     return false;
                   })}
-                  
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -406,17 +284,6 @@ function CustomerComponent() {
                 />
               )}
             </div>
-            {/* <Modal show={showLoaderModal} centered>
-              <Modal.Body className="text-center">
-                <Spinner animation="grow" variant="primary" />
-                <Spinner animation="grow" variant="secondary" />
-                <Spinner animation="grow" variant="success" />
-                <Spinner animation="grow" variant="danger" />
-                <Spinner animation="grow" variant="warning" />
-                <Spinner animation="grow" variant="info" />
-                <Spinner animation="grow" variant="dark" />
-              </Modal.Body>
-            </Modal> */}
           </div>
         </div>
       </div>

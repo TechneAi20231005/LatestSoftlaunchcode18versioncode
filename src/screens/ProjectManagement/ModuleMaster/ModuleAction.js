@@ -7,7 +7,8 @@ export const moduleMaster = createAsyncThunk(
     try {
       const service = new ModuleService();
       const response = await service.getModule();
-      console.log("resss", response);
+  
+      
       return response;
     } catch (error) {
       throw error;
@@ -21,7 +22,8 @@ export const getmoduleById = createAsyncThunk(
     try {
       const service = new ModuleService();
       const response = await service.getModuleById(config.id);
-      console.log("resM", response);
+    
+      
       return response;
     } catch (error) {
       throw error;
@@ -35,7 +37,8 @@ export const postmoduleMaster = createAsyncThunk(
     try {
       const service = new ModuleService();
       const response = await service.postModule(config);
-      console.log("resss", response);
+
+      
       return response;
     } catch (error) {
       throw error;
@@ -49,7 +52,8 @@ export const updateModuleMaster = createAsyncThunk(
     try {
       const service = new ModuleService();
       const response = await service.updateModule(config.id, config.payload);
-      console.log("resss", response);
+ 
+      
       return response;
     } catch (error) {
       throw error;

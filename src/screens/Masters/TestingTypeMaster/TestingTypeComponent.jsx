@@ -1,18 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import StateService from "../../../services/MastersService/StateService";
-import CountryService from "../../../services/MastersService/CountryService";
+
 import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import { CountryDropdown } from "../CountryMaster/CountryComponent";
+
 import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
+
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import TestingTypeServices from "../../../services/MastersService/TestingTypeService";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   postTesting,
@@ -25,8 +21,6 @@ import {
   handleModalClose,
 } from "./TestingTypeComponentSlices";
 
-import TestingTypeComponentSlices from "./TestingTypeComponentSlices";
-
 function TestingTypeComponent() {
   const dispatch = useDispatch();
   const testingtypeData = useSelector(
@@ -37,27 +31,20 @@ function TestingTypeComponent() {
     (TestingTypeComponentSlices) =>
       TestingTypeComponentSlices.testingData.exportTestingData
   );
-  const modal = useSelector((TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal);
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49));
-  const notify = useSelector((TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.notify);
-  console.log(modal);
+  const modal = useSelector(
+    (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49)
+  );
+  const notify = useSelector(
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.notify
+  );
 
   const [data, setData] = useState(null);
-  // const [notify, setNotify] = useState();
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
 
-  // const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
-  const [type, setType] = useState(null);
-
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
@@ -116,12 +103,7 @@ function TestingTypeComponent() {
       sortable: true,
       width: "60px",
     },
-    // {
-    //   name: "State",
-    //   selector: (row) => row.state,
-    //   sortable: true,
-    //   width: "125px",
-    // },
+
     {
       name: "Testing Type",
       selector: (row) => row.testing_type,
@@ -174,87 +156,16 @@ function TestingTypeComponent() {
     },
   ];
 
-  const loadData = async () => {
-    // const data = [];
-    // const exportTempData = [];
-    // await new TestingTypeServices()
-    //   .getAlltestingType()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       let counter = 1;
-    //       const temp = res.data.data;
-    //       for (const key in temp) {
-    //         data.push({
-    //           counter: counter++,
-    //           id: temp[key].id,
-    //           testing_type: temp[key].testing_type,
-    //           is_active: temp[key].is_active,
-    //           remark: temp[key].remark,
-    //           created_at: temp[key].created_at,
-    //           created_by: temp[key].created_by,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by: temp[key].updated_by,
-    //         });
-    //       }
-    //       setData(null);
-    //       setData(data);
-    //       setType(data);
-    //       for (const i in data) {
-    //         exportTempData.push({
-    //           Sr: data[i].counter,
-    //           testing_type: temp[i].testing_type,
-    //           Status: data[i].is_active ? "Active" : "Deactive",
-    //           Remark:data[i].remark,
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: data[i].updated_at,
-    //           updated_by: data[i].updated_by,
-    //         });
-    //       }
-    //       setExportData(null);
-    //       setExportData(exportTempData);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog(
-    //       "State",
-    //       "Get_State",
-    //       "INSERT",
-    //       errorObject.data.message
-    //     );
-    //   });
-    // await new CountryService().getCountrySort().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
-    //       setCountryDropdown(
-    //         res.data.data
-    //           .filter((d) => d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.country }))
-    //       );
-    //     }
-    //   }
-    // });
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
+  const loadData = async () => {};
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    // setNotify(null);
+
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postTesting(form));
       dispatch(testingData());
-      // await new TestingTypeServices()
+
       //   .postTestingType(form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -289,7 +200,7 @@ function TestingTypeComponent() {
     } else {
       dispatch(updateTesting({ id: id, payload: form }));
       dispatch(testingData());
-      // await new TestingTypeServices()
+
       //   .updateTestingType(id, form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -341,8 +252,6 @@ function TestingTypeComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -435,19 +344,7 @@ function TestingTypeComponent() {
         </div>
       </div>
 
-      <Modal
-        centered
-        show={modal.showModal}
-        // onHide={(e) => {
-        //   dispatch(
-        //   handleModalClose({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   })
-        //   );
-        // }}
-      >
+      <Modal centered show={modal.showModal}>
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
@@ -604,71 +501,5 @@ function TestingTypeComponent() {
     </div>
   );
 }
-
-// function StateDropdown(props) {
-//   const [data, setData] = useState(null);
-//   useEffect(async () => {
-//     const tempData = [];
-//     await new StateService().getState().then((res) => {
-//       if (res.status === 200) {
-//         const data = res.data.data;
-//         let counter = 1;
-//         for (const key in data) {
-//           if (data[key].is_active == 1) {
-//             tempData.push({
-//               counter: counter++,
-//               id: data[key].id,
-//               state: data[key].state,
-//             });
-//           }
-//         }
-//         setData(tempData);
-//       }
-//     });
-//   }, []);
-
-//   return (
-//     <>
-//       {data && (
-//         <select
-//           className="form-control form-control-sm"
-//           id={props.id}
-//           name={props.name}
-//           onChange={props.getChangeValue}
-//           required={props.required ? true : false}
-//         >
-//           {props.defaultValue == 0 && (
-//             <option value={0} selected>
-//               Select State
-//             </option>
-//           )}
-//           {props.defaultValue != 0 && <option value={0}>Select State</option>}
-//           {data.map(function (item, i) {
-//             if (props.countryId && props.countryId == item.country_id) {
-//               return (
-//                 <option key={i} value={item.id} selected>
-//                   {item.state}
-//                 </option>
-//               );
-//             } else if (props.defaultValue && props.defaultValue == item.id) {
-//               return (
-//                 <option key={i} value={item.id} selected>
-//                   {item.state}
-//                 </option>
-//               );
-//             } else {
-//               return (
-//                 <option key={i} value={item.id}>
-//                   {item.state}
-//                 </option>
-//               );
-//             }
-//           })}
-//         </select>
-//       )}
-//       {!data && <p> Loading....</p>}
-//     </>
-//   );
-// }
 
 export { TestingTypeComponent };

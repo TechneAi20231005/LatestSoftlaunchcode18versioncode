@@ -26,7 +26,7 @@ export const taskandticketTypeSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+  
     },
 
     handleModalOpen: (state, action) => {
@@ -79,10 +79,7 @@ export const taskandticketTypeSlice = createSlice({
 
         state.status = "succeded";
         state.showLoaderModal = false;
-        // let count = 1;
-        // for (let i = 0; i < taskAndTicketMaster.length; i++) {
-        //   taskAndTicketMaster[i].counter = count++;
-        // }
+        
         state.getParentDropdown = [...getParentDropdown];
       }
     });

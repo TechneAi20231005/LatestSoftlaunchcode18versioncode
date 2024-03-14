@@ -28,7 +28,7 @@ export const citySlice = createSlice({
       state.data = action.payload;
       state.message = action.payload;
 
-      console.log("", action.payload.message);
+
     });
     builder.addCase(postCityComponent.rejected, (state, action) => {
       state.status = "failed";

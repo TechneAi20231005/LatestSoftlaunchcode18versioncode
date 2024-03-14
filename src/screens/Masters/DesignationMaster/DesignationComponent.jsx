@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ListGroup, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
+
 import DesignationService from "../../../services/MastersService/DesignationService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
+
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
@@ -13,8 +13,7 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import DashboardSlice from "../../Dashboard/DashboardSlice";
-import DesignationSlice from "./DesignationSlice";
+
 import {
   getDesignationData,
   postDesignationData,
@@ -23,12 +22,10 @@ import {
 import { handleModalClose, handleModalOpen } from "./DesignationSlice";
 
 function DesignationComponent() {
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const dispatch = useDispatch();
-  // const getDesignation = useSelector( (DashboardSlice) => DashboardSlice.dashboard.getDesignationData);
+
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
   );
@@ -45,21 +42,7 @@ function DesignationComponent() {
     (DesignationSlice) => DesignationSlice.designationMaster.notify
   );
 
-  // const [notify, setNotify] = useState(null);
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
-
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
-
-  // const [exportData, setExportData] = useState(null);
-
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
 
   const searchRef = useRef();
 
@@ -79,21 +62,9 @@ function DesignationComponent() {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
-
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
-  const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {
-   
-  };
+  const handleSearch = (value) => {};
 
   const columns = [
     {
@@ -181,178 +152,30 @@ function DesignationComponent() {
     },
   ];
 
-  const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    // const data = [];
-    // const exportTempData = [];
-    // await new DesignationService()
-    //   .getDesignation()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       setShowLoaderModal(false);
-    //       let counter = 1;
-    //       const temp = res.data.data;
-    //       for (const key in temp) {
-    //         data.push({
-    //           counter: counter++,
-    //           id: temp[key].id,
-    //           designation: temp[key].designation,
-    //           is_active: temp[key].is_active,
-    //           remark: temp[key].remark,
-    //           created_at: temp[key].created_at,
-    //           created_by: temp[key].created_by,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by: temp[key].updated_by,
-    //         });
-    //       }
-    //       setData(null);
-    //       setData(data);
-    //       setDataa(data);
-    //       for (const i in data) {
-    //         exportTempData.push({
-    //           Sr: data[i].counter,
-    //           Designation: data[i].designation,
-    //           Status: data[i].is_active ? "Active" : "Deactive",
-    //           Remark: data[i].remark,
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: data[i].updated_at,
-    //           updated_by: data[i].updated_by,
-    //         });
-    //       }
-    //       setExportData(null);
-    //       setExportData(exportTempData);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog(
-    //       "Designation",
-    //       "Get_Designation",
-    //       "INSERT",
-    //       errorObject.data.message
-    //     );
-    //   });
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
+  const loadData = async () => {};
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    // setNotify(null);
+
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postDesignationData(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getDesignationData());
-
         } else {
         }
       });
-
-
-
-      // await new DesignationService()
-      //   .postDesignation(form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       setShowLoaderModal(false);
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Designation",
-      //         "Create_Designation",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Designation",
-      //       "Create_Designation",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
-      dispatch(updatedDesignationData({ id: id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getDesignationData());
-
-        } else {
+      dispatch(updatedDesignationData({ id: id, payload: form })).then(
+        (res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getDesignationData());
+          } else {
+          }
         }
-      });
-
-      // await new DesignationService()
-      //   .updateDesignation(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       setShowLoaderModal(false);
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.data.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Designation",
-      //         "Edit_Designation",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Designation",
-      //       "Edit_Designation",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
+      );
     }
   };
-
-  //Search As Enter key press
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -365,8 +188,6 @@ function DesignationComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
-
 
   useEffect(() => {
     loadData();
@@ -419,7 +240,6 @@ function DesignationComponent() {
               placeholder="Search by Designation Name...."
               ref={searchRef}
               onChange={(e) => setSearchTerm(e.target.value)}
-              // onKeyDown={handleKeyDown}
             />
           </div>
           <div className="col-md-3">
@@ -456,7 +276,6 @@ function DesignationComponent() {
               {designationData && (
                 <DataTable
                   columns={columns}
-                  // data={designationData}
                   data={designationData.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
@@ -475,7 +294,6 @@ function DesignationComponent() {
                     }
                     return false;
                   })}
-                  
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -500,17 +318,7 @@ function DesignationComponent() {
         </Modal.Body>
       </Modal>
 
-      <Modal
-        centered
-        show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
-      >
+      <Modal centered show={modal.showModal}>
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
@@ -680,10 +488,10 @@ function DesignationComponent() {
 
 function DesignationDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
 
-    await new DesignationService().getDesignation().then((res) => {
+    new DesignationService().getDesignation().then((res) => {
       if (res.status == 200) {
         const data = res.data.data;
         for (const key in data) {

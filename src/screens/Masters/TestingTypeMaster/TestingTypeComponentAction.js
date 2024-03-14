@@ -19,7 +19,8 @@ export const testingData = createAsyncThunk(
       try {
         const service = new TestingTypeServices();
         const response = await service.postTestingType(config);
-        console.log("dd", response);
+      
+        
         return response;
       } catch (error) {
         throw error;
@@ -30,7 +31,8 @@ export const testingData = createAsyncThunk(
   export const updateTesting = createAsyncThunk(
     "updateTesting",
     async (config, thunkapi) => {
-      console.log("c", config);
+    
+      
       try {
         const service = new TestingTypeServices();
         const response = await service.updateTestingType(config.id, config.payload);

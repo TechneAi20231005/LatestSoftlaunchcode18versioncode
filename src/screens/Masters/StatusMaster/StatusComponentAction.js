@@ -20,7 +20,8 @@ export const postStatusData = createAsyncThunk(
     try {
       const service = new StatusService();
       const response = await service.postStatus(config);
-      console.log("dd", response);
+
+      
       return response;
     } catch (error) {
       throw error;
@@ -31,7 +32,8 @@ export const postStatusData = createAsyncThunk(
 export const updateStatusData = createAsyncThunk(
   "updateStatusData",
   async (config, thunkapi) => {
-    console.log("c", config);
+
+    
     try {
       const service = new StatusService();
       const response = await service.updateStatus(config.id, config.payload);
