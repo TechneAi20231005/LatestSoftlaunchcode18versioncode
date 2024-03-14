@@ -25,7 +25,7 @@ function StatusComponent() {
     const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
     const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
     const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
-    console.log("notify",statusData);
+
  
     
  

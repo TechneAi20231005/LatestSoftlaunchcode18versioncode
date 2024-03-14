@@ -203,61 +203,7 @@ export default function CreateCustomer({ match }) {
         });
 
       
-        //   .then((res) => {
-        //     if (res.status === 200) {
-        //       if (res.data.status === 1) {
-        //         history({
-        //           pathname: `/${_base}/Customer`,
-        //         }
-        //         ,
-        //      { state: {
-        //         type: "success", message: res.data.message ,
-        //      }
-        //     }
-        //         );
-        //       } else {
-        //         setNotify({ type: "danger", message: res.data.message });
-        //       }
-        //     } else {
-        //       setNotify({ type: "danger", message: res.message });
-        //       new ErrorLogService().sendErrorLog(
-        //         "Customer",
-        //         "Create_Customer",
-        //         "INSERT",
-        //         res.message
-        //       );
-        //     }
-        //   })
-
-        //   .catch((error) => {
-        //     if (error.response) {
-        //       const { response } = error;
-        //       const { request, ...errorObject } = response;
-        //       setNotify({ type: "danger", message: "Request Error !!!" });
-        //       new ErrorLogService().sendErrorLog(
-        //         "Customer",
-        //         "Create_Customer",
-        //         "INSERT",
-        //         errorObject.data.message
-        //       );
-        //     } else {
-        //       // Handle non-HTTP errors
-        //       console.error("Non-HTTP error occurred:", error.message);
-        //       setNotify({ type: "danger", message: "Non-HTTP error occurred" });
-        //     }
-        //   });
-
-        // .catch((error) => {
-        //   const { response } = error;
-        //   const { request, ...errorObject } = response;
-        //   setNotify({ type: "danger", message: "Request Error !!!" });
-        //   new ErrorLogService().sendErrorLog(
-        //     "Customer",
-        //     "Create_Customer",
-        //     "INSERT",
-        //     errorObject.data.message
-        //   );
-        // });
+        
       }
     }
   };

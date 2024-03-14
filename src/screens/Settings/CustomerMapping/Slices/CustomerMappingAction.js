@@ -53,7 +53,6 @@ export const getcustomerTypeData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.getTemplate();
-  console.log("re",response)
         return response;
       } catch (error) {
         throw error;

@@ -168,7 +168,7 @@ export default function ViewTicketComponent({ match }) {
     loadData();
     loadComments();
     return () => {
-      console.log("");
+   
     };
   }, []);
 
@@ -238,25 +238,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
-            {/* <div className="col-md-4">
-              <StatusCard
-                progress={data ? data.parent_name : ""}
-                progressBg="bg-success"
-                iconClass="icofont-user fs-4"
-                iconbg="bg-lightblue"
-                title="Parent Task Type "
-              />
-            </div> */}
-
-            {/* <div className="col-md-4">
-              <StatusCard
-                progress={data ? data.type_name : ""}
-                progressBg="bg-success"
-                iconClass="icofont-user fs-4"
-                iconbg="bg-lightblue"
-                title="Ticket Type"
-              />
-            </div> */}
+         
           </div>
         
           {rows && (
@@ -264,7 +246,7 @@ export default function ViewTicketComponent({ match }) {
               <div className="card-body">
                 <div className="row">
                   {rows.map((data, index) => {
-                    // console.log("dd",rows)
+            
                     var range = "";
                     return (
                       <div className={`${data.inputWidth} mt-2`}>

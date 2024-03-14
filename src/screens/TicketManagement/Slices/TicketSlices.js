@@ -19,7 +19,6 @@ export const createTicketSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -41,7 +40,6 @@ export const createTicketSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let customerMappingData = payload.data.data;
-        console.log("customerMappingData", customerMappingData);
         state.status = "succeded";
         state.showLoaderModal = false;
         state.customerMappingData = [...customerMappingData];
@@ -82,7 +80,6 @@ export const createTicketSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        console.log("payload", payload)
         let queryGroupData = payload.data.data.filter((d) => d.is_active == 1)
         let queryGroupDropDownData = payload.data.data
           .filter((d) => d.is_active == 1)

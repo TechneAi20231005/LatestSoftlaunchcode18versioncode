@@ -23,12 +23,8 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
-  // const exportData = useSelector(
-  //   (TemplateComponetSlice) =>
-  //     TemplateComponetSlice.tempateMaster.exportTemplateData
-  // );
+ 
   const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportData)
-  console.log("exportData",exportData)
 
 
 
@@ -36,12 +32,10 @@ function TemplateComponent() {
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
   );
-  console.log('notify' , notify)
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
   );
 
-  // const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [modal, setModal] = useState({
@@ -51,10 +45,8 @@ function TemplateComponent() {
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  // const [exportData, setExportData] = useState(null)
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null)
 
   const handleModal = (data) => {
     setModal(data);
@@ -78,20 +70,13 @@ function TemplateComponent() {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
+ 
 
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+ 
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
   };
 
   const columns = [
@@ -117,12 +102,7 @@ function TemplateComponent() {
       sortable: true,
       width: "80px",
     },
-    // {
-    //   name: "Template Name",
-    //   selector: (row) => row.template_name,
-    //   sortable: true,
-    //   width: "150px",
-    // },
+    
 
     {
       name: "Template Name",
@@ -193,75 +173,10 @@ function TemplateComponent() {
   ];
 
   const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    // const data = [];
-    // const exportTempData = []
-    // await new TemplateService().getTemplate().then(res => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     let counter = 1;
-    //     const temp = res.data.data;
-    //     for (const key in temp) {
-    //       data.push({
-    //         counter: counter++,
-    //         id: temp[key].id,
-    //         template_name: temp[key].template_name,
-    //         is_active: temp[key].is_active,
-    //         remark: temp[key].remark,
-    //         created_at: temp[key].created_at,
-    //         created_by: temp[key].created_by,
-    //         updated_at: temp[key].updated_at,
-    //         updated_by: temp[key].updated_by,
-    //       })
-    //     }
-    //     setData(null);
-    //     setData(data);
-    //     setDataa(data);
-    //     for (const key in data) {
-    //       exportTempData.push({
-    //         Sr: data[key].counter,
-    //         template_name: data[key].template_name,
-    //         Status: data[key].is_active ? 'Active' : 'Deactive',
-    //         created_at: data[key].created_at,
-    //         created_by: data[key].created_by,
-    //         updated_at: data[key].updated_at,
-    //         updated_by: data[key].updated_by,
-    //       })
-    //     }
-    //     setExportData(null)
-    //     setExportData(exportTempData)
-    //   }
-    // }).catch(error => {
-    //   const { response } = error;
-    //   const { request, ...errorObject } = response;
-    //   new ErrorLogService().sendErrorLog("Template Master", "Get_TemplateMaster", "INSERT", errorObject.data.message);
-    // })
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //     }
-    //   }
-    // })
+   
   };
 
-  //Search As Enter key press
-  // useEffect(() => {
-  //   const listener = event => {
-  //     if (event.code === "Enter") {
-  //       console.log("Enter key was pressed. Run your function.");
-  //       // callMyFunction();
-  //       handleSearch()
-  //     }
-  //   };
-  //   document.addEventListener("keydown", listener);
-  //   return () => {
-  //     document.removeEventListener("keydown", listener);
-  //   };
-  // }, [data]);
+ 
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -278,22 +193,13 @@ function TemplateComponent() {
       dispatch(getRoles());
     }
     if (location && location.state) {
-      // setNotify(location.state.notify);
+     
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (notify) {
-  //     const timer = setTimeout(() => {
-  //       dispatch(hideNotification());
-  //     }, 5000); // Adjust the timeout duration as needed
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [notify, dispatch]);
-
+  
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -330,7 +236,6 @@ function TemplateComponent() {
               className="form-control"
               placeholder="Search by Templete Name...."
               ref={searchRef}
-              // onKeyDown={handleKeyDown}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -445,11 +350,7 @@ function TemplateDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          {/* {props.defaultValue === 0 && (
-              <option value={0} selected>
-                Select Stage Type
-              </option>
-            )} */}
+          
           {props.defaultValue !== 0 && (
             <option value={0}>Select Template</option>
           )}

@@ -12,7 +12,7 @@ export const getCustomerMappingsetting = createAsyncThunk(
     try {
       const service = new CustomerMappingService();
       const response = await service.getCustomerMappingSettings(config);
-      console.log("response",response);
+
 
       return response;
     } catch (error) {
@@ -28,8 +28,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.getQueryType();
-        console.log("response",response);
-  
+       
         return response;
       } catch (error) {
         throw error;
@@ -45,7 +44,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new QueryTypeService();
         const response = await service.getAllQueryGroup();
-        console.log("responseppp",response);
+   
   
         return response;
       } catch (error) {
@@ -60,7 +59,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.getParent();
-        console.log("response",response);
+
   
         return response;
       } catch (error) {
@@ -76,7 +75,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new DepartmentMappingService();
         const response = await service.getDepartmentMappingByEmployeeId(config);
-        console.log("response",response);
+    
   
         return response;
       } catch (error) {
@@ -91,7 +90,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new MyTicketService();
         const response = await service.postTicket(config);
-        console.log("response",response);
+
   
         return response;
       } catch (error) {
@@ -107,7 +106,7 @@ export const queryTypesData = createAsyncThunk(
       try {
         const service = new MyTicketService();
         const response = await service.getTicketById(config);
-        console.log("response",response);
+      
   
         return response;
       } catch (error) {

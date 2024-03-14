@@ -9,7 +9,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.getTemplate();
-        console.log("resss", response);
         return response;
       } catch (error) {
         throw error;
@@ -24,7 +23,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.exporttempData();
-        console.log("tempalate", response);
         return response;
       } catch (error) {
         throw error;
@@ -38,7 +36,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.getParent();
-        console.log("resss", response);
         return response;
       } catch (error) {
         throw error;
@@ -52,7 +49,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TaskTicketTypeService();
         const response = await service.getAllType();
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -69,7 +65,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.postTemplate(config);
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -85,7 +80,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new BasketService();
         const response = await service.updatetempalateBasket(config.id,config.payload);
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -103,7 +97,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.addBasketinEdit(config.id,config.payload);
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -119,7 +112,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.updateTemplate(config.id,config.payload);
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -136,7 +128,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.addTaskinBasket(config.templateId,config.basketId,config.payload);
-        console.log("pppppppppp",response);
       
         return response;
       } catch (error) {
@@ -153,7 +144,6 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.getTemplateById(config.id); 
-        console.log("response in action" , response)
         return response;
       } catch (error) {
         throw error;

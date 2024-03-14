@@ -6,7 +6,6 @@ const _getAllTemplate = _URL + "/getAllTemplate";
 const _createTemplate = _URL + "/createTemplate";
 const _getTemplateById = _URL + "/getTemplateById/";
 const _exportData = _URL + "/getTemplateExport";
-console.log(_exportData)
 const _updateTemplate = _URL + "/updateTemplate/";
 
 const _updateTask = _URL + "/updateTask/";

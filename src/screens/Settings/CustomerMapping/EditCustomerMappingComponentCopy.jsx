@@ -137,9 +137,7 @@
                   e.preventDefault();
                   const form = new FormData(e.target);
                   var flag = 1;
-                  // for (var pair of form) {
-                  //     console.log(pair[0] + ', ' + pair[1]);
-                  // }
+                
                   const getApproch = form.getAll("approach")[0];
                   if (getApproch == "RW") {
                     if (rationTotal !== 100) {
@@ -444,7 +442,6 @@
 
                 useEffect(() => {
                   loadData();
-                  // console.log(data && priorityDropdown.map(d=>({label:}) d.label== data.priority));
                 }, []);
 
                 useEffect(() => {
@@ -505,9 +502,7 @@
                         const secondValue = ratioArray[i];
                         newarray.push(secondValue);
                       }
-                      // for (let i = 0; i < newarray.length; i++) {
-                      //     console.log(newarray)
-                      // }
+                      
                       let editSum = 0;
                       newarray.forEach((value) => {
                         editSum += Number(value);

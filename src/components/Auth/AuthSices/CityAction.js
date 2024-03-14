@@ -10,7 +10,6 @@ export const postCityComponent = createAsyncThunk("postCityComponet",async (payl
       const res = await cityService.postCity(payload);
       if (res?.status === 200 && res?.data?.status === 1) {
         const data = res?.data;
-        console.log(data);
 
         return data;
       } else {
@@ -40,7 +39,6 @@ export const getRole = createAsyncThunk(
     try {
       const res = await manageMenuService.getRole();
       const data = res.data;
-      console.log("data",data)
       return data;
     } catch (error) {
       throw error;

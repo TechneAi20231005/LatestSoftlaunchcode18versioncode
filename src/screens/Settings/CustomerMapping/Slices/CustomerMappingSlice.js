@@ -29,7 +29,6 @@ export const CustomerMappingSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -115,7 +114,6 @@ export const CustomerMappingSlice = createSlice({
           .filter((d) => d.is_active)
           .map((d) => ({ value: d.id, label: d.type_name }));
         state.customerTypeData = select;
-        console.log("s", select);
 
         state.status = "succeded";
 

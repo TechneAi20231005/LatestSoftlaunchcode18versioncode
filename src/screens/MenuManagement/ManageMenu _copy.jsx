@@ -92,9 +92,8 @@ const ManageMenu_copy = () => {
         await new ManageMenuService().getRole(e.target.value).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
-                    // setData(null)
-                    // setData(res.data.data)
-                    // console.log(res.data.data[0]);
+                
+                    
 
                     const data=res.data.data;
 
@@ -104,9 +103,7 @@ const ManageMenu_copy = () => {
                 }
             }
         }).catch(error => {
-            // const { response } = error;
-            // const { request, ...errorObject } = response;
-            // new ErrorLogService().sendErrorLog("Status", "Create_Status", "INSERT", errorObject.data.message);
+           
         })
     }
 

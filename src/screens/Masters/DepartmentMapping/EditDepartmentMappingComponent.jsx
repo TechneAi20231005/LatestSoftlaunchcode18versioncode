@@ -131,16 +131,7 @@ function EditDepartmentMappingComponent({match}) {
     
     const departmentHandler = (id,e) =>{
 
-        // let temp_state = [...data.departments];
-        // let actualIndex=null;	
-        // temp_state.forEach((ele,index)=>{
-        //     if(ele.id==id){
-        //         actualIndex=index;
-        //     }
-        // })
-        // let temp_element = { ...menus.menu[actualIndex] };
-        // // console.log(temp_element);
-        // setMenus(prev=>({...prev,'menu':temp_state}));   
+        
 
     }
 

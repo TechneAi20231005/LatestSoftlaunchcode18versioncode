@@ -37,13 +37,12 @@ export const citySlice = createSlice({
     builder.addCase(getCity.fulfilled, (state, action) => {
       state.status = "loading";
       state.data = action.payload.data;
-      console.log("hhe", action.payload);
+
     });
     builder.addCase(getRole.fulfilled, (state, action) => {
       state.status = "loading";
       state.data = action.payload;
-      console.log("act", action.payload);
-      console.log("hhssss", action.payload);
+    
     });
   },
 });

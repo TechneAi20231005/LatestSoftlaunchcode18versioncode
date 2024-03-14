@@ -154,12 +154,12 @@ export default function ProjectwiseModule() {
           }
         });
     } catch (error) {
-      console.error("Error fetching authority data:", error);
+   
     }
   };
 
   const changeSubModuleHandle = async (e, type) => {
-    console.log("e",e)
+
     if (e === null) {
       return;
     }

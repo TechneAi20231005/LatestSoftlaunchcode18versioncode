@@ -137,7 +137,7 @@ export default function ProjectwiseModule({ match }) {
         }
       })
     } catch (error) {
-      console.error("Error fetching authority data:", error);
+   
     }
 
   };

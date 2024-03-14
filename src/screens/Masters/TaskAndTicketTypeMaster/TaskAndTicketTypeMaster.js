@@ -97,7 +97,6 @@ function TaskAndTicketTypeMaster(props) {
         }));
         setParent(mappedData);
       } else {
-        console.error("error", res.status);
       }
     });
   };

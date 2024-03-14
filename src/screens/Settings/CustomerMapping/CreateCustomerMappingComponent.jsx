@@ -39,14 +39,11 @@ export default function CreateCustomerMappingComponent() {
   const departmentDropdownRef = useRef();
 
   const [customerType, setCustomerType] = useState();
-  // const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
 
-  // const [queryType, setQueryType] = useState();
-  // const [queryTypeDropdown, setQueryTypeDropdown] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
-  console.log(dynamicFormDropdown);
+
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
   const [template, setTemplate] = useState();
@@ -57,7 +54,6 @@ export default function CreateCustomerMappingComponent() {
 
   const [user, setUser] = useState();
   const [userDropdown, setUserDropdown] = useState();
-  console.log("userDropdown", userDropdown);
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
@@ -78,7 +74,6 @@ export default function CreateCustomerMappingComponent() {
   const queryType = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.queryTypeData
   );
-  console.log("queryType", queryType);
   const queryTypeDropdown = useSelector(
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.queryTypeDropDownData
@@ -119,62 +114,11 @@ export default function CreateCustomerMappingComponent() {
   const priority = ["Low", "Medium", "High", "Very High"];
 
   const loadData = async () => {
-    // await new CustomerTypeService().getCustomerType().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.type_name }));
-    //       setCustomerType(data);
-    //       setCustomerTypeDropdown(select);
-    //     }
-    //   }
-    // });
-
-    // await new CustomerMappingService().getPriorityDropdown().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
-    //       const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.label }));
-    //     }
-    //   }
-    // });
-
-    // await new QueryTypeService().getQueryType().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data.map((d) => ({value: d.id,label: d.query_type_name}));
-    //       setQueryType(data);
-    //       setQueryTypeDropdown(res.data.data.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.query_type_name }))
-    //       );
-    //     }
-    //   }
-    // });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     // setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //     }
-    //   }
-    // })
+    
 
     await getDynamicForm();
 
-    // await new TemplateService().getTemplate().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       const select = res.data.data.map((d) => ({value: d.id, label: d.template_name }));
-    //       setTemplate(data);
-    //       setTemplateDropdown(select);
-    //     }
-    //   }
-    // });
-    //await getDepartment();
-    // await getUser();
+   
   };
 
   const getDynamicForm = async () => {
@@ -257,19 +201,6 @@ export default function CreateCustomerMappingComponent() {
       }
     });
   };
-  //   await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-  //       if (res.status == 200) {
-  //       if (res.data.status == 1) {
-  //         const data = res.data.data.filter((d) => d.is_active == 1);
-  //         setUser(data);
-  //         var defaultValue = [{ value: 0, label: "Select User" }]
-  //         var dropwdown = res.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")" }));
-  //         defaultValue = [...defaultValue, ...dropwdown];
-  //         setUserDropdown(dropwdown);
-  //       }
-  //     }
-  //   });
-  // }
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
@@ -335,22 +266,14 @@ export default function CreateCustomerMappingComponent() {
     }
     setRatioTotal(sum);
 
-    // sum =  ratiowiseData.reduce((result,number)=> result+number);
-    // if(sum > 100){
-    //     ratiowiseData[index]=0;
-    //     sum = ratiowiseData.reduce((result,number)=> result+number);
-    // }
+  
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
 
-    // console.log(form);
-
-    // for (const pair of form.entries()) {
-    //   console.log(`${pair[0]}, ${pair[1]}`);
-    // }
+  
 
     var flag = 1;
     if (data.approach == "RW") {
@@ -416,9 +339,7 @@ export default function CreateCustomerMappingComponent() {
     if (!customerTypeDropdown.length) {
       dispatch(getcustomerTypeData());
     }
-    // if(!queryType.length || !queryTypeDropdown.length){
-    //   dispatch(getQueryTypeData())
-    // }
+  
     if (!templateDropdown.length) {
       dispatch(getTemplateData());
     }
@@ -557,44 +478,7 @@ export default function CreateCustomerMappingComponent() {
                   </div>
                 </div>
 
-                {/* <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Status :</b>
-                    </label>
-                    <div className="col-sm-4">
-                      <div className="row">
-                        <div className="col-md-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_1"
-                              value="1"
-                              defaultChecked={true}
-                              key={Math.random()}
-                            />
-                            <label className="form-check-label"  htmlFor="is_active_1">Active </label>
-                          </div>
-                        </div>
-
-                        <div className="col-md-1">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_0"
-                              value="0"
-                              defaultChecked={false}
-                              key={Math.random()}
-                            />
-                            <label className="form-check-label" htmlFor="is_active_0">Deactive</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
+               
 
                 <div className="row mt-2">
                   <div className="col-sm-2">

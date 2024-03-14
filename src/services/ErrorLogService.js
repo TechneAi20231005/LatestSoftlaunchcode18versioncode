@@ -33,7 +33,7 @@ export default class ErrorLogService{
                         'created_at':getDateTime(),
                     }
        return axios.post(_URL,payload).then(r=>{
-           console.log(r);
+       
        });
     }
 

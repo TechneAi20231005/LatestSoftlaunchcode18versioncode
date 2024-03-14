@@ -360,94 +360,7 @@ function CreateUserComponent({ match }) {
 
 
   
-  //   e.preventDefault();
-  //   if (loading) {
-  //     return
-  //   }
-  //   setNotify(null);
-  //   const form = new FormData(e.target);
-  //   var flag = 1;
-
-  //   var a = JSON.stringify(Object.fromEntries(form));
-
-  //   const formValidation = checkingValidation(form);
-  //   if (formValidation === 1) {
-  //     return false;
-  //   }
-
-  //   var selectDepartment = form.getAll("department_id[]");
-  //   if (selectDepartment == "") {
-  //     setInputState({ ...state, departmentErr: " Please Select Department" });
-  //     return false;
-  //   }
-
-  //   if (confirmPasswordError == true) {
-  //     alert("Password Does not Match");
-  //     return false;
-  //   } else if (mailError == true) {
-  //     alert("Enter valid email");
-  //     return false;
-  //   } else if (pincodeValid == true) {
-  //     alert("Enter valid Pincode");
-  //     return false;
-  //   } else if (
-  //     confirmPasswordError == false &&
-  //     mailError == false &&
-  //     contactValid == false &&
-  //     whatsappValid == false &&
-  //     pincodeValid == false
-  //   ) {
-  //     if (flag === 1) {
-  //       dispatch(postUserData(form)).then((res) => {
-  //         if (res.payload.data.status === 1 && res.payload.status === 200) {
-  //           navigate(`/${_base}/User`)
-  //         }
-  //       })
-  //       //  await new UserService()
-  //       //     .postUser(form)
-  //       //     .then((res) => {
-  //       //       if (res.status === 200) {
-  //       //         if (res.data.status === 1) {
-  //       //           history({
-  //       //             pathname: `/${_base}/User`
-  //       //           }
-  //       //           ,
-  //       //        { state: {
-  //       //           type: "success", message: res.data.message ,
-  //       //        }
-  //       //       }
-  //       //           );
-  //       //         } else {
-  //       //           setNotify({ type: "danger", message: res.data.message });
-  //       //         }
-  //       //       } else {
-  //       //         setNotify({ type: "danger", message: res.message });
-  //       //         new ErrorLogService().sendErrorLog(
-  //       //           "User",
-  //       //           "Create_User",
-  //       //           "INSERT",
-  //       //           res.message
-  //       //         );
-  //       //       }
-  //       //     })
-  //       //     .catch((error) => {
-  //       //       if (error.response) {
-  //       //         const { request, ...errorObject } = error.response;
-  //       //         new ErrorLogService().sendErrorLog(
-  //       //           "User",
-  //       //           "Create_User",
-  //       //           "INSERT",
-  //       //           errorObject.data.message
-  //       //         );
-  //       //       } else if (error.request) {
-  //       //         console.error("Error response is undefined:", error.request);
-  //       //       } else {
-  //       //         console.error("Error:", error.message);
-  //       //       }
-  //       //     });
-  //     }
-  //   }
-  // };
+  
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -701,31 +614,7 @@ function CreateUserComponent({ match }) {
     setFilteredRoles(aa);
 
  
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       const filteredAsAccountFor = res.data.data.filter((filterData) => {
-    //         if (accountFor === "SELF") {
-    //           return filterData.role.toLowerCase() !== "user";
-    //         } else if (accountFor === "CUSTOMER") {
-    //           return filterData.role.toLowerCase() === "user";
-    //         }
-    //       });
-    //       const response = filteredAsAccountFor
-
-    //         .filter((d) => d.is_active === 1)
-
-    //         .map((d) => ({
-    //           value: d.id,
-    //           label: d.role,
-    //         }));
-    //       const aa = response.sort(function (a, b) {
-    //         return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-    //       });
-
-    //       // setRoleDropdown(aa);
-    //     }
-    //   }
-    // });
+    
   };
 
  
@@ -1510,18 +1399,13 @@ function CreateUserComponent({ match }) {
 
                       <div className="col-sm-4">
                         <Select
-                          // options={
-                          //   updateStatus.citydrp !== undefined
-                          //     ? cityData
-                          //     : []
-                          // }
+                          
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                          // key={Math.random()}
-                          // value={ cityName? cityName : ""}
+                          
                         />
                       </div>
                     </div>
@@ -1570,19 +1454,16 @@ function CreateUserComponent({ match }) {
                   <tbody>
                     {rows.map((item, idx) => (
                       <tr id={`addr_${idx}`} key={idx}>
-                        {/* <tr key={idx}> */}
                         <td className="text-center">{idx + 1}</td>
                         <td>
                        
                           <Select
-                            // isMulti
                             isSearchable={true}
                             name="department_id[]"
                             id="department_id[]"
                             key={idx}
                             className="basic-multi-select"
                             classNamePrefix="select"
-                            //   options={userData}
                             options={departmentDropdown}
                           
                             value={departmentDropdown.filter((d) =>
@@ -1602,7 +1483,6 @@ function CreateUserComponent({ match }) {
                             options={options}
                             id={`ticket_show_type_id_` + idx}
                             name="ticket_show_type[]"
-                            // value={item.ticket_show_type}
                             onChange={(e) =>
                               handleCheckInput(e, idx, "TICKET_SHOW")
                             }

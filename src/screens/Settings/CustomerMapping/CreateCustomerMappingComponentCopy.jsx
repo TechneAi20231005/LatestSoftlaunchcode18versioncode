@@ -62,9 +62,8 @@ export default function CreateCustomerMappingComponentCopy() {
     const handleForm = async (e) => {
         e.preventDefault();
         const form = new FormData(e.target);
-        // for (var pair of form) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+      
+        
         await new CustomerMappingService().postCustomerMapping(form).then(res => {
             if(res.status===200){
                 if(res.data.status===1){

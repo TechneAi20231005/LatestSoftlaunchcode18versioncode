@@ -136,7 +136,7 @@ export default function ResourcePlanningReportComponent() {
               setShowLoaderModal(false);
               let sr = 1;
               const data = res.data.data;
-              console.log("data resource planing", data)
+         
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({

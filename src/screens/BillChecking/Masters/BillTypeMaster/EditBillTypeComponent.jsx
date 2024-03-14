@@ -600,7 +600,6 @@ const EditBillTypeComponent = ({ match }) => {
       }
     } catch (error) {
       // Handle error appropriately
-      console.error("Error:", error);
     }
   };
   //Created By Rushikesh harkare 12/10/2023

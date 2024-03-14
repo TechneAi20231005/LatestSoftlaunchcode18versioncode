@@ -416,7 +416,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
-    console.log("data",data)
+
     const form = new FormData(e.target);
     var flag = 1;
     if (data.approach === "RW") {
@@ -426,7 +426,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       }
     }
   
-    console.log("ratioTotal",ratioTotal)
+ 
 
     if (flag == 1) {
       await new CustomerMappingService()
@@ -458,15 +458,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           }
         })
         .catch((error) => {
-          // const { response } = error;
-          // const { request, ...errorObject } = response;
-          // new ErrorLogService().sendErrorLog("Status","Create_Status","INSERT",errorObject.data.message);
+
         });
     } 
     
-    // else {
-    //   alert("Error No 25");
-    // }
+
+    
   };
 
   useEffect(() => {

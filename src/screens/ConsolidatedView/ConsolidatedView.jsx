@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Modal, Nav, Tab } from "react-bootstrap";
 import CurrentClientProject from "./CurrentClientProject";
 import PageHeader from "../../components/Common/PageHeader";
-// import { ProjectCardData } from "../../components/Data/AppData";
-// import ProjectService from "../../../services/ProjectManagementService/ProjectService";
 import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
 import { Spinner } from "react-bootstrap";
 
@@ -18,16 +16,13 @@ function ConsolidatedView() {
   const consolatedData = useSelector(
     (ConsolidatedSlice) => ConsolidatedSlice.consolidatedData.consolidatedData
   );
-  console.log("consolatedData", consolatedData);
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 34)
   );
-  console.log("checkRole", checkRole);
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
   const [projects, setProjects] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
@@ -35,26 +30,7 @@ function ConsolidatedView() {
     dispatch(consolidatedData());
     dispatch(getRoles());
 
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    // new ConsolidatedService().getConsolidatedView().then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status === 1) {
-    //       setProjects(null);
-    //       setProjects(res.data.data);
-    //     }
-    //   }
-    // });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+    
   };
 
   useEffect(() => {
@@ -63,7 +39,6 @@ function ConsolidatedView() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -77,7 +52,6 @@ function ConsolidatedView() {
           <div className="col-lg-12 col-md-12 flex-column mb-2">
             <Tab.Content>
               <Tab.Pane eventKey="All">
-                {/* <div className="d-flex"> */}
                 <div className="row  ml-2 mr-2">
                   {consolatedData &&
                     consolatedData.map((data, index) => {
@@ -89,7 +63,6 @@ function ConsolidatedView() {
                       );
                     })}
                 </div>
-                {/* </div> */}
               </Tab.Pane>
             </Tab.Content>
           </div>

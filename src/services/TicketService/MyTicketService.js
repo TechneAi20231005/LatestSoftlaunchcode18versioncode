@@ -63,7 +63,6 @@ export default class MyTicketService {
     //  payload.append("tenant_id", userSessionData.tenantId);
     payload.append("created_by", userSessionData.userId);
     // payload.append("created_at", userSessionData.time);
-    console.log("payload",payload);
     const token = localStorage.getItem("jwt_token");
 
     const config = {
