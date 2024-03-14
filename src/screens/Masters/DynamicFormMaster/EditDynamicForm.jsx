@@ -3402,7 +3402,7 @@ console.log("inputLabelValue",rows.map((i)=>i.inputLabel))
                         {data?.inputType === "radio" && (
                           <div className="row mt-3">
                             {data &&
-                              data?.inputAddOn?.inputRadio.map((i, index) => (
+                              data?.inputAddOn?.inputRadio?.map((i, index) => (
                                 <div key={index} className="col">
                                   <div className="form-check">
                                     <input

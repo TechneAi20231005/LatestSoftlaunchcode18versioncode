@@ -47,7 +47,6 @@ export default function CreateBillCheckingTransaction({ match }) {
         setIp(res.data.ip);
       } catch (error) {
         // Handle errors if needed
-        console.error("Error fetching data:", error);
       }
     };
 
@@ -126,8 +125,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     const date = new Date(`04/31/${new Date().getFullYear() - 1}`);
   };
 
-  
-
   const [debit, setDebit] = useState();
   const [taxable, setTaxable] = useState();
   const [gst, setGst] = useState();
@@ -153,14 +150,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [tcsErr, setTcsErr] = useState(null);
   const [td, setTD] = useState(null);
 
-  // const handleDebitAdvance = (e) => {
-  //   const debitValue = e.target.value;
-  //   if (debitValue === "") {
-  //     setDebitAdvanceErr("Debit Advance Is Required");
-  //   } else {
-  //     setDebitAdvanceErr("");
-  //   }
-  // };
   const handleTaxable = (e) => {
     const taxableValue = e.target.value;
     if (taxableValue === "") {
@@ -312,8 +301,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setTdsPercentage(0)
-            // setConstitutionDropdown(null);
+            setTdsPercentage(0);
             setConstitution(res.data.data);
             setConstitutionDropdown(
               res.data.data.map((d) => ({
@@ -328,8 +316,6 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (selectTdsPercentageRef.current.value != null) {
             document.getElementById("tds_percentage").value = "";
           }
-
-         
         }
       });
   };
@@ -351,7 +337,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            // setConstitutionDropdown(null);
             setConstitution(res.data.data);
             setConstitutionDropdown(
               res.data.data.map((d) => ({
@@ -425,13 +410,16 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
-          const filterData =res.data.data.filter((d)=>d.consider_in_payment==="YES")
-          console.log("res==>",vendorDropdown)
+          const filterData = res.data.data.filter(
+            (d) => d.consider_in_payment === "YES"
+          );
           setVendorDropdown(
-            filterData.filter((d)=>d.is_active==1).map((d) => ({
-              value: d.id,
-              label: d.vendor_name,
-            }))
+            filterData
+              .filter((d) => d.is_active == 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.vendor_name,
+              }))
           );
         }
       }
@@ -511,7 +499,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     }
 
-    // console.log("isigst",document.getElementById('is_igst_applicable').value)
     if (document.getElementById("is_igst_applicable").checked) {
       form.append("is_igst_applicable", 1);
     } else {
@@ -547,8 +534,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("authorized_by_management", 0);
     }
     form.append("client_ip_address", ip);
-    // form.append("is_igst_applicable", (igst === true && data && data.is_igst_applicable === 1) ? 1 : 0);
-    // form.append("is_tcs_applicable", isTcsApplicable === true ? 1 : 0);
 
     await new BillTransactionService()
       .updateBillChecking(id, form)
@@ -621,26 +606,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     "image/jpg",
     "application/pdf",
   ];
-
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     for (var i = 0; i < e.target.files.length; i++) {
-  //       tempSelectedFile.push({
-  //         file: e.target.files[i],
-  //         fileName: e.target.files[i].name,
-  //         tempUrl: URL.createObjectURL(e.target.files[i]),
-  //       });
-  //     }
-  //     setSelectedFiles(tempSelectedFile);
-  //   } else if (type === "DELETE") {
-  //     fileInputRef.current.value = "";
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -729,19 +694,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
   const [isoriginalbillneeded, SetIsOriginalBillNeeded] = useState(false);
 
-  // const handleTcsApplicable = (e) => {
-  //   setIsTcsApplicable(e.target.checked);
-  //   if (e.target.checked) {
-  //     setIsTcsApplicable(e.target.checked === true);
-  //   } else {
-  //     setIsTcsApplicable((e.target.checked = false));
-  //   }
-  //   const newValue = e.target.checked;
-
-  //   // Update the local state
-  //   // setIgst(newValue);
-  // };
-
   const handleTcsApplicable = (e) => {
     const newValue = e.target.checked;
     setIsTcsApplicable(newValue);
@@ -766,34 +718,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     currentDate.getDate()
   );
 
-  // const currentDateee = new Date();
-  // const formattedDate = currentDateee.toISOString().slice(0, 10); // YYYY-MM-DD
-
   const formattedOneYearAgo = `${oneYearAgo.getFullYear()}-${(
     oneYearAgo.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}-${oneYearAgo.getDate().toString().padStart(2, "0")}`;
-
-  // var temp=res.data.data;
-  // var billAmount=0;
-  //     billAmount = parseFloat(temp.taxable_amount) + parseFloat(temp.gst_amount) + parseFloat(temp.round_off) + parseFloat(temp.tcs)
-  //     var netPayment = 0;
-  //     netPayment = parseFloat(billAmount) - parseFloat(temp.debit_advance);
-
-  //     if (temp.is_tds_applicable!=0)
-  //     {
-  //         var tdsAmount = (parseFloat(temp.taxable_amount) * parseFloat(temp.tds_percentage))/ 100;
-  //         setTdsAmount(Math.ceil(tdsAmount));
-  //         if (tdsAmount > 0) {
-  //             netPayment = netPayment - parseFloat(Math.ceil(tdsAmount))
-  //             setNetPayment(Math.round(netPayment));
-  //         }
-  //     }
-  //     document.getElementById("net_payment").value = Math.round(netPayment)
-  //     setNetPayment(Math.round(netPayment));
-
-  //    setBillAmount(parseFloat(billAmount).toFixed(2))
 
   useEffect(() => {
     var tdsAmount = 0;
@@ -862,19 +791,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     isTcsApplicable,
   ]);
 
-  // console.log("bill amount1",billAmount1&&billAmount1)
-  // console.log("bill amount",billAmount&&billAmount)
-  // console.log("tcs",document?.getElementById("tcs")?.value)
-
-  // console.log("tcs99",tcs&&tcs.length)
-
-  // console.log("debit advance",parseFloat(document.getElementById("debit_advance").value))
-  // console.log("tds amount",tdsAmount)
-
   useEffect(() => {
     if (checkRole && checkRole[45].can_update === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
     return () => {};
@@ -919,12 +837,9 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
 
-
   return (
     <div className="container-xxl">
-      {/* {data && JSON.stringify(data)} */}
       {notify && <Alert alertData={notify} />}
-      {/* {data && JSON.stringify(data)} */}
 
       <PageHeader />
 
@@ -970,86 +885,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       value={data && data.level}
                     />
 
-                    {/* <div className="col-md-3">
-                      <label className=" col-form-label">
-                        <b>
-                          Bill Type : <Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-                      {billTypeDropdown && (
-                        <Select
-                          type="text"
-                          className="form-control form-control"
-                          options={billTypeDropdown}
-                          onChange={handleAssignToPerson}
-                          defaultValue={
-                            data &&
-                            billTypeDropdown.filter(
-                              (d) => d.value == data.bill_type
-                            )
-                          }
-                          id="bill_type"
-                          name="bill_type"
-                          placeholder="Bill Type"
-                          required
-                          isDisabled={data.is_active == 0 ? true : false}
-                        />
-                      )}
-                    </div>
-
-                    {data.is_active == 0 ?
-                      <div className="col-md-3">
-                        <label className="col-form-label">
-                          <b>
-                            Assign To : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                   
-                   
-                        {userDropdown && data ? (
-                          <Select
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="assign_to"
-                            options={RecordRoomUserDropdown}
-                            name="assign_to"
-                            placeholder="Assign To"
-                            required
-                            defaultValue={userDropdown.filter(
-                              (d) => d.value == data.assign_to
-                            )}
-                          />
-                        ) : (
-                          <p>Loading....</p>
-                        )}
-                      </div>
-                      : <div className="col-md-3">
-                        <label className="col-form-label">
-                          <b>
-                            Assign To : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                       
-                       
-                        {userDropdown && data ? (
-                          <Select
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="assign_to"
-                            options={userDropdown}
-                            name="assign_to"
-                            placeholder="Assign To"
-                            required
-                            defaultValue={userDropdown.filter(
-                              (d) => d.value == data.assign_to
-                            )}
-                          />
-                        ) : (
-                          <p>Loading....</p>
-                        )}
-                      </div>
-                    } */}
-
                     <div className="col-md-3">
                       <input
                         type="hidden"
@@ -1067,7 +902,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           type="text"
                           className="form-control form-control"
                           options={billTypeDropdown}
-                          // onChange={handleAssignToPerson}
                           onChange={(e) => {
                             handleAssignToPerson(e);
                             handleBillTypeChange(e); // Call the function to clear the assign to field
@@ -1082,26 +916,17 @@ export default function CreateBillCheckingTransaction({ match }) {
                           name="bill_type"
                           placeholder="Bill Type"
                           isDisabled
-                          // isDisabled={
-                          //   authorities && authorities.All_Update_Bill === true
-                          //     ? false
-                          //     : true
-                          // }
-
-                          // isDisabled={data.is_active == 0 || data.is_assign_to == 0 ? true : false}
                         />
                       )}
                     </div>
 
                     <>
                       <div className="col-md-3">
-                        {/* {data && data.is_assign_to == 0 && ( */}
                         <input
                           type="hidden"
                           name="assign_to"
                           value={data && data.assign_to}
                         />
-                        {/* )} */}
 
                         <label className="col-form-label">
                           <b>
@@ -1146,11 +971,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                               ? true
                               : false
                           }
-                          // isDisabled={
-                          //   data && data.access.Update_Bill == false
-                          //     ? true
-                          //     : false
-                          // }
                           required
                           defaultValue={
                             data &&
@@ -1161,38 +981,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         />
                       )}
                     </div>
-                    {/* <div className="col-md-3 ">
-                                        <label className="col-md-4 col-form-label">
-                                            <b>Branch Name : <Astrick color="red" size="13px" /></b>
-                                        </label>
-                                        {departmentDropdown &&
-                                            <Select className="form-control form-control-sm"
-                                                id="department_name"
-                                                name="department_name"
-                                                options={departmentDropdown}
-                                            // placeholder="Branch Name"
-                                            // required
-
-                                            />
-                                        }
-                                    </div> */}
                   </div>
-                
 
                   <div className="form-group row mt-3">
-                    {/* <div className="col-md-3">
-                                    <label className=" col-form-label">
-                                        <b>Expected Bill Received Date : <Astrick color="red" size="13px" /></b>
-                                    </label>
-                                    <input type="date" className="form-control form-control-sm"
-                                        id="expected_bill_received_date"
-                                        name="expected_bill_received_date"
-                                        // placeholder="Bill Type"
-                                        // required
-                                        onKeyPress={e => { Validation.CharactersOnly(e) }}
-                                    />
-                                    </div> */}
-
                     <div className="col-md-3 ">
                       <label className=" col-form-label">
                         <b>
@@ -1225,24 +1016,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {console.log("data==>",data)}
-                      {console.log("datas==>",formattedStartDate)}
 
                       <input
                         type="date"
                         className="form-control form-control-sm"
                         id="bill_date"
                         name="bill_date"
-                        // minDate="01-01-2023"
-                        // maxDate="31-03-2023"
                         min={
                           authorities &&
                           authorities.Past_Financial_Year_Bill_Date === true
                             ? formattedStartPastDate
                             : formattedStartDate
                         }
-                        // max={formattedEndDate}
-
                         max={formattedDate}
                         readOnly={
                           (authorities && authorities?.Edit_In_Bill === true) ||
@@ -1254,7 +1039,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultValue={data.bill_date}
                       />
                     </div>
-               
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1280,7 +1064,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                     </div>
                   </div>
 
-                  {/* {console.log("a",data && data.map((i)=>i.approvers_id))} */}
                   <div className=" form-group row mt-3">
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
@@ -1300,13 +1083,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1314,19 +1092,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? false
                             : true
                         }
-                        // readOnly={
-                        //   userSessionData.userId != data.created_by ||
-
-                        //   (authorities &&
-                        //     authorities.All_Update_Bill === false &&
-                        //     data.is_assign_to == 1)
-                        //     ? true
-                        //     : false
-                        // }
                         maxLength={13}
-                        // onKeyPress={(e) => {
-                        //   Validation.NumbersSpeicalOnlyDot(e);
-                        // }}
                         onKeyPress={(e) => {
                           const allowedKeys = [
                             "0",
@@ -1399,13 +1165,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1413,16 +1174,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? false
                             : true
                         }
-                        // readOnly={authorities&&authorities.All_Update_Bill=== false ?true :false ||data.is_active == 0 || !(userSessionData.userId == data.created_by) ? true : false}
-
-                        // readOnly={
-                        //   userSessionData.userId == data.created_by ||
-                        //   (authorities &&
-                        //     authorities.All_Update_Bill === true) ||
-                        //   data.is_active == 1
-                        //     ? false
-                        //     : true
-                        // }
                         onKeyPress={(e) => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
@@ -1463,31 +1214,16 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                    {/* <input
-                        className="sm"
-                        id="is_igst_applicable"
-                        name="is_igst_applicable"
-                        type="hidden"
-value={igst=== true ?1 :0} */}
-                    {/* /> */}
                     <div className=" col ">
                       <input
                         className="sm"
                         id="is_igst_applicable"
-                        // name="is_igst_applicable"
                         type="checkbox"
                         style={{ marginRight: "8px" }}
                         disabled={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
-                            // authorities &&
-                            // authorities.All_Update_Bill == true &&
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1521,16 +1257,9 @@ value={igst=== true ?1 :0} */}
                         onChange={(e) => handleGst(e)}
                         required
                         readOnly={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
-                            // authorities &&
-                            // authorities.All_Update_Bill == true &&
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1586,22 +1315,9 @@ value={igst=== true ?1 :0} */}
                         id="round_off"
                         name="round_off"
                         onChange={(e) => handleRoundOff(e)}
-                        // readOnly={
-                        //   userSessionData.userId == data.created_by ||
-                        //   (authorities &&
-                        //     authorities.All_Update_Bill === true) ||
-                        //   data.is_active == 1
-                        //     ? false
-                        //     : true
-                        // }
                         readOnly={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1610,9 +1326,6 @@ value={igst=== true ?1 :0} */}
                             : true
                         }
                         defaultValue={data.round_off ? data.round_off : 0}
-                        // onKeyPress={(e) => {
-                        //   Validation.NumbersSpeicalOnlyDot(e);
-                        // }}
                         maxLength={13}
                         onKeyPress={(e) => {
                           const allowedKeys = [
@@ -1666,29 +1379,6 @@ value={igst=== true ?1 :0} */}
                   </div>
 
                   <div className=" form-group row mt-3 ">
-                    {/* <div className=" col-md-3 ">
-                      <label className=" col-form-label">
-                        <b>
-                          {" "}
-                          TCS: <Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="tcs"
-                        name="tcs"
-                        onChange={(e) => handleTcs(e)}
-                        required
-                        defaultValue={data.tcs ? data.tcs : 0}
-                        onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
-                        }}
-                      />
-                    </div> */}
-
-                
-
                     {isTcsApplicable === true ? (
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
@@ -1707,13 +1397,7 @@ value={igst=== true ?1 :0} */}
                           name="tcs"
                           step="any"
                           onChange={(e) => handleTcs(e)}
-                          // value={data.tcs}
-
                           defaultValue={isTcsApplicable === true ? data.tcs : 0}
-                          // readOnly={isTcsApplicable  ? false : true}
-                          // disabled={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ||   authorities.TCS_Applicable === true ? false :true}
-                          // value={data.tcs}
-
                           readOnly={
                             authorities &&
                             authorities.TCS_Applicable === false &&
@@ -1722,12 +1406,6 @@ value={igst=== true ?1 :0} */}
                               ? true
                               : false
                           }
-                          // readOnly={
-                          //   data.is_active == 0 && isTcsApplicable === false
-                          //     ? true
-                          //     : false
-                          // }
-                          // required={isTcsApplicable === true ? true : false}
                           onKeyPress={(e) => {
                             Validation.NumbersSpeicalOnlyDot(e);
                           }}
@@ -1765,34 +1443,10 @@ value={igst=== true ?1 :0} */}
                             onChange={(e) => handleTcs(e)}
                             readOnly
                             value={0}
-                            // value={data.tcs}
-
-                            // defaultValue={isTcsApplicable === true ? data.tcs : 0}
-                            // readOnly={isTcsApplicable  ? false : true}
-                            // readOnly={(data.is_assign_to == 1 && authorities && authorities.All_Update_Bill == true) || data.is_rejected == 1 || data.created_by == localStorage.getItem("id") || (authorities && authorities.All_Update_Bill == true) || (data.current_user_is_approver == 1 && authorities && authorities.All_Update_Bill == true) && data.current_user_is_approver == 0 ? false :true}
-                            // value={data.tcs}
-
-                            // readOnly={
-                            //   data.is_active == 0 && isTcsApplicable === false
-                            //     ? true
-                            //     : false
-                            // }
-                            // required={isTcsApplicable === true ? true : false}
                             onKeyPress={(e) => {
                               Validation.NumbersSpeicalOnlyDot(e);
                             }}
-                            // required={isTcsApplicable === true ? true : false}
                           />
-
-                          {/* {inputState && isTcsApplicable === true && (
-                        <small
-                          style={{
-                            color: "red",
-                          }}
-                        >
-                          {tcsErr}
-                        </small>
-                      )} */}
                         </div>
                       </>
                     )}
@@ -1810,14 +1464,8 @@ value={igst=== true ?1 :0} */}
                         id="bill_amount"
                         name="bill_amount"
                         defaultValue={data.bill_amount ? data.bill_amount : 0}
-                        value={
-                          billAmount > 0
-                            ? // && isTcsApplicable === true
-                              billAmount
-                            : billAmount1
-                        }
+                        value={billAmount > 0 ? billAmount : billAmount1}
                         readOnly={true}
-                        // required
                       />
                     </div>
                     <div className=" col-md-3 mt-4">
@@ -1826,19 +1474,13 @@ value={igst=== true ?1 :0} */}
                         type="checkbox"
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         id="is_tds_applicable"
-                        // name="is_tds_applicable"
                         onChange={(e) => handleTdsApplicable(e)}
                         defaultChecked={
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                          // (data.is_assign_to == 1 &&
-                          //   authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          // (authorities &&
-                          //   authorities.All_Update_Bill == true) ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1858,15 +1500,11 @@ value={igst=== true ?1 :0} */}
                         type="checkbox"
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
-                          authorities &&
-                          authorities.TCS_Applicable === false 
-                          // authorities &&
-                          // authorities.All_Update_Bill === false
+                          authorities && authorities.TCS_Applicable === false
                             ? true
                             : false
                         }
                         id="is_tcs_applicable"
-                        // name="is_tcs_applicable"
                         onChange={(e) => handleTcsApplicable(e)}
                         defaultChecked={
                           data.is_tcs_applicable == 1 ? true : false
@@ -1899,13 +1537,8 @@ value={igst=== true ?1 :0} */}
                             options={sectionDropdown}
                             ref={sectionRef}
                             isDisabled={
-                              // (data.is_assign_to == 1 &&
-                              //   authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              // (authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -1913,7 +1546,6 @@ value={igst=== true ?1 :0} */}
                                 ? false
                                 : true
                             }
-                            // onChange={(e) => handleSectionDropDownChange(e)}
                             onChange={(e) => {
                               handleSectionDropDownChange(e);
                               handleTDSSectionChange(e);
@@ -1939,43 +1571,9 @@ value={igst=== true ?1 :0} */}
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {/* {tdsData && tdsData.length > 0 && (
-                          <span>
-                            aahe tds
-                            {constitutionDropdown && sectionDropdown &&(
-                              <Select
-                                id="tds_constitution"
-                                name="tds_constitution"
-                                key={Math.random()}
-                                options={constitutionDropdown}
-                                defaultValue={
-                                  sectionDropdown &&
-                                  constitutionDropdown.filter(
-                                    (d) => d.value === data.tds_constitution
-                                  )
-                                }
-                              />
-                            )}
-                          </span>
-                        )} */}
 
-                        {/* {(!tdsData || tdsData.length == 0) && ( */}
                         <span>
                           {constitutionDropdown && data && (
-                            // <Select
-                            //   className="form-control form-control-sm"
-                            //   id="tds_constitution"
-                            //   name="tds_constitution"
-                            //   options={constitutionDropdown}
-                            //   key={Math.random()}
-                            //   onChange={e=>{handleTdsPercentage(e)}}
-                            //   value={
-                            //     data.tds_constitution &&
-                            //     constitutionDropdown.filter(
-                            //       (d) => d.value === data.tds_constitution
-                            //     )
-                            //   }
-                            // />
                             <Select
                               className="form-control form-control-sm"
                               id="tds_constitution"
@@ -1983,13 +1581,8 @@ value={igst=== true ?1 :0} */}
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
                               isDisabled={
-                                // (data.is_assign_to == 1 &&
-                                //   authorities &&
-                                //   authorities.All_Update_Bill == true) ||
                                 data.is_rejected == 1 ||
                                 data.created_by == localStorage.getItem("id") ||
-                                // (authorities &&
-                                //   authorities.All_Update_Bill == true) ||
                                 (data.current_user_is_approver == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true &&
@@ -2013,7 +1606,6 @@ value={igst=== true ?1 :0} */}
                             />
                           )}
                         </span>
-                        {/* )} */}
                       </div>
 
                       <div className="col-md-3">
@@ -2029,52 +1621,11 @@ value={igst=== true ?1 :0} */}
                           key={Math.random()}
                           ref={selecttdsAmountRef}
                           name="tds_amount"
-                          defaultValue={data.tds_amount? data.tds_amount : 0  }
-                          // defaultValue={data.tds_amount}
-                          value={tdsAmount ? tdsAmount :0}
+                          defaultValue={data.tds_amount ? data.tds_amount : 0}
+                          value={tdsAmount ? tdsAmount : 0}
                           readOnly={true}
                         />
                       </div>
-
-                      {/* {tdsPercentage ?  <div className="col-md-3">
-                        <label className=" col-form-label">
-                          <b>
-                            TDS Amount : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="tds_amount"
-                          key={Math.random()}
-                          ref={selecttdsAmountRef}
-                          name="tds_amount"
-                          value={td}
-                          // defaultValue={data.tds_amount}
-                          // value={tdsAmount}
-                          // readOnly={true}
-                        />
-                      </div> :
-                      <div className="col-md-3">
-                        <label className=" col-form-label">
-                          <b>
-                            TDS Amount : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="tds_amount"
-                          key={Math.random()}
-                          ref={selecttdsAmountRef}
-                          name="tds_amount"
-                          defaultValue={data.tds_amount && data.tds_amount }
-                          // defaultValue={data.tds_amount}
-                          // value={tdsAmount}
-                          // readOnly={true}
-                        />
-                      </div>
-} */}
 
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
@@ -2089,18 +1640,12 @@ value={igst=== true ?1 :0} */}
                             className="form-control form-control-sm"
                             id="tds_percentage"
                             name="tds_percentage"
-                            // defaultValue={data && data.tds_percentage ? data.tds_percentage : ''}
                             value={tdsPercentage ? tdsPercentage : ""}
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
-                              // (data.is_assign_to == 1 &&
-                              //   authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              // (authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -2120,8 +1665,6 @@ value={igst=== true ?1 :0} */}
                                 ? data.tds_percentage
                                 : ""
                             }
-                            // value={tdsPercentage ? tdsPercentage : ''}
-                            // ref={tdsPercentageRef}
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
@@ -2161,8 +1704,6 @@ value={igst=== true ?1 :0} */}
                         readOnly
                         value={netPayment}
                         defaultValue={data.net_payment ? data.net_payment : 0}
-
-                        // required
                       />
                       <span
                         className="fw-bold"
@@ -2172,15 +1713,6 @@ value={igst=== true ?1 :0} */}
                           ? data.bill_amount_in_words
                           : ""}
                       </span>
-
-                      {/* <input type="text" className="form-control form-control-sm"
-                                                // value={numWords(netPayment)}
-                                                // id ="net_payment"
-                                                // defaultValue={data.net_payment? toWords.convert(data.net_payment) :"zero"}
-                                                // value={netPayment? toWords.convert(parseInt(netPayment)) : "zero" }
-                                                style={{ border: "none", color: "red", fontSize: "12px", fontWeight: "bold", width: "100% !important", background: "white" }}
-                                                readOnly
-                                            /> */}
                     </div>
 
                     {netPaymentError && (
@@ -2193,48 +1725,12 @@ value={igst=== true ?1 :0} */}
                       </p>
                     )}
 
-                    {/* <div className=" col-md-3 ">
-                      <label className=" col-form-label">
-                        <b>
-                          {" "}
-                          Net Payment In Words :{" "}
-                          <Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="bill_amount_in_words"
-                        name="bill_amount_in_words"
-                        readOnly
-                        // value={netPayment}
-                        defaultValue={
-                          data.bill_amount_in_words
-                            ? data.bill_amount_in_words
-                            : 0
-                        }
-                      />
-                    </div> */}
-
-                    {/* <div className=" col-md-3 ">
-                                        <label className=" col-form-label">
-                                            <b> Net Payment In Words: <Astrick color="red" size="13px" /></b>
-                                        </label>
-                                        <input type="text" className="form-control form-control-sm"
-                                            id="net_payment_in_word"
-                                            name="net_payment_in_word"
-                                            // onChange ={e=>handleAmountWords(e)}
-
-                                        />
-                                    </div> */}
-
                     <div className=" col-md mt-4">
                       <input
                         className="sm-1"
                         type="checkbox"
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         id="is_original_bill_needed"
-                        // name="is_original_bill_needed"
                         onChange={(e) => handleAuthorizedByManagement(e)}
                         defaultChecked={
                           data.is_original_bill_needed == 1 ? true : false
@@ -2242,8 +1738,6 @@ value={igst=== true ?1 :0} */}
                         disabled={
                           authorities &&
                           authorities.Original_Bill_Needed === false
-                          // authorities &&
-                          // authorities.All_Update_Bill === false
                             ? true
                             : false
                         }
@@ -2305,31 +1799,6 @@ value={igst=== true ?1 :0} */}
                           </div>
                         </>
                       )}
-
-                    {/* <h1>{data &&JSON.stringify( data.access.Authorized_By_Management  )}</h1>  */}
-
-                    {/* <div className=" col-md mt-4 ">
-                                            <input className="sm-1" type="checkbox" style={{ marginRight: "8px", marginLeft: "10px" }}
-                                                id="is_tcs_applicable"
-                                                name="is_tcs_applicable"
-                                                disabled={data && data.access.Authorized_By_Management ? false : true}
-                                            />
-
-                                            <label className="col-form-label">
-                                                <b>Authorised By Management</b>
-                                            </label>
-                                        </div> */}
-
-                    {/* <div className=" col-md mt-4">
-                                            <input className="sm-1" type="checkbox" style={{ marginRight: "8px", marginLeft: "10px" }}
-                                                id="is_tcs_applicable"
-                                                name="is_tcs_applicable"
-                                                disabled={data && data.access.Cancel_Bill ? false : true}
-                                            />
-                                            <label className="col-form-label">
-                                                <b>Cancel Bill</b>
-                                            </label>
-                                        </div> */}
                   </div>
                   <div className="form-group row mt-3 ">
                     <div className=" col-md-4 ">
@@ -2343,12 +1812,6 @@ value={igst=== true ?1 :0} */}
                         name="narration"
                         rows="4"
                         maxLength={2000}
-                        // readOnly={
-                        //   authorities && authorities.All_Update_Bill === true
-                        //     ? false
-                        //     : true
-                        // }
-                        // defaultValue={data.narration ? data.narration : ""}
                       />
                     </div>
                     <div className=" col-md-4 ">
@@ -2376,9 +1839,6 @@ value={igst=== true ?1 :0} */}
                         id="audit_remark"
                         name="audit_remark"
                         maxLength={250}
-                        // defaultValue={
-                        //   data.audit_remark ? data.audit_remark : ""
-                        // }
                         readOnly={
                           authorities && authorities.Internal_Audit === false
                             ? true
@@ -2403,9 +1863,6 @@ value={igst=== true ?1 :0} */}
                             ? true
                             : false
                         }
-                        // defaultValue={
-                        //   data.external_remark ? data.external_remark : ""
-                        // }
                       />
                     </div>
                   </div>
@@ -2420,7 +1877,6 @@ value={igst=== true ?1 :0} */}
                               <Astrick color="red" size="13px" />{" "}
                             </b>
                           </label>
-                          {console.log("data==>",data)}
                           <input
                             type="file"
                             id="attachment"
@@ -2429,13 +1885,8 @@ value={igst=== true ?1 :0} */}
                             ref={fileInputRef}
                             multiple
                             disabled={
-                              // (data.is_assign_to == 1 &&
-                              //   authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                              // (authorities &&
-                              //   authorities.All_Update_Bill == true) ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -2443,7 +1894,6 @@ value={igst=== true ?1 :0} */}
                                 ? false
                                 : true
                             }
-
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
                               maxLengthCheck(e, "UPLOAD");
@@ -2457,12 +1907,6 @@ value={igst=== true ?1 :0} */}
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
                             id="authorized_by_management"
-                            // name="authorized_by_management"
-                            // onChange={(e) => handleTdsApplicable(e)}
-                            // defaultChecked={
-                            //   data.is_tds_applicable == 1 ? true : false
-                            // }
-
                             onChange={(e) => handleAuthorizedByManagement(e)}
                             defaultChecked={
                               data.authorized_by_management == 1 ? true : false
@@ -2485,16 +1929,11 @@ value={igst=== true ?1 :0} */}
                             className="sm-1"
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
-                            // disabled={
-                            //   data && data.access.TCS_Applicable ? false : true
-                            // }
                             id="authorized_by_hod"
-                            // name="authorized_by_hod"
                             onChange={(e) => handleAuthorizedByHod(e)}
                             defaultChecked={
                               data.authorized_by_hod == 1 ? true : false
                             }
-                            // onChange={(e) => handleTcsApplicable(e)}
                             disabled={
                               authorities &&
                               authorities.Allow_Edit_Authorized_By_HOD === false
@@ -2510,68 +1949,7 @@ value={igst=== true ?1 :0} */}
                     </div>
                   </div>
 
-                  {/* <div className="d-flex">
-                    {selectedFiles &&
-                      selectedFiles.map((attachment, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="justify-content-start"
-                            style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
-                          >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-
-                                  <div className="d-flex justify-content-between p-0 mt-1">
-                                    <button
-                                      disabled={
-                                        authorities &&
-                                        authorities.Edit_In_Bill === false
-                                          ? true
-                                          : false
-                                      }
-                                      className="btn btn-danger text-white btn-sm p-1"
-                                      type="button"
-                                      onClick={(e) => {
-                                        uploadAttachmentHandler(
-                                          e,
-                                          "DELETE",
-                                          index
-                                        );
-                                      }}
-                                    >
-                                      <i
-                                        class="icofont-ui-delete"
-                                        style={{ fontSize: "15px" }}
-                                      ></i>
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div> */}
-
                   <div
-                    //  className="d-flex"
                     className="attachments-container"
                     style={{
                       display: "flex",
@@ -2606,11 +1984,6 @@ value={igst=== true ?1 :0} */}
                                 style={{ padding: "10px", overflow: "hidden" }}
                               >
                                 <span
-                                  // style={{
-                                  //   overflow: "hidden",
-                                  //   textOverflow: "ellipsis",
-                                  //   whiteSpace: "nowrap",
-                                  // }}
                                   style={{
                                     display: "inline-block",
                                     overflow: "hidden",
@@ -2657,8 +2030,6 @@ value={igst=== true ?1 :0} */}
 
                   {data && data.attachment && (
                     <div
-                      // className="d-flex justify-content-start mt-2"
-                      // style={{ overflowX: "auto" }}
                       className="attachments-container"
                       style={{
                         display: "flex",
@@ -2696,11 +2067,6 @@ value={igst=== true ?1 :0} */}
                                   }}
                                 >
                                   <span
-                                    // style={{
-                                    //   overflow: "hidden",
-                                    //   textOverflow: "ellipsis",
-                                    //   whiteSpace: "nowrap",
-                                    // }}
                                     style={{
                                       display: "inline-block",
                                       overflow: "hidden",
@@ -2741,59 +2107,6 @@ value={igst=== true ?1 :0} */}
                                 </div>
                               </div>
                             </div>
-                            // <div
-                            //   className="justify-content-start"
-                            //   style={{
-                            //     marginRight: "5px",
-                            //     padding: "0px",
-                            //     width: "auto",
-                            //   }}
-                            // >
-                            //   <div
-                            //     className="card"
-                            //     style={{ backgroundColor: "#EBF5FB" }}
-                            //   >
-                            //     <div className="card-header">
-                            //       <p style={{ fontSize: "12px" }}>
-                            //         <b>{attach.name}</b>
-                            //       </p>
-                            //       <div className="d-flex justify-content-end p-0">
-                            //         <a
-                            //           href={`${attach.path}`}
-                            //           target="_blank"
-                            //           className="btn btn-warning btn-sm p-0 px-1"
-                            //         >
-                            //           <i
-                            //             className="icofont-download"
-                            //             style={{
-                            //               fontSize: "10px",
-                            //               height: "15px",
-                            //             }}
-                            //           ></i>
-                            //         </a>
-
-                            //         <button
-                            //           className="btn btn-danger text-white btn-sm p-0 px-1"
-                            //           type="button"
-                            //           disabled={
-                            //             authorities &&
-                            //             authorities.Edit_In_Bill === false
-                            //               ? true
-                            //               : false
-                            //           }
-                            //           onClick={(e) => {
-                            //             handleDeleteAttachment(e, attach.id);
-                            //           }}
-                            //         >
-                            //           <i
-                            //             className="icofont-ui-delete"
-                            //             style={{ fontSize: "12px" }}
-                            //           ></i>
-                            //         </button>
-                            //       </div>
-                            //     </div>
-                            //   </div>
-                            // </div>
                           );
                         })}
                     </div>
@@ -2880,104 +2193,7 @@ value={igst=== true ?1 :0} */}
                           </div>
                         )
                       )}
-
-                    {/* <div className="table-responsive">
-                      <table
-                        className="table table-bordered mt-3 table-responsive"
-                        id="tab_logic"
-                      >
-                        <thead>
-                          <tr>
-                          <th className="text-center"> Iteration </th>
-
-
-                            <th className="text-center"> Level </th>
-                            <th className="text-center"> Total Approval Level Count </th>
-
-                            <th className="text-center">Total Approvals </th>
-
-
-
-                            <th className="text-center"> Approvals Required Name</th>
-                            <th className="text-center"> Rejected By </th>
-
-                          </tr>
-                        </thead>
-                        <tbody>
-
-                          {Object.entries(data.iteration_data).map(([iteration, values]) => (
-                            Object.entries(values).map(([key, value]) => (
-
-
-                              <tr key={key}>
-                                {/* {data && JSON.stringify(value)} */}
-                    {/* <td>{value.iteration}</td>
-
-                                <td>{value.level}</td>
-                                <td>{value.totalApprovalLevelCount}</td>
-
-                                <td>{value.total_approvals}</td>
-
-
-                                <td>{value.approvals_required_name}</td>
-                                <td>{value.rejectedBy}</td>
-
-
-
-                              </tr>
-
-                            ))
-                          ))}
-
-                        </tbody>
-                      </table>
-                    </div> */}
                   </div>
-
-                  {/* <div className="table-responsive">
-                    <table
-                      className="table table-bordered mt-3 table-responsive"
-                      id="tab_logic"
-                    >
-                      <thead>
-                        <tr>
-                          <th className="text-center"> Level </th>
-                          <th className="text-center"> Last Approved By </th>
-
-                        </tr>
-                      </thead>
-                      <tbody>
-                       
-                          <tr key={index}>
-
-
-                            <td>{index + 1}</td>
-                            <td>
-
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                defaultValue={data.level}
-
-                              />
-                            </td>
-
-                            <td>
-
-<input
-  type="text"
-  className="form-control form-control-sm"
-  defaultValue={data.last_approved_by}
-
-/>
-</td>
-
-                          </tr>
-                   
-                      </tbody>
-                    </table>
-                  </div>
- */}
                 </div>
               </div>
               {/* CARD */}
