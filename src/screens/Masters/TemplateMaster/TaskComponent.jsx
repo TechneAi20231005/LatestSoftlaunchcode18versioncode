@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import TemplateService from "../../../services/MastersService/TemplateService";
 import { useParams } from "react-router-dom";
-import { _base } from "../../../settings/constants";
+
 import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
@@ -45,10 +45,8 @@ export default function TaskComponent(props) {
 
   const handleChange = (e, type) => {
     if (type === "select2") {
-      // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
 
-      // Assuming the name is 'task_type_id', you can adjust it as needed
       const name = "task_type_id";
 
       const updatedData = { ...data, [name]: selectedValue };
@@ -60,7 +58,6 @@ export default function TaskComponent(props) {
       const updatedData = { ...data, [name]: selectedValue };
       setData(updatedData);
     } else {
-      // Handle standard input elements
       const { name, value } = e.target;
 
       const updatedData = { ...data, [name]: value };
@@ -83,7 +80,6 @@ export default function TaskComponent(props) {
 
             setParent(mappedData);
           } else {
-            console.error("error", res.status);
           }
         }
       }
@@ -93,11 +89,7 @@ export default function TaskComponent(props) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-          // setTaskTypeDropdown(
-          //   temp
-          //     .filter((d) => d.type === "TICKET" && d.is_active == 1)
-          //     .map((d) => ({ value: d.id, label: d.type_name }))
-          // );
+
           setTaskTypeDropdown(
             temp
               .filter((d) => d.is_active == 1)
@@ -108,31 +100,32 @@ export default function TaskComponent(props) {
     });
   }, []);
 
-  const handleCancle=()=>{
-    setShow(false)
-
-  }
+  const handleCancle = () => {
+    setShow(false);
+  };
 
   const handleSubmit = (e) => {
-    console.log("pp", props.taskData.task_days);
-     // Check if any required fields are empty
-     const taskName = document.querySelector('input[name="task"]').value.trim();
-     const daysRequired = document.querySelector('input[name="days"]').value.trim();
-     const hoursRequired = document.querySelector('input[name="total_time"]').value.trim();
-     const startDays = document.querySelector('input[name="start_days"]').value.trim();
-     
-     if (!taskName || !daysRequired || !hoursRequired || !startDays) {
-         alert("Please fill out all required fields.");
-         return; // Prevent form submission
-     
-     }
+    const taskName = document.querySelector('input[name="task"]').value.trim();
+    const daysRequired = document
+      .querySelector('input[name="days"]')
+      .value.trim();
+    const hoursRequired = document
+      .querySelector('input[name="total_time"]')
+      .value.trim();
+    const startDays = document
+      .querySelector('input[name="start_days"]')
+      .value.trim();
+
+    if (!taskName || !daysRequired || !hoursRequired || !startDays) {
+      alert("Please fill out all required fields.");
+      return;
+    }
     setNotify(null);
     e.preventDefault();
 
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
       .then((res) => {
-        console.log("res", res);
         if (res.status === 200) {
           if (res.data.status == 1) {
             props.refreshData(id);
@@ -225,7 +218,6 @@ export default function TaskComponent(props) {
                 </div>
                 <div className="modal-body">
                   <div className="mb-3">
-                   
                     {show && (
                       <div className="">
                         <label>Task Name</label>
@@ -235,27 +227,14 @@ export default function TaskComponent(props) {
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
                           name="task"
-                          // required
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
 
                         <label>Days Required</label>
                         <Astrick color="red" size="13px" />
-                        {/* <input
-                          type="number"
-                        
-                          max="100"
-                          className="form-control form-control-sm"
-                          defaultValue={props.taskData.task_days}
-                          name="days"
-                          required
-
-                          onInput={(e) => handleChange(e, "standard")}
-                        /> */}
 
                         <input
-                          // type="time"
                           max="100"
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.task_days}
@@ -295,7 +274,7 @@ export default function TaskComponent(props) {
                               : "00:00"
                           }
                           name="total_time"
-                           type="text"
+                          type="text"
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
@@ -335,7 +314,7 @@ export default function TaskComponent(props) {
                         />
 
                         <br />
-                        {console.log("pp",props)}
+
                         <label>
                           Start task{" "}
                           {props.taskData.AB === "START_FROM"

@@ -2,7 +2,8 @@ import React, {useState,useEffect } from 'react'
 import ProjectService from "../../../services/ProjectManagementService/ProjectService";
 import Select from 'react-select';
 import 'react-select-plus/dist/react-select-plus.css';
-import BootstrapSelect from 'react-bootstrap-select-dropdown';
+
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function ProjectDropdown(props) {
@@ -29,17 +30,8 @@ export default function ProjectDropdown(props) {
                     })
 
 
-                    // if(this.props.defaultValue){
-                    //     if(Array.isArray(this.props.defaultValue)){
-                    //         if(this.props.defaultValue.includes(temp[key].id)){
-                    //             defaultValue.push({value:temp[key].id,label:temp[key].project_name});
-                    //         }
-                    //     }else{
-                    //         if(this.props.defaultValue==temp[key].id){
-                    //             defaultValue.push({value:temp[key].id,label:temp[key].project_name});
-                    //         }
-                    //     }
-                    // }
+                    
+                    
                 }
                 setData(data);
                 setValue(defaultValue);

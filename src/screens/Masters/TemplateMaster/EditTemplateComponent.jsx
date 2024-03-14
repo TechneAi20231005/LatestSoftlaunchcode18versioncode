@@ -1,29 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageHeader from "../../../components/Common/PageHeader";
-import ErrorLogService from "../../../services/ErrorLogService";
-import UserDropdown from "../UserMaster/UserDropdown";
+
 import Alert from "../../../components/Common/Alert";
 import TemplateService from "../../../services/MastersService/TemplateService";
-import * as Validation from "../../../components/Utilities/Validation";
+
 import TaskComponent from "./TaskComponent";
 import { useParams } from "react-router-dom";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import { Modal } from "react-bootstrap";
-import BasketDetails from "../../TicketManagement/TaskManagement/components/BasketDetails";
+
 import { Astrick } from "../../../components/Utilities/Style";
-import UserService from "../../../services/MastersService/UserService";
-import BasketService from "../../../services/TicketService/BasketService";
 
 import Select from "react-select";
 import { _base } from "../../../settings/constants";
-import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTaskinBasketData,
   basketinEditData,
   getAllTypeData,
-  getTemplateByIdData,
   postTemplateData,
   templateData,
   updateBasketModalData,
@@ -49,9 +45,7 @@ const EditTemplateComponent = ({ match, props }) => {
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
   );
-  // const notify = useSelector(
-  //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
-  // );
+
   const addBasketModal = useSelector(
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.addBasketModal
@@ -82,35 +76,20 @@ const EditTemplateComponent = ({ match, props }) => {
     ],
   });
 
-  const [user, setUser] = useState();
   const [stack, setStack] = useState({ SE: "", AB: "" });
-  // const [userData, setUserData] = useState();
 
   const [show, setShow] = useState(false);
   const [modal, setModal] = useState({ shown: false, modalData: null });
   const [error, setError] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
-  // const [addBasketModal, setAddBasketModal] = useState({
-  //   showModal: false,
-  //   modalAddData: null,
-  //   modalAddHeader: null,
-  // });
-  // const [addTaskModal, setAddTaskModal] = useState({
-  //   showModal: false,
-  //   modalAddData: null,
-  //   modalAddHeader: null,
-  // });
+
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
+
   const handleAddBasketModal = (data) => {
     dispatch(handleBasketModal(data));
-    // setAddBasketModal(data);
   };
-  // const [basketId, setBasketId] = useState();
-  const handleAddTaskModal = (data) => {
-    // setAddTaskModal(data);
-    // setBasketId(data.modalData.basket_id);
-  };
+
+  const handleAddTaskModal = (data) => {};
   const mainJson = {
     template_name: null,
     template_data: [
@@ -125,10 +104,7 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const handleAddRow = async () => {
     let flag = 1;
-    // let last = rows.template_data.length - 1;
-    // if ((!rows.template_data[last].basket_name || !rows.template_data[last].basket_owner) && last > 0) {
-    //     flag = 0;
-    // }
+
     const item = { basket_name: null, basket_owner: null, basket_task: [] };
 
     if (flag === 1) {
@@ -138,11 +114,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
       setNewData({ ...newData, template_data: temp });
     } else {
-      // setShowAlert({
-      //   show: true,
-      //   type: "warning",
-      //   message: "Please Fill Previous Row Values",
-      // });
     }
   };
   const handleRemoveSpecificRow = (idx) => () => {
@@ -158,10 +129,8 @@ const EditTemplateComponent = ({ match, props }) => {
   const showHandler = (e) => {
     setShow((prev) => true);
   };
-  // const [taskTypeDropdown, setTaskTypeDropdown] = useState();
 
   const loadData = async () => {
-    // dispatch(getTemplateByIdData({id:templateId}))
     await new TemplateService().getTemplateById(templateId).then((res) => {
       if (res.status === 200) {
         const newData = {
@@ -170,56 +139,22 @@ const EditTemplateComponent = ({ match, props }) => {
           template_data: [...res.data.data.template_data],
         };
         setData(res.data.data);
-        console.log("ppp==", res);
+
         setSatrtEndValue(res.data.data.AB);
         setNewData(null);
         setNewData((prevData) => ({ ...prevData, ...newData }));
       }
     });
     dispatch(getAllTypeData());
-    // await new TaskTicketTypeService().getAllType().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data;
-    //       setTaskTypeDropdown(
-    //         temp
-    //           .filter((d) => d.type === "TASK" && d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.type_name }))
-    //       );
-    //     }
-    //   }
-    // });
+
     dispatch(getRoles());
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getUserForMyTicketsData(inputRequired));
-
-    // const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setUserData(
-    //         temp.map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
   };
 
   const submitHandler = (e) => {
-    // setNotify(null);
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -228,44 +163,12 @@ const EditTemplateComponent = ({ match, props }) => {
       }
     });
     if (a > 0) {
-      // setNotify(null);
-      // setNotify({ type: "warning", message: "Add Data" });
     } else {
-      // setNotify(null);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
           navigate(`/${_base}/Template`);
         }
       });
-      // new TemplateService()
-      //   .postTemplate(rows)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       const data = res.data;
-
-      //       if (res.data.status === 1) {
-      //         navigate({
-      //           pathname: `/${_base}/Template`,
-
-      //         },{                            state: {alert : {type: 'success', message:res.data.message} }
-      //       });
-      //       } else {
-      //         // setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       // setNotify({ type: "danger", message: res.message });
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     new ErrorLogService().sendErrorLog(
-      //       "TemplateMaster",
-      //       "Create_TemplateMaster",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     }
   };
 
@@ -284,18 +187,6 @@ const EditTemplateComponent = ({ match, props }) => {
     );
     handleHideModal();
     loadData();
-
-    // new BasketService()
-    //   .updatetempalateBasket(modal.modalData.basket_id, formData)
-
-    //   .then((res) => {
-    //     if (res.status === 200 && res.data.status === 1) {
-    //       handleHideModal();
-    //       loadData();
-    //       // setNotify(null);
-    //       // setNotify({ type: "success", message: res.data.message });
-    //     }
-    //   });
   };
 
   const handleChange = (e, type) => {
@@ -318,25 +209,15 @@ const EditTemplateComponent = ({ match, props }) => {
         },
       }));
     }
-    // setModal((prevModal) => ({
-    //   ...prevModal,
-    //   modalData: {
-    //     ...prevModal.modalData,
-    //     basket_name: value,
-    //     basket_owner:value
-    //   },
-    // }));
   };
 
   const [startEndValue, setSatrtEndValue] = useState("");
-  console.log("start", startEndValue);
 
   const handleShow = () => {
     setShow((prev) => !prev);
   };
 
   const handleNewChange = (e, idx, type, name) => {
-    console.log("target", e.target.value);
     const value = type === "select1" ? e.target.value : e.value;
     setSatrtEndValue(e.target.value);
 
@@ -345,14 +226,11 @@ const EditTemplateComponent = ({ match, props }) => {
       const newTemplateData = [...newDataCopy.template_data];
 
       if (idx === null) {
-        // Add a new item to the template_data array
         newTemplateData.push({ [name]: value, basket_task: [] });
       } else {
-        // Update an existing item in the template_data array
         newTemplateData[idx] = { ...newTemplateData[idx], [name]: value };
       }
 
-      // Update the template_data array in the newDataCopy object
       newDataCopy.template_data = newTemplateData;
 
       return newDataCopy;
@@ -407,9 +285,9 @@ const EditTemplateComponent = ({ match, props }) => {
   const handleAddBasket = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    // Add your form data to the `formData` object here
+
     var flag = 1;
-    // Print the formData entries
+
     if (selectUserRef.current.commonProps.hasValue == false) {
       alert("Please Select User");
       e.preventDefault();
@@ -420,21 +298,6 @@ const EditTemplateComponent = ({ match, props }) => {
     if (flag == 1) {
       dispatch(basketinEditData({ id: templateId, payload: formData }));
       loadData();
-
-      // await new TemplateService()
-      //   .addBasketinEdit(templateId, formData)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status == 1) {
-      //         loadData();
-      //         handleAddBasketModal({
-      //           showModal: false,
-      //           modalData: "",
-      //           modalHeader: "",
-      //         });
-      //       }
-      //     }
-      //   });
     }
   };
 
@@ -446,7 +309,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
     dispatch(updateTemplateData({ id: templateId, payload: form })).then(
       (res) => {
-        console.log(res);
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
           setNotify({ type: "success", message: res?.payload?.data?.message });
           dispatch(templateData());
@@ -466,45 +328,28 @@ const EditTemplateComponent = ({ match, props }) => {
         }
       }
     );
-
-    // await new TemplateService().updateTemplate(templateId, form).then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       navigate({
-    //         pathname: `/${_base}/Template`,
-
-    //       },{    state: {alert : {type: 'success', message:res.data.message} }
-    //     });
-    //     }
-    //   }
-    // });
   };
 
   const handleAddTask = async (e) => {
-    console.log("ssss", e);
-
     e.preventDefault();
 
     const formData = new FormData(e.target);
 
-    // Add your form data to the `formData` object here
-
-    // Print the formData entries
     for (const entry of formData.entries(formData)) {
-      // console.log(entry[0], entry[1])
     }
-    dispatch(addTaskinBasketData({templateId: templateId,basketId: basketId,payload: formData,})).then((res)=>{
-      console.log("addtask",res.payload.data.data)
-      if(res.payload.data.data){
+    dispatch(
+      addTaskinBasketData({
+        templateId: templateId,
+        basketId: basketId,
+        payload: formData,
+      })
+    ).then((res) => {
+      if (res.payload.data.data) {
         loadData();
-
-      }else{
-        setNotify({type: 'danger', message:res.payload.data.message});
-
+      } else {
+        setNotify({ type: "danger", message: res.payload.data.message });
       }
-    })
-
-
+    });
 
     // await new TemplateService()
     //   .addTaskinBasket(templateId, basketId, formData)
@@ -544,10 +389,6 @@ const EditTemplateComponent = ({ match, props }) => {
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
-        {/* {data && JSON.stringify(data)} */}
-        {console.log("newData", newData)}
-        {console.log("data", data)}
-
         <div className="card-body">
           <form onSubmit={updateTemplate}>
             <div className="mt-2"></div>
@@ -610,46 +451,6 @@ const EditTemplateComponent = ({ match, props }) => {
                 Status :<Astrick color="red" size="13px" />
               </label>
 
-              {/* {console.log("active",data?.is_active)}
-              <div className="row">
-                <div className="col-md-2">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="is_active"
-                      id="is_active"
-                      value="1"
-                      defaultChecked={
-                      data&&data?.is_active === 1 ? true:false
-                      }
-                    />
-                    <label className="form-check-label" htmlFor="is_active_1">
-                      Active
-                    </label>
-                  </div>
-                </div>
-                <div className="col-md-1">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="is_active"
-                      id="is_active_0"
-                      value="0"
-                      readOnly={modal.modalData ? false : true}
-                      defaultChecked={
-                        data && data.is_active == 0?true :false
-                        }
-                    />
-                    <label className="form-check-label" htmlFor="is_active_0">
-                      Deactive
-                    </label>
-                  </div>
-                </div>
-              </div> */}
-
-              {console.log("active", data?.is_active)}
               <div className="row">
                 <div className="col-md-2">
                   <div className="form-check">
@@ -697,17 +498,16 @@ const EditTemplateComponent = ({ match, props }) => {
               onClick={() => {
                 dispatch(handleBasketModal({ showModal: true }));
               }}
-              // disabled={isButtonDisabled}
             >
               Create Basket
             </button>
-            {/* )} */}
+
             <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
               Cancel
             </Link>
           </div>
         </div>
-        {/* add basket modal */}
+
         <Modal
           centered
           show={addBasketModal.showModal}
@@ -783,9 +583,7 @@ const EditTemplateComponent = ({ match, props }) => {
             </form>
           </Modal.Body>
         </Modal>
-        {/* add basket modal */}
 
-        {/* add task modal */}
         <Modal
           centered
           show={addTaskModal.showModal}
@@ -802,7 +600,6 @@ const EditTemplateComponent = ({ match, props }) => {
           {" "}
           <Modal.Header></Modal.Header>
           <Modal.Body>
-            {console.log("ab", data?.AB)}
             <form method="post" onSubmit={handleAddTask}>
               <div className="form-group row">
                 <div className="col-sm-12">
@@ -1030,23 +827,6 @@ const EditTemplateComponent = ({ match, props }) => {
                         </div>
                       </div>
                     </Modal.Body>
-                    {console.log(
-                      "pp",
-                      userData && userData.filter((d) => d.value)
-                    )}
-                    {console.log(
-                      "modalData",
-                      modal && modal.modalData.basket_owner
-                    )}
-
-                    {console.log(
-                      "p",
-                      userData &&
-                        userData.filter(
-                          (d) =>
-                            d.value === modal && modal?.modalData?.basket_owner
-                        )
-                    )}
 
                     <Modal.Footer>
                       <button

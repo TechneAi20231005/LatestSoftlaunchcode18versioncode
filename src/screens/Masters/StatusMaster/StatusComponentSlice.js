@@ -29,7 +29,8 @@ export const statusMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+   
+      
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -114,7 +115,8 @@ export const statusMasterSlice = createSlice({
     });
     builder.addCase(postStatusData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+ 
+      
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postStatusData = payload.data.data;
 

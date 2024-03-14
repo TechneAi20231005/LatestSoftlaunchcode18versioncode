@@ -3,21 +3,23 @@ import { Link, useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
-import StatusService from "../../../services/MastersService/StatusService";
+
+
 import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
 import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
+
+
 import Alert from "../../../components/Common/Alert";
-import DataTableExtensions from "react-data-table-component-extensions";
+
+
 import "react-data-table-component-extensions/dist/index.css";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { Spinner } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
+
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import DynamicFormDropDownSlice from "./Slices/DynamicFormDropDownSlice";
-import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
+
+
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
@@ -37,20 +39,15 @@ export default function DynamicFormDropdownComponent() {
 
   const [exportData, setExportData] = useState(null)
   const roleId = sessionStorage.getItem("role_id");
-  //   const [checkRole, setCheckRole] = useState(null)
+
+  
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
   );
-  // const data = useSelector(
-  //   (DynamicFormDropDownSlice) =>
-  //     DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData
-  // );
-  // const exportData = useSelector(
-  //   (DynamicFormDropDownSlice) =>
-  //     DynamicFormDropDownSlice.dynamicFormDropDown.exportDynamicFormData
-  // );
+ 
+  
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -76,11 +73,8 @@ export default function DynamicFormDropdownComponent() {
     });
   }
 
-  //   const handleSearch = () => {
-  //     const SearchValue = searchRef.current.value;
-  //     const result = SearchInputData(data, SearchValue);
-  //     // setData(result);
-  //   };
+
+  
 
   const handleModal = (data) => {
     setModal(data);
@@ -150,7 +144,8 @@ export default function DynamicFormDropdownComponent() {
         </div>
       ),
     },
-    // { name: 'Status', selector: row => row.Status, sortable: true, },
+
+    
     { name: "Created At", selector: (row) => row.created_at, sortable: true },
     { name: "Created By", selector: (row) => row.created_by, sortable: true },
 
@@ -159,8 +154,8 @@ export default function DynamicFormDropdownComponent() {
   ];
 
   const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
+
+    
     const data = [];
     const exportTempData = [];
     await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
@@ -210,16 +205,8 @@ export default function DynamicFormDropdownComponent() {
         new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
     })
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //     if (res.status === 200) {
-    //       // setShowLoaderModal(false);
 
-    //       if (res.data.status == 1) {
-    //         const getRoleId = sessionStorage.getItem("role_id");
-    //         setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //       }
-    //     }
-    //   })
+    
   };
 
   const tableData = {
@@ -227,11 +214,13 @@ export default function DynamicFormDropdownComponent() {
     data,
   };
 
-  //Search As Enter key press
+
+  
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter") {
-        // callMyFunction();
+        
+        
         handleSearch();
       }
     };
@@ -249,13 +238,13 @@ export default function DynamicFormDropdownComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    // if (!data.length) {
-    //   dispatch(dynamicFormDropDownData());
-    // }
+  
+    
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
+  
+      
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -294,7 +283,9 @@ export default function DynamicFormDropdownComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              // onClick={handleSearch}
+         
+           
+              
               style={{ marginTop: "0px", fontWeight: "600" }}
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
@@ -323,7 +314,8 @@ export default function DynamicFormDropdownComponent() {
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {data && (
-                // <DataTableExtensions {...tableData}>
+              
+              
                   <DataTable
                     columns={columns}
                     data={data.filter((customer) => {
@@ -350,24 +342,16 @@ export default function DynamicFormDropdownComponent() {
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
                   />
-                //  </DataTableExtensions>
+             
+                  
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* <Modal show={showLoaderModal} centered>
-                <Modal.Body className="text-center">
-                    <Spinner animation="grow" variant="primary" />
-                    <Spinner animation="grow" variant="secondary" />
-                    <Spinner animation="grow" variant="success" />
-                    <Spinner animation="grow" variant="danger" />
-                    <Spinner animation="grow" variant="warning" />
-                    <Spinner animation="grow" variant="info" />
-                    <Spinner animation="grow" variant="dark" />
-                </Modal.Body>
-            </Modal> */}
+   
+   
     </div>
   );
 }

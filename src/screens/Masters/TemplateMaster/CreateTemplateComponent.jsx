@@ -1,20 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageHeader from "../../../components/Common/PageHeader";
-import ErrorLogService from "../../../services/ErrorLogService";
-import UserDropdown from "../UserMaster/UserDropdown";
+
+
 import Alert from "../../../components/Common/Alert";
 import TemplateService from "../../../services/MastersService/TemplateService";
-import * as Validation from "../../../components/Utilities/Validation";
+
+
 import { _base } from "../../../settings/constants";
-import UserService from "../../../services/MastersService/UserService";
+
+
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
+
 
 import { name } from "platform";
-import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllTypeData,
@@ -48,10 +52,10 @@ const CreateTemplateComponent = () => {
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
   );
-  console.log("userData",userData)
-  // const notify = useSelector(
-  //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
-  // );
+
+  
+
+  
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
@@ -59,7 +63,8 @@ const CreateTemplateComponent = () => {
 
   const roleId = sessionStorage.getItem("role_id");
 
-  // const [checkRole, setCheckRole] = useState(null);
+
+  
 
   const mainJson = {
     template_name: null,
@@ -84,12 +89,13 @@ const CreateTemplateComponent = () => {
       },
     ],
   });
-  // const [userData, setUserData] = useState();
+
+  
 
   const [stack, setStack] = useState({ SE: "", AB: "" });
   const [data, setData] = useState([]);
-  // const [taskTypeDropdown, setTaskTypeDropdown] = useState();
-  // const [parent, setParent] = useState();
+
+  
   const [error, setError] = useState("");
 
   const loadData = async () => {
@@ -97,47 +103,8 @@ const CreateTemplateComponent = () => {
       setData(res.data.data);
     });
 
-    // await new TaskTicketTypeService().getParent().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
-    //       if (res.status === 200) {
-    //         const mappedData = res.data.data.map((d) => ({
-    //           value: d.id,
-    //           label: d.type_name,
-    //         }));
-
-    //         setParent(mappedData);
-    //       } else {
-    //         console.error("error", res.status);
-    //       }
-    //     }
-    //   }
-    // });
-
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data.filter((d) => d.is_active == 1);
-    //       setUserData(
-    //         temp.map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + " " + d.last_name,
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+  
+    
   };
 
   const handleParentchange = async (e) => {
@@ -146,18 +113,8 @@ const CreateTemplateComponent = () => {
     }
     dispatch(getAllTypeData());
 
-    // await new TaskTicketTypeService().getAllType().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
-    //       const temp = res.data.data;
-    //       setTaskTypeDropdown(
-    //         temp
-    //           .filter((d) => d.type === "TICKET" && d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.type_name }))
-    //       );
-    //     }
-    //   }
-    // });
+  
+    
   };
 
   const handleCheckInput = (e, idx) => {
@@ -176,18 +133,16 @@ const CreateTemplateComponent = () => {
 
       setRows({ ...rows, template_data: temp });
     } else {
-      // setShowAlert({
-      //   show: true,
-      //   type: "warning",
-      //   message: "Please Fill Previous Row Values",
-      // });
+    
+      
     }
   };
 
   const handleRemoveSpecificRow = (idx) => {
     setRows((prevState) => {
       const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
-      console.log("Updated rows:", updatedRows); // Log updated rows to verify state update
+   
+      
       return {
         ...prevState,
         template_data: updatedRows,
@@ -209,7 +164,8 @@ const CreateTemplateComponent = () => {
 
   const [show, setShow] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
-  const [isBasketNameTaken, setIsBasketNameTaken] = useState(false);
+
+  
   const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState("");
   const typeRef = useRef();
   const shouldShowButton =
@@ -246,7 +202,8 @@ const CreateTemplateComponent = () => {
     }
   };
   const submitHandler = (e) => {
-    // setNotify(null);
+ 
+    
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -255,19 +212,14 @@ const CreateTemplateComponent = () => {
       }
     });
     if (a > 0) {
-      // setNotify(null);
-      // setNotify({ type: "warning", message: "Add Data" });
+   
+      
     } else {
-      // setNotify(null);
-      // dispatch(postTemplateData(rows)).then((res) => {
-      //   if (res?.payload?.data?.status && res?.payload?.status == 200) {
-      //     navigate(`/${_base}/Template`);
-      //     dispatch(templateData());
-      //   }
-      // });
-
+      
+      
       dispatch(postTemplateData(rows)).then((res) => {
-        console.log(res);
+
+        
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
           setNotify({ type: "success", message: res?.payload?.data?.message });
           dispatch(templateData());
@@ -287,39 +239,8 @@ const CreateTemplateComponent = () => {
         }
       });
 
-      // new TemplateService().postTemplate(rows)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       const data = res.data;
-
-      //       if (res.data.status === 1) {
-      //         history(
-      //           {
-      //             pathname: `/${_base}/Template`,
-      //           },
-      //           {
-      //             state: {
-      //               alert: { type: "success", message: res.data.message },
-      //             },
-      //           }
-      //         );
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     new ErrorLogService().sendErrorLog(
-      //       "TemplateMaster",
-      //       "Create_TemplateMaster",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
+    
+      
     }
   };
 
@@ -340,7 +261,8 @@ const CreateTemplateComponent = () => {
     var a = tempData;
     setRows(null);
     setRows(tempData);
-    // var doNull = document.getElementsByClassName("taskField")
+
+    
     for (
       var i = 0;
       i < document.getElementsByClassName("taskField").length;
@@ -365,18 +287,8 @@ const CreateTemplateComponent = () => {
     }
     setShow(false);
   };
-  // const [editTaskModal, setEditTaskModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   basketIndex: "",
-  //   taskIndex: "",
-  //   modalHeader: "",
-  // });
-
-  // {({showModal:true, modalData:task}, i, index)}
-  // const handleEditTask = (data, basketIndex, idx) => {
-  //   setEditTaskModal(data);
-  // };
+ 
+  
 
   const handleCancelTask = (e) => {
     setShow(false);
@@ -413,36 +325,8 @@ const CreateTemplateComponent = () => {
     });
   };
 
-  // const handleEditTaskData = (e, basketIndex, idx, type, event) => {
-  //   if (type === "select2") {
-  //     var value = event.value;
-  //   } else {
-  //     var value = e.target.value;
-  //   }
-  //   setRows((prevRows) => {
-  //     const updatedTemplateData = [...prevRows.template_data];
-  //     if (type === "select2") {
-  //       updatedTemplateData[basketIndex].basket_task[idx][e.name] = value;
-  //     } else {
-  //       updatedTemplateData[basketIndex].basket_task[idx][e.target.name] =
-  //         value;
-  //     }
-
-  //     return {
-  //       ...prevRows,
-  //       template_data: updatedTemplateData,
-  //     };
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   if (notify) {
-  //     const timer = setTimeout(() => {
-  //       dispatch(hideNotification());
-  //     }, 1500); // Adjust the timeout duration as needed
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [notify, dispatch]);
+ 
+  
   useEffect(() => {
     if (!parent.length) {
       dispatch(getParentData());
@@ -459,7 +343,8 @@ const CreateTemplateComponent = () => {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      // alert("Rushi")
+   
+      
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -490,9 +375,8 @@ const CreateTemplateComponent = () => {
                       onChange={(e) => {
                         handleChange(e, name, "select1");
                       }}
-                      // onKeyPress={(e) => {
-                      //   Validation.CharactersOnly(e);
-                      // }}
+                    
+                      
                     />
                     {error && <small style={{ color: "red" }}>{error}</small>}
                   </div>
@@ -580,30 +464,8 @@ const CreateTemplateComponent = () => {
                               )}
                             </td>
 
-                            {/* <td>
-                              {idx === 0 && (
-                                <span>
-                                  <button
-                                    type="button"
-                                    onClick={handleAddRow}
-                                    className="btn btn-sm btn-outline-primary pull-left"
-                                  >
-                                    <i className="icofont-plus-circle"></i>
-                                  </button>
-                                </span>
-                              )}
-
-                              <td>
-                                <button
-                                  type="button"
-                                  className="btn btn-outline-danger btn-sm"
-                                  onClick={() => handleRemoveSpecificRow(idx)}
-                                >
-                                  <i className="icofont-ui-delete"></i>
-                                </button>
-                              </td>
-                            </td> */}
-
+                          
+                          
                             <td>
                               {idx === 0 ? ( // Conditional rendering for the first row
                                 <span>
@@ -767,8 +629,8 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
-                                {/* {editTaskModal.modalData &&
-                                  JSON.stringify(editTaskModal.modalData)} */}
+                             
+                             
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
@@ -800,7 +662,8 @@ const CreateTemplateComponent = () => {
                                     <label>
                                       <b>
                                         Parent Task type :
-                                        {/* <Astrick color="red" size="13px" /> */}
+                                   
+                                   
                                       </b>
                                     </label>
                                     <Select
@@ -833,7 +696,8 @@ const CreateTemplateComponent = () => {
                                     <label>
                                       <b>
                                         Task Type Name:
-                                        {/* <Astrick color="red" size="13px" /> */}
+                                
+                                
                                       </b>
                                     </label>
                                     <Select
@@ -944,26 +808,14 @@ const CreateTemplateComponent = () => {
 
                               <Modal.Footer>
                                 <div>
-                                  {/* <button
-                                    type="button"
-                                    onClick={(e) =>
-                                      dispatch(
-                                      handleModalClose({
-                                        showModal: false,
-                                        modalData: "",
-                                        modalHeader: "",
-                                      }))
-                                    }
-                                    className="btn btn-sm btn-primary"
-                                    style={{ backgroundColor: "#484C7F" }}
-                                  >
-                                    Submit
-                                  </button> */}
+                      
+                      
 
                                   <button
                                     type="button"
                                     onClick={(e) => {
-                                      // Check if any required fields are empty
+                                
+                                      
                                       const taskName = document
                                         .getElementById("task")
                                         .value.trim();
@@ -989,7 +841,8 @@ const CreateTemplateComponent = () => {
                                         return; // Prevent further execution
                                       }
 
-                                      // If all required fields are filled, dispatch the action to close the modal
+                               
+                                      
                                       dispatch(
                                         handleModalClose({
                                           showModal: false,

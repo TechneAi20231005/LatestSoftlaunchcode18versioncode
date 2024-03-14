@@ -31,7 +31,7 @@ export const rolemasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -90,7 +90,7 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(postRole.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postRole = payload.data.data;
 
@@ -170,7 +170,7 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(postMenuData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+    
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };

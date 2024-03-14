@@ -7,7 +7,8 @@ export const subModuleMaster = createAsyncThunk(
       try {
         const service = new SubModuleService();
         const response = await service.getSubModule();
-        console.log("resss", response);
+    
+        
         return response;
       } catch (error) {
         throw error;
@@ -21,7 +22,8 @@ export const subModuleMaster = createAsyncThunk(
       try {
         const service = new SubModuleService();
         const response = await service.postSubModule(config);
-        console.log("sub", response);
+    
+        
         return response;
       } catch (error) {
         throw error;

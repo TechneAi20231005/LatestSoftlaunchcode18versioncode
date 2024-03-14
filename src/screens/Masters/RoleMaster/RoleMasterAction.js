@@ -21,7 +21,8 @@ export const postRole = createAsyncThunk(
     try {
       const service = new RoleService();
       const response = await service.postRole(config);
-      console.log("dd", response);
+
+      
       return response;
     } catch (error) {
       throw error;
@@ -32,7 +33,8 @@ export const postRole = createAsyncThunk(
 export const updatedRole = createAsyncThunk(
   "updatedRole",
   async (config, thunkapi) => {
-    console.log("c", config);
+ 
+    
     try {
       const service = new RoleService();
       const response = await service.updateRole(config.id, config.payload);
@@ -67,7 +69,7 @@ export const postMenuData = createAsyncThunk(
     try {
       const service = new ManageMenuService();
       const response = await service.postData(config);
-      console.log("dd", response);
+  
       return response;
     } catch (error) {
       throw error;

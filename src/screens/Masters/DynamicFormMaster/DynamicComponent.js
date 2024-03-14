@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
 
 function DynamicComponent(props) {
-    // console.log(props);
+
     const [selectedDropdown, setSelectedDropdown] = useState();
     const [selectedDropdownValues, setSelectedDropdownValues] = useState();
 
@@ -22,7 +22,8 @@ function DynamicComponent(props) {
                         setSelectedDropdown(res.data.data.master.id)
 
                         setSelectedDropdownValues(res.data.data.dropdown.map((d) => ({ label: d.label, value: d.value })))
-                        // rows[idx].inputAddOn.inputDataSourceData = data;
+                     
+                        
                     }
                 }
             })
@@ -69,9 +70,8 @@ function DynamicComponent(props) {
             <span>
                 <select className="form-control form-control-sm" 
                 onChange={props.onGetChange}
-                // onChange={(e) => {
-                //     props.onGetChange(e.target.value); // Call onGetChange with the selected value
-                // }}
+               
+                
                 id="inputDataSourceData"
                 name="inputDataSourceData"
                 // value={props.selectData}
@@ -80,8 +80,8 @@ function DynamicComponent(props) {
                     <option value="user">User Master</option>
                     <option value="department">Department Master</option>
                     <option value="role">Role Master</option>
-                    {/* <option value="department|id|department">Department Master</option> */}
-                    {/* <option value="role|id|role">Role Master</option> */}
+            
+            
                 </select>
                 <small style={{'color':'red'}}><b>Select Data Source</b></small> 
             </span>
@@ -165,7 +165,8 @@ function DynamicComponent(props) {
             id="inputRadio"
         name="inputRadio"
 
-            // id={props.inputAddOn} name={props.inputAddOn}
+        
+        
             placeholder='Eg. 1:True|0:False'
             className="form-control form-control-sm"
             />
@@ -186,7 +187,8 @@ function DynamicComponent(props) {
                                 className="form-control form-control-sm"
                                 defaultValue={props.data.inputAddOn.inputRangeMin}
                                 min={props.data.inputAddOn.inputRangeMin}
-                            // max={props.data.inputAddOn.inputRangeMax ? props.data.inputAddOn.inputRangeMax : ''}
+                 
+                                
                             />
                         </div>
                         <div className="form-group">
@@ -198,7 +200,8 @@ function DynamicComponent(props) {
                                 name="inputRangeMax"
                                 className="form-control form-control-sm"
                                 defaultValue={props.data.inputAddOn.inputRangeMax}
-                                // min={props.data.inputAddOn.inputRangeMin ? props.data.inputAddOn.inputRangeMin : ''}
+                            
+                                
                                 max={props.data.inputAddOn.inputRangeMax}
                             />
                         </div>
@@ -208,17 +211,7 @@ function DynamicComponent(props) {
 
 
 
-{/* 
-                        {props.inputType == "radio" && props.inputAddOn.inputRadio
-                          ? props.inputAddOn.inputRadio.map((d) => {
-                              return (
-                                <div>
-                                  <input type="radio" />
-                                  <label for={d.value}>{d.label}</label>
-                                </div>
-                              );
-                            })
-                          : ""} */}
+
                        
              
             

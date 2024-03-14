@@ -16,7 +16,8 @@ export const submoduleSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
+      
+      
     },
   },
   extraReducers: (builder) => {
@@ -55,7 +56,8 @@ export const submoduleSlice = createSlice({
 
     builder.addCase(postSubModuleMaster.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payloadsub", payload);
+
+      
 
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
@@ -63,10 +65,8 @@ export const submoduleSlice = createSlice({
 
         state.status = "succeded";
         state.showLoaderModal = false;
-        // let count = 1;
-        // for (let i = 0; i < postSubModuleMaster.length; i++) {
-        //   postSubModuleMaster[i].counter = count++;
-        // }
+      
+        
         state.postSubModuleMaster = postSubModuleMaster;
       }
     });
@@ -83,17 +83,16 @@ export const submoduleSlice = createSlice({
 
     builder.addCase(getSubModuleById.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("getSubModuleByIdsss", payload);
+    
+      
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getSubModuleById = payload.data.data;
 
         state.status = "succeded";
         state.showLoaderModal = false;
-        // let count = 1;
-        // for (let i = 0; i < postSubModuleMaster.length; i++) {
-        //   postSubModuleMaster[i].counter = count++;
-        // }
+      
+        
         state.getSubModuleById = getSubModuleById;
       }
     });

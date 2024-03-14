@@ -9,7 +9,7 @@ const initialState = {
   status: "",
   err: "",
   testingData: [],
-  notify:'',
+  notify: "",
   exportTestingData: [],
   modal: {
     showModal: false,
@@ -24,7 +24,6 @@ export const testingtypeSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      console.log("action of modal", action.payload);
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -36,7 +35,7 @@ export const testingtypeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(testingData.pending, (state) => {
       state.status = "loading";
-      state.notify = null
+      state.notify = null;
     });
 
     builder.addCase(testingData.fulfilled, (state, action) => {
@@ -76,17 +75,17 @@ export const testingtypeSlice = createSlice({
 
     builder.addCase(postTesting.pending, (state) => {
       state.status = "loading";
-      state.notify = null
+      state.notify = null;
     });
     builder.addCase(postTesting.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let postTesting = payload.data.data;
-        console.log(postTesting);
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postTesting = postTesting;
@@ -102,17 +101,17 @@ export const testingtypeSlice = createSlice({
 
     builder.addCase(updateTesting.pending, (state) => {
       state.status = "loading";
-      state.notify = null
+      state.notify = null;
     });
     builder.addCase(updateTesting.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload Role", payload);
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let updateTesting = payload.data.data;
-        console.log(updateTesting);
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateTesting = updateTesting;
@@ -125,6 +124,6 @@ export const testingtypeSlice = createSlice({
     });
   },
 });
-export const {handleModalClose,handleModalOpen}= testingtypeSlice.actions
+export const { handleModalClose, handleModalOpen } = testingtypeSlice.actions;
 
 export default testingtypeSlice.reducer;

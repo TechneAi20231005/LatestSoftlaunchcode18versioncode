@@ -15,15 +15,14 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { CustomerDropdown } from "../CustomerMaster/CustomerComponent";
 
 import DepartmentService from "../../../services/MastersService/DepartmentService";
-import RoleService from "../../../services/MastersService/RoleService";
+
 import DesignationService from "../../../services/MastersService/DesignationService";
 import DepartmentMappingService from "../../../services/MastersService/DepartmentMappingService";
-import CountryService from "../../../services/MastersService/CountryService";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import { DashbordSlice } from "../../Dashboard/DashbordSlice";
+
 import {
   getCountryDataSort,
   getEmployeeData,
@@ -49,7 +48,6 @@ function EditUserComponent({ match }) {
   const roleDropdown = useSelector(
     (rolemasterSlice) => rolemasterSlice.rolemaster.filterRoleData
   );
-  // console.log("r",r)
 
   const { id } = useParams();
   const userId = parseInt(id);
@@ -57,7 +55,7 @@ function EditUserComponent({ match }) {
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
   const [country, setCountry] = useState(null);
-  // const [countryDropdown, setCountryDropdown] = useState(null);
+
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
@@ -67,8 +65,6 @@ function EditUserComponent({ match }) {
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
   const [defaultDepartment, setDefaultDepartment] = useState();
-
-  // const [roleDropdown, setRoleDropdown] = useState(null);
 
   const [dataa, setDataa] = useState({ employee_id: null, departments: null });
 
@@ -82,7 +78,6 @@ function EditUserComponent({ match }) {
     ticket_show_type: null,
     is_default: 0,
   };
-  // const [rows, setRows] = useState([mappingData]);
 
   const [rows, setRows] = useState([
     {
@@ -114,7 +109,6 @@ function EditUserComponent({ match }) {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();
@@ -141,7 +135,7 @@ function EditUserComponent({ match }) {
       setPasswordValid(false);
     }
 
-    // Compare passwords
+ 
     if (
       confirmedPasswordRef.current.value !== "" &&
       confirmedPasswordRef.current.value !== passwordValidation
@@ -248,12 +242,6 @@ function EditUserComponent({ match }) {
     }
   };
 
-  // const [sameAs, setSameAs] = useState(false)
-
-  // const handleSameAs = (e) = {
-  //     console.log(e.target.checked)
-  // }
-
   const [contactNumber, setContactNumber] = useState(null);
 
   const [contactValid, setContactValid] = useState(false);
@@ -342,7 +330,6 @@ function EditUserComponent({ match }) {
       return false;
     }
 
-    console.log("res", form);
     if (flag === 1) {
       await new UserService()
         .updateUser(userId, form)
@@ -352,12 +339,6 @@ function EditUserComponent({ match }) {
               setNotify({ type: "success", message: res.data.message });
 
               dispatch(getEmployeeData());
-              //   history({
-              //     pathname: `/${_base}/User`,
-              //   },
-              //       {state: {type:"success", message: res.data.message}},
-              //          );
-              // }
 
               setTimeout(() => {
                 navigate(`/${_base}/User`, {
@@ -421,8 +402,6 @@ function EditUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-  const [filteredRoles, setFilteredRoles] = useState([]);
-
   const accountForChange = async (account_for) => {
     setAccountFor(account_for);
     const accountFor = account_for;
@@ -433,35 +412,9 @@ function EditUserComponent({ match }) {
         return filterData.label?.toLowerCase() === "user";
       }
     });
-    // const response = filteredAsAccountFor
-    //   // ?.filter((d) => d.is_active === 1)
-    //   // .map((d) => ({
-    //   //   value: d.value,
-    //   //   label: d.label,
-    //   // }));
-    // const aa = response.sort(function (a, b) {
-    //   return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-    // });
-    // setFilteredRoles(aa);
   };
 
   const loadData = async () => {
-    // setRows([mappingData]);
-
-    //  **************************Country load data**************************************
-    // await new CountryService().getCountry().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
-    //       setCountryDropdown(
-    //         res.data.data
-    //           .filter((d) => d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.country }))
-    //       );
-    //     }
-    //   }
-    // });
-    //  ************************** State load data**************************************
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -593,7 +546,7 @@ function EditUserComponent({ match }) {
                 is_default: d.is_default,
               });
             });
-            // setRows(null);
+
             setRows(temp);
           } else {
             setRows([mappingData]);
@@ -602,20 +555,9 @@ function EditUserComponent({ match }) {
           setRows([mappingData]);
         }
       });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //       // setRoleMenu(res.data.data.map((menu)=>{ menu.menu_id}))
-    //     }
-    //   }
-    // });
   };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      //setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
       setStateDropdown(
         state
           .filter((d) => d.country_id == e.value)
@@ -628,7 +570,6 @@ function EditUserComponent({ match }) {
       setCityDropdown(null);
     }
     if (type == "STATE") {
-      //setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
       setCityDropdown(
         city
           .filter((d) => d.state_id == e.value)
@@ -640,20 +581,21 @@ function EditUserComponent({ match }) {
       setCityName(null);
     }
   };
- 
+
   const handleUserSelect = (selectedOptions, index) => {
     const selectedDepartmentId = selectedOptions.value;
-  
-    // Check if the selected department is already present in the rows
-    const isDepartmentAlreadySelected = rows.some(row => row.department_id === selectedDepartmentId);
-  
+
+    const isDepartmentAlreadySelected = rows.some(
+      (row) => row.department_id === selectedDepartmentId
+    );
+
     if (isDepartmentAlreadySelected) {
-      // If the department is already selected, show an error message
-      // You can handle the error message display as per your UI design
-      alert("This Department is already selected. Please select another Department.");
+      alert(
+        "This Department is already selected. Please select another Department."
+      );
       return;
     }
-    // const selectedUserIds = selectedOptions.filter((option) => option.value);
+
     const selectedUserIds = selectedOptions.value;
 
     const updatedAssign = [...rows];
@@ -669,7 +611,6 @@ function EditUserComponent({ match }) {
     // updatedUserErrors[index] = "";
     // setUserErrors(updatedUserErrors);
   };
-
 
   const handleTickeTypeShowSelect = (selectedOptions, index) => {
     // const selectedUserIds = selectedOptions.filter((option) => option.value);
@@ -790,19 +731,6 @@ function EditUserComponent({ match }) {
       dispatch(getRoleData());
     }
   }, []);
-  // useEffect(() => {
-
-  //   loadData();
-  //   var role = checkRole && checkRole.map((d,index)=>{
-  //     if(d.menu_id == 3){
-  //     return d[index]
-  //     }
-  //   })
-
-  //     if(role === 0){
-  //     <Redirect to= {`/${_base}/Dashboard`}/>
-  //   }
-  // }, [role]);
 
   useEffect(() => {
     if (
@@ -826,18 +754,6 @@ function EditUserComponent({ match }) {
   const [copyData, setCopyData] = useState(null);
 
   const [isReadOnly, setIsReadOnly] = useState(false);
-  // function copyTextValue(e) {
-  //   if (e.target.checked) {
-  //     setIsReadOnly(true);
-  //   } else {
-  //     setIsReadOnly(false);
-  //   }
-  //   var text1 = e.target.checked
-  //     ? document.getElementById("contact_no").value
-  //     : "";
-  //   setCopyData(text1);
-  //   // document.getElementById("whats_app_contact_no").value = text1;
-  // }
 
   function copyTextValue(e) {
     if (e.target.checked) {
@@ -849,11 +765,7 @@ function EditUserComponent({ match }) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
-
-    // document.getElementById("whats_app_contact_no").value = text1;
   }
-
-  console.log("c",cityDropdown)
 
   useEffect(() => {
     if (
@@ -902,9 +814,6 @@ function EditUserComponent({ match }) {
               <div className="row clearfix g-3">
                 <div className="col-sm-12">
                   <div className="card">
-                    {/* <div className='card-header bg-primary text-white p-2'>
-                                  <h5>User Details</h5>
-                              </div> */}
                     <div className="card-body">
                       <div className="form-group row">
                         <label className="col-sm-2 col-form-label">
@@ -918,12 +827,8 @@ function EditUserComponent({ match }) {
                             id="account_for"
                             name="account_for"
                             value={accountFor ? accountFor : ""}
-                            // onChange={(e) => {
-                            //   setAccountFor(e.target.value);
-                            // }}
                             onChange={(e) => accountForChange(e.target.value)}
                           >
-                            {/* <option value="SELF" selected>{data.accountFor}</option> */}
                             <option value="SELF">SELF</option>
                             <option value="CUSTOMER">CUSTOMER</option>
                           </select>
@@ -1088,7 +993,8 @@ function EditUserComponent({ match }) {
                               ) {
                                 setInputState({
                                   ...state,
-                                  emailErr: "Please enter a valid email address",
+                                  emailErr:
+                                    "Please enter a valid email address",
                                 });
                               } else {
                                 setInputState({ ...state, emailErr: "" });
@@ -1168,7 +1074,7 @@ function EditUserComponent({ match }) {
                             defaultValue={
                               data.contact_no ? data.contact_no : ""
                             }
-                            // value={contactNumber ? contactNumber : ""}
+                        
                             onChange={handleContactValidation}
                             onKeyPress={(e) => {
                               Validation.mobileNumbersOnly(e);
@@ -1184,15 +1090,12 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                        {/* <label className="col-sm-2 col-form-label">
-                          <b>Same as Contact No. :</b>
-                        </label> */}
+                      
                         <label className="col-sm-3 col-form-label text-end ">
                           <b className="mx-3">Same as Contact No. or</b>
                           <br />
                           <b className="mx-3">Whats App Contact Number :</b>
-                          {/* <label className="col-sm-3 col-form-label text-end "> */}
-                          {/* </label> */}
+                     
                           <input
                             type="checkbox"
                             name="check1"
@@ -1200,21 +1103,9 @@ function EditUserComponent({ match }) {
                             onChange={copyTextValue}
                             style={{ position: "absolute", top: "32%" }}
                           />
-                          {/* <b>Whats App Number :</b> */}
+                     
                         </label>
-                        {/* <div className="col-sm-1">
-                          <input
-                            defaultChecked={data.check1 == 1}
-                            type="checkbox"
-                            name="check1"
-                            onChange={copyTextValue}
-                            style={{ position: "absolute", top: "20%" }}
-                          />
-                        </div> */}
-                        {/*
-                        <label className="col-sm-2 col-form-label">
-                          <b>Whats App Number :</b>
-                        </label> */}
+                     
 
                         {isReadOnly === true ? (
                           <>
@@ -1225,14 +1116,10 @@ function EditUserComponent({ match }) {
                                 id="whats_app_contact_no"
                                 name="whats_app_contact_no"
                                 placeholder="Whats App Contact Number"
-                                // defaultValue={
-                                //   isReadOnly == true ? copyData :
-                                //   data.contact_no || data.whats_app_contact_no
-
-                                // }
+                                
                                 value={copyData}
                                 readOnly={isReadOnly}
-                                // value={copyData ? copyData : ""}
+                        
                                 minLength={10}
                                 maxLength={10}
                                 onKeyPress={(e) => {
@@ -1274,7 +1161,7 @@ function EditUserComponent({ match }) {
                                     : data.whats_app_contact_no
                                 }
                                 readOnly={isReadOnly}
-                                // value={copyData ? copyData : ""}
+                          
                                 minLength={10}
                                 maxLength={10}
                                 onKeyPress={(e) => {
@@ -1285,7 +1172,6 @@ function EditUserComponent({ match }) {
                                   e.preventDefault();
                                   return false;
                                 }}
-                                
                                 onCopy={(e) => {
                                   e.preventDefault();
                                   return false;
@@ -1304,148 +1190,10 @@ function EditUserComponent({ match }) {
                           </>
                         )}
 
-                        {/* <div className="col-sm-3">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="whats_app_contact_no"
-                            name="whats_app_contact_no"
-                            placeholder="Whats App Contact Number"
-                            defaultValue={
-                              isReadOnly == true ? copyData :
-                              data.contact_no || data.whats_app_contact_no
-                                
-                            }
-                            readOnly={isReadOnly}
-                            // value={copyData ? copyData : ""}
-                            minLength={10}
-                            maxLength={10}
-                            onKeyPress={(e) => {
-                              Validation.mobileNumbersOnly(e);
-                            }}
-                            onChange={handleWhatsappValidation}
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              return false;
-                            }}
-                            onCopy={(e) => {
-                              e.preventDefault();
-                              return false;
-                            }}
-                          />
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {inputState.whatsappErr}
-                            </small>
-                          )}
-                        </div> */}
+                      
                       </div>
 
-                      {/* <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label">
-                          <b> Password : </b>
-                        </label>
-                        <div
-                          className="col-sm-4"
-                          style={{ position: "relative", display: "flex" }}
-                        >
-                          <InputGroup className="">
-                            <input
-                              className="form-control"
-                              id="password"
-                              name="password"
-                              placeholder="Password"
-                              minLength={6}
-                              maxLength={12}
-                              type={passwordShown ? "text" : "password"}
-                              onKeyPress={(e) => {
-                                Validation.password(e);
-                              }}
-                              onChange={(e) => { handlePasswordValidation(e)}}
-                            />
-                            <InputGroup.Text>
-                              <i
-                                className="bi bi-eye-fill"
-                                onClick={togglePasswordVisiblity}
-                              ></i>
-                            </InputGroup.Text>
-                          </InputGroup>
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                                position: "absolute",
-                                top: "95%",
-                              }}
-                            >
-                              {inputState.passwordErr}
-                            </small>
-                          )}
-                        </div>
-
-                        <label className="col-sm-2 col-form-label">
-                          <b>Confirmed Password : </b>
-                        </label>
-                        <div
-                          className="col-sm-4"
-                          style={{ position: "relative", display: "flex" }}
-                        >
-                          <InputGroup className="">
-                            <input
-                              className="form-control form-control-sm "
-                              id="confirmed_password"
-                              name="confirmed_password"
-                              placeholder="confirmed_password"
-                              type={passwordShown1 ? "text" : "password"}
-                              onKeyPress={(e) => {
-                                Validation.password(e);
-                              }}
-                              onChangeCapture={handleConfirmedPassword}
-                              onPaste={(e) => {
-                                e.preventDefault();
-                                return false;
-                              }}
-                              onCopy={(e) => {
-                                e.preventDefault();
-                                return false;
-                              }}
-                            />
-                            <InputGroup.Text>
-                              <i
-                                className="bi bi-eye-fill"
-                                onClick={togglePasswordVisiblity1}
-                              ></i>
-                            </InputGroup.Text>
-                          </InputGroup>
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                                position: "absolute",
-                                top: "95%",
-                              }}
-                            >
-                              {inputState.confirmed_PassErr}
-                            </small>
-                          )}
-                        </div>
-                        {confirmPasswordError && (
-                          <span
-                            style={{
-                              color: "red",
-                              position: "relative",
-                              left: "67%",
-                            }}
-                          >
-                            Password Not matched
-                          </span>
-                        )}
-                      </div> */}
-
+                    
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -1464,13 +1212,12 @@ function EditUserComponent({ match }) {
                               id="password"
                               name="password"
                               placeholder="Password"
-                              // minLength={6} // Minimum length is set to 8 characters
-                              // maxLength={12}
+                            
                               type={passwordShown ? "text" : "password"}
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
-                              // onChange={handlePasswordValidation}
+                     
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1572,7 +1319,7 @@ function EditUserComponent({ match }) {
                             <Select
                               id="role_id"
                               name="role_id"
-                              // options={roleDropdown}
+                             
                               options={
                                 accountFor === "SELF"
                                   ? orderedSelfRoleData
@@ -1792,11 +1539,9 @@ function EditUserComponent({ match }) {
                             onChange={(e) =>
                               handleDependentChange(e, "COUNTRY")
                             }
-                            //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
                           />
                         </div>
                       </div>
-                      {console.log("ss",stateDropdown)}
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
@@ -1818,9 +1563,7 @@ function EditUserComponent({ match }) {
                                 (d) => d.value == data.state_id
                               )
                             }
-                            // defaultValue={stateName ? stateName : ""}
                             onChange={(e) => handleDependentChange(e, "STATE")}
-                            // value={stateName ? stateName : ""}
                           />
                         </div>
 
@@ -1830,7 +1573,6 @@ function EditUserComponent({ match }) {
                         >
                           <b>City : </b>
                         </label>
-
 
                         {cityDropdown && (
                           <div className="col-sm-4">
@@ -1855,17 +1597,13 @@ function EditUserComponent({ match }) {
                                     )
                                   : cityName
                               }
-                              // defaultValue={cityName ? cityName : ""}
                               onChange={(e) => setCityName(e)}
-                              // value={cityName ? cityName : ""}
                             />
                           </div>
                         )}
                       </div>
                     </div>
-                    {/* CARD BODY*/}
                   </div>
-                  {/* CARD */}
                 </div>
               </div>
             )}
@@ -1926,66 +1664,59 @@ function EditUserComponent({ match }) {
                         </tr>
                       </thead>
 
-                  
-
                       <tbody>
                         {rows &&
                           rows?.map((item, idx) => (
                             <tr key={idx}>
                               <td className="text-center">{idx + 1}</td>
                               <td>
-                                {/* {departmentDropdown && item.department_id && ( */}
-                                  
-                                  <Select
-                                isSearchable={true}
-                                name="department_id[]"
-                                // id="department_id[]"
-                                 id={`department_id_` + idx}
-                                key={idx}
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                                options={departmentDropdown}
-                                value={ departmentDropdown&&departmentDropdown?.filter((d) =>
-                                  Array.isArray(item.department_id)
-                                    ? item.department_id.includes(d.value)
-                                    : item.department_id === d.value
-                                )}
-                                required
-                                style={{ zIndex: "100" }}
-                                onChange={(selectedOption) =>
-                                  handleUserSelect(selectedOption, idx)
-                                }
-                              />
-                                {/* )}   */}
+                                <Select
+                                  isSearchable={true}
+                                  name="department_id[]"
+                                  id={`department_id_` + idx}
+                                  key={idx}
+                                  className="basic-multi-select"
+                                  classNamePrefix="select"
+                                  options={departmentDropdown}
+                                  value={
+                                    departmentDropdown &&
+                                    departmentDropdown?.filter((d) =>
+                                      Array.isArray(item.department_id)
+                                        ? item.department_id.includes(d.value)
+                                        : item.department_id === d.value
+                                    )
+                                  }
+                                  required
+                                  style={{ zIndex: "100" }}
+                                  onChange={(selectedOption) =>
+                                    handleUserSelect(selectedOption, idx)
+                                  }
+                                />
                               </td>
 
                               <td>
-                                {/* {options && item.ticket_show_type && ( */}
-                                  <Select
-                                    options={options}
-                                    id={`ticket_show_type_id_` + idx}
-                                    name="ticket_show_type_id[]"
-                                    // onChange={e => ticketShowHandler(idx, e)}
-
-                                    value={ options&&options?.filter((d) =>
+                                <Select
+                                  options={options}
+                                  id={`ticket_show_type_id_` + idx}
+                                  name="ticket_show_type_id[]"
+                                  value={
+                                    options &&
+                                    options?.filter((d) =>
                                       Array.isArray(item.ticket_show_type)
-                                        ? item.ticket_show_type.includes(d.value)
+                                        ? item.ticket_show_type.includes(
+                                            d.value
+                                          )
                                         : item.ticket_show_type === d.value
-                                    )}
-                                    required
-
-                                    onChange={(selectedOption) =>
-                                      handleTickeTypeShowSelect(selectedOption, idx)
-                                    }
-                                    // value={
-                                      
-                                    //   item.ticket_show_type &&
-                                    //   options&& options.filter(
-                                    //     (d) => d.value == item.ticket_show_type
-                                    //   )
-                                    // }
-                                  />
-                                {/* )}  */}
+                                    )
+                                  }
+                                  required
+                                  onChange={(selectedOption) =>
+                                    handleTickeTypeShowSelect(
+                                      selectedOption,
+                                      idx
+                                    )
+                                  }
+                                />
                               </td>
 
                               <td className="text-center">
@@ -2038,7 +1769,6 @@ function EditUserComponent({ match }) {
                                     <i className="icofont-plus-circle"></i>
                                   </button>
                                 )}
-                             
 
                                 {idx != 0 && (
                                   <button
@@ -2123,4 +1853,3 @@ function EditUserComponent({ match }) {
 }
 
 export default EditUserComponent;
-
