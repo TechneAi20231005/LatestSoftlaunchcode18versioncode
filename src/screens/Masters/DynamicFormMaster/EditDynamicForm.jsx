@@ -1163,7 +1163,7 @@ function EditDynamicForm({ match }) {
                                       </div>
                                     </div>
                                   )}
-
+{console.log("rows",rows)}
                                   {rows[idx].inputType === "datetime-local" && (
                                     <div className="d-flex justify-content-between">
                                       <div class="form-group">
@@ -1250,6 +1250,8 @@ function EditDynamicForm({ match }) {
               {/* Card */}
             </div>
 
+
+
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
@@ -1322,6 +1324,7 @@ function EditDynamicForm({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
+
 
                         {data.inputType === "datetime-local" && (
                           <input

@@ -278,12 +278,12 @@ export default function ViewTicketComponent({ match }) {
                                   .toLowerCase()
                                 : ""
                             }
+                            readOnly
                             name={data.inputName}
                             className="form-control form-control-sm"
                             defaultValue={data.inputDefaultValue}
                           />
                         )}
-                   
                    {data.inputType === "date" && (
                           <div className="form-control">
                             {/* <DatePicker
@@ -297,9 +297,11 @@ export default function ViewTicketComponent({ match }) {
                               style={{ width: "100%" }}
                               
                             /> */}
+                          
   
   <input
                               type="date"
+                          disabled
                               name={data.inputName}
                               required={
                                 data && data.inputMandatory == true ? true : false
@@ -308,6 +310,24 @@ export default function ViewTicketComponent({ match }) {
                               // value={dateValue}
                               defaultValue={data.inputDefaultValue}
                               // format={data.inputFormat}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        )}
+
+{data.inputType === "datetime-local" && (
+                          <div className="form-control">
+                            <input
+                              type="datetime-local"
+                              name={data.inputName}
+                              disabled
+
+                              required={
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
+                              }
+                              defaultValue={data.inputDefaultValue}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -322,12 +342,15 @@ export default function ViewTicketComponent({ match }) {
                                   .toLowerCase()
                                 : ""
                             }
+                            readOnly
+
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
                             className="form-control form-control-sm"
                           />
                         )}
 
+{console.log("data",data)}
 
 
 {data.inputType == "radio" && data.inputAddOn.inputRadio
@@ -342,6 +365,9 @@ export default function ViewTicketComponent({ match }) {
                                         .toLowerCase()
                                       : ""
                                   }
+                              readOnly
+                              disabled
+                              checked={d.value == data.inputDefaultValue}
                                   name={data.inputName}
                                   className="mx-2"
                                   type="radio"
@@ -367,6 +393,8 @@ export default function ViewTicketComponent({ match }) {
                                       : ""
                                   }
                             required={data.inputMandatory == true ? true : false}
+                            disabled
+                            checked={d.value == data.inputDefaultValue}
   
                                   name={data.inputName}
                                   className="mx-2"
@@ -389,6 +417,8 @@ export default function ViewTicketComponent({ match }) {
                                 ? data.inputName.replace(/ /g, "_").toLowerCase()
                                 : ""
                             }
+                            readOnly
+
                             name={data.inputName}
                             // defaultValue={
                             //   selectedDropdown
@@ -408,14 +438,16 @@ export default function ViewTicketComponent({ match }) {
                         )}
                         {data.inputType === "decimal" && (
                           <input
-                            type="number"
+                          readOnly
+
+                          type={data.inputType}
                             id={
                               data.inputName
                                 ? data.inputName.replace(/ /g, "_").toLowerCase()
                                 : ""
                             }
                             required={data.inputMandatory == true ? true : false}
-  
+  defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
                             maxLength={parseInt(data.inputAddOn.inputRangeMax)}
@@ -433,6 +465,7 @@ export default function ViewTicketComponent({ match }) {
                                 ? data.inputName.replace(/ /g, "_").toLowerCase()
                                 : ""
                             }
+                            isDisabled
   
                             name={data.inputName}
 
@@ -451,7 +484,8 @@ export default function ViewTicketComponent({ match }) {
                                       .toLowerCase()
                                   : ""
                               }
-                              defaultValue={data.inputAddOn.inputDataSource}
+                              disabled
+                              defaultValue={data.inputDefaultValue}
                               name={data.inputName}
                               className="form-control form-control-sm"
                             >
@@ -466,7 +500,7 @@ export default function ViewTicketComponent({ match }) {
                                             data &&
                                               data?.inputAddOn
                                                 ?.inputDataSourceData
-                                          ) === option.value
+                                          ) == option.value
                                         }
                                         value={option.value}
                                       >

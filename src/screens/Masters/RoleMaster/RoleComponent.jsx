@@ -1,26 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-
+import ErrorLogService from "../../../services/ErrorLogService";
 import RoleService from "../../../services/MastersService/RoleService";
 import PageHeader from "../../../components/Common/PageHeader";
-
+import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { Link } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-
+import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
-
+import RoleMasterSlice from "./RoleMasterSlice";
 import { getRoleData, updatedRole } from "./RoleMasterAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { postRole } from "./RoleMasterAction";
 import { handleModalOpen, handleModalClose } from "./RoleMasterSlice";
-import { DashbordSlice } from "../../Dashboard/DashbordSlice";
+import DashbordSlice from "../../Dashboard/DashbordSlice";
 
 function RoleComponent({ location }) {
   const dispatch = useDispatch();
@@ -30,6 +30,7 @@ function RoleComponent({ location }) {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
   );
+  console.log("checkRole",checkRole)
 
   const Notify = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify
@@ -41,11 +42,23 @@ function RoleComponent({ location }) {
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
   );
 
+  console.log("moadal", exportData);
+
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState();
 
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
+
+  // const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -67,12 +80,22 @@ function RoleComponent({ location }) {
     });
   }
 
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
 
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [searchTerm, setSearchTerm] = useState('');
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
   const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearch = (value) => {};
+  
+  const handleSearch = (value) => {
+    console.log("fff",filteredData);
+  };
+  
 
   const columns = [
     {
@@ -132,7 +155,7 @@ function RoleComponent({ location }) {
         <div>
           <OverlayTrigger overlay={<Tooltip>{row.role} </Tooltip>}>
             <div>
-             
+              {/* <span className="ms-1"> {row.role}</span> */}
               <span>
                 {row.role.length > 12
                   ? row.role.substring(0, 12) + "..."
@@ -191,7 +214,7 @@ function RoleComponent({ location }) {
   ];
 
   const loadData = async () => {
-
+    //   const data = [];
     //   const exportTempData = [];
     //   await new RoleService().getRole().then(res => {
     //       if (res.status === 200) {
@@ -261,8 +284,95 @@ function RoleComponent({ location }) {
         } else {
         }
       });
+
+      // dispatch(getRoleData());
+      // await new RoleService().postRole(form).then((res) => {
+      //   console.log("res",res);
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Role",
+      //         "Create_Role",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Role",
+      //       "Create_Role",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
+    } else {
+      dispatch(updatedRole({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getRoleData());
+        } else {
+        }
+      });
+   
+      // await new RoleService().updateRole(id, form)
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       if (res.data.status === 1) {
+      //         setNotify({ type: "success", message: res.data.message });
+      //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
+      //         loadData();
+      //       } else {
+      //         setNotify({ type: "danger", message: res.data.message });
+      //       }
+      //     } else {
+      //       setNotify({ type: "danger", message: res.message });
+      //       new ErrorLogService().sendErrorLog(
+      //         "Role",
+      //         "Edit_Role",
+      //         "INSERT",
+      //         res.message
+      //       );
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     const { response } = error;
+      //     const { request, ...errorObject } = response;
+      //     setNotify({ type: "danger", message: "Request Error !!!" });
+      //     new ErrorLogService().sendErrorLog(
+      //       "Role",
+      //       "Edit_Role",
+      //       "INSERT",
+      //       errorObject.data.message
+      //     );
+      //   });
     }
   };
+
+  // //Search As Enter key press
+  // useEffect(() => {
+  //     const listener = event => {
+  //         if (event.code === "Enter") {
+  //             console.log("Enter key was pressed. Run your function.");
+  //             // callMyFunction();
+  //             handleSearch()
+  //         }
+  //     };
+  //     document.addEventListener("keydown", listener);
+  //     return () => {
+  //         document.removeEventListener("keydown", listener);
+  //     };
+  // }, [data]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -271,6 +381,11 @@ function RoleComponent({ location }) {
   };
 
   useEffect(() => {
+    // if(checkRole && checkRole[9].can_read === 0){
+    //   // alert("Rushi")
+
+    //   window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    // }
     loadData();
 
     const storedAlert = localStorage.getItem("alert");
@@ -332,6 +447,7 @@ function RoleComponent({ location }) {
               className="form-control"
               placeholder="Search by Role Name...."
               ref={searchRef}
+              // onKeyDown={handleKeyDown}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -339,7 +455,7 @@ function RoleComponent({ location }) {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              value={searchTerm}
+              value={searchTerm} 
               onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
@@ -368,19 +484,13 @@ function RoleComponent({ location }) {
               {RoleMasterData && (
                 <DataTable
                   columns={columns}
-                  data={RoleMasterData.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
+                  data={RoleMasterData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
+                        return Object.values(customer).some(value =>
+                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -398,7 +508,17 @@ function RoleComponent({ location }) {
         </div>
       </div>
 
-      <Modal centered show={modal.showModal}>
+      <Modal
+        centered
+        show={modal.showModal}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
+      >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
@@ -566,9 +686,9 @@ function RoleComponent({ location }) {
 
 function RoleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(() => {
+  useEffect( () => {
     const tempData = [];
-    new RoleService().getRole().then((res) => {
+     new RoleService().getRole().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
