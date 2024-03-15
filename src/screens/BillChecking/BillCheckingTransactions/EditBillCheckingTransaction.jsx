@@ -1454,9 +1454,9 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                           readOnly={
                             authorities &&
-                            authorities.TCS_Applicable === false &&
-                            authorities &&
-                            authorities.All_Update_Bill === false
+                            authorities.TCS_Applicable === false 
+                            // authorities &&
+                            // authorities.All_Update_Bill === false
                               ? true
                               : false
                           }

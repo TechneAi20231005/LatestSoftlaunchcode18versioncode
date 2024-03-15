@@ -8,7 +8,8 @@ import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTy
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
 export default function TaskComponent(props) {
-  const [data, setData] = useState({ task: props.taskData.task_name });
+  const [data, setData] = useState({ task: props.taskData.task_name,days:props.taskData.days, total_time:props.taskData.total_hours,start_days:props.taskData.start_days,days:props.taskData.task_days });
+  console.log("dataupdate",)
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
 
@@ -106,6 +107,7 @@ export default function TaskComponent(props) {
 
   const handleSubmit = (e) => {
     const taskName = document.querySelector('input[name="task"]').value.trim();
+    console.log("taskName",taskName)
     const daysRequired = document
       .querySelector('input[name="days"]')
       .value.trim();
