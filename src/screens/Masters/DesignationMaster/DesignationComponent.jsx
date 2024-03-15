@@ -25,7 +25,7 @@ function DesignationComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const dispatch = useDispatch();
-  const checkRole = useSelector((Das) =>
+  const checkRole = useSelector((DashbordSlice) =>
   DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
   );
   const designationData = useSelector(

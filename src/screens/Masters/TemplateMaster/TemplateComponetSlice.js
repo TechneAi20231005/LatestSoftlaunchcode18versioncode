@@ -75,8 +75,6 @@ export const templateSlice = createSlice({
 
       state.addTaskModal = action.payload;
     },
-
-    
   },
   extraReducers: (builder) => {
     builder.addCase(templateData.pending, (state) => {
@@ -129,10 +127,13 @@ export const templateSlice = createSlice({
             template_name: exportTempateData[i].template_name,
             calculate_from: exportTempateData[i].calculate_from,
             basket_name: exportTempateData[i].basket_name,
+            "Assign To": exportTempateData[i].basket_owner,
             task: exportTempateData[i].task,
 
-            days: exportTempateData[i].days,
-            total_hours: exportTempateData[i].total_hours,
+            "Day Required": exportTempateData[i].days,
+            "Hours Required": exportTempateData[i].total_hours,
+            start_days: exportTempateData[i].start_days,
+            end_days: exportTempateData[i].end_days,
 
             remark: exportTempateData[i].remark,
 
@@ -316,7 +317,6 @@ export const templateSlice = createSlice({
     });
     builder.addCase(getTemplateByIdData.fulfilled, (state, action) => {
       const { payload } = action;
-     
     });
     builder.addCase(getTemplateByIdData.rejected, (state) => {
       state.status = "rejected";
