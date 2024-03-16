@@ -133,9 +133,15 @@ export default function CreateTicketComponent() {
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerMappingData
   );
-
   const handleForm = async (e) => {
     e.preventDefault();
+
+    if (e.target.name === "CHECKBOX" && selectedCheckBoxValue.length <= 0) {
+      // Here you can proceed with form submission
+      alert('At least one checkbox must be selected');
+      return false;
+    }
+
     if (isSubmitted) {
       return;
     }
@@ -316,7 +322,7 @@ export default function CreateTicketComponent() {
       formdata.append("key", key);
       formdata.append("value", e.value);
       formdata.append("dropdownName", dependanceDropdownName);
-      formdata.append("dropdownId", currentData[0].inputAddOn.inputDataSource);
+      formdata.append("dropdownId", currentData[0]?.inputAddOn?.inputDataSource);
 
       var dropdown = [];
       await new DynamicFormDropdownMasterService()
@@ -577,6 +583,18 @@ export default function CreateTicketComponent() {
       newPrev[nameField] = value;
       return newPrev;
     });
+  };
+
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
+  console.log("selectedCheckBoxValue", selectedCheckBoxValue.length)
+
+
+  const handleRadioChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+  const handleCheckBoxChange = (event) => {
+    setSelectedCheckBoxValue(event.target.value);
   };
 
   useEffect(() => {
@@ -1020,9 +1038,10 @@ export default function CreateTicketComponent() {
                           }
                           name={data.inputName}
                           defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
+                            // selectedDropdown
+                            //   ? selectedDropdown[data.inputName]
+                            //   : ""
+                            data.inputDefaultValue
                           }
                           onChange={dynamicChangeHandle}
                           required={data.inputMandatory == true ? true : false}
@@ -1030,18 +1049,23 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
+                      {console.log("data==>", data)}
+
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                           return (
                             <div>
                               <input
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
+                                // id={
+                                //   data.inputName
+                                //     ? data.inputName
+                                //         .replace(/ /g, "_")
+                                //         .toLowerCase()
+                                //     : ""
+                                // }
+                                value={d.value}
+                                onChange={handleRadioChange}
+                                defaultChecked={selectedValue === d.value}
                                 name={data.inputName}
                                 className="mx-2"
                                 type="radio"
@@ -1052,22 +1076,27 @@ export default function CreateTicketComponent() {
                         })
                         : ""}
 
+                      {console.log("datal", data)}
+
                       {data.inputType == "checkbox" &&
                         data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                           return (
                             <div>
                               <input
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                    : ""
-                                }
-                                required={
-                                  data.inputMandatory == true ? true : false
-                                }
+                                // id={
+                                //   data.inputName
+                                //     ? data.inputName
+                                //         .replace(/ /g, "_")
+                                //         .toLowerCase()
+                                //     : ""
+                                // }
+
+                                value={d.value}
+                                onChange={handleCheckBoxChange}
+                                defaultChecked={selectedCheckBoxValue === d.value}
+
+                                required={data.inputMandatory && selectedCheckBoxValue === d.value}
                                 name={data.inputName}
                                 className="mx-2"
                                 type="checkbox"
@@ -1095,6 +1124,7 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
+                      {console.log("data", data)}
                       {data.inputType === "decimal" && (
                         <input
                           type="number"
@@ -1103,6 +1133,7 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
+                          defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory == true ? true : false}
                           name={data.inputName}
                           onChange={dynamicChangeHandle}
@@ -1111,7 +1142,7 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {data.inputType === "select" && (
+                      {/* {data.inputType === "select" && (
                         <Select
                           defaultValue={
                             selectedDropdown
@@ -1135,6 +1166,38 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                           required={data.inputMandatory ? true : false}
                         />
+                      )} */}
+
+                      {data.inputType === "select" && (
+                        <select
+                          id={
+                            data.inputName
+                              ? data.inputName
+                                .replace(/ /g, "_")
+                                .toLowerCase()
+                              : ""
+                          }
+                          name={data.inputName}
+                          className="form-control form-control-sm"
+                        >
+                          <option> {data.inputDefaultValue}</option>
+                          {data.inputAddOn.inputRadio &&
+                            data.inputAddOn.inputRadio.map((option) => {
+                              return (
+                                <option
+                                  selected={
+                                    parseInt(
+                                      data &&
+                                      data?.inputAddOn?.inputDataSource
+                                    ) === option.value
+                                  }
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </option>
+                              );
+                            })}
+                        </select>
                       )}
 
                       {data.inputType === "select-master" && (

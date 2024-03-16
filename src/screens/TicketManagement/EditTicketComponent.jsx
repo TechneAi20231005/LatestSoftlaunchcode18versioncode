@@ -1253,6 +1253,8 @@ export default function EditTicketComponent({ match }) {
                           </div>
                         )}
 
+                        {console.log("data",data)}
+
                         {data.inputType === "datetime-local" && (
                           <div className="form-control">
                             <input
@@ -1282,9 +1284,10 @@ export default function EditTicketComponent({ match }) {
                             }
                             name={data.inputName}
                             defaultValue={
-                              selectedDropdown
-                                ? selectedDropdown[data.inputName]
-                                : ""
+                              data.inputDefaultValue
+                              // selectedDropdown
+                              //   ? selectedDropdown[data.inputName]
+                              //   : ""
                             }
                             onChange={dynamicChangeHandle}
                             required={
@@ -1377,6 +1380,7 @@ export default function EditTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
+                            defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}

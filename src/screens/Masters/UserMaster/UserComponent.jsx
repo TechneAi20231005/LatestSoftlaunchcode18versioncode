@@ -196,8 +196,8 @@ function UserComponent() {
             State: temp[i].state,
             City: temp[i].city,
             Department: temp[i].department,
-            Ticket_Show_Type: temp[i].ticket_show_type,
-            all_department: temp[i].all_department,
+            Ticket_Show_Type: temp[i].ticket_show_type === "MY_TICKETS" ? "My Tickets" :"Department Tickets",
+            // all_department: temp[i].all_department,
             Ticket_Passing_Authority: temp[i].ticket_passing_authority
               ? "Yes"
               : "No",

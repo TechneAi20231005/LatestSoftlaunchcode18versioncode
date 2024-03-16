@@ -23,6 +23,7 @@ export const templateData = createAsyncThunk(
       try {
         const service = new TemplateService();
         const response = await service.exporttempData();
+        console.log("responsetemplate",response)
         return response;
       } catch (error) {
         throw error;
