@@ -35,12 +35,12 @@ export default function CreateTicketComponent() {
   const dispatch = useDispatch();
   const departmentDropdownRef = useRef();
   const current = new Date();
+  const [isMultipleDepartment, setisMultipleDepartment] = useState([])
 
-  const todayDate = `${current.getFullYear()}-${
-    current.getMonth() + 1 < 10
-      ? "0" + current.getMonth() + 1
-      : current.getMonth() + 1
-  }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
+    ? "0" + current.getMonth() + 1
+    : current.getMonth() + 1
+    }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
@@ -298,7 +298,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => {});
+          .catch((err) => { });
         setRows(dynamicForm);
       }
     }
@@ -336,7 +336,7 @@ export default function CreateTicketComponent() {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-            currentData[0].inputAddOn.inputDataSource
+          currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -451,6 +451,8 @@ export default function CreateTicketComponent() {
       .getDepartmentMappingByEmployeeId(userSessionData.userId)
       .then((resp) => {
         if (resp.data.status === 1) {
+          // console.log("get department dat of user", resp.data.data)
+          setisMultipleDepartment(resp.data.data)
           setUserDepartments(
             resp.data.data.map((d) => ({
               value: d.department_id,
@@ -659,7 +661,11 @@ export default function CreateTicketComponent() {
                   {userDepartments && (
                     <Select
                       defaultValue={
-                        userDepartments.length == 1 && userDepartments[0]
+                        userDepartments.length == 1 ? userDepartments[0] : isMultipleDepartment?.map(department => {
+                          if (department?.is_default) {
+                            return { value: department?.department_id, label: department?.department }
+                          }
+                        })
                       }
                       options={userDepartments}
                       name="from_department_id"
@@ -1026,50 +1032,50 @@ export default function CreateTicketComponent() {
 
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="radio"
-                                />
-                                <label for={d.value}>{d.label}</label>
-                              </div>
-                            );
-                          })
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                name={data.inputName}
+                                className="mx-2"
+                                type="radio"
+                              />
+                              <label for={d.value}>{d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
 
                       {data.inputType == "checkbox" &&
-                      data.inputAddOn.inputRadio
+                        data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                          .replace(/ /g, "_")
-                                          .toLowerCase()
-                                      : ""
-                                  }
-                                  required={
-                                    data.inputMandatory == true ? true : false
-                                  }
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="checkbox"
-                                />
-                                <label for={d.value}> {d.label}</label>
-                              </div>
-                            );
-                          })
+                          return (
+                            <div>
+                              <input
+                                id={
+                                  data.inputName
+                                    ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                    : ""
+                                }
+                                required={
+                                  data.inputMandatory == true ? true : false
+                                }
+                                name={data.inputName}
+                                className="mx-2"
+                                type="checkbox"
+                              />
+                              <label for={d.value}> {d.label}</label>
+                            </div>
+                          );
+                        })
                         : ""}
 
                       {data.inputType === "number" && (
@@ -1151,7 +1157,7 @@ export default function CreateTicketComponent() {
                                     selected={
                                       parseInt(
                                         data &&
-                                          data?.inputAddOn?.inputDataSourceData
+                                        data?.inputAddOn?.inputDataSourceData
                                       ) === option.value
                                     }
                                     value={option.value}
