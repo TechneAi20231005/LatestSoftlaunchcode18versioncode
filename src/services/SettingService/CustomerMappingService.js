@@ -6,10 +6,12 @@ import {settingMasterUrl} from '../../settings/constants';
 const _URL=settingMasterUrl.customerMapping;
 
 const _getAllCustomerMapping=_URL+"/getAllCustomerMapping"  
+const _getExportData=_URL+"/getExportCustomerMapping";  
 const _createCustomerMapping=_URL+"/createCustomerMapping";    
 const _getCustomerMappingById=_URL+"/getCustomerMappingById";    
 const _updateCustomerMapping=_URL+"/updateCustomerMapping/";    
-const _priorityDropdown=_URL+"/priorityDropdown";    
+const _priorityDropdown=_URL+"/priorityDropdown";  
+  
 
 export function getDateTime(){
     var now = new Date(); 
@@ -37,6 +39,20 @@ export default class CustomerMapping {
         };
         return axios.get(_getAllCustomerMapping,config)
     }
+
+
+    gerExportData(){
+      const token = localStorage.getItem("jwt_token");
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
+      return axios.get(_getExportData,config)
+  }
 
     getPriorityDropdown(){
         const token = localStorage.getItem("jwt_token");

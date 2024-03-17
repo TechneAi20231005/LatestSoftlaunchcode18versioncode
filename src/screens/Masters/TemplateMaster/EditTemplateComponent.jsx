@@ -337,12 +337,20 @@ const EditTemplateComponent = ({ match, props }) => {
 
     for (const entry of formData.entries(formData)) {
     }
-    dispatch( addTaskinBasketData({templateId: templateId,basketId: basketId, payload: formData,})
+    dispatch(
+      addTaskinBasketData({
+        templateId: templateId,
+        basketId: basketId,
+        payload: formData,
+      })
     ).then((res) => {
-      if (res.payload.data.data) {
+      console.log("res", res);
+      if (res.payload.data.status == 1) {
         loadData();
-      } else {
         setNotify({ type: "success", message: res.payload.data.message });
+      } else {
+        setNotify({ type: "danger", message: res.payload.data.message });
+        loadData();
       }
     });
 
@@ -368,7 +376,6 @@ const EditTemplateComponent = ({ match, props }) => {
   const selectUserRef = useRef();
 
   useEffect(() => {
-   
     loadData();
   }, []);
 
