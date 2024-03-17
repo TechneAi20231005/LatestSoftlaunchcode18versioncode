@@ -22,6 +22,8 @@ import UserService from "../../../services/MastersService/UserService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -79,9 +81,13 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [authorities, SetAuthorities] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) =>
+  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
+);
 
   const sectionRef = useRef();
+  const dispatch = useDispatch();
   const tdsPercentageRef = useRef();
 
   const handleTdsChange = (e) => {
@@ -284,14 +290,16 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getRoles());
+    
 
     await new BillCheckingTransactionService()
       .getSectionDropdown()
@@ -744,10 +752,12 @@ export default function CreateBillCheckingTransaction({ match }) {
   ]);
 
   useEffect(() => {
-    if (checkRole && checkRole[45].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  console.log(checkRole)
 
   const [roundOffError, setRoundOffError] = useState("");
 
