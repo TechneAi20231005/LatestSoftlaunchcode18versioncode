@@ -43,8 +43,9 @@ const AuthorityMapping = () => {
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 39)
   );
+  console.log("checkRole",checkRole)
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.getModuleSettingData

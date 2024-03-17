@@ -303,7 +303,7 @@ function BillTypeMaster() {
   }, [location]);
 
   useEffect(() => {
-    if (checkRole && checkRole[47].can_read === 0) {
+    if (checkRole && checkRole[47]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
