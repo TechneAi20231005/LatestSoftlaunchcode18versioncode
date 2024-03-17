@@ -326,6 +326,7 @@ export default function TaskData(props) {
           })}
       </div>
 
+
       <div className="d-flex justify-content-between mt-1">
         {props.data.taskOwnersId &&
           props.data.taskOwnersId.indexOf(

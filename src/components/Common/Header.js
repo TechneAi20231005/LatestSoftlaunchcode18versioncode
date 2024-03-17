@@ -82,7 +82,7 @@ export default function Header() {
         if (res.data.status == 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
-            "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
+            "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
@@ -420,6 +420,7 @@ export default function Header() {
                       />
                     )}
                   </div>
+                  {console.log("profile",data)}
                   <div className="card-body pb-0" style={{ zIndex: 500 }}>
                     <div className="d-flex py-1" style={{ zIndex: 500 }}>
                       <img
