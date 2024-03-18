@@ -43,12 +43,10 @@ const AuthorityMapping = () => {
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 39)
   );
-  const authorities = useSelector(
-    (BillCheckingTransactionSlice) =>
-      BillCheckingTransactionSlice.billChecking.getModuleSettingData
-  );
+  console.log("checkRole",checkRole)  
+  const authorities = useSelector((BillCheckingTransactionSlice) =>BillCheckingTransactionSlice.billChecking.getModuleSettingData);
   const userData = useSelector(
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
@@ -487,11 +485,11 @@ const AuthorityMapping = () => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    }
-  }, [checkRole]);
+  // useEffect(() => {
+  //   if (checkRole && checkRole[0]?.can_cre === 0) {
+  //     window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+  //   }
+  // }, [checkRole]);
 
   return (
     <div className="container-xxl">
@@ -534,6 +532,7 @@ const AuthorityMapping = () => {
           </div>
         </div>
       </div>
+      {console.log("authorities",authorities)}
 
       {/* DATA TABLE */}
       <div className="card mt-2">

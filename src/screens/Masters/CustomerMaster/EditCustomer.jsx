@@ -481,6 +481,7 @@ function EditCustomer({ match }) {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
+                        defaultValue={data&& data.remark}
                         maxLength={50}
                       />
                     </div>

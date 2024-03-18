@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { QueryGroupForm, QueryGroupFormUpdate, postqueryTypeForm, queryTypeData, updateQueryTypeData } from "./QueryTypeComponetAction";
+import {
+  QueryGroupForm,
+  QueryGroupFormUpdate,
+  postqueryTypeForm,
+  queryTypeData,
+  updateQueryTypeData,
+} from "./QueryTypeComponetAction";
 import { queryType } from "./QueryTypeComponetAction";
 
 const initialState = {
@@ -7,16 +13,15 @@ const initialState = {
   err: "",
   queryTypeData: [],
   queryType: [],
-  queryTypeData:[],
+  queryTypeData: [],
   QueryGroupForm: [],
-  notify:'',
+  notify: "",
   modal: {
     showModal: false,
     modalData: "",
     modalHeader: "",
   },
-  updateQueryTypeData:[]
-  
+  updateQueryTypeData: [],
 };
 
 export const queryTypeSlice = createSlice({
@@ -25,7 +30,6 @@ export const queryTypeSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-     
     },
 
     handleModalOpen: (state, action) => {
@@ -37,16 +41,11 @@ export const queryTypeSlice = createSlice({
     handleFormQueryGroup: (state, action) => {
       state.modal = action.payload;
     },
-
-
-
-
-
   },
   extraReducers: (builder) => {
     builder.addCase(queryTypeData.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
 
     builder.addCase(queryTypeData.fulfilled, (state, action) => {
@@ -74,7 +73,7 @@ export const queryTypeSlice = createSlice({
 
     builder.addCase(queryType.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
 
     builder.addCase(queryType.fulfilled, (state, action) => {
@@ -92,18 +91,14 @@ export const queryTypeSlice = createSlice({
         state.queryType = [...queryType];
       }
 
-
-      let queryTypeData =[]
-      payload.data.data.forEach((q) => {
+      let queryTypeData = [];
+      payload?.data?.data?.forEach((q) => {
         if (q.query_type_name) {
           queryTypeData.push({ value: q.id, label: q.query_type_name });
         }
       });
 
-      state.queryTypeData= queryTypeData
-
-
-
+      state.queryTypeData = queryTypeData;
     });
     builder.addCase(queryType.rejected, (state) => {
       state.status = "rejected";
@@ -113,17 +108,17 @@ export const queryTypeSlice = createSlice({
 
     builder.addCase(QueryGroupForm.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
     builder.addCase(QueryGroupForm.fulfilled, (state, action) => {
       const { payload } = action;
- 
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let QueryGroupForm = payload.data.data;
-     
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.QueryGroupForm = QueryGroupForm;
@@ -137,22 +132,19 @@ export const queryTypeSlice = createSlice({
 
     //_____________________updateQueryGroupForm__________________________
 
-
-
-    
     builder.addCase(QueryGroupFormUpdate.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
     builder.addCase(QueryGroupFormUpdate.fulfilled, (state, action) => {
       const { payload } = action;
-  
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let QueryGroupFormUpdate = payload.data.data;
-  
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.QueryGroupFormUpdate = QueryGroupFormUpdate;
@@ -166,21 +158,19 @@ export const queryTypeSlice = createSlice({
 
     //____________________updateQueryType____________________
 
-
-
     builder.addCase(updateQueryTypeData.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
     builder.addCase(updateQueryTypeData.fulfilled, (state, action) => {
       const { payload } = action;
-   
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let updateQueryTypeData = payload.data.data;
-    
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateQueryTypeData = updateQueryTypeData;
@@ -194,20 +184,19 @@ export const queryTypeSlice = createSlice({
 
     //___________________________postqueryType____________________
 
-
     builder.addCase(postqueryTypeForm.pending, (state) => {
       state.status = "loading";
-      state.notify =null
+      state.notify = null;
     });
     builder.addCase(postqueryTypeForm.fulfilled, (state, action) => {
       const { payload } = action;
-    
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let postqueryTypeForm = payload.data.data;
-      
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postqueryTypeForm = postqueryTypeForm;
@@ -218,11 +207,8 @@ export const queryTypeSlice = createSlice({
     builder.addCase(postqueryTypeForm.rejected, (state) => {
       state.status = "rejected";
     });
-
-
-
-
   },
 });
-export const { handleModalOpen, handleModalClose,handleFormQueryGroup } = queryTypeSlice.actions;
+export const { handleModalOpen, handleModalClose, handleFormQueryGroup } =
+  queryTypeSlice.actions;
 export default queryTypeSlice.reducer;
