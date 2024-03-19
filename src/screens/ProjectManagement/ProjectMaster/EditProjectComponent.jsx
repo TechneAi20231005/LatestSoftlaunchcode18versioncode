@@ -21,7 +21,7 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
-  const dispatch =useDispatch()
+  const dispatch = useDispatch()
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
@@ -35,8 +35,8 @@ export default function EditProjectComponent({ match }) {
   // const [checkRole, setCheckRole] = useState(null);
 
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 19)
-);
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 19)
+  );
 
   const [users, setUsers] = useState(null);
   const [projectOwners, setProjectOwners] = useState(null);
@@ -86,7 +86,7 @@ export default function EditProjectComponent({ match }) {
     await new ProjectService()
       .getProjectById(projectId)
       .then((res) => {
-        console.log("res",res)
+        console.log("res", res)
         if (res.status === 200) {
           const data = res.data.data;
           if (data && data.projectOwners) {
@@ -182,7 +182,7 @@ export default function EditProjectComponent({ match }) {
     window.open(URL, "_blank");
   };
 
-  
+
 
   useEffect(() => {
     loadData();
@@ -270,7 +270,7 @@ export default function EditProjectComponent({ match }) {
                         />
                       )}
                     </div>
-                    {console.log("data",data)}
+                    {console.log("data", data)}
                     <label
                       className="col-sm-2 col-form-label"
                       style={{ textAlign: "right" }}
@@ -285,7 +285,7 @@ export default function EditProjectComponent({ match }) {
                         name="logo"
                         accept="image/*"
                       />
-                     <p>{data.logo}</p>
+                      <p>{data.logo}</p>
                       {data && data.logo != "" && (
                         <i
                           onClick={handleShowLogo}

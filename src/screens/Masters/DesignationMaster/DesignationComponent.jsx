@@ -26,7 +26,7 @@ function DesignationComponent() {
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
-  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 8)
+    DashbordSlice?.dashboard?.getRoles?.filter((d) => d.menu_id == 8)
   );
   const designationData = useSelector(
     (DesignationSlice) => DesignationSlice.designationMaster.getDesignationData
@@ -63,12 +63,12 @@ function DesignationComponent() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = (value) => {};
+  const handleSearch = (value) => { };
 
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "80px",
       cell: (row) => (
@@ -151,7 +151,7 @@ function DesignationComponent() {
     },
   ];
 
-  const loadData = async () => {};
+  const loadData = async () => { };
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -397,8 +397,8 @@ function DesignationComponent() {
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                ? true
-                                : false
+                                  ? true
+                                  : false
                             }
                           />
                           <label
