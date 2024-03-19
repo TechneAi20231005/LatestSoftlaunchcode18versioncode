@@ -251,7 +251,7 @@ export const CharactersOnly = (e) => {
 
 
 export const CharactersNumbersOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z 0-9]+$");
+  var regex = new RegExp("^[a-zA-Z0-9 !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();

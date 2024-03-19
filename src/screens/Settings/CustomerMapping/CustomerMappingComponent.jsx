@@ -13,16 +13,19 @@ import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { Modal } from "react-bootstrap";
 import { UseDispatch,useDispatch,useSelector } from 'react-redux';
 import CustomerMappingSlice from './Slices/CustomerMappingSlice';
-import { getCustomerMappingData } from './Slices/CustomerMappingAction';
+import { exportCustomerMappingData, getCustomerMappingData } from './Slices/CustomerMappingAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import DashbordSlice from '../../Dashboard/DashbordSlice';
 export default function CustomerMappingComponent() {
 
   const dispatch=useDispatch()
   const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
-  console.log("data",data)
 
-  const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.exportTempData)
+
+  const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.
+    exportData
+    )
+
   const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 
 
@@ -74,7 +77,7 @@ export default function CustomerMappingComponent() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+
   };
 
 
@@ -235,6 +238,7 @@ export default function CustomerMappingComponent() {
     loadData();
 
     dispatch(getCustomerMappingData())
+    dispatch(exportCustomerMappingData())
    
     if(!checkRole.length){
       dispatch(getRoles())

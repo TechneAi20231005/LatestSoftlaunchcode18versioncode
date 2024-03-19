@@ -94,7 +94,7 @@ const ViewPaymentTemplateDetails = ({ match }) => {
                 selected={data && data.bill_type_name == "Received Date"}
                 value="Received Date"
               >
-                Recieved Date
+                Received Date
               </option>
             </select>
           </div>

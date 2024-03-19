@@ -43,7 +43,7 @@ const AuthorityMapping = () => {
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 39)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
   console.log("checkRole",checkRole)  
   const authorities = useSelector((BillCheckingTransactionSlice) =>BillCheckingTransactionSlice.billChecking.getModuleSettingData);
@@ -63,7 +63,7 @@ const AuthorityMapping = () => {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.modal
   );
-
+  
   const [error, setError] = useState("");
 
   const [user, setUser] = useState();
@@ -313,6 +313,7 @@ const AuthorityMapping = () => {
   const handleRemoveSpecificRow = (index) => async () => {
     const id = assign[index].id;
 
+
     // Delete the item
     await new BillCheckingTransactionService()
       .deleteModuleSettingUser(id)
@@ -356,11 +357,17 @@ const AuthorityMapping = () => {
     updatedUserErrors[index] = "";
     setUserErrors(updatedUserErrors);
   };
+  console.log("data",modal.modalData)
   const handleData = async (e, row) => {
+    console.log("row",row);
     if (row.id) {
+
       await new BillCheckingTransactionService()
+
         .getModuleAuthorityUserSetting(row.id)
+
         .then((res) => {
+          console.log("res",res)
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
@@ -381,6 +388,8 @@ const AuthorityMapping = () => {
           }
         });
     }
+    dispatch(getSubmoduleData(parseInt(row.submodule_name)));
+
   };
 
   const loadData = async () => {
@@ -400,7 +409,6 @@ const AuthorityMapping = () => {
 
     dispatch(updateAuthority());
 
-    dispatch(getSubmoduleData());
   };
 
   function getCurrentDateString() {
@@ -485,11 +493,11 @@ const AuthorityMapping = () => {
     loadData();
   }, []);
 
-  // useEffect(() => {
-  //   if (checkRole && checkRole[0]?.can_cre === 0) {
-  //     window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-  //   }
-  // }, [checkRole]);
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_cre === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
@@ -641,6 +649,7 @@ const AuthorityMapping = () => {
                       />
                     </div>
                   )}
+                  
 
                   {modal.modalData && submodulename && (
                     <>
@@ -684,6 +693,9 @@ const AuthorityMapping = () => {
                     )}
                   </tr>
                 </thead>
+                {console.log("userData",userData)}
+                {console.log(assign)}
+
 
                 <tbody>
                   {assign && assign.length > 0 ? (
@@ -709,7 +721,7 @@ const AuthorityMapping = () => {
                               value={userData.filter((d) =>
                                 Array.isArray(item.user_id)
                                   ? item.user_id.includes(d.value)
-                                  : item.user_id === d.value
+                                  : item.user_id == d.value
                               )}
                               required
                               style={{ zIndex: "100" }}

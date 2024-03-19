@@ -17,6 +17,26 @@ export const getCustomerMappingData = createAsyncThunk(
     }
   }
 );
+export const exportCustomerMappingData = createAsyncThunk(
+  "exportCustomerMappingData",
+  async (config, thunkapi) => {
+    try {
+      const service = new CustomerMappingService();
+      const response = await service.exportCustomerMapping();
+      console.log("hello",response)
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+
+
+
+
+
 
 
 export const getcustomerTypeData = createAsyncThunk(

@@ -126,6 +126,7 @@ export const getModuleSettingData = createAsyncThunk(
       try {
         const service = new BillCheckingTransactionService();
         const response = await service.getModuleSetting();
+        console.log("responseauthority",response)
       
   
         return response;
@@ -143,7 +144,8 @@ export const getModuleSettingData = createAsyncThunk(
     async (config, thunkapi) => {
       try {
         const service = new BillCheckingTransactionService();
-        const response = await service.getSubmodule(45);
+        const response = await service.getSubmodule(41);
+        console.log("getSubmoduleData",getSubmoduleData)
      
   
         return response;

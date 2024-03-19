@@ -520,6 +520,7 @@ export const BillCheckingTransactionSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
+        
         let getSubmoduleData = payload.data.data.map((d) => ({ value: d.id, label: d.name }))
 
     

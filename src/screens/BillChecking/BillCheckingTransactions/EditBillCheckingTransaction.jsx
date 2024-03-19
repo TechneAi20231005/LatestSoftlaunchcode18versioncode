@@ -25,6 +25,9 @@ import {
   ReactSelectComponent,
 } from "../../../components/Utilities/Button/Button";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "@testing-library/react";
+import { getAllRoles } from "../../Dashboard/DashboardAction";
 
 const secretKey = "rushikesh";
 
@@ -57,6 +60,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   }, []);
 
   const history = useNavigate();
+  const dispatch =useDispatch()
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 41));
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -92,7 +97,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [tdsData, setTdsData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
 
   const handleModal = (data) => {
     setModal(data);
@@ -472,14 +477,16 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getAllRoles())
   };
 
   const RecordRoomUserDropdown = [
@@ -811,7 +818,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   
 
   useEffect(() => {
-    if (checkRole && checkRole[45].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

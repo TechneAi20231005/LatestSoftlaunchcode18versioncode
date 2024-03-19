@@ -42,7 +42,7 @@ export default function EditDropdownComponent({ match }) {
     const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
 const dispatch=useDispatch()
 
-const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35));
+const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 37));
 
 
     const handleChange = idx => e => {

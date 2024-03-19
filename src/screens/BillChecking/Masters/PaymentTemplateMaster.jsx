@@ -666,7 +666,7 @@ function PaymentTemplateMaster() {
                     >
                       <option value="">Select Bill Type</option>
                       <option value="Bill Date">Bill Date</option>
-                      <option value="Received Date">Recieved Date</option>
+                      <option value="Received Date">Received Date</option>
                     </select>
                   )}
 
@@ -872,7 +872,7 @@ function PaymentTemplateMaster() {
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: "#484C7F" }}
               >
-                save
+                Save
               </button>
             )}
             {modal.modalData && (

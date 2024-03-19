@@ -1624,6 +1624,7 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           handleBulkModal({ showModal: false });
+          setNotify({ type: "danger", message: res.data.message });
           loadData();
         } else {
           setError({ type: "danger", message: res.data.message });
