@@ -82,7 +82,7 @@ export default function Header() {
         if (res.data.status == 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
-            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data.profile_picture;
+            "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
@@ -344,9 +344,8 @@ export default function Header() {
                   >
                     <Link
                       to={`/${_base}/Notification`}
-                      className={`card-footer text-center border-top-0 ${
-                        !showApprovedOnly ? "bg-info" : ""
-                      }`}
+                      className={`card-footer text-center border-top-0 ${!showApprovedOnly ? "bg-info" : ""
+                        }`}
                       onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
                     >
                       View All Notifications
@@ -356,9 +355,8 @@ export default function Header() {
 
                     <Link
                       to={`/${_base}/ApprovedNotification`}
-                      className={`card-footer text-center border-top-0 ${
-                        showApprovedOnly ? "bg-info" : ""
-                      }`}
+                      className={`card-footer text-center border-top-0 ${showApprovedOnly ? "bg-info" : ""
+                        }`}
                       onClick={() => setShowApprovedOnly(true)}
                     >
                       Approved Only By Me
@@ -420,7 +418,7 @@ export default function Header() {
                       />
                     )}
                   </div>
-                  {console.log("profile",data)}
+                  {console.log("profile", data)}
                   <div className="card-body pb-0" style={{ zIndex: 500 }}>
                     <div className="d-flex py-1" style={{ zIndex: 500 }}>
                       <img

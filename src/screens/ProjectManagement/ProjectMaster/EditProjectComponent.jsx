@@ -21,7 +21,7 @@ export default function EditProjectComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
-  const {id} = useParams();
+  const { id } = useParams();
   const projectId = id
 
   const [data, setData] = useState(null);
@@ -80,24 +80,24 @@ export default function EditProjectComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           const data = res.data.data;
-          if(data && data.projectOwners){
-          const a = res.data.data.projectOwners.map((d) => ({
-            value: d.user_id,
-            label: d.employee_name,
-          }));
-          setProjectOwners(a);
-          if (data) {
-            setData(null);
-            setData(data);
+          if (data && data.projectOwners) {
+            const a = res.data.data.projectOwners.map((d) => ({
+              value: d.user_id,
+              label: d.employee_name,
+            }));
+            setProjectOwners(a);
+            if (data) {
+              setData(null);
+              setData(data);
+            }
           }
         }
-      }
       })
       .catch((error) => {
         if (error.response) {
           const { response } = error;
           const { request, ...errorObject } = response;
-      
+
           // Continue handling the error as needed
           setNotify({ type: 'danger', message: errorObject.data.message });
           new ErrorLogService().sendErrorLog(
@@ -108,12 +108,12 @@ export default function EditProjectComponent({ match }) {
           );
         } else {
           console.error("Error object does not contain expected 'response' property:", error);
-      
+
           // Handle cases where 'response' is not available
           // You may want to log or handle this case accordingly
         }
       });
-      
+
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -136,8 +136,8 @@ export default function EditProjectComponent({ match }) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/Project`,
-             
-            },{ state: { alert: { type: "success", message: res.data.message } }}
+
+            }, { state: { alert: { type: "success", message: res.data.message } } }
             );
           } else {
             setNotify({ type: "danger", message: res.data.message });
@@ -167,7 +167,7 @@ export default function EditProjectComponent({ match }) {
 
   const handleShowLogo = (e) => {
     var URL =
-      "http://3.108.206.34/3_SoftLaunch//storage/app/Attachment/project/" +
+      "http://3.108.206.34/2_Testing//storage/app/Attachment/project/" +
       data.logo;
     window.open(URL, "_blank");
   };
@@ -208,8 +208,8 @@ export default function EditProjectComponent({ match }) {
                         defaultValue={
                           data
                             ? customer.filter(
-                                (d) => d.value == data.customer_id
-                              )
+                              (d) => d.value == data.customer_id
+                            )
                             : ""
                         }
                       />
