@@ -8,16 +8,22 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import { Link, useLocation } from "react-router-dom";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function BillTypeMaster() {
   const location = useLocation();
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const userId = userSessionData.userId;
 
   const searchRef = useRef();
+  const dispatch =useDispatch()
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 44));
+
+
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -272,14 +278,17 @@ function BillTypeMaster() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+  
+    
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+  
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -288,7 +297,10 @@ function BillTypeMaster() {
   };
 
   useEffect(() => {
+    dispatch(getRoles())
+   
     loadData();
+
   }, []);
 
   useEffect(() => {
@@ -303,10 +315,11 @@ function BillTypeMaster() {
   }, [location]);
 
   useEffect(() => {
-    if (checkRole && checkRole[47]?.can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  console.log("checkRole",checkRole)
 
   return (
     <div className="container-xxl">

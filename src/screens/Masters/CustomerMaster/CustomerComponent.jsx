@@ -36,7 +36,7 @@ function CustomerComponent() {
     (dashboardSlice) => dashboardSlice.dashboard.exportCustomerData
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
   );
 
   function SearchInputData(data, search) {
