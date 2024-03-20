@@ -782,7 +782,6 @@ export default function MyTicketComponent() {
                   <i className="icofont-ui-edit"></i> Edit
                 </Link>
               </li>
-              {/* } */}
               <li>
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
@@ -791,6 +790,15 @@ export default function MyTicketComponent() {
                 >
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
+              </li>
+              <li>
+                <Link
+                  to={`/${_base}/TicketHistory/` + data.id}
+                  className="btn btn-sm btn-primary text-white"
+                  style={{ width: "100%", zIndex: 100 }}
+                >
+                  <i className="icofont-history"></i> History
+                </Link>
               </li>
             </Dropdown.Menu>
           </Dropdown>
