@@ -17,7 +17,6 @@ import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
 import Select from "react-select";
 
-
 export default function ViewTicketComponent({ match }) {
   const history = useNavigate();
   const { id } = useParams();
@@ -167,9 +166,7 @@ export default function ViewTicketComponent({ match }) {
   useEffect(() => {
     loadData();
     loadComments();
-    return () => {
-   
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
@@ -181,7 +178,6 @@ export default function ViewTicketComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-
       <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ""}`} />
 
       {notify && <Alert alertData={notify} />}
@@ -222,7 +218,13 @@ export default function ViewTicketComponent({ match }) {
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.priority : ""}
-                progressBg={data?.priority === "High" ? "bg-warning" : data?.priority === "Medium" ? "bg-info" : "bg-success"}
+                progressBg={
+                  data?.priority === "High"
+                    ? "bg-warning"
+                    : data?.priority === "Medium"
+                    ? "bg-info"
+                    : "bg-success"
+                }
                 details=""
                 iconClass="icofont-price fs-4"
                 iconbg="bg-lightgreen"
@@ -238,15 +240,13 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
-         
           </div>
-        
+
           {rows && (
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
                   {rows.map((data, index) => {
-            
                     var range = "";
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
@@ -259,8 +259,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             name={data.inputName}
@@ -274,8 +274,8 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             readOnly
@@ -284,7 +284,7 @@ export default function ViewTicketComponent({ match }) {
                             defaultValue={data.inputDefaultValue}
                           />
                         )}
-                   {data.inputType === "date" && (
+                        {data.inputType === "date" && (
                           <div className="form-control">
                             {/* <DatePicker
                               required={
@@ -297,14 +297,15 @@ export default function ViewTicketComponent({ match }) {
                               style={{ width: "100%" }}
                               
                             /> */}
-                          
-  
-  <input
+
+                            <input
                               type="date"
-                          disabled
+                              disabled
                               name={data.inputName}
                               required={
-                                data && data.inputMandatory == true ? true : false
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
                               }
                               // onChange={dynamicChangeHandle}
                               // value={dateValue}
@@ -315,13 +316,12 @@ export default function ViewTicketComponent({ match }) {
                           </div>
                         )}
 
-{data.inputType === "datetime-local" && (
+                        {data.inputType === "datetime-local" && (
                           <div className="form-control">
                             <input
                               type="datetime-local"
                               name={data.inputName}
                               disabled
-
                               required={
                                 data && data.inputMandatory == true
                                   ? true
@@ -338,99 +338,96 @@ export default function ViewTicketComponent({ match }) {
                             id={
                               data.inputName
                                 ? data.inputName
-                                  .replace(/ /g, "_")
-                                  .toLowerCase()
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             readOnly
-
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
                             className="form-control form-control-sm"
                           />
                         )}
 
-{console.log("data",data)}
+                        {console.log("data", data)}
 
-
-{data.inputType == "radio" && data.inputAddOn.inputRadio
+                        {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                      : ""
-                                  }
-                              readOnly
-                              disabled
-                              checked={d.value == data.inputDefaultValue}
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="radio"
-                                />
-                                <label for={d.value}>{d.label}</label>
-                              </div>
-                            );
-                          })
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    readOnly
+                                    disabled
+                                    checked={d.value == data.inputDefaultValue}
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="radio"
+                                  />
+                                  <label for={d.value}>{d.label}</label>
+                                </div>
+                              );
+                            })
                           : ""}
 
-
-{data.inputType == "checkbox" &&
-                          data.inputAddOn.inputRadio
+                        {data.inputType == "checkbox" &&
+                        data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                            return (
-                              <div>
-                                <input
-                                  id={
-                                    data.inputName
-                                      ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                      : ""
-                                  }
-                            required={data.inputMandatory == true ? true : false}
-                            disabled
-                            checked={d.value == data.inputDefaultValue}
-  
-                                  name={data.inputName}
-                                  className="mx-2"
-                                  type="checkbox"
-                                />
-                                <label for={d.value}> {d.label}</label>
-                              </div>
-                            );
-                          })
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    required={
+                                      data.inputMandatory == true ? true : false
+                                    }
+                                    disabled
+                                    checked={d.value == data.inputDefaultValue}
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="checkbox"
+                                  />
+                                  <label for={d.value}> {d.label}</label>
+                                </div>
+                              );
+                            })
                           : ""}
 
-                         
-  
-{data.inputType === "number" && (
+                        {data.inputType === "number" && (
                           <input
                             type={data.inputType}
                             // type="date"
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             readOnly
-
                             name={data.inputName}
                             // defaultValue={
                             //   selectedDropdown
                             //     ? selectedDropdown[data.inputName]
                             //     : ""
-  
+
                             // }
-  
+
                             defaultValue={data.inputDefaultValue}
-  
-                            required={data.inputMandatory == true ? true : false}
-  
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
                             className="form-control form-control-sm"
@@ -438,80 +435,119 @@ export default function ViewTicketComponent({ match }) {
                         )}
                         {data.inputType === "decimal" && (
                           <input
-                          readOnly
-
-                          type={data.inputType}
+                            readOnly
+                            type={data.inputType}
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
-                            required={data.inputMandatory == true ? true : false}
-  defaultValue={data.inputDefaultValue}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
                             maxLength={parseInt(data.inputAddOn.inputRangeMax)}
                             className="form-control form-control-sm"
                           />
                         )}
-                                               {data.inputType === "select" && (
+                        {/* {data.inputType === "select" && (
                           <Select
-                            defaultValue={
-                            data.defaultValue
-                            }
+                            defaultValue={data.defaultValue}
                             options={data.inputAddOn.inputRadio}
                             id={
                               data.inputName
-                                ? data.inputName.replace(/ /g, "_").toLowerCase()
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
                                 : ""
                             }
                             isDisabled
-  
                             name={data.inputName}
-
                             className="form-control form-control-sm"
                             required={data.inputMandatory ? true : false}
                           />
+                        )} */}
+
+{console.log("data",data)}
+
+{data.inputType === "select" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            disabled
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputRadio &&
+                              data.inputAddOn.inputRadio.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputRadio
+                                        ) == option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
                         )}
-  
-  
-  {data.inputType === "select-master" && (
-                            <select
-                              id={
-                                data.inputName
-                                  ? data.inputName
-                                      .replace(/ /g, "_")
-                                      .toLowerCase()
-                                  : ""
-                              }
-                              disabled
-                              defaultValue={data.inputDefaultValue}
-                              name={data.inputName}
-                              className="form-control form-control-sm"
-                            >
-                              <option> {data.inputName}</option>
-                              {data.inputAddOn.inputDataSourceData &&
-                                data.inputAddOn.inputDataSourceData.map(
-                                  (option) => {
-                                    return (
-                                      <option
-                                        selected={
-                                          parseInt(
-                                            data &&
-                                              data?.inputAddOn
-                                                ?.inputDataSourceData
-                                          ) == option.value
-                                        }
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </option>
-                                    );
-                                  }
-                                )}
-                            </select>
-                          )}
-  
+
+
+                        {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            disabled
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) == option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
                       </div>
                     );
                   })}
@@ -584,7 +620,6 @@ export default function ViewTicketComponent({ match }) {
           </div>
         </div>{" "}
         {/*  COL */}
-
         <div className="col-xxl-4 col-xl-4 col-lg-12 col-md-12">
           {isLoading ? (
             <Shimmer count={10} />
@@ -602,8 +637,6 @@ export default function ViewTicketComponent({ match }) {
             <div className="card mb-3">
               <div className="card-body">
                 <h6 className="fw-bold mb-3 text-danger">Timeline</h6>
-
-               
 
                 <div>
                   <div style={{ display: "block", flexDirection: "column" }}>
@@ -647,8 +680,6 @@ export default function ViewTicketComponent({ match }) {
                     />
                   )}
                 </div>
-
-              
               </div>
             </div>
           </div>

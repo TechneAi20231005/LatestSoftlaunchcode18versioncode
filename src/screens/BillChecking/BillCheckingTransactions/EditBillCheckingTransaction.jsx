@@ -387,7 +387,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           setData(res.data.data);
           setIsTcsApplicable(
             res.data.data.is_tcs_applicable == 1 ? true : false
-          );
+          );  
           handleSectionDropDownChange1(res.data.data.tds_section);
           if (res.data.data.is_tds_applicable == 1) {
             setShowTdsFileds(true);
@@ -1892,7 +1892,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="narration"
                         name="narration"
                         rows="4"
-                        maxLength={2000}
+                        maxLength={1000}
                        
                       />
                     </div>
@@ -1920,7 +1920,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         className="form-control form-control-sm"
                         id="audit_remark"
                         name="audit_remark"
-                        maxLength={250}
+                        maxLength={1000}
                      
                         readOnly={
                           authorities && authorities.Internal_Audit === false
@@ -1940,7 +1940,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="external_remark"
                         name="external_remark"
                         rows="4"
-                        maxLength={250}
+                        maxLength={1000}
                         readOnly={
                           authorities && authorities.External_Audit === false
                             ? true

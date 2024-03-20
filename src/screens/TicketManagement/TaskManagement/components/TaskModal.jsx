@@ -40,7 +40,7 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-
+console.log("fromdate",fromdate)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -618,6 +618,9 @@ export default function TaskModal(props) {
                   />
                 )}
               </div>
+
+              {console.log("pp",props)}
+              {console.log("pp1",fromdate?.length > 0 ? 1:0)}
               <div className="col-md-4">
                 <label className="form-label">
                   <b>End Date :<Astrick color="red" size="13px" /></b>
@@ -629,10 +632,10 @@ export default function TaskModal(props) {
                     name="end_date"
                     // defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate}
+                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    // max={props.expectedSolveDate}
+                    max={props.expectedSolveDate}
                     required
                   // onChange={e=>handleMinDate(e)}
                   />
@@ -643,7 +646,7 @@ export default function TaskModal(props) {
                     name="end_date"
                     defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate}
+                    min={fromdate?.length > 0 ? fromdate :props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
                     // max={props.expectedSolveDate}

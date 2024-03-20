@@ -39,6 +39,10 @@ export const rolemasterSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
+   
+      clearRoleDropdown: (state) => {
+        state.filterRoleData = []; // Clear the filterRoleData array
+      },
   },
   extraReducers: (builder) => {
     builder.addCase(getRoleData.pending, (state) => {
@@ -49,8 +53,8 @@ export const rolemasterSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getRoleData = payload.data.data;
-        let filterRoleData = payload.data.data
+        let getRoleData = payload?.data?.data;
+        let filterRoleData = payload?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.role }));
 
@@ -191,5 +195,5 @@ export const rolemasterSlice = createSlice({
   },
 });
 
-export const { handleModalOpen, handleModalClose } = rolemasterSlice.actions;
+export const { handleModalOpen, handleModalClose,clearRoleDropdown } = rolemasterSlice.actions;
 export default rolemasterSlice.reducer;

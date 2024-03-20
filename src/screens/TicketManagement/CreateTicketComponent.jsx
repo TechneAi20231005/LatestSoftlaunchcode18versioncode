@@ -1106,6 +1106,7 @@ export default function CreateTicketComponent() {
                           );
                         })
                         : ""}
+                        {console.log("data",data)}
 
                       {data.inputType === "number" && (
                         <input
@@ -1119,8 +1120,12 @@ export default function CreateTicketComponent() {
                           defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory == true ? true : false}
                           onChange={dynamicChangeHandle}
-                          min={data.inputAddOn.inputRange ? range[0] : ""}
-                          max={data.inputAddOn.inputRange ? range[1] : ""}
+                          // min={data.inputAddOn.inputRangeMin}
+                          min={5}
+                          max={data.inputAddOn.inputRangeMax}
+
+                          // min={data.inputAddOn.inputRange ? range[0] : ""}
+                          // max={data.inputAddOn.inputRange ? range[1] : ""}
                           className="form-control form-control-sm"
                         />
                       )}

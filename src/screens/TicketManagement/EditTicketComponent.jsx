@@ -374,7 +374,6 @@ export default function EditTicketComponent({ match }) {
         setUsers(res.data.data.ticket_users);
         setTicketStatus(data.status_id);
         setRows(res.data.data.dynamic_form);
-
         if (data.status_id == 3) {
           setIsSolved(true);
         }
@@ -721,6 +720,20 @@ export default function EditTicketComponent({ match }) {
       label: "Priyanka Dupargude",
     },
   ];
+
+
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
+  console.log("selectedCheckBoxValue", selectedCheckBoxValue.length)
+
+
+  const handleRadioChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+  const handleCheckBoxChange = (event) => {
+    setSelectedCheckBoxValue(event.target.value);
+  };
+
 
   useEffect(() => {
     loadData();
@@ -1297,18 +1310,24 @@ export default function EditTicketComponent({ match }) {
                           />
                         )}
 
+                        {console.log("data18",data)}
+
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
                               return (
                                 <div>
                                   <input
-                                    id={
-                                      data.inputName
-                                        ? data.inputName
-                                            .replace(/ /g, "_")
-                                            .toLowerCase()
-                                        : ""
-                                    }
+                                    // id={
+                                    //   data.inputName
+                                    //     ? data.inputName
+                                    //         .replace(/ /g, "_")
+                                    //         .toLowerCase()
+                                    //     : ""
+                                    // }
+                                    value={d.value}
+                                onChange={handleRadioChange}
+                                defaultChecked={d.value == data.inputDefaultValue}
+
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -1325,16 +1344,20 @@ export default function EditTicketComponent({ match }) {
                               return (
                                 <div>
                                   <input
-                                    id={
-                                      data.inputName
-                                        ? data.inputName
-                                            .replace(/ /g, "_")
-                                            .toLowerCase()
-                                        : ""
-                                    }
+                                    // id={
+                                    //   data.inputName
+                                    //     ? data.inputName
+                                    //         .replace(/ /g, "_")
+                                    //         .toLowerCase()
+                                    //     : ""
+                                    // }
                                     required={
                                       data.inputMandatory == true ? true : false
                                     }
+                                    value={d.value}
+                                onChange={handleCheckBoxChange}
+                                defaultChecked={d.value == data.inputDefaultValue}
+
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
@@ -1388,7 +1411,7 @@ export default function EditTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "select" && (
+                        {/* {data.inputType === "select" && (
                           <Select
                             defaultValue={
                               selectedDropdown
@@ -1414,9 +1437,9 @@ export default function EditTicketComponent({ match }) {
                             className="form-control form-control-sm"
                             required={data.inputMandatory ? true : false}
                           />
-                        )}
+                        )} */}
 
-                        {data.inputType === "select-master" && (
+{data.inputType === "select" && (
                           <select
                             id={
                               data.inputName
@@ -1425,7 +1448,45 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
-                            defaultValue={data.inputAddOn.inputDataSource}
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputRadio &&
+                              data.inputAddOn.inputRadio.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputRadio
+                                        ) == option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
+
+
+
+                        {/* {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={option.value === data.inputDefaultValue}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -1450,7 +1511,45 @@ export default function EditTicketComponent({ match }) {
                                 }
                               )}
                           </select>
-                        )}
+                        )} */}
+
+                         
+  {data.inputType === "select-master" && (
+                            <select
+                              id={
+                                data.inputName
+                                  ? data.inputName
+                                      .replace(/ /g, "_")
+                                      .toLowerCase()
+                                  : ""
+                              }
+                              
+                              defaultValue={data.inputDefaultValue}
+                              name={data.inputName}
+                              className="form-control form-control-sm"
+                            >
+                              <option> {data.inputName}</option>
+                              {data.inputAddOn.inputDataSourceData &&
+                                data.inputAddOn.inputDataSourceData.map(
+                                  (option) => {
+                                    return (
+                                      <option
+                                        selected={
+                                          parseInt(
+                                            data &&
+                                              data?.inputAddOn
+                                                ?.inputDataSourceData
+                                          ) == option.value
+                                        }
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </option>
+                                    );
+                                  }
+                                )}
+                            </select>
+                          )}
                       </div>
                     );
                   })}

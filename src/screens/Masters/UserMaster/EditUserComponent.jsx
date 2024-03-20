@@ -28,12 +28,14 @@ import {
   getEmployeeData,
   getRoles,
 } from "../../Dashboard/DashboardAction";
-import { rolemasterSlice } from "../RoleMaster/RoleMasterSlice";
+import { clearRoleDropdown, rolemasterSlice } from "../RoleMaster/RoleMasterSlice";
 import { getRoleData } from "../RoleMaster/RoleMasterAction";
+import RoleService from "../../../services/MastersService/RoleService";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
+  const [roleDropdown,setRoleDropdown]=useState([])
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -45,9 +47,12 @@ function EditUserComponent({ match }) {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
 
-  const roleDropdown = useSelector(
-    (rolemasterSlice) => rolemasterSlice.rolemaster.filterRoleData
-  );
+  // const roleDropdown = useSelector(
+  //   (rolemasterSlice) => rolemasterSlice?.rolemaster?.filterRoleData
+  // );
+
+
+
 
   const { id } = useParams();
   const userId = parseInt(id);
@@ -135,7 +140,6 @@ function EditUserComponent({ match }) {
       setPasswordValid(false);
     }
 
- 
     if (
       confirmedPasswordRef.current.value !== "" &&
       confirmedPasswordRef.current.value !== passwordValidation
@@ -302,6 +306,12 @@ function EditUserComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+    if (isReadOnly) {
+      form.append("check1", 1);
+    } else {
+      form.append("check1", 0);
+    }
+
     var flag = 1;
     setNotify(null);
     var a = JSON.stringify(Object.fromEntries(form));
@@ -402,7 +412,14 @@ function EditUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
+const [selectRole,setSelctRole]=useState(null)
+const handleSelectRole = (e) => {
+  const newValue = e;
+  setSelctRole(newValue);
+};
+
   const accountForChange = async (account_for) => {
+    setSelctRole(null)
     setAccountFor(account_for);
     const accountFor = account_for;
     const filteredAsAccountFor = roleDropdown.filter((filterData) => {
@@ -412,8 +429,11 @@ function EditUserComponent({ match }) {
         return filterData.label?.toLowerCase() === "user";
       }
     });
+    // dispatch(clearRoleDropdown())
+    
   };
-
+  
+  
   const loadData = async () => {
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
@@ -467,12 +487,17 @@ function EditUserComponent({ match }) {
     // await new RoleService().getRole().then((res) => {
     //   if (res.status == 200) {
     //     if (res.data.status == 1) {
-    //       const data = res.data.data.filter((d) => d.is_active == 1);
-    //       setRoleDropdown(
-    //         res.data.data
-    //           .filter((d) => d.is_active === 1)
-    //           .map((d) => ({ value: d.id, label: d.role }))
-    //       );
+    //       // const data = res.data.data.filter((d) => d.is_active == 1);
+    //       console.log("res",res.data.data)
+    //       // setRoleDropdown(
+    //       //   res.data.data
+    //       //     .filter((d) => d.is_active === 1)
+    //       //     .map((d) => ({ value: d.id, label: d.role }))
+    //       //     );
+    //       const data = res.data.data.filter((d) => d.is_active === 1);
+    //       const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
+    //       setRoleDropdown(dropdownData);
+    //           console.log("role",roleDropdown)
     //     }
     //   }
     // });
@@ -495,9 +520,18 @@ function EditUserComponent({ match }) {
       .getUserById(userId)
       .then((res) => {
         if (res.status === 200) {
+
           if (res.data.status == 1) {
             const temp = res.data.data;
+            setSelctRole(
+              roleDropdown &&
+              roleDropdown.filter(
+                (d) => d.value == temp?.role_id
+              ))
+
             setAccountFor(temp.account_for);
+            setIsReadOnly();
+
             const tempDept = temp.department.map((d) => ({
               value: d.department_id,
               label: d.department_name,
@@ -720,18 +754,42 @@ function EditUserComponent({ match }) {
     }
   }, [checkRole]);
   useEffect(() => {
-    loadData();
     if (!CountryData.length) {
       dispatch(getCountryDataSort());
     }
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    if (!roleDropdown.length) {
-      dispatch(getRoleData());
-    }
+    
+    // if (!roleDropdown.length) {
+    // }
   }, []);
 
+
+useEffect(() => {
+  const fetchRoleData = async () => {
+    try {
+      const res = await new RoleService().getRole();
+      if (res.status === 200 && res.data.status === 1) {
+        const data = res.data.data.filter((d) => d.is_active === 1);
+        const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
+        setRoleDropdown(dropdownData);
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  fetchRoleData();
+}, []); // Empty dependency array ensures the effect runs only once after component mounts
+
+
+  useEffect(()=>{
+    loadData();
+
+  },[roleDropdown])
+
+ 
   useEffect(() => {
     if (
       data !== null &&
@@ -789,6 +847,7 @@ function EditUserComponent({ match }) {
       );
     }
   }, [data, cityDropdown]);
+
 
   return (
     <div className="container-xxl">
@@ -1074,7 +1133,6 @@ function EditUserComponent({ match }) {
                             defaultValue={
                               data.contact_no ? data.contact_no : ""
                             }
-                        
                             onChange={handleContactValidation}
                             onKeyPress={(e) => {
                               Validation.mobileNumbersOnly(e);
@@ -1090,24 +1148,24 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                      
+
                         <label className="col-sm-3 col-form-label text-end ">
                           <b className="mx-3">Same as Contact No. or</b>
                           <br />
                           <b className="mx-3">Whats App Contact Number :</b>
-                     
+
                           <input
                             type="checkbox"
-                            name="check1"
-                            defaultChecked={data.check1 == 1}
+                            id="check1"
+                            defaultChecked={data.contact_no == data.whats_app_contact_no ? true : false}
                             onChange={copyTextValue}
                             style={{ position: "absolute", top: "32%" }}
                           />
-                     
                         </label>
-                     
 
-                        {isReadOnly === true ? (
+                       
+                        
+                        {data?.contact_no == data?.whats_app_contact_no ? (
                           <>
                             <div className="col-sm-3">
                               <input
@@ -1116,10 +1174,8 @@ function EditUserComponent({ match }) {
                                 id="whats_app_contact_no"
                                 name="whats_app_contact_no"
                                 placeholder="Whats App Contact Number"
-                                
-                                value={copyData}
+                                defaultValue={data.whats_app_contact_no}
                                 readOnly={isReadOnly}
-                        
                                 minLength={10}
                                 maxLength={10}
                                 onKeyPress={(e) => {
@@ -1155,13 +1211,15 @@ function EditUserComponent({ match }) {
                                 id="whats_app_contact_no"
                                 name="whats_app_contact_no"
                                 placeholder="Whats App Contact Number"
-                                defaultValue={
-                                  isReadOnly === false
-                                    ? data.contact_no
-                                    : data.whats_app_contact_no
-                                }
+                                // defaultValue={
+                                //   // isReadOnly === false
+                                //   //   ? data.contact_no
+                                //   //   : data.whats_app_contact_no
+                                //   data?.contact_no == data?.whats_app_contact_no  ? data.whats_app_contact_no : ""
+
+                                // }
+                                value={copyData}
                                 readOnly={isReadOnly}
-                          
                                 minLength={10}
                                 maxLength={10}
                                 onKeyPress={(e) => {
@@ -1189,11 +1247,8 @@ function EditUserComponent({ match }) {
                             </div>
                           </>
                         )}
-
-                      
                       </div>
 
-                    
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -1212,12 +1267,10 @@ function EditUserComponent({ match }) {
                               id="password"
                               name="password"
                               placeholder="Password"
-                            
                               type={passwordShown ? "text" : "password"}
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
-                     
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1315,25 +1368,30 @@ function EditUserComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          {roleDropdown && (
+                          {roleDropdown  && (
                             <Select
                               id="role_id"
                               name="role_id"
-                             
                               options={
                                 accountFor === "SELF"
                                   ? orderedSelfRoleData
                                   : orderedCustomerRoleData
                               }
-                              defaultValue={
-                                data &&
-                                roleDropdown &&
-                                roleDropdown.filter(
-                                  (d) => d.value == data.role_id
-                                )
-                              }
+                              // defaultValue={
+                              //   data &&
+                              //   roleDropdown &&
+                              //   roleDropdown.filter(
+                              //     (d) => d.value == data.role_id
+                              //   )
+                              // }
+                              value={selectRole}
+                        onChange={(e) => handleSelectRole(e)}
+
+                              
                             />
                           )}
+                        
+
                           {inputState && (
                             <small
                               style={{

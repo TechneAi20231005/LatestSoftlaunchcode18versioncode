@@ -361,7 +361,11 @@ function CreateUserComponent({ match }) {
 
   
   
-
+  const [selectRole,setSelctRole]=useState(null)
+  const handleSelectRole = (e) => {
+    const newValue = e;
+    setSelctRole(newValue);
+  };
   const handleForm = async (e) => {
     e.preventDefault();
     if (loading) {
@@ -592,6 +596,7 @@ function CreateUserComponent({ match }) {
   
 
   const accountForChange = async (account_for) => {
+    setSelctRole(null)
     setAccountFor(account_for);
     const accountFor = account_for;
     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
@@ -1207,6 +1212,7 @@ function CreateUserComponent({ match }) {
                         </span>
                       )}
                     </div>
+                    {console.log("filterRole",filteredRoles)}
                     <div
                       className="form-group row mt-4"
                       style={{ position: "relative", display: "flex" }}
@@ -1220,7 +1226,9 @@ function CreateUserComponent({ match }) {
                         <Select
                           id="role_id"
                           name="role_id"
-                          defaultValue={filteredRoles}
+                          // defaultValue={filteredRoles}
+                          value={selectRole}
+
                           // options={filteredRoles}
                           options={
                             accountFor === "SELF"
@@ -1228,6 +1236,7 @@ function CreateUserComponent({ match }) {
                               : orderedCustomerRoleData
                           }
                           onChange={(e) => {
+                            handleSelectRole(e)
                             if (e.value === "") {
                               setInputState({
                                 ...state,
