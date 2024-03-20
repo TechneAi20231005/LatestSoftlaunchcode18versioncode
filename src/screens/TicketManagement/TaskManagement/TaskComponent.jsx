@@ -155,7 +155,6 @@ export default function TaskComponent({ match }) {
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
-
             res.data.data.map((tasks, index) => {
               tasks.taskData.forEach((d, i) => {
                 let taskOwnerNames = d.taskOwners
@@ -165,8 +164,8 @@ export default function TaskComponent({ match }) {
                   ticket_id_name: d.ticket_id_name,
                   Task_Names: d.task_name,
                   Task_Hours: d.task_hours,
-                  Start_Date: tasks.start_date,
-                  End_Date: tasks.end_date,
+                  Start_Date: d.task_start_date,
+                  End_Date: d.task_end_date,
                   Status: d.status,
                   Priority: d.priority,
                   Total_Worked: d.total_worked,
@@ -248,7 +247,7 @@ export default function TaskComponent({ match }) {
 
   /*  ********************************* PLANNER ************************************** */
   const [showPlannerModal, setShowPlannerModal] = useState(false);
-  
+
 
   const handleClosePlannerModal = () => {
     setShowPlannerModal(false);
@@ -358,7 +357,7 @@ export default function TaskComponent({ match }) {
     };
 
     await new BasketService().pushForward(sendArray).then((res) => {
-     
+
     });
   };
 
@@ -411,7 +410,7 @@ export default function TaskComponent({ match }) {
     getBasketData();
     loadData();
     getTicketData();
-  
+
   }, []);
 
   // created by Asmita Margaje
@@ -693,7 +692,7 @@ export default function TaskComponent({ match }) {
 
                         {ele && (ele.ownership === "TICKET" || ele.ownership === "BASKET" || ele.ownership === "PROJECT")
 
-                          
+
 
                           && (
                             <button
@@ -773,9 +772,9 @@ export default function TaskComponent({ match }) {
                                   data={task}
                                   loadBasket={getBasketData}
                                   onShowTaskModal={handleShowTaskModal}
-                                
+
                                   isReviewer={isReviewer}
-                                
+
                                 />
                               );
                             })}

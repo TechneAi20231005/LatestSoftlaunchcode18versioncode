@@ -211,7 +211,7 @@ function Profile() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           res.data.data.profile_picture =
-            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" +
+            "http://3.108.206.34/2_Testing/TSNewBackend/" +
             res.data.data.profile_picture;
           setData(res.data.data);
         }
