@@ -2,22 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageHeader from "../../../components/Common/PageHeader";
 
-
 import Alert from "../../../components/Common/Alert";
 import TemplateService from "../../../services/MastersService/TemplateService";
 
-
 import { _base } from "../../../settings/constants";
-
 
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
 
-
-
 import { name } from "platform";
-
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -53,18 +47,12 @@ const CreateTemplateComponent = () => {
       MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
   );
 
-  
-
-  
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
   const [notify, setNotify] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-
-
-  
 
   const mainJson = {
     template_name: null,
@@ -90,21 +78,15 @@ const CreateTemplateComponent = () => {
     ],
   });
 
-  
-
   const [stack, setStack] = useState({ SE: "", AB: "" });
   const [data, setData] = useState([]);
 
-  
   const [error, setError] = useState("");
 
   const loadData = async () => {
     await new TemplateService().getTemplate().then((res) => {
       setData(res.data.data);
     });
-
-  
-    
   };
 
   const handleParentchange = async (e) => {
@@ -112,9 +94,6 @@ const CreateTemplateComponent = () => {
       typeRef.current.clearValue();
     }
     dispatch(getAllTypeData());
-
-  
-    
   };
 
   const handleCheckInput = (e, idx) => {
@@ -133,16 +112,13 @@ const CreateTemplateComponent = () => {
 
       setRows({ ...rows, template_data: temp });
     } else {
-    
-      
     }
   };
 
   const handleRemoveSpecificRow = (idx) => {
     setRows((prevState) => {
       const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
-   
-      
+
       return {
         ...prevState,
         template_data: updatedRows,
@@ -165,7 +141,6 @@ const CreateTemplateComponent = () => {
   const [show, setShow] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
 
-  
   const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState("");
   const typeRef = useRef();
   const shouldShowButton =
@@ -202,8 +177,6 @@ const CreateTemplateComponent = () => {
     }
   };
   const submitHandler = (e) => {
- 
-    
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -212,14 +185,8 @@ const CreateTemplateComponent = () => {
       }
     });
     if (a > 0) {
-   
-      
     } else {
-      
-      
       dispatch(postTemplateData(rows)).then((res) => {
-
-        
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
           setNotify({ type: "success", message: res?.payload?.data?.message });
           dispatch(templateData());
@@ -238,14 +205,22 @@ const CreateTemplateComponent = () => {
           setNotify({ type: "danger", message: res?.payload?.data?.message });
         }
       });
-
-    
-      
     }
   };
 
   const addTask = (e) => {
     e.preventDefault();
+
+    const hoursInput = document.getElementById("hours_add");
+    const enteredValue = hoursInput.value.trim();
+    const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
+
+    if (!timeRegex.test(enteredValue)) {
+      // If the format is invalid, show an alert or handle it accordingly
+      alert("Invalid time format. Please use 'HH:mm' format");
+      return; // Prevent further execution of the function
+    }
+
     var form = new FormData(e.target);
     var temp = {
       task_name: form.get("taskName"),
@@ -262,7 +237,6 @@ const CreateTemplateComponent = () => {
     setRows(null);
     setRows(tempData);
 
-    
     for (
       var i = 0;
       i < document.getElementsByClassName("taskField").length;
@@ -270,7 +244,7 @@ const CreateTemplateComponent = () => {
     ) {
       document.getElementsByClassName("taskField")[i].value = "";
     }
-    if (typeRef && typeRef.current.commonProps.hasValue === true) {
+    if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
       typeRef.current.clearValue();
     }
     if (document.getElementById("task_add").value != "") {
@@ -287,8 +261,6 @@ const CreateTemplateComponent = () => {
     }
     setShow(false);
   };
- 
-  
 
   const handleCancelTask = (e) => {
     setShow(false);
@@ -325,8 +297,6 @@ const CreateTemplateComponent = () => {
     });
   };
 
- 
-  
   useEffect(() => {
     if (!parent.length) {
       dispatch(getParentData());
@@ -343,9 +313,6 @@ const CreateTemplateComponent = () => {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-   
-      
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -375,8 +342,6 @@ const CreateTemplateComponent = () => {
                       onChange={(e) => {
                         handleChange(e, name, "select1");
                       }}
-                    
-                      
                     />
                     {error && <small style={{ color: "red" }}>{error}</small>}
                   </div>
@@ -445,13 +410,11 @@ const CreateTemplateComponent = () => {
                                   options={userData}
                                   id="basket_owner"
                                   name="basket_owner"
-
                                   value={userData.filter((d) =>
                                     Array.isArray(item.basket_owner)
                                       ? item.basket_owner.includes(d.value)
                                       : item.basket_owner === d.value
                                   )}
-                                  
                                   onChange={(e) =>
                                     handleChange(
                                       e,
@@ -464,8 +427,6 @@ const CreateTemplateComponent = () => {
                               )}
                             </td>
 
-                          
-                          
                             <td>
                               {idx === 0 ? ( // Conditional rendering for the first row
                                 <span>
@@ -498,10 +459,7 @@ const CreateTemplateComponent = () => {
                   <button type="submit" class="btn btn-sm btn-primary">
                     Submit
                   </button>
-                  <Link
-                    to={`/${_base}/Template`}
-                    class="btn btn-sm btn-danger"
-                  >
+                  <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
                     Cancel
                   </Link>
                 </div>
@@ -629,8 +587,6 @@ const CreateTemplateComponent = () => {
                           >
                             <Modal.Body>
                               <div className="form-group row">
-                             
-                             
                                 <div>
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
@@ -658,7 +614,7 @@ const CreateTemplateComponent = () => {
                                     />
                                   </div>
 
-                                  <div className="col-sm-12 mt-2">
+                                  {/* <div className="col-sm-12 mt-2">
                                     <label>
                                       <b>
                                         Parent Task type :
@@ -690,9 +646,9 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                     />
-                                  </div>
+                                  </div> */}
 
-                                  <div className="col-sm-12 mt-2">
+                                  {/* <div className="col-sm-12 mt-2">
                                     <label>
                                       <b>
                                         Task Type Name:
@@ -727,7 +683,7 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                     />
-                                  </div>
+                                  </div> */}
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>
@@ -756,7 +712,7 @@ const CreateTemplateComponent = () => {
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>
-                                        Hours Required:
+                                        Hours Requiredss:
                                         <Astrick color="red" size="13px" />
                                       </b>
                                     </label>
@@ -808,14 +764,26 @@ const CreateTemplateComponent = () => {
 
                               <Modal.Footer>
                                 <div>
-                      
-                      
-
                                   <button
                                     type="button"
                                     onClick={(e) => {
-                                
-                                      
+                                      // Validate the "Hours Required" field
+                                      const hoursInput =
+                                        document.getElementById(
+                                          "hours_required"
+                                        );
+                                      const enteredValue =
+                                        hoursInput.value.trim();
+                                      const timeRegex =
+                                        /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
+
+                                      if (!timeRegex.test(enteredValue)) {
+                                        // If the format is invalid, show an alert and prevent further execution
+                                        alert(
+                                          "Invalid time format. Please use 'HH:mm' format"
+                                        );
+                                        return;
+                                      }
                                       const taskName = document
                                         .getElementById("task")
                                         .value.trim();
@@ -841,8 +809,6 @@ const CreateTemplateComponent = () => {
                                         return; // Prevent further execution
                                       }
 
-                               
-                                      
                                       dispatch(
                                         handleModalClose({
                                           showModal: false,
@@ -898,7 +864,7 @@ const CreateTemplateComponent = () => {
                                 placeholder="Add New Task"
                                 required
                               />
-                              <label>
+                              {/* <label>
                                 <b>Parent Task Type</b>
                               </label>
                               <Select
@@ -907,9 +873,9 @@ const CreateTemplateComponent = () => {
                                 onChange={(e) => handleParentchange(e)}
                                 className=" form-control-sm mb-2"
                                 options={parent && parent}
-                              />
+                              /> */}
 
-                              {taskTypeDropdown && (
+                              {/* {taskTypeDropdown && (
                                 <label>
                                   <b>Task Type :</b>
                                 </label>
@@ -923,7 +889,7 @@ const CreateTemplateComponent = () => {
                                   className=" form-control-sm mb-2"
                                   options={taskTypeDropdown && taskTypeDropdown}
                                 />
-                              )}
+                              )} */}
 
                               <label>
                                 <b>

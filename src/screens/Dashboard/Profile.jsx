@@ -253,7 +253,7 @@ function Profile() {
 
       {notify && <Alert alertData={notify} />}
       <div className="row">
-        <div className="col-4">
+        <div className="col-lg-4 mb-4">
           <div className="card shadow">
             <div className="card-header bg-primary text-white"></div>
             <div className="card-body text-center p-0 ">
@@ -292,7 +292,9 @@ function Profile() {
                     fontWeight: "500",
                   }}
                 >
-                  <p>{data && data.email_id}</p>
+                  <p style={{ maxWidth: "100%", overflowWrap: "break-word" }}>
+                    {data && data.email_id}
+                  </p>
                 </div>
 
                 <center>
@@ -307,7 +309,7 @@ function Profile() {
             </div>
           </div>
 
-          <div className="card shadow mt-2">
+          {/* <div className="card shadow mt-2">
             <div className="card-header bg-primary text-white">
               <h5 style={{ textAlign: "center" }}>Your Departments</h5>
             </div>
@@ -315,8 +317,8 @@ function Profile() {
               <table className="table table-bordered">
                 <thead>
                   <tr>
-                    <td>Sr</td>
-                    <td>Deparment</td>
+                    <th>Sr</th>
+                    <th>Deparment</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -324,9 +326,9 @@ function Profile() {
                     data.department.length > 0 &&
                     data.department.map((d, i) => {
                       return (
-                        <tr className="text-center">
+                        <tr key={i}>
                           <td>{i + 1}</td>
-                          <td style={{ textAlign: "center" }}>
+                          <td>
                             {d.department_name}
                             {d.is_default == 1 && (
                               <span
@@ -342,6 +344,46 @@ function Profile() {
                     })}
                 </tbody>
               </table>
+            </div>
+          </div> */}
+
+          <div className="card shadow mt-2">
+            <div className="card-header bg-primary text-white">
+              <h5 className="mb-0">Your Departments</h5>{" "}
+              {/* Added mb-0 class to remove margin */}
+            </div>
+            <div className="card-body p-0">
+              {" "}
+              {/* Removed unnecessary text-center class */}
+              <div className="table-responsive">
+                <table className="table table-bordered mb-0">
+                  {" "}
+                  {/* Added mb-0 class to remove margin */}
+                  <thead>
+                    <tr>
+                      <th className="text-center">Sr</th>
+                      <th className="text-center">Department</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data &&
+                      data.department.length > 0 &&
+                      data.department.map((d, i) => (
+                        <tr key={i}>
+                          <td className="text-center">{i + 1}</td>{" "}
+                          {/* Center align Sr column */}
+                          <td>{d.department_name}</td>
+                          {/* Render badge if department is default */}
+                          <td className="text-center">
+                            {d.is_default === 1 && (
+                              <span className="badge bg-success">Default</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

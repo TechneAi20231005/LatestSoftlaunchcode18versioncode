@@ -88,8 +88,10 @@ export default function MyTicketComponent() {
     modalsHeader: "",
   });
 
+
+  const [locationState, setLocationState] = useState(null);
   const location = useLocation();
-  const [locationState, setLocationState] = useState(location?.state);
+
   const account_for = localStorage.getItem("account_for");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -134,9 +136,9 @@ export default function MyTicketComponent() {
     .getHours()
     .toString()
     .padStart(2, "0")}${currentDate
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
   const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
     2,
     4
@@ -159,7 +161,6 @@ export default function MyTicketComponent() {
 
   const handleSelectAllNamesChange = () => {
     setSelectAllNames(!selectAllNames);
-
     setSelectedRowss(
       selectAllNames
         ? []
@@ -781,7 +782,6 @@ export default function MyTicketComponent() {
                   <i className="icofont-ui-edit"></i> Edit
                 </Link>
               </li>
-              {/* } */}
               <li>
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
@@ -790,6 +790,15 @@ export default function MyTicketComponent() {
                 >
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
+              </li>
+              <li>
+                <Link
+                  to={`/${_base}/TicketHistory/` + data.id}
+                  className="btn btn-sm btn-primary text-white"
+                  style={{ width: "100%", zIndex: 100 }}
+                >
+                  <i className="icofont-history"></i> History
+                </Link>
               </li>
             </Dropdown.Menu>
           </Dropdown>
@@ -804,9 +813,8 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "SEARCH_RESULT"),
     },
 
@@ -823,7 +831,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -922,9 +930,8 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "YOUR_TASK"),
     },
     {
@@ -945,7 +952,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1034,9 +1041,8 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
 
-      width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
-      }`,
+      width: `${assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
     },
     { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
@@ -1052,7 +1058,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1141,9 +1147,8 @@ export default function MyTicketComponent() {
       name: "Action",
       button: true,
       ignoreRowClick: true,
-      width: `${
-        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
+      width: `${createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
+        }`,
       cell: (row) => actionComponent(row, "ADDED_BY_ME"),
     },
 
@@ -1165,7 +1170,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1266,13 +1271,12 @@ export default function MyTicketComponent() {
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        unpassedTickets
-          ? unpassedTickets.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${unpassedTickets
+        ? unpassedTickets.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "UNPASSED_TICKET"),
     },
 
@@ -1324,7 +1328,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1427,13 +1431,12 @@ export default function MyTicketComponent() {
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        departmentwiseTicket
-          ? departmentwiseTicket.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
+      width: `${departmentwiseTicket
+        ? departmentwiseTicket.length > 0
+          ? "4rem"
+          : "20.625rem"
+        : "auto"
+        }`,
       cell: (row) => actionComponent(row, "DEPARTMENTWISE_TICKET"),
     },
     {
@@ -1454,7 +1457,7 @@ export default function MyTicketComponent() {
     {
       name: "Description",
       width: "18.75rem",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1764,7 +1767,7 @@ export default function MyTicketComponent() {
       setNotify({ type: "danger", message: "An error occurred." });
     }
   };
-  const searchThroughEnter = () => {};
+  const searchThroughEnter = () => { };
 
   const handleForm = async (e) => {
     try {
@@ -1880,7 +1883,7 @@ export default function MyTicketComponent() {
       // You can add additional error handling logic here, such as displaying an error message to the user.
     }
   };
-  const passTicketHandler = () => {};
+  const passTicketHandler = () => { };
   const handleChangeStatus = (e) => {
     setStatusValue(e);
   };
@@ -2338,11 +2341,16 @@ export default function MyTicketComponent() {
   };
 
   useEffect(() => {
+    console.log('location before timeout', locationState)
+    setLocationState(location.state)
     const timeoutId = setTimeout(() => {
-      setLocationState(null);
+      const a = null;
+      setLocationState(a);
+
     }, 3000);
     return () => clearTimeout(timeoutId);
   }, []);
+
 
   useEffect(() => {
     const listener = (e) => {
@@ -2377,7 +2385,7 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {locationState && <Alert alertData={locationState} />}
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm} id="your_form_id">

@@ -7,12 +7,17 @@ import Alert from "../../../components/Common/Alert";
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
+import { useDispatch, useSelector } from "react-redux";
+import { templateData } from "./TemplateComponetAction";
 export default function TaskComponent(props) {
 
+
   const [data, setData] = useState({ task: props.taskData.task_name,days:props.taskData.days, total_time:props.taskData.total_hours,start_days:props.taskData.start_days,days:props.taskData.task_days,basket_id:props.taskData.basket_id });
-  console.log("dataupdate",)
+ 
+
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
+  const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
 
@@ -101,6 +106,7 @@ export default function TaskComponent(props) {
         }
       }
     });
+    dispatch(templateData());
   }, []);
 
   const handleCancle = () => {
@@ -109,7 +115,8 @@ export default function TaskComponent(props) {
 
   const handleSubmit = (e) => {
     const taskName = document.querySelector('input[name="task"]').value.trim();
-    console.log("taskName",taskName)
+
+    
     const daysRequired = document
       .querySelector('input[name="days"]')
       .value.trim();
@@ -318,10 +325,12 @@ export default function TaskComponent(props) {
                         />
 
                         <br />
+                     
+                     
 
                         <label>
                           Start task{" "}
-                          {props.taskData.AB === "START_FROM"
+                          {props.calculatedays=== "START_FROM"
                             ? "after"
                             : "before"}{" "}
                           days :

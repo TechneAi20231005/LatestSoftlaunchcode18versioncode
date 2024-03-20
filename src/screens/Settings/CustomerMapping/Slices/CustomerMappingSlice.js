@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  exportCustomerMappingData,
   getCustomerMappingData,
   getQueryTypeData,
   getTemplateData,
@@ -17,6 +18,7 @@ const initialState = {
   },
   customerMappingData: [],
   exportTempData: [],
+  exportData:[],
   customerTypeData: [],
   queryTypeData: [],
   queryTypeDropDownData: [],
@@ -44,8 +46,11 @@ export const CustomerMappingSlice = createSlice({
     builder.addCase(getCustomerMappingData.fulfilled, (state, action) => {
       const { payload } = action;
 
+      
+   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
+  
         let counter = 1;
         const data = payload.data.data;
         let customerMappingData = [];
@@ -82,18 +87,16 @@ export const CustomerMappingSlice = createSlice({
             Department: data[i].department_name,
             Priority: data[i].priority,
             Approach: data[i].approach,
-            remark:data[i].remark,
-            is_active: data[i].is_active ==1 ?"Active": "Deactive",
+            remark: data[i].remark,
+            is_active: data[i].is_active == 1 ? "Active" : "Deactive",
             created_at: data[i].created_at,
             created_by: data[i].created_by,
             updated_at: data[i].updated_at,
             updated_by: data[i].updated_by,
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: data[i].dynamic_form_name,
-            customer_type_name:data[i].customer_type_name,
-            confirmation_required:data[i].confirmation_required==1 ?'Yes':'no'
-          
-            
+            customer_type_name: data[i].customer_type_name,
+            confirmation_required: data[i].confirmation_required == 1 ? "Yes" : "no",
           });
         }
         state.exportTempData = exportTempData;
@@ -102,6 +105,68 @@ export const CustomerMappingSlice = createSlice({
     builder.addCase(getCustomerMappingData.rejected, (state) => {
       state.status = "rejected";
     });
+
+
+    //ExportCustomerMapping
+
+    builder.addCase(exportCustomerMappingData.pending, (state) => {
+      state.status = "loading";
+    });
+
+    builder.addCase(exportCustomerMappingData.fulfilled, (state, action) => {
+      const { payload } = action;
+
+
+   
+
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let exportTempateData = payload.data.data;
+       
+        
+
+        state.status = "succeded";
+        state.showLoaderModal = false;
+
+        let exportData = [];
+        let count = 1;
+        for (let i = 0; i < exportTempateData.length; i++) {
+          exportTempateData[i].counter = count++;
+        }
+
+        for (const i in exportTempateData) {
+          exportData.push({
+            Sr: exportTempateData[i].counter,
+            Query: exportTempateData[i].query_type_name,
+            Template: exportTempateData[i].template_name,
+            Department: exportTempateData[i].department_name,
+            Priority: exportTempateData[i].priority,
+            Approach: exportTempateData[i].approach,
+            remark: exportTempateData[i].remark,
+            is_active: exportTempateData[i].is_active == 1 ? "Active" : "Deactive",
+            created_at: exportTempateData[i].created_at,
+            created_by: exportTempateData[i].created_by,
+            updated_at: exportTempateData[i].updated_at,
+            updated_by: exportTempateData[i].updated_by,
+            // confirmation_required:[i].confirmation_required,
+            dynamic_form_name: exportTempateData[i].dynamic_form_name,
+            customer_type_name: exportTempateData[i].customer_type_name,
+           "Assign User":exportTempateData[i].mapped_user,
+            confirmation_required: exportTempateData[i].confirmation_required == 1 ? "Yes" : "no",
+          });
+          state.exportData = exportData;
+        
+          
+        }
+      }
+    });
+    builder.addCase(exportCustomerMappingData.rejected, (state) => {
+      state.status = "rejected";
+    });
+
+
+
+
+
 
     builder.addCase(getcustomerTypeData.pending, (state) => {
       state.status = "loading";

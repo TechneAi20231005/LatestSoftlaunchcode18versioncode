@@ -180,7 +180,7 @@ export default function ViewTicketComponent({ match }) {
     <div className="container-xxl">
       <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ""}`} />
 
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />}   */}
 
       <div className="row g-3 mt-2">
         <div className="col-xxl-8 col-xl-8 col-lg-12 col-md-12">

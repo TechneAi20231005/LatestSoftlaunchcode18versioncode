@@ -105,7 +105,7 @@ export default function CreateTicketComponent() {
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
+      for (var i = 0; i < e.target?.files?.length; i++) {
         var file = e.target.files[i];
         var reader = new FileReader();
         reader.onload = function (event) {
@@ -135,8 +135,7 @@ export default function CreateTicketComponent() {
   );
   const handleForm = async (e) => {
     e.preventDefault();
-
-    if (e.target.name === "CHECKBOX" && selectedCheckBoxValue.length <= 0) {
+    if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
       // Here you can proceed with form submission
       alert('At least one checkbox must be selected');
       return false;
@@ -149,11 +148,12 @@ export default function CreateTicketComponent() {
 
     const formData = new FormData(e.target);
     if (selectedFiles) {
-      for (var i = 0; i < selectedFiles.length; i++) {
+      for (var i = 0; i < selectedFiles?.length; i++) {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
       }
     }
     var flag = 1;
+    console.log("selectQueryGroup", selectQueryGroup)
     if (selectQueryGroup && selectQueryGroup.length > 0) {
       formData.append("dynamicForm", JSON.stringify(rows));
       var selectCountry = formData.getAll("customer_id");
@@ -243,7 +243,7 @@ export default function CreateTicketComponent() {
 
       var data = customerMapping.filter((val) => val.query_type_id === e.value);
       setApproch(data[0]?.approach);
-      const cmId = data.length > 0 ? data[0].id : null;
+      const cmId = data?.length > 0 ? data[0].id : null;
       if (cmId) {
         await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
           if (res.status === 200) {
@@ -256,7 +256,7 @@ export default function CreateTicketComponent() {
       }
 
       setRows(null);
-      if (data && data.length == 0) {
+      if (data && data?.length == 0) {
         alert(
           "Dynamic Form is not mapped against this Query Type, Please Map Form first"
         );
@@ -296,7 +296,7 @@ export default function CreateTicketComponent() {
             //Remove from array
             dynamicForm.forEach((d, i) => {
               if (d.inputType === "select") {
-                if (tempResponse.length > 0) {
+                if (tempResponse?.length > 0) {
                   dynamicForm[i].inputAddOn.inputDataSourceData =
                     tempResponse[0];
                   tempResponse.splice(i, 1);
@@ -457,7 +457,7 @@ export default function CreateTicketComponent() {
       .getDepartmentMappingByEmployeeId(userSessionData.userId)
       .then((resp) => {
         if (resp.data.status === 1) {
-          // console.log("get department dat of user", resp.data.data)
+
           setisMultipleDepartment(resp.data.data)
           setUserDepartments(
             resp.data.data.map((d) => ({
@@ -465,7 +465,7 @@ export default function CreateTicketComponent() {
               label: d.department,
             }))
           );
-          if (resp.data.data.length > 0) {
+          if (resp?.data?.data?.length > 0) {
             setData((prev) => {
               const newPrev = { ...prev };
               newPrev["from_department_id"] = resp.data.data[0].department_id;
@@ -567,7 +567,7 @@ export default function CreateTicketComponent() {
       var value = type == "Select2" ? e && e.value : e.target.value;
       if (nameField == "query_type_id") {
         const x = customerMapping.filter((d) => d.query_type_id == value);
-        if (x.length > 0) {
+        if (x?.length > 0) {
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev["customer_mapping_id"] = x[0].id;
@@ -587,8 +587,6 @@ export default function CreateTicketComponent() {
 
   const [selectedValue, setSelectedValue] = useState('');
   const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
-  console.log("selectedCheckBoxValue", selectedCheckBoxValue.length)
-
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -679,7 +677,7 @@ export default function CreateTicketComponent() {
                   {userDepartments && (
                     <Select
                       defaultValue={
-                        userDepartments.length == 1 ? userDepartments[0] : isMultipleDepartment?.map(department => {
+                        userDepartments?.length == 1 ? userDepartments[0] : isMultipleDepartment?.map(department => {
                           if (department?.is_default) {
                             return { value: department?.department_id, label: department?.department }
                           }
@@ -944,7 +942,7 @@ export default function CreateTicketComponent() {
           </>
         )}
 
-        {data.ticket_uploading === "REGULAR" && rows && rows.length > 0 && (
+        {data.ticket_uploading === "REGULAR" && rows && rows?.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">
               <div className="row">
@@ -1049,8 +1047,6 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {console.log("data==>", data)}
-
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                           return (
@@ -1076,7 +1072,6 @@ export default function CreateTicketComponent() {
                         })
                         : ""}
 
-                      {console.log("datal", data)}
 
                       {data.inputType == "checkbox" &&
                         data.inputAddOn.inputRadio
@@ -1129,7 +1124,6 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {console.log("data", data)}
                       {data.inputType === "decimal" && (
                         <input
                           type="number"

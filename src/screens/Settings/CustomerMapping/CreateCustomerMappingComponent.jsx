@@ -332,16 +332,18 @@ export default function CreateCustomerMappingComponent() {
     loadData();
     getUser();
     dispatch(getQueryTypeData());
+    dispatch(getTemplateData());
+    dispatch(getcustomerTypeData());
 
     if (!checkRole.length) {
       dispatch(getRoles());
     }
     if (!customerTypeDropdown.length) {
-      dispatch(getcustomerTypeData());
+
     }
   
     if (!templateDropdown.length) {
-      dispatch(getTemplateData());
+     
     }
   }, []);
 

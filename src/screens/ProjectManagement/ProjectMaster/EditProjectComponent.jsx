@@ -16,9 +16,12 @@ import Select from "react-select";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import UserService from "../../../services/MastersService/UserService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
+  const dispatch = useDispatch()
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
@@ -29,7 +32,12 @@ export default function EditProjectComponent({ match }) {
   const [ba, setBa] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 19)
+  );
+
   const [users, setUsers] = useState(null);
   const [projectOwners, setProjectOwners] = useState(null);
 
@@ -78,6 +86,7 @@ export default function EditProjectComponent({ match }) {
     await new ProjectService()
       .getProjectById(projectId)
       .then((res) => {
+        console.log("res", res)
         if (res.status === 200) {
           const data = res.data.data;
           if (data && data.projectOwners) {
@@ -115,14 +124,15 @@ export default function EditProjectComponent({ match }) {
       });
 
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getRoles())
   };
 
   const handleForm = async (e) => {
@@ -172,12 +182,14 @@ export default function EditProjectComponent({ match }) {
     window.open(URL, "_blank");
   };
 
+
+
   useEffect(() => {
     loadData();
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[19].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -258,6 +270,7 @@ export default function EditProjectComponent({ match }) {
                         />
                       )}
                     </div>
+                    {console.log("data", data)}
                     <label
                       className="col-sm-2 col-form-label"
                       style={{ textAlign: "right" }}
@@ -272,6 +285,7 @@ export default function EditProjectComponent({ match }) {
                         name="logo"
                         accept="image/*"
                       />
+                      <p>{data.logo}</p>
                       {data && data.logo != "" && (
                         <i
                           onClick={handleShowLogo}
@@ -430,7 +444,7 @@ export default function EditProjectComponent({ match }) {
               </div>
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[19].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
                   </button>
