@@ -82,6 +82,8 @@ const EditTemplateComponent = ({ match, props }) => {
   const [modal, setModal] = useState({ shown: false, modalData: null });
   const [error, setError] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+  const [calculatedays,setCalculatedays]=useState()
+
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -132,6 +134,9 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const loadData = async () => {
     await new TemplateService().getTemplateById(templateId).then((res) => {
+
+      
+      setCalculatedays(res.data.data.AB)
       if (res.status === 200) {
         const newData = {
           template_name: res.data.data.template_name,
@@ -344,7 +349,8 @@ const EditTemplateComponent = ({ match, props }) => {
         payload: formData,
       })
     ).then((res) => {
-      console.log("res", res);
+
+      
       if (res.payload.data.status == 1) {
         loadData();
         setNotify({ type: "success", message: res.payload.data.message });
@@ -784,6 +790,7 @@ const EditTemplateComponent = ({ match, props }) => {
                         <TaskComponent
                           taskData={task}
                           refreshData={loadData}
+                          calculatedays={calculatedays}
                           key={i}
                         />
                       );
