@@ -30,6 +30,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 export default function CreateTicketComponent() {
   const history = useNavigate();
+  const navigate = useNavigate();
+
   const [notify, setNotify] = useState(null);
   const departmentRef = useRef();
   const dispatch = useDispatch();
@@ -179,18 +181,26 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              history(
-                {
-                  pathname: `/${_base}/Ticket`,
-                },
-                {
-                  state: {
-                    type: "success",
-                    message: res.data.message,
-                  },
-                }
-              );
+
+              setNotify({ type: "success",  message: res.data.message });
+              setTimeout(() => {
+                navigate(`/${_base}/Ticket`);
+              }, 3000);
+
+
+              // setNotify({ type: "success", message: res.data.message });
+
+              // history(
+              //   {
+              //     pathname: `/${_base}/Ticket`,
+              //   },
+              //   {
+              //     state: {
+              //       type: "success",
+              //       message: res.data.message,
+              //     },
+              //   }
+              // );
 
               setIsSubmitted(false);
             } else {
