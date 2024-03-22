@@ -15,9 +15,12 @@ import { Modal } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function ProjectComponent() {
   const location = useLocation();
+  const dispatch = useDispatch()
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -25,7 +28,10 @@ function ProjectComponent() {
   const searchRef = useRef();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) =>
+  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
+);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   function SearchInputData(data, search) {
@@ -361,16 +367,18 @@ function ProjectComponent() {
         );
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+      dispatch(getRoles())
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -381,7 +389,7 @@ function ProjectComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[19].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -397,7 +405,7 @@ function ProjectComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[19].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Project/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"

@@ -30,7 +30,8 @@ function RoleComponent({ location }) {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
   );
-  console.log("checkRole",checkRole)
+
+  
 
   const Notify = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify

@@ -16,6 +16,8 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
 import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function ViewTicketComponent({ match }) {
   const history = useNavigate();
@@ -27,7 +29,7 @@ export default function ViewTicketComponent({ match }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState(null);
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   const [isSolved, setIsSolved] = useState(false);
   const [chart, setChart] = useState(null);
@@ -36,6 +38,13 @@ export default function ViewTicketComponent({ match }) {
   const [rows, setRows] = useState();
   const [chartDataa, setChartData] = useState("");
   const [commentData, setCommentData] = useState();
+
+
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+  );
+
 
   //   const onAddMention = (e) => {
   //     setIdCount((idCount) => [...idCount, e.id]);
@@ -82,15 +91,17 @@ export default function ViewTicketComponent({ match }) {
         handleAttachment("GetAttachment", ticketId);
       }
     });
+    
+    dispatch(getRoles())
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const loadComments = async () => {
@@ -170,7 +181,7 @@ export default function ViewTicketComponent({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

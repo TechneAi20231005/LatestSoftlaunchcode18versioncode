@@ -64,7 +64,7 @@ function BillCheckingTransaction() {
       BillCheckingTransactionSlice.billChecking.authoritiesData
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 42)
   );
   const billTypeDropdown = useSelector(
     (BillCheckingTransactionSlice) =>

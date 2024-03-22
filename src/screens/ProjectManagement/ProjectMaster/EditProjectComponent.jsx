@@ -35,7 +35,7 @@ export default function EditProjectComponent({ match }) {
   // const [checkRole, setCheckRole] = useState(null);
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 19)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
 
   const [users, setUsers] = useState(null);
@@ -177,7 +177,7 @@ export default function EditProjectComponent({ match }) {
 
   const handleShowLogo = (e) => {
     var URL =
-      "http://3.108.206.34/2_Testing//storage/app/Attachment/project/" +
+      "http://3.108.206.34/3_SoftLaunch//storage/app/Attachment/project/" +
       data.logo;
     window.open(URL, "_blank");
   };

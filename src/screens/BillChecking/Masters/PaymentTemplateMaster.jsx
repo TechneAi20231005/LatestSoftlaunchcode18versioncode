@@ -30,8 +30,8 @@ function PaymentTemplateMaster() {
     (PaymentTemplateMasterSlice) =>
       PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 45)
+  const checkRole = useSelector((DashbordSlice) =>
+  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
   );
 
   const [paymentType, setPaymentType] = useState("Weekly");

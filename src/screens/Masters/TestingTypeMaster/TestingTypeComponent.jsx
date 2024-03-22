@@ -35,7 +35,7 @@ function TestingTypeComponent() {
     (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 49)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
   );
   const notify = useSelector(
     (TestingTypeComponentSlices) =>

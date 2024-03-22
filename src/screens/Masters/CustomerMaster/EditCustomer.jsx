@@ -26,7 +26,7 @@ function EditCustomer({ match }) {
   const customerId = id;
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
   );
 
   const [data, setData] = useState(null);

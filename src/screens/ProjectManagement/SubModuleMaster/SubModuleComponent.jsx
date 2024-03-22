@@ -12,6 +12,8 @@ import Alert from "../../../components/Common/Alert";
 import { Modal } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { useDispatch, useSelector } from "react-redux";
 
 function SubModuleComponent() {
   const location = useLocation();
@@ -20,7 +22,11 @@ function SubModuleComponent() {
   const [data, setData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+  );
   const [exportData, setExportData] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -187,17 +193,18 @@ function SubModuleComponent() {
           errorObject.data.message
         );
       });
+      dispatch(getRoles())
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
 
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -206,13 +213,13 @@ function SubModuleComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[21].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
      
       
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -223,7 +230,7 @@ function SubModuleComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[21].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/SubModule/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"

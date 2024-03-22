@@ -710,10 +710,12 @@ function StateComponent() {
                 Add
               </button>
             )}
-            {console.log("checkRole",checkRole)}
+         
+         
 
 
-            {console.log("c==", checkRole)}
+          
+          
             {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"

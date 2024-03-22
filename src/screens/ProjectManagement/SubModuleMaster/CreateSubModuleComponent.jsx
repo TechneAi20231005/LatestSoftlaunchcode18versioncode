@@ -14,13 +14,20 @@ import { Astrick } from "../../../components/Utilities/Style"
 import *  as Validation from '../../../components/Utilities/Validation';
 import Select from 'react-select';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 export default function CreateModuleComponent({ match }) {
 
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
+    const dispatch = useDispatch();
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    );
+   
 
     const [data, setData] = useState({ project_id: null, module_id: null });
 
@@ -75,17 +82,20 @@ export default function CreateModuleComponent({ match }) {
         })
 
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
+        dispatch(getRoles())
+
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
 
                 
 
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
+        
 
         await new ModuleService().getModule().then(res => {
             if (res.status === 200) {
@@ -103,12 +113,12 @@ export default function CreateModuleComponent({ match }) {
     }, [])
 
     useEffect(()=>{
-        if(checkRole && checkRole[21].can_create === 0){
+        if(checkRole && checkRole[0]?.can_create === 0){
           // alert("Rushi")
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
         }
-      },[checkRole])
+      },[])
 
     return (
         <div className="container-xxl">

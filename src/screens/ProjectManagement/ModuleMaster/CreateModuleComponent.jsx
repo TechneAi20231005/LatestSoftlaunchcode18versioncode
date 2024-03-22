@@ -14,13 +14,21 @@ import {ProjectDropdown} from "../ProjectMaster/ProjectComponent";
 import {Astrick} from "../../../components/Utilities/Style"
 import *  as Validation from '../../../components/Utilities/Validation';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function CreateModuleComponent({match}) {
+
+    const dispatch = useDispatch();
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==21)
+    );
+    console.log("checkRole",checkRole)
     
     const history = useNavigate();
     const [notify,setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
     const handleForm = async(e) =>{
         e.preventDefault();
         const formData=new FormData(e.target);
@@ -55,27 +63,28 @@ export default function CreateModuleComponent({match}) {
     }
 
 const loadData=async()=>{
-    await new ManageMenuService().getRole(roleId).then((res) => {
-        if (res.status === 200) {
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //     if (res.status === 200) {
     
             
 
-            if (res.data.status == 1) {
-                const getRoleId = sessionStorage.getItem("role_id");
-                setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-            }
-        }
-    })
+    //         if (res.data.status == 1) {
+    //             const getRoleId = sessionStorage.getItem("role_id");
+    //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //         }
+    //     }
+    // })
+    dispatch(getRoles())
 }
 
     useEffect(()=>{
-        if(checkRole && checkRole[20].can_create === 0){
+        if(checkRole && checkRole[0]?.can_create === 0){
           // alert("Rushi")
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
         }
         loadData();
-      },[checkRole])
+      },[])
 
   return (  
     <div className="container-xxl">

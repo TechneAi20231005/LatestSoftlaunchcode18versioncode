@@ -69,7 +69,7 @@ export default function CreateCustomer({ match }) {
  
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 2)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
   );
 
   const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);

@@ -12,14 +12,23 @@ import { Spinner, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { _base, userSessionData } from "../../settings/constants";
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function ResourcePlanningReportComponent() {
+
+
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  // const [checkRole, setCheckRole] = useState(null)
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==25)
+  );
+
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
@@ -77,14 +86,16 @@ export default function ResourcePlanningReportComponent() {
     });
 
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //     }
+    //   }
+    // })
+    dispatch(getRoles())
 
     const data = [];
     const exportData = [];
@@ -255,12 +266,12 @@ export default function ResourcePlanningReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[24].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole])
+  }, [])
 
   return (
     <div className="container-xxl">

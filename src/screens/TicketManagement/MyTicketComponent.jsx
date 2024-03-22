@@ -26,12 +26,13 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
 import { useSelector, useDispatch } from "react-redux";
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
   const [userName, setUserName] = useState("");
@@ -65,6 +66,11 @@ export default function MyTicketComponent() {
 
   const [exportData, setExportData] = useState(null);
   const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+  );
+
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -1713,14 +1719,15 @@ export default function MyTicketComponent() {
         }
       }
     });
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.menu_id == 17));
-        }
-      }
-    });
+    dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.menu_id == 17));
+    //     }
+    //   }
+    // });
   };
 
   const handlePassTicketForm = async (e) => {
@@ -2373,7 +2380,7 @@ export default function MyTicketComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[0].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

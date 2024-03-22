@@ -10,9 +10,15 @@ import *  as Validation from '../../components/Utilities/Validation';
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
 import { Astrick } from "../../components/Utilities/Style";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 function UserTaskReportComponent() {
     const [showLoaderModal, setShowLoaderModal] = useState(false);
+    const dispatch = useDispatch();
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==24)
+    );
 
     const [userData, setUserData] = useState(null);
     const [data, setData] = useState(null);
@@ -25,7 +31,7 @@ function UserTaskReportComponent() {
     const [todateformat, setTodateformat] = useState('');
     const [fromdateformat, setFromdateformat] = useState('');
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
     // const [datePicker, setDatePicker] = useState({
     //     fromDate: "",
     //     toDate: ""
@@ -73,15 +79,16 @@ function UserTaskReportComponent() {
             }
         })
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-                if (res.data.status == 1) {
-                    setShowLoaderModal(false)
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //         if (res.data.status == 1) {
+        //             setShowLoaderModal(false)
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
+        dispatch(getRoles)
 
 
     }
@@ -178,7 +185,7 @@ function UserTaskReportComponent() {
     }, [])
 
     useEffect(() => {
-        if (checkRole && checkRole[23].can_read === 0) {
+        if (checkRole && checkRole[0]?.can_read === 0) {
             // alert("Rushi")
 
             window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

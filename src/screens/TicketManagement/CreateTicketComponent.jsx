@@ -28,6 +28,7 @@ import DepartmentMappingService from "../../services/MastersService/DepartmentMa
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
+import { getRoles } from "../Dashboard/DashboardAction";
 export default function CreateTicketComponent() {
   const history = useNavigate();
   const navigate = useNavigate();
@@ -35,6 +36,10 @@ export default function CreateTicketComponent() {
   const [notify, setNotify] = useState(null);
   const departmentRef = useRef();
   const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
+);
+
   const departmentDropdownRef = useRef();
   const current = new Date();
   const [isMultipleDepartment, setisMultipleDepartment] = useState([])
@@ -89,7 +94,7 @@ export default function CreateTicketComponent() {
   const [inputDataSourceData, setInputDataSourceData] = useState();
   const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [parent, setParent] = useState();
   const [parentName, setParentName] = useState();
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -485,14 +490,16 @@ export default function CreateTicketComponent() {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
-        }
-      }
-    });
+      dispatch(getRoles())
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
+    //     }
+    //   }
+    // });
   };
 
   const handleDownloadFormat = async (e) => {
