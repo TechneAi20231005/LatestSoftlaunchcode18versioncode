@@ -78,6 +78,8 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
+  console.log("departmentDropdown",departmentDropdown)
+
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -306,7 +308,18 @@ function CreateDynamicForm() {
       ) {
         rows[idx].inputAddOn.inputDataSourceData = CustomerData;
         setInputDataSource(CustomerData);
-      } else if (
+      }
+
+      else if (
+        e.target.name === "inputDataSource" &&
+        e.target.value === "department"
+      ) {
+        rows[idx].inputAddOn.inputDataSourceData = departmentDropdown;
+        setInputDataSource(departmentDropdown);
+      }
+      
+      
+      else if (
         e.target.name === "inputDataSource" &&
         e.target.value === "status"
       ) {
