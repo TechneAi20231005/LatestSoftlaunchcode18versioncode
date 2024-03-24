@@ -177,7 +177,7 @@ export default function EditProjectComponent({ match }) {
 
   const handleShowLogo = (e) => {
     var URL =
-      "http://3.108.206.34/2_Testing//storage/app/Attachment/project/" +
+      "http://3.108.206.34/3_SoftLaunch//storage/app/Attachment/project/" +
       data.logo;
     window.open(URL, "_blank");
   };

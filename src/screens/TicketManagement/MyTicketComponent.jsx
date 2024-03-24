@@ -197,6 +197,7 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
+            console.log("confirm ticket", res.data.data)
             setNotify({ type: "success", message: res.data.message });
             setConfirmationModal({
               showModal: false,
@@ -2392,7 +2393,7 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {locationState && <Alert alertData={locationState} />}
-      {/* {notify && <Alert alertData={notify} />} */}
+      {notify && <Alert alertData={notify} />}
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm} id="your_form_id">
