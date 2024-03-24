@@ -40,14 +40,14 @@ export default function DynamicFormDropdownComponent() {
   const [exportData, setExportData] = useState(null)
   const roleId = sessionStorage.getItem("role_id");
 
-  
+
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
   );
- 
-  
+
+
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -74,7 +74,7 @@ export default function DynamicFormDropdownComponent() {
   }
 
 
-  
+
 
   const handleModal = (data) => {
     setModal(data);
@@ -83,7 +83,7 @@ export default function DynamicFormDropdownComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div className="btn-group" role="group">
@@ -99,7 +99,7 @@ export default function DynamicFormDropdownComponent() {
     { name: "Sr", selector: (row) => row.counter, sortable: true },
 
 
-   
+
 
     {
       name: "Dropdown Name",
@@ -145,7 +145,7 @@ export default function DynamicFormDropdownComponent() {
       ),
     },
 
-    
+
     { name: "Created At", selector: (row) => row.created_at, sortable: true },
     { name: "Created By", selector: (row) => row.created_by, sortable: true },
 
@@ -155,58 +155,58 @@ export default function DynamicFormDropdownComponent() {
 
   const loadData = async () => {
 
-    
+
     const data = [];
     const exportTempData = [];
     await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
-        if (res.status === 200) {
-    setShowLoaderModal(false);
+      if (res.status === 200) {
+        setShowLoaderModal(false);
 
-            let counter = 1;
-            const temp = res.data.data
-           
-            for (const key in temp) {
-                data.push({
-                    counter: counter++,
-                    id: temp[key].id,
-                    dropdown_name: temp[key].dropdown_name,
-                    is_active: temp[key].is_active,
-                    updated_at: temp[key].updated_at,
-                    created_at: temp[key].created_at,
-                    created_by: temp[key].created_by,
+        let counter = 1;
+        const temp = res.data.data
 
-                    updated_by: temp[key].updated_by,
-                })
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            dropdown_name: temp[key].dropdown_name,
+            is_active: temp[key].is_active,
+            updated_at: temp[key].updated_at,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
 
-            }
-            setData(null);
-            setData(data);
-            setDataa(data);
+            updated_by: temp[key].updated_by,
+          })
 
-            for (const key in data) {
-                exportTempData.push({
-                    Sr: data[key].counter,
-                    Dropdown: data[key].dropdown_name,
-                    Status: data[key].is_active ? 'Active' : 'Deactive',
-
-                    created_at: temp[key].created_at,
-                    created_by: temp[key].created_by,
-                    updated_at: data[key].updated_at,
-                    updated_by: data[key].updated_by,
-                })
-            }
-
-            setExportData(null)
-            setExportData(exportTempData)
         }
+        setData(null);
+        setData(data);
+        setDataa(data);
+
+        for (const key in data) {
+          exportTempData.push({
+            Sr: data[key].counter,
+            Dropdown: data[key].dropdown_name,
+            Status: data[key].is_active ? 'Active' : 'Deactive',
+
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: data[key].updated_at,
+            updated_by: data[key].updated_by,
+          })
+        }
+
+        setExportData(null)
+        setExportData(exportTempData)
+      }
     }).catch(error => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
+      const { response } = error;
+      const { request, ...errorObject } = response;
+      new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
     })
 
 
-    
+
   };
 
   const tableData = {
@@ -215,12 +215,12 @@ export default function DynamicFormDropdownComponent() {
   };
 
 
-  
+
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter") {
-        
-        
+
+
         handleSearch();
       }
     };
@@ -238,13 +238,13 @@ export default function DynamicFormDropdownComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-  
-    
+
+
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-  
-      
+
+
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -283,9 +283,9 @@ export default function DynamicFormDropdownComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-         
-           
-              
+
+
+
               style={{ marginTop: "0px", fontWeight: "600" }}
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
@@ -314,44 +314,44 @@ export default function DynamicFormDropdownComponent() {
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {data && (
-              
-              
-                  <DataTable
-                    columns={columns}
-                    data={data.filter((customer) => {
-                      if (typeof searchTerm === "string") {
-                        if (typeof customer === "string") {
-                          return customer
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase());
-                        } else if (typeof customer === "object") {
-                          return Object.values(customer).some(
-                            (value) =>
-                              typeof value === "string" &&
-                              value
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                          );
-                        }
+
+
+                <DataTable
+                  columns={columns}
+                  data={data.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
                       }
-                      return false;
-                    })}
-                    defaultSortField="title"
-                    pagination
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-             
-                  
+                    }
+                    return false;
+                  })}
+                  defaultSortField="title"
+                  pagination
+                  selectableRows={false}
+                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                  highlightOnHover={true}
+                />
+
+
               )}
             </div>
           </div>
         </div>
       </div>
 
-   
-   
+
+
     </div>
   );
 }

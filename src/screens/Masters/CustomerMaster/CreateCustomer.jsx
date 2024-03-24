@@ -8,7 +8,7 @@ import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
 
-import {  useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   getCityData,
@@ -66,7 +66,7 @@ export default function CreateCustomer({ match }) {
     (DashbordSlice) => DashbordSlice.dashboard.FilterCity
   );
 
- 
+
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
@@ -86,7 +86,7 @@ export default function CreateCustomer({ match }) {
 
 
     if (newEmail.trim() === "") {
-      setIsValidEmail(true); 
+      setIsValidEmail(true);
     } else {
 
       const isValid = validateEmail(newEmail);
@@ -146,19 +146,19 @@ export default function CreateCustomer({ match }) {
       flag = 0;
       setNotify(null);
       if (customerType == "") {
-      
+
         alert("Please Select Customer Type");
-    
+
       } else if (selectEmail == "") {
 
         alert("Please Select Email");
 
       } else if (selectCountry == "") {
-    
+
         alert("Please Select Country");
 
       } else if (selectState == "") {
- 
+
         alert("Please Select State");
 
       } else if (selectCity == "") {
@@ -177,10 +177,10 @@ export default function CreateCustomer({ match }) {
       return false;
     } else {
       if (flag === 1) {
-      
+
 
         dispatch(postCustomerData(formData)).then((res) => {
-       
+
           if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
             setNotify({
               type: "success",
@@ -202,24 +202,24 @@ export default function CreateCustomer({ match }) {
           }
         });
 
-      
-        
+
+
       }
     }
   };
 
   const loadData = async () => {
-   
+
   };
 
   const handleCountryChange = (e) => {
- 
+
     setStateDropdownData(
       stateDropdown
         .filter((filterState) => filterState.country_id === e.value)
         .map((d) => ({ value: d.id, label: d.state }))
     );
-   
+
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
@@ -234,7 +234,7 @@ export default function CreateCustomer({ match }) {
       ).map((d) => ({ value: d.id, label: d.city }))
     );
 
- 
+
     const newStatus = { ...updateStatus, citydrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(e);
@@ -347,9 +347,8 @@ export default function CreateCustomer({ match }) {
                   <div className="col-sm-4">
                     <input
                       type="email"
-                      className={`form-control form-control-sm ${
-                        isValidEmail ? "" : "is-invalid"
-                      }`}
+                      className={`form-control form-control-sm ${isValidEmail ? "" : "is-invalid"
+                        }`}
                       id="email_id"
                       name="email_id"
                       placeholder="Email Address"
@@ -364,7 +363,7 @@ export default function CreateCustomer({ match }) {
                     )}
                   </div>
 
-                
+
                 </div>
 
                 <div className="form-group row mt-3">
@@ -426,14 +425,9 @@ export default function CreateCustomer({ match }) {
                       required
                       maxLength={250}
                       onChange={onTestChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                        }
-                      }}
                       onKeyPress={(e) => {
                         if (e.key === "Enter") {
-                        
+
                         } else {
                           Validation.addressFieldOnly(e);
                         }
@@ -479,7 +473,7 @@ export default function CreateCustomer({ match }) {
                       id="country_id"
                       name="country_id"
                       onChange={handleCountryChange}
-                  
+
                       required
                     />
                   </div>
