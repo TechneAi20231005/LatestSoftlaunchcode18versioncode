@@ -649,7 +649,7 @@ console.log("fromdate",fromdate)
                     min={fromdate?.length > 0 ? fromdate :props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    // max={props.expectedSolveDate}
+                    max={props.expectedSolveDate}
                     required
                   // onChange={e=>handleMinDate(e)}
                   />
