@@ -1218,6 +1218,7 @@ export default function EditTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
+                            readOnly
                             onChange={dynamicChangeHandle}
                             className="form-control form-control-sm"
                           />
@@ -1231,6 +1232,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            readOnly
                             name={data.inputName}
                             className="form-control form-control-sm"
                             defaultValue={
@@ -1257,13 +1259,15 @@ export default function EditTicketComponent({ match }) {
                                   ? true
                                   : false
                               }
+                              readOnly
                               defaultValue={data.inputDefaultValue}
                               style={{ width: "100%" }}
                             />
                           </div>
                         )}
 
-                        {console.log("data", data)}
+    
+    
 
                         {data.inputType === "datetime-local" && (
                           <div className="form-control">
@@ -1275,6 +1279,7 @@ export default function EditTicketComponent({ match }) {
                                   ? true
                                   : false
                               }
+                              readOnly
                               onChange={dynamicChangeHandle}
                               defaultValue={data.inputDefaultValue}
                               style={{ width: "100%" }}
@@ -1292,6 +1297,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            readOnly
                             name={data.inputName}
                             defaultValue={
                               data.inputDefaultValue
@@ -1307,7 +1313,7 @@ export default function EditTicketComponent({ match }) {
                           />
                         )}
 
-                        {console.log("data18", data)}
+
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
@@ -1329,6 +1335,7 @@ export default function EditTicketComponent({ match }) {
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
+                                    readOnly
                                   />
                                   <label for={d.value}>{d.label}</label>
                                 </div>
@@ -1360,6 +1367,7 @@ export default function EditTicketComponent({ match }) {
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
+                                    disabled
                                   />
                                   <label for={d.value}> {d.label}</label>
                                 </div>
@@ -1382,6 +1390,7 @@ export default function EditTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
+                            readOnly
                             onChange={dynamicChangeHandle}
                             min={data.inputAddOn.inputRange ? range[0] : ""}
                             max={data.inputAddOn.inputRange ? range[1] : ""}
@@ -1401,6 +1410,7 @@ export default function EditTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
+                            readOnly
                             defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
@@ -1446,6 +1456,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            disabled
                             defaultValue={data.inputDefaultValue}
                             name={data.inputName}
                             className="form-control form-control-sm"
@@ -1516,6 +1527,7 @@ export default function EditTicketComponent({ match }) {
                             }
                             defaultValue={data.inputDefaultValue}
                             name={data.inputName}
+                            disabled
                             className="form-control form-control-sm"
                           >
                             <option> {data.inputName}</option>
