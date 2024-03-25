@@ -1132,8 +1132,8 @@ export default function CreateTicketComponent() {
                           defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory == true ? true : false}
                           onChange={dynamicChangeHandle}
-                          // min={data.inputAddOn.inputRangeMin}
-                          min={5}
+                          min={data.inputAddOn.inputRangeMin}
+                         
                           max={data.inputAddOn.inputRangeMax}
 
                           // min={data.inputAddOn.inputRange ? range[0] : ""}
