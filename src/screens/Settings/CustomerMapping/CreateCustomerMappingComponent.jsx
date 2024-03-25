@@ -503,6 +503,7 @@ export default function CreateCustomerMappingComponent() {
                           type="radio"
                           name="confirmation_required"
                           id="confirmation_required_yes"
+                          required
                           value="1"
                           defaultChecked={
                             data &&
@@ -525,6 +526,7 @@ export default function CreateCustomerMappingComponent() {
                           name="confirmation_required"
                           id="confirmation_required_no"
                           value="0"
+                          required
                           defaultChecked={
                             data &&
                             (data.confirmation_required == 1 ||

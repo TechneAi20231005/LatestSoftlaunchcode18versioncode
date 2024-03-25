@@ -307,7 +307,7 @@ export default function TaskComponent(props) {
                           }
                         /> */}
 
-                        <label>
+                        {/* <label>
                           <b>Task Type :</b>
                         </label>
                         <Select
@@ -322,7 +322,7 @@ export default function TaskComponent(props) {
                               (d) => d.value == props.taskData.task_type_id
                             )
                           }
-                        />
+                        /> */}
 
                         <br />
                      

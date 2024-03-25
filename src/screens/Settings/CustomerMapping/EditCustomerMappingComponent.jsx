@@ -185,6 +185,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
+          console.log("data",data)
           const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.template_name,
@@ -485,6 +486,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         <div className="col-sm-12">
           <div className="card mt-2">
             <div className="card-body">
+              {console.log("data",data)}
               {data && (
                 <form
                   onSubmit={handleForm}
@@ -680,6 +682,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                     <div className="col-sm-2">
                       <label className="col-form-label">
                         <b>Confirmation Required :</b>
+                        <Astrick color="red" size="13px" />
                       </label>
                     </div>
 
@@ -695,6 +698,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_yes"
                             value="1"
+                            required
                             key={Math.random()}
                             defaultChecked={
                               data.confirmation_required == 1 ||
@@ -716,6 +720,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_no"
                             value="0"
+                            required
                             key={Math.random()}
                             defaultChecked={
                               data.confirmation_required == 0 ||
@@ -829,6 +834,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                              Loading.....
                            </span>
                          )}
+                         {console.log("userDropdown",userDropdown)}
+                         {console.log("data",data)}
      
                          {userDropdown &&
                            data.approach == "RW" &&
@@ -844,6 +851,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                  </thead>
                                  <tbody>
                                    {userDropdown.map((ele, i) => {
+                                    // Find the corresponding user policy in user_policy array
+                                    const userPolicy = data.user_policy.find(policy => policy.startsWith(`${ele.value}:`));
+                                    // Extract the ratio value from the user policy
+                                    const defaultRatio = userPolicy ? parseInt(userPolicy.split(':')[1]) : 0;
                                      return (
                                        <tr>
                                          <td>{i + 1}</td>
@@ -865,14 +876,16 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                              readOnly
                                            />
                                          </td>
+                                         {console.log("ratiowiseData",ratiowiseData)}
                                          <td>
                                            <input
                                              type="text"
                                              className="form-control col-sm-2"
                                              name="ratio[]"
-                                             defaultValue={
-                                               ratiowiseData ? ratiowiseData[i] : 0
-                                             }
+                                             defaultValue={defaultRatio}
+                                            //  defaultValue={
+                                            //    ratiowiseData ? ratiowiseData[i] : 0
+                                            //  }
                                              onInput={handleRatioInput(i)}
                                             //  max="100"
                                            />

@@ -626,15 +626,15 @@ const EditTemplateComponent = ({ match, props }) => {
                     className="form-control form-control-sm"
                   />
                 </div>
-                <label>
-                  <b>Task Type :{/* <Astrick color="red" size="13px" /> */}</b>
+                {/* <label>
+                  <b>Task Type :</b>
                 </label>
                 <Select
                   id="task_type_id"
                   name="task_type_id"
                   className=" form-control-sm mt-2"
                   options={taskTypeDropdown && taskTypeDropdown}
-                />
+                /> */}
 
                 <div className="col-sm-12">
                   <label className="col-form-label">
@@ -701,6 +701,8 @@ const EditTemplateComponent = ({ match, props }) => {
                       id="start_days"
                       name="start_days"
                       required
+                      max="100"
+                      min="1"
                       className="form-control form-control-sm"
                     />
                   </div>

@@ -18,7 +18,7 @@ const initialState = {
   },
   customerMappingData: [],
   exportTempData: [],
-  exportData:[],
+  exportData: [],
   customerTypeData: [],
   queryTypeData: [],
   queryTypeDropDownData: [],
@@ -46,11 +46,9 @@ export const CustomerMappingSlice = createSlice({
     builder.addCase(getCustomerMappingData.fulfilled, (state, action) => {
       const { payload } = action;
 
-      
-   
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
-  
+
         let counter = 1;
         const data = payload.data.data;
         let customerMappingData = [];
@@ -96,7 +94,8 @@ export const CustomerMappingSlice = createSlice({
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: data[i].dynamic_form_name,
             customer_type_name: data[i].customer_type_name,
-            confirmation_required: data[i].confirmation_required == 1 ? "Yes" : "no",
+            confirmation_required:
+              data[i].confirmation_required == 1 ? "Yes" : "no",
           });
         }
         state.exportTempData = exportTempData;
@@ -105,7 +104,6 @@ export const CustomerMappingSlice = createSlice({
     builder.addCase(getCustomerMappingData.rejected, (state) => {
       state.status = "rejected";
     });
-
 
     //ExportCustomerMapping
 
@@ -116,13 +114,8 @@ export const CustomerMappingSlice = createSlice({
     builder.addCase(exportCustomerMappingData.fulfilled, (state, action) => {
       const { payload } = action;
 
-
-   
-
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
-       
-        
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -142,7 +135,8 @@ export const CustomerMappingSlice = createSlice({
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
-            is_active: exportTempateData[i].is_active == 1 ? "Active" : "Deactive",
+            is_active:
+              exportTempateData[i].is_active == 1 ? "Active" : "Deactive",
             created_at: exportTempateData[i].created_at,
             created_by: exportTempateData[i].created_by,
             updated_at: exportTempateData[i].updated_at,
@@ -150,23 +144,17 @@ export const CustomerMappingSlice = createSlice({
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: exportTempateData[i].dynamic_form_name,
             customer_type_name: exportTempateData[i].customer_type_name,
-           "Assign User":exportTempateData[i].mapped_user,
-            confirmation_required: exportTempateData[i].confirmation_required == 1 ? "Yes" : "no",
+            "Assign User": exportTempateData[i].mapped_user,
+            confirmation_required:
+              exportTempateData[i].confirmation_required == 1 ? "Yes" : "no",
           });
           state.exportData = exportData;
-        
-          
         }
       }
     });
     builder.addCase(exportCustomerMappingData.rejected, (state) => {
       state.status = "rejected";
     });
-
-
-
-
-
 
     builder.addCase(getcustomerTypeData.pending, (state) => {
       state.status = "loading";
@@ -220,9 +208,14 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(getTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
+      console.log("payload", payload);
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let templateDropDownData = payload.data.data.map((d) => ({
+        const activeTemplate = payload.data.data.filter(
+          (d) => d.is_active == 1
+        );
+
+        let templateDropDownData = activeTemplate.map((d) => ({
           value: d.id,
           label: d.template_name,
         }));
