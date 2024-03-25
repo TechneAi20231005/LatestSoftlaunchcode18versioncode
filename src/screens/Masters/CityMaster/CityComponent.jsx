@@ -27,7 +27,9 @@ import { getRoles } from "../../Dashboard/DashboardAction"
 function CityComponent() {
 
 
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
+
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [updateStatus, setUpdateStatus] = useState({});
@@ -55,6 +57,9 @@ function CityComponent() {
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
   const StateData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredStateData)
   const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard?.filteredCountryData)
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
 
   const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCityData)
 
@@ -238,11 +243,20 @@ function CityComponent() {
   };
 
   const handleCountryChange = (e) => {
-    setStateDropdown(
-      StateData
-        ?.filter((d) => d.country_id == e.value)
-        .map((d) => ({ value: d.id, label: d.state }))
+
+    setStateDropdownData(
+      stateDropdown &&
+        stateDropdown
+          ?.filter((filterState) => filterState.country_id === e.value)
+          ?.map((d) => ({ value: d.id, label: d.state }))
     );
+  
+
+    // setStateDropdown(
+    //   StateData
+    //     ?.filter((d) => d.country_id == e.value)
+    //     .map((d) => ({ value: d.id, label: d.state }))
+    // );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
@@ -298,7 +312,7 @@ function CityComponent() {
           };
         }
       });
-      setStateDropdown(filterNewState);
+      setStateDropdownData(filterNewState);
     }
   }, [dependent]);
 
@@ -493,7 +507,7 @@ function CityComponent() {
                   </label>
                   <Select
              
-                    options={StateData}
+                    options={stateDropdownData}
                     id="state_id"
                     name="state_id"
                     onChange={handleCountryChange}

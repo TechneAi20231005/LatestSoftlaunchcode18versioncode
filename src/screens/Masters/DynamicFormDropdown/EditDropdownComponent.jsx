@@ -25,24 +25,24 @@ import { Astrick } from "../../../components/Utilities/Style";
 import *  as Validation from '../../../components/Utilities/Validation';
 
 
-import {useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { dynamicFormDropDownData } from "./Slices/DynamicFormDropDownAction";
 
 export default function EditDropdownComponent({ match }) {
 
     const history = useNavigate();
-    const {id}=useParams()
+    const { id } = useParams()
     const [master, setMaster] = useState();
     const [data, setData] = useState([{ id: null, label: null, value: null }]);
     const [notify, setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
 
-    
-    const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
-const dispatch=useDispatch()
 
-const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 37));
+    const [modal, setModal] = useState({ showModal: false, modalData: "", modalHeader: "" });
+    const dispatch = useDispatch()
+
+    const checkRole = useSelector((DashbordSlice) => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 37));
 
 
     const handleChange = idx => e => {
@@ -67,12 +67,12 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                 new ErrorLogService().sendErrorLog("User", "Create_User", "INSERT", res.message);
             }
         }).catch(error => {
-        
-            
+
+
         })
 
-       
-        
+
+
     }
 
 
@@ -81,16 +81,16 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
         e.preventDefault();
         const formData = new FormData(e.target);
 
-        await new DynamicFormDropdownMasterService().updateDropdown(id,formData).then(res => {
+        await new DynamicFormDropdownMasterService().updateDropdown(id, formData).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
                     history({
                         pathname: `/${_base}/DynamicFormDropdown`,
-                      
-                    },{ state: { alert: { type: "success", message: res.data.message } }}
+
+                    }, { state: { alert: { type: "success", message: res.data.message } } }
                     );
 
-      dispatch(dynamicFormDropDownData());
+                    dispatch(dynamicFormDropDownData());
 
                 } else {
                     setNotify({ type: 'danger', message: res.data.message });
@@ -124,36 +124,36 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
         setData(null);
         setData(temp);
 
-      
-        
+
+
     }
 
-    
+
     const [items, setItems] = useState(data); // Initialize items state with data
 
     const handleInputChange = (e, index) => {
         const { value } = e.target;
         const updatedItems = [...items]; // Create a copy of the state array
         updatedItems[index] = { ...updatedItems[index], label: value }; // Update the label property of the specific item
-        setItems(updatedItems); 
-        
+        setItems(updatedItems);
+
     };
 
 
     useEffect(() => {
         loadData();
-        if(!checkRole.length){
+        if (!checkRole.length) {
             dispatch(getRoles())
-          }
+        }
     }, [])
 
-    useEffect(()=>{
-        if(checkRole && checkRole[0]?.can_update === 0){
-          // alert("Rushi")
-    
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+    useEffect(() => {
+        if (checkRole && checkRole[0]?.can_update === 0) {
+            // alert("Rushi")
+
+            window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
         }
-      },[checkRole])
+    }, [checkRole])
 
     return (
         <div className="container-xxl">
@@ -173,7 +173,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                 <input type="hidden" className='form-control form-control-sm'
                                     name='id'
                                     id='id'
-                                    onKeyPress={e=> {Validation.CharactersNumbersOnly(e)}}
+                                    onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
                                     defaultValue={master && master.id}
                                 />
 
@@ -190,13 +190,14 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                             <label className="col-sm-2 col-form-label">
                                 <b>Status :</b>
                             </label>
+                            {console.log("master dropdown", master)}
                             <div className="col-sm-4">
                                 <div className="row">
                                     <div className="col-md-2">
                                         <div className="form-check">
                                             <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
                                                 value="1"
-                                                defaultChecked={(master && master.is_active) ? true : ((!master) ? true : false)}
+                                                defaultChecked={master?.is_active}
                                             />
                                             <label className="form-check-label" htmlFor="is_active_1">
                                                 Active
@@ -206,8 +207,8 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                     <div className="col-md-1">
                                         <div className="form-check">
                                             <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
-                                            // readOnly={(modal.modalData) ? false : true }
-                                            defaultChecked={master && master.is_active==1 ? true :false}
+                                                // readOnly={(modal.modalData) ? false : true }
+                                                defaultChecked={!master?.is_active}
                                             />
                                             <label className="form-check-label" htmlFor="is_active_0">
                                                 Deactive
@@ -233,7 +234,7 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                 </thead>
                                 <tbody>
                                     {data && data.map((item, idx) => (
-                                        
+
                                         <tr id={`addr_${idx}`} key={idx}>
                                             <td>{idx + 1}
                                                 <input
@@ -243,31 +244,31 @@ const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles
                                                 />
 
                                             </td>
-                                           
-
-                                         
-                                         
 
 
 
-<td>
-<input
-        type="text"
-        key={idx}
-        name="dropdown_values[]"
-        id={`dropdown_values_${idx}`}
-        className="form-control form-control-sm"
-        onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
-        value={item.value} 
-        
-        onChange={(e) => {
-          const updatedData = [...data];
-          updatedData[idx].value = e.target.value;
-          setData(updatedData);
-        }}
-        required
-      />
-      </td>
+
+
+
+
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    key={idx}
+                                                    name="dropdown_values[]"
+                                                    id={`dropdown_values_${idx}`}
+                                                    className="form-control form-control-sm"
+                                                    onKeyPress={e => { Validation.CharactersNumbersSpeicalOnly(e) }}
+                                                    value={item.value}
+
+                                                    onChange={(e) => {
+                                                        const updatedData = [...data];
+                                                        updatedData[idx].value = e.target.value;
+                                                        setData(updatedData);
+                                                    }}
+                                                    required
+                                                />
+                                            </td>
 
 
                                             <td>

@@ -40,12 +40,19 @@ export default function TaskComponent({ match }) {
   const [attachment, setAttachment] = useState();
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
+
+  //Basket Modal Related
+  const [basketModal, setBasketModal] = useState(false);
+  const [basketData, setBasketData] = useState(null);
+  const [showBasketModal, setShowBasketModal] = useState(false);
+
   const getTicketData = async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
@@ -69,12 +76,6 @@ export default function TaskComponent({ match }) {
         );
       });
   };
-
-  //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
-
-  const [basketData, setBasketData] = useState(null);
-  const [showBasketModal, setShowBasketModal] = useState(false);
 
   const handleCloseBasketModal = () => {
     setShowBasketModal(false);
@@ -557,7 +558,7 @@ export default function TaskComponent({ match }) {
                         </span>
                       )}
                     </button>
-                    {/* )} */}
+
                   </li>
                 </Dropdown.Menu>
               </Dropdown>

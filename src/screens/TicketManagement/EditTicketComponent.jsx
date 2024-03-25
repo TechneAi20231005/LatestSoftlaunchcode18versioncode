@@ -1313,7 +1313,7 @@ export default function EditTicketComponent({ match }) {
                           />
                         )}
 
-
+{console.log("data",data)}
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {

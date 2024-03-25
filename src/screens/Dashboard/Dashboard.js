@@ -81,7 +81,7 @@ export default function HrDashboard(props) {
   const [previousTask, setPreviousTask] = useState();
 
   const [chartData, setChartData] = useState({
-    series: [50, 59, 40],
+    series: [0, 0, 0],
     Chart: {
       height: "auto",
     },
@@ -122,10 +122,11 @@ export default function HrDashboard(props) {
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
         setUpcomingTask(res.data.data.upcomingTask);
+        console.log("res.data.data.count.pendingTask", res.data.data.count.pendingTask)
         const updatedChartData = {
           ...chartData,
           series: [
-            res.data.data.count.pendingTask,
+            res.data.data.count.pendingTask ? res.data.data.count.pendingTask : 0,
             res.data.data.count.workingTask,
             res.data.data.count.completedTask,
           ],
