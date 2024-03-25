@@ -208,7 +208,7 @@ export default function CreateProjectComponent({ match }) {
 
   function handleFileChange(event) {
     const file = event.target.files[0];
-    if (file.size > 2 * 1024 * 1024) {
+    if (file?.size > 2 * 1024 * 1024) {
       // File size exceeds 2MB, notify the user and clear the input field
       alert("File size must be less than 2MB.");
       event.target.value = null; // Clear the input field

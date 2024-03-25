@@ -1598,7 +1598,7 @@ function VendorMaster({ match }) {
     await new VendorMasterService().downloadBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
           window.open(URL, "_blank").focus();
         }
       }
@@ -1628,7 +1628,7 @@ function VendorMaster({ match }) {
           loadData();
         } else {
           setError({ type: "danger", message: res.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
           window.open(URL, "_blank")?.focus();
           setNotify({ type: "danger", message: res.data.message });
         }
