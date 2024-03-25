@@ -52,9 +52,11 @@ export default function TaskData(props) {
     priorityColor = "bg-danger";
   }
 
+
+  // if((taskOwners.filter((d)=>d.is_started === "YES")) && userSessionData.id == taskOwners.filter((d)=>d.id))
+
   //Timer
   const [timerState, setTimerState] = useState(props.data.time_status);
-
   const handleTimer = async (e) => {
     var data = {
       tenant_id: localStorage.getItem("tenant_id"),
@@ -149,7 +151,9 @@ export default function TaskData(props) {
   //Group Activity
   const [showGroupActivityModal, setShowGroupActivityModal] = useState(false);
   const showGroupActivity = (e, taskOwners, taskId, dataa) => {
+   
     setShowGroupActivityModal(true);
+    
   };
 
   const hideGroupActivity = (e, taskOwners, taskId, dataa) => {
@@ -404,7 +408,7 @@ export default function TaskData(props) {
         {props.data.type == "GROUP_ACTIVITY" &&
           props.data.status !== "COMPLETED" && (
             <div>
-              {(timerState === "START" || timerState == null) && (
+              {(timerState === "START" || timerState == null)   && (
                 <button
                   type="button"
                   style={{

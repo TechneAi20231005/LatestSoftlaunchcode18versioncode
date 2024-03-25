@@ -351,6 +351,7 @@ export default function EditTicketComponent({ match }) {
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
+          console.log("res",res.payload.data.data)
           const data = res.payload.data.data.filter(
             (d) => d.is_active == 1 && d.account_for === "SELF"
           );
@@ -361,6 +362,7 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
+          console.log("data",data)
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -600,6 +602,9 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + " " + d.last_name + "(" + d.id + ")",
         }));
+        console.log("select",select)
+        console.log("user",user)
+
       setUserDropdown(select);
       setUserName(null);
     }
@@ -723,7 +728,6 @@ export default function EditTicketComponent({ match }) {
 
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
-  console.log("selectedCheckBoxValue", selectedCheckBoxValue.length);
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -1313,7 +1317,6 @@ export default function EditTicketComponent({ match }) {
                           />
                         )}
 
-{console.log("data",data)}
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
@@ -1335,7 +1338,7 @@ export default function EditTicketComponent({ match }) {
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
-                                    readOnly
+                                    disabled
                                   />
                                   <label for={d.value}>{d.label}</label>
                                 </div>
