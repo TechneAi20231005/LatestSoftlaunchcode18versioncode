@@ -340,10 +340,11 @@ export default function TaskComponent(props) {
                           type="number"
                           min="1"
                           max="100"
+                          required
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.start_days}
                           name="start_days"
-                          onInput={(e) => handleChange(e, "standard")}
+                          onChange={(e) => handleChange(e, "standard")} // Changed onInput to onChange
                         />
                       </div>
                     )}
