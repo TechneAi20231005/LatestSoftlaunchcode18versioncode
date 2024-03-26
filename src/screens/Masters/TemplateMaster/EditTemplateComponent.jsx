@@ -684,6 +684,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       name="start_days"
                       max="100"
                       min="1"
+                      
                       required
                       className="form-control form-control-sm"
                     />

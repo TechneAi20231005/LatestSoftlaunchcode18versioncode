@@ -10,17 +10,20 @@ import { Astrick } from "../../../components/Utilities/Style";
 import { useDispatch, useSelector } from "react-redux";
 import { templateData } from "./TemplateComponetAction";
 export default function TaskComponent(props) {
-
-
-  const [data, setData] = useState({ task: props.taskData.task_name,days:props.taskData.days, total_time:props.taskData.total_hours,start_days:props.taskData.start_days,days:props.taskData.task_days,basket_id:props.taskData.basket_id });
- 
+  const [data, setData] = useState({
+    task: props.taskData.task_name,
+    days: props.taskData.days,
+    total_time: props.taskData.total_hours,
+    start_days: props.taskData.start_days,
+    days: props.taskData.task_days,
+    basket_id: props.taskData.basket_id,
+  });
 
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
-
 
   const searchRef = useRef();
   const handleSearch = (e) => {
@@ -116,7 +119,6 @@ export default function TaskComponent(props) {
   const handleSubmit = (e) => {
     const taskName = document.querySelector('input[name="task"]').value.trim();
 
-    
     const daysRequired = document
       .querySelector('input[name="days"]')
       .value.trim();
@@ -325,12 +327,10 @@ export default function TaskComponent(props) {
                         /> */}
 
                         <br />
-                     
-                     
 
                         <label>
                           Start task{" "}
-                          {props.calculatedays=== "START_FROM"
+                          {props.calculatedays === "START_FROM"
                             ? "after"
                             : "before"}{" "}
                           days :
@@ -340,10 +340,11 @@ export default function TaskComponent(props) {
                           type="number"
                           min="1"
                           max="100"
+                          required
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.start_days}
                           name="start_days"
-                          onInput={(e) => handleChange(e, "standard")}
+                          onChange={(e) => handleChange(e, "standard")} // Changed onInput to onChange
                         />
                       </div>
                     )}
