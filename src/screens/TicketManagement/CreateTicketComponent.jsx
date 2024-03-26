@@ -21,9 +21,7 @@ import { userSessionData as user } from "../../settings/constants";
 import DepartmentService from "../../services/MastersService/DepartmentService";
 import QueryTypeService from "../../services/MastersService/QueryTypeService";
 import CustomerMappingService from "../../services/SettingService/CustomerMappingService";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
-import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
 import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 import { useDispatch, useSelector } from "react-redux";
@@ -104,35 +102,68 @@ export default function CreateTicketComponent() {
   const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  console.log("selectedFiles",selectedFiles)
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
+  // const uploadAttachmentHandler = (e, type, id = null) => {
+  //   if (type === "UPLOAD") {
+  //     var tempSelectedFile = [];
+  //     console.log("tempSelectedFile",tempSelectedFile)
+  //     for (var i = 0; i < e.target?.files?.length; i++) {
+  //       var file = e.target.files[i];
+  //       console.log("file",file )
+  //       var reader = new FileReader();
+  //       reader.onload = function (event) {
+  //         tempSelectedFile.push({
+  //           file: file,
+  //           fileName: file.name,
+  //           tempUrl: event.target.result,
+  //         });
+  //         setSelectedFiles(tempSelectedFile);
+  //       };
+  //       reader.readAsDataURL(file);
+  //     }
+  //   } else if (type === "DELETE") {
+  //     fileInputRef.current.value = "";
+  //     let filteredFileArray = selectedFiles.filter(
+  //       (item, index) => id !== index
+  //     );
+  //     setSelectedFiles(filteredFileArray);
+  //   }
+  // };
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target?.files?.length; i++) {
-        var file = e.target.files[i];
-        var reader = new FileReader();
-        reader.onload = function (event) {
-          tempSelectedFile.push({
-            file: file,
-            fileName: file.name,
-            tempUrl: event.target.result,
-          });
-          setSelectedFiles(tempSelectedFile);
-        };
+      const files = e.target.files;
+      const uploadedFiles = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = ((file) => {
+          return function (event) {
+            uploadedFiles.push({
+              file: file,
+              fileName: file.name,
+              tempUrl: event.target.result,
+            });
+            if (uploadedFiles.length === files.length) {
+              setSelectedFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
+            }
+          };
+        })(file);
+        
         reader.readAsDataURL(file);
       }
     } else if (type === "DELETE") {
       fileInputRef.current.value = "";
-      let filteredFileArray = selectedFiles.filter(
-        (item, index) => id !== index
-      );
-      setSelectedFiles(filteredFileArray);
+      const filteredFiles = selectedFiles.filter((_, index) => id !== index);
+      setSelectedFiles(filteredFiles);
     }
   };
+  
 
   const roleId = sessionStorage.getItem("role_id");
   const ticketTypeRefs = useRef();
