@@ -39,12 +39,10 @@ export default function ViewTicketComponent({ match }) {
   const [chartDataa, setChartData] = useState("");
   const [commentData, setCommentData] = useState();
 
-
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
   );
-
 
   //   const onAddMention = (e) => {
   //     setIdCount((idCount) => [...idCount, e.id]);
@@ -91,8 +89,8 @@ export default function ViewTicketComponent({ match }) {
         handleAttachment("GetAttachment", ticketId);
       }
     });
-    
-    dispatch(getRoles())
+
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -215,7 +213,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-{console.log("dd",data)}
+            {console.log("dd", data)}
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
@@ -364,8 +362,8 @@ export default function ViewTicketComponent({ match }) {
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                            console.log("radio==",d.value)
-                            console.log("radio=== ",data.inputDefaultValue)
+                              console.log("radio==", d.value);
+                              console.log("radio=== ", data.inputDefaultValue);
 
                               return (
                                 <div>
@@ -486,9 +484,9 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )} */}
 
-{console.log("data",data)}
+                        {console.log("data", data)}
 
-{data.inputType === "select" && (
+                        {data.inputType === "select" && (
                           <select
                             id={
                               data.inputName
@@ -504,27 +502,22 @@ export default function ViewTicketComponent({ match }) {
                           >
                             <option> {data.inputName}</option>
                             {data.inputAddOn.inputRadio &&
-                              data.inputAddOn.inputRadio.map(
-                                (option) => {
-                                  return (
-                                    <option
-                                      selected={
-                                        parseInt(
-                                          data &&
-                                            data?.inputAddOn
-                                              ?.inputRadio
-                                        ) == option.value
-                                      }
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </option>
-                                  );
-                                }
-                              )}
+                              data.inputAddOn.inputRadio.map((option) => {
+                                return (
+                                  <option
+                                    selected={
+                                      parseInt(
+                                        data && data?.inputAddOn?.inputRadio
+                                      ) == option.value
+                                    }
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                );
+                              })}
                           </select>
                         )}
-
 
                         {data.inputType === "select-master" && (
                           <select

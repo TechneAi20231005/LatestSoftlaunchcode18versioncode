@@ -40,7 +40,7 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-console.log("fromdate",fromdate)
+  console.log("fromdate", fromdate)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -162,7 +162,7 @@ console.log("fromdate",fromdate)
             setParent(mappedData);
             // parentName(mappedData);
           } else {
-         
+
           }
         }
       }
@@ -227,7 +227,7 @@ console.log("fromdate",fromdate)
           ]);
         }
 
-     
+
 
         // Clear the input field
         fileInputRef.current.value = "";
@@ -280,7 +280,7 @@ console.log("fromdate",fromdate)
     }
 
     var flag = 1;
-  
+
 
     if (todateformat > fromdateformat) {
       alert("Please select End Date Greater than Start date");
@@ -302,7 +302,7 @@ console.log("fromdate",fromdate)
         e.preventDefault();
       }
     }
-  
+
     if (flag == 1) {
       if (todateformat > fromdateformat) {
         alert("Please select End Date Greater than Start date");
@@ -372,7 +372,7 @@ console.log("fromdate",fromdate)
               );
             }
           });
-        
+
         }
       }
     }
@@ -415,7 +415,7 @@ console.log("fromdate",fromdate)
             <strong>Task Details</strong>
           </Modal.Title>
         </Modal.Header>
-       
+
         {notify && <Alert alertData={notify} />}
 
         <form onSubmit={handleForm} method="post" encType="multipart/form-data">
@@ -489,7 +489,7 @@ console.log("fromdate",fromdate)
                               props.data.type === "GROUP_ACTIVITY"
                             }
                           />
-                       
+
                           <label
                             className="form-check-label"
                             htmlFor="status_group_activity"
@@ -515,7 +515,7 @@ console.log("fromdate",fromdate)
                     type="text"
                     className="form-control form-control-sm"
                     name="task_name"
-                    
+
                     required
                   />
                 ) : (
@@ -524,13 +524,13 @@ console.log("fromdate",fromdate)
                     className="form-control form-control-sm"
                     name="task_name"
                     defaultValue={props.data.task_name}
-                    
+
 
                     required
                   />
                 )}
 
-             
+
               </div>
             </div>
 
@@ -594,7 +594,7 @@ console.log("fromdate",fromdate)
                     onChange={handleFromDate}
                     // max={props.expectedSolveDate}
                     min={props.ticketStartDate}
-                   
+
 
                     required
 
@@ -619,8 +619,8 @@ console.log("fromdate",fromdate)
                 )}
               </div>
 
-              {console.log("pp",props)}
-              {console.log("pp1",fromdate?.length > 0 ? 1:0)}
+              {console.log("pp", props)}
+              {console.log("pp1", fromdate?.length > 0 ? 1 : 0)}
               <div className="col-md-4">
                 <label className="form-label">
                   <b>End Date :<Astrick color="red" size="13px" /></b>
@@ -635,7 +635,7 @@ console.log("fromdate",fromdate)
                     min={fromdate?.length > 0 ? fromdate : props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    max={props.expectedSolveDate}
+
                     required
                   // onChange={e=>handleMinDate(e)}
                   />
@@ -646,10 +646,10 @@ console.log("fromdate",fromdate)
                     name="end_date"
                     defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate?.length > 0 ? fromdate :props.data.start_date}
+                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    max={props.expectedSolveDate}
+
                     required
                   // onChange={e=>handleMinDate(e)}
                   />

@@ -712,7 +712,7 @@ const CreateTemplateComponent = () => {
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>
-                                        Hours Requiredss:
+                                        Hours Required:
                                         <Astrick color="red" size="13px" />
                                       </b>
                                     </label>
@@ -743,6 +743,9 @@ const CreateTemplateComponent = () => {
                                     <input
                                       type="number"
                                       id="start_days"
+                                      required
+                                      min="1"
+                                      max="100"
                                       name="start_days"
                                       onChange={(e) =>
                                         handleEditTaskData(
@@ -763,7 +766,7 @@ const CreateTemplateComponent = () => {
                               {/* })}  */}
 
                               <Modal.Footer>
-                                <div>
+                                {/* <div>
                                   <button
                                     type="button"
                                     onClick={(e) => {
@@ -809,6 +812,101 @@ const CreateTemplateComponent = () => {
                                         return; // Prevent further execution
                                       }
 
+                                      dispatch(
+                                        handleModalClose({
+                                          showModal: false,
+                                          modalData: "",
+                                          modalHeader: "",
+                                        })
+                                      );
+                                    }}
+                                    className="btn btn-sm btn-primary"
+                                    style={{ backgroundColor: "#484C7F" }}
+                                  >
+                                    Submit
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-danger"
+                                    onClick={(e) =>
+                                      dispatch(
+                                        handleModalClose({
+                                          showModal: false,
+                                          modalData: "",
+                                          modalHeader: "",
+                                        })
+                                      )
+                                    }
+                                  >
+                                    Cancel
+                                  </button>
+                                </div> */}
+
+                                <div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      // Validate the "Hours Required" field
+                                      const hoursInput =
+                                        document.getElementById(
+                                          "hours_required"
+                                        );
+                                      const enteredValue =
+                                        hoursInput.value.trim();
+                                      const timeRegex =
+                                        /^(?:2[0-3]|[01][0-9]):[0-5][0-9]/;
+
+                                      if (!timeRegex.test(enteredValue)) {
+                                        // If the format is invalid, show an alert and prevent further execution
+                                        alert(
+                                          "Invalid time format. Please use 'HH:mm' format"
+                                        );
+                                        return;
+                                      }
+
+                                      // Validate the "Start Days" field for min-max range
+                                      const startDaysInput =
+                                        document.getElementById("start_days");
+                                      const startDaysValue = parseInt(
+                                        startDaysInput.value.trim(),
+                                        10
+                                      ); // Convert to integer
+
+                                      if (
+                                        startDaysValue < 1 ||
+                                        startDaysValue > 100
+                                      ) {
+                                        // If the value is out of range, show an alert and prevent further execution
+                                        alert(
+                                          "Start days must be between 1 and 100."
+                                        );
+                                        return;
+                                      }
+
+                                      // Validate other required fields
+                                      const taskName = document
+                                        .getElementById("task")
+                                        .value.trim();
+                                      const daysRequired = document
+                                        .getElementById("days")
+                                        .value.trim();
+                                      const hoursRequired = enteredValue; // Use validated value
+                                      const startDays = startDaysValue; // Use validated value
+
+                                      if (
+                                        !taskName ||
+                                        !daysRequired ||
+                                        !hoursRequired ||
+                                        !startDays
+                                      ) {
+                                        alert(
+                                          "Please fill out all required fields."
+                                        );
+                                        return; // Prevent further execution
+                                      }
+
+                                      // If all validations pass, dispatch the action to close the modal
                                       dispatch(
                                         handleModalClose({
                                           showModal: false,

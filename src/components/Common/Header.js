@@ -82,7 +82,7 @@ export default function Header() {
         if (res.data.status == 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
-            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data.profile_picture;
+            "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
