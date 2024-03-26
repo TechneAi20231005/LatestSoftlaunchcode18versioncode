@@ -862,8 +862,11 @@ function CreateDynamicForm() {
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
                                         name="inputOnChangeSource"
-                                        value={selectedValue}
+                                        // defaultValue={selectedValue}
                                       >
+                                        {console.log("selected",selectedValue)}
+                                        {console.log("selected",selectedValue)}
+
                                         <option>Select Data Source</option>
 
                                         {dropdown &&

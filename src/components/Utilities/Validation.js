@@ -231,6 +231,25 @@ export const addressFieldOnly = (e) => {
   }
 };
 
+
+export const addressField = (e) => {
+  const regex = new RegExp(
+    "^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:'\"\\/\\[\\]{}|`~\\n]{0,250}$"
+  );
+
+  if (e.keyCode === 13) {
+
+
+    return true;
+  }
+
+  const value =
+    e.target.value + String.fromCharCode(e.charCode || e.which || 0);
+  if (!regex.test(value)) {
+    e.preventDefault();
+  }
+};
+
 // export const CharactersOnly = (e) => {
 //   var regex = new RegExp("^[a-zA-Z]+$");
 //   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);

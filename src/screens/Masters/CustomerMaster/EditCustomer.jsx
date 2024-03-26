@@ -568,7 +568,7 @@ function EditCustomer({ match }) {
                         rows="3"
                         maxLength={250}
                         onKeyPress={(e) => {
-                          Validation.addressFieldOnly(e);
+                          Validation.addressField(e);
                         }}
                         required
                         defaultValue={data.address}

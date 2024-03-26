@@ -429,7 +429,7 @@ export default function CreateCustomer({ match }) {
                         if (e.key === "Enter") {
 
                         } else {
-                          Validation.addressFieldOnly(e);
+                          Validation.addressField(e);
                         }
                       }}
                       rows="3"
