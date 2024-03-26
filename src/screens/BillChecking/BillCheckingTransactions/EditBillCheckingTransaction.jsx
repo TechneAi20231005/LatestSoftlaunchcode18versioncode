@@ -953,7 +953,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             Assign To : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-
+                        {console.log("data", data)}
                         {userDropdown && data ? (
                           <Select
                             type="text"
@@ -963,7 +963,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                             name="assign_to"
                             placeholder="Assign To"
                             required
-                            isDisabled
+                            isDisabled={
+                              data && data?.is_assign_to == 1 ? false : true
+                            }
                             defaultValue={userDropdown.filter(
                               (d) => d.value == data.assign_to
                             )}
