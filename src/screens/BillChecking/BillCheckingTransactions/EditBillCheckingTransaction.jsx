@@ -60,8 +60,10 @@ export default function CreateBillCheckingTransaction({ match }) {
   }, []);
 
   const history = useNavigate();
-  const dispatch =useDispatch()
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 41));
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 41)
+  );
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
@@ -392,7 +394,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           setData(res.data.data);
           setIsTcsApplicable(
             res.data.data.is_tcs_applicable == 1 ? true : false
-          );  
+          );
           handleSectionDropDownChange1(res.data.data.tds_section);
           if (res.data.data.is_tds_applicable == 1) {
             setShowTdsFileds(true);
@@ -477,7 +479,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     });
 
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -486,7 +487,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     //     }
     //   }
     // });
-    dispatch(getAllRoles())
+    dispatch(getAllRoles());
   };
 
   const RecordRoomUserDropdown = [
@@ -551,7 +552,6 @@ export default function CreateBillCheckingTransaction({ match }) {
       form.append("authorized_by_management", 0);
     }
     form.append("client_ip_address", ip);
-    
 
     await new BillTransactionService()
       .updateBillChecking(id, form)
@@ -625,7 +625,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     "application/pdf",
   ];
 
-  
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
@@ -643,36 +642,36 @@ export default function CreateBillCheckingTransaction({ match }) {
         const fileSize = file.size; // Get the file size in bytes
 
         // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-        if (validFileTypes.includes(fileType)) {
-          // Check if the total size of all files is less than or equal to 5MB
-          if (totalSize + fileSize <= 5 * 1024 * 1024) {
-            tempSelectedFile.push({
-              file: file,
-              fileName: file.name,
-              tempUrl: URL.createObjectURL(file),
-            });
+        // if (validFileTypes.includes(fileType)) {
+        // Check if the total size of all files is less than or equal to 5MB
+        // if (totalSize + fileSize <= 5 * 1024 * 1024) {
+        tempSelectedFile.push({
+          file: file,
+          fileName: file.name,
+          tempUrl: URL.createObjectURL(file),
+        });
 
-            totalSize += fileSize; // Update the total size
-          } else {
-            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-            alert("Total file size exceeds 5MB. Please select smaller files.");
-            break; // Stop processing more files
-          }
-        } else {
-          // Handle the case where an invalid file type is selected (e.g., show an error message)
-          alert(
-            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-          );
-        }
+        totalSize += fileSize; // Update the total size
+        //   } else {
+        //     // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+        //     alert("Total file size exceeds 5MB. Please select smaller files.");
+        //     break; // Stop processing more files
+        //   }
+        // } else {
+        //   // Handle the case where an invalid file type is selected (e.g., show an error message)
+        //   alert(
+        //     "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+        //   );
+        // }
       }
       // Check if the maximum 10 attachments condition is met
 
-      if (tempSelectedFile?.length + data?.attachment?.length <= 10) {
-        fileInputRef.current.value = "";
-        setSelectedFiles(tempSelectedFile);
-      } else {
-        alert("You can only upload a maximum of 10 attachments.");
-      }
+      // if (tempSelectedFile?.length + data?.attachment?.length <= 10) {
+      fileInputRef.current.value = "";
+      setSelectedFiles(tempSelectedFile);
+      // } else {
+      //   alert("You can only upload a maximum of 10 attachments.");
+      // }
     } else if (type === "DELETE") {
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
@@ -713,8 +712,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [authorizedByManagement, setAuthorizedByManagement] = useState(false);
   const [isoriginalbillneeded, SetIsOriginalBillNeeded] = useState(false);
 
- 
-
   const handleTcsApplicable = (e) => {
     const newValue = e.target.checked;
     setIsTcsApplicable(newValue);
@@ -739,15 +736,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     currentDate.getDate()
   );
 
- 
-
   const formattedOneYearAgo = `${oneYearAgo.getFullYear()}-${(
     oneYearAgo.getMonth() + 1
   )
     .toString()
     .padStart(2, "0")}-${oneYearAgo.getDate().toString().padStart(2, "0")}`;
 
- 
   useEffect(() => {
     var tdsAmount = 0;
 
@@ -814,8 +808,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     netPayment,
     isTcsApplicable,
   ]);
-
-  
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
@@ -913,8 +905,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       value={data && data.level}
                     />
 
-                  
-
                     <div className="col-md-3">
                       <input
                         type="hidden"
@@ -946,7 +936,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           name="bill_type"
                           placeholder="Bill Type"
                           isDisabled
-                         
                         />
                       )}
                     </div>
@@ -1002,7 +991,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                               ? true
                               : false
                           }
-                        
                           required
                           defaultValue={
                             data &&
@@ -1013,12 +1001,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         />
                       )}
                     </div>
-                   
                   </div>
 
                   <div className="form-group row mt-3">
-                    
-
                     <div className="col-md-3 ">
                       <label className=" col-form-label">
                         <b>
@@ -1057,14 +1042,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                         className="form-control form-control-sm"
                         id="bill_date"
                         name="bill_date"
-                       
                         min={
                           authorities &&
                           authorities.Past_Financial_Year_Bill_Date === true
                             ? formattedStartPastDate
                             : formattedStartDate
                         }
-                       
                         max={formattedDate}
                         readOnly={
                           (authorities && authorities?.Edit_In_Bill === true) ||
@@ -1120,10 +1103,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                         
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1131,9 +1112,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? false
                             : true
                         }
-                       
                         maxLength={13}
-                      
                         onKeyPress={(e) => {
                           const allowedKeys = [
                             "0",
@@ -1206,10 +1185,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         required
                         readOnly={
-                        
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                         
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1217,7 +1194,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? false
                             : true
                         }
-                       
                         onKeyPress={(e) => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
@@ -1258,7 +1234,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       )}
                     </div>
 
-                  
                     <div className=" col ">
                       <input
                         className="sm"
@@ -1266,12 +1241,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         type="checkbox"
                         style={{ marginRight: "8px" }}
                         disabled={
-                        
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                         
                           (data.current_user_is_approver == 1 &&
-                            
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1305,12 +1277,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         onChange={(e) => handleGst(e)}
                         required
                         readOnly={
-                        
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                         
                           (data.current_user_is_approver == 1 &&
-                           
                             data.current_user_is_approver == 0)
                             ? false
                             : true
@@ -1366,12 +1335,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="round_off"
                         name="round_off"
                         onChange={(e) => handleRoundOff(e)}
-                        
                         readOnly={
-                         
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                         
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1380,7 +1346,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             : true
                         }
                         defaultValue={data.round_off ? data.round_off : 0}
-                     
                         maxLength={13}
                         onKeyPress={(e) => {
                           const allowedKeys = [
@@ -1434,8 +1399,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                   </div>
 
                   <div className=" form-group row mt-3 ">
-                    
-
                     {isTcsApplicable === true ? (
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
@@ -1454,20 +1417,14 @@ export default function CreateBillCheckingTransaction({ match }) {
                           name="tcs"
                           step="any"
                           onChange={(e) => handleTcs(e)}
-                       
-
                           defaultValue={isTcsApplicable === true ? data.tcs : 0}
-                         
-
                           readOnly={
-                            authorities &&
-                            authorities.TCS_Applicable === false 
-                            // authorities &&
-                            // authorities.All_Update_Bill === false
-                              ? true
+                            authorities && authorities.TCS_Applicable === false
+                              ? // authorities &&
+                                // authorities.All_Update_Bill === false
+                                true
                               : false
                           }
-                         
                           onKeyPress={(e) => {
                             Validation.NumbersSpeicalOnlyDot(e);
                           }}
@@ -1505,14 +1462,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                             onChange={(e) => handleTcs(e)}
                             readOnly
                             value={0}
-                            
                             onKeyPress={(e) => {
                               Validation.NumbersSpeicalOnlyDot(e);
                             }}
-                          
                           />
-
-                          
                         </div>
                       </>
                     )}
@@ -1550,10 +1503,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                      
                           data.is_rejected == 1 ||
                           data.created_by == localStorage.getItem("id") ||
-                          
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1574,8 +1525,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         style={{ marginRight: "8px", marginLeft: "10px" }}
                         disabled={
                           authorities && authorities.TCS_Applicable === false
-                            ? 
-                              true
+                            ? true
                             : false
                         }
                         id="is_tcs_applicable"
@@ -1611,10 +1561,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                             options={sectionDropdown}
                             ref={sectionRef}
                             isDisabled={
-                             
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                             
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -1647,10 +1595,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                      
+
                         <span>
                           {constitutionDropdown && data && (
-                            
                             <Select
                               className="form-control form-control-sm"
                               id="tds_constitution"
@@ -1658,10 +1605,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
                               isDisabled={
-                               
                                 data.is_rejected == 1 ||
                                 data.created_by == localStorage.getItem("id") ||
-                              
                                 (data.current_user_is_approver == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true &&
@@ -1685,7 +1630,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             />
                           )}
                         </span>
-                       
                       </div>
 
                       <div className="col-md-3">
@@ -1707,7 +1651,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         />
                       </div>
 
-                     
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
                           <b>
@@ -1725,12 +1668,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
-                            
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                            
                               (data.current_user_is_approver == 1 &&
-                             
                                 data.current_user_is_approver == 0)
                                 ? false
                                 : true
@@ -1747,16 +1687,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 ? data.tds_percentage
                                 : ""
                             }
-                         
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
-                             
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                            
                               (data.current_user_is_approver == 1 &&
-                               
                                 data.current_user_is_approver == 0)
                                 ? false
                                 : true
@@ -1783,7 +1719,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         readOnly
                         value={netPayment}
                         defaultValue={data.net_payment ? data.net_payment : 0}
-
                       />
                       <span
                         className="fw-bold"
@@ -1793,8 +1728,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           ? data.bill_amount_in_words
                           : ""}
                       </span>
-
-                    
                     </div>
 
                     {netPaymentError && (
@@ -1807,9 +1740,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </p>
                     )}
 
-                   
-
-                  
                     <div className=" col-md mt-4">
                       <input
                         className="sm-1"
@@ -1823,8 +1753,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         disabled={
                           authorities &&
                           authorities.Original_Bill_Needed === false
-                            ?
-                              true
+                            ? true
                             : false
                         }
                       />
@@ -1885,8 +1814,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </div>
                         </>
                       )}
-
-                  
                   </div>
                   <div className="form-group row mt-3 ">
                     <div className=" col-md-4 ">
@@ -1900,7 +1827,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="narration"
                         rows="4"
                         maxLength={1000}
-                       
                       />
                     </div>
                     <div className=" col-md-4 ">
@@ -1928,7 +1854,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="audit_remark"
                         name="audit_remark"
                         maxLength={1000}
-                     
                         readOnly={
                           authorities && authorities.Internal_Audit === false
                             ? true
@@ -1953,7 +1878,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ? true
                             : false
                         }
-                       
                       />
                     </div>
                   </div>
@@ -1976,10 +1900,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                             ref={fileInputRef}
                             multiple
                             disabled={
-                            
                               data.is_rejected == 1 ||
                               data.created_by == localStorage.getItem("id") ||
-                           
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -1989,7 +1911,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             }
                             onChange={(e) => {
                               uploadAttachmentHandler(e, "UPLOAD", "");
-                              maxLengthCheck(e, "UPLOAD");
+                              // maxLengthCheck(e, "UPLOAD");
                             }}
                           />
                         </div>
@@ -2000,8 +1922,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
                             id="authorized_by_management"
-                          
-
                             onChange={(e) => handleAuthorizedByManagement(e)}
                             defaultChecked={
                               data.authorized_by_management == 1 ? true : false
@@ -2024,7 +1944,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                             className="sm-1"
                             type="checkbox"
                             style={{ marginRight: "8px", marginLeft: "10px" }}
-                           
                             id="authorized_by_hod"
                             onChange={(e) => handleAuthorizedByHod(e)}
                             defaultChecked={
@@ -2044,8 +1963,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </div>
                     </div>
                   </div>
-
-                  
 
                   <div
                     className="attachments-container"
@@ -2082,7 +1999,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 style={{ padding: "10px", overflow: "hidden" }}
                               >
                                 <span
-                                 
                                   style={{
                                     display: "inline-block",
                                     overflow: "hidden",
@@ -2129,7 +2045,6 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                   {data && data.attachment && (
                     <div
-                    
                       className="attachments-container"
                       style={{
                         display: "flex",
@@ -2167,7 +2082,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                                   }}
                                 >
                                   <span
-                                
                                     style={{
                                       display: "inline-block",
                                       overflow: "hidden",
@@ -2208,7 +2122,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 </div>
                               </div>
                             </div>
-                            
                           );
                         })}
                     </div>
@@ -2295,11 +2208,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </div>
                         )
                       )}
-
-                   
                   </div>
-
-                 
                 </div>
               </div>
               {/* CARD */}

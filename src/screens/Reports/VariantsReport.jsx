@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { Table } from "react-bootstrap";
+import { Modal, Spinner, Table } from "react-bootstrap";
 import { Astrick } from "../../components/Utilities/Style";
 import ErrorLogService from "../../services/ErrorLogService";
 import UserService from "../../services/MastersService/UserService";
@@ -15,13 +15,14 @@ import { useDispatch, useSelector } from "react-redux";
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==38)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 38)
   );
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -92,10 +93,13 @@ export default function ResourcePlanningReportComponent() {
   const loadData = async () => {
     const tempUserData = [];
     const exportTempData = [];
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const data = res.data.data.filter((d) => d.is_active == 1 && d.account_for === "SELF");
+        const data = res.data.data.filter(
+          (d) => d.is_active == 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -115,7 +119,6 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -124,7 +127,7 @@ export default function ResourcePlanningReportComponent() {
     //     }
     //   }
     // });
-    dispatch(getRoles())
+    dispatch(getRoles());
 
     // const data = [];
     // await new ReportService()
@@ -209,6 +212,7 @@ export default function ResourcePlanningReportComponent() {
   };
 
   const handleForm = async (e) => {
+    setShowLoaderModal(true);
     e.preventDefault();
     const formData = new FormData(e.target);
     const tempData = [];
@@ -222,6 +226,7 @@ export default function ResourcePlanningReportComponent() {
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
+            setShowLoaderModal(false);
             if (res.data.status == 1) {
               let sr = 1;
               const data = res.data.data;
@@ -316,7 +321,9 @@ export default function ResourcePlanningReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label htmlFor="" className="">
-                  <b>Select User :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Select User :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {userData && (
                   <Select
@@ -380,20 +387,22 @@ export default function ResourcePlanningReportComponent() {
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
               </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: "right",
-                  marginTop: "20px",
-                  fontWeight: "600",
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Variance Report"
-                />
-              </div>
+              {data && data.length > 0 && (
+                <div
+                  className="col-md-10"
+                  style={{
+                    textAlign: "right",
+                    marginTop: "20px",
+                    fontWeight: "600",
+                  }}
+                >
+                  <ExportToExcel
+                    className="btn btn-sm btn-danger"
+                    apiData={exportData && exportData}
+                    fileName="Variance Report"
+                  />
+                </div>
+              )}
             </div>
           </form>
         </div>
@@ -412,14 +421,26 @@ export default function ResourcePlanningReportComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
-                // expandableRows
-                // expandableRowsComponent={ExpandedComponent}
+                  // expandableRows
+                  // expandableRowsComponent={ExpandedComponent}
                 />
               )}
             </div>
           </div>
         </div>
       </div>
+
+      <Modal show={showLoaderModal} centered>
+        <Modal.Body className="text-center">
+          <Spinner animation="grow" variant="primary" />
+          <Spinner animation="grow" variant="secondary" />
+          <Spinner animation="grow" variant="success" />
+          <Spinner animation="grow" variant="danger" />
+          <Spinner animation="grow" variant="warning" />
+          <Spinner animation="grow" variant="info" />
+          <Spinner animation="grow" variant="dark" />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

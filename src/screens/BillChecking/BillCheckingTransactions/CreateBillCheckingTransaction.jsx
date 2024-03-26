@@ -83,8 +83,8 @@ export default function CreateBillCheckingTransaction({ match }) {
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
-);
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
+  );
 
   const sectionRef = useRef();
   const dispatch = useDispatch();
@@ -299,7 +299,6 @@ export default function CreateBillCheckingTransaction({ match }) {
     //   }
     // });
     dispatch(getRoles());
-    
 
     await new BillCheckingTransactionService()
       .getSectionDropdown()
@@ -562,35 +561,36 @@ export default function CreateBillCheckingTransaction({ match }) {
         const fileSize = file.size; // Get the file size in bytes
 
         // Check if the file type is valid (PNG, JPG, JPEG, or PDF)
-        if (validFileTypes.includes(fileType)) {
-          // Check if the total size of all files is less than or equal to 5MB
-          if (totalSize + fileSize <= 5 * 1024 * 1024) {
-            tempSelectedFile.push({
-              file: file,
-              fileName: file.name,
-              tempUrl: URL.createObjectURL(file),
-            });
+        // if (validFileTypes.includes(fileType)) {
+        // Check if the total size of all files is less than or equal to 5MB
+        // if (totalSize + fileSize <= 5 * 1024 * 1024) {
+        tempSelectedFile.push({
+          file: file,
+          fileName: file.name,
+          tempUrl: URL.createObjectURL(file),
+        });
 
-            totalSize += fileSize; // Update the total size
-          } else {
-            // Handle the case where the total size exceeds 5MB (e.g., show an error message)
-            alert("Total file size exceeds 5MB. Please select smaller files.");
-            break; // Stop processing more files
-          }
-        } else {
-          // Handle the case where an invalid file type is selected (e.g., show an error message)
-          alert(
-            "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
-          );
-        }
+        totalSize += fileSize; // Update the total size
+        //   } else {
+        //     // Handle the case where the total size exceeds 5MB (e.g., show an error message)
+        //     alert("Total file size exceeds 5MB. Please select smaller files.");
+        //     break; // Stop processing more files
+        //   }
+        // } else {
+        //   // Handle the case where an invalid file type is selected (e.g., show an error message)
+        //   alert(
+        //     "Invalid file type. Please select PNG, JPG, JPEG, or PDF files."
+        //   );
+        // }
       }
 
-      if (tempSelectedFile.length <= 10) {
-        fileInputRef.current.value = "";
-        setSelectedFiles(tempSelectedFile);
-      } else {
-        alert("You can only upload a maximum of 10 attachments.");
-      }
+      // if (tempSelectedFile.length <= 10) {
+      fileInputRef.current.value = "";
+      setSelectedFiles(tempSelectedFile);
+      // }
+      // else {
+      //   alert("You can only upload a maximum of 10 attachments.");
+      // }
     } else if (type === "DELETE") {
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
@@ -757,7 +757,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   }, [checkRole]);
 
-  console.log(checkRole)
+  console.log(checkRole);
 
   const [roundOffError, setRoundOffError] = useState("");
 
@@ -1583,29 +1583,29 @@ export default function CreateBillCheckingTransaction({ match }) {
                           const selectedFile = e.target.files[0];
 
                           // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
+                          // if (
+                          //   selectedFile.type === "image/jpg" ||
+                          //   selectedFile.type === "image/jpeg" ||
+                          //   selectedFile.type === "image/png" ||
+                          //   selectedFile.type === "application/pdf"
+                          // ) {
+                          //   // File type is allowed
+                          // } else {
+                          //   // Check if the file type is BMP
+                          //   if (selectedFile.type === "image/bmp") {
+                          //     alert(
+                          //       "Invalid file format. BMP files are not allowed."
+                          //     );
+                          //   } else {
+                          //     alert(
+                          //       "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                          //     );
+                          //   }
+                          //   e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          // }
 
                           uploadAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "UPLOAD");
+                          // maxLengthCheck(e, "UPLOAD");
                         }}
                       />
                     </div>
