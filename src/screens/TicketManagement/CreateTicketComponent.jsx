@@ -159,6 +159,9 @@ export default function CreateTicketComponent() {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
       }
     }
+    console.log("formData",formData)
+    console.log("selectedFiles",selectedFiles)
+
     var flag = 1;
     console.log("selectQueryGroup", selectQueryGroup)
     if (selectQueryGroup && selectQueryGroup.length > 0) {
