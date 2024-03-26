@@ -251,17 +251,80 @@ function BillCheckingTransaction() {
         const originalParam = row.id;
 
         return (
+          // <Dropdown className="d-inline-flex m-1">
+          //   <Dropdown.Toggle
+          //     as="button"
+          //     variant=""
+          //     id={`${"dropdown-basic_" + data?.id}`}
+          //     className="btn btn-primary text-white"
+          //   >
+          //     <i className="icofont-listine-dots"></i>
+          //   </Dropdown.Toggle>
+          //   {row &&
+          //     ((row.level == parseInt(row.total_level) &&
+          //       row.is_assign_to == 1) ||
+          //       row.is_editable_for_creator == 1 ||
+          //       (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+          //       (authorities &&
+          //         authorities.All_Update_Bill === true &&
+          //         row.is_assign_to != 1) ||
+          //       (row.level != parseInt(row.total_level) &&
+          //         row.is_approver == 1)) &&
+          //     row.is_active == 1 && (
+          //       <li>
+          //         <Link
+          //           to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+          //           className="btn btn-sm btn-primary text-white"
+          //           style={{ width: "100%", zIndex: 100 }}
+          //         >
+          //           <i className="icofont-edit"></i> Edit
+          //         </Link>
+          //       </li>
+          //     )}
+
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
               id={`${"dropdown-basic_" + data?.id}`}
               className="btn btn-primary text-white"
+              style={{
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.875rem",
+                marginRight: "5px",
+              }} // Adjust the size and margin as needed
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
+
+            {row &&
+              ((row.level == parseInt(row.total_level) &&
+                row.is_assign_to == 1) ||
+                row.is_editable_for_creator == 1 ||
+                (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+                (authorities &&
+                  authorities.All_Update_Bill === true &&
+                  row.is_assign_to != 1) ||
+                (row.level != parseInt(row.total_level) &&
+                  row.is_approver == 1)) &&
+              row.is_active == 1 && (
+                // <li>
+                <Link
+                  to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                  className="btn btn-sm btn-primary text-white"
+                  style={{
+                    padding: "0.25rem 0.5rem",
+                    fontSize: "0.875rem", // Match the font size with the dropdown toggle
+                  }}
+                >
+                  <i className="icofont-edit"></i>
+                  {/* Edit */}
+                </Link>
+                // </li>
+              )}
+
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
@@ -281,7 +344,7 @@ function BillCheckingTransaction() {
                       <i className="icofont-edit"></i> Edit
                     </Link>
                   </li>
-                )}
+                )} */}
 
               <li>
                 <Link

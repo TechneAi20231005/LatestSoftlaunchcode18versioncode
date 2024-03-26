@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorLogService from "../../../services/ErrorLogService";
@@ -56,7 +54,6 @@ function EditCustomer({ match }) {
   };
 
   const loadData = async () => {
-
     await new CustomerService()
       .getCustomerById(customerId)
       .then((res) => {
@@ -142,8 +139,6 @@ function EditCustomer({ match }) {
     });
 
     dispatch(getRoles());
-
-    
   };
 
   const [emailError, setEmailError] = useState("");
@@ -166,7 +161,7 @@ function EditCustomer({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
-  
+
     setContactNumber(contactNumber);
     if (
       contactNumber.charAt(0) == "9" ||
@@ -188,7 +183,6 @@ function EditCustomer({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     var flag = 1;
-  
 
     var customerType = formData.getAll("customer_type_id");
     var selectEmail = formData.getAll("email_id");
@@ -210,20 +204,12 @@ function EditCustomer({ match }) {
       } else if (selectEmail == "") {
         alert("Please Select Email");
       } else if (selectCountry == "") {
-   
         alert("Please Select Country");
-     
       } else if (selectState == "") {
- 
         alert("Please Select State");
-
       } else if (selectCity == "") {
-
         alert("Please Select City");
-  
       } else {
-   
-   
       }
     }
 
@@ -481,12 +467,11 @@ function EditCustomer({ match }) {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        defaultValue={data&& data.remark}
+                        defaultValue={data && data.remark}
                         maxLength={50}
                       />
                     </div>
                   </div>
-               
 
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
@@ -621,7 +606,6 @@ function EditCustomer({ match }) {
                             )
                           }
                           onChange={handleCountryChange}
-                          
                         />
                       )}
                     </div>
@@ -638,7 +622,6 @@ function EditCustomer({ match }) {
                           options={stateDropdown}
                           id="state_id"
                           name="state_id"
-                         
                           defaultValue={stateName}
                           onChange={handleStateChange}
                           value={stateName}

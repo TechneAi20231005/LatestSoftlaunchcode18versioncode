@@ -28,10 +28,6 @@ export default function CreateCustomer({ match }) {
     state_id: null,
   });
 
-
-
-
-
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [stateName, setStateName] = useState(null);
@@ -66,14 +62,11 @@ export default function CreateCustomer({ match }) {
     (DashbordSlice) => DashbordSlice.dashboard.FilterCity
   );
 
-
-
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
   );
 
   const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
-
 
   const [stateDropdownData, setStateDropdownData] = useState(false);
   const [cityDropdownData, setCityDropdownData] = useState(false);
@@ -84,18 +77,15 @@ export default function CreateCustomer({ match }) {
     const newEmail = e.target.value;
     setEmail(newEmail);
 
-
     if (newEmail.trim() === "") {
       setIsValidEmail(true);
     } else {
-
       const isValid = validateEmail(newEmail);
       setIsValidEmail(isValid);
     }
   };
 
   const validateEmail = (email) => {
-
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
@@ -146,29 +136,17 @@ export default function CreateCustomer({ match }) {
       flag = 0;
       setNotify(null);
       if (customerType == "") {
-
         alert("Please Select Customer Type");
-
       } else if (selectEmail == "") {
-
         alert("Please Select Email");
-
       } else if (selectCountry == "") {
-
         alert("Please Select Country");
-
       } else if (selectState == "") {
-
         alert("Please Select State");
-
       } else if (selectCity == "") {
-
         alert("Please Select City");
-
       } else {
-
         alert("Please Check Form");
-
       }
     }
 
@@ -177,10 +155,7 @@ export default function CreateCustomer({ match }) {
       return false;
     } else {
       if (flag === 1) {
-
-
         dispatch(postCustomerData(formData)).then((res) => {
-
           if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
             setNotify({
               type: "success",
@@ -201,19 +176,13 @@ export default function CreateCustomer({ match }) {
             setNotify({ type: "danger", message: res?.payload?.data?.message });
           }
         });
-
-
-
       }
     }
   };
 
-  const loadData = async () => {
-
-  };
+  const loadData = async () => {};
 
   const handleCountryChange = (e) => {
-
     setStateDropdownData(
       stateDropdown
         .filter((filterState) => filterState.country_id === e.value)
@@ -227,13 +196,11 @@ export default function CreateCustomer({ match }) {
   };
 
   const handleStateChange = (e) => {
-
     setCityDropdownData(
       AllcityDropDownData.filter(
         (filterState) => filterState.state_id === e.value
       ).map((d) => ({ value: d.id, label: d.city }))
     );
-
 
     const newStatus = { ...updateStatus, citydrp: 1 };
     setUpdateStatus(newStatus);
@@ -243,7 +210,6 @@ export default function CreateCustomer({ match }) {
 
   const onTestChange = () => {
     var key = window.event.keyCode;
-
 
     if (key === 13) {
       document.getElementById("txtArea").value =
@@ -273,8 +239,6 @@ export default function CreateCustomer({ match }) {
     if (!cityDropdownData.length) {
     }
   }, []);
-
-
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -347,8 +311,9 @@ export default function CreateCustomer({ match }) {
                   <div className="col-sm-4">
                     <input
                       type="email"
-                      className={`form-control form-control-sm ${isValidEmail ? "" : "is-invalid"
-                        }`}
+                      className={`form-control form-control-sm ${
+                        isValidEmail ? "" : "is-invalid"
+                      }`}
                       id="email_id"
                       name="email_id"
                       placeholder="Email Address"
@@ -362,8 +327,6 @@ export default function CreateCustomer({ match }) {
                       </div>
                     )}
                   </div>
-
-
                 </div>
 
                 <div className="form-group row mt-3">
@@ -427,7 +390,6 @@ export default function CreateCustomer({ match }) {
                       onChange={onTestChange}
                       onKeyPress={(e) => {
                         if (e.key === "Enter") {
-
                         } else {
                           Validation.addressField(e);
                         }
@@ -473,7 +435,6 @@ export default function CreateCustomer({ match }) {
                       id="country_id"
                       name="country_id"
                       onChange={handleCountryChange}
-
                       required
                     />
                   </div>
