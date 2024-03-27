@@ -2144,7 +2144,7 @@ const TestCases = ({ match }) => {
                   {userTypeData === 'TESTER' && executable == 0 && (
                     <div>
                       <a
-                        href='http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/TestCases/downloadSampleFormat.csv'
+                        href='http://3.108.206.34/TSNewBackend/public/TestCases/downloadSampleFormat.csv'
                         className='btn btn-warning'
                         download
                       >

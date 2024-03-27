@@ -123,7 +123,7 @@ function VendorMaster({ match }) {
     {
       name: "Action",
       className: "font-weight-bold",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -1006,7 +1006,7 @@ function VendorMaster({ match }) {
     if (type === "UPLOAD") {
       if (
         panattachment?.length +
-          (panAttachmentRef?.current?.files?.length || 0) >
+        (panAttachmentRef?.current?.files?.length || 0) >
         2
       ) {
         panAttachmentRef.current.value = "";
@@ -1053,7 +1053,7 @@ function VendorMaster({ match }) {
     if (type === "UPLOAD") {
       if (
         adharattachment?.length +
-          (aadharAttachmentRef?.current?.files?.length || 0) >
+        (aadharAttachmentRef?.current?.files?.length || 0) >
         2
       ) {
         aadharAttachmentRef.current.value = "";
@@ -1100,7 +1100,7 @@ function VendorMaster({ match }) {
     if (type === "UPLOAD") {
       if (
         MSMEselectedFiles?.length +
-          (msmeInputRef?.current?.files?.length || 0) >
+        (msmeInputRef?.current?.files?.length || 0) >
         2
       ) {
         msmeInputRef.current.value = "";
@@ -1147,7 +1147,7 @@ function VendorMaster({ match }) {
     if (type === "UPLOAD") {
       if (
         passBookSelectedFiles?.length +
-          (passbookInputRef?.current?.files?.length || 0) >
+        (passbookInputRef?.current?.files?.length || 0) >
         2
       ) {
         passbookInputRef.current.value = "";
@@ -1199,7 +1199,7 @@ function VendorMaster({ match }) {
     if (type === "UPLOAD") {
       if (
         chequeAttachmentSelectedFiles?.length +
-          (chequeInputRef?.current?.files?.length || 0) >
+        (chequeInputRef?.current?.files?.length || 0) >
         2
       ) {
         chequeInputRef.current.value = "";
@@ -1599,7 +1599,6 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           URL =
-            //  "http://3.108.206.34/3_SoftLaunch/TSNewBackend/"
             `${_attachmentUrl}` + res.data.data;
           window.open(URL, "_blank").focus();
         }
@@ -1631,7 +1630,6 @@ function VendorMaster({ match }) {
         } else {
           setError({ type: "danger", message: res.data.message });
           URL =
-            // "http://3.108.206.34/3_SoftLaunch/TSNewBackend/"
             `${_attachmentUrl}` + res.data.data;
           window.open(URL, "_blank")?.focus();
           setNotify({ type: "danger", message: res.data.message });
@@ -1928,12 +1926,12 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? CountryDropdown.filter(
-                                (d) => d.label === modal.modalData.country
-                              )
+                              (d) => d.label === modal.modalData.country
+                            )
                             : CountryDropdown.filter(
-                                (d) =>
-                                  d.value === parseInt(modal.modalData.country)
-                              )
+                              (d) =>
+                                d.value === parseInt(modal.modalData.country)
+                            )
                         }
                         required={true}
                       />
@@ -1956,12 +1954,12 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? stateDropdown.filter(
-                                (d) => d.label == modal.modalData.state
-                              )
+                              (d) => d.label == modal.modalData.state
+                            )
                             : stateDropdown.filter(
-                                (d) =>
-                                  d.value == parseInt(modal.modalData.state)
-                              )
+                              (d) =>
+                                d.value == parseInt(modal.modalData.state)
+                            )
                         }
                         required={true}
                       />
@@ -1981,11 +1979,11 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? cityDropdown.filter(
-                                (d) => d.label == modal.modalData.city
-                              )
+                              (d) => d.label == modal.modalData.city
+                            )
                             : cityDropdown.filter(
-                                (d) => d.value == parseInt(modal.modalData.city)
-                              )
+                              (d) => d.value == parseInt(modal.modalData.city)
+                            )
                         }
                         required={true}
                       />
@@ -2731,7 +2729,7 @@ function VendorMaster({ match }) {
                         }}
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2822,8 +2820,8 @@ function VendorMaster({ match }) {
                         ref={passbookInputRef}
                         disabled={
                           modal.modalData.bank_passbook_attachment &&
-                          authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities &&
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2930,7 +2928,7 @@ function VendorMaster({ match }) {
                         name="account_no"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -3040,8 +3038,8 @@ function VendorMaster({ match }) {
                       multiple={true}
                       disabled={
                         modal.modalData.cheque_attachment &&
-                        authorities &&
-                        authorities.Edit_Vendor_Master_Bank_Details === false
+                          authorities &&
+                          authorities.Edit_Vendor_Master_Bank_Details === false
                           ? true
                           : false
                       }
@@ -3151,7 +3149,7 @@ function VendorMaster({ match }) {
                         maxLength="11"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -3260,7 +3258,7 @@ function VendorMaster({ match }) {
                         id="beneficiary_name"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -3347,7 +3345,7 @@ function VendorMaster({ match }) {
                         }}
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -3490,7 +3488,7 @@ function VendorMaster({ match }) {
                       value={erp}
                       readOnly={
                         authorities &&
-                        authorities.Update_ERP_Account_Name === false
+                          authorities.Update_ERP_Account_Name === false
                           ? true
                           : false
                       }
@@ -3685,8 +3683,8 @@ function VendorMaster({ match }) {
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                ? true
-                                : false
+                                  ? true
+                                  : false
                             }
                           />
                           <label

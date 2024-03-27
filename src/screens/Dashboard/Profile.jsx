@@ -212,7 +212,6 @@ function Profile() {
         if (res.data.status == 1) {
           res.data.data.profile_picture =
             `${_attachmentUrl}` +
-            // "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" +
             res.data.data.profile_picture;
           setData(res.data.data);
         }
