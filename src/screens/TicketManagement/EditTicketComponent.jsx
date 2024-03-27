@@ -349,6 +349,11 @@ export default function EditTicketComponent({ match }) {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active,department_id";
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      console.log("resE", res.payload.data.data);
+      console.log(
+        "department",
+        res.payload.data.data.filter((d) => d.department_id == 23)
+      );
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
           const data = res.payload.data.data.filter(
@@ -595,6 +600,7 @@ export default function EditTicketComponent({ match }) {
   const reviewerIdRef = useRef();
   const handleDepartment = (e) => {
     if (e) {
+      console.log("e==>", e.value);
       const select = user
         .filter((d) => d.department_id == e.value)
         .map((d) => ({

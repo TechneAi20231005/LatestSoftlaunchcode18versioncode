@@ -82,7 +82,8 @@ export default function Header() {
         if (res.data.status == 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
-            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data.profile_picture;
+            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" +
+            res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
@@ -344,8 +345,9 @@ export default function Header() {
                   >
                     <Link
                       to={`/${_base}/Notification`}
-                      className={`card-footer text-center border-top-0 ${!showApprovedOnly ? "bg-info" : ""
-                        }`}
+                      className={`card-footer text-center border-top-0 ${
+                        !showApprovedOnly ? "bg-info" : ""
+                      }`}
                       onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
                     >
                       View All Notifications
@@ -355,8 +357,9 @@ export default function Header() {
 
                     <Link
                       to={`/${_base}/ApprovedNotification`}
-                      className={`card-footer text-center border-top-0 ${showApprovedOnly ? "bg-info" : ""
-                        }`}
+                      className={`card-footer text-center border-top-0 ${
+                        showApprovedOnly ? "bg-info" : ""
+                      }`}
                       onClick={() => setShowApprovedOnly(true)}
                     >
                       Approved Only By Me

@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProjectService from "../../../services/ProjectManagementService/ProjectService";
@@ -21,11 +18,11 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
-  const projectId = id
+  const projectId = id;
 
   const [data, setData] = useState(null);
   const [customer, setCustomer] = useState(null);
@@ -86,7 +83,7 @@ export default function EditProjectComponent({ match }) {
     await new ProjectService()
       .getProjectById(projectId)
       .then((res) => {
-        console.log("res", res)
+        console.log("res", res);
         if (res.status === 200) {
           const data = res.data.data;
           if (data && data.projectOwners) {
@@ -108,21 +105,23 @@ export default function EditProjectComponent({ match }) {
           const { request, ...errorObject } = response;
 
           // Continue handling the error as needed
-          setNotify({ type: 'danger', message: errorObject.data.message });
+          setNotify({ type: "danger", message: errorObject.data.message });
           new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
+            "Project",
+            "Edit_Project",
+            "INSERT",
             errorObject.data.message
           );
         } else {
-          console.error("Error object does not contain expected 'response' property:", error);
+          console.error(
+            "Error object does not contain expected 'response' property:",
+            error
+          );
 
           // Handle cases where 'response' is not available
           // You may want to log or handle this case accordingly
         }
       });
-
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -132,7 +131,7 @@ export default function EditProjectComponent({ match }) {
     //     }
     //   }
     // });
-    dispatch(getRoles())
+    dispatch(getRoles());
   };
 
   const handleForm = async (e) => {
@@ -144,10 +143,15 @@ export default function EditProjectComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/Project`,
-
-            }, { state: { alert: { type: "success", message: res.data.message } } }
+            history(
+              {
+                pathname: `/${_base}/Project`,
+              },
+              {
+                state: {
+                  alert: { type: "success", message: res.data.message },
+                },
+              }
             );
           } else {
             setNotify({ type: "danger", message: res.data.message });
@@ -181,8 +185,6 @@ export default function EditProjectComponent({ match }) {
       data.logo;
     window.open(URL, "_blank");
   };
-
-
 
   useEffect(() => {
     loadData();
@@ -220,8 +222,8 @@ export default function EditProjectComponent({ match }) {
                         defaultValue={
                           data
                             ? customer.filter(
-                              (d) => d.value == data.customer_id
-                            )
+                                (d) => d.value == data.customer_id
+                              )
                             : ""
                         }
                       />
@@ -465,10 +467,3 @@ export default function EditProjectComponent({ match }) {
     </div>
   );
 }
-
-
-
-
-
-
-
