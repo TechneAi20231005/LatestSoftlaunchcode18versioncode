@@ -220,6 +220,6 @@ export default class VendorMasterService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`http://3.108.206.34/TSNewBackend/public/api/billCheckingMaster/deleteAttachment/${attachment_id}`, config);
+    return axios.get(`http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/billCheckingMaster/deleteAttachment/${attachment_id}`, config);
   }
 }
