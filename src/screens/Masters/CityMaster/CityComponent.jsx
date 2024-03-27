@@ -1,12 +1,14 @@
+
+
+
+
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
-import ErrorLogService from "../../../services/ErrorLogService";
 
-import CountryService from "../../../services/MastersService/CountryService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import StateService from "../../../services/MastersService/StateService";
+import { useSelector, useDispatch } from "react-redux";
+
 import CityService from "../../../services/MastersService/CityService";
 
 import PageHeader from "../../../components/Common/PageHeader";
@@ -16,18 +18,18 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { handleModalInStore,handleModalClose,  } from "../../Dashboard/DashbordSlice";
 
 import { Spinner } from "react-bootstrap";
+
+import { getCityData, getCountryData, getCountryDataSort, getStateDataSort, postCityData, updateCityData } from "../../Dashboard/DashboardAction";
+import { getRoles } from "../../Dashboard/DashboardAction"
 function CityComponent() {
-  const [data, setData] = useState(null);
 
-  const [dataa, setDataa] = useState(null);
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
-  const [stateDropdownNew, setStateDropdownNew] = useState(null);
 
-  const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
+
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [updateStatus, setUpdateStatus] = useState({});
@@ -35,22 +37,33 @@ function CityComponent() {
 
   const [stateName, setStateName] = useState(null);
 
-  const [notify, setNotify] = useState();
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+
+
 
   const [dependent, setDependent] = useState({
     country_id: null,
     state_id: null,
   });
 
-  const [exportData, setExportData] = useState(null);
+
 
   const searchRef = useRef();
 
+  const dispatch = useDispatch();
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
+  const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
+  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const StateData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredStateData)
+  const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard?.filteredCountryData)
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
+
+  const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCityData)
+
+  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7));
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -67,32 +80,20 @@ function CityComponent() {
     });
   }
 
+
+  const [searchTerm, setSearchTerm] = useState('');
+ 
+  const [filteredData, setFilteredData] = useState([]);
+  const handleSearch = (value) => {
+
+  };
   
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
-
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
-  const handleModal = (data) => {
-    if (data.modalData !== "" && data.modalData !== null) {
-      setStateName(data.modalData.state);
-    }
-    setModal(data);
-    if (data.modalData) {
-      setDependent({
-        country_id: data.modalData.country_id,
-        state_id: data.modalData.state_id,
-      });
-    }
-  };
 
   const columns = [
-    // Columns definition..
+
     {
       name: "Action",
       selector: (row) => {},
@@ -104,13 +105,16 @@ function CityComponent() {
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
+            
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit City",
-              });
-            }}
+        
+              dispatch(
+                handleModalInStore({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit City",
+                })
+              );}}
           >
             <i className="icofont-edit text-success"></i>
           </button>
@@ -186,125 +190,13 @@ function CityComponent() {
     },
   ];
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    // Load data and update state.
-    const data = [];
-    const exportTempData = [];
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.country,
-              }))
-          );
-        }
-      }
-    });
+   
+ 
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
 
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          // setStateDropdown(
-          //   res.data.data
-          //     .filter((d) => d.is_active === 1)
-          //     .map((d) => ({ value: d.id, label: d.state })),
-          // )
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-                country_id: d.country_id,
-              }))
-          );
 
-          setStateDropdownNew(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-              }))
-          );
-        }
-      }
-    });
-    await new CityService()
-      .getCity()
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              city: temp[key].city,
-              state: temp[key].state,
-              state_id: temp[key].state_id,
-              country: temp[key].country,
-              country_id: temp[key].country_id,
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setDataa(data);
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              City: data[i].city,
-              State: data[i].state,
-              Country: data[i].country,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              Remark: data[i].remark,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
 
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "City",
-          "Get_City",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    
   };
 
   const handleForm = (id) => async (e) => {
@@ -322,88 +214,49 @@ function CityComponent() {
         alert("Please Select State");
       }
     }
-
     if (flag === 1) {
-      setNotify(null);
       if (!id) {
-        await new CityService()
-          .postCity(form)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                setNotify(null);
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
-
-                loadData();
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              new ErrorLogService().sendErrorLog(
-                "City",
-                "Create_City",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            new ErrorLogService().sendErrorLog(
-              "City",
-              "Create_City",
-              "INSERT",
-              errorObject.data.message
-            );
-          });
+        dispatch(postCityData(form)).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCityData());
+  
+          } else {
+          }
+        });
+      
+      
       } else {
-        await new CityService()
-          .updateCity(id, form)
-          .then((res) => {
-            if (res.status === 200) {
-              setShowLoaderModal(false);
-              if (res.data.status) {
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
-                loadData();
-                setNotify(null);
-                setNotify({ type: "success", message: res.data.message });
-              } else {
-                setNotify(null);
-                setNotify({ type: "danger", message: res.data.message });
-              }
+
+
+        dispatch(updateCityData({ id:id,
+          payload: form})).then((res) => {
+            if (res?.payload?.data?.status === 1) {
+              dispatch(getCityData());
+    
             } else {
-              setNotify({ type: "danger", message: res.message });
-              new ErrorLogService().sendErrorLog(
-                "City",
-                "Edit_City",
-                "INSERT",
-                res.message
-              );
             }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setNotify({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "City",
-              "Edit_City",
-              "INSERT",
-              errorObject.data.message
-            );
           });
+ 
+     
       }
     }
   };
 
   const handleCountryChange = (e) => {
-    setStateDropdown(
-      state
-        .filter((d) => d.country_id == e.value)
-        .map((d) => ({ value: d.id, label: d.state }))
+
+    setStateDropdownData(
+      stateDropdown &&
+        stateDropdown
+          ?.filter((filterState) => filterState.country_id === e.value)
+          ?.map((d) => ({ value: d.id, label: d.state }))
     );
+  
+
+    // setStateDropdown(
+    //   StateData
+    //     ?.filter((d) => d.country_id == e.value)
+    //     .map((d) => ({ value: d.id, label: d.state }))
+    // );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
@@ -415,9 +268,37 @@ function CityComponent() {
     }
   };
 
+
+  
   useEffect(() => {
-    loadData();
+
+    dispatch(getCityData());
+    dispatch(getRoles())
+    dispatch(getCountryData())
+   dispatch(getStateDataSort())
+   dispatch(getCountryDataSort())
+  
+
+    if(!cityData.length || !checkRole.length || !StateData.length || !CountryData.length){
+     
+    }
+    
   }, []);
+
+  useEffect(() => {
+    setFilteredData(cityData.filter(customer => {
+      if (typeof searchTerm === 'string') {
+        if (typeof customer === 'string') {
+          return customer.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (typeof customer === 'object') {
+          return Object.values(customer).some(value =>
+            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+      }
+      return false;
+    }));
+  }, [searchTerm, cityData]);
 
   useEffect(() => {
     if (dependent.country_id !== null) {
@@ -431,30 +312,32 @@ function CityComponent() {
           };
         }
       });
-      setStateDropdown(filterNewState);
+      setStateDropdownData(filterNewState);
     }
   }, [dependent]);
 
   useEffect(() => {
-    if (checkRole && checkRole[6].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
         setStateName(
-          stateDropdown.filter((d) => modal.modalData.state_id == d.value)
+          stateDropdown?.filter((d) => modal.modalData.state_id == d.value)
         );
       }
     }
   }, [modal.showModal, checkRole]);
 
+
+
   return (
     <div className="container-xxl">
-      {notify && (
+      {Notify && (
         <>
           {" "}
-          <Alert alertData={notify} />{" "}
+          <Alert alertData={Notify} />{" "}
         </>
       )}
       <PageHeader
@@ -462,16 +345,19 @@ function CityComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[6].can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
                     setStateName(null);
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add City",
-                    });
+                    dispatch(
+                      handleModalInStore({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add City",
+                      })
+                    );
+                  
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add City
@@ -491,15 +377,20 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) =>setSearchTerm(e.target.value)}
+
+     
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+             
               style={{ marginTop: "0px", fontWeight: "600" }}
+              value={searchTerm} 
+              onClick={() => handleSearch(searchTerm)}
+
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -513,20 +404,35 @@ function CityComponent() {
             </button>
             <ExportToExcel
               className="btn btn-sm btn-danger"
-              apiData={exportData}
+              apiData={ExportData}
               fileName="City master"
             />
           </div>
         </div>
       </div>
+   
+
+
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {cityData && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                 
+                  data={cityData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
+                        return Object.values(customer).some(value =>
+                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -551,22 +457,22 @@ function CityComponent() {
         </Modal.Body>
       </Modal>
 
+
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+      
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header closeButton  onClick={() => {dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: null,
+                        modalHeader: "Add City",
+                      }))}}>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -577,14 +483,15 @@ function CityComponent() {
                     Select Country :<Astrick color="red" size="13px" />
                   </label>
                   <Select
-                    options={countryDropdown}
+          
+                    options={CountryData&& CountryData}
                     id="country_id"
                     name="country_id"
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? countryDropdown.filter(
-                            (d) => modal.modalData.country_id == d.value
+                        ? CountryData?.filter(
+                            (d) => modal?.modalData?.country_id == d.value
                           )
                         : ""
                     }
@@ -592,18 +499,21 @@ function CityComponent() {
                   />
                 </div>
 
+
+
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
                     Select State :<Astrick color="red" size="13px" />
                   </label>
                   <Select
-                    options={stateDropdownNew}
+             
+                    options={stateDropdownData}
                     id="state_id"
                     name="state_id"
-                    // onChange={handleCountryChange}
+                    onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? stateDropdownNew.filter(
+                        ? StateData.filter(
                             (d) => modal.modalData.state_id == d.value
                           )
                         : ""
@@ -722,7 +632,7 @@ function CityComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[6].can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -736,13 +646,19 @@ function CityComponent() {
             <button
               type="button"
               className="btn btn-danger text-white"
-              onClick={() => {
-                handleModal({
+              onClick={() => {dispatch(
+                handleModalClose({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
+                  modalData: null,
+                  modalHeader: "Add City",
+                }))}}
+              // onClick={() => {
+              //   handleModal({
+              //     showModal: false,
+              //     modalData: "",
+              //     modalHeader: "",
+              //   });
+              // }}
             >
               Cancel
             </button>
@@ -754,9 +670,9 @@ function CityComponent() {
 }
 function CityDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect( () => {
     const tempData = [];
-    await new CityService().getCity().then((res) => {
+     new CityService().getCity().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -813,3 +729,4 @@ function CityDropdown(props) {
 }
 
 export { CityComponent, CityDropdown };
+

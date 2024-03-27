@@ -64,6 +64,8 @@ export default class BillTypeMasterService{
             "Content-Type": "application/json",
           },
         };
+        // payload.append('tenant_id',userSessionData.tenantId);
+
             return axios.post(_URL+"/createBillType",payload,config)
     }
 

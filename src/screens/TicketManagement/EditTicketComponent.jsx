@@ -18,7 +18,14 @@ import DynamicFormDropdownMasterService from "../../services/MastersService/Dyna
 import UserService from "../../services/MastersService/UserService";
 import PageHeader from "../../components/Common/PageHeader";
 import Select from "react-select";
-
+import { getCurrentDate } from "../../components/Utilities/Functions";
+import { UserDropdown } from "../Masters/UserMaster/UserComponent";
+import { DepartmentDropdown } from "../Masters/DepartmentMaster/DepartmentComponent";
+import { StatusDropdown } from "../Masters/StatusMaster/StatusComponent";
+import { QueryTypeDropdown } from "../Masters/QueryTypeMaster/QueryTypeComponent";
+import { ProjectDropdown } from "../ProjectManagement/ProjectMaster/ProjectComponent";
+import { ModuleDropdown } from "../ProjectManagement/ModuleMaster/ModuleComponent";
+import { SubModuleDropdown } from "../ProjectManagement/SubModuleMaster/SubModuleComponent";
 import { Astrick } from "../../components/Utilities/Style";
 import { userSessionData as user } from "../../settings/constants";
 import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
@@ -38,27 +45,45 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import { Mention, MentionsInput } from "react-mentions";
 import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+import ProjectMasterSlice from "../ProjectManagement/ProjectMaster/ProjectMasterSlice";
+import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
+import ModuleSlice from "../ProjectManagement/ModuleMaster/ModuleSlice";
+import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
+import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
+import {
+  getSubModuleById,
+  subModuleMaster,
+} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
+import StatusComponentSlice from "../Masters/StatusMaster/StatusComponentSlice";
+import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
+import QueryTypeComponetSlice from "../Masters/QueryTypeMaster/QueryTypeComponetSlice";
+import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
+import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
+import { getUserForMyTicketsData } from "./MyTicketComponentAction";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function EditTicketComponent({ match }) {
-  const navigate = useNavigate();
+  const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const ticketId = id;
-
   const [dateValue, setDateValue] = useState(new Date());
-
   const editor = useRef(null);
-
   const [idCount, setIdCount] = useState([]);
-
   const [convertedContent, setConvertedContent] = useState(null);
   const [allUsers, setAllUsers] = useState();
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
+
+  const dispatch = useDispatch();
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
+  );
 
   const [projectDropdown, setProjectDropdown] = useState();
 
@@ -101,10 +126,11 @@ export default function EditTicketComponent({ match }) {
   const [tester, setTester] = useState(null);
   const [ticketStatus, setTicketStatus] = useState();
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const [confirmationModalDetails, setConfirmationModalDetails] =useState(false);
+  const [confirmationModalDetails, setConfirmationModalDetails] =
+    useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-
+  const [updateStatus, setUpdateStatus] = useState({});
   const [dateErr, setDateErr] = useState(null);
 
   const [proceed, setProceed] = useState(true);
@@ -175,9 +201,6 @@ export default function EditTicketComponent({ match }) {
             setProceed(true);
             setConfirmationModal(false);
             setNotify({ type: "success", message: res.data.message });
-            setTimeout(() => {
-              navigate(`/${_base}/Ticket`);
-            }, 1000);
           } else {
             setNotify({ type: "danger", message: res.data.message });
             setProceed(false);
@@ -224,19 +247,16 @@ export default function EditTicketComponent({ match }) {
           setShowLoaderModal(false);
           if (res.status === 200) {
             if (res.data.status === 1) {
-              navigate(
-                `/${_base}/Ticket`
-                // {
-                //   alert: { type: "success", message: res.data.message },
-                // }
-                // {
-                //   pathname: `/${_base}/Ticket`,
-                // },
-                // {
-                //   state: {
-                //     alert: { type: "success", message: res.data.message },
-                //   },
-                // }
+              history(
+                {
+                  pathname: `/${_base}/Ticket`,
+                },
+                {
+                  state: {
+                    type: "success",
+                    message: res.data.message,
+                  },
+                }
               );
             } else {
               setNotify({ type: "danger", message: res.data.message });
@@ -328,17 +348,21 @@ export default function EditTicketComponent({ match }) {
 
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data
-            .filter((d) => d.is_active == 1)
+    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      if (res.payload.status == 200) {
+        if (res.payload.data.status == 1) {
+          console.log("res",res.payload.data.data)
+          const data = res.payload.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === "SELF"
+          );
+          const select = res.payload.data.data
+            .filter((d) => d.is_active == 1 && d.account_for === "SELF")
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
+          console.log("data",data)
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -352,7 +376,6 @@ export default function EditTicketComponent({ match }) {
         setUsers(res.data.data.ticket_users);
         setTicketStatus(data.status_id);
         setRows(res.data.data.dynamic_form);
-
         if (data.status_id == 3) {
           setIsSolved(true);
         }
@@ -391,7 +414,6 @@ export default function EditTicketComponent({ match }) {
                 }
               });
 
-              //Remove from array
               dynamicForm.forEach((d, i) => {
                 if (d.inputType === "select") {
                   if (tempResponse.length > 0) {
@@ -403,18 +425,7 @@ export default function EditTicketComponent({ match }) {
               });
               setRows(dynamicForm);
             })
-            .catch((err) => {
-              console.log("Error >>>>>>>>>>>>>>>>>>>>>>", err);
-            });
-        }
-      }
-    });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+            .catch((err) => {});
         }
       }
     });
@@ -517,10 +528,10 @@ export default function EditTicketComponent({ match }) {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+          const temp = res?.data?.data?.filter((d) => d.is_active == 1);
           setSubModuleData(temp);
           setSubModuleDropdown(
-            temp.map((d) => ({ value: d.id, label: d.sub_module_name }))
+            temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
           );
         }
       }
@@ -583,7 +594,6 @@ export default function EditTicketComponent({ match }) {
   const moduleIdRef = useRef();
   const subModuleIdRef = useRef();
   const reviewerIdRef = useRef();
-  console.log("module id", moduleIdRef);
   const handleDepartment = (e) => {
     if (e) {
       const select = user
@@ -592,6 +602,9 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + " " + d.last_name + "(" + d.id + ")",
         }));
+        console.log("select",select)
+        console.log("user",user)
+
       setUserDropdown(select);
       setUserName(null);
     }
@@ -647,11 +660,11 @@ export default function EditTicketComponent({ match }) {
   const handleModuleChange = (e) => {
     if (e) {
       setSubModuleDropdown(null);
-      setSubModuleDropdown(
-        subModuleData
-          .filter((d) => d.module_id == e.value)
-          .map((d) => ({ value: d.id, label: d.sub_module_name }))
-      );
+      const data = subModuleData
+        .filter((d) => d.module_id == e.value)
+        .map((d) => ({ value: d.id, label: d.sub_module_name }));
+
+      setSubModuleDropdown(data);
     }
   };
 
@@ -713,10 +726,21 @@ export default function EditTicketComponent({ match }) {
     },
   ];
 
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
+
+  const handleRadioChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+  const handleCheckBoxChange = (event) => {
+    setSelectedCheckBoxValue(event.target.value);
+  };
+
   useEffect(() => {
     loadData();
     setConfirmationModal(false, null);
     loadAttachment();
+    dispatch(getRoles());
   }, []);
 
   useEffect(() => {
@@ -726,7 +750,6 @@ export default function EditTicketComponent({ match }) {
         label: d.first_name + " " + d.last_name,
       }));
       setUserName(userData.filter((d) => d.value == data.assign_to_user_id));
-      // setUserDropdown(user.filter(d => d.department_id == data.assign_to_department_id).map(d => ({ value: d.id, label: d.first_name + " " + d.last_name })))
       setUserDropdown(
         user
           .filter((d) => d.department_id == data.assign_to_department_id)
@@ -735,7 +758,6 @@ export default function EditTicketComponent({ match }) {
             label: d.first_name + " " + d.last_name,
           }))
       );
-      // console.log("u",data.map(d => d.department_id == data.assign_to_department_id).filter(d => ({ value: d.id, label: d.first_name + " " + d.last_name })))
     }
   }, [user]);
 
@@ -756,7 +778,7 @@ export default function EditTicketComponent({ match }) {
     .padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`;
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -866,7 +888,6 @@ export default function EditTicketComponent({ match }) {
                         readOnly={true}
                       />
                     </div>
-                    {expectedTrue && JSON.stringify(expectedTrue)}
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>
@@ -982,7 +1003,6 @@ export default function EditTicketComponent({ match }) {
               </div>
               {/* CARD */}
 
-              {/* {data && data.passed_status == "PASS" && */}
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row">
@@ -992,10 +1012,11 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {projectDropdown && (
+                      {projectDropdown && data && (
                         <Select
                           id="project_id"
                           name="project_id"
+                          required
                           options={projectDropdown}
                           onChange={handleProjectChange}
                           defaultValue={projectDropdown.filter(
@@ -1010,17 +1031,21 @@ export default function EditTicketComponent({ match }) {
                           Module : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {moduleDropdown && (
+                      {moduleDropdown && data && (
                         <Select
                           id="module_id"
                           name="module_id"
                           options={moduleDropdown}
                           ref={moduleIdRef}
+                          required
                           clearValue={true}
                           onChange={handleModuleChange}
-                          defaultValue={moduleDropdown.filter(
-                            (d) => d.value == data.module_id
-                          )}
+                          defaultValue={
+                            moduleDropdown &&
+                            moduleDropdown.filter(
+                              (d) => d.value == data.module_id
+                            )
+                          }
                         />
                       )}
                     </div>
@@ -1035,9 +1060,12 @@ export default function EditTicketComponent({ match }) {
                           id="submodule_id"
                           name="submodule_id"
                           ref={subModuleIdRef}
-                          defaultValue={subModuleDropdown.filter(
-                            (d) => d.value == data.submodule_id
-                          )}
+                          defaultValue={
+                            subModuleDropdown &&
+                            subModuleDropdown.filter(
+                              (d) => d.value == data.submodule_id
+                            )
+                          }
                         />
                       )}
                     </div>
@@ -1071,7 +1099,7 @@ export default function EditTicketComponent({ match }) {
                       <div className="col-sm-3">
                         <label className=" col-form-label">
                           <b>
-                            Assign to Department :{" "}
+                            Assign Department :{" "}
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
@@ -1113,7 +1141,6 @@ export default function EditTicketComponent({ match }) {
                                 (d) => d.value == data.assign_to_user_id
                               )
                             }
-                            // defaultValue={data.assign_to_user}
                             isDisabled={isSolved}
                           />
                         )}
@@ -1124,26 +1151,7 @@ export default function EditTicketComponent({ match }) {
                             Priority :<Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {/* <select className="form-control form-control-sm" 
-                                            id="priority"
-                                                name="priority" 
-                                                required={true}                                                 
-                                                disabled={data && (data.status_id==3 || data.status_id=="3")}
-                                                >
-                                                <option value="Low"
-                                                    selected={data.priority === "Low" ? true : false}>Low
-                                                </option>
-                                                <option value="Medium"
-                                                    selected={data.priority === "Medium" ? true : false}>Medium
-                                                </option>
-                                                <option value="High"
-                                                    selected={data.priority === "High" ? true : false}>High
-                                                </option>
-                                                <option value="Very High"
-                                                    selected={data.priority === "Very High" ? true : false}>Very
-                                                    High
-                                                </option>
-                                            </select> */}
+
                         <input
                           type="text"
                           className="form-control form-control-sm"
@@ -1161,12 +1169,6 @@ export default function EditTicketComponent({ match }) {
                             Status : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {/* <StatusDropdown id="status_id" name="status_id"
-                                                required
-                                                defaultValue={data.status_id}
-                                                // disabled={data && (data.status_id==3 || data.status_id=="3")}
-                                                getChangeValue={e => handleTicketStatus(e)}
-                                            /> */}
 
                         {statusData && (
                           <Select
@@ -1174,9 +1176,12 @@ export default function EditTicketComponent({ match }) {
                             name="status_id"
                             options={statusData}
                             onChange={(e) => handleTicketStatus(e)}
-                            defaultValue={statusData.filter(
-                              (d) => d.value == data.status_id
-                            )}
+                            defaultValue={
+                              statusData &&
+                              statusData.filter(
+                                (d) => d.value == data.status_id
+                              )
+                            }
                           />
                         )}
                       </div>
@@ -1184,132 +1189,375 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
-              {rows && rows.length > 0 && (
-                <div className="card mt-2">
-                  <div className="card-body">
-                    <div className="row">
-                      {rows.map((data, index) => {
-                        var range = "";
-                        return (
-                          <div className={`${data.inputWidth} mt-2`}>
-                            <label>
-                              <b>{data.inputLabel} :</b>
-                            </label>
-                            {data.inputType === "text" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                readOnly
-                                className="form-control form-control-sm"
-                              />
-                            )}
 
-                            {data.inputType === "textarea" && (
-                              <textarea
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                className="form-control form-control-sm"
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                              />
+              {rows && rows.length > 0 && (
+                <div className="row">
+                  {rows.map((data, index) => {
+                    var range = "";
+                    return (
+                      <div className={`${data.inputWidth} mt-2`}>
+                        <label>
+                          <b>
+                            {data.inputLabel}{" "}
+                            {data.inputMandatory == true ? (
+                              <Astrick color="red" size="13px" />
+                            ) : (
+                              ""
                             )}
-                            {data.inputType === "date" && (
-                              <div className="form-control">
-                                <DatePicker
-                                  // onChange={onChangeDate}
-                                  value={dateValue}
-                                  format={data.inputFormat}
-                                  style={{ width: "100%" }}
-                                />
-                              </div>
-                            )}
-                            {data.inputType === "time" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "number" && (
-                              <input
-                                type={data.inputType}
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                min={data.inputAddOn.inputRange ? range[0] : ""}
-                                max={data.inputAddOn.inputRange ? range[1] : ""}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "decimal" && (
-                              <input
-                                type="number"
-                                id={
-                                  data.inputName
-                                    ? data.inputName
-                                        .replace(/ /g, "_")
-                                        .toLowerCase()
-                                    : ""
-                                }
-                                name={data.inputName}
-                                defaultValue={data.inputDefaultValue}
-                                onChange={dynamicChangeHandle}
-                                min={data.inputAddOn.inputRange ? range[0] : ""}
-                                max={data.inputAddOn.inputRange ? range[1] : ""}
-                                className="form-control form-control-sm"
-                              />
-                            )}
-                            {data.inputType === "select" && (
-                              <input
-                                type="text"
-                                // defaultValue={selectedDropdown ? selectedDropdown[data.inputName] : ""}
-                                // defaultValue={data.inputDefaultValue ? data.inputAddOn.inputDataSourceData.filter(d => d.value == data.inputDefaultValue) : ""}
-                                defaultValue={data.inputDefaultValue}
-                                // options={data.inputAddOn.inputDataSourceData}
-                                // id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                                name={data.inputName}
-                                // onChange={e => { dynamicDependancyHandle(data.inputName, e, data.inputAddOn.inputOnChangeSource) }}
-                                className="form-control form-control-sm"
-                                required={data.inputMandatory ? true : false}
-                                readOnly
-                              />
-                            )}
+                            :
+                          </b>
+                        </label>
+                        {data.inputType === "text" && (
+                          <input
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            defaultValue={data.inputDefaultValue}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            readOnly
+                            onChange={dynamicChangeHandle}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "textarea" && (
+                          <textarea
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            readOnly
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                            defaultValue={
+                              selectedDropdown
+                                ? selectedDropdown[data.inputName]
+                                : ""
+                            }
+                            onChange={dynamicChangeHandle}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                          >
+                            {data.inputDefaultValue}
+                          </textarea>
+                        )}
+
+                        {data.inputType === "date" && (
+                          <div className="form-control">
+                            <input
+                              type="date"
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
+                              }
+                              readOnly
+                              defaultValue={data.inputDefaultValue}
+                              style={{ width: "100%" }}
+                            />
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                        )}
+
+    
+    
+
+                        {data.inputType === "datetime-local" && (
+                          <div className="form-control">
+                            <input
+                              type="datetime-local"
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
+                              }
+                              readOnly
+                              onChange={dynamicChangeHandle}
+                              defaultValue={data.inputDefaultValue}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        )}
+
+                        {data.inputType === "time" && (
+                          <input
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            readOnly
+                            name={data.inputName}
+                            defaultValue={
+                              data.inputDefaultValue
+                              // selectedDropdown
+                              //   ? selectedDropdown[data.inputName]
+                              //   : ""
+                            }
+                            onChange={dynamicChangeHandle}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            className="form-control form-control-sm"
+                          />
+                        )}
+
+
+                        {data.inputType == "radio" && data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                              return (
+                                <div>
+                                  <input
+                                    // id={
+                                    //   data.inputName
+                                    //     ? data.inputName
+                                    //         .replace(/ /g, "_")
+                                    //         .toLowerCase()
+                                    //     : ""
+                                    // }
+                                    value={d.value}
+                                    onChange={handleRadioChange}
+                                    defaultChecked={
+                                      d.value == data.inputDefaultValue
+                                    }
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="radio"
+                                    disabled
+                                  />
+                                  <label for={d.value}>{d.label}</label>
+                                </div>
+                              );
+                            })
+                          : ""}
+
+                        {data.inputType == "checkbox" &&
+                        data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                              return (
+                                <div>
+                                  <input
+                                    // id={
+                                    //   data.inputName
+                                    //     ? data.inputName
+                                    //         .replace(/ /g, "_")
+                                    //         .toLowerCase()
+                                    //     : ""
+                                    // }
+                                    required={
+                                      data.inputMandatory == true ? true : false
+                                    }
+                                    value={d.value}
+                                    onChange={handleCheckBoxChange}
+                                    defaultChecked={
+                                      d.value == data.inputDefaultValue
+                                    }
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="checkbox"
+                                    disabled
+                                  />
+                                  <label for={d.value}> {d.label}</label>
+                                </div>
+                              );
+                            })
+                          : ""}
+
+                        {data.inputType === "number" && (
+                          <input
+                            type={data.inputType}
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            defaultValue={data.inputDefaultValue}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            readOnly
+                            onChange={dynamicChangeHandle}
+                            min={data.inputAddOn.inputRange ? range[0] : ""}
+                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "decimal" && (
+                          <input
+                            type="number"
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            readOnly
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            onChange={dynamicChangeHandle}
+                            minLength={parseInt(data.inputAddOn.inputRangeMin)}
+                            maxLength={parseInt(data.inputAddOn.inputRangeMax)}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {/* {data.inputType === "select" && (
+                          <Select
+                            defaultValue={
+                              selectedDropdown
+                                ? selectedDropdown[data.inputName]
+                                : ""
+                            }
+                            options={data.inputAddOn.inputRadio}
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            name={data.inputName}
+                            onChange={(e) => {
+                              dynamicDependancyHandle(
+                                data.inputName,
+                                e,
+                                data.inputAddOn.inputOnChangeSource
+                              );
+                            }}
+                            className="form-control form-control-sm"
+                            required={data.inputMandatory ? true : false}
+                          />
+                        )} */}
+
+                        {data.inputType === "select" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            disabled
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputRadio &&
+                              data.inputAddOn.inputRadio.map((option) => {
+                                return (
+                                  <option
+                                    selected={
+                                      parseInt(
+                                        data && data?.inputAddOn?.inputRadio
+                                      ) == option.value
+                                    }
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                );
+                              })}
+                          </select>
+                        )}
+
+                        {/* {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={option.value === data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )} */}
+
+                        {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            disabled
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) == option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -1444,26 +1692,6 @@ export default function EditTicketComponent({ match }) {
                   })}
               </div>
 
-              {/* <div className='card mt-2'>
-                            <div className='card-body'>
-                                <div className="col-sm-4 mt-3">
-                                    <label className=" col-form-label">
-                                        <b>Upload Attachment : </b>
-                                    </label>
-                                    <input type="file"
-                                        id="attachment"
-                                        name="attachment[]"
-                                        multiple
-                                    />
-                                </div>
-                            </div>
-                            <Attachment
-                                data={attachment}
-                                refId={ticketId}
-                                handleAttachment={handleAttachment}
-                            />
-                        </div> */}
-
               <div className="mt-3" style={{ textAlign: "right" }}>
                 {isSolved == false && (
                   <button type="submit" className="btn btn-sm btn-primary">
@@ -1551,6 +1779,7 @@ export default function EditTicketComponent({ match }) {
                     className="form-control form-control-sm"
                     name="otp"
                     id="otp"
+                    required
                     minLength={6}
                     maxLength={6}
                     onKeyPress={(e) => {

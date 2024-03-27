@@ -24,23 +24,7 @@ class Sidebar extends React.Component {
     }
   }
 
-  // componentWillUnmount () {
-  //   // Remove the event listener when the component is about to unmount
-  //   window.removeEventListener('unload', this.handleBeforeUnload)
-  // }
-
-  // handleBeforeUnload = () => {
-  //   // Perform any cleanup tasks or clear the session here
-  //   // For example, you can clear session storage or local storage
-  //   window.sessionStorage.clear()
-  //   window.localStorage.clear()
-
-  //   // NOTE: Modern browsers may not show a custom message anymore, but you can still use it
-  //   // to perform cleanup tasks before the user leaves the page.
-  //   const confirmationMessage = 'Are you sure you want to leave?'
-  //   alert(confirmationMessage)
-  //   return confirmationMessage
-  // }
+ 
 
   decodeToken = token => {
     // Decode JWT token payload
@@ -80,14 +64,12 @@ class Sidebar extends React.Component {
 
         this.setState({ menuData: tempMenu })
       } else {
-        // window.location.reload(false)
       }
 
       window.document.children[0].setAttribute('data-theme', 'light')
     } catch (error) {
-      console.log('API call failed:', error)
+   
     } finally {
-      // window.location.reload(false)
     }
   }
 

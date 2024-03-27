@@ -43,12 +43,11 @@ export default function BasketDetails(props) {
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => { 
+  const handleForm = async (e) => {
     e.preventDefault();
     setNotify(null);
     const formData = new FormData(e.target);
 
-    formData.append("ticket_id", props.ticketId);
     formData.append("source", "AFTER_TICKET_INSERT");
     if (formData.get("id")) {
       await new BasketService()
@@ -124,7 +123,7 @@ export default function BasketDetails(props) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const tempData = res.data.data
-            .filter((d) => d.is_active === 1)
+            .filter((d) => d.is_active === 1 && d.account_for === "SELF")
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
@@ -192,13 +191,13 @@ export default function BasketDetails(props) {
                   id="basket_name"
                   name={`${props.data ? "basket_name" : "basket_name[]"}`}
                   className="form-control form-control-sm"
-                  defaultValue={props.data ? props.data.basket_name : null}
+                  defaultValue={props?.data ? props?.data?.basket_name : null}
                   onKeyPress={(e) => {
                     Validation.CharactersNumbersSpeicalOnly(e);
                   }}
                   required
                 />
-              </div>  
+              </div>
             </div>
 
             <div className="form-group row">
@@ -251,9 +250,7 @@ export default function BasketDetails(props) {
                   type="date"
                   name={`${props.data ? "end_date" : "end_date[]"}`}
                   className="form-control form-control-sm"
-                  //  onChange={handleToDate}
                   required
-                  // max={ticketData && ticketData.expected_solve_date}
                   min={todate}
                   readOnly={props.data && props.data.end_date ? true : false}
                   value={props.data ? props.data.end_date : null}
@@ -284,3 +281,6 @@ export default function BasketDetails(props) {
     </>
   );
 }
+
+
+

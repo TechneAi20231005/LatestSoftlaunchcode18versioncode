@@ -1,38 +1,58 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
+
 import CustomerType from "../../../services/MastersService/CustomerTypeService";
 import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
+
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import { Spinner } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCustomerTypeData,
+  postCustomerData,
+  updateCustomerData,
+} from "./CustomerTypeComponentAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import {
+  handleModalClose,
+  handleModalOpen,
+} from "./CustomerTypeComponentSlice";
 
 function CustomerTypeComponent() {
-    const isActive1Ref = useRef()
-    const isActive0Ref = useRef()
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
-  const [notify, setNotify] = useState();
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  const isActive1Ref = useRef();
+  const dispatch = useDispatch();
+  const customerData = useSelector(
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
+  );
+  const exportData = useSelector(
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
+  );
+
+  const modal = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
+  );
+  const notify = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
+  );
+
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
+  );
+
+  const isActive0Ref = useRef();
+
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [isActive, setIsActive] = useState(1)
-  const [exportData, setExportData] = useState(null);
+  const [isActive, setIsActive] = useState(1);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
   const searchRef = useRef();
 
   function SearchInputData(data, search) {
@@ -51,11 +71,9 @@ function CustomerTypeComponent() {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (value) => {};
 
   const columns = [
     {
@@ -71,11 +89,13 @@ function CustomerTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Customer Type",
-              });
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Customer Type",
+                })
+              );
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -99,6 +119,7 @@ function CustomerTypeComponent() {
       name: "Status",
       selector: (row) => row.is_active,
       sortable: true,
+      width: "125px",
       cell: (row) => (
         <div>
           {row.is_active == 1 && (
@@ -142,175 +163,36 @@ function CustomerTypeComponent() {
 
   const loadData = async () => {
     setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    const data = [];
-    const exportTempData = [];
-    await new CustomerType()
-      .getCustomerType()
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              type_name: temp[key].type_name,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setDataa(data);
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              customer_type_name: data[i].type_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              Remark: data[i].remark,
-              created_at: data[i].created_at,
-              created_by: data[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "Customer Type",
-          "Get_CustomerType",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
   };
-  const handleIsActive = (e) =>{
-   const  value =e.target.value;
-    
-    if(value == 1) {
-        setIsActive(1)
-    }else {
-        setIsActive(0)
+  const handleIsActive = (e) => {
+    const value = e.target.value;
+
+    if (value == 1) {
+      setIsActive(1);
+    } else {
+      setIsActive(0);
     }
-  }
+  };
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+
     const form = new FormData(e.target);
     if (!id) {
-      await new CustomerType()
-        .postCustomerType(form)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "CustomerType",
-              "Create_CustomerType",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "CustomerType",
-            "Create_CustomerType",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(postCustomerData(form)).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCustomerTypeData());
+        } else {
+        }
+      });
     } else {
-        form.delete('is_active')
-        form.append('is_active', isActive)
-      await new CustomerType()
-        .updateCustomerType(id, form)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-
-            if (res.data.status === 1) {
-                setIsActive(1)
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "CustomerType",
-              "Edit_CustomerType",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
-          new ErrorLogService().sendErrorLog(
-            "CustomerType",
-            "Edit_CustomerType",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(updateCustomerData({ id: id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getCustomerTypeData());
+        } else {
+        }
+      });
     }
   };
-
-  //Search As Enter key press
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -319,8 +201,8 @@ function CustomerTypeComponent() {
   };
 
   useEffect(() => {
-    if (checkRole && checkRole[11].can_read === 0) {
-      // alert("Rushi")
+    if (checkRole && checkRole[0]?.can_read === 0) {
+
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -328,6 +210,11 @@ function CustomerTypeComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(getCustomerTypeData());
+
+    if (!customerData?.length) {
+      dispatch(getRoles());
+    }
   }, []);
 
   return (
@@ -338,15 +225,17 @@ function CustomerTypeComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[11].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Customer Type",
-                    });
+                    dispatch(
+                      handleModalOpen({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Customer Type",
+                      })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Customer
@@ -368,14 +257,16 @@ function CustomerTypeComponent() {
               className="form-control"
               placeholder="Search by Customer Name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
+     
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -401,10 +292,29 @@ function CustomerTypeComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {customerData && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  // data={customerData}
+
+                  data={customerData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -432,19 +342,30 @@ function CustomerTypeComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -490,7 +411,7 @@ function CustomerTypeComponent() {
                     defaultValue={modal.modalData ? modal.modalData.remark : ""}
                   />
                 </div>
-            
+
                 {modal.modalData && (
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
@@ -503,10 +424,11 @@ function CustomerTypeComponent() {
                             className="form-check-input"
                             type="radio"
                             name="is_active"
-                            onClick={(e)=>{handleIsActive(e)}}
+                            onClick={(e) => {
+                              handleIsActive(e);
+                            }}
                             id="is_active_1"
                             ref={isActive1Ref}
-
                             value="1"
                             defaultChecked={
                               modal.modalData && modal.modalData.is_active === 1
@@ -531,7 +453,9 @@ function CustomerTypeComponent() {
                             type="radio"
                             name="is_active"
                             id="is_active_0"
-                            onClick={(e)=>{handleIsActive(e)}}
+                            onClick={(e) => {
+                              handleIsActive(e);
+                            }}
                             ref={isActive0Ref}
                             value="0"
                             readOnly={modal.modalData ? false : true}
@@ -569,7 +493,7 @@ function CustomerTypeComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[11].can_update === 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -584,11 +508,13 @@ function CustomerTypeComponent() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel
@@ -602,9 +528,9 @@ function CustomerTypeComponent() {
 
 function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new CustomerType().getCustomerType().then((res) => {
+    new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

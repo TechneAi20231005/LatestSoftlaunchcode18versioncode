@@ -5,6 +5,7 @@ const _URL = masterURL.template;
 const _getAllTemplate = _URL + "/getAllTemplate";
 const _createTemplate = _URL + "/createTemplate";
 const _getTemplateById = _URL + "/getTemplateById/";
+const _exportData = _URL + "/getTemplateExport";
 const _updateTemplate = _URL + "/updateTemplate/";
 
 const _updateTask = _URL + "/updateTask/";
@@ -24,6 +25,20 @@ export default class TemplateService {
     };
 
     return axios.get(_getAllTemplate, config);
+  }
+
+  exporttempData() {
+    const token = localStorage.getItem("jwt_token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+
+    return axios.get(_exportData, config);
   }
 
   postTemplate(payload) {

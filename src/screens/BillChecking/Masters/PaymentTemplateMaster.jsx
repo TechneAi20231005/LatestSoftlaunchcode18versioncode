@@ -19,13 +19,26 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import PaymentTemplateMasterSlice from "./BillTypeMaster/PaymentTemplateMasterSlice";
+import { paymentTemplate } from "./BillTypeMaster/PaymentTemplateMasterAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function PaymentTemplateMaster() {
+  const dispatch = useDispatch();
+  const paymentdata = useSelector(
+    (PaymentTemplateMasterSlice) =>
+      PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
+  );
+  const checkRole = useSelector((DashbordSlice) =>
+  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
+  );
+
   const [paymentType, setPaymentType] = useState("Weekly");
 
-  const paymentModeRef= useRef(null)
+  const paymentModeRef = useRef(null);
 
-  const [days,setDays]=useState()
+  const [days, setDays] = useState();
 
   const options = [
     { value: "01", label: "1" },
@@ -59,10 +72,6 @@ function PaymentTemplateMaster() {
     { value: "29", label: "29" },
     { value: "30", label: "30" },
     { value: "31", label: "31" },
-   
-    
-
-
   ];
 
   const weeks = [
@@ -84,7 +93,6 @@ function PaymentTemplateMaster() {
   });
 
   const handleModal = (data) => {
-    // alert(data.modalData.payment_type_name)
     setPaymentType(data ? data.modalData.payment_type_name : "");
     setModal(data);
   };
@@ -109,14 +117,13 @@ function PaymentTemplateMaster() {
     });
   }
 
-  const billDayRef =useRef(null)
+  const billDayRef = useRef(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {};
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -124,11 +131,8 @@ function PaymentTemplateMaster() {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
-  const fileInputRef = useRef(null);
-  const [dropdowns, setDropdowns] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
   const columns = [
     {
@@ -212,12 +216,6 @@ function PaymentTemplateMaster() {
       ),
     },
 
-    // {
-    //   name: "Template Name",
-    //   selector: (row) => row.template_name,
-    //   width:"150px",
-    //   sortable: true,
-    // },
     {
       name: "Payment Type",
       selector: (row) => row.payment_type_name,
@@ -235,6 +233,7 @@ function PaymentTemplateMaster() {
       name: "Bill Day",
       selector: (row) => row.bill_day,
       sortable: true,
+      width: "150px",
 
       cell: (row) => (
         <div
@@ -245,14 +244,7 @@ function PaymentTemplateMaster() {
           {row.template_name && (
             <OverlayTrigger overlay={<Tooltip>{row.bill_day} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.bill_day && row.bill_day.length } 
-                    
-                    
-                    
-                    
-                </span>
+                <span className="ms-1"> {row.bill_day && row.bill_day}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -348,45 +340,14 @@ function PaymentTemplateMaster() {
 
   const handleMinDaysLength = (e) => {
     if (e.target.value > 366) {
-      // setToolTip({'id':"MIN_DAYS","message":"YOU CANNOT ADD MORE DAYS THAN 366 !!!"})
       minDaysRef.current.value = "";
     } else {
-      // setToolTip({'id':"EMPTY","message":"NOTHING"});
     }
   };
 
   const loadData = async () => {
-    const data = [];
-    await new PaymentTemplateService().getPaymentTemplate().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            id: temp[key].id,
-            counter: counter++,
-            bill_type: temp[key].bill_type,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by,
-            template_name: temp[key].template_name,
-            payment_type: temp[key].payment_type,
-            payment_weekly: temp[key].payment_weekly,
-            bill_day: temp[key].bill_day,
-            min_days: temp[key].min_days,
-            payment_type_name: temp[key].payment_type_name,
-            bill_type_name: temp[key].bill_type_name,
-            payment_weekly_name: temp[key].payment_weekly_name,
-          });
-        }
-        setData(null);
-        setData(data);
-        setPaymentType("Weekly");
-      }
-    });
+    dispatch(paymentTemplate());
+    dispatch(getRoles());
 
     await new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
@@ -397,15 +358,6 @@ function PaymentTemplateMaster() {
             label: d.country,
           }))
         );
-      }
-    });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
       }
     });
 
@@ -432,29 +384,24 @@ function PaymentTemplateMaster() {
         );
       }
     });
-
-    // const form = new FormData();
-    // form.append('used_for', 'BC_Legal_Status,Bill_Type');
-    // await new DropdownService().getDropdown(form).then((res) => {
-    //     if (res.status === 200) {
-
-    //         const data = JSON.stringify(res.data.data);
-
-    //     }
-    // });
   };
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    setNotify(null);  
-    if(  paymentModeRef&& paymentModeRef.current.value == "Monthly" &&billDayRef.current && billDayRef.current.commonProps.hasValue === false){
-      alert("please select  bill days")
-      e.preventDefault()
-      billDayRef.current.clearValue()
-      return
+    setNotify(null);
+    if (
+      paymentModeRef &&
+      paymentModeRef.current.value == "Monthly" &&
+      billDayRef.current &&
+      billDayRef.current.commonProps.hasValue === false
+    ) {
+      alert("please select  bill days");
+      e.preventDefault();
+      billDayRef.current.clearValue();
+      return;
     }
-    
+
     if (!id) {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
@@ -463,7 +410,7 @@ function PaymentTemplateMaster() {
             if (res.data.status === 1) {
               setNotify({ type: "success", message: res.data.message });
               setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
+              dispatch(paymentTemplate());
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -496,7 +443,7 @@ function PaymentTemplateMaster() {
             if (res.data.status === 1) {
               setNotify({ type: "success", message: res.data.message });
               setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
+              dispatch(paymentTemplate());
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -535,9 +482,7 @@ function PaymentTemplateMaster() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[49].can_read === 0) {
-      // alert("Rushi")
-
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -577,14 +522,15 @@ function PaymentTemplateMaster() {
               name="search"
               placeholder="Search...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={(e) => handleSearch(e)}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -604,10 +550,27 @@ function PaymentTemplateMaster() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {paymentdata && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={paymentdata.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortFieldId="id"
                   pagination
                   selectableRows={false}
@@ -703,7 +666,7 @@ function PaymentTemplateMaster() {
                     >
                       <option value="">Select Bill Type</option>
                       <option value="Bill Date">Bill Date</option>
-                      <option value="Received Date">Recieved Date</option>
+                      <option value="Received Date">Received Date</option>
                     </select>
                   )}
 
@@ -720,7 +683,7 @@ function PaymentTemplateMaster() {
                     >
                       <option value="">Select Bill Type</option>
                       <option value="Bill Date">Bill Date</option>
-                      <option value="Received Date">Recieved Date</option>
+                      <option value="Received Date">Received Date</option>
                     </select>
                   )}
                 </div>
@@ -733,8 +696,6 @@ function PaymentTemplateMaster() {
                       Payment Weekly :<Astrick color="red" size="13px" />
                     </label>
                     <Select
-                     
-                     
                       options={weeks.map((d) => ({ label: d, value: d }))}
                       id="payment_weekly"
                       name="payment_weekly[]"
@@ -752,69 +713,44 @@ function PaymentTemplateMaster() {
                           : null
                       }
                     />
-
-                    {/* {!modal.modalData &&
-                                            <Select className="form-control"
-                                                options={weeks.map(d => ({ "label": d, "value": d }))}
-                                                id="payment_weekly"
-                                                name="payment_weekly[]"
-                                                required
-                                                isMulti
-
-                                            />
-
-                                        } */}
                   </div>
                 )}
 
                 {paymentType && paymentType === "Monthly" && (
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
-                      Bill Day :<Astrick color="red" size="13px" />
+                      Bill Date :<Astrick color="red" size="13px" />
                     </label>
-                    {modal.modalData && (
-                      // <input
-                      //   type="text"
-                      //   className="form-control form-control-sm"
-                      //   id="bill_day"
-                      //   name="bill_day"
-                      //   required={true}
-                      //   defaultValue={
-                      //     modal.modalData ? modal.modalData.bill_day : ""
-                      //   }
-                      // />
 
-                    <Select
-                       options={options}
-                       id="bill_day"
-                       name="bill_day"
-                       isSearchable 
-                       ref={billDayRef}
-                       isMulti
-                       isClearable
-                        />
+                    {modal.modalData && (
+                      <Select
+                        options={options}
+                        id="bill_day"
+                        name="bill_day[]"
+                        isSearchable
+                        ref={billDayRef}
+                        isMulti
+                        defaultValue={
+                          modal?.modalData?.bill_day
+                            ? options.filter((option) =>
+                                modal.modalData.bill_day
+                                  .split(",")
+                                  .includes(option.value)
+                              )
+                            : null
+                        }
+                        isClearable
+                      />
                     )}
                     {!modal.modalData && (
-                      // <input
-                      //   type="text"
-                      //   className="form-control form-control-sm"
-                      //   id="bill_day"
-                      //   name="bill_day"
-                      //   required={true}
-                      //   defaultValue={
-                      //     modal.modalData ? modal.modalData.bill_day : ""
-                      //   }
-                      // />
-
-                      <Select 
-                       options ={options}
-                       id="days" 
-                       name="days"
-                       isSearchable 
-                       isMulti
-                       isClearable
-                       ref={billDayRef}
-
+                      <Select
+                        options={options}
+                        id="bill_day[]"
+                        name="bill_day[]"
+                        isSearchable
+                        isMulti
+                        isClearable
+                        ref={billDayRef}
                       />
                     )}
                   </div>
@@ -926,34 +862,6 @@ function PaymentTemplateMaster() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="col-sm-12">
-                                    <label className="form-label font-weight-bold">Status :<Astrick color="red" size="13px" /></label>
-                                    <div className="row">
-                                        <div className="col-md-2">
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
-                                                    value="1"
-                                                    defaultChecked={(modal.modalData && modal.modalData.is_active === 1) ? true : ((!modal.modalData) ? true : false)}
-                                                />
-                                                <label className="form-check-label" htmlFor="is_active_1">
-                                                    Active
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-1">
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
-                                                    readOnly={(modal.modalData) ? false : true}
-                                                    defaultChecked={(modal.modalData && modal.modalData.is_active === 0) ? true : false}
-                                                />
-                                                <label className="form-check-label" htmlFor="is_active_0">
-                                                    Deactive
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
               </div>
             </div>
           </Modal.Body>
@@ -964,7 +872,7 @@ function PaymentTemplateMaster() {
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: "#484C7F" }}
               >
-                save
+                Save
               </button>
             )}
             {modal.modalData && (
@@ -995,54 +903,5 @@ function PaymentTemplateMaster() {
     </div>
   );
 }
-
-// function CountryDropdown(props){
-//     const [data, setData] = useState(null);
-//     useEffect( async () => {
-//         const tempData=[];
-//         await new CountryService().getCountry().then(res =>{
-//             if(res.status===200){
-//             let counter=1;
-//             const data=res.data.data;
-//             for (const key in data) {
-//                 if(data[key].is_active==1){
-//                     tempData.push({
-//                     id: data[key].id,
-//                     country: data[key].country
-//                     })
-//                 }
-//             }
-//             setData(tempData);
-//             }
-//         });
-//     }, [])
-
-//     return (
-//         <>
-//         { data &&
-//             <select className="form-control form-control-sm"
-//                     id={props.id}
-//                     name={props.name}
-//                     onChange={props.getChangeValue}
-//                     required={props.required ? true : false }
-//                     >
-//                 { props.defaultValue == 0 && <option value={0} selected>Select Country</option> }
-//                 { props.defaultValue != 0 && <option value={0}>Select Country</option> }
-//                 {data.map(function(item, i){
-//                     if(props.defaultValue && props.defaultValue==item.id){
-//                         return <option key={i} value={item.id} selected>{item.country}</option>
-//                     }else{
-//                         return <option key={i} value={item.id}>{item.country}</option>
-//                     }
-
-//                 })
-//             }
-//             </select>
-//         }
-
-//         {!data && <p> Loading....</p>}
-//         </>
-//     )
-// }
 
 export default PaymentTemplateMaster;

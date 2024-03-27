@@ -11,20 +11,21 @@ import ErrorLogService from "../../../services/ErrorLogService";
 import QueryTypeService from "../../../services/MastersService/QueryTypeService";
 import DynamicFormService from "../../../services/MastersService/DynamicFormService";
 import Alert from "../../../components/Common/Alert";
-import DynamicFormDropdown from "../DynamicFormMaster/DynamicFormDropdown";
+
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import InputGroup from "react-bootstrap/InputGroup";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import SplitButton from "react-bootstrap/SplitButton";
+
 import Dropdown from "react-bootstrap/Dropdown";
-import Button from "react-bootstrap/Button";
+
+
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function QueryTypeComponent() {
+  const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
@@ -45,10 +46,14 @@ function QueryTypeComponent() {
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
+  );
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
+
   const [editData, setEditData] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState(modal.modalData);
   const [modalEditPopup, setModalEditPopup] = useState({
@@ -115,8 +120,6 @@ function QueryTypeComponent() {
       setExportQueryGroupData(null);
       setExportQueryGroupData(exportTemporaryData);
     } else {
-      // setNotify(null)
-      // setNotify({ type: 'danger', message: 'Please Search Department Name' })
       alert("Please Search Query Group Name");
     }
   };
@@ -148,8 +151,6 @@ function QueryTypeComponent() {
 
   const handleModal = (data) => {
     setModal(data);
-    //    const tempo = data && data.modalData.query_group
-    // setQueryGroups(tempo)
   };
 
   const columns = [
@@ -485,18 +486,11 @@ function QueryTypeComponent() {
             exportTempQueryGroupData.push({
               Sr: data[i].counter,
               group_name: data[i].group_name,
-              is_active: data[i].is_active,
+              Status: data[i].is_active ? "Active" : "Deactive",
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
               updated_by: data[i].updated_by,
-              // Query_Type_Name: data[i].query_type_name,
-              // Status: data[i].is_active ? 'Active' : 'Deactive',
-              // created_at: data[i].created_at,
-              // created_by: data[i].created_by,
-              // updated_at: data[i].updated_at,
-              // updated_by: data[i].updated_by,
-              // query_group_data: temp[i].query_group_data,
             });
           }
 
@@ -586,7 +580,6 @@ function QueryTypeComponent() {
             });
             loadData();
             loadDataEditPopup();
-            // alert("Record Updated")
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }
@@ -650,13 +643,13 @@ function QueryTypeComponent() {
             exportTempData.push({
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
+              query_group_name: temp[i].query_group_name,
               Status: data[i].is_active ? "Active" : "Deactive",
               Remark: data[i].remark,
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
               updated_by: data[i].updated_by,
-              query_group_data: temp[i].query_group_data,
             });
           }
 
@@ -698,17 +691,7 @@ function QueryTypeComponent() {
         );
       }
     });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles());
   };
 
   const handleClearData = (e) => {
@@ -806,21 +789,6 @@ function QueryTypeComponent() {
     }
   };
 
-  //Search As Enter key press
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
-
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleSearch();
@@ -832,14 +800,6 @@ function QueryTypeComponent() {
     }
   };
 
-  // const [formId, setFormId]=useState(null)
-  // console.log(formId)
-  // useEffect(()=>{
-  //     if(modal.modalData){
-  //         setFormId(modal.modalData.query_group.forEach((d,i)=>d))
-  //     }
-  // },[formId])
-
   useEffect(() => {
     loadData();
     loadDataEditPopup();
@@ -847,14 +807,10 @@ function QueryTypeComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[13].can_read === 0) {
-      // alert("Rushi")
-
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
-  // const queryGroupDropdownValue = modal.modalData && JSON.stringify(modal.modalData.query_group)
 
   return (
     <>
@@ -865,7 +821,7 @@ function QueryTypeComponent() {
           renderRight={() => {
             return (
               <div className="col-auto d-flex w-sm-100">
-                {checkRole && checkRole[13].can_create === 1 ? (
+                {checkRole && checkRole[0]?.can_create === 1 ? (
                   <button
                     className="btn btn-dark btn-set-task w-sm-100"
                     onClick={() => {
@@ -979,7 +935,6 @@ function QueryTypeComponent() {
               <div className="deadline-form">
                 <div className="row g-3 mb-3">
                   <div className="col-sm-12">
-                    {/* {modal.modalData && JSON.stringify(modal.modalData)} */}
                     <label className="form-label font-weight-bold">
                       Query Type Name : <Astrick color="red" size="13px" />
                     </label>
@@ -1020,7 +975,7 @@ function QueryTypeComponent() {
                   </div>
                   <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
-                      Select Customer : 
+                      Select Customer :
                     </label>
 
                     <Select
@@ -1029,7 +984,7 @@ function QueryTypeComponent() {
                       name="customer_id"
                       defaultValue={
                         modal.modalData &&
-                        customerDropdown.filter(
+                        customerDropdown?.filter(
                           (d) => d.value == modal.modalData.customer_id
                         )
                       }
@@ -1215,7 +1170,7 @@ function QueryTypeComponent() {
               )}
               {modal.modalData &&
               checkRole &&
-              checkRole[13].can_update === 1 ? (
+              checkRole[0]?.can_update === 1 ? (
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
@@ -1273,25 +1228,6 @@ function QueryTypeComponent() {
           <Modal.Body>
             <div className="deadline-form">
               <div className="row g-3 mb-3">
-                {/* <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Select Customer : <Astrick color="red" size="13px" />
-                  </label>
-
-                  <Select
-                    options={customerDropdown}
-                    id="customer_id"
-                    name="customer_id"
-                    defaultValue={
-                      modalQueryGroup.modalDataQueryGroup &&
-                      customerDropdown.filter(
-                        (d) =>
-                          d.value ==
-                          modalQueryGroup.modalDataQueryGroup.customer_id
-                      )
-                    }
-                  />
-                </div> */}
                 <label className="form-label font-weight-bold">
                   Query Group :<Astrick color="red" size="13px" />
                 </label>
@@ -1325,7 +1261,6 @@ function QueryTypeComponent() {
                       id="group_name"
                       name="group_name"
                       placeholder=""
-                      // defaultValue={modalQueryGroup.modalDataQueryGroup && modalQueryGroup.modalDataQueryGroup && modalQueryGroup.modalDataQueryGroup.group_name ? modalQueryGroup.modalDataQueryGroup.group_name : ""}
                       maxLength={50}
                       required
                       onKeyPress={(e) => {
@@ -1335,10 +1270,11 @@ function QueryTypeComponent() {
                   )}
                 </div>
               </div>
+
               {modalQueryGroup.modalDataQueryGroup && (
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Status : <Astrick color="red" size="13px" />
+                    Status: <Astrick color="red" size="13px" />
                   </label>
                   <div className="row">
                     <div className="col-md-2">
@@ -1349,7 +1285,7 @@ function QueryTypeComponent() {
                           name="is_active"
                           id="is_active_1"
                           value="1"
-                          // key={Math.random()}
+                          onClick={(e) => handleIsActive(e)}
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 1
@@ -1379,6 +1315,7 @@ function QueryTypeComponent() {
                           readOnly={
                             modalQueryGroup.modalDataQueryGroup ? false : true
                           }
+                          onClick={(e) => handleIsActive(e)}
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 0
@@ -1428,7 +1365,7 @@ function QueryTypeComponent() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleFormQueryGroup({
+                handleModalQueryGroup({
                   showModalQueryGroup: false,
                   modalDataQueryGroup: "",
                   modalHeaderQueryGroup: "",
@@ -1484,7 +1421,6 @@ function QueryTypeComponent() {
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
-                  // onClick={() => window.location.reload(false)}
                   onClick={(e) => {
                     handleClearData(e);
                   }}
@@ -1520,12 +1456,7 @@ function QueryTypeComponent() {
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          {/* <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Understood</Button> */}
-        </Modal.Footer>
+        <Modal.Footer></Modal.Footer>
       </Modal>
       {/* ********************************************* End Edit & Popup********************************** */}
     </>
@@ -1534,9 +1465,9 @@ function QueryTypeComponent() {
 
 function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new QueryTypeService().getQueryType().then((res) => {
+    new QueryTypeService().getQueryType().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

@@ -213,19 +213,15 @@ function TestCase({ match }) {
   const submitHandler = (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-    // console.log(testCase);
-    // console.log(inputList);
-    // setTestCase([...testCase, { "module_id": ''}]);
+   
     new TestCaseService()
       .postTestcase(module_id, submodule_id, data)
       .then((res) => {
         if (res.status === 200) {
-          // console.log(res.data);
           if (res.data.status == 1) {
             document.getElementById("create-course-form").reset();
             history({
               pathname: `/${_base}/TestCase/${module_id}/${submodule_id}`,
-              // state: { showAlert: true, alertData: returnValue },
             });
           } else {
           }
@@ -239,15 +235,8 @@ function TestCase({ match }) {
     new TestCaseService()
       .deleteTestcase(id)
       .then((res) => {
-        console.log('deleted');
-        //     if(res.status===200){
-        //         if(data.status===1){
-        //             setShowAlert({show:true,type:"success",message:"Record Deleted"});
-        //         }else{
-        //             setShowAlert({show:true,type:"success",message:data.message});
-        //         }
-        //         loadData();
-        //     }
+    
+       
       });
   };
 

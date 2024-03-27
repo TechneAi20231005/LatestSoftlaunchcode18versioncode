@@ -14,7 +14,11 @@ import {
   getAttachment,
   deleteAttachment,
 } from "../../../services/OtherService/AttachmentService";
-import { _pincodeUrl, userSessionData } from "../../../settings/constants";
+import {
+  _pincodeUrl,
+  attachmentUrl,
+  userSessionData,
+} from "../../../settings/constants";
 import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -28,6 +32,13 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 
 function VendorMaster({ match }) {
   const [data, setData] = useState(null);
+  const [panattachment, setPanAttachment] = useState([]);
+  const [adharattachment, setAdharattachment] = useState([]);
+  const [MSMEselectedFiles, setMSMESelectedFiles] = useState([]);
+  const [passBookSelectedFiles, setPassBookSelectedFiles] = useState([]);
+  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =
+    useState([]);
+  const [vendorId, setVendorId] = useState(null);
   const [attachment, setAttachment] = useState();
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
@@ -55,6 +66,7 @@ function VendorMaster({ match }) {
   };
 
   const searchRef = useRef();
+  const aadharAttachmentRef = useRef(null);
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -85,8 +97,7 @@ function VendorMaster({ match }) {
         setConsiderInPay(false);
       }
     }
-    //setConsiderInPay(null)
-    // setConsiderInPay(data? data.modalData.consider_in_payment: "")
+
     setModal(data);
   };
 
@@ -95,8 +106,10 @@ function VendorMaster({ match }) {
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [CountryDropdown, setCountryDropdown] = useState();
+
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
+
   const [payment, setPayment] = useState();
   const [paymentDropdown, setPaymentDropdown] = useState();
   const [deta, setDeta] = useState();
@@ -105,12 +118,12 @@ function VendorMaster({ match }) {
   const msmeInputRef = useRef(null);
   const passbookInputRef = useRef(null);
   const chequeInputRef = useRef(null);
-
+  const panAttachmentRef = useRef(null);
   const columns = [
     {
       name: "Action",
       className: "font-weight-bold",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       cell: (row) => (
         <div
@@ -124,16 +137,20 @@ function VendorMaster({ match }) {
             data-bs-toggle="modal"
             data-bs-target="#depedit"
             onClick={(e) => {
+              setVendorId(row?.id);
+              setConsider(row?.consider_in_payment);
+              setPanAttachment(row?.pan_attachment);
+              setAdharattachment(row?.adhar_attachment);
+              setMSMESelectedFiles(row?.msme_attachment);
+              setPassBookSelectedFiles(row?.bank_passbook_attachment);
+              setGstAttachment(row?.gst_attachment);
+              setChequeAttachmentSelectedFiles(row?.cheque_attachment);
               handleModal({
                 showModal: true,
                 modalData: row,
                 modalHeader: "Edit Vendor",
               });
               setError(null);
-              setMSMESelectedFiles(null);
-              setSelectedFiles(null);
-              setChequeAttachmentSelectedFiles(null);
-              setPassBookSelectedFiles(null);
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -169,7 +186,34 @@ function VendorMaster({ match }) {
         </div>
       ),
     },
-    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+
+    {
+      name: "Vendor Name",
+      selector: (row) => row.vendor_name,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.vendor_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.vendor_name && row.vendor_name.length < 30
+                    ? row.vendor_name
+                    : row.vendor_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
 
     {
       name: "Address",
@@ -203,31 +247,219 @@ function VendorMaster({ match }) {
     { name: "City", selector: (row) => row.city, sortable: true },
     { name: "Pincode", selector: (row) => row.pincode, sortable: true },
     { name: "Mobile", selector: (row) => row.mobile_no, sortable: true },
-    { name: "Email", selector: (row) => row.email, sortable: true },
-    { name: "Aadhaar", selector: (row) => row.adhar_no, sortable: true },
-    { name: " PAN ", selector: (row) => row.pan_no, sortable: true },
+
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.email && (
+            <OverlayTrigger overlay={<Tooltip>{row.email} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.email && row.email.length < 20
+                    ? row.email
+                    : row.email.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+    {
+      name: "Aadhaar",
+      selector: (row) => row.adhar_no,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.adhar_no && (
+            <OverlayTrigger overlay={<Tooltip>{row.adhar_no} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.adhar_no && row.adhar_no.length < 20
+                    ? row.adhar_no
+                    : row.adhar_no.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+    {
+      name: " PAN ",
+      selector: (row) => row.pan_no,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.pan_no && (
+            <OverlayTrigger overlay={<Tooltip>{row.pan_no} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.pan_no && row.pan_no.length < 20
+                    ? row.pan_no
+                    : row.pan_no.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
     { name: " MSME NO ", selector: (row) => row.msme_no, sortable: true },
-    { name: " GST NO ", selector: (row) => row.gst_no, sortable: true },
+
+    {
+      name: " GST NO ",
+      selector: (row) => row.gst_no,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.gst_no && (
+            <OverlayTrigger overlay={<Tooltip>{row.gst_no} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.gst_no && row.gst_no.length < 20
+                    ? row.gst_no
+                    : row.gst_no.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
     { name: " Bank Name ", selector: (row) => row.bank_name, sortable: true },
     {
       name: " Bank Branch Name ",
       selector: (row) => row.bank_branch_name,
       sortable: true,
     },
-    { name: " Account No ", selector: (row) => row.account_no, sortable: true },
-    { name: " IFSC Code ", selector: (row) => row.ifsc_code, sortable: true },
+
+    {
+      name: " Account No ",
+      selector: (row) => row.account_no,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.account_no && (
+            <OverlayTrigger overlay={<Tooltip>{row.account_no} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.account_no && row.account_no.length < 20
+                    ? row.account_no
+                    : row.account_no.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
+    {
+      name: " IFSC Code ",
+      selector: (row) => row.ifsc_code,
+      sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.ifsc_code && (
+            <OverlayTrigger overlay={<Tooltip>{row.ifsc_code} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.ifsc_code && row.ifsc_code.length < 20
+                    ? row.ifsc_code
+                    : row.ifsc_code.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+
     {
       name: " Benificiary Name ",
       selector: (row) => row.beneficiary_name,
       sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.beneficiary_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.beneficiary_name} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.beneficiary_name && row.beneficiary_name.length < 20
+                    ? row.beneficiary_name
+                    : row.beneficiary_name.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
+
     {
       name: " Consider In Pay ",
       selector: (row) => row.consider_in_payment,
       sortable: true,
     },
     {
-      name: "ACME Account_Name ",
+      name: "ERP Account Name ",
       selector: (row) => row.acme_account_name,
       sortable: true,
     },
@@ -242,10 +474,33 @@ function VendorMaster({ match }) {
       sortable: true,
     },
     { name: " Narration ", selector: (row) => row.narration, sortable: true },
+
     {
       name: " Template Name ",
       selector: (row) => row.template_name,
       sortable: true,
+      width: "160px",
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.template_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.template_name && row.template_name.length < 20
+                    ? row.template_name
+                    : row.template_name.substring(0, 15) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
     {
       name: " Created At ",
@@ -335,14 +590,6 @@ function VendorMaster({ match }) {
       }
     });
 
-    // await new VendorMasterService().getVendorMasterById().then((res)=>{
-    //     if(res.status === 200){
-    //         if(res,data.status == 1){
-    //             setData(res.data.data)
-    //         }
-    //     }
-    // })
-
     await new BillCheckingTransactionService()
       .getUpdatedAuthorities()
       .then((res) => {
@@ -357,22 +604,24 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         setCountry(res.data.data);
         setCountryDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
-          }))
+          res.data.data
+            .filter((d) => d.is_active === 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
+            }))
         );
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
@@ -390,27 +639,23 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         setCity(res.data.data);
         setCityDropdown(
-          res.data.data.filter((d)=>d.is_active == 1).map((i) => ({
-            value: i.id,
-            label: i.city,
-          }))
+          res.data.data
+            .filter((d) => d.is_active === 1)
+            .map((i) => ({
+              value: i.id,
+              label: i.city,
+            }))
         );
-
-          
       }
     });
-
 
     await new VendorMasterService().getActivePaymentTemplate().then((res) => {
       if (res.status === 200) {
         setPayment(res.data.data);
         setPaymentDropdown(
           res.data.data
-            .filter((d) => d.is_active === 1)
+            ?.filter((d) => d.is_active === 1)
             .map((i) => ({ value: i.id, label: i.template_name }))
-
-          //  res.data.data.filter((d) => d.is_active == 1).map((i)=> ({ value: i.id, label: i.template_name }))
-          // res.data.data.map((d) =>
         );
       }
     });
@@ -457,6 +702,13 @@ function VendorMaster({ match }) {
     var flag = 1;
     var msg = "";
 
+    if (panattachment?.length > 0) {
+      for (let i = 0; i < panattachment.length; i++) {
+        if (panattachment[i]?.file) {
+          form.append(`pan_attachment[${i}]`, panattachment[i].file);
+        }
+      }
+    }
     if (inputState.VendorNameErr) {
       alert("Invalid Vendor Name");
       return;
@@ -490,10 +742,7 @@ function VendorMaster({ match }) {
       alert("Invalid GST Number ");
       return;
     }
-    // if (inputState.MSMENumberErr) {
-      //   alert("Invalid MSME Number ");
-      //   return;
-    // }
+
     if (inputState.BankNameErr) {
       alert("Invalid Bank Name ");
       return;
@@ -556,6 +805,7 @@ function VendorMaster({ match }) {
         e.preventDefault();
         flag = 0;
       }
+
       if (flag == 1) {
         await new VendorMasterService()
           .createVendor(form)
@@ -564,6 +814,7 @@ function VendorMaster({ match }) {
               if (res.data.status === 1) {
                 setNotify({ type: "success", message: res.data.message });
                 setModal({ showModal: false, modalData: "", modalHeader: "" });
+                setPanAttachment([]);
                 loadData();
               } else {
                 setError({ type: "danger", message: res.data.message });
@@ -621,7 +872,7 @@ function VendorMaster({ match }) {
         flag = 0;
       }
       if (flag === 1) {
-        setNotify(null)
+        setNotify(null);
         await new VendorMasterService()
           .updateVendor(id, form)
           .then((res) => {
@@ -692,24 +943,50 @@ function VendorMaster({ match }) {
     }
   };
 
-  const [selectedFiles, setSelectedFiles] = useState();
-  const uploadAttachmentHandler = (e, type, id = null) => {
+  const [gstAttachment, setGstAttachment] = useState([]);
+  const uploadGstAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      if (
+        gstAttachment?.length + (gstInputRef?.current?.files?.length || 0) >
+        2
+      ) {
+        gstInputRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
       }
-      setSelectedFiles(tempSelectedFile);
+      const files = gstInputRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setGstAttachment((prevState) => [...prevState, tempSelectedFile]);
+        }
+      } else {
+      }
     } else if (type === "DELETE") {
       gstInputRef.current.value = "";
-      let filteredFileArray = selectedFiles.filter(
+      let filteredFileArray = gstAttachment.filter(
         (item, index) => id !== index
       );
-      setSelectedFiles(filteredFileArray);
+      setGstAttachment(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setGstAttachment(response?.data?.data?.data?.gst_attachment);
+            }
+          });
+      }
     }
   };
   const handleDeleteAttachment = (e, type, id) => {
@@ -719,89 +996,249 @@ function VendorMaster({ match }) {
       }
     });
   };
-  const [panattachment, setPanAttachment] = useState();
 
-  const uploadPanAttachmentHandler = (e, type, id = null) => {
+  const uploadPanAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      if (
+        panattachment?.length +
+        (panAttachmentRef?.current?.files?.length || 0) >
+        2
+      ) {
+        panAttachmentRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
       }
-      setPanAttachment(tempSelectedFile);
+      const files = panAttachmentRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setPanAttachment((prevState) => [...prevState, tempSelectedFile]);
+        }
+      } else {
+      }
     } else if (type === "DELETE") {
-      gstInputRef.current.value = "";
+      panAttachmentRef.current.value = "";
       let filteredFileArray = panattachment.filter(
         (item, index) => id !== index
       );
       setPanAttachment(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setPanAttachment(response?.data?.data?.data?.pan_attachment);
+            }
+          });
+      }
     }
   };
 
-  const [MSMEselectedFiles, setMSMESelectedFiles] = useState();
-  const uploadMSMEAttachmentHandler = (e, type, id = null) => {
+  const uploadAdharAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile1 = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile1.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      if (
+        adharattachment?.length +
+        (aadharAttachmentRef?.current?.files?.length || 0) >
+        2
+      ) {
+        aadharAttachmentRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
       }
-      setMSMESelectedFiles(tempSelectedFile1);
+      const files = aadharAttachmentRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setAdharattachment((prevState) => [...prevState, tempSelectedFile]);
+        }
+      } else {
+      }
     } else if (type === "DELETE") {
-      msmeInputRef.current.value = "";
-      let filteredFileArray1 = MSMEselectedFiles.filter(
+      aadharAttachmentRef.current.value = "";
+      let filteredFileArray = adharattachment.filter(
         (item, index) => id !== index
       );
-      setMSMESelectedFiles(filteredFileArray1);
+      setAdharattachment(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setAdharattachment(response?.data?.data?.data?.adhar_attachment);
+            }
+          });
+      }
     }
   };
 
-  const [passBookSelectedFiles, setPassBookSelectedFiles] = useState();
-  const uploadPassBookAttachmentHandler = (e, type, id = null) => {
+  const uploadMSMEAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile1 = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile1.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      if (
+        MSMEselectedFiles?.length +
+        (msmeInputRef?.current?.files?.length || 0) >
+        2
+      ) {
+        msmeInputRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
       }
-      setPassBookSelectedFiles(tempSelectedFile1);
+      const files = msmeInputRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setMSMESelectedFiles((prevState) => [...prevState, tempSelectedFile]);
+        }
+      } else {
+      }
     } else if (type === "DELETE") {
       msmeInputRef.current.value = "";
-      let filteredFileArray1 = passBookSelectedFiles.filter(
+      let filteredFileArray = MSMEselectedFiles.filter(
         (item, index) => id !== index
       );
-      setPassBookSelectedFiles(filteredFileArray1);
+      setMSMESelectedFiles(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setMSMESelectedFiles(response?.data?.data?.data?.msme_attachment);
+            }
+          });
+      }
     }
   };
 
-  const [chequeAttachmentSelectedFiles, setChequeAttachmentSelectedFiles] =
-    useState();
-  const uploadPassChequeAttachmentHandler = (e, type, id = null) => {
+  const uploadPassBookAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
     if (type === "UPLOAD") {
-      var tempSelectedFile1 = [];
-      for (var i = 0; i < e.target.files.length; i++) {
-        tempSelectedFile1.push({
-          file: e.target.files[i],
-          fileName: e.target.files[i].name,
-          tempUrl: URL.createObjectURL(e.target.files[i]),
-        });
+      if (
+        passBookSelectedFiles?.length +
+        (passbookInputRef?.current?.files?.length || 0) >
+        2
+      ) {
+        passbookInputRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
       }
-      setChequeAttachmentSelectedFiles(tempSelectedFile1);
+      const files = passbookInputRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setPassBookSelectedFiles((prevState) => [
+            ...prevState,
+            tempSelectedFile,
+          ]);
+        }
+      } else {
+      }
+    } else if (type === "DELETE") {
+      passbookInputRef.current.value = "";
+      let filteredFileArray = passBookSelectedFiles.filter(
+        (item, index) => id !== index
+      );
+      setPassBookSelectedFiles(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setPassBookSelectedFiles(
+                response?.data?.data?.data?.bank_passbook_attachment
+              );
+            }
+          });
+      }
+    }
+  };
+
+  const uploadPassChequeAttachmentHandler = async (
+    e,
+    type,
+    id = null,
+    attachmentId
+  ) => {
+    if (type === "UPLOAD") {
+      if (
+        chequeAttachmentSelectedFiles?.length +
+        (chequeInputRef?.current?.files?.length || 0) >
+        2
+      ) {
+        chequeInputRef.current.value = "";
+        alert("Cannot attach more than 2 attachments");
+        return;
+      }
+      const files = chequeInputRef?.current?.files;
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          let tempSelectedFile = {
+            file: files[i],
+            fileName: files[i].name,
+            tempUrl: URL.createObjectURL(files[i]),
+          };
+          setChequeAttachmentSelectedFiles((prevState) => [
+            ...prevState,
+            tempSelectedFile,
+          ]);
+        }
+      } else {
+      }
     } else if (type === "DELETE") {
       chequeInputRef.current.value = "";
-      let filteredFileArray1 = chequeAttachmentSelectedFiles.filter(
+      let filteredFileArray = chequeAttachmentSelectedFiles.filter(
         (item, index) => id !== index
       );
-      setChequeAttachmentSelectedFiles(filteredFileArray1);
+      setChequeAttachmentSelectedFiles(filteredFileArray);
+      if (attachmentId) {
+        await new VendorMasterService().deleteAttachmentById(attachmentId);
+        await new VendorMasterService()
+          .getVendorMasterById(vendorId)
+          .then((response) => {
+            if (response?.data?.data?.status === 1) {
+              setChequeAttachmentSelectedFiles(
+                response?.data?.data?.data?.cheque_attachment
+              );
+            }
+          });
+      }
     }
   };
   const [emailError, setEmailError] = useState(null);
@@ -925,10 +1362,15 @@ function VendorMaster({ match }) {
   };
 
   const handleStateChange = (e) => {
+    if (cityRef.current.commonProps.hasValue != null) {
+      cityRef.current.clearValue();
+    }
     if (e) {
       const a = city.filter((d) => d.state_id == e.value);
+      const aa = a.filter((i) => i.is_active == 1);
+
       setCityDropdown((prev) => null);
-      setCityDropdown(a.map((d) => ({ value: d.id, label: d.city })));
+      setCityDropdown(aa.map((d) => ({ value: d.id, label: d.city })));
     }
   };
 
@@ -951,7 +1393,7 @@ function VendorMaster({ match }) {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("pan_attachment").value = null;
-        setPanAttachment(null);
+        setPanAttachment([]);
       }
     }
 
@@ -959,21 +1401,21 @@ function VendorMaster({ match }) {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("msme_attachment").value = null;
-        setMSMESelectedFiles(null);
+        setMSMESelectedFiles([]);
       }
     }
     if (type == "GST") {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("gst_attachment").value = null;
-        setSelectedFiles(null);
+        setGstAttachment([]);
       }
     }
     if (type == "PASSBOOK") {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("bank_passbook_attachment").value = null;
-        setPassBookSelectedFiles(null)
+        setPassBookSelectedFiles([]);
       }
     }
 
@@ -981,7 +1423,7 @@ function VendorMaster({ match }) {
       if (e.target.files.length > 2) {
         alert("You Can Upload Only 2 Attachments");
         document.getElementById("cheque_attachment").value = null;
-        setChequeAttachmentSelectedFiles(null)
+        setChequeAttachmentSelectedFiles([]);
       }
     }
   };
@@ -994,7 +1436,7 @@ function VendorMaster({ match }) {
           <tr>
             <th>Sr</th>
             <th>Attachment Name</th>
-            <th>Acton</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -1002,18 +1444,22 @@ function VendorMaster({ match }) {
             <td>1</td>
             <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
 
-            {data.adhar_attachment ? (
+            {data?.adhar_attachment?.length ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.adhar_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data?.adhar_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
               <p>NA</p>
@@ -1022,79 +1468,96 @@ function VendorMaster({ match }) {
           <tr>
             <td>2</td>
             <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
-            {data.pan_attachment ? (
+            {data.pan_attachment && data.pan_attachment.length > 0 ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.pan_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data.pan_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
-              <p>NA</p>
+              <td>NA</td>
             )}
           </tr>
           <tr>
             <td>3</td>
             <td style={{ fontWeight: "bold" }}>GST Attachment</td>
-            {data.gst_attachment ? (
+            {data.gst_attachment && data.gst_attachment.length > 0 ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.gst_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data.gst_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
-              <p>NA</p>
+              <td>NA</td>
             )}
           </tr>
+
           <tr>
             <td>4</td>
             <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
-
-            {data.msme_attachment ? (
+            {data.msme_attachment && data.msme_attachment.length > 0 ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.msme_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data.msme_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
-              <p>NA</p>
+              <td>NA</td>
             )}
           </tr>
+
           <tr>
             <td>5</td>
             <td style={{ fontWeight: "bold" }}>Pasbook Attachment</td>
-            {data.bank_passbook_attachment ? (
+            {data?.bank_passbook_attachment?.length ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.bank_passbook_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data?.bank_passbook_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
               <p>NA</p>
@@ -1104,18 +1567,22 @@ function VendorMaster({ match }) {
             <td>6</td>
             <td style={{ fontWeight: "bold" }}>Cheque Attachment</td>
 
-            {data.cheque_attachment ? (
+            {data?.cheque_attachment ? (
               <td>
-                <a
-                  href={`${_attachmentUrl}/${data.cheque_attachment}`}
-                  target="_blank"
-                  className="btn btn-primary btn-sm p-1"
-                >
-                  <i
-                    class="icofont-eye"
-                    style={{ fontSize: "15px", height: "15px" }}
-                  ></i>
-                </a>
+                {data?.cheque_attachment.map((attachment, index) => (
+                  <a
+                    key={index}
+                    href={`${_attachmentUrl}/${attachment?.path}`}
+                    target="_blank"
+                    className="btn btn-primary btn-sm p-1 mr-1"
+                    style={{ marginBottom: "5px" }}
+                  >
+                    <i
+                      className="icofont-eye"
+                      style={{ fontSize: "15px", height: "15px" }}
+                    ></i>
+                  </a>
+                ))}
               </td>
             ) : (
               <p>NA</p>
@@ -1128,30 +1595,42 @@ function VendorMaster({ match }) {
 
   const downloadFormat = async (e) => {
     e.preventDefault();
-    // const form = new FormData(e.target);
     await new VendorMasterService().downloadBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
           window.open(URL, "_blank").focus();
         }
       }
     });
   };
+
   const handleBulkUpload = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.target);
+    const file = e.target.elements.attachment.files[0]; // Access the file from the event target
+
+    if (!file) {
+      alert("Please choose a file.");
+      return;
+    }
+
+    const form = new FormData();
+    form.append("attachment", file);
+    form.append("created_by", userSessionData.userId);
+
     setError(null);
+
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
           handleBulkModal({ showModal: false });
+          setNotify({ type: "danger", message: res.data.message });
           loadData();
         } else {
           setError({ type: "danger", message: res.data.message });
-          URL = "http://3.108.206.34/2_Testing/TSNewBackend/" + res.data.data;
-          window.open(URL, "_blank").focus();
+          URL = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" + res.data.data;
+          window.open(URL, "_blank")?.focus();
+          setNotify({ type: "danger", message: res.data.message });
         }
       }
     });
@@ -1175,10 +1654,16 @@ function VendorMaster({ match }) {
                       modalData: "",
                       modalHeader: "Add Vendor",
                     });
-                    setMSMESelectedFiles(null);
-                    setPassBookSelectedFiles(null);
-                    setChequeAttachmentSelectedFiles(null);
-                    setSelectedFiles(null);
+
+                    setPanAttachment([]);
+                    setAdharattachment([]);
+                    setMSMESelectedFiles([]);
+                    setPassBookSelectedFiles([]);
+                    setChequeAttachmentSelectedFiles([]);
+                    setMSMESelectedFiles([]);
+                    setPassBookSelectedFiles([]);
+                    setChequeAttachmentSelectedFiles([]);
+                    setGstAttachment([]);
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Vendor
@@ -1304,49 +1789,16 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.vendor_name : ""
                       }
-                      // onChange={(event) => {
-                      //   const regex = new RegExp(
-                      //     "^[a-zA-Z\\u0900-\\u097F ]+$" // allow English, numbers and Devanagari script
-                      //   );
-                      //   if (event.target.value === "") {
-                      //     setInputState({
-                      //       ...state,
-                      //       VendorNameErr: "", // Clear the error message when the input is empty
-                      //     });
-                      //   } else if (event.target.value.length < 3) {
-                      //     setInputState({
-                      //       ...state,
-                      //       VendorNameErr:
-                      //         "Vendor Name should be at least 3 characters.",
-                      //     });
-                      //   } else if (!regex.test(event.target.value)) {
-                      //     setInputState({
-                      //       ...state,
-                      //       VendorNameErr: "Invalid vendor Name.",
-                      //     });
-                      //   } else {
-                      //     setInputState({
-                      //       ...state,
-                      //       VendorNameErr: "", // Clear the error message when the input is valid
-                      //     });
-                      //   }
-                      // }}
                       required={true}
                     />
-                    {/* {inputState.VendorNameErr && (
-                      <small style={{ color: "red" }}>
-                        {inputState.VendorNameErr}
-                      </small>
-                    )} */}
                   </div>
                   {modal.modalData && modal.modalData && (
-                    <div className="col-md-3 mt-2">
+                    <div className="col-md-4 mt-2">
                       <label className=" col-form-label">
                         <b>
                           Vendor ID : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {/* {data && ( */}
                       <input
                         type="text"
                         className="form-control form-control"
@@ -1356,7 +1808,6 @@ function VendorMaster({ match }) {
                         required
                         disabled
                       />
-                      {/* )} */}
                     </div>
                   )}
 
@@ -1390,7 +1841,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className="col-sm-4">
+                  <div className={modal?.modalData ? "col-sm-3" : "col-sm-4"}>
                     <label className="form-label font-weight-bold">
                       Email Id :<Astrick color="red" size="13px" />
                     </label>
@@ -1402,9 +1853,6 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.email : ""
                       }
-                      // onChange={(e) => {
-                      //   Validation.EmailOnly(e);
-                      // }}
                       onChange={handleEmail}
                       onKeyPress={(e) => {
                         handleEmail(e);
@@ -1423,31 +1871,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  {/* <div className="col-sm-4">
-                        <input
-                          type="email"
-                          className="form-control form-control-sm"
-                          id="email_id"
-                          name="email_id"
-                          onChange={handleEmail}
-                          placeholder="Please enter valid email address"
-                          onKeyPress={(e) => {
-                            handleEmail(e);
-                          }}
-                        />
-
-                        {inputState && (
-                          <small
-                            style={{
-                              color: "red",
-                            }}
-                          >
-                            {emailError}
-                          </small>
-                        )}
-                      </div> */}
-
-                  <div className="col-sm-4">
+                  <div className={modal?.modalData ? "col-sm-3" : "col-sm-3"}>
                     <label className="form-label font-weight-bold">
                       Address :<Astrick color="red" size="13px" />
                     </label>
@@ -1459,14 +1883,6 @@ function VendorMaster({ match }) {
                       name="address"
                       placeholder="Enter maximum 50 character"
                       maxLength={50}
-                      // onKeyPress={(e) => {
-                      //   Validation.addressFieldOnly(e);
-                      // }}
-                      // onKeyDown={(e) => {
-                      //   if (e.key === "enter") {
-                      //     e.preventDefault();
-                      //   }
-                      // }}
                       required={true}
                       defaultValue={
                         modal.modalData ? modal.modalData.address : ""
@@ -1493,10 +1909,11 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className="col-sm-2">
+                  <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
                       Country :<Astrick color="red" size="13px" />
                     </label>
+
                     {CountryDropdown && data ? (
                       <Select
                         id="country"
@@ -1507,12 +1924,12 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? CountryDropdown.filter(
-                                (d) => d.label == modal.modalData.country
-                              )
+                              (d) => d.label === modal.modalData.country
+                            )
                             : CountryDropdown.filter(
-                                (d) =>
-                                  d.value == parseInt(modal.modalData.country)
-                              )
+                              (d) =>
+                                d.value === parseInt(modal.modalData.country)
+                            )
                         }
                         required={true}
                       />
@@ -1521,7 +1938,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className="col-sm-2">
+                  <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
                       State :<Astrick color="red" size="13px" />
                     </label>
@@ -1535,19 +1952,19 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? stateDropdown.filter(
-                                (d) => d.label == modal.modalData.state
-                              )
+                              (d) => d.label == modal.modalData.state
+                            )
                             : stateDropdown.filter(
-                                (d) =>
-                                  d.value == parseInt(modal.modalData.state)
-                              )
+                              (d) =>
+                                d.value == parseInt(modal.modalData.state)
+                            )
                         }
                         required={true}
                       />
                     )}
                   </div>
 
-                  <div className="col-sm-2">
+                  <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
                       City :<Astrick color="red" size="13px" />
                     </label>
@@ -1560,18 +1977,18 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
                             ? cityDropdown.filter(
-                                (d) => d.label == modal.modalData.city
-                              )
+                              (d) => d.label == modal.modalData.city
+                            )
                             : cityDropdown.filter(
-                                (d) => d.value == parseInt(modal.modalData.city)
-                              )
+                              (d) => d.value == parseInt(modal.modalData.city)
+                            )
                         }
                         required={true}
                       />
                     )}
                   </div>
 
-                  <div className="col-sm-2">
+                  <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
                       Pincode :<Astrick color="red" size="13px" />
                     </label>
@@ -1641,21 +2058,6 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.adhar_no : ""
                       }
-                      // required={true}
-                      // onKeyDown={(event) => {
-                      //   if (
-                      //     !(
-                      //       event.keyCode === 8 ||
-                      //       event.keyCode === 9 ||
-                      //       event.keyCode === 27 ||
-                      //       (event.keyCode >= 35 && event.keyCode <= 40) ||
-                      //       (event.keyCode >= 48 && event.keyCode <= 57) ||
-                      //       (event.keyCode >= 96 && event.keyCode <= 105)
-                      //     )
-                      //   ) {
-                      //     event.preventDefault();
-                      //   }
-                      // }}
                       onChange={(event) => {
                         const aadharNum = event.target.value.trim();
 
@@ -1711,56 +2113,14 @@ function VendorMaster({ match }) {
                     <label className="col-form-label">
                       <b>Aadhaar Attachment :</b>
                     </label>
-                    {modal.modalData && modal.modalData.adhar_attachment && (
-                      <a
-                        href={`${_attachmentUrl}/${modal.modalData.adhar_attachment}`}
-                        target="_blank"
-                        downlaod
-                        className="btn btn-info btn-sm  p-0"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
 
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-
-                          maxLengthCheck(e, "ADHAR");
-                        }}
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    )}
                     <input
                       type="file"
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
-                      name="adhar_attachment"
+                      name="adhar_attachment[]"
                       id="adhar_attachment"
                       className="form-control"
-                      ref={fileInputRef}
+                      ref={aadharAttachmentRef}
                       multiple
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
@@ -1786,50 +2146,76 @@ function VendorMaster({ match }) {
                           }
                           e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         }
+                        // Check if attachment is required and input field is empty
 
-                        maxLengthCheck(e, "ADHAR");
+                        uploadAdharAttachmentHandler(e, "UPLOAD", "");
+                        maxLengthCheck(e, "PAN");
                       }}
                       capture="camera"
                     />
+
+                    {/* aadhar attachment display */}
+                    {adharattachment &&
+                      adharattachment.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
+                        return (
+                          <div
+                            key={index}
+                            className="justify-content-end px-0"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="card-header p-1">
+                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                  <a
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadAdharAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index,
+                                        attachment?.id ? attachment?.id : null
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
-
-                  {/* <div className="col-sm-3 ">
-                  <label className="form-label font-weight-bold">
-                    PAN No :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="pan_no"
-                    name="pan_no"
-                    maxLength="10"
-                    defaultValue={modal.modalData ? modal.modalData.pan_no : ""}
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersOnlyForPan(e);
-                    }}
-                    required={true}
-                    onChange={(event) => {
-                      if (event.target.value === "") {
-                        setInputState({
-                          ...state,
-                          PanNumberErr: "Please enter Pancard number.",
-                        });
-                      } else {
-                        setInputState({ ...state, PanNumberErr: "" });
-                      }
-                    }}
-                  />
-                  {inputState && (
-                    <small
-                      style={{
-                        color: "red",
-                      }}
-                    >
-                      {inputState.PanNumberErr}
-                    </small>
-                  )}
-                </div> */}
-
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
@@ -1892,66 +2278,17 @@ function VendorMaster({ match }) {
                       <b>
                         PAN Attachment :<Astrick color="red" size="13px" />
                       </b>
-                      {modal.modalData && modal.modalData.pan_attachment && (
-                        <a
-                          href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
-                          target="_blank"
-                          downlaod
-                          // required={true}
-                          className="btn btn-info btn-sm p-0"
-                          accept="image/jpg,image/jpeg,image/png,application/pdf"
-                          onChange={(e) => {
-                            const selectedFile = e.target.files[0];
-
-                            // Check if the file type is one of the allowed types
-                            if (
-                              selectedFile.type === "image/jpg" ||
-                              selectedFile.type === "image/jpeg" ||
-                              selectedFile.type === "image/png" ||
-                              selectedFile.type === "application/pdf"
-                            ) {
-                              // File type is allowed
-                            } else {
-                              // Check if the file type is BMP
-                              if (selectedFile.type === "image/bmp") {
-                                alert(
-                                  "Invalid file format. BMP files are not allowed."
-                                );
-                              } else {
-                                alert(
-                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                                );
-                              }
-                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                            }
-
-                            uploadPanAttachmentHandler(e, "UPLOAD", "");
-                            maxLengthCheck(e, "PAN");
-                          }}
-                        >
-                          <i
-                            class="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                          <p>{modal.modalData._attachmentUrl}</p>
-                        </a>
-                      )}
                     </label>
-                    {console.log(_attachmentUrl)}
+
                     <input
-                      // href={`${_attachmentUrl}/${modal.modalData.pan_attachment}`}
                       type="file"
                       name="pan_attachment"
                       id="pan_attachment"
                       multiple={true}
-                      required={modal.modalData.pan_attachment ? false : true}
+                      required={panattachment.length > 0 ? false : true}
                       className="form-control"
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
-
-                        // Check if the file type is one of the allowed types
                         if (
                           selectedFile.type === "image/jpg" ||
                           selectedFile.type === "image/jpeg" ||
@@ -1970,71 +2307,80 @@ function VendorMaster({ match }) {
                               "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
                             );
                           }
-                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = "";
+                          panAttachmentRef.current.value = "";
                         }
 
                         uploadPanAttachmentHandler(e, "UPLOAD", "");
                         maxLengthCheck(e, "PAN");
                       }}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
-                      ref={fileInputRef}
+                      ref={panAttachmentRef}
                       capture="camera"
                     />
-                  </div>
 
-                  {panattachment &&
-                    panattachment.map((attachment, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="justify-content-end"
-                          style={{
-                            marginRight: "20px",
-                            padding: "5px",
-                            maxWidth: "250px",
-                          }}
-                        >
+                    {/* Pan attachment display */}
+                    {panattachment &&
+                      panattachment.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
+                        return (
                           <div
-                            className="card"
-                            style={{ backgroundColor: "#EBF5FB" }}
+                            key={index}
+                            className="justify-content-end px-0"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
                           >
-                            <div className="card-header">
-                              <span>{attachment.fileName}</span>
-                              {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
-                              <div className="d-flex justify-content-between p-0 mt-1">
-                                <a
-                                  href={`${attachment.tempUrl}`}
-                                  target="_blank"
-                                  className="btn btn-warning btn-sm p-0 px-1"
-                                >
-                                  <i class="icofont-ui-zoom-out"></i>
-                                </a>
-                                <button
-                                  className="btn btn-danger text-white btn-sm p-1"
-                                  type="button"
-                                  onClick={(e) => {
-                                    uploadPanAttachmentHandler(
-                                      e,
-                                      "DELETE",
-                                      index
-                                    );
-                                  }}
-                                >
-                                  <i
-                                    class="icofont-ui-delete"
-                                    style={{ fontSize: "15px" }}
-                                  ></i>
-                                </button>
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="p-1 card-header">
+                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                  <a
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 py-0 px-1"
+                                  >
+                                    <i className="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadPanAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index,
+                                        attachment?.id ? attachment?.id : null
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                  </div>
 
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
@@ -2049,10 +2395,6 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.gst_no : ""
                       }
-                      // onKeyPress={(e) => {
-                      //   Validation.GSTNumberOnly(e);
-                      // }}
-                      // required={true}
                       onChange={(event) => {
                         event.target.value = event.target.value.toUpperCase();
                         const gstNumber = event.target.value;
@@ -2100,53 +2442,10 @@ function VendorMaster({ match }) {
                     <label className="col-form-label">
                       <b> GST Attachment : </b>
                     </label>
-                    {modal.modalData && modal.modalData.gst_attachment && (
-                      <a
-                        href={`${_attachmentUrl}/${modal.modalData.gst_attachment}`}
-                        target="_blank"
-                        downlaod
-                        className="btn btn-info btn-sm p-0"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
 
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-
-                          uploadAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "GST");
-                        }}
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    )}
                     <input
                       type="file"
-                      name="gst_attachment"
+                      name="gst_attachment[]"
                       id="gst_attachment"
                       multiple={true}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
@@ -2174,21 +2473,26 @@ function VendorMaster({ match }) {
                               "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
                             );
                           }
-                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = "";
+                          gstInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         }
 
-                        uploadAttachmentHandler(e, "UPLOAD", "");
+                        uploadGstAttachmentHandler(e, "UPLOAD", "");
                         maxLengthCheck(e, "GST");
                       }}
                     />
 
-                    {/* <div className="d-flex"> */}
-                    {selectedFiles &&
-                      selectedFiles.map((attachment, index) => {
+                    {/* Gst attachment display */}
+
+                    {gstAttachment &&
+                      gstAttachment.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
                         return (
                           <div
                             key={index}
-                            className="justify-content-end"
+                            className="justify-content-end px-0"
                             style={{
                               marginRight: "20px",
                               padding: "5px",
@@ -2199,29 +2503,33 @@ function VendorMaster({ match }) {
                               className="card"
                               style={{ backgroundColor: "#EBF5FB" }}
                             >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
-                                <div className="d-flex justify-content-between p-0 mt-1">
+                              <div className="p-1 card-header">
+                                <div className="d-flex justify-content-between align-items-center p-0">
                                   <a
-                                    href={`${attachment.tempUrl}`}
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
                                     target="_blank"
                                     className="btn btn-warning btn-sm p-0 px-1"
                                   >
                                     <i class="icofont-ui-zoom-out"></i>
                                   </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
                                   <button
                                     className="btn btn-danger text-white btn-sm p-1"
                                     type="button"
                                     onClick={(e) => {
-                                      uploadAttachmentHandler(
+                                      uploadGstAttachmentHandler(
                                         e,
                                         "DELETE",
-                                        index
+                                        index,
+                                        attachment?.id ? attachment?.id : null
                                       );
                                     }}
                                   >
@@ -2252,7 +2560,6 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.msme_no : ""
                       }
-                      // onKeyPress={e=>validateNumber(e)}
                       onKeyPress={(e) => {
                         if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
                           e.preventDefault();
@@ -2265,97 +2572,6 @@ function VendorMaster({ match }) {
                             ...state,
                             MSMENumberErr: "",
                           });
-                        } else 
-if (msmeNo.length < 19) {
-                          setInputState({
-                            ...state,
-                            MSMENumberErr: "Invalid MSME No.",
-                          });
-                        } else if (
-                          /^([A-Za-z]{5}\d{2}[A-Za-z0-9]{1,2}\d{7})|^(\d{20})$/.test(
-                            msmeNo
-                          )
-                        ) {
-                          setInputState({
-                            ...state,
-                            MSMENumberErr: "Invalid MSME No.",
-                          });
-                        } else if (
-                          !/^([A-Za-z]{5}\d{2}\d{2}\d{7})|^(\d{19})$/.test(
-                            msmeNo
-                          )
-                        ) {
-                          setInputState({
-                            ...state,
-                            MSMENumberErr: "Invalid Udyam No.",
-                          });
-                        } else {
-                          setInputState({
-                            ...state,
-                            MSMENumberErr: "",
-                          });
-                        }
-                      }}
-                    />
-                    {inputState && (
-                      <small
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        {inputState.MSMENumberErr}
-                      </small>
-                    )}
-                  </div>
-
-                  {/* <div className="col-sm-3">
-                    <label className="form-label font-weight-bold">
-                      MSME No:
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="msme_no"
-                      name="msme_no"
-                      maxLength={12}
-                      ref={fileInputRef}
-                      // value={Panuppercase && Panuppercase ? Panuppercase : ""}
-                      defaultValue={
-                        modal.modalData ? modal.modalData.msme_no : ""
-                      }
-                      onKeyPress={(e) => {
-                        if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      onChange={(event) => {
-                        const msmeNo = event.target.value
-
-                        if (msmeNo.toLowerCase() === "na") {
-                          msmeNo = "NA"; // Convert "na" to "NA"
-                        
-                        // if (msmeNo === "NA") {
-                        //   setInputState({
-                        //     ...state,
-                        //     MSMENumberErr: " ",
-                        //   });
-                        // } else if (
-                          msmeNo.length === 12 ||
-                          msmeNo.length === 19
-                        }
-                         {
-                          // Check for 12 or 19 zeros
-                          if (/^0+$/.test(msmeNo)) {
-                            setInputState({
-                              ...state,
-                              MSMENumberErr: "Invalid MSME No.",
-                            });
-                          } else {
-                            setInputState({
-                              ...state,
-                              MSMENumberErr: "",
-                            });
-                          }
                         } else if (msmeNo.length < 19) {
                           setInputState({
                             ...state,
@@ -2387,65 +2603,16 @@ if (msmeNo.length < 19) {
                         }
                       }}
                     />
-                    {inputState.MSMENumberErr && (
-                      <small style={{ color: "red" }}>
-                        {inputState.MSMENumberErr}
-                      </small>
-                    )}
-                  </div> */}
+                  </div>
 
                   <div className=" col-sm-3 mt-2">
                     <label className="col-form-label" htmlFor="msme_attachment">
                       <b> MSME Attachment : </b>
                     </label>
-                    {modal.modalData && modal.modalData.msme_attachment && (
-                      <a
-                        href={`${_attachmentUrl}/${modal.modalData.msme_attachment}`}
-                        target="_blank"
-                        downlaod
-                        multiple
-                        className="btn btn-info btn-sm p-0"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
 
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-
-                          uploadMSMEAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "MSME");
-                        }}
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    )}
                     <input
                       type="file"
-                      name="msme_attachment"
+                      name="msme_attachment[]"
                       id="msme_attachment"
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
                       className="form-control"
@@ -2454,7 +2621,6 @@ if (msmeNo.length < 19) {
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
 
-                        // Check if the file type is one of the allowed types
                         if (
                           selectedFile.type === "image/jpg" ||
                           selectedFile.type === "image/jpeg" ||
@@ -2473,74 +2639,76 @@ if (msmeNo.length < 19) {
                               "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
                             );
                           }
-                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = "";
+                          msmeInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         }
 
                         uploadMSMEAttachmentHandler(e, "UPLOAD", "");
                         maxLengthCheck(e, "MSME");
                       }}
                     />
-                    {/* 
-                  <p style={{ fontSize: "10px" }}>
-                    {" "}
-                    Note :-Accept only png, jpeg, jpp and pdf file.
-                  </p> */}
 
-                    <div className="d-flex">
-                      {MSMEselectedFiles &&
-                        MSMEselectedFiles.map((attachment, index) => {
-                          return (
+                    {/* msme attachment display */}
+                    {MSMEselectedFiles &&
+                      MSMEselectedFiles.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
+                        return (
+                          <div
+                            key={index}
+                            className="justify-content-start px-0"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
                             <div
-                              key={index}
-                              className="justify-content-start"
-                              style={{
-                                marginRight: "20px",
-                                padding: "5px",
-                                maxWidth: "250px",
-                              }}
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
                             >
-                              <div
-                                className="card"
-                                style={{ backgroundColor: "#EBF5FB" }}
-                              >
-                                <div className="card-header">
-                                  <span>{attachment.fileName}</span>
-                                  {/* <img
-                                src={attachment.tempUrl}
-                                style={{ height: "100%", width: "100%" }}
-                              />{" "} */}
-                                  *
-                                  <div className="d-flex justify-content-between p-0 mt-1">
-                                    <a
-                                      href={`${attachment.tempUrl}`}
-                                      target="_blank"
-                                      className="btn btn-warning btn-sm p-0 px-1"
-                                    >
-                                      <i class="icofont-ui-zoom-out"></i>
-                                    </a>
-                                    <button
-                                      className="btn btn-danger text-white btn-sm p-1"
-                                      type="button"
-                                      onClick={(e) => {
-                                        uploadMSMEAttachmentHandler(
-                                          e,
-                                          "DELETE",
-                                          index
-                                        );
-                                      }}
-                                    >
-                                      <i
-                                        class="icofont-ui-delete"
-                                        style={{ fontSize: "15px" }}
-                                      ></i>
-                                    </button>
-                                  </div>
+                              <div className="p-1 card-header">
+                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                  <a
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadMSMEAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index,
+                                        attachment?.id ? attachment?.id : null
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          );
-                        })}
-                    </div>
+                          </div>
+                        );
+                      })}
                   </div>
 
                   <div className="col-sm-3 mt-3">
@@ -2550,16 +2718,16 @@ if (msmeNo.length < 19) {
                     {modal.modalData && (
                       <input
                         type="text"
-                        className="form-control form-control-sm"
+                        className="form-control form-controlF-sm"
                         id="bank_name"
                         name="bank_name"
                         maxLength={50}
-onKeyPress={(e) => {
+                        onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2600,7 +2768,7 @@ onKeyPress={(e) => {
                         name="bank_name"
                         maxLength={50}
                         onKeyPress={(e) => {
-                        Validation.CharacterWithSpace(e);
+                          Validation.CharacterWithSpace(e);
                         }}
                         required={true}
                         onChange={(event) => {
@@ -2635,107 +2803,115 @@ onKeyPress={(e) => {
                     )}
                   </div>
 
-                  <div className="col-sm-3 mt-3">
-                    <label className="form-label font-weight-bold">
-                      Bank Branch Name :<Astrick color="red" size="13px" />
+                  <div className=" col-sm-3 mt-2">
+                    <label className="col-form-label" htmlFor="attachment">
+                      <b>Passbook Attachment :</b>
                     </label>
-                    {modal.modalData && (
+                    {
                       <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="bank_branch_name"
-                        name="bank_branch_name"
-                        maxLength={25}
-onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        readOnly={
-                          authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                        type="file"
+                        name="bank_passbook_attachment[]"
+                        id="bank_passbook_attachment"
+                        accept="image/jpg,image/jpeg,image/png,application/pdf"
+                        className="form-control"
+                        multiple={true}
+                        ref={passbookInputRef}
+                        disabled={
+                          modal.modalData.bank_passbook_attachment &&
+                            authorities &&
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
-                        // readOnly={
-                        //   deta && deta.Bank_Details == false ? true : false
-                        // }
-                        defaultValue={
-                          modal.modalData
-                            ? modal.modalData.bank_branch_name
-                            : ""
-                        }
-                        // onKeyPress={(e) => {
-                        //   Validation.CharactersNumbersSpeicalOnly(e);
-                        // }}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === "") {
-                            setInputState({
-                              branchNameError: "",
-                            });
-                          } else if (
-                            !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
-                            )
+                        onChange={(e) => {
+                          const selectedFile = e.target.files[0];
+                          if (
+                            selectedFile.type === "image/jpg" ||
+                            selectedFile.type === "image/jpeg" ||
+                            selectedFile.type === "image/png" ||
+                            selectedFile.type === "application/pdf"
                           ) {
-                            setInputState({
-                              branchNameError: "Invalid Branch Name",
-                            });
-                          } else if (value.length > 25) {
-                            setInputState({
-                              branchNameError:
-                                "Bank name can be up to 50 characters long.",
-                            });
                           } else {
-                            setInputState("");
+                            if (selectedFile.type === "image/bmp") {
+                              alert(
+                                "Invalid file format. BMP files are not allowed."
+                              );
+                            } else {
+                              alert(
+                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              );
+                            }
+                            e.target.value = "";
+                            passbookInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
                           }
+                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
+                          maxLengthCheck(e, "PASSBOOK");
                         }}
-                        required={true}
                       />
-                    )}
-                    {!modal.modalData && (
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="bank_branch_name"
-                        name="bank_branch_name"
-                        maxLength={25}
-                        // onKeyPress={(e) => {
-                        //   Validation.CharactersNumbersSpeicalOnly(e);
-                        // }}
-onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === "") {
-                            setInputState({
-                              branchNameError: "",
-                            });
-                          } else if (
-                            !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
-                            )
-                          ) {
-                            setInputState({
-                              branchNameError: "Invalid Branch Name",
-                            });
-                          } else if (value.length > 25) {
-                            setInputState({
-                              branchNameError:
-                                "Bank name can be up to 50 characters long.",
-                            });
-                          } else {
-                            setInputState("");
-                          }
-                        }}
-                        required={true}
-                      />
-                    )}
-                    {inputState.branchNameError && (
-                      <small style={{ color: "red" }}>
-                        {inputState.branchNameError}
-                      </small>
-                    )}
+                    }
+
+                    {/* passbook attachment display */}
+
+                    {passBookSelectedFiles &&
+                      passBookSelectedFiles.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
+                        return (
+                          <div
+                            key={index}
+                            className="justify-content-start px-0"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="p-1 card-header">
+                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                  <a
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadPassBookAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index,
+                                        attachment?.id ? attachment?.id : null
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
 
                   <div className="col-sm-3 mt-3">
@@ -2750,7 +2926,7 @@ onKeyPress={(e) => {
                         name="account_no"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2845,6 +3021,119 @@ onKeyPress={(e) => {
                     )}
                   </div>
 
+                  <div className=" col-sm-3 mt-2">
+                    <label className="col-form-label">
+                      <b>Cheque Attachment :</b>
+                    </label>
+
+                    <input
+                      type="file"
+                      name="cheque_attachment[]"
+                      id="cheque_attachment"
+                      accept="image/jpg,image/jpeg,image/png,application/pdf"
+                      className="form-control"
+                      ref={chequeInputRef}
+                      multiple={true}
+                      disabled={
+                        modal.modalData.cheque_attachment &&
+                          authorities &&
+                          authorities.Edit_Vendor_Master_Bank_Details === false
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => {
+                        const selectedFile = e.target.files[0];
+
+                        // Check if the file type is one of the allowed types
+                        if (
+                          selectedFile.type === "image/jpg" ||
+                          selectedFile.type === "image/jpeg" ||
+                          selectedFile.type === "image/png" ||
+                          selectedFile.type === "application/pdf"
+                        ) {
+                          // File type is allowed
+                        } else {
+                          // Check if the file type is BMP
+                          if (selectedFile.type === "image/bmp") {
+                            alert(
+                              "Invalid file format. BMP files are not allowed."
+                            );
+                          } else {
+                            alert(
+                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                            );
+                          }
+                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                        }
+                        uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
+                        maxLengthCheck(e, "CHEQUE");
+                      }}
+                    />
+
+                    {/* cheque attachment display */}
+
+                    {chequeAttachmentSelectedFiles &&
+                      chequeAttachmentSelectedFiles.map((attachment, index) => {
+                        const splittedArray = attachment?.path
+                          ? attachment?.path?.split("/")
+                          : null;
+                        return (
+                          <div
+                            key={index}
+                            className="justify-content-start px-0"
+                            style={{
+                              marginRight: "20px",
+                              padding: "5px",
+                              maxWidth: "250px",
+                            }}
+                          >
+                            <div
+                              className="card"
+                              style={{ backgroundColor: "#EBF5FB" }}
+                            >
+                              <div className="p-1 card-header">
+                                <div className="d-flex justify-content-between align-items-center p-0">
+                                  <a
+                                    href={
+                                      attachment?.path
+                                        ? `${_attachmentUrl}/${attachment?.path}`
+                                        : `${attachment.tempUrl}`
+                                    }
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                  >
+                                    <i class="icofont-ui-zoom-out"></i>
+                                  </a>
+                                  <span className="fw-6 fw-bold">
+                                    {attachment?.path
+                                      ? splittedArray[splittedArray.length - 1]
+                                      : attachment.fileName}
+                                  </span>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      uploadPassChequeAttachmentHandler(
+                                        e,
+                                        "DELETE",
+                                        index,
+                                        attachment?.id ? attachment?.id : null
+                                      );
+                                    }}
+                                  >
+                                    <i
+                                      class="icofont-ui-delete"
+                                      style={{ fontSize: "15px" }}
+                                    ></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
                   <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
                       IFSC Code :<Astrick color="red" size="13px" />
@@ -2855,16 +3144,10 @@ onKeyPress={(e) => {
                         className="form-control form-control-sm"
                         id="ifsc_code"
                         name="ifsc_code"
-                        // value={
-                        //   ifscodeUppercase && ifscodeUppercase
-                        //     ? ifscodeUppercase
-                        //     : ""
-                        // }
-
                         maxLength="11"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2962,7 +3245,7 @@ onKeyPress={(e) => {
                     )}
                   </div>
 
-                  <div className="col-sm-3 mt-4">
+                  <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
                       Beneficiary Name :<Astrick color="red" size="13px" />
                     </label>
@@ -2973,7 +3256,7 @@ onKeyPress={(e) => {
                         id="beneficiary_name"
                         readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
@@ -2994,7 +3277,6 @@ onKeyPress={(e) => {
                               BeneficiaryErr: "",
                             });
                           } else if (!regex.test(enteredValue)) {
-                            // check if entered value matches the regex
                             setInputState({
                               ...state,
                               BeneficiaryErr: "Invalid name",
@@ -3045,401 +3327,99 @@ onKeyPress={(e) => {
                       </small>
                     )}
                   </div>
-
-                  <div className=" col-sm-3 mt-2">
-                    <label className="col-form-label" htmlFor="attachment">
-                      <b>Passbook Attachment :</b>
+                  <div className="col-sm-3 mt-3">
+                    <label className="form-label font-weight-bold">
+                      Bank Branch Name :<Astrick color="red" size="13px" />
                     </label>
-
-                    {modal.modalData &&
-                      modal.modalData.bank_passbook_attachment && (
-                        <a
-                          href={`${_attachmentUrl}/${modal.modalData.bank_passbook_attachment}`}
-                          target="_blank"
-                          downlaod
-                          multiple={true}
-                          className="btn btn-info btn-sm p-0"
-                          accept="image/jpg,image/jpeg,image/png,application/pdf"
-                          onChange={(e) => {
-                            const selectedFile = e.target.files[0];
-
-                            // Check if the file type is one of the allowed types
-                            if (
-                              selectedFile.type === "image/jpg" ||
-                              selectedFile.type === "image/jpeg" ||
-                              selectedFile.type === "image/png" ||
-                              selectedFile.type === "application/pdf"
-                            ) {
-                              // File type is allowed
-                            } else {
-                              // Check if the file type is BMP
-                              if (selectedFile.type === "image/bmp") {
-                                alert(
-                                  "Invalid file format. BMP files are not allowed."
-                                );
-                              } else {
-                                alert(
-                                  "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                                );
-                              }
-                              e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                            }
-                            uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                            maxLengthCheck(e, "PASSBOOK");
-                          }}
-                          // onClick={(e)=>{if(userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"){
-                          //   e.preventDefault()
-                          // }}}
-
-                          // disabled={userSessionData&&userSessionData.Edit_Vendor_Master_Bank_Details==="false"?true:false}
-                        >
-                          <i
-                            className="icofont-download"
-                            style={{ fontSize: "15px" }}
-                          >
-                            Download
-                          </i>
-                        </a>
-                      )}
                     {modal.modalData && (
                       <input
-                        type="file"
-                        name="bank_passbook_attachment"
-                        id="bank_passbook_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        ref={fileInputRef}
-                        multiple={true}
-                        disabled={
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="bank_branch_name"
+                        name="bank_branch_name"
+                        maxLength={25}
+                        onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
+                        readOnly={
                           authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
+                            authorities.Edit_Vendor_Master_Bank_Details === false
                             ? true
                             : false
                         }
-                       
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "PASSBOOK");
-                        }}
-                        // disabled={
-                        //   deta && deta.Bank_Details == false ? true : false
-                        // }
-                        className="form-control"
-                      />
-                    )}
-
-                    {!modal.modalData && (
-                      <input
-                        type="file"
-                        name="bank_passbook_attachment"
-                        id="bank_passbook_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        className="form-control"
-                        multiple={true}
-                        ref={passbookInputRef}
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "PASSBOOK");
-                        }}
-                      />
-                    )}
-
-                    {/* <div className="d-flex"> */}
-                    {passBookSelectedFiles &&
-                      passBookSelectedFiles.map((attachment, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className="justify-content-start"
-                            style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
-                            }}
-                          >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
-                                src={attachment.tempUrl}
-                                style={{ height: "100%", width: "100%" }}
-                              />{" "} */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassBookAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    {/* </div> */}
-                    {/* <p style={{ fontSize: "12px" }}>
-                    {" "}
-                    Note :-Accept only png, jpeg, jpp and pdf file.
-                  </p> */}
-                  </div>
-
-                  <div className=" col-sm-3 mt-2">
-                    <label className="col-form-label">
-                      <b>Cheque Attachment :</b>
-                    </label>
-                    {modal.modalData && modal.modalData.cheque_attachment && (
-                      <a
-                        href={`${_attachmentUrl}/${modal.modalData.cheque_attachment}`}
-                        target="_blank"
-                        downlaod
-                        className="btn btn-info btn-sm p-0"
-                        ref={fileInputRef}
-                        multiple={true}
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
-                        }}
-                      >
-                        <i
-                          class="icofont-download"
-                          style={{ fontSize: "15px" }}
-                        >
-                          Download
-                        </i>
-                      </a>
-                    )}
-                    {modal.modalData && (
-                      <input
-                        type="file"
-                        name="cheque_attachment"
-                        ref={chequeInputRef}
-                        id="cheque_attachment"
-                        multiple={true}
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        disabled={
-                          authorities &&
-                          authorities.Edit_Vendor_Master_Bank_Details === false
-                            ? true
-                            : false
+                        defaultValue={
+                          modal.modalData
+                            ? modal.modalData.bank_branch_name
+                            : ""
                         }
-                        
-                        className="form-control"
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === "") {
+                            setInputState({
+                              branchNameError: "",
+                            });
+                          } else if (
+                            !value.match(
+                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                            )
                           ) {
-                            // File type is allowed
+                            setInputState({
+                              branchNameError: "Invalid Branch Name",
+                            });
+                          } else if (value.length > 25) {
+                            setInputState({
+                              branchNameError:
+                                "Bank name can be up to 50 characters long.",
+                            });
                           } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                            setInputState("");
                           }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
                         }}
+                        required={true}
                       />
                     )}
                     {!modal.modalData && (
                       <input
-                        type="file"
-                        name="cheque_attachment"
-                        id="cheque_attachment"
-                        accept="image/jpg,image/jpeg,image/png,application/pdf"
-                        className="form-control"
-                        ref={chequeInputRef}
-                        multiple={true}
-                        onChange={(e) => {
-                          const selectedFile = e.target.files[0];
-
-                          // Check if the file type is one of the allowed types
-                          if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
-                          ) {
-                            // File type is allowed
-                          } else {
-                            // Check if the file type is BMP
-                            if (selectedFile.type === "image/bmp") {
-                              alert(
-                                "Invalid file format. BMP files are not allowed."
-                              );
-                            } else {
-                              alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
-                              );
-                            }
-                            e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
-                          }
-                          uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "CHEQUE");
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="bank_branch_name"
+                        name="bank_branch_name"
+                        maxLength={25}
+                        onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
                         }}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === "") {
+                            setInputState({
+                              branchNameError: "",
+                            });
+                          } else if (
+                            !value.match(
+                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                            )
+                          ) {
+                            setInputState({
+                              branchNameError: "Invalid Branch Name",
+                            });
+                          } else if (value.length > 25) {
+                            setInputState({
+                              branchNameError:
+                                "Bank name can be up to 50 characters long.",
+                            });
+                          } else {
+                            setInputState("");
+                          }
+                        }}
+                        required={true}
                       />
                     )}
-
-                    {/* <div className="d-flex"> */}
-                    {chequeAttachmentSelectedFiles &&
-                      chequeAttachmentSelectedFiles.map((attachment, index) => {
-                        return (
-                          <div
-                            key={index}
-                            // className="justify-content-start"
-                            style={{
-                              // marginRight: "20px",
-                              // padding: "5px",
-                              maxWidth: "200px",
-                            }}
-                          >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
-                              <div className="card-header">
-                                <span>{attachment.fileName}</span>
-                                {/* <img
-                              src={attachment.tempUrl}
-                              style={{ height: "100%", width: "100%" }}
-                            />{" "}
-                            * */}
-                                *
-                                <div className="d-flex justify-content-between p-0 mt-1">
-                                  <a
-                                    href={`${attachment.tempUrl}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                  >
-                                    <i class="icofont-ui-zoom-out"></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      uploadPassChequeAttachmentHandler(
-                                        e,
-                                        "DELETE",
-                                        index
-                                      );
-                                    }}
-                                  >
-                                    <i
-                                      class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
-                                    ></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    {inputState.branchNameError && (
+                      <small style={{ color: "red" }}>
+                        {inputState.branchNameError}
+                      </small>
+                    )}
                   </div>
-                  {/* </div> */}
 
                   <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
@@ -3493,7 +3473,7 @@ onKeyPress={(e) => {
                     </select>
                   </div>
 
-                  <div className="col-sm-3 mt-4">
+                  <div className="col-sm-3 mt-3">
                     <label className="form-label font-weight-bold">
                       ERP Acc Name :<Astrick color="red" size="13px" />
                     </label>
@@ -3506,15 +3486,10 @@ onKeyPress={(e) => {
                       value={erp}
                       readOnly={
                         authorities &&
-                        authorities.Update_ERP_Account_Name === false
+                          authorities.Update_ERP_Account_Name === false
                           ? true
                           : false
                       }
-                      // readOnly={
-                      //   deta && deta.Update_ACME_Account_Name == false
-                      //     ? true
-                      //     : false
-                      // }
                       defaultValue={
                         modal.modalData ? modal.modalData.acme_account_name : ""
                       }
@@ -3542,37 +3517,12 @@ onKeyPress={(e) => {
                       </small>
                     )}
                   </div>
-                  {/* {console.log("d",modal.modalData.consider_in_payment)}
-                  {modal.modalData.consider_in_payment === "YES" && consider && consider === "YES" ? ( */}
-                  {/* <div className="col-sm-3 mt-4">
-                      <label className="form-label font-weight-bold">
-                        Template :<Astrick color="red" size="13px" />
-                      </label>
-
-                      {paymentDropdown && (
-                        <Select
-                          id="payment_template"
-                          name="payment_template"
-                          options={paymentDropdown}
-                          ref={considerInRef}
-                          defaultValue={
-                            modal.modalData &&
-                            paymentDropdown.filter(
-                              (d) => d.value == modal.modalData.payment_template
-                            )
-                          }
-                        />
-                      )}
-                    </div> */}
-                  {/* ) : null} */}
 
                   {consider === "YES" && paymentDropdown && (
-                    <div className="col-sm-3 mt-4">
+                    <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Template :<Astrick color="red" size="13px" />
                       </label>
-
-                      {/* Show the Select component only if consider is "YES" */}
 
                       <Select
                         id="payment_template"
@@ -3590,7 +3540,7 @@ onKeyPress={(e) => {
                   )}
 
                   {consider && consider === "PETTY_CASH" && considerInPay && (
-                    <div className="col-sm-3 mt-4">
+                    <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Card Number :
                       </label>
@@ -3631,26 +3581,6 @@ onKeyPress={(e) => {
                             });
                           }
                         }}
-                        // onChange={(event) => {
-                        //   if (event.target.value === "") {
-                        //     setInputState({
-                        //       ...state,
-                        //       CardNumberError: "",
-                        //     });
-                        //   } else if (event.target.value < 16) {
-                        //     setInputState({
-                        //       ...state,
-                        //       CardNumberError: "Card Number Should be  16 length",
-                        //     });
-                        //   }
-
-                        //   else {
-                        //     setInputState({
-                        //       ...state,
-                        //       CardNumberError: "", // Clear the error if the length is 16
-                        //     });
-                        //   }
-                        // }}
                       />
                       {inputState.CardNumberError && (
                         <div className="text-danger">
@@ -3671,7 +3601,6 @@ onKeyPress={(e) => {
                         id="reference_number"
                         name="reference_number"
                         maxLength={25}
-                        // required={true}
                         defaultValue={
                           modal.modalData
                             ? modal.modalData.reference_number
@@ -3701,9 +3630,6 @@ onKeyPress={(e) => {
                             });
                           }
                         }}
-                        // onKeyPress={(e) => {
-                        //   Validation.RefNumbersSpecialAlphanumeric(e);
-                        // }}
                         onKeyPress={(e) => {
                           Validation.CardNumbersOnly(e);
                         }}
@@ -3755,8 +3681,8 @@ onKeyPress={(e) => {
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                ? true
-                                : false
+                                  ? true
+                                  : false
                             }
                           />
                           <label
@@ -3792,34 +3718,6 @@ onKeyPress={(e) => {
                       </div>
                     </div>
                   </div>
-
-                  {/* <div className="col-sm-12">
-                                    <label className="form-label font-weight-bold">Status :<Astrick color="red" size="13px" /></label>
-                                    <div className="row">
-                                        <div className="col-md-2">
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
-                                                    value="1"
-                                                    defaultChecked={(modal.modalData && modal.modalData.is_active === 1) ? true : ((!modal.modalData) ? true : false)}
-                                                />
-                                                <label className="form-check-label" htmlFor="is_active_1">
-                                                    Active
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-1">
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
-                                                    readOnly={(modal.modalData) ? false : true}
-                                                    defaultChecked={(modal.modalData && modal.modalData.is_active === 0) ? true : false}
-                                                />
-                                                <label className="form-check-label" htmlFor="is_active_0">
-                                                    Deactive
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
                 </div>
               </div>
             </Modal.Body>

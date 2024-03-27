@@ -18,6 +18,7 @@ import * as Validation from "../../../../components/Utilities/Validation";
 import UserService from "../../../../services/MastersService/UserService";
 import TaskTicketTypeService from "../../../../services/MastersService/TaskTicketTypeService";
 import TestCasesService from "../../../../services/TicketService/TestCaseService";
+import { Astrick } from "../../../../components/Utilities/Style";
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -39,7 +40,7 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-
+  console.log("fromdate", fromdate)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -64,11 +65,10 @@ export default function TaskModal(props) {
   };
 
   const handleClose = () => {
-    const timer = setTimeout(() => {
-      props.close();
-      props.loadBasket();
-      clearInterval(timer);
-    }, 2000);
+
+    props.close();
+    props.loadBasket();
+
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
@@ -97,7 +97,7 @@ export default function TaskModal(props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         const data1 = res.data.data;
-        const data = data1.filter((d) => d.is_active === 1);
+        const data = data1.filter((d) => d.is_active === 1 && d.account_for === "SELF");
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -162,7 +162,7 @@ export default function TaskModal(props) {
             setParent(mappedData);
             // parentName(mappedData);
           } else {
-            console.error("error", res.status);
+
           }
         }
       }
@@ -184,37 +184,7 @@ export default function TaskModal(props) {
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    // if (type === "UPLOAD") {
-    //   var tempSelectedFile = [];
 
-    //   for (var i = 0; i < e.target.files.length; i++) {
-    //     tempSelectedFile.push({
-    //       file: e.target.files[i],
-    //       show_to_customer: 0,
-    //       show_to_project_owner: 0,
-    //     });
-    //   }
-    //   fileInputRef.current.value = "";
-    //   setSelectedFile(tempSelectedFile);
-
-    // if (type === "UPLOAD") {         // updated by Asmita Margaje
-    //   const selectedFilesCount = selectedFile.length;
-    //   const newFiles = Array.from(e.target.files)
-    //     .filter((file, index) => index < 5 - selectedFilesCount) // Limit to available slots
-    //     .map((file) => ({
-    //       file,
-    //       show_to_customer: 0,
-    //       show_to_project_owner: 0,
-    //     }));
-
-    //   if (newFiles.length === 0) {
-    //     // All available slots already used
-    //     alert("You can only upload a maximum of 5 files.");
-    //   } else {
-    //     setSelectedFile((prevSelectedFiles) => [
-    //       ...prevSelectedFiles,
-    //       ...newFiles,
-    //     ]);
 
     if (type === "UPLOAD") {
       const selectedFilesCount = selectedFile.length;
@@ -257,14 +227,12 @@ export default function TaskModal(props) {
           ]);
         }
 
-        // console.log("size",maxTotalSizeMB)
-        // console.log("totalSizeBytes",totalSizeMB)
+
 
         // Clear the input field
         fileInputRef.current.value = "";
       }
 
-      // console.log("selected",selectedFile)
     } else if (type === "DELETE") {
       let filteredFileArray = selectedFile.filter(
         (item, index) => id !== index
@@ -312,13 +280,7 @@ export default function TaskModal(props) {
     }
 
     var flag = 1;
-    // if (typeRef && typeRef.current.commonProps.hasValue == false) {
-    //   alert("Plaese select task type");
-    //   e.preventDefault();
-    //   flag = 0;
-    // } else {
-    //   flag = 1;
-    // }
+
 
     if (todateformat > fromdateformat) {
       alert("Please select End Date Greater than Start date");
@@ -340,17 +302,14 @@ export default function TaskModal(props) {
         e.preventDefault();
       }
     }
-    // console.log(assignUserRef.current);
-    // if(assignUserRef.current.value.length <2){
-    //   alert("pelase select atleast two users")
-    //   e.preventDefault();
-    // }
+
     if (flag == 1) {
       if (todateformat > fromdateformat) {
         alert("Please select End Date Greater than Start date");
       } else {
         if (formData.get("id")) {
-          const taskTypeId = typeRef.current.props.value.map((d) => {
+
+          const taskTypeId = typeRef?.current?.props?.value.map((d) => {
             return d.value;
           });
           formData.append("task_type_id", taskTypeId);
@@ -364,9 +323,11 @@ export default function TaskModal(props) {
 
                   handleClose();
                 } else {
+                  setLoading(false);
                   setNotify({ type: "danger", message: res.data.message });
                 }
               } else {
+                setLoading(false);
                 setNotify({ type: "danger", message: res.message });
                 new ErrorLogService().sendErrorLog(
                   "Ticket",
@@ -377,6 +338,7 @@ export default function TaskModal(props) {
               }
             })
             .catch((error) => {
+              setLoading(false)
               const { response } = error;
               const { request, ...errorObject } = response;
               new ErrorLogService().sendErrorLog(
@@ -396,9 +358,11 @@ export default function TaskModal(props) {
                 handleClose();
                 // props.loadBasket();
               } else {
+                setLoading(false);
                 setNotify({ type: "danger", message: res.data.message });
               }
             } else {
+              setLoading(false);
               setNotify({ type: "danger", message: res.data.message });
               new ErrorLogService().sendErrorLog(
                 "Ticket",
@@ -408,16 +372,7 @@ export default function TaskModal(props) {
               );
             }
           });
-          // .catch((error) => {
-          //   const { response } = error;
-          //   const { request, ...errorObject } = response;
-          //   new ErrorLogService().sendErrorLog(
-          //     "Task",
-          //     "Create_Task",
-          //     "INSERT",
-          //     errorObject.data.message
-          //   );
-          // });
+
         }
       }
     }
@@ -441,19 +396,7 @@ export default function TaskModal(props) {
     });
   };
 
-  // console.log("pp",props.loadBasket())
 
-  // const handleGroupActivity=(event) =>{
-  //   // console.log(e);
-  //   // e.preventDefault()
-  //   if (
-  //     document.getElementById("task_type_group_activity").checked == true  &&
-  //     assignUserRef.current.commonProps.selectProps.value.length < 1
-  //   ) {
-  //     alert("please select atleast two users for group activity");
-  //     event.preventDefault();
-  //   }
-  // }
 
   useEffect(() => {
     loadData();
@@ -472,10 +415,7 @@ export default function TaskModal(props) {
             <strong>Task Details</strong>
           </Modal.Title>
         </Modal.Header>
-        {/* Ticket.{props.data.ticket_id}<br/>
-          Basket.{props.data.ticket_basket_id}<br/>
-          Task.{props.data.id}<br/>
-        */}
+
         {notify && <Alert alertData={notify} />}
 
         <form onSubmit={handleForm} method="post" encType="multipart/form-data">
@@ -549,7 +489,7 @@ export default function TaskModal(props) {
                               props.data.type === "GROUP_ACTIVITY"
                             }
                           />
-                          {/* {console.log("props",props.data.type)} */}
+
                           <label
                             className="form-check-label"
                             htmlFor="status_group_activity"
@@ -567,16 +507,14 @@ export default function TaskModal(props) {
             <div className="row mt-2">
               <div className="col-md-12">
                 <label className="form-label">
-                  <b>Task Name : </b>
+                  <b>Task Name :<Astrick color="red" size="13px" /></b>
+
                 </label>
                 {props.data.task_name === null ? (
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     name="task_name"
-                    // defaultValue={props.data.task_name}
-                    // onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
                     required
                   />
@@ -586,23 +524,13 @@ export default function TaskModal(props) {
                     className="form-control form-control-sm"
                     name="task_name"
                     defaultValue={props.data.task_name}
-                    // onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+
 
                     required
                   />
                 )}
 
-                {/* <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  name="task_name"
-                  defaultValue={props.data.task_name}
-                  // onKeyPress={e => { Validation.CharactersNumbersOnly(e) }}
-              readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                  required
-                  /> */}
               </div>
             </div>
 
@@ -655,7 +583,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Start Date *:</b>
+                  <b>Start Date :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.start_date == null ? (
                   <input
@@ -666,12 +594,11 @@ export default function TaskModal(props) {
                     onChange={handleFromDate}
                     // max={props.expectedSolveDate}
                     min={props.ticketStartDate}
-                    // defaultValue={props.data.start_date}
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+
 
                     required
 
-                    // min={new Date().toISOString().slice(0, 10)}
+                  // min={new Date().toISOString().slice(0, 10)}
                   />
                 ) : (
                   <input
@@ -687,13 +614,16 @@ export default function TaskModal(props) {
 
                     required
 
-                    // min={new Date().toISOString().slice(0, 10)}
+                  // min={new Date().toISOString().slice(0, 10)}
                   />
                 )}
               </div>
+
+              {console.log("pp", props)}
+              {console.log("pp1", fromdate?.length > 0 ? 1 : 0)}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>End Date *:</b>
+                  <b>End Date :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.end_date == null ? (
                   <input
@@ -702,12 +632,12 @@ export default function TaskModal(props) {
                     name="end_date"
                     // defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate}
+                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    // max={props.expectedSolveDate}
+
                     required
-                    // onChange={e=>handleMinDate(e)}
+                  // onChange={e=>handleMinDate(e)}
                   />
                 ) : (
                   <input
@@ -716,12 +646,12 @@ export default function TaskModal(props) {
                     name="end_date"
                     defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate}
+                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-                    // max={props.expectedSolveDate}
+
                     required
-                    // onChange={e=>handleMinDate(e)}
+                  // onChange={e=>handleMinDate(e)}
                   />
                 )}
               </div>
@@ -730,7 +660,7 @@ export default function TaskModal(props) {
                 props.moduleSetting["RequiredHour"] == 1 && ( */}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Task Hours *:</b>
+                  <b>Task Hours :<Astrick color="red" size="13px" /></b>
                 </label>
                 {props.data.task_hours == null ? (
                   <input
@@ -741,7 +671,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 ) : (
                   <input
@@ -752,7 +682,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -763,7 +693,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Task Priority *:</b>
+                  <b>Task Priority :<Astrick color="red" size="13px" /></b>
                 </label>
 
                 <select
@@ -889,7 +819,7 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Assign to user *:</b>
+                  <b>Assign to user :<Astrick color="red" size="13px" /></b>
                 </label>
 
                 {defaultUserData?.length > 0 && userData && (
@@ -929,7 +859,7 @@ export default function TaskModal(props) {
                         .filter((d) => d.value == localStorage.getItem("id"))
                     }
                     isClearable
-                    // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                  // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -1105,13 +1035,14 @@ export default function TaskModal(props) {
               style={{ backgroundColor: "#484C7F" }}
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
-              {loading ? (
+              Submit
+              {/* {loading ? (
                 <span>
                   <i className="fa fa-spinner fa-spin" /> Loading...
                 </span>
               ) : (
                 "Submit"
-              )}
+              )} */}
               {/* Submit */}
             </button>
             <button
@@ -1128,3 +1059,6 @@ export default function TaskModal(props) {
     </>
   );
 }
+
+
+

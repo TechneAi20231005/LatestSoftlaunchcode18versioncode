@@ -7,7 +7,6 @@ export default function Test(props) {
   return (
     <div>
         
-        {/* {props.columns && JSON.stringify(props.columns)} */}
         {props.data && JSON.stringify(props.data)}
 
         <Table striped bordered hover size="sm">
@@ -35,16 +34,7 @@ export default function Test(props) {
 
 
 
-            {/* {props.data.map((item, index) => (
-                <tr key={index}>
-                    <td>{item['sr']}</td>
-                    <td>{item["id"]}</td>
-                    <td>{item["ticket_id"]}</td>
-                    <td>{item["description"]}</td>
-                    <td>{item["ticket_date"]}</td>
-                </tr>
-            ))} */}
-
+           
         </tbody>
     </Table>
 

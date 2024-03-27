@@ -3,55 +3,99 @@ import { Link, useNavigate } from "react-router-dom";
 import { _base } from "../../../settings/constants";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import ErrorLogService from "../../../services/ErrorLogService";
 
-import UserService from "../../../services/MastersService/UserService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Select from "react-select";
 import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { Astrick } from "../../../components/Utilities/Style";
 
-import DepartmentService from "../../../services/MastersService/DepartmentService";
 import CustomerService from "../../../services/MastersService/CustomerService";
-import RoleService from "../../../services/MastersService/RoleService";
-import DesignationService from "../../../services/MastersService/DesignationService";
-
-import CountryService from "../../../services/MastersService/CountryService";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
 
 import InputGroup from "react-bootstrap/InputGroup";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllRoles,
+  getCityData,
+  getCountryDataSort,
+  getRoles,
+  getStateData,
+  getStateDataSort,
+  postUserData,
+  getEmployeeData,
+} from "../../Dashboard/DashboardAction";
+
+import { getDesignationData } from "../DesignationMaster/DesignationAction";
+
+import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
+import { getRoleData } from "../RoleMaster/RoleMasterAction";
 
 function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
+  const roleDropdown = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
+  );
+  const departmentDropdown = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
+  );
 
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+  const [filteredRoles, setFilteredRoles] = useState([]);
+
+
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
 
   const [accountFor, setAccountFor] = useState("SELF");
 
-  const [departmentDropdown, setDepartmentDropdown] = useState(null);
-  const [roleDropdown, setRoleDropdown] = useState(null);
-  const [designationDropdown, setDesignationDropdown] = useState(null);
+ 
   const [CustomerDrp, setCustomerDrp] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
-  const [options, setOptions] = useState([
+
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading
+  );
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.FilterCity
+  );
+
+
+  const designationDropdown = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
+
+  const options = [
     { value: "MY_TICKETS", label: "My Tickets" },
     {
       value: "DEPARTMENT_TICKETS",
       label: "Department Tickets",
     },
-  ]);
+  ];
 
   const mappingData = {
     department_id: null,
@@ -59,7 +103,23 @@ function CreateUserComponent({ match }) {
     ticket_passing_authority: 0,
     is_default: 0,
   };
-  const [rows, setRows] = useState([mappingData]);
+  const [rows, setRows] = useState([
+    {
+      department_id: [],
+      ticket_show_type: null,
+      ticket_passing_authority: 0,
+      is_default: 0,
+    },
+  ]);
+
+  const [empty, setEmpty] = useState([
+    {
+      department_id: [],
+      ticket_show_type: null,
+      ticket_passing_authority: 0,
+      is_default: 0,
+    },
+  ]);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -162,13 +222,13 @@ function CreateUserComponent({ match }) {
     } else if (selectContactNo.length < 10) {
       setInputState({
         ...state,
-        contactNoErr: "contact length should be equal to 10",
+        contactNoErr: "contact number length should be 10 digit",
       });
       flag = 1;
     } else if (selectContactNo.length > 10) {
       setInputState({
         ...state,
-        contactNoErr: "contact length should be equal to 10",
+        contactNoErr: "contact number length should be 10 digit",
       });
       flag = 1;
     } else if (contactValid == true) {
@@ -205,7 +265,7 @@ function CreateUserComponent({ match }) {
       setContactValid(true);
     }
 
-    if (contactValidation.length < 11) {
+    if (contactValidation.length < 10) {
       setContactNumber(contactValidation);
     }
   };
@@ -235,6 +295,8 @@ function CreateUserComponent({ match }) {
 
   const [passwordError, setPasswordError] = useState(null);
   const [passwordValid, setPasswordValid] = useState(false);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
+  const [cityDropdownData, setCityDropdownData] = useState([]);
 
   const handlePasswordValidation = (e) => {
     if (e.target.value === "") {
@@ -296,8 +358,20 @@ function CreateUserComponent({ match }) {
     }
   };
 
+
+  
+  
+  const [selectRole,setSelctRole]=useState(null)
+  const handleSelectRole = (e) => {
+    const newValue = e;
+    setSelctRole(newValue);
+  };
   const handleForm = async (e) => {
     e.preventDefault();
+    if (loading) {
+      return;
+    }
+    setLoading(true); // Set loading state to true
     setNotify(null);
 
     const form = new FormData(e.target);
@@ -307,23 +381,28 @@ function CreateUserComponent({ match }) {
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
+      setLoading(false); // Reset loading state
       return false;
     }
 
     var selectDepartment = form.getAll("department_id[]");
     if (selectDepartment == "") {
       setInputState({ ...state, departmentErr: " Please Select Department" });
+      setLoading(false); // Reset loading state
       return false;
     }
 
     if (confirmPasswordError == true) {
       alert("Password Does not Match");
+      setLoading(false); // Reset loading state
       return false;
     } else if (mailError == true) {
       alert("Enter valid email");
+      setLoading(false); // Reset loading state
       return false;
     } else if (pincodeValid == true) {
       alert("Enter valid Pincode");
+      setLoading(false); // Reset loading state
       return false;
     } else if (
       confirmPasswordError == false &&
@@ -333,167 +412,29 @@ function CreateUserComponent({ match }) {
       pincodeValid == false
     ) {
       if (flag === 1) {
-        await new UserService()
-          .postUser(form)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                history(
-                  {
-                    pathname: `/${_base}/User`,
-                  },
-                  {
-                    state: {
-                      type: "success",
-                      message: res.data.message,
-                    },
-                  }
-                );
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setNotify({ type: "danger", message: res.message });
-              new ErrorLogService().sendErrorLog(
-                "User",
-                "Create_User",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-          .catch((error) => {
-            if (error.response) {
-              const { request, ...errorObject } = error.response;
-              new ErrorLogService().sendErrorLog(
-                "User",
-                "Create_User",
-                "INSERT",
-                errorObject.data.message
-              );
-            } else if (error.request) {
-              console.error("Error response is undefined:", error.request);
-            } else {
-              console.error("Error:", error.message);
-            }
-          });
+        dispatch(postUserData(form)).then((res) => {
+          if (res.payload.data.status === 1 && res.payload.status === 200) {
+            dispatch(getEmployeeData());
+            setNotify({ type: "success", message: res.payload.data.message });
+            setTimeout(() => {
+              navigate(`/${_base}/User`);
+            }, 3000);
+          }
+          setLoading(false); 
+        });
       }
     }
   };
 
   const loadData = async () => {
-    setRows([mappingData]);
 
-    //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.country,
-              }))
-          );
-        }
-      }
-    });
-    //  ************************** State load data**************************************
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-              }))
-          );
-        }
-      }
-    });
-    //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.city,
-              }))
-          );
-        }
-      }
-    });
+    dispatch(getCountryDataSort());
+    dispatch(getStateDataSort());
 
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        const temp = [];
+   
 
-        if (res.data.status == 1) {
-          // setDepartment(res.data.data.filter(d => d.is_active === 1));
-          setDepartmentDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.department,
-              }))
-          );
-        }
-      }
-    });
 
-    await new RoleService().getRole().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const filteredAsAccountFor = res.data.data.filter((filterData) => {
-            if (accountFor === "SELF") {
-              return filterData.role.toLowerCase() !== "user";
-            } else if (accountFor === "CUSTOMER") {
-              return filterData.role.toLowerCase() === "user";
-            }
-          });
-
-          const response = filteredAsAccountFor
-
-            .filter((d) => d.is_active === 1)
-
-            .map((d) => ({
-              value: d.id,
-              label: d.role,
-            }));
-          const aa = response.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-          setRoleDropdown(aa);
-        }
-      }
-    });
-
-    await new DesignationService().getDesignation().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          // setDesignationDropdown(res.data.data.map(d => ({ value: d.id, label: d.designation })));
-          setDesignationDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.designation,
-              }))
-          );
-        }
-      }
-    });
-
+  
     await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -509,39 +450,32 @@ function CreateUserComponent({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+ 
+    
   };
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
+    
+      
+      setStateDropdownData(
+        stateDropdown &&
+          stateDropdown
+            ?.filter((filterState) => filterState.country_id === e.value)
+            ?.map((d) => ({ value: d.id, label: d.state }))
       );
-      const newStatus = { ...updateStatus, statedrp: 1 };
-      setUpdateStatus(newStatus);
-      setStateName(null);
-      setCityName(null);
+    
     }
     if (type == "STATE") {
-      // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
+
+      setCityDropdownData(
+        AllcityDropDownData &&
+          AllcityDropDownData?.filter(
+            (filterState) => filterState.state_id === e.value
+          )?.map((d) => ({ value: d.id, label: d.city }))
       );
-      const newStatus = { ...updateStatus, citydrp: 1 };
-      setUpdateStatus(newStatus);
+
+    
       setStateName(e);
       setCityName(null);
     }
@@ -554,11 +488,7 @@ function CreateUserComponent({ match }) {
   const handleAddRow = async () => {
     setNotify(null);
     let flag = 1;
-    // let last=rows.length-1;
-    // if(!rows[last].department_id ){
-    //     flag=0;
-    //     setNotify({ type: 'danger', message: "Complete Previous Record" })
-    // }
+   
     if (flag === 1) {
       setRows([...rows, mappingData]);
     } else {
@@ -566,54 +496,134 @@ function CreateUserComponent({ match }) {
     }
   };
 
+  
+  
+
+  const handleUserSelect = (selectedOptions, index) => {
+    const selectedDepartmentId = selectedOptions.value;
+
+    // Check if the selected department is already present in the rows
+    const isDepartmentAlreadySelected = rows.some(
+      (row) => row.department_id === selectedDepartmentId
+    );
+
+    if (isDepartmentAlreadySelected) {
+      // If the department is already selected, show an error message
+      // You can handle the error message display as per your UI design
+      alert(
+        "This Department is already selected. Please select another Department."
+      );
+      return;
+    }
+
+    // Update the state with the selected department if it's not already selected
+    const updatedAssign = [...rows];
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      department_id: selectedDepartmentId,
+    };
+    setRows(updatedAssign);
+  };
+
+  const handleTicketTypeShow = (selectedTicketOption, index) => {
+    const selectedTicketID = selectedTicketOption.value;
+
+    
+    const isDepartmentAlreadySelected = rows.some(
+      (row) => row.ticket_show_type === selectedTicketID
+    );
+
+  
+    
+    const updatedAssign = [...rows];
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      ticket_show_type: selectedTicketID,
+    };
+    setRows(updatedAssign);
+  };
+
+  const handleRemoveSpecificRow = (index) => async () => {
+
+    
+    const updatedAssign = [...rows];
+    updatedAssign.splice(index, 1);
+
+ 
+    
+    setRows(updatedAssign);
+  
+    
+  };
+
+  
+
+
+
+  
+
+  const sortSlefRole =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.role.toLowerCase() !== "user";
+    });
+  const filterSelfRole = sortSlefRole
+    ?.filter((d) => d.is_active === 1)
+    .map((d) => ({
+      value: d.id,
+      label: d.role,
+    }));
+  const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
+
+  const customerSort =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.role.toLowerCase() === "user";
+    });
+  const filterCutomerRole = customerSort
+    ?.filter((d) => d.is_active === 1)
+    .map((d) => ({
+      value: d.id,
+      label: d.role,
+    }));
+  const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
+
+
+  
+
   const accountForChange = async (account_for) => {
+    setSelctRole(null)
     setAccountFor(account_for);
-    const ticketTypeShow = options.filter((d) => d.value === "MY_TICKETS");
-
-    account_for === "CUSTOMER"
-      ? setOptions(ticketTypeShow)
-      : setOptions([
-          { value: "MY_TICKETS", label: "My Tickets" },
-          {
-            value: "DEPARTMENT_TICKETS",
-            label: "Department Tickets",
-          },
-        ]);
-
     const accountFor = account_for;
-    await new RoleService().getRole().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const filteredAsAccountFor = res.data.data.filter((filterData) => {
-            if (accountFor === "SELF") {
-              return filterData.role.toLowerCase() !== "user";
-            } else if (accountFor === "CUSTOMER") {
-              return filterData.role.toLowerCase() === "user";
-            }
-          });
-          const response = filteredAsAccountFor
-
-            .filter((d) => d.is_active === 1)
-
-            .map((d) => ({
-              value: d.id,
-              label: d.role,
-            }));
-          const aa = response.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-
-          setRoleDropdown(aa);
-        }
+    const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
+      if (accountFor === "SELF") {
+        return filterData.role.toLowerCase() !== "user";
+      } else if (accountFor === "CUSTOMER") {
+        return filterData.role.toLowerCase() === "user";
       }
     });
+
+    const response = filteredAsAccountFor
+      .filter((d) => d.is_active === 1)
+      .map((d) => ({
+        value: d.id,
+        label: d.role,
+      }));
+    const aa = response.sort(function (a, b) {
+      return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+    });
+    setFilteredRoles(aa);
+
+ 
+    
   };
 
-  const handleRemoveSpecificRow = (idx) => () => {
-    if (idx > 0) {
-      setRows(rows.filter((_, i) => i !== idx));
-    }
-  };
+ 
+
 
   const [departmentValue, setDepartmentValue] = useState(false);
   const departmentRef = useRef(null);
@@ -658,9 +668,7 @@ function CreateUserComponent({ match }) {
           e.target.checked == true ? 1 : 0;
       } else if (type == "IS_DEFAULT") {
         temp_element.is_default = e.target.checked == true ? 1 : 0;
-        // temp_state.forEach((d, i) => {
-        //   temp_state[i].is_default = 0;
-        // });
+       
       }
       temp_state[actualIndex] = temp_element;
       setRows(temp_state);
@@ -680,38 +688,19 @@ function CreateUserComponent({ match }) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
-    // document.getElementById("whats_app_contact_no").value = text1;
+   
   }
 
   useEffect(() => {
     whatsappRef.current.value = copyData;
   }, [copyData]);
 
-  // const [spacePassword, setSpacePassword] = useState(null)
-  // const passwordHandle = (e) => {
-  //     //setPassword(e.target.value)
+ 
 
-  //     function hasWhiteSpace(s) {
-  //         return /\s/g.test(s);
-  //     }
-  //     setSpacePassword(e.target.value)
-  //     if (hasWhiteSpace(e.target.value)) {
-  //         alert("Space allowed");
-  //         setSpacePassword(e.target.value.replace(/^\s+|\s+$/gm, ''))
-  //     }
-  // }
 
-  const [spacePassword, setSpacePassword] = useState(null);
   const passwordHandle = (e, s) => {
     setPassword(e.target.value);
-    // function hasWhiteSpace(s) {
-    //     return /\s/g.test(s);
-    // }
-    // setSpacePassword(e.target.value)
-    // if (hasWhiteSpace(e.target.value)) {
-    //     alert("Space Not allowed");
-    //     setSpacePassword(e.target.value.replace(/^\s+|\s+$/gm, ''))
-    // }
+
   };
 
   function language() {
@@ -726,9 +715,36 @@ function CreateUserComponent({ match }) {
   }
   useEffect(() => {
     loadData();
+    if (!checkRole.length) {
+      dispatch(getRoles());
+    }
+    dispatch(getRoleData());
+    if (!designationDropdown.length) {
+      dispatch(getDesignationData());
+    }
+
+    if (!AllcityDropDownData.length) {
+      dispatch(getCityData());
+    }
+
+    if (!cityDropdownData.length) {
+      dispatch(getCityData());
+    }
+
+    if (!stateDropdown.length) {
+      dispatch(getStateData());
+    }
+    if (!stateDropdownData.length) {
+      dispatch(getStateData());
+    }
+
+    // handleData()
+    dispatch(getAllRoles());
+    dispatch(departmentData());
   }, []);
+
   useEffect(() => {
-    if (checkRole && checkRole[2].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -738,7 +754,7 @@ function CreateUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
 
       <form onSubmit={handleForm} ref={userForm} method="post">
         <Tabs
@@ -816,7 +832,7 @@ function CreateUserComponent({ match }) {
                           placeholder="Please enter first name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -849,7 +865,7 @@ function CreateUserComponent({ match }) {
                           placeholder="Middle Name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -882,7 +898,7 @@ function CreateUserComponent({ match }) {
                           placeholder="Last Name"
                           maxLength={30}
                           onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
+                            Validation.Characters(e);
                           }}
                           onChange={(event) => {
                             if (event.target.value === "") {
@@ -1011,8 +1027,8 @@ function CreateUserComponent({ match }) {
                           placeholder="Contact Number"
                           // value={contactNumber? contactNumber :""}
                           // key={Math.random()}
-                          max="10"
-                          min="10"
+                          maxLength="10"
+                          minLength="10"
                           onKeyPress={(e) => {
                             Validation.mobileNumbersOnly(e);
                           }}
@@ -1069,6 +1085,8 @@ function CreateUserComponent({ match }) {
                             Validation.mobileNumbersOnly(e);
                           }}
                           onChange={handleWhatsappValidation}
+                          maxLength="10"
+                          minLength="10"
                         />
                         {inputState && (
                           <small
@@ -1194,7 +1212,7 @@ function CreateUserComponent({ match }) {
                         </span>
                       )}
                     </div>
-
+                    {console.log("filterRole",filteredRoles)}
                     <div
                       className="form-group row mt-4"
                       style={{ position: "relative", display: "flex" }}
@@ -1208,8 +1226,17 @@ function CreateUserComponent({ match }) {
                         <Select
                           id="role_id"
                           name="role_id"
-                          options={roleDropdown}
+                          // defaultValue={filteredRoles}
+                          value={selectRole}
+
+                          // options={filteredRoles}
+                          options={
+                            accountFor === "SELF"
+                              ? orderedSelfRoleData
+                              : orderedCustomerRoleData
+                          }
                           onChange={(e) => {
+                            handleSelectRole(e)
                             if (e.value === "") {
                               setInputState({
                                 ...state,
@@ -1343,25 +1370,26 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
-                          options={countryDropdown}
+                          options={CountryData}
                           name="country_id"
                           id="country_id"
                           onChange={(e) => handleDependentChange(e, "COUNTRY")}
                         />
                       </div>
                     </div>
-
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>State :</b>
                       </label>
                       <div className="col-sm-4">
                         <Select
-                          options={
-                            updateStatus.statedrp !== undefined
-                              ? stateDropdown
-                              : []
-                          }
+                          // options={
+                          //   updateStatus.statedrp !== undefined
+                          //     ? stateDropdown
+                          //     : []
+                          // }
+
+                          options={stateDropdownData}
                           name="state_id"
                           id="state_id"
                           onChange={(e) => handleDependentChange(e, "STATE")}
@@ -1380,17 +1408,13 @@ function CreateUserComponent({ match }) {
 
                       <div className="col-sm-4">
                         <Select
-                          options={
-                            updateStatus.citydrp !== undefined
-                              ? cityDropdown
-                              : []
-                          }
+                          
+                          options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                          // key={Math.random()}
-                          // value={ cityName? cityName : ""}
+                          
                         />
                       </div>
                     </div>
@@ -1434,131 +1458,115 @@ function CreateUserComponent({ match }) {
                       </th>
                     </tr>
                   </thead>
+                  
+
                   <tbody>
-                    {rows &&
-                      rows.map((item, idx) => (
-                        <tr key={idx}>
-                          <td className="text-center">{idx + 1}</td>
-                          <td>
-                            <Select
-                              options={departmentDropdown}
-                              id={`department_id_` + idx}
-                              name="department_id[]"
-                              ref={departmentRef}
-                              onChange={(e) =>
-                                handleCheckInput(e, idx, "DEPARTMENT")
-                              }
-                            />
-                          </td>
-                          <td>
-                            <Select
-                              options={options}
-                              id={`ticket_show_type_id_` + idx}
-                              name="ticket_show_type[]"
-                              onChange={(e) =>
-                                handleCheckInput(e, idx, "TICKET_SHOW")
-                              }
-                            />
-                          </td>
-
-                          <td className="text-center">
-                            <input
-                              type="hidden"
-                              // key={Math.random()}
-                              name="ticket_passing_authority[]"
-                              value={
-                                item.ticket_passing_authority
-                                  ? item.ticket_passing_authority
-                                  : 0
-                              }
-                            />
-
-                            <input
-                              type="checkbox"
-                              id={`ticket_passing_authority_` + idx}
-                              checked={item.ticket_passing_authority == 1}
-                              onChange={(e) =>
-                                handleCheckInput(
-                                  e,
-                                  idx,
-                                  "TICKET_PASSING_AUTHORITY"
-                                )
-                              }
-                            />
-                          </td>
-                          <td className="text-center">
-                            <input
-                              type="hidden"
-                              name="is_default[]"
-                              value={item.is_default ? item.is_default : ""}
-                              // key={Math.random()}
-                            />
-                            <input
-                              type="checkbox"
-                              id={`is_default_` + idx}
-                              checked={item.is_default == 1}
-                              onChange={(e) =>
-                                handleCheckInput(e, idx, "IS_DEFAULT")
-                              }
-                            />
-                          </td>
-                          {/* <td className="text-center">
-                            <input
-                              type="hidden"
-                              name="ticket_passing_authority[]"
-                              value={item.ticket_passing_authority}
-                            />
-
-                            <input
-                              type="checkbox"
-                              id={`ticket_passing_authority_` + idx}
-                              // checked={item.ticket_passing_authority == 1}
-                              onChange={(e) =>
-                                handleCheckInput(
-                                  e,
-                                  idx,
-                                  "TICKET_PASSING_AUTHORITY"
-                                )
-                              }
-                            />
-                          </td>
-                          <td className="text-center">
-                            <input
-                              type="hidden"
-                              name="is_default[]"
-                              value={item.is_default}
-                            />
-                            <input
-                              type="checkbox"
-                              id={`is_default_` - idx}
-                              // checked={item.is_default == 1}
-                              onChange={(e) =>
-                                handleCheckInput(e, idx, "IS_DEFAULT")
-                              }
-                            />
-                          </td> */}
-                          <td>
-                            {idx === 0 && departmentValue == true && (
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-primary pull-left"
-                                onClick={handleAddRow}
-                              >
-                                <i className="icofont-plus-circle"></i>
-                              </button>
+                    {rows.map((item, idx) => (
+                      <tr id={`addr_${idx}`} key={idx}>
+                        <td className="text-center">{idx + 1}</td>
+                        <td>
+                       
+                          <Select
+                            isSearchable={true}
+                            name="department_id[]"
+                            id="department_id[]"
+                            key={idx}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            options={departmentDropdown}
+                          
+                            value={departmentDropdown.filter((d) =>
+                              Array.isArray(item.department_id)
+                                ? item.department_id.includes(d.value)
+                                : item.department_id === d.value
                             )}
-                            {rows.length == idx + 1 && idx != 0 && (
-                              <button
-                                type="button"
-                                className="btn btn-outline-danger btn-sm"
-                                onClick={handleRemoveSpecificRow(idx)}
-                              >
-                                <i className="icofont-ui-delete"></i>
-                              </button>
+                            required
+                            style={{ zIndex: "100" }}
+                            onChange={(selectedOption) =>
+                              handleUserSelect(selectedOption, idx)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <Select
+                            options={options}
+                            id={`ticket_show_type_id_` + idx}
+                            name="ticket_show_type[]"
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, "TICKET_SHOW")
+                            }
+                            value={options.filter((d) =>
+                              Array.isArray(item.ticket_show_type)
+                                ? item.ticket_show_type.includes(d.value)
+                                : item.ticket_show_type === d.value
                             )}
-                          </td>
-                        </tr>
-                      ))}
+                            
+                            required
+                          />
+                        </td>
+
+                        <td className="text-center">
+                          <input
+                            type="hidden"
+                            name="ticket_passing_authority[]"
+                            value={
+                              item.ticket_passing_authority
+                                ? item.ticket_passing_authority
+                                : 0
+                            }
+                          />
+
+                          <input
+                            type="checkbox"
+                            id={`ticket_passing_authority_` + idx}
+                            checked={item.ticket_passing_authority == 1}
+                            onChange={(e) =>
+                              handleCheckInput(
+                                e,
+                                idx,
+                                "TICKET_PASSING_AUTHORITY"
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="text-center">
+                          <input
+                            type="hidden"
+                            name="is_default[]"
+                            value={item.is_default ? item.is_default : ""}
+                          />
+                          <input
+                            type="checkbox"
+                            id={`is_default_` + idx}
+                            checked={item.is_default == 1}
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, "IS_DEFAULT")
+                            }
+                          />
+                        </td>
+
+                        <td>
+                          {idx === 0 && departmentValue == true && (
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary pull-left"
+                              onClick={handleAddRow}
+                            >
+                              <i className="icofont-plus-circle"></i>
+                            </button>
+                          )}
+                          {idx != 0 && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={handleRemoveSpecificRow(idx)}
+                            >
+                              <i className="icofont-ui-delete"></i>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1600,9 +1608,6 @@ function CreateUserComponent({ match }) {
             </button>
           )}
 
-          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
-            Cancel
-          </Link>
           {tabKey == "User_Settings" && (
             <button
               onClick={() => setTabKey("All_Tickets")}
@@ -1611,6 +1616,9 @@ function CreateUserComponent({ match }) {
               Back
             </button>
           )}
+          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
+            Cancel
+          </Link>
         </div>
       </form>
     </div>

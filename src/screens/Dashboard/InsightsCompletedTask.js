@@ -26,7 +26,6 @@ export default function InsightsCompletedTask() {
     });
   }
 
-  // console.log("p",previousTask.length)
 
   useEffect(() => {
     get();

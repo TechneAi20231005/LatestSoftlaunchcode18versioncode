@@ -1,28 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { _base,  } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
+import { _base } from "../../../settings/constants";
 
 import UserService from "../../../services/MastersService/UserService";
 import PageHeader from "../../../components/Common/PageHeader";
 
-import Alert from "../../../components/Common/Alert";
-import DataTableExtensions from "react-data-table-component-extensions";
 import "react-data-table-component-extensions/dist/index.css";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import CountryService from "../../../services/MastersService/CountryService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { Spinner } from "react-bootstrap";
 
-function UserComponent( ) {
-  const location = useLocation()
+import { useDispatch, useSelector } from "react-redux";
+
+import { getEmployeeData, getRoles } from "../../Dashboard/DashboardAction";
+import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
+
+function UserComponent() {
+  const location = useLocation();
   const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
+  const dispatch = useDispatch();
+
   const [notify, setNotify] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: "",
@@ -32,11 +30,14 @@ function UserComponent( ) {
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
 
-
- 
+  const employeeData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.employeeData
+  );
 
   const handleModal = (data) => {
     setModal(data);
@@ -60,12 +61,11 @@ function UserComponent( ) {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {};
   const columns = [
     {
       name: "Action",
@@ -104,7 +104,7 @@ function UserComponent( ) {
     },
     {
       name: "Email",
-      selector: (row) => row.email,
+      selector: (row) => row.email_id,
       sortable: true,
       width: "175px",
     },
@@ -116,7 +116,7 @@ function UserComponent( ) {
     },
     {
       name: "Username",
-      selector: (row) => row.username,
+      selector: (row) => row.user_name,
       sortable: true,
       width: "150px",
     },
@@ -166,145 +166,57 @@ function UserComponent( ) {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-    const data = [];
     const exportTempData = [];
-    //  **************************Country load data**************************************
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          //setCountry(res.data.data.filter(d => d.is_active === 1));
-          setCountryDropdown(res.data.data.filter((d) => d.is_active == 1));
+
+    await new UserService().getExportTicket().then((res) => {
+      if (res.status == 200) {
+        const temp = res.data.data;
+
+        for (const i in temp) {
+          exportTempData.push({
+            SrNo: exportTempData.length + 1,
+
+            Account_for: temp[i].account_for,
+            customer_name: temp[i].customer,
+            Name:
+              temp[i].first_name +
+              " " +
+              temp[i].middle_name +
+              " " +
+              temp[i].last_name,
+            Email: temp[i].email_id,
+            ContactNo: temp[i].contact_no,
+            WhatsappNo: temp[i].whats_app_contact_no,
+            User_Name: temp[i].user_name,
+            Role: temp[i].role,
+            Designation: temp[i].designation,
+            Address: temp[i].address,
+            Pincode: temp[i].pincode,
+            Country: temp[i].country,
+            State: temp[i].state,
+            City: temp[i].city,
+            Department: temp[i].department,
+            Ticket_Show_Type: temp[i].ticket_show_type === "MY_TICKETS" ? "My Tickets" :"Department Tickets",
+            // all_department: temp[i].all_department,
+            Ticket_Passing_Authority: temp[i].ticket_passing_authority
+              ? "Yes"
+              : "No",
+            Make_Default: temp[i].is_default ? "yes" : "No",
+            Status: temp[i].is_active ? "Active" : "Deactive",
+            created_at: temp[i].created_at,
+            created_by: temp[i].created_by,
+            updated_at: temp[i].updated_at,
+
+            updated_by: temp[i].updated_by,
+          });
         }
+
+        setExportData(null);
+        setExportData(exportTempData);
       }
     });
-
-    await new UserService()
-      .getUser()
-      .then((res) => {
-        setShowLoaderModal(false);
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              account_for: temp[key].account_for,
-              customer: temp[key].customer,
-              name:
-                temp[key].first_name +
-                " " +
-                temp[key].middle_name +
-                " " +
-                temp[key].last_name,
-              email: temp[key].email_id,
-              contact_no: temp[key].contact_no,
-              WhatsappNo: temp[key].whats_app_contact_no,
-              username: temp[key].user_name,
-              Role: temp[key].role,
-              Designation: temp[key].designation,
-              Address: temp[key].address,
-              Pincode: temp[key].pincode,
-              country_id: temp[key].country,
-              state_id: temp[key].state,
-              city_id: temp[key].city,
-              Department: temp[key].department,
-              Ticket_Show_Type: temp[key].ticket_show_type,
-              Ticket_Passing_Authority: temp[key].ticket_passing_authority,
-              Make_Default: temp[key].is_default,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setDataa(data);
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
-
-              Account_for: temp[i].account_for,
-              customer_name: temp[i].customer,
-              Name:
-                temp[i].first_name +
-                " " +
-                temp[i].middle_name +
-                " " +
-                temp[i].last_name,
-              Email: temp[i].email_id,
-              ContactNo: temp[i].contact_no,
-              WhatsappNo: temp[i].whats_app_contact_no,
-              User_Name: temp[i].user_name,
-              Role: temp[i].role,
-              Designation: temp[i].designation,
-              Address: temp[i].address,
-              Pincode: temp[i].pincode,
-              Country: temp[i].country,
-              State: temp[i].state,
-              City: temp[i].city,
-              Department: temp[i].department,
-              Ticket_Show_Type: temp[i].ticket_show_type,
-              all_department: temp[i].all_department,
-              Ticket_Passing_Authority: temp[i].ticket_passing_authority
-                ? "Yes"
-                : "No",
-              Make_Default: temp[i].is_default ? "yes" : "No",
-              Status: temp[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-
-              updated_by: temp[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          const { request, ...errorObject } = error.response;
-          new ErrorLogService().sendErrorLog(
-            "Status",
-            "Get_Status",
-            "INSERT",
-            errorObject.data.message
-          );
-        } else {
-          console.error(error);
-        }
-        
-        });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
-
-    //   await new ManageMenuService().getRole(roleId).then((res) => {
-    //     console.log("res===>",res)
-    //     if (res.status === 200) {
-    //         if (res.data.status == 1) {
-    //             const getRoleId = sessionStorage.getItem("role_id");
-    //             setCheckRole(res.data.data.map(d => d.menu_id == 3 || "3"))
-    //         }
-    //     }
-    // })
   };
 
-  //Search As Enter key press
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       handleSearch();
@@ -315,37 +227,55 @@ function UserComponent( ) {
     data,
   };
   var flag = 1;
-useEffect(()=>{
-  loadData();
+  useEffect(() => {
+    loadData();
 
-},[])
-useEffect(() => {
-  if (location && location.state) {
-    setNotify(location.state);
-  }
-  return () => {
-    setNotify(null);
-  };
-}, [location.state]);
+    dispatch(getEmployeeData());
+    dispatch(getRoles());
+    dispatch(departmentData());
+  }, []);
+  useEffect(() => {
+    if (location && location.state) {
+      setNotify(location.state);
+    }
+    return () => {
+      setNotify(null);
+    };
+  }, [location.state]);
 
   useEffect(() => {
-    if (checkRole && checkRole[2].can_read === 0) {
-      // alert("Rushi")
-
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
+  useEffect(() => {
+    setFilteredData(
+      employeeData.filter((customer) => {
+        if (typeof searchTerm === "string") {
+          if (typeof customer === "string") {
+            return customer.toLowerCase().includes(searchTerm.toLowerCase());
+          } else if (typeof customer === "object") {
+            return Object.values(customer).some(
+              (value) =>
+                typeof value === "string" &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }
+        }
+        return false;
+      })
+    );
+  }, [searchTerm, employeeData]);
+
   return (
     <div className="container-xxl">
-      {notify && flag == 1 && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="User Master"
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[3].can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base + "/User/Create"}`}
                   className="btn btn-dark btn-set-task w-sm-100"
@@ -369,13 +299,15 @@ useEffect(() => {
               placeholder="Search by User Name...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -390,7 +322,7 @@ useEffect(() => {
             </button>
             <ExportToExcel
               className="btn btn-sm btn-danger"
-              apiData={exportData}
+              apiData={exportData && exportData}
               fileName="User master Records"
             />
           </div>
@@ -401,32 +333,35 @@ useEffect(() => {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
-                <DataTableExtensions {...tableData}>
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    defaultSortField="title"
-                    pagination
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                </DataTableExtensions>
+              {employeeData && (
+                <DataTable
+                  columns={columns}
+                  data={employeeData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
+                  defaultSortField="title"
+                  pagination
+                  selectableRows={false}
+                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                  highlightOnHover={true}
+                />
               )}
             </div>
-
-            <Modal show={showLoaderModal} centered>
-              <Modal.Body className="text-center">
-                <Spinner animation="grow" variant="primary" />
-                <Spinner animation="grow" variant="secondary" />
-                <Spinner animation="grow" variant="success" />
-                <Spinner animation="grow" variant="danger" />
-                <Spinner animation="grow" variant="warning" />
-                <Spinner animation="grow" variant="info" />
-                <Spinner animation="grow" variant="dark" />
-              </Modal.Body>
-            </Modal>
           </div>
         </div>
       </div>
@@ -436,9 +371,9 @@ useEffect(() => {
 
 function UserDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new UserService().getUser().then((res) => {
+    new UserService().getUser().then((res) => {
       if (res.status == 200) {
         const data = res.data.data;
         let counter = 1;
@@ -464,12 +399,6 @@ function UserDropdown(props) {
   return (
     <>
       {data && (
-        // <Select isSearchable={true} className="basic-multi-select"
-        //     classNamePrefix="select"
-        //     name={props.name}
-        //     onChange={props.getChangeValue}
-        //     options={data}
-        // />
         <select
           className="form-control form-control-sm"
           id={props.id}

@@ -14,8 +14,8 @@ import "./styles.css"; // Import your CSS file
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
 
-  const {id} =useParams()
-  const  BillId =id
+  const { id } = useParams();
+  const BillId = id;
   const [approverData, setApproverData] = useState({
     data: [
       {
@@ -46,7 +46,8 @@ const EditBillTypeComponent = ({ match }) => {
   // Function for add new slab
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
-    var firstAmount = newData[index].amount;
+    var firstAmount = newData[index].amount + 1;
+
     if (isNaN(firstAmount)) {
       firstAmount = 0.0;
     }
@@ -67,6 +68,7 @@ const EditBillTypeComponent = ({ match }) => {
         // The last slab can have the same amount as the previous one
         continue;
       }
+
       if (firstAmount <= newData[i].amount) {
         if (firstAmount >= newData[i].amount) {
           alert(
@@ -161,8 +163,10 @@ const EditBillTypeComponent = ({ match }) => {
   };
   //Created By Rushikesh harkare 12/10/2023
 
-// Function To Remove Slab
+  // Function To Remove Slab
   const handleRemoveSection = (indexToRemove) => {
+    setAmountErr("");
+
     const newData = [...approverData.data];
 
     // Remove the section at the specified index
@@ -190,9 +194,11 @@ const EditBillTypeComponent = ({ match }) => {
     // Update the state with the modified data
     setApproverData({ data: newData });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for on Changing amount update in state
+  const [amountErr, setAmountErr] = useState("");
+
+  //Function for on Changing amount update in state
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
     var amountValue = parseFloat(value);
@@ -212,144 +218,49 @@ const EditBillTypeComponent = ({ match }) => {
       newData[index + 1].amount = amountValue;
       setApproverData({ data: newData });
     }
-  };
-//Created By Rushikesh harkare 12/10/2023
 
-//Validation For amount 
-// const validateAmounts = (e, index) => {
-//   const slabsData = approverData.data;
-//   const numSlabs = slabsData.length;
-
-//   // Check if the input value has changed
-//   if (e.target.value === slabsData[index].amount) {
-//     return; // Exit the function if the value hasn't changed
-//   }
-
-//   // Update the current slab's amount
-//   const newValue = parseFloat(e.target.value);
-
-//   if (index === 0) {
-//     // Special case for the last index
-//     const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
-//     if (index === 0 && newValue > previousAmount) {
-//       alert(
-//         `Amount in section ${
-//           index + 1
-//         } should not be greater than the previous tab`
-//       );
-//       e.target.value = previousAmount;
-//       slabsData[index].amount = previousAmount;
-//       newValue = previousAmount;
-//     }else {
-//       // Update the last slab's amount
-//       slabsData[index].amount = newValue;
-//     }
-//     if (index > 0 && newValue < previousAmount) {
-//       alert(
-//         `Amount in section ${
-//           index + 1
-//         } should be greater than the previous tab`
-//       );
-//       e.target.value = previousAmount;
-//       slabsData[index].amount = previousAmount;
-//     } else {
-//       // Update the last slab's amount
-//       slabsData[index].amount = newValue;
-//     }
-//   } else {
-//     // For all other indices
-//     const previousAmount = slabsData[index - 1].amount;
-//     const nextAmount = slabsData[index + 1].amount;
-
-//     if (index === numSlabs - 2) {
-//       // Special case for the second-last index
-//       if (newValue < previousAmount) {
-//         alert(
-//           `Amount in section ${
-//             index + 1
-//           } should be greater than the previous tab`
-//         );
-//         e.target.value = previousAmount;
-//         slabsData[index].amount = previousAmount;
-//         slabsData[index + 1].amount = previousAmount;
-//       } else {
-//         // Update the current slab's amount
-//         slabsData[index].amount = newValue;
-//       }
-//     } else {
-//       // For all other indices except the last and second-last
-//       if (newValue <= previousAmount || newValue >= nextAmount) {
-//         alert(
-//           `Amount in section ${
-//             index + 1
-//           } should be greater than the previous tab and less than the next tab`
-//         );
-//         e.target.value = previousAmount;
-//         slabsData[index].amount = previousAmount;
-//       } else {
-//         // Update the current slab's amount
-//         slabsData[index].amount = newValue;
-//       }
-//     }
-//   }
-
-//   // Update the state with the modified data
-//   setApproverData({ data: slabsData });
-// };
-
-
-
-
-
-//Validation For amount
-const validateAmounts = (e, index) => {
-  const slabsData = approverData.data;
-  const numSlabs = slabsData.length;
-
-  // Check if the input value has changed
-  if (e.target.value === slabsData[index].amount) {
-    return; // Exit the function if the value hasn't changed
-  }
-
-  // Update the current slab's amount
-  const newValue = parseFloat(e.target.value);
-
-  if (index === 0) {
-    // Special case for the last index
-    const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
-    if (index === 0 && newValue > previousAmount) {
-      alert(
+    if (newData[index + 1]?.amount <= newData[index - 1]?.amount) {
+      setAmountErr(
         `Amount in section ${
           index + 1
-        } should not be greater than the previous tab`
+        } should be greater than the previous tab.`
       );
-      e.target.value = previousAmount;
-      slabsData[index].amount = previousAmount;
-      newValue = previousAmount;
-    }else {
-      // Update the last slab's amount
-      slabsData[index].amount = newValue;
-    }
-    if (index > 0 && newValue < previousAmount) {
-      alert(
-        `Amount in section ${
-          index + 1
-        } should be greater than the previous tab`
-      );
-      e.target.value = previousAmount;
-      slabsData[index].amount = previousAmount;
     } else {
-      // Update the last slab's amount
-      slabsData[index].amount = newValue;
+      setAmountErr("");
     }
-  } else {
-    // For all other indices
-    const previousAmount = slabsData[index - 1].amount;
-    const nextAmount = slabsData[index + 1].amount;
+  };
 
-    if (index === numSlabs - 2) {
-      // Special case for the second-last index
-      if (newValue < previousAmount) {
+  //Validation For amount
+  const validateAmounts = (e, index) => {
+    const slabsData = approverData.data;
+    const numSlabs = slabsData.length;
+
+    // Check if the input value has changed
+    if (e.target.value === slabsData[index].amount) {
+      return; // Exit the function if the value hasn't changed
+    }
+
+    // Update the current slab's amount
+    const newValue = parseFloat(e.target.value);
+
+    if (index === 0) {
+      // Special case for the last index
+      const previousAmount =
+        index === 0 ? slabsData[index + 1].amount : slabsData[index - 1].amount;
+      if (index === 0 && newValue > previousAmount) {
+        alert(
+          `Amount in section ${
+            index + 1
+          } should not be greater than the previous tab`
+        );
+        e.target.value = previousAmount;
+        slabsData[index].amount = previousAmount;
+        newValue = previousAmount;
+      } else {
+        // Update the last slab's amount
+        slabsData[index].amount = newValue;
+      }
+      if (index > 0 && newValue < previousAmount) {
         alert(
           `Amount in section ${
             index + 1
@@ -357,41 +268,57 @@ const validateAmounts = (e, index) => {
         );
         e.target.value = previousAmount;
         slabsData[index].amount = previousAmount;
-        slabsData[index + 1].amount = previousAmount;
       } else {
-        // Update the current slab's amount
+        // Update the last slab's amount
         slabsData[index].amount = newValue;
       }
     } else {
-      // For all other indices except the last and second-last
-      if (newValue <= previousAmount || newValue >= nextAmount) {
-        alert(
-          `Amount in section ${
-            index + 1
-          } should be greater than the previous tab and less than the next tab`
-        );
-        e.target.value = previousAmount;
-        slabsData[index].amount = previousAmount;
+      // For all other indices
+      const previousAmount = slabsData[index - 1].amount;
+      const nextAmount = slabsData[index + 1].amount;
+
+      if (index === numSlabs - 2) {
+        // Special case for the second-last index
+        if (newValue < previousAmount) {
+          alert(
+            `Amount in section ${
+              index + 1
+            } should be greater than the previous tab`
+          );
+          e.target.value = previousAmount;
+          slabsData[index].amount = previousAmount;
+          slabsData[index + 1].amount = previousAmount;
+        } else {
+          // Update the current slab's amount
+          slabsData[index].amount = newValue;
+        }
       } else {
-        // Update the current slab's amount
-        slabsData[index].amount = newValue;
+        // For all other indices except the last and second-last
+        if (newValue <= previousAmount || newValue >= nextAmount) {
+          alert(
+            `Amount in section ${
+              index + 1
+            } should be greater than the previous tab and less than the next tab`
+          );
+          e.target.value = previousAmount;
+          slabsData[index].amount = previousAmount;
+        } else {
+          // Update the current slab's amount
+          slabsData[index].amount = newValue;
+        }
       }
     }
-  }
 
-  // Update the state with the modified data
-  setApproverData({ data: slabsData });
-};
+    // Update the state with the modified data
+    setApproverData({ data: slabsData });
+  };
 
+  //Created By Rushikesh harkare 12/10/2023
 
-
-
-
-//Created By Rushikesh harkare 12/10/2023
-
-// onLoad function to collect data from API's
+  // onLoad function to collect data from API's
   const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -428,9 +355,9 @@ const validateAmounts = (e, index) => {
         }
       });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for update state selected values from each slab and each row perticularly 
+  //Function for update state selected values from each slab and each row perticularly
   const handleUserSelection = (sectionIndex, rowIndex, selectedOptions) => {
     const updatedSelectedUsersArray = [...selectedUsersArray];
     const newData = [...approverData.data];
@@ -510,9 +437,9 @@ const validateAmounts = (e, index) => {
     setApproverData({ data: updatedData });
     // Clear the input field's value
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for update state selected values from each slab and each row perticularly 
+  //Function for update state selected values from each slab and each row perticularly
   const handleUserSelection2 = (sectionIndex, rowIndex, selectedOptions) => {
     // Copy the current selectedUsersArray to avoid mutating state directly
     const updatedSelectedUsersArray = [...selectedUsersArray];
@@ -542,9 +469,9 @@ const validateAmounts = (e, index) => {
       inputRefs.current[sectionIndex][rowIndex].value = "";
     }
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function for get only selected users from optional approvers dropdown 
+  //Function for get only selected users from optional approvers dropdown
   const getAvailableOptions = (options, sectionIndex, rowIndex) => {
     const selectedUsersInSection = selectedUsersArray[sectionIndex];
 
@@ -561,9 +488,9 @@ const validateAmounts = (e, index) => {
     // If no selection has been made, show all options
     return options;
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Update in state Required Numbers
+  //Update in state Required Numbers
   const handleRequiredNumbersChange = (index, rowIndex, newValue) => {
     // Get the maximum length from the required_users array
     const maxLength =
@@ -579,25 +506,55 @@ const validateAmounts = (e, index) => {
     // Update the state with the new data
     setApproverData({ data: newData });
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
-//Function To Sumbmit the main form
+  const [inputState, setInputState] = useState({
+    remarkErr: "",
+  });
+
+  const [remarkError, setRemarkError] = useState(null);
+  const [billTypeErr, setBillTypeErr] = useState(null);
+
+  const handleRemark = (e) => {
+    const remarkValue = e.target.value;
+    if (remarkValue === "") {
+      setRemarkError("Invalid Remark");
+    } else {
+      setRemarkError("");
+    }
+  };
+
+  const handlbillType = (e) => {
+    const billTypeValue = e.target.value;
+    if (billTypeValue === "") {
+      setBillTypeErr("Invalid Bill type");
+    } else {
+      setBillTypeErr("");
+    }
+  };
+
+  //Function To Sumbmit the main form
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    const isEmpty = approverData.data.some((section) => {
-      return section.level.some((levelItem) => {
+    const isEmpty = approverData?.data?.some((section) => {
+      return section?.level?.some((levelItem) => {
         return (
-          levelItem.employee_id.length === 0 ||
-          levelItem.required_users.length === 0 ||
-          isNaN(levelItem.required_numbers) ||
-          levelItem.required_numbers == null ||
-          isNaN(section.amount) ||
-          section.slab === null
+          levelItem?.employee_id?.length === 0 ||
+          levelItem?.required_users?.length === 0 ||
+          isNaN(levelItem?.required_numbers) ||
+          levelItem?.required_numbers == null ||
+          isNaN(section?.amount) ||
+          section?.slab === null
         );
       });
     });
+
+    if (inputState.remarkErr) {
+      alert("Please Fill Remark Field");
+      return;
+    }
 
     // Check if assign_employee_id[] is empty
     const assignEmployeeId = formData.getAll("assign_employee_id[]");
@@ -609,6 +566,11 @@ const validateAmounts = (e, index) => {
     // Check if any of the fields are empty or null
     if (isEmpty) {
       alert("Please fill in all required fields");
+      return;
+    }
+
+    if (amountErr) {
+      alert("Please fix the error before submitting the form.");
       return;
     }
 
@@ -625,21 +587,22 @@ const validateAmounts = (e, index) => {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/billTypeMaster`,
-            message: "once",
-         
-          },   {state: { alert: { type: "success", message: res.data.message } }});
+          history(
+            {
+              pathname: `/${_base}/billTypeMaster`,
+              message: "once",
+            },
+            { state: { alert: { type: "success", message: res.data.message } } }
+          );
         } else {
           setNotify({ type: "danger", message: res.data.message });
         }
       }
     } catch (error) {
       // Handle error appropriately
-      console.error("Error:", error);
     }
   };
-//Created By Rushikesh harkare 12/10/2023
+  //Created By Rushikesh harkare 12/10/2023
 
   // Initialize approverData with default values from billTypeData
   useEffect(() => {
@@ -708,9 +671,17 @@ const validateAmounts = (e, index) => {
                   className="form-control"
                   id="bill_type"
                   required={true}
+                  onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
                   maxLength={20}
                 />
+                <small
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {billTypeErr}
+                </small>
               </div>
 
               <div className="col-sm-4 ">
@@ -744,11 +715,25 @@ const validateAmounts = (e, index) => {
                 <textarea
                   type="text"
                   cols="4"
-                  className="form-control"
+                  // className="form-control"
+                  className="form-control form-control"
                   name="remark"
                   defaultValue={billTypeData && billTypeData.remark}
                   required={true}
+                  onChange={handleRemark}
+                  onKeyPress={(e) => {
+                    handleRemark(e);
+                  }}
                 />
+                {inputState && (
+                  <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {remarkError}
+                  </small>
+                )}
               </div>
               <div className="col-sm-12">
                 <label className="form-label font-weight-bold">
@@ -813,7 +798,6 @@ const validateAmounts = (e, index) => {
                           : "Upto Amount:"}
                       </strong>
 
-                      
                       <input
                         className="form-control-sm"
                         style={
@@ -825,7 +809,12 @@ const validateAmounts = (e, index) => {
                         key={index}
                         value={item.amount ? item.amount : ""}
                         onKeyPress={(e) => {
-                          if (!/^[0-9]*(\.[0-9]{0,2})?$/.test(e.target.value + e.key) || e.target.value.length >= 10) {
+                          if (
+                            !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                              e.target.value + e.key
+                            ) ||
+                            e.target.value.length >= 10
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -839,11 +828,13 @@ const validateAmounts = (e, index) => {
                           index > 0 && index === approverData.data.length - 1
                         }
                       />
-                      {index + 1 === item.slab && index === 0 ? (
+
+                      {index === 0 || index !== approverData.data.length - 1 ? (
                         <Button
                           type="button"
                           variant="primary"
                           className="sm"
+                          disabled={!item.amount ? true : false}
                           onClick={(e) => {
                             handleIncrement(e, index);
                           }}
@@ -863,15 +854,27 @@ const validateAmounts = (e, index) => {
                         </Button>
                       ) : null}
                     </Col>
+
+                    {index > 0 && index === approverData.data.length - 2 && (
+                      <small style={{ color: "red", display: "block" }}>
+                        {amountErr}
+                      </small>
+                    )}
                   </Row>
 
                   <Table className="mt-2">
                     <thead>
                       <tr>
                         <th>Sr</th>
-                        <th>Assinged Approvers</th>
-                        <th>Required Approvers </th>
-                        <th>Required Numbers</th>
+                        <th>
+                          Assinged Approvers <Astrick color="red" size="13px" />
+                        </th>
+                        <th>
+                          Required Approvers <Astrick color="red" size="13px" />{" "}
+                        </th>
+                        <th>
+                          Required Members <Astrick color="red" size="13px" />
+                        </th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -942,6 +945,7 @@ const validateAmounts = (e, index) => {
                               <input
                                 type="number"
                                 key={rowIndex}
+                                min={1}
                                 max={
                                   approverData.data[index].level[rowIndex]
                                     .required_users?.length || ""
@@ -1005,17 +1009,12 @@ const validateAmounts = (e, index) => {
                   <br />
                 </div>
               ))}
-            {/* <Button type="button" className="pull-right" variant="danger">
-              Cancel
-            </Button> */}
 
-            
-            <Link to={`/${_base}/billTypeMaster`}
-            className="pull-right btn btn-danger text-white"
-            
+            <Link
+              to={`/${_base}/billTypeMaster`}
+              className="pull-right btn btn-danger text-white"
             >
-                   Cancel
-            
+              Cancel
             </Link>
             <Button className="pull-right" type="submit" variant="primary">
               Update

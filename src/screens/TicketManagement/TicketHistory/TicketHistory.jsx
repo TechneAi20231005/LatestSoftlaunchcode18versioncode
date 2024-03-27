@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 
 const TicketHistory = ({ match }) => {
 
-  const {id}=useParams()
+  const { id } = useParams()
 
   const [data, setData] = useState()
 
@@ -34,7 +34,7 @@ const TicketHistory = ({ match }) => {
 
       ]
     },
-    { name: "Passing Date", selector: (row) => row.passed_status_changed_at, sortable: true },
+    { name: "Passing Date", selector: (row) => row.passed_status_changed_at, sortable: true, width: "6%", },
     { name: "Passed Status", selector: (row) => row.passed_status, sortable: true },
     { name: "Passed By", selector: (row) => row.passed_status_changed_by, sortable: true },
     { name: "Query Type", selector: (row) => row.query_type_name, sortable: true },
@@ -152,10 +152,10 @@ const TicketHistory = ({ match }) => {
 
       ]
     },
-    { name: "Confirmation", selector: (row) =>   (row.confirmation_required ==1 ? "YES" : "NO"),sortable: true },
-    { name: "Created At", selector: (row) => row.created_at, sortable: true },
+    { name: "Confirmation", selector: (row) => (row.confirmation_required == 1 ? "YES" : "NO"), sortable: true },
+    { name: "Created At", selector: (row) => row.created_at, sortable: true, width: "6%", },
     { name: "Created By", selector: (row) => row.created_by, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: "Updated At", selector: (row) => row.updated_at, sortable: true, width: "6%", },
     { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
     {
       name: "Operation", selector: (row) => row.operation, sortable: true, conditionalCellStyles: [

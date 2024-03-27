@@ -15,25 +15,44 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { CustomerDropdown } from "../CustomerMaster/CustomerComponent";
 
 import DepartmentService from "../../../services/MastersService/DepartmentService";
-import RoleService from "../../../services/MastersService/RoleService";
+
 import DesignationService from "../../../services/MastersService/DesignationService";
 import DepartmentMappingService from "../../../services/MastersService/DepartmentMappingService";
-import CountryService from "../../../services/MastersService/CountryService";
 import StateService from "../../../services/MastersService/StateService";
 import CityService from "../../../services/MastersService/CityService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+
+import {
+  getCountryDataSort,
+  getEmployeeData,
+  getRoles,
+} from "../../Dashboard/DashboardAction";
+import { clearRoleDropdown, rolemasterSlice } from "../RoleMaster/RoleMasterSlice";
+import { getRoleData } from "../RoleMaster/RoleMasterAction";
+import RoleService from "../../../services/MastersService/RoleService";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
-  const [options, setOptions] = useState([
-    { value: "MY_TICKETS", label: "My Tickets" },
-    {
-      value: "DEPARTMENT_TICKETS",
-      label: "Department Tickets",
-    },
-  ]);
+  const [roleDropdown,setRoleDropdown]=useState([])
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const CountryData = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
+  );
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
+
+  // const roleDropdown = useSelector(
+  //   (rolemasterSlice) => rolemasterSlice?.rolemaster?.filterRoleData
+  // );
+
+
+
 
   const { id } = useParams();
   const userId = parseInt(id);
@@ -41,7 +60,7 @@ function EditUserComponent({ match }) {
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
   const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
@@ -52,17 +71,27 @@ function EditUserComponent({ match }) {
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
   const [defaultDepartment, setDefaultDepartment] = useState();
 
-  const [roleDropdown, setRoleDropdown] = useState(null);
-
   const [dataa, setDataa] = useState({ employee_id: null, departments: null });
 
+  const options = [
+    { value: "MY_TICKETS", label: "My Tickets" },
+    { value: "DEPARTMENT_TICKETS", label: "Department Tickets" },
+  ];
   const mappingData = {
     department_id: null,
     ticket_passing_authority: null,
     ticket_show_type: null,
     is_default: 0,
   };
-  const [rows, setRows] = useState([mappingData]);
+
+  const [rows, setRows] = useState([
+    {
+      department_id: [],
+      ticket_show_type: null,
+      ticket_passing_authority: 0,
+      is_default: 0,
+    },
+  ]);
 
   const [designationDropdown, setDesignationDropdown] = useState(null);
 
@@ -85,7 +114,6 @@ function EditUserComponent({ match }) {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();
@@ -112,7 +140,6 @@ function EditUserComponent({ match }) {
       setPasswordValid(false);
     }
 
-    // Compare passwords
     if (
       confirmedPasswordRef.current.value !== "" &&
       confirmedPasswordRef.current.value !== passwordValidation
@@ -136,6 +163,8 @@ function EditUserComponent({ match }) {
     roleErr: "",
     designationErr: "",
     departmentErr: "",
+    ticketTypeShowErr: "",
+    PinCodeErr: "",
   });
 
   function checkingValidation(form) {
@@ -217,12 +246,6 @@ function EditUserComponent({ match }) {
     }
   };
 
-  // const [sameAs, setSameAs] = useState(false)
-
-  // const handleSameAs = (e) = {
-  //     console.log(e.target.checked)
-  // }
-
   const [contactNumber, setContactNumber] = useState(null);
 
   const [contactValid, setContactValid] = useState(false);
@@ -283,6 +306,12 @@ function EditUserComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+    if (isReadOnly) {
+      form.append("check1", 1);
+    } else {
+      form.append("check1", 0);
+    }
+
     var flag = 1;
     setNotify(null);
     var a = JSON.stringify(Object.fromEntries(form));
@@ -292,18 +321,42 @@ function EditUserComponent({ match }) {
       return false;
     }
 
+    var selectDepartment = form.getAll("department_id[]");
+    if (selectDepartment == "") {
+      setInputState({ ...state, departmentErr: " Please Select Department" });
+      return false;
+    }
+
+    if (inputState.PinCodeErr) {
+      alert("Invalid Pincode");
+      return;
+    }
+    var selectTicketTypeShow = form.getAll("ticket_show_type_id[]");
+    if (selectTicketTypeShow == "") {
+      setInputState({
+        ...state,
+        ticketTypeShowErr: " Please Select Ticket Type Show",
+      });
+      return false;
+    }
+
     if (flag === 1) {
       await new UserService()
         .updateUser(userId, form)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/User`,
-                },
-                { state: { type: "success", message: res.data.message } }
-              );
+              setNotify({ type: "success", message: res.data.message });
+
+              dispatch(getEmployeeData());
+
+              setTimeout(() => {
+                navigate(`/${_base}/User`, {
+                  state: {
+                    alert: { type: "success", message: res.data.message },
+                  },
+                });
+              }, 3000);
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
@@ -327,28 +380,61 @@ function EditUserComponent({ match }) {
               errorObject.data.message
             );
           } else {
-            console.error(error);
           }
         });
       // }
     }
   };
 
-  const loadData = async () => {
-    //  **************************Country load data**************************************
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
+  const sortSlefRole =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.label?.toLowerCase() !== "user";
+    });
+  const filterSelfRole = sortSlefRole?.map((d) => ({
+    value: d.value,
+    label: d.label,
+  }));
+  const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
+
+  const customerSort =
+    roleDropdown &&
+    roleDropdown?.filter((d) => {
+      return d.label?.toLowerCase() === "user";
+    });
+  const filterCutomerRole = customerSort?.map((d) => ({
+    value: d.value,
+    label: d.label,
+  }));
+  const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
+    return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+  });
+
+const [selectRole,setSelctRole]=useState(null)
+const handleSelectRole = (e) => {
+  const newValue = e;
+  setSelctRole(newValue);
+};
+
+  const accountForChange = async (account_for) => {
+    setSelctRole(null)
+    setAccountFor(account_for);
+    const accountFor = account_for;
+    const filteredAsAccountFor = roleDropdown.filter((filterData) => {
+      if (accountFor === "SELF") {
+        return filterData.label?.toLowerCase() !== "user";
+      } else if (accountFor === "CUSTOMER") {
+        return filterData.label?.toLowerCase() === "user";
       }
     });
-    //  ************************** State load data**************************************
+    // dispatch(clearRoleDropdown())
+    
+  };
+  
+  
+  const loadData = async () => {
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -366,6 +452,7 @@ function EditUserComponent({ match }) {
         }
       }
     });
+
     //  ************************** city load data**************************************
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
@@ -377,7 +464,7 @@ function EditUserComponent({ match }) {
               .map((d) => ({
                 value: d.id,
                 label: d.city,
-                state_id: d.state_id,
+                // state_id: d.state_id,
               }))
           );
         }
@@ -397,18 +484,23 @@ function EditUserComponent({ match }) {
       }
     });
 
-    await new RoleService().getRole().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          setRoleDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.role }))
-          );
-        }
-      }
-    });
+    // await new RoleService().getRole().then((res) => {
+    //   if (res.status == 200) {
+    //     if (res.data.status == 1) {
+    //       // const data = res.data.data.filter((d) => d.is_active == 1);
+    //       console.log("res",res.data.data)
+    //       // setRoleDropdown(
+    //       //   res.data.data
+    //       //     .filter((d) => d.is_active === 1)
+    //       //     .map((d) => ({ value: d.id, label: d.role }))
+    //       //     );
+    //       const data = res.data.data.filter((d) => d.is_active === 1);
+    //       const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
+    //       setRoleDropdown(dropdownData);
+    //           console.log("role",roleDropdown)
+    //     }
+    //   }
+    // });
 
     await new DesignationService().getDesignation().then((res) => {
       if (res.status == 200) {
@@ -428,9 +520,18 @@ function EditUserComponent({ match }) {
       .getUserById(userId)
       .then((res) => {
         if (res.status === 200) {
+
           if (res.data.status == 1) {
             const temp = res.data.data;
+            setSelctRole(
+              roleDropdown &&
+              roleDropdown.filter(
+                (d) => d.value == temp?.role_id
+              ))
+
             setAccountFor(temp.account_for);
+            setIsReadOnly();
+
             const tempDept = temp.department.map((d) => ({
               value: d.department_id,
               label: d.department_name,
@@ -479,7 +580,7 @@ function EditUserComponent({ match }) {
                 is_default: d.is_default,
               });
             });
-            setRows(null);
+
             setRows(temp);
           } else {
             setRows([mappingData]);
@@ -488,20 +589,9 @@ function EditUserComponent({ match }) {
           setRows([mappingData]);
         }
       });
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-          // setRoleMenu(res.data.data.map((menu)=>{ menu.menu_id}))
-        }
-      }
-    });
   };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      //setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })));
       setStateDropdown(
         state
           .filter((d) => d.country_id == e.value)
@@ -514,7 +604,6 @@ function EditUserComponent({ match }) {
       setCityDropdown(null);
     }
     if (type == "STATE") {
-      //setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })));
       setCityDropdown(
         city
           .filter((d) => d.state_id == e.value)
@@ -526,18 +615,65 @@ function EditUserComponent({ match }) {
       setCityName(null);
     }
   };
+
+  const handleUserSelect = (selectedOptions, index) => {
+    const selectedDepartmentId = selectedOptions.value;
+
+    const isDepartmentAlreadySelected = rows.some(
+      (row) => row.department_id === selectedDepartmentId
+    );
+
+    if (isDepartmentAlreadySelected) {
+      alert(
+        "This Department is already selected. Please select another Department."
+      );
+      return;
+    }
+
+    const selectedUserIds = selectedOptions.value;
+
+    const updatedAssign = [...rows];
+
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      department_id: selectedUserIds,
+    };
+
+    setRows(updatedAssign);
+
+    // const updatedUserErrors = [...userErrors];
+    // updatedUserErrors[index] = "";
+    // setUserErrors(updatedUserErrors);
+  };
+
+  const handleTickeTypeShowSelect = (selectedOptions, index) => {
+    // const selectedUserIds = selectedOptions.filter((option) => option.value);
+    const selectedUserIds = selectedOptions.value;
+
+    const updatedAssign = [...rows];
+
+    updatedAssign[index] = {
+      ...updatedAssign[index],
+      ticket_show_type: selectedUserIds,
+    };
+
+    setRows(updatedAssign);
+
+    // const updatedUserErrors = [...userErrors];
+    // updatedUserErrors[index] = "";
+    // setUserErrors(updatedUserErrors);
+  };
+
   const handleAddRow = async () => {
     setNotify(null);
     let flag = 1;
     // let last=rows.length-1;
-
     // if(!rows[last].department_id ){
     //     flag=0;
     //     setNotify({ type: 'danger', message: "Complete Previous Record" })
     // }
-
     if (flag === 1) {
-      await setRows([...rows, mappingData]);
+      setRows([...rows, mappingData]);
     } else {
       setNotify({ type: "danger", message: "Complete Previous Record" });
     }
@@ -604,80 +740,56 @@ function EditUserComponent({ match }) {
     }
   };
 
-  const accountForChange = async (account_for) => {
-    setAccountFor(account_for);
-    const ticketTypeShow = options.filter((d) => d.value === "MY_TICKETS");
-
-    account_for === "CUSTOMER"
-      ? setOptions(ticketTypeShow)
-      : setOptions([
-        { value: "MY_TICKETS", label: "My Tickets" },
-        {
-          value: "DEPARTMENT_TICKETS",
-          label: "Department Tickets",
-        },
-      ]);
-
-    const accountFor = account_for;
-    await new RoleService().getRole().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const filteredAsAccountFor = res.data.data.filter((filterData) => {
-            if (accountFor === "SELF") {
-              return filterData.role.toLowerCase() !== "user";
-            } else if (accountFor === "CUSTOMER") {
-              return filterData.role.toLowerCase() === "user";
-            }
-          });
-          const response = filteredAsAccountFor
-
-            .filter((d) => d.is_active === 1)
-
-            .map((d) => ({
-              value: d.id,
-              label: d.role,
-            }));
-          const aa = response.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-
-          setRoleDropdown(aa);
-        }
-      }
-    });
-  };
-
   const [value, setValue] = useState("");
   const onPaste = (e) => {
     const paste = e.clipboardData.getData("text/plain");
     if (paste.match(/[-\.]/)) return;
     setValue(paste);
   };
-  // useEffect(()=>{
-  //   if(checkRole && checkRole[2].can_update === 0){
-  //     // alert("Rushi")
-
-  //     window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-  //   }
-  // },[checkRole])
   useEffect(() => {
+    if (checkRole && checkRole[0]?.can_update === 0) {
+      // alert("Rushi")
 
-    loadData();
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+    }
+  }, [checkRole]);
+  useEffect(() => {
+    if (!CountryData.length) {
+      dispatch(getCountryDataSort());
+    }
+    if (!checkRole.length) {
+      dispatch(getRoles());
+    }
+    
+    // if (!roleDropdown.length) {
+    // }
   }, []);
-  // useEffect(() => {
 
-  //   loadData();
-  //   var role = checkRole && checkRole.map((d,index)=>{
-  //     if(d.menu_id == 3){
-  //     return d[index]
-  //     }
-  //   })
 
-  //     if(role === 0){
-  //     <Redirect to= {`/${_base}/Dashboard`}/>
-  //   }
-  // }, [role]);
+useEffect(() => {
+  const fetchRoleData = async () => {
+    try {
+      const res = await new RoleService().getRole();
+      if (res.status === 200 && res.data.status === 1) {
+        const data = res.data.data.filter((d) => d.is_active === 1);
+        const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
+        setRoleDropdown(dropdownData);
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
 
+  fetchRoleData();
+}, []); // Empty dependency array ensures the effect runs only once after component mounts
+
+
+  useEffect(()=>{
+    loadData();
+
+  },[roleDropdown])
+
+ 
   useEffect(() => {
     if (
       data !== null &&
@@ -691,8 +803,8 @@ function EditUserComponent({ match }) {
       setUpdateStatus(newStatus);
       setStateName(
         data &&
-        stateDropdown &&
-        stateDropdown.filter((d) => d.value == data.state_id)
+          stateDropdown &&
+          stateDropdown.filter((d) => d.value == data.state_id)
       );
     }
   }, [data, stateDropdown]);
@@ -700,6 +812,7 @@ function EditUserComponent({ match }) {
   const [copyData, setCopyData] = useState(null);
 
   const [isReadOnly, setIsReadOnly] = useState(false);
+
   function copyTextValue(e) {
     if (e.target.checked) {
       setIsReadOnly(true);
@@ -710,7 +823,6 @@ function EditUserComponent({ match }) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
-    // document.getElementById("whats_app_contact_no").value = text1;
   }
 
   useEffect(() => {
@@ -729,24 +841,14 @@ function EditUserComponent({ match }) {
           cityDropdown &&
           cityDropdown.filter((d) => d.value == data.city_id)
           ? data &&
-          cityDropdown &&
-          cityDropdown.filter((d) => d.value == data.city_id)
+              cityDropdown &&
+              cityDropdown.filter((d) => d.value == data.city_id)
           : cityName
       );
     }
   }, [data, cityDropdown]);
 
-  useEffect(() => {
-    if (accountFor === 'SELF') {
-      setRoleDropdown(prevState => {
-        return prevState?.filter(filterRole => filterRole.label.toLowerCase() !== 'user')
-      })
-    } else {
-      setRoleDropdown(prevState => {
-        return prevState?.filter(filterRole => filterRole.label.toLowerCase() === 'user')
-      })
-    }
-  }, [accountFor])
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
@@ -771,9 +873,6 @@ function EditUserComponent({ match }) {
               <div className="row clearfix g-3">
                 <div className="col-sm-12">
                   <div className="card">
-                    {/* <div className='card-header bg-primary text-white p-2'>
-                                  <h5>User Details</h5>
-                              </div> */}
                     <div className="card-body">
                       <div className="form-group row">
                         <label className="col-sm-2 col-form-label">
@@ -787,11 +886,8 @@ function EditUserComponent({ match }) {
                             id="account_for"
                             name="account_for"
                             value={accountFor ? accountFor : ""}
-                            onChange={(e) => {
-                              accountForChange(e.target.value);
-                            }}
+                            onChange={(e) => accountForChange(e.target.value)}
                           >
-                            {/* <option value="SELF" selected>{data.accountFor}</option> */}
                             <option value="SELF">SELF</option>
                             <option value="CUSTOMER">CUSTOMER</option>
                           </select>
@@ -838,7 +934,7 @@ function EditUserComponent({ match }) {
                               data.first_name ? data.first_name : ""
                             }
                             onKeyPress={(e) => {
-                              Validation.CharactersNumbersOnly(e);
+                              Validation.Characters(e);
                             }}
                             onChange={(event) => {
                               if (event.target.value === "") {
@@ -873,7 +969,7 @@ function EditUserComponent({ match }) {
                               data.middle_name ? data.middle_name : ""
                             }
                             onKeyPress={(e) => {
-                              Validation.CharactersNumbersOnly(e);
+                              Validation.Characters(e);
                             }}
                             onChange={(event) => {
                               if (event.target.value === "") {
@@ -906,7 +1002,7 @@ function EditUserComponent({ match }) {
                             maxLength={30}
                             defaultValue={data.last_name ? data.last_name : ""}
                             onKeyPress={(e) => {
-                              Validation.CharactersNumbersOnly(e);
+                              Validation.Characters(e);
                             }}
                             onChange={(event) => {
                               if (event.target.value === "") {
@@ -946,8 +1042,24 @@ function EditUserComponent({ match }) {
                             name="email_id"
                             placeholder="Email Address"
                             defaultValue={data.email_id ? data.email_id : ""}
-                            onChange={handleEmail}
-                          //onKeyPress={e => { Validation.password(e) }}
+                            // onChange={handleEmail}
+                            onChange={(event) => {
+                              const email = event.target.value;
+                              if (
+                                !email.match(
+                                  /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                )
+                              ) {
+                                setInputState({
+                                  ...state,
+                                  emailErr:
+                                    "Please enter a valid email address",
+                                });
+                              } else {
+                                setInputState({ ...state, emailErr: "" });
+                              }
+                            }}
+                            //onKeyPress={e => { Validation.password(e) }}
                           />
                           {inputState && (
                             <small
@@ -1015,11 +1127,12 @@ function EditUserComponent({ match }) {
                             className="form-control form-control-sm"
                             id="contact_no"
                             name="contact_no"
+                            maxLength="10"
+                            minLength="10"
                             placeholder="Contact Number"
                             defaultValue={
                               data.contact_no ? data.contact_no : ""
                             }
-                            // value={contactNumber ? contactNumber : ""}
                             onChange={handleContactValidation}
                             onKeyPress={(e) => {
                               Validation.mobileNumbersOnly(e);
@@ -1035,178 +1148,106 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                        {/* <label className="col-sm-2 col-form-label">
-                          <b>Same as Contact No. :</b>
-                        </label> */}
+
                         <label className="col-sm-3 col-form-label text-end ">
                           <b className="mx-3">Same as Contact No. or</b>
                           <br />
                           <b className="mx-3">Whats App Contact Number :</b>
-                          {/* <label className="col-sm-3 col-form-label text-end "> */}
-                          {/* </label> */}
+
                           <input
                             type="checkbox"
-                            name="check1"
-                            defaultChecked={data.check1 == 1}
+                            id="check1"
+                            defaultChecked={data.contact_no == data.whats_app_contact_no ? true : false}
                             onChange={copyTextValue}
                             style={{ position: "absolute", top: "32%" }}
                           />
-                          {/* <b>Whats App Number :</b> */}
                         </label>
-                        {/* <div className="col-sm-1">
-                          <input
-                            defaultChecked={data.check1 == 1}
-                            type="checkbox"
-                            name="check1"
-                            onChange={copyTextValue}
-                            style={{ position: "absolute", top: "20%" }}
-                          />
-                        </div> */}
-                        {/*
-                        <label className="col-sm-2 col-form-label">
-                          <b>Whats App Number :</b>
-                        </label> */}
-                        <div className="col-sm-3">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            id="whats_app_contact_no"
-                            name="whats_app_contact_no"
-                            placeholder="Whats App Contact Number"
-                            defaultValue={
-                              data.whats_app_contact_no
-                                ? data.whats_app_contact_no
-                                : ""
-                            }
-                            readOnly={isReadOnly}
-                            // value={copyData ? copyData : ""}
-                            minLength={10}
-                            maxLength={10}
-                            onKeyPress={(e) => {
-                              Validation.mobileNumbersOnly(e);
-                            }}
-                            onChange={handleWhatsappValidation}
-                            onPaste={(e) => {
-                              e.preventDefault();
-                              return false;
-                            }}
-                            onCopy={(e) => {
-                              e.preventDefault();
-                              return false;
-                            }}
-                          />
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {inputState.whatsappErr}
-                            </small>
-                          )}
-                        </div>
-                      </div>
 
-                      {/* <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label">
-                          <b> Password : </b>
-                        </label>
-                        <div
-                          className="col-sm-4"
-                          style={{ position: "relative", display: "flex" }}
-                        >
-                          <InputGroup className="">
-                            <input
-                              className="form-control"
-                              id="password"
-                              name="password"
-                              placeholder="Password"
-                              minLength={6}
-                              maxLength={12}
-                              type={passwordShown ? "text" : "password"}
-                              onKeyPress={(e) => {
-                                Validation.password(e);
-                              }}
-                              onChange={(e) => { handlePasswordValidation(e)}}
-                            />
-                            <InputGroup.Text>
-                              <i
-                                className="bi bi-eye-fill"
-                                onClick={togglePasswordVisiblity}
-                              ></i>
-                            </InputGroup.Text>
-                          </InputGroup>
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                                position: "absolute",
-                                top: "95%",
-                              }}
-                            >
-                              {inputState.passwordErr}
-                            </small>
-                          )}
-                        </div>
+                       
+                        
+                        {data?.contact_no == data?.whats_app_contact_no ? (
+                          <>
+                            <div className="col-sm-3">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                id="whats_app_contact_no"
+                                name="whats_app_contact_no"
+                                placeholder="Whats App Contact Number"
+                                defaultValue={data.whats_app_contact_no}
+                                readOnly={isReadOnly}
+                                minLength={10}
+                                maxLength={10}
+                                onKeyPress={(e) => {
+                                  Validation.mobileNumbersOnly(e);
+                                }}
+                                onChange={handleWhatsappValidation}
+                                onPaste={(e) => {
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                onCopy={(e) => {
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                              />
+                              {inputState && (
+                                <small
+                                  style={{
+                                    color: "red",
+                                  }}
+                                >
+                                  {inputState.whatsappErr}
+                                </small>
+                              )}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="col-sm-3">
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                id="whats_app_contact_no"
+                                name="whats_app_contact_no"
+                                placeholder="Whats App Contact Number"
+                                // defaultValue={
+                                //   // isReadOnly === false
+                                //   //   ? data.contact_no
+                                //   //   : data.whats_app_contact_no
+                                //   data?.contact_no == data?.whats_app_contact_no  ? data.whats_app_contact_no : ""
 
-                        <label className="col-sm-2 col-form-label">
-                          <b>Confirmed Password : </b>
-                        </label>
-                        <div
-                          className="col-sm-4"
-                          style={{ position: "relative", display: "flex" }}
-                        >
-                          <InputGroup className="">
-                            <input
-                              className="form-control form-control-sm "
-                              id="confirmed_password"
-                              name="confirmed_password"
-                              placeholder="confirmed_password"
-                              type={passwordShown1 ? "text" : "password"}
-                              onKeyPress={(e) => {
-                                Validation.password(e);
-                              }}
-                              onChangeCapture={handleConfirmedPassword}
-                              onPaste={(e) => {
-                                e.preventDefault();
-                                return false;
-                              }}
-                              onCopy={(e) => {
-                                e.preventDefault();
-                                return false;
-                              }}
-                            />
-                            <InputGroup.Text>
-                              <i
-                                className="bi bi-eye-fill"
-                                onClick={togglePasswordVisiblity1}
-                              ></i>
-                            </InputGroup.Text>
-                          </InputGroup>
-                          {inputState && (
-                            <small
-                              style={{
-                                color: "red",
-                                position: "absolute",
-                                top: "95%",
-                              }}
-                            >
-                              {inputState.confirmed_PassErr}
-                            </small>
-                          )}
-                        </div>
-                        {confirmPasswordError && (
-                          <span
-                            style={{
-                              color: "red",
-                              position: "relative",
-                              left: "67%",
-                            }}
-                          >
-                            Password Not matched
-                          </span>
+                                // }
+                                value={copyData}
+                                readOnly={isReadOnly}
+                                minLength={10}
+                                maxLength={10}
+                                onKeyPress={(e) => {
+                                  Validation.mobileNumbersOnly(e);
+                                }}
+                                onChange={handleWhatsappValidation}
+                                onPaste={(e) => {
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                onCopy={(e) => {
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                              />
+                              {inputState && (
+                                <small
+                                  style={{
+                                    color: "red",
+                                  }}
+                                >
+                                  {inputState.whatsappErr}
+                                </small>
+                              )}
+                            </div>
+                          </>
                         )}
-                      </div> */}
+                      </div>
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
@@ -1226,13 +1267,10 @@ function EditUserComponent({ match }) {
                               id="password"
                               name="password"
                               placeholder="Password"
-                              // minLength={6} // Minimum length is set to 8 characters
-                              // maxLength={12}
                               type={passwordShown ? "text" : "password"}
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
-                              // onChange={handlePasswordValidation}
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1323,7 +1361,6 @@ function EditUserComponent({ match }) {
                           </span>
                         )}
                       </div>
-
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -1331,20 +1368,30 @@ function EditUserComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          {roleDropdown && (
+                          {roleDropdown  && (
                             <Select
                               id="role_id"
                               name="role_id"
-                              options={roleDropdown}
-                              defaultValue={
-                                data &&
-                                roleDropdown &&
-                                roleDropdown.filter(
-                                  (d) => d.value == data.role_id
-                                )
+                              options={
+                                accountFor === "SELF"
+                                  ? orderedSelfRoleData
+                                  : orderedCustomerRoleData
                               }
+                              // defaultValue={
+                              //   data &&
+                              //   roleDropdown &&
+                              //   roleDropdown.filter(
+                              //     (d) => d.value == data.role_id
+                              //   )
+                              // }
+                              value={selectRole}
+                        onChange={(e) => handleSelectRole(e)}
+
+                              
                             />
                           )}
+                        
+
                           {inputState && (
                             <small
                               style={{
@@ -1490,6 +1537,25 @@ function EditUserComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.NumbersOnly(e);
                             }}
+                            onChange={(event) => {
+                              const pincode = event.target.value.trim();
+
+                              const pincodeRegex = /^\d{6}$/; // regular expression to match 6 digits
+
+                              if (pincode === "") {
+                                setInputState({
+                                  ...state,
+                                  PinCodeErr: "",
+                                });
+                              } else if (!pincodeRegex.test(pincode)) {
+                                setInputState({
+                                  ...state,
+                                  PinCodeErr: " Enter a 6 digit pin code.",
+                                });
+                              } else {
+                                setInputState({ ...state, PinCodeErr: "" });
+                              }
+                            }}
                             onPaste={(e) => {
                               e.preventDefault();
                               return false;
@@ -1499,6 +1565,15 @@ function EditUserComponent({ match }) {
                               return false;
                             }}
                           />
+                          {inputState && (
+                            <small
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {inputState.PinCodeErr}
+                            </small>
+                          )}
                         </div>
 
                         <label
@@ -1509,20 +1584,19 @@ function EditUserComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
-                            options={countryDropdown}
+                            options={CountryData}
                             id="country_id"
                             name="country_id"
                             defaultValue={
                               data &&
-                              countryDropdown &&
-                              countryDropdown.filter(
+                              CountryData &&
+                              CountryData.filter(
                                 (d) => d.value == data.country_id
                               )
                             }
                             onChange={(e) =>
                               handleDependentChange(e, "COUNTRY")
                             }
-                          //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
                           />
                         </div>
                       </div>
@@ -1540,10 +1614,14 @@ function EditUserComponent({ match }) {
                             }
                             id="state_id"
                             name="state_id"
-                            // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
-                            defaultValue={stateName ? stateName : ""}
+                            defaultValue={
+                              data &&
+                              stateDropdown &&
+                              stateDropdown.filter(
+                                (d) => d.value == data.state_id
+                              )
+                            }
                             onChange={(e) => handleDependentChange(e, "STATE")}
-                          // value={stateName ? stateName : ""}
                           />
                         </div>
 
@@ -1564,18 +1642,26 @@ function EditUserComponent({ match }) {
                               }
                               id="city_id"
                               name="city_id"
-                              // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
-                              defaultValue={cityName ? cityName : ""}
+                              defaultValue={
+                                data &&
+                                cityDropdown &&
+                                cityDropdown.filter(
+                                  (d) => d.value == data.city_id
+                                )
+                                  ? data &&
+                                    cityDropdown &&
+                                    cityDropdown.filter(
+                                      (d) => d.value == data.city_id
+                                    )
+                                  : cityName
+                              }
                               onChange={(e) => setCityName(e)}
-                            // value={cityName ? cityName : ""}
                             />
                           </div>
                         )}
                       </div>
                     </div>
-                    {/* CARD BODY*/}
                   </div>
-                  {/* CARD */}
                 </div>
               </div>
             )}
@@ -1635,40 +1721,60 @@ function EditUserComponent({ match }) {
                           </th>
                         </tr>
                       </thead>
+
                       <tbody>
                         {rows &&
                           rows?.map((item, idx) => (
                             <tr key={idx}>
                               <td className="text-center">{idx + 1}</td>
                               <td>
-                                {departmentDropdown && item.department_id && (
-                                  <Select
-                                    options={departmentDropdown}
-                                    id={`department_id_` + idx}
-                                    name="department_id[]"
-                                    // onChange={e => departmentHandler(idx, e)}
-                                    defaultValue={departmentDropdown?.filter(
-                                      (d) => d.value == item.department_id
-                                    )}
-                                  />
-                                )}
+                                <Select
+                                  isSearchable={true}
+                                  name="department_id[]"
+                                  id={`department_id_` + idx}
+                                  key={idx}
+                                  className="basic-multi-select"
+                                  classNamePrefix="select"
+                                  options={departmentDropdown}
+                                  value={
+                                    departmentDropdown &&
+                                    departmentDropdown?.filter((d) =>
+                                      Array.isArray(item.department_id)
+                                        ? item.department_id.includes(d.value)
+                                        : item.department_id === d.value
+                                    )
+                                  }
+                                  required
+                                  style={{ zIndex: "100" }}
+                                  onChange={(selectedOption) =>
+                                    handleUserSelect(selectedOption, idx)
+                                  }
+                                />
                               </td>
+
                               <td>
-                                {options && item.ticket_show_type && (
-                                  <Select
-                                    options={options}
-                                    id={`ticket_show_type_id_` + idx}
-                                    name="ticket_show_type[]"
-                                    // onChange={e => ticketShowHandler(idx, e)}
-                                    defaultValue={
-                                      rows &&
-                                      item.ticket_show_type &&
-                                      options.filter(
-                                        (d) => d.value == item.ticket_show_type
-                                      )
-                                    }
-                                  />
-                                )}
+                                <Select
+                                  options={options}
+                                  id={`ticket_show_type_id_` + idx}
+                                  name="ticket_show_type_id[]"
+                                  value={
+                                    options &&
+                                    options?.filter((d) =>
+                                      Array.isArray(item.ticket_show_type)
+                                        ? item.ticket_show_type.includes(
+                                            d.value
+                                          )
+                                        : item.ticket_show_type === d.value
+                                    )
+                                  }
+                                  required
+                                  onChange={(selectedOption) =>
+                                    handleTickeTypeShowSelect(
+                                      selectedOption,
+                                      idx
+                                    )
+                                  }
+                                />
                               </td>
 
                               <td className="text-center">
@@ -1721,7 +1827,8 @@ function EditUserComponent({ match }) {
                                     <i className="icofont-plus-circle"></i>
                                   </button>
                                 )}
-                                {rows.length == idx + 1 && idx != 0 && (
+
+                                {idx != 0 && (
                                   <button
                                     type="button"
                                     className="btn btn-outline-danger btn-sm"
@@ -1739,6 +1846,28 @@ function EditUserComponent({ match }) {
                 )}
               </div>
             </div>
+            {inputState && (
+              <small
+                style={{
+                  color: "red",
+                  position: "absolute",
+                  right: "70%",
+                }}
+              >
+                {inputState.departmentErr}
+              </small>
+            )}
+            {inputState && (
+              <small
+                style={{
+                  color: "red",
+                  position: "absolute",
+                  right: "70%",
+                }}
+              >
+                {inputState.ticketTypeShowErr}
+              </small>
+            )}
           </Tab>
         </Tabs>
         <div className="mt-3" style={{ textAlign: "right" }}>
@@ -1764,9 +1893,6 @@ function EditUserComponent({ match }) {
             </button>
           )}
 
-          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
-            Cancel
-          </Link>
           {tabKey == "User_Settings" && (
             <button
               onClick={() => setTabKey("All_Tickets")}
@@ -1775,6 +1901,9 @@ function EditUserComponent({ match }) {
               Back
             </button>
           )}
+          <Link to={`/${_base}/User`} className="btn btn-danger text-white">
+            Cancel
+          </Link>
         </div>
       </form>
     </div>

@@ -15,6 +15,9 @@ import CommentsData from "./CommentData";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import Chatbox from "./NewChatBox";
 import Shimmer from "./ShimmerComponent";
+import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function ViewTicketComponent({ match }) {
   const history = useNavigate();
@@ -26,7 +29,7 @@ export default function ViewTicketComponent({ match }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState(null);
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
   const [isSolved, setIsSolved] = useState(false);
   const [chart, setChart] = useState(null);
@@ -35,6 +38,11 @@ export default function ViewTicketComponent({ match }) {
   const [rows, setRows] = useState();
   const [chartDataa, setChartData] = useState("");
   const [commentData, setCommentData] = useState();
+
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+  );
 
   //   const onAddMention = (e) => {
   //     setIdCount((idCount) => [...idCount, e.id]);
@@ -45,11 +53,11 @@ export default function ViewTicketComponent({ match }) {
       setChartData(res.data.data["series"]);
     });
     await new MyTicketService().getTicketById(ticketId).then((res) => {
-      setRows(res.data.data.dynamic_form);
+      setRows(res?.data?.data?.dynamic_form);
       setShowLoaderModal(null);
 
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res?.data?.data;
         if (data.status_id == 3) {
           setIsSolved(true);
         }
@@ -82,14 +90,16 @@ export default function ViewTicketComponent({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles());
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const loadComments = async () => {
@@ -165,13 +175,11 @@ export default function ViewTicketComponent({ match }) {
   useEffect(() => {
     loadData();
     loadComments();
-    return () => {
-      console.log("");
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[15].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -179,15 +187,14 @@ export default function ViewTicketComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-  
       <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ""}`} />
 
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />}   */}
 
       <div className="row g-3 mt-2">
         <div className="col-xxl-8 col-xl-8 col-lg-12 col-md-12">
           <div className="row g-3 mb-3">
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.status_name : ""}
                 progressBg="bg-warning"
@@ -197,7 +204,7 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
 
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_by_name : ""}
                 progressBg="bg-info"
@@ -206,8 +213,8 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-
-            <div className="col-md-3">
+            {console.log("dd", data)}
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
                 progressBg="bg-info"
@@ -217,10 +224,16 @@ export default function ViewTicketComponent({ match }) {
               />
             </div>
 
-            <div className="col-md-3">
+            <div className="col-md-4">
               <StatusCard
                 progress={data ? data.priority : ""}
-                progressBg="bg-danger"
+                progressBg={
+                  data?.priority === "High"
+                    ? "bg-warning"
+                    : data?.priority === "Medium"
+                    ? "bg-info"
+                    : "bg-success"
+                }
                 details=""
                 iconClass="icofont-price fs-4"
                 iconbg="bg-lightgreen"
@@ -236,32 +249,13 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
-            <div className="col-md-4">
-              <StatusCard
-                progress={data ? data.parent_name : ""}
-                progressBg="bg-success"
-                iconClass="icofont-user fs-4"
-                iconbg="bg-lightblue"
-                title="Parent Task Type "
-              />
-            </div>
-
-            <div className="col-md-4">
-              <StatusCard
-                progress={data ? data.type_name : ""}
-                progressBg="bg-success"
-                iconClass="icofont-user fs-4"
-                iconbg="bg-lightblue"
-                title="Ticket Type"
-              />
-            </div>
           </div>
-          {rows && rows.length > 0 && (
+
+          {rows && (
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
                   {rows.map((data, index) => {
-                    // console.log("dd",rows)
                     var range = "";
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
@@ -293,6 +287,7 @@ export default function ViewTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            readOnly
                             name={data.inputName}
                             className="form-control form-control-sm"
                             defaultValue={data.inputDefaultValue}
@@ -300,10 +295,48 @@ export default function ViewTicketComponent({ match }) {
                         )}
                         {data.inputType === "date" && (
                           <div className="form-control">
-                            <DatePicker
+                            {/* <DatePicker
+                              required={
+                                data && data.inputMandatory == true ? true : false
+                              }
                               // onChange={onChangeDate}
-                              value={dateValue}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
                               format={data.inputFormat}
+                              style={{ width: "100%" }}
+                              
+                            /> */}
+
+                            <input
+                              type="date"
+                              disabled
+                              name={data.inputName}
+                              required={
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
+                              }
+                              // onChange={dynamicChangeHandle}
+                              // value={dateValue}
+                              defaultValue={data.inputDefaultValue}
+                              // format={data.inputFormat}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                        )}
+
+                        {data.inputType === "datetime-local" && (
+                          <div className="form-control">
+                            <input
+                              type="datetime-local"
+                              name={data.inputName}
+                              disabled
+                              required={
+                                data && data.inputMandatory == true
+                                  ? true
+                                  : false
+                              }
+                              defaultValue={data.inputDefaultValue}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -318,13 +351,103 @@ export default function ViewTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            readOnly
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
                             className="form-control form-control-sm"
                           />
                         )}
+
+                        {console.log("dataV", data)}
+
+                        {data.inputType == "radio" && data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                              console.log("radio==", d.value);
+                              console.log("radio=== ", data.inputDefaultValue);
+
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    readOnly
+                                    disabled
+                                    checked={d.value == data.inputDefaultValue}
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="radio"
+                                  />
+                                  <label for={d.value}>{d.label}</label>
+                                </div>
+                              );
+                            })
+                          : ""}
+
+                        {data.inputType == "checkbox" &&
+                        data.inputAddOn.inputRadio
+                          ? data.inputAddOn.inputRadio.map((d) => {
+                              return (
+                                <div>
+                                  <input
+                                    id={
+                                      data.inputName
+                                        ? data.inputName
+                                            .replace(/ /g, "_")
+                                            .toLowerCase()
+                                        : ""
+                                    }
+                                    required={
+                                      data.inputMandatory == true ? true : false
+                                    }
+                                    disabled
+                                    checked={d.value == data.inputDefaultValue}
+                                    name={data.inputName}
+                                    className="mx-2"
+                                    type="checkbox"
+                                  />
+                                  <label for={d.value}> {d.label}</label>
+                                </div>
+                              );
+                            })
+                          : ""}
+
                         {data.inputType === "number" && (
                           <input
+                            type={data.inputType}
+                            // type="date"
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            readOnly
+                            name={data.inputName}
+                            // defaultValue={
+                            //   selectedDropdown
+                            //     ? selectedDropdown[data.inputName]
+                            //     : ""
+
+                            // }
+
+                            defaultValue={data.inputDefaultValue}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
+                            min={data.inputAddOn.inputRange ? range[0] : ""}
+                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            className="form-control form-control-sm"
+                          />
+                        )}
+                        {data.inputType === "decimal" && (
+                          <input
+                            readOnly
                             type={data.inputType}
                             id={
                               data.inputName
@@ -333,16 +456,20 @@ export default function ViewTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
-                            name={data.inputName}
+                            required={
+                              data.inputMandatory == true ? true : false
+                            }
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            name={data.inputName}
+                            minLength={parseInt(data.inputAddOn.inputRangeMin)}
+                            maxLength={parseInt(data.inputAddOn.inputRangeMax)}
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "decimal" && (
-                          <input
-                            type="number"
+                        {/* {data.inputType === "select" && (
+                          <Select
+                            defaultValue={data.defaultValue}
+                            options={data.inputAddOn.inputRadio}
                             id={
                               data.inputName
                                 ? data.inputName
@@ -350,27 +477,83 @@ export default function ViewTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
+                            isDisabled
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
-                            className="form-control form-control-sm"
-                          />
-                        )}
-                        {data.inputType === "select" && (
-                          <input
-                            type="text"
-                            // defaultValue={selectedDropdown ? selectedDropdown[data.inputName] : ""}
-                            // defaultValue={data.inputDefaultValue ? data.inputAddOn.inputDataSourceData.filter(d => d.value == data.inputDefaultValue) : ""}
-                            defaultValue={data.inputDefaultValue}
-                            // options={data.inputAddOn.inputDataSourceData}
-                            // id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                            name={data.inputName}
-                            // onChange={e => { dynamicDependancyHandle(data.inputName, e, data.inputAddOn.inputOnChangeSource) }}
                             className="form-control form-control-sm"
                             required={data.inputMandatory ? true : false}
-                            readOnly
                           />
+                        )} */}
+
+                        {console.log("data", data)}
+
+                        {data.inputType === "select" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            disabled
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputRadio &&
+                              data.inputAddOn.inputRadio.map((option) => {
+                                return (
+                                  <option
+                                    selected={
+                                      parseInt(
+                                        data && data?.inputAddOn?.inputRadio
+                                      ) == option.value
+                                    }
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                );
+                              })}
+                          </select>
+                        )}
+
+                        {data.inputType === "select-master" && (
+                          <select
+                            id={
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, "_")
+                                    .toLowerCase()
+                                : ""
+                            }
+                            disabled
+                            defaultValue={data.inputDefaultValue}
+                            name={data.inputName}
+                            className="form-control form-control-sm"
+                          >
+                            <option> {data.inputName}</option>
+                            {data.inputAddOn.inputDataSourceData &&
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) == option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
+                          </select>
                         )}
                       </div>
                     );
@@ -452,6 +635,7 @@ export default function ViewTicketComponent({ match }) {
               ticketId={ticketId}
               loadComment={loadCommentsCallback}
               commentData={commentData}
+              statusName={data}
             />
           )}
         </div>
@@ -460,16 +644,6 @@ export default function ViewTicketComponent({ match }) {
             <div className="card mb-3">
               <div className="card-body">
                 <h6 className="fw-bold mb-3 text-danger">Timeline</h6>
-
-                {/* {chart && (
-                  <Chart
-                    options={chart.options}
-                    series={chart.series}
-                    type="rangeBar"
-                    height={chart.options.chart.height}
-                  />
-                
-                )} */}
 
                 <div>
                   <div style={{ display: "block", flexDirection: "column" }}>
@@ -504,28 +678,15 @@ export default function ViewTicketComponent({ match }) {
                       User 2
                     </label>
                   </div>
-                  {chartDataa && chartDataa?.length > 0 && chartOptions && (
+                  {chartDataa?.data?.length && chartOptions && (
                     <Chart
                       options={chartOptions}
                       data={chartDataa}
-                      // series={getTaskSeries()}
                       type="rangeBar"
                       height={chartOptions?.chart?.height}
                     />
                   )}
                 </div>
-
-                {/* {console.log("series",chart.series)} */}
-                {/* {console.log("chart",chart.options.chart.height)} */}
-
-                {/* <Chart
-          width={'700px'}
-          height={'410px'}
-          chartType="Gantt"
-          loader={<div>Loading Chart</div>}
-          data={ganttChartData}
-          rootProps={{ 'data-testid': '1' }}
-        /> */}
               </div>
             </div>
           </div>

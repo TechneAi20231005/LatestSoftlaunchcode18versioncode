@@ -4,7 +4,6 @@ import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import StateService from "../../../services/MastersService/StateService";
-import CountryService from "../../../services/MastersService/CountryService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Select from "react-select";
 
@@ -13,30 +12,63 @@ import * as Validation from "../../../components/Utilities/Validation";
 import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { Spinner } from "react-bootstrap";
-
+import { useSelector, useDispatch } from "react-redux";
+import {
+  dashboardSlice,
+  handleModalClose,
+  hideNotification,
+} from "../../Dashboard/DashbordSlice";
+import {
+  getCountryDataSort,
+  getRoles,
+  getStateData,
+  postStateData,
+  updateStateData,
+} from "../../Dashboard/DashboardAction";
+import { handleModalInStore } from "../../Dashboard/DashbordSlice";
 function StateComponent() {
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  // const [modal, setModal] = useState({
+  //   showModal: false,
+  //   modalData: "",
+  //   modalHeader: "",
+  // });
 
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const [state, setState] = useState(null);
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
 
   const searchRef = useRef();
+
+  const dispatch = useDispatch();
+  const stateData = useSelector( (dashboardSlice) => dashboardSlice.dashboard.stateData);
+  console.log("stateData",stateData);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
+  );
+
+  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+
+
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const ExportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportData
+  );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -54,14 +86,21 @@ function StateComponent() {
     });
   }
 
+  // const handleSearch = () => {
+  //   const SearchValue = searchRef.current.value;
+  //   const result = SearchInputData(data, SearchValue);
+  //   setData(result);
+  // };
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {
+    console.log("fff", filteredData);
   };
-
-  
 
   const columns = [
     {
@@ -76,11 +115,18 @@ function StateComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit State",
-              });
+              dispatch(
+                handleModalInStore({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit State",
+                })
+              );
+              // handleModal({
+              //   showModal: true,
+              //   modalData: row,
+              //   modalHeader: "Edit State",
+              // });
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -158,82 +204,82 @@ function StateComponent() {
     // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
-    await new StateService()
-      .getState()
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              state: temp[key].state,
-              country: temp[key].country,
-              country_id: temp[key].country_id,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
-          }
-          setData(null);
-          setData(data);
-          setState(data);
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              State: data[i].state,
-              Country: data[i].country,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              Remark:temp[i].remark,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "State",
-          "Get_State",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    // await new StateService()
+    //   .getState()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       setShowLoaderModal(false);
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           counter: counter++,
+    //           id: temp[key].id,
+    //           state: temp[key].state,
+    //           country: temp[key].country,
+    //           country_id: temp[key].country_id,
+    //           is_active: temp[key].is_active,
+    //           remark: temp[key].remark,
+    //           created_at: temp[key].created_at,
+    //           created_by: temp[key].created_by,
+    //           updated_at: temp[key].updated_at,
+    //           updated_by: temp[key].updated_by,
+    //         });
+    //       }
+    //       setData(null);
+    //       setData(data);
+    //       setState(data);
+    //       for (const i in data) {
+    //         exportTempData.push({
+    //           Sr: data[i].counter,
+    //           State: data[i].state,
+    //           Country: data[i].country,
+    //           Status: data[i].is_active ? "Active" : "Deactive",
+    //           Remark:temp[i].remark,
+    //           created_at: temp[i].created_at,
+    //           created_by: temp[i].created_by,
+    //           updated_at: data[i].updated_at,
+    //           updated_by: data[i].updated_by,
+    //         });
+    //       }
+    //       setExportData(null);
+    //       setExportData(exportTempData);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     const { response } = error;
+    //     const { request, ...errorObject } = response;
+    //     new ErrorLogService().sendErrorLog(
+    //       "State",
+    //       "Get_State",
+    //       "INSERT",
+    //       errorObject.data.message
+    //     );
+    //   });
 
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
+    // await new CountryService().getCountrySort().then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
+    //       setCountryDropdown(
+    //         res.data.data
+    //           .filter((d) => d.is_active == 1)
+    //           .map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
   };
 
   const handleForm = (id) => async (e) => {
@@ -254,73 +300,88 @@ function StateComponent() {
 
     if (flag === 1) {
       if (!id) {
-        await new StateService()
-          .postState(form)
-          .then((res) => {
-            if (res.status === 200) {
-              setShowLoaderModal(false);
-              if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
-                loadData();
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setNotify({ type: "danger", message: res.message });
-              new ErrorLogService().sendErrorLog(
-                "State",
-                "Create_State",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setNotify({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "State",
-              "Create_State",
-              "INSERT",
-              errorObject.data.message
-            );
-          });
+        dispatch(postStateData(form)).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getStateData());
+          } else {
+          }
+        });
+
+        // await new StateService()
+        //   .postState(form)
+        //   .then((res) => {
+        //     if (res.status === 200) {
+        //       setShowLoaderModal(false);
+        //       if (res.data.status === 1) {
+        //         setNotify({ type: "success", message: res.data.message });
+        //         setModal({ showModal: false, modalData: "", modalHeader: "" });
+        //         loadData();
+        //       } else {
+        //         setNotify({ type: "danger", message: res.data.message });
+        //       }
+        //     } else {
+        //       setNotify({ type: "danger", message: res.message });
+        //       new ErrorLogService().sendErrorLog(
+        //         "State",
+        //         "Create_State",
+        //         "INSERT",
+        //         res.message
+        //       );
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     setNotify({ type: "danger", message: "Request Error !!!" });
+        //     new ErrorLogService().sendErrorLog(
+        //       "State",
+        //       "Create_State",
+        //       "INSERT",
+        //       errorObject.data.message
+        //     );
+        //   });
       } else {
-        await new StateService()
-          .updateState(id, form)
-          .then((res) => {
-            if (res.status === 200) {
-              setShowLoaderModal(false);
-              if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
-                loadData();
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setNotify({ type: "danger", message: res.message });
-              new ErrorLogService().sendErrorLog(
-                "State",
-                "Edit_State",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setNotify({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "State",
-              "Edit_State",
-              "INSERT",
-              errorObject.data.message
-            );
-          });
+        dispatch(updateStateData({ id: id, payload: form })).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getStateData());
+          } else {
+          }
+        });
+      
+
+        // await new StateService()
+        //   .updateState(id, form)
+        //   .then((res) => {
+        //     if (res.status === 200) {
+        //       setShowLoaderModal(false);
+        //       if (res.data.status === 1) {
+        //         setNotify({ type: "success", message: res.data.message });
+        //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
+        //         loadData();
+        //       } else {
+        //         setNotify({ type: "danger", message: res.data.message });
+        //       }
+        //     } else {
+        //       setNotify({ type: "danger", message: res.message });
+        //       new ErrorLogService().sendErrorLog(
+        //         "State",
+        //         "Edit_State",
+        //         "INSERT",
+        //         res.message
+        //       );
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     const { response } = error;
+        //     const { request, ...errorObject } = response;
+        //     setNotify({ type: "danger", message: "Request Error !!!" });
+        //     new ErrorLogService().sendErrorLog(
+        //       "State",
+        //       "Edit_State",
+        //       "INSERT",
+        //       errorObject.data.message
+        //     );
+        //   });
       }
     }
   };
@@ -332,32 +393,61 @@ function StateComponent() {
   };
 
   useEffect(() => {
-    if(checkRole && checkRole[5].can_read === 0){
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+    if (checkRole && checkRole[0]?.can_read === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
-  useEffect(()=>{
-loadData();
-  },[])
+  useEffect(() => {
+    loadData();
+    
+    dispatch(getCountryDataSort());
+    dispatch(getStateData());
+    // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
+    if (!stateData.length || !checkRole.length) {
+     
+     
+      dispatch(getRoles());
+    }
+    if(!CountryData.length){
+
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (Notify) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(hideNotification());
+  //     }, 1500); // Adjust the timeout duration as needed
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [Notify, dispatch]);
+
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
       <PageHeader
         headerTitle="State Master"
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[5].can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add State",
-                    });
+                    dispatch(
+                      handleModalInStore({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add State",
+                      })
+                    );
+                    // handleModal({
+                    //   showModal: true,
+                    //   modalData: null,
+                    //   modalHeader: "Add State",
+                    // });
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add State
@@ -378,14 +468,16 @@ loadData();
               className="form-control"
               placeholder="Search by State Name...."
               ref={searchRef}
-              onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -400,7 +492,7 @@ loadData();
             </button>
             <ExportToExcel
               className="btn btn-sm btn-danger"
-              apiData={exportData}
+              apiData={ExportData}
               fileName="State master Records"
             />
           </div>
@@ -411,10 +503,27 @@ loadData();
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {stateData && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={stateData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -441,19 +550,30 @@ loadData();
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: null,
+                  modalHeader: "Add State",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -465,12 +585,12 @@ loadData();
                   </label>
 
                   <Select
-                    options={countryDropdown}
+                    options={CountryData}
                     id="country_id"
                     name="country_id"
                     defaultValue={
                       modal.modalData
-                        ? countryDropdown.filter(
+                        ? CountryData.filter(
                             (d) => modal.modalData.country_id == d.value
                           )
                         : ""
@@ -577,18 +697,26 @@ loadData();
             </div>
           </Modal.Body>
           <Modal.Footer>
-
-
             {!modal.modalData && (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F",width:'80px',padding:"8px" }}
+                style={{
+                  backgroundColor: "#484C7F",
+                  width: "80px",
+                  padding: "8px",
+                }}
               >
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[5].can_update == 1 ? (
+         
+         
+
+
+          
+          
+            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -603,12 +731,22 @@ loadData();
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
+              // onClick={() => {
+              // handleModal({
+              //   showModal: false,
+              //   modalData: "",
+              //   modalHeader: "",
+              // });
+
+              // }}
             >
               Cancel
             </button>
@@ -686,3 +824,4 @@ function StateDropdown(props) {
 }
 
 export { StateComponent, StateDropdown };
+

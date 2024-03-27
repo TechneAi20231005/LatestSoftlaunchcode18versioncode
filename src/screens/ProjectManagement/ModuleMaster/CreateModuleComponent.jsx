@@ -1,3 +1,8 @@
+
+
+
+
+
 import React,{ useEffect, useState } from 'react'
 import {Link,useNavigate} from 'react-router-dom';
 import ModuleService from "../../../services/ProjectManagementService/ModuleService";
@@ -9,13 +14,21 @@ import {ProjectDropdown} from "../ProjectMaster/ProjectComponent";
 import {Astrick} from "../../../components/Utilities/Style"
 import *  as Validation from '../../../components/Utilities/Validation';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function CreateModuleComponent({match}) {
+
+    const dispatch = useDispatch();
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==21)
+    );
+    console.log("checkRole",checkRole)
     
     const history = useNavigate();
     const [notify,setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
     const handleForm = async(e) =>{
         e.preventDefault();
         const formData=new FormData(e.target);
@@ -43,34 +56,35 @@ export default function CreateModuleComponent({match}) {
               new ErrorLogService().sendErrorLog("Module", "Create_Module", "INSERT", errorObject.data.message);
             } else {
               console.error("Error object does not contain expected 'response' property:", error);
-              // Handle cases where 'response' is not available
-              // You may want to log or handle this case accordingly
+        
             }
           });
           
     }
 
 const loadData=async()=>{
-    await new ManageMenuService().getRole(roleId).then((res) => {
-        if (res.status === 200) {
-    // setShowLoaderModal(false);
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //     if (res.status === 200) {
+    
+            
 
-            if (res.data.status == 1) {
-                const getRoleId = sessionStorage.getItem("role_id");
-                setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-            }
-        }
-    })
+    //         if (res.data.status == 1) {
+    //             const getRoleId = sessionStorage.getItem("role_id");
+    //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+    //         }
+    //     }
+    // })
+    dispatch(getRoles())
 }
 
     useEffect(()=>{
-        if(checkRole && checkRole[20].can_create === 0){
+        if(checkRole && checkRole[0]?.can_create === 0){
           // alert("Rushi")
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
         }
         loadData();
-      },[checkRole])
+      },[])
 
   return (  
     <div className="container-xxl">
@@ -137,7 +151,7 @@ const loadData=async()=>{
                                 </div>
                             </div>
 
-                            <div className="form-group row mt-3">
+                            {/* <div className="form-group row mt-3">
                                 <label className="col-sm-2 col-form-label">
                                     <b>Status : </b>
                                 </label>
@@ -166,7 +180,7 @@ const loadData=async()=>{
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                         </div> {/* CARD BODY */}
                     </div>{/* CARD */}
@@ -182,3 +196,8 @@ const loadData=async()=>{
     </div>            
   )
 }
+
+
+
+
+

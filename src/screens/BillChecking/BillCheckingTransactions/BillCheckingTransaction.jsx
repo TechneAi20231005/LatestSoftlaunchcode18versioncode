@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Dropdown, Spinner } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -19,20 +18,33 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import UserService from "../../../services/MastersService/UserService";
 // import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 // import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-
-
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+import BillCheckingTransactionSlice from "../Slices/BillCheckingTransactionSlice";
+import {
+  BillcheckingpostData,
+  billTypeDataDropDowm,
+  cancelBillCheckData,
+  getBillcheckingData,
+  getUpdatedAuthoritiesData,
+  postBillcheckingData,
+  statusDropDownData,
+} from "../Slices/BillCheckingTransactionAction";
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import { getVendorMasterData } from "../Slices/VendorMasterAction";
+import VendorMasterSlice from "../Slices/VendorMasterSlice";
 
 function BillCheckingTransaction() {
-  const location = useLocation()
+  const location = useLocation();
   const [data, setData] = useState(null);
+
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -41,7 +53,31 @@ function BillCheckingTransaction() {
   });
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+
+  const dispatch = useDispatch();
+  const AllBillCheckingData = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.sortedBillCheckingData
+  );
+  const authorities = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.authoritiesData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 42)
+  );
+  const billTypeDropdown = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
+  );
+  const vendorDropdown = useSelector(
+    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.vendorMasterDropDown
+  );
+
+  const statusDropdown = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.statusDropDownData
+  );
 
   const handleModal = (data) => {
     setModal(data);
@@ -51,28 +87,140 @@ function BillCheckingTransaction() {
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data&& data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
+    return (
+      data &&
+      data.filter((d) => {
+        for (const key in d) {
+          if (
+            typeof d[key] === "string" &&
+            d[key].toLowerCase().includes(lowercaseSearch)
+          ) {
+            return true;
+          }
         }
-      }
-      return false;
-    });
+        return false;
+      })
+    );
   }
 
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     const result = searchInData(data, searchValue);
-
-
     setData(result);
   };
 
+  const selectInputRef = useRef();
+  const selectVendorRef = useRef();
+  const selectVendorNameRef = useRef();
+  const selectBillStatusRef = useRef();
+  const selectBillTypeRef = useRef();
+  const selectAssignToRef = useRef();
+  const selectFromBillRef = useRef();
+  const selectToBillRef = useRef();
+  const selectFromReceivedRef = useRef();
+  const selectToReceivedRef = useRef();
+  const selectFromPaymentRef = useRef();
+  const selectToPaymentRef = useRef();
+  const selectFromBillAmountRef = useRef();
 
+  const selectToBillAmountRef = useRef();
+  const selectFromHoldAmountRef = useRef();
+
+  const selectToHoldAmountRef = useRef();
+  const selectIsOriginalBillRef = useRef();
+
+  const [isOriginalBillReceived, setIsOriginalBillReceived] = useState(false);
+
+  const handleCheckboxChange = () => {
+    // Toggle the state of isOriginalBillReceived
+    setIsOriginalBillReceived(!isOriginalBillReceived);
+  };
+
+  const handleClearSearchData = (e) => {
+    if (searchRef.current.value != null) {
+      document.getElementById("search").value = "";
+    }
+  };
+
+  const handleClearData = (e) => {
+    setFromBillDate("");
+    setToBillDate("");
+    setToReceive("");
+    setReceive("");
+    setToPaymentDate("");
+    setDatee("");
+    setIsToBillDateRequired(false);
+    setIsToReceiveRequired(false);
+    setIsPaymentRequired(false);
+    if (selectInputRef.current.value != null) {
+      selectToBillRef.current.value = "";
+      document.getElementById("id").value = "";
+    }
+    if (selectVendorRef.current.value != null) {
+      document.getElementById("vendor_bill_no").value = "";
+    }
+    if (selectVendorNameRef.current.commonProps.hasValue != null) {
+      selectVendorNameRef.current.clearValue();
+      selectVendorNameRef.current.clearValue();
+    }
+
+    if (selectBillStatusRef.current.commonProps.hasValue != null) {
+      selectBillStatusRef.current.clearValue();
+      selectBillStatusRef.current.clearValue();
+    }
+
+    if (selectBillTypeRef.current.commonProps.hasValue != null) {
+      selectBillTypeRef.current.clearValue();
+      selectBillTypeRef.current.clearValue();
+    }
+
+    if (selectAssignToRef.current.commonProps.hasValue != null) {
+      selectAssignToRef.current.clearValue();
+      selectAssignToRef.current.clearValue();
+    }
+
+    if (selectFromBillRef.current.value != null) {
+      document.getElementById("from_bill_date").value = "";
+    }
+
+    if (selectToBillRef.current.value != null) {
+      document.getElementById("to_bill_date").value = "";
+    }
+
+    if (selectFromReceivedRef.current.value != null) {
+      document.getElementById("from_received_date").value = "";
+    }
+
+    if (selectToReceivedRef.current.value != null) {
+      document.getElementById("to_received_date").value = "";
+    }
+
+    if (selectFromPaymentRef.current.value != null) {
+      document.getElementById("from_payment_date").value = "";
+    }
+
+    if (selectToPaymentRef.current.value != null) {
+      document.getElementById("to_payment_date").value = "";
+    }
+
+    if (selectFromBillAmountRef.current.value != null) {
+      document.getElementById("from_bill_amount").value = "";
+    }
+
+    if (selectToBillAmountRef.current.value != null) {
+      document.getElementById("to_bill_amount").value = "";
+    }
+
+    if (selectFromHoldAmountRef.current.value != null) {
+      document.getElementById("from_hold_amount").value = "";
+    }
+
+    if (selectToHoldAmountRef.current.value != null) {
+      document.getElementById("to_hold_amount").value = "";
+    }
+
+    setIsOriginalBillReceived(false);
+  };
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -82,12 +230,16 @@ function BillCheckingTransaction() {
   const [cityDropdown, setCityDropdown] = useState();
   const fileInputRef = useRef(null);
   const [id, setId] = useState();
-  const [billTypeDropdown, setBillTypeDropdown] = useState(null);
-  const [vendorDropdown, setVendorDropdown] = useState(null);
+
   const [assignToDropdown, setAssignToDropdown] = useState();
-  const [statusDropdown, setStatusDropdown] = useState();
+
   const [userDropdown, setUserDropdown] = useState();
-  const [authorities, SetAuthorities] = useState();
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
 
   const columns = [
     {
@@ -96,31 +248,93 @@ function BillCheckingTransaction() {
       selector: (row) => {},
       sortable: false,
       cell: (row) => {
-        // if (data.length > 6) {
         const originalParam = row.id;
 
-        // const encryptedParam = encodeURIComponent(encryptParameter(originalParam))
         return (
+          // <Dropdown className="d-inline-flex m-1">
+          //   <Dropdown.Toggle
+          //     as="button"
+          //     variant=""
+          //     id={`${"dropdown-basic_" + data?.id}`}
+          //     className="btn btn-primary text-white"
+          //   >
+          //     <i className="icofont-listine-dots"></i>
+          //   </Dropdown.Toggle>
+          //   {row &&
+          //     ((row.level == parseInt(row.total_level) &&
+          //       row.is_assign_to == 1) ||
+          //       row.is_editable_for_creator == 1 ||
+          //       (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+          //       (authorities &&
+          //         authorities.All_Update_Bill === true &&
+          //         row.is_assign_to != 1) ||
+          //       (row.level != parseInt(row.total_level) &&
+          //         row.is_approver == 1)) &&
+          //     row.is_active == 1 && (
+          //       <li>
+          //         <Link
+          //           to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+          //           className="btn btn-sm btn-primary text-white"
+          //           style={{ width: "100%", zIndex: 100 }}
+          //         >
+          //           <i className="icofont-edit"></i> Edit
+          //         </Link>
+          //       </li>
+          //     )}
+
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${"dropdown-basic_" + data?.id}`}
               className="btn btn-primary text-white"
+              style={{
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.875rem",
+                marginRight: "5px",
+              }} // Adjust the size and margin as needed
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
+
+            {row &&
+              ((row.level == parseInt(row.total_level) &&
+                row.is_assign_to == 1) ||
+                row.is_editable_for_creator == 1 ||
+                (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+                (authorities &&
+                  authorities.All_Update_Bill === true &&
+                  row.is_assign_to != 1) ||
+                (row.level != parseInt(row.total_level) &&
+                  row.is_approver == 1)) &&
+              row.is_active == 1 && (
+                // <li>
+                <Link
+                  to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                  className="btn btn-sm btn-primary text-white"
+                  style={{
+                    padding: "0.25rem 0.5rem",
+                    fontSize: "0.875rem", // Match the font size with the dropdown toggle
+                  }}
+                >
+                  <i className="icofont-edit"></i>
+                  {/* Edit */}
+                </Link>
+                // </li>
+              )}
+
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-      
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities && 
-                    authorities.All_Update_Bill === true && row.is_assign_to != 1) ||
+                  (authorities &&
+                    authorities.All_Update_Bill === true &&
+                    row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
+                    row.is_approver == 1)) &&
+                row.is_active == 1 && (
                   <li>
                     <Link
                       to={`/${_base}/EditBillCheckingTransaction/` + row.id}
@@ -130,7 +344,7 @@ function BillCheckingTransaction() {
                       <i className="icofont-edit"></i> Edit
                     </Link>
                   </li>
-                )}
+                )} */}
 
               <li>
                 <Link
@@ -147,12 +361,12 @@ function BillCheckingTransaction() {
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities && 
-                    authorities.All_Update_Bill === true && row.is_assign_to != 1) ||
+                  (authorities &&
+                    authorities.All_Update_Bill === true &&
+                    row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
-
-             
+                    row.is_approver == 1)) &&
+                row.is_active == 1 && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -163,19 +377,22 @@ function BillCheckingTransaction() {
                     </Link>
                   </li>
                 )}
-            
+
+              {((row.is_assign_to == 1 && row.level == row.total_level) ||
+                row.is_active == 0) && (
+                <li>
+                  <Link
+                    to={`/${_base}/PaymentHistory/` + row.id}
+                    className="btn btn-sm btn-warning text-white"
+                    style={{ width: "100%", zIndex: 100 }}
+                  >
+                    <i className="icofont-tasks"></i> Payment History
+                  </Link>
+                </li>
+              )}
+
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
-                  <li>
-                    <Link
-                      to={`/${_base}/PaymentHistory/` + row.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-tasks"></i> Payment History
-                    </Link>
-                  </li>
-
                   <li>
                     <Link
                       to={`/${_base}/PaymentDetails/` + row.id}
@@ -197,19 +414,21 @@ function BillCheckingTransaction() {
                   </li>
                 </>
               )}
-              {authorities && authorities.Is_Cancle_Bill === true && (row.is_rejected == 0) && (
-                <li>
-                  <button
-                    className="btn btn-sm btn-danger text-white"
-                    onClick={(e) => {
-                      handleCancelBill(e, row.id);
-                    }}
-                    style={{ width: "100%", zIndex: 100 }}
-                  >
-                    <i class="icofont-ui-close"></i> Cancel{" "}
-                  </button>
-                </li>
-              )}
+              {authorities &&
+                authorities.Is_Cancle_Bill === true &&
+                row.is_active == 1 && (
+                  <li>
+                    <button
+                      className="btn btn-sm btn-danger text-white"
+                      onClick={(e) => {
+                        handleCancelBill(e, row.id);
+                      }}
+                      style={{ width: "100%", zIndex: 100 }}
+                    >
+                      <i class="icofont-ui-close"></i> Cancel{" "}
+                    </button>
+                  </li>
+                )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -259,20 +478,21 @@ function BillCheckingTransaction() {
       name: "Actual Payment Date.",
       selector: (row) => row["Actual Payment Date"],
       sortable: true,
-    cell: (row) => (
+      cell: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
-          style={{width:"100%",}}
+          style={{ width: "100%" }}
         >
           {row["Actual Payment Date"] && (
-            <OverlayTrigger overlay={<Tooltip>{row["Actual Payment Date"]} </Tooltip>}>
+            <OverlayTrigger
+              overlay={<Tooltip>{row["Actual Payment Date"]} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row["Actual Payment Date"].substring(0,10)+"..."}
-                  
+                  {row["Actual Payment Date"].substring(0, 10) + "..."}
                 </span>
               </div>
             </OverlayTrigger>
@@ -281,16 +501,14 @@ function BillCheckingTransaction() {
       ),
     },
 
-
-
     {
       name: "Bill Amount",
       selector: (row) => row["Bill Amount"],
       sortable: true,
     },
     {
-      name: "Net Amount",
-      selector: (row) => row["Net Amount"],
+      name: "Net Payment",
+      selector: (row) => row["Net Payment"],
       sortable: true,
     },
     {
@@ -324,7 +542,7 @@ function BillCheckingTransaction() {
         </div>
       ),
     },
-  
+
     {
       name: "Assign From",
       selector: (row) => row["Assign From"],
@@ -338,11 +556,7 @@ function BillCheckingTransaction() {
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.created_by }
-                  
-                </span>
+                <span className="ms-1"> {row.created_by}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -355,60 +569,12 @@ function BillCheckingTransaction() {
       selector: (row) => row["Assign To"],
       sortable: true,
     },
-   
-
-    // {
-    //   name: "Levels Of Approval",
-    //   selector: (row) => row["Levels Of Approval"],
-    //   sortable: true,
-    //   cell: (row) => (
-    //     <div
-    //       className="btn-group"
-    //       role="group"
-    //       aria-label="Basic outlined example"
-    //     >
-    //       {row.total_level && (
-    //         <OverlayTrigger overlay={<Tooltip>{row.total_level} </Tooltip>}>
-    //           <div>
-    //             <span className="ms-1">
-    //               {" "}
-    //               {row.total_level && row.total_level.length < 10
-    //                 ? row.total_level
-    //                 : row.total_level.substring(0, 10) + "...."}
-    //             </span>
-    //           </div>
-    //         </OverlayTrigger>
-    //       )}
-    //     </div>
-    //   ),
-    // },
 
     {
       name: "Levels Of Approval",
       selector: (row) => row.total_level,
       sortable: true,
     },
-    // {
-    //   name: "Levels Of Approval",
-    //   selector: (row) => row["Levels Of Approval"],
-    //   sortable: true,
-    //   cell: (row) => (
-    //     <div className="btn-group" role="group" aria-label="Basic outlined example">
-     
-    //         <OverlayTrigger overlay={<Tooltip>{row.total_level}</Tooltip>}>
-    //           <div>
-    //             <span className="ms-1">
-    //               {row.total_level.length < 10
-    //                 ? row.total_level
-    //                 : "row.total_level".substring(0, 10) + "...."}
-    //             </span>
-    //           </div>
-    //         </OverlayTrigger>
-        
-    //     </div>
-    //   ),
-    // },
-    
 
     {
       name: "Approved By",
@@ -436,7 +602,6 @@ function BillCheckingTransaction() {
       ),
     },
 
- 
     {
       name: "Pending From",
       selector: (row) => row["Pending From"],
@@ -467,7 +632,6 @@ function BillCheckingTransaction() {
       name: "Rejected By",
       selector: (row) => row["Rejected By"],
       sortable: true,
-     
     },
 
     {
@@ -486,8 +650,6 @@ function BillCheckingTransaction() {
       selector: (row) => row["Is Original Bill"],
       sortable: true,
     },
-
-   
 
     {
       name: "Internal Audit",
@@ -514,8 +676,6 @@ function BillCheckingTransaction() {
         </div>
       ),
     },
-
-    
 
     {
       name: "External Audit",
@@ -568,7 +728,6 @@ function BillCheckingTransaction() {
 
       selector: (row) => row["Is Canceled"],
 
-
       sortable: true,
 
       cell: (row) => (
@@ -596,8 +755,6 @@ function BillCheckingTransaction() {
       ),
     },
 
-    
-
     {
       name: "Created At",
       selector: (row) => row["Created At"],
@@ -624,8 +781,6 @@ function BillCheckingTransaction() {
       ),
     },
 
- 
-
     {
       name: "Created By",
       selector: (row) => row["Created By"],
@@ -639,19 +794,13 @@ function BillCheckingTransaction() {
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {
-                     row.created_by
-                  }
-                </span>
+                <span className="ms-1"> {row.created_by}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
       ),
     },
-    
 
     {
       name: "Updated At",
@@ -692,47 +841,37 @@ function BillCheckingTransaction() {
           {row.updated_by && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.updated_by }
-                </span>
+                <span className="ms-1"> {row.updated_by}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
       ),
     },
-   
   ];
 
   const handleCancelBill = async (e, id) => {
     // Display a confirmation dialog
     var response = window.confirm("Are you sure you want to Cancel this Bill?");
-    setNotify(null)
+
     if (response) {
       try {
-        // Assuming 'cancelBill' returns a promise
-        await new BillCheckingService().cancelBill(id).then((res)=>{
-          if(res.status === 200){
-            if(res.data.status == 1 ){
+        await new BillCheckingService().cancelBill(id).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setNotify({ type: "success", message: res.data.message });
 
-              setNotify({ type: "success", message:res.data.message});
-              // Bill canceled successfully, update data
               loadData();
-            }
-            else{
+            } else {
               setNotify({ type: "danger", message: res.data.message });
             }
           }
-
-        })
+        });
       } catch (error) {
         // Handle any potential errors during cancellation
-        console.error("Error during bill cancellation:", error);
       }
     }
   };
-
 
   const loadData = async (e) => {
     const data = [];
@@ -741,7 +880,7 @@ function BillCheckingTransaction() {
 
     await new BillCheckingService().getBillCheckData().then((res) => {
       if (res.status === 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         let counter = 1;
 
@@ -760,7 +899,7 @@ function BillCheckingTransaction() {
             "Bill No": temp[key].vendor_bill_no,
             "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
+            "Net Payment": temp[key].net_payment,
             is_active: temp[key].is_active,
             "Is TCS applicable": temp[key].is_tcs_applicable,
             bill_type_name: temp[key].bill_type_name,
@@ -769,7 +908,9 @@ function BillCheckingTransaction() {
             "Debit Advance": temp[key].debit_advance,
             "Bill date": temp[key].bill_date,
             "Bill Status": temp[key].payment_status,
-            "Is Original Bill": temp[key].is_original_bill_needed,
+            "Is Original Bill":
+              temp[key].is_original_bill_needed === 1 ? "Yes" : "No",
+
             "Recieved Date": temp[key].received_date,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
@@ -784,26 +925,23 @@ function BillCheckingTransaction() {
             "Assign To": temp[key].assign_to_name,
             is_assign_to: temp[key].is_assign_to,
             level: temp[key].level,
-            total_level: temp[key].level ,
+            total_level: temp[key].total_level,
             last_approved_by: temp[key].last_approved_by,
             approvedBy: temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
             audit_remark: temp[key].audit_remark,
             external_audit_remark: temp[key].external_audit_remark,
 
-            levels_of_approval: temp[key].levels_of_approval,
+            levels_of_approval: temp[key].level + 1,
 
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
             is_rejected: temp[key].is_rejected,
-"Is cancelled": temp[key].cancelled,
-
-          
+            "Is cancelled": temp[key].is_active,
           });
         }
         for (const key in temp) {
           tempData.push({
-            // counter: counter++,
             SrNo: tempData.length + 1,
             "Bill ID": temp[key].bc_id,
             "Vendor Name": temp[key].vendor_id_name,
@@ -811,49 +949,44 @@ function BillCheckingTransaction() {
             "Bill No": temp[key].vendor_bill_no,
             "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
-            "Net Amount": temp[key].net_payment,
+            "Net Payment": temp[key].net_payment,
             "Rejected By": temp[key].rejectedBy,
-            "Is TCS applicable": temp[key].is_tcs_applicable,
-       
+            "Is TCS applicable":
+              temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
+
             bill_type_name: temp[key].bill_type_name,
 
             "Taxable Amount": temp[key].taxable_amount,
             "Debit Advance": temp[key].debit_advance,
             "Bill date": temp[key].bill_date,
-            "Rejected By": temp[key].rejectedBy,
 
-            // "Bill Status": temp[key].bill_status,
             "Bill Status": temp[key].payment_status,
 
-            "Recieved Date": temp[key].received_date,
-            total_level: temp[key].total_level,
-            last_approved_by: temp[key].last_approved_by,
-            is_editable_for_creator: temp[key].is_editable_for_creator,
+            "Received Date": temp[key].received_date,
 
-            "Levels of approval": temp[key].levels_of_approval,
-            "Approve By": temp[key].approved_by,
+            levels_of_approval: temp[key].level + 1,
+
+            "Approve By": temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
 
             "Assign From": temp[key].created_by,
             "Assign To": temp[key].assign_to_name,
-            is_assign_to: temp[key].is_assign_to == 0 ? "NO" : "YES",
 
-            approvedBy: temp[key].approvedBy,
-            "Is Original Bill": temp[key].is_original_bill_needed,
+            "Is Original Bill":
+              temp[key].is_original_bill_needed === 1 ? "Yes" : "No",
 
-            // "is original Bill": temp[key].is_original_bill_needed,
             "Internal Audit": temp[key].audit_remark,
             "External Audit": temp[key].external_audit_remark,
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
-            "Is cancelled": temp[key].cancelled,
+            "Is cancelled": temp[key].is_active === 0 ? "Yes" : "No",
 
             "Created at": temp[key].created_at,
             "Created by": temp[key].created_by,
             "Updated At": temp[key].updated_at,
             "Updated By": temp[key].updated_by,
           });
-          setExportData(null);
+
           setExportData(tempData);
         }
         setData(null);
@@ -861,15 +994,18 @@ function BillCheckingTransaction() {
         res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
       }
     });
+
     const inputRequired = "id,employee_id,first_name,last_name,middle_name";
+
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         if (res.data.status == 1) {
-          setIsLoading(false)
+          setIsLoading(false);
 
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+          const temp = res.data.data;
+
           setUserDropdown(
             temp.map((d) => ({
               value: d.id,
@@ -880,56 +1016,17 @@ function BillCheckingTransaction() {
       }
     });
 
-    await new BillCheckingTransactionService()
-      .getUpdatedAuthorities()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false)
+    dispatch(getUpdatedAuthoritiesData());
+    dispatch(billTypeDataDropDowm());
 
-          if (res.data.status == 1) {
-            SetAuthorities(res.data.data);
-          }
-        }
-      });
-    await new BillCheckingTransactionService()
-      ._getBillTypeDataDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false)
-
-          if (res.data.status == 1) {
-            setBillTypeDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
-            );
-          }
-        }
-      });
-
-    await new BillCheckingTransactionService()
-      .getVendorsDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false)
-
-          if (res.data.status == 1) {
-          setIsLoading(false)
-
-            setVendorDropdown(
-              res.data.data.map((d) => ({
-                value: d.id,
-                label: d.vendor_name,
-              }))
-            );
-          }
-        }
-      });
+    dispatch(getVendorMasterData());
 
     await new DropdownService().getMappedEmp().then((res) => {
       if (res.status === 200) {
-        setIsLoading(false)
+        setIsLoading(false);
 
         if (res.data.status == 1) {
-          setIsLoading(false)
+          setIsLoading(false);
 
           setAssignToDropdown(
             res.data.data.map((d) => ({
@@ -941,42 +1038,7 @@ function BillCheckingTransaction() {
       }
     });
 
-    await new DropdownService().getBillCheckingStatus().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setStatusDropdown(
-            res.data.data.map((d) => ({
-              value: d.id,
-              label: d.convention_name,
-            }))
-          );
-        }
-      }
-    });
-
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        setCountry(res.data.data);
-        setCountryDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.country,
-          }))
-        );
-      }
-    });
-
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        setState(res.data.data);
-        setStateDropdown(
-          res.data.data.map((d) => ({
-            value: d.id,
-            label: d.state,
-          }))
-        );
-      }
-    });
+    dispatch(statusDropDownData());
 
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
@@ -990,20 +1052,14 @@ function BillCheckingTransaction() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles());
   };
 
   const handleFilter = async (e) => {
-    setNotify(null)
+    setNotify(null);
     e.preventDefault();
     const formData = new FormData(e.target);
+
     await new BillCheckingTransactionService()
       .filterBillCheckingData(formData)
       .then((res) => {
@@ -1012,12 +1068,11 @@ function BillCheckingTransaction() {
           let counter = 1;
           const temp = res.data.data;
 
-
           for (const key in temp) {
             tempData.push({
               "Sr No": counter++,
               id: temp[key].id,
-              // bc_id: temp[key].bc_id,
+
               "Bill ID": temp[key].bc_id,
               "Vendor Name": temp[key].vendor_id_name,
               "Payment Date": temp[key].payment_date,
@@ -1025,53 +1080,35 @@ function BillCheckingTransaction() {
               "Actual Payment Date": temp[key].payment_date,
               "Bill Amount": temp[key].bill_amount,
               "Net Amount": temp[key].net_payment,
-              // "Bill Status": temp[key].bill_status,
-              "Bill Status": temp[key].payment_status,
 
+              "Bill Status": temp[key].payment_status,
+              "Net Payment": temp[key].net_payment,
               bill_type_name: temp[key].bill_type_name,
               "Assign From": temp[key].created_by,
               "Assign To": temp[key].assign_to_name,
-              "Levels of approval": temp[key].levels_of_approval,
+              "Levels of approval": temp[key].level + 1,
               approvedBy: temp[key].approvedBy,
-"Pending From": temp[key].level_approver,
-              // rejectedBy:temp[key].rejectedBy,
+              "Pending From": temp[key].level_approver,
 
-              // "Approve By": temp[key].approved_by,
-
-              // "Rejected By": temp[key].rejectedBy,
-              // rejectedBy: temp[key].rejectedBy,
               "Taxable Amount": temp[key].taxable_amount,
               "Debit Advance": temp[key].debit_advance,
-              // "is original Bill": temp[key].is_original_bill_needed,
-              "Is Original Bill": temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
 
-              // is_original_bill_needed: temp[key].is_original_bill_needed == 1? "Yes" : "No",
-              // audit_remark: temp[key].audit_remark,
-              // external_audit_remark: temp[key].external_audit_remark,
+              "Is Original Bill":
+                temp[key].is_original_bill_needed == 1 ? "Yes" : "No",
+
               "Bill date": temp[key].bill_date,
               "Recieved Date": temp[key].received_date,
               "Hold Amount": temp[key].hold_amount,
               "Paid Amount": temp[key].actual_paid,
-              "Is cancelled": temp[key].cancelled,
-              "Is TCS applicable": temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
+              "Is cancelled": temp[key].is_active,
+              is_active: temp[key].is_active,
+              "Is TCS applicable":
+                temp[key].is_tcs_applicable == 1 ? "Yes" : "No",
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
 
-              // created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
-              // is_editable_for_creator: temp[key].is_editable_for_creator,
-              // bill_type_name: temp[key].bill_type_name,
-              // "Assign From": temp[key].created_by,
-              // assign_to_name: temp[key].assign_to_name,
-              // is_assign_to: temp[key].assign_to_name,
-              // "Assign To": temp[key].assign_to_name,
-              // "Approve By": temp[key].approved_by,
-              // "Pending From": temp[key].level_approver,
-
-              // level_approver: temp[key].level_approver,
-              // level: temp[key].level,
-              // total_level: temp[key].total_level,
             });
           }
           setData(null);
@@ -1079,8 +1116,7 @@ function BillCheckingTransaction() {
           setExportData(null);
           setExportData(tempData);
           setData(tempData);
-        }
-        else {
+        } else {
           setNotify({ type: "danger", message: res.data.message });
         }
       });
@@ -1104,28 +1140,106 @@ function BillCheckingTransaction() {
 
   const [datee, setDatee] = useState();
   const [billDatedatee, setBillDatee] = useState();
+
   const [receivedate, setReceive] = useState();
-  const [isBillDateRequired, setIsBillDateRequired] = useState();
+  const [isBillDateRequired, setIsBillDateRequired] = useState(false);
+  const [fromBillAmount, setFromBillAmount] = useState("");
+  const [toBillAmount, setToBillAmount] = useState("");
+  const [toBillAmountErr, setToBillAmountErr] = useState("");
+
+  const [fromHoldlAmount, setFromHoldAmount] = useState("");
+  const [toHoldAmount, setToHoldAmount] = useState("");
+  const [toHoldAmountErr, setToHoldAmountErr] = useState("");
+
+  const handleToBillAmount = (e) => {
+    const value = e.target.value;
+    setToBillAmount(value);
+
+    // Check if toBillAmount is less than fromBillAmount
+    if (parseFloat(value) < parseFloat(fromBillAmount)) {
+      setToBillAmountErr(
+        "To bill amount should be greater than from bill amount"
+      );
+    } else {
+      setToBillAmountErr("");
+    }
+  };
+
+  const handleFromBillAmount = (e) => {
+    const value = e.target.value;
+    setFromBillAmount(value);
+
+    // Check if fromBillAmount is greater than toBillAmount
+    if (parseFloat(value) > parseFloat(toBillAmount)) {
+      setToBillAmountErr(
+        "To bill amount should be greater than from bill amount"
+      );
+    } else {
+      setToBillAmountErr("");
+    }
+  };
+
+  const handleToHoldAmount = (e) => {
+    const value = e.target.value;
+    setToHoldAmount(value);
+
+    // Check if toBillAmount is less than fromBillAmount
+    if (parseFloat(value) < parseFloat(fromHoldlAmount)) {
+      setToHoldAmountErr(
+        "To hold amount should be greater than from hold amount"
+      );
+    } else {
+      setToHoldAmountErr("");
+    }
+  };
+
+  const handleFromHoldAmount = (e) => {
+    const value = e.target.value;
+    setFromHoldAmount(value);
+
+    // Check if fromBillAmount is greater than toBillAmount
+    if (parseFloat(value) > parseFloat(toHoldAmount)) {
+      setToHoldAmountErr(
+        "To hold amount should be greater than from hold amount"
+      );
+    } else {
+      setToHoldAmountErr("");
+    }
+  };
+  const [isToReceiveRequired, setIsToReceiveRequired] = useState(false);
+
+  const [toRecive, setToReceive] = useState("");
+  const [isToPaymentRequired, setIsPaymentRequired] = useState(false);
+
+  const [toPaymentDate, setToPaymentDate] = useState("");
 
   const handleFromDate = (e) => {
     setDatee(e.target.value);
+    setIsPaymentRequired(!!e.target.value);
+    setToPaymentDate("");
   };
   const handleReceiveDate = (e) => {
     setReceive(e.target.value);
+
+    setIsToReceiveRequired(!!e.target.value);
+    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
+    setToReceive("");
   };
 
   const isReceivedDate = !!receivedate;
   const isToPaymentDateRequired = !!datee;
 
+  const [fromBillDate, setFromBillDate] = useState("");
+  const [toBillDate, setToBillDate] = useState("");
+  const [isToBillDateRequired, setIsToBillDateRequired] = useState(false);
+
   const handleBillDate = (e) => {
     const selectedDate = e.target.value;
-    setBillDatee(selectedDate);
-
-    // Check if the selected date is not empty
-    setIsBillDateRequired(selectedDate !== "");
+    setFromBillDate(selectedDate);
+    setIsToBillDateRequired(!!selectedDate);
+    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
+    setToBillDate("");
   };
-
-  // const isBillDateRequired = !!billDatedatee;
 
   const [paymentType, setPaymentType] = useState("weekly", "monthly");
 
@@ -1133,9 +1247,9 @@ function BillCheckingTransaction() {
 
   useEffect(() => {
     loadData();
+
     if (location && location.state) {
       setNotify(location.state.alert);
-      
     }
   }, []);
   const handleKeyDown = (event) => {
@@ -1144,27 +1258,36 @@ function BillCheckingTransaction() {
     }
   };
   useEffect(() => {
-    if (checkRole && checkRole[45].can_read === 0) {
-      // alert("Rushi")
-
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
-
-  // created by Asmita Margaje 
+  // created by Asmita Margaje
   // Define a functional component named LoaderComponent
   function LoaderComponent() {
     return (
       // Container to center-align the spinner and loading text
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
         {/* Spinner element with custom styling */}
-        <Spinner animation="border" role="status" style={{ width: '100px', height: '100px', borderWidth: '5px', color: '#484c7f', marginBottom: '10px' }}>
+        <Spinner
+          animation="border"
+          role="status"
+          style={{
+            width: "100px",
+            height: "100px",
+            borderWidth: "5px",
+            color: "#484c7f",
+            marginBottom: "10px",
+          }}
+        >
           {/* Visually hidden loading text for accessibility */}
           <span className="visually-hidden">Loading...</span>
         </Spinner>
         {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>Loading...</div>
+        <div style={{ color: "#484c7f", fontSize: "16px", fontWeight: "bold" }}>
+          Loading...
+        </div>
       </div>
     );
   }
@@ -1185,7 +1308,6 @@ function BillCheckingTransaction() {
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add Data
               </Link>
 
-              {/* {data && JSON.stringify(data.filter(d=>d.id).map(d=>({value:d.id})))} */}
               <button
                 className="btn btn-danger text-white"
                 onClick={(e) => {
@@ -1226,6 +1348,7 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="id"
                       id="id"
+                      ref={selectInputRef}
                     />
                   </div>
 
@@ -1238,6 +1361,7 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="vendor_bill_no"
                       id="vendor_bill_no"
+                      ref={selectVendorRef}
                     />
                   </div>
 
@@ -1247,11 +1371,11 @@ function BillCheckingTransaction() {
                     </label>
                     {vendorDropdown && (
                       <Select
-                        // className="form-control form-control"
                         id="vendor_name"
                         name="vendor_name[]"
                         isMulti
                         options={vendorDropdown}
+                        ref={selectVendorNameRef}
                         placeholder="Vendor Name"
                       />
                     )}
@@ -1263,12 +1387,12 @@ function BillCheckingTransaction() {
                     </label>
                     {statusDropdown && (
                       <Select
-                        // className="form-control form-control"
                         id="bill_status"
                         name="bill_status[]"
                         isMulti
                         options={statusDropdown}
                         placeholder="bill_status"
+                        ref={selectBillStatusRef}
                       />
                     )}
                   </div>
@@ -1278,17 +1402,15 @@ function BillCheckingTransaction() {
                     </label>
                     {billTypeDropdown && (
                       <Select
-                        // className="form-control form-control"
                         options={billTypeDropdown}
                         id="bill_type"
                         isMulti
                         name="bill_type[]"
                         placeholder="Bill Type"
+                        ref={selectBillTypeRef}
                       />
                     )}
                   </div>
-
-             
 
                   <div className="col-sm-2 ">
                     <label>
@@ -1296,33 +1418,15 @@ function BillCheckingTransaction() {
                     </label>
                     {userDropdown && (
                       <Select
-                        // className="form-control form-control"
                         options={userDropdown}
                         id="assign_to"
                         name="assign_to[]"
                         isMulti
                         placeholder="Assign To"
+                        ref={selectAssignToRef}
                       />
                     )}
                   </div>
-
-                  {/* <div className="col-sm-2 mt-4">
-                    <label>
-                      <b>Bill Date:</b>
-                    </label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      name="bill_date"
-                      id="bill_date"
-                    />
-                  </div> */}
-
-                  {/* Added two more fields to show from bill date and to bill date          -Updated by Asmita Margaje - 8/8/2023
-
-1) From Bill Date and To Bill Date are added inputs which will show records according to selected date
-
-*/}
 
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1334,6 +1438,9 @@ function BillCheckingTransaction() {
                       name="from_bill_date"
                       id="from_bill_date"
                       onChange={(e) => handleBillDate(e)}
+                      max={formattedDate}
+                      ref={selectFromBillRef}
+                      value={fromBillDate}
                     />
                   </div>
 
@@ -1347,7 +1454,11 @@ function BillCheckingTransaction() {
                       name="to_bill_date"
                       id="to_bill_date"
                       min={billDatedatee}
-                      required={isBillDateRequired}
+                      required={isToBillDateRequired}
+                      max={formattedDate}
+                      ref={selectToBillRef}
+                      value={toBillDate}
+                      onChange={(e) => setToBillDate(e.target.value)}
                     />
                   </div>
 
@@ -1360,6 +1471,8 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="from_received_date"
                       id="from_received_date"
+                      ref={selectFromReceivedRef}
+                      value={receivedate}
                       onChange={(e) => handleReceiveDate(e)}
                     />
                   </div>
@@ -1372,8 +1485,11 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="to_received_date"
                       id="to_received_date"
-min={receivedate}
-                      required={isReceivedDate}
+                      min={receivedate}
+                      ref={selectToReceivedRef}
+                      value={toRecive}
+                      required={isToReceiveRequired}
+                      onChange={(e) => setToReceive(e.target.value)}
                     />
                   </div>
 
@@ -1386,7 +1502,9 @@ min={receivedate}
                       className="form-control"
                       name="from_payment_date"
                       id="from_payment_date"
+                      value={datee}
                       onChange={(e) => handleFromDate(e)}
+                      ref={selectFromPaymentRef}
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1399,7 +1517,10 @@ min={receivedate}
                       name="to_payment_date"
                       id="to_payment_date"
                       min={datee}
-                      required={isToPaymentDateRequired}
+                      ref={selectToPaymentRef}
+                      required={isToPaymentRequired}
+                      value={toPaymentDate}
+                      onChange={(e) => setToPaymentDate(e.target.value)}
                     />
                   </div>
 
@@ -1414,6 +1535,8 @@ min={receivedate}
                       id="from_bill_amount"
                       name="from_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                      onChange={(e) => handleFromBillAmount(e)}
+                      ref={selectFromBillAmountRef}
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1466,6 +1589,8 @@ min={receivedate}
                       id="to_bill_amount"
                       name="to_bill_amount"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                      onChange={(e) => handleToBillAmount(e)}
+                      ref={selectToBillAmountRef}
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1506,6 +1631,14 @@ min={receivedate}
                         }
                       }}
                     />
+
+                    <small
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {toBillAmountErr}
+                    </small>
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1516,6 +1649,7 @@ min={receivedate}
                       className="form-control"
                       name="from_hold_amount"
                       id="from_hold_amount"
+                      ref={selectFromHoldAmountRef}
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1555,6 +1689,7 @@ min={receivedate}
                           e.preventDefault();
                         }
                       }}
+                      onChange={(e) => handleFromHoldAmount(e)}
                     />
                   </div>
                   <div className="col-sm-2 mt-4">
@@ -1566,6 +1701,7 @@ min={receivedate}
                       className="form-control"
                       name="to_hold_amount"
                       id="to_hold_amount"
+                      ref={selectToHoldAmountRef}
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           "0",
@@ -1605,7 +1741,15 @@ min={receivedate}
                           e.preventDefault();
                         }
                       }}
+                      onChange={(e) => handleToHoldAmount(e)}
                     />
+                    <small
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      {toHoldAmountErr}
+                    </small>
                   </div>
                   <div className="col-sm-2 mt-4">
                     <label>
@@ -1616,10 +1760,11 @@ min={receivedate}
                       className="sm-1 mx-2"
                       id="is_original_bill_needed"
                       name="is_original_bill_needed"
+                      onChange={handleCheckboxChange}
+                      checked={isOriginalBillReceived}
+                      ref={selectIsOriginalBillRef}
                     />
                   </div>
-
-            
 
                   <div className="col-md-2 mt-4">
                     <button
@@ -1632,14 +1777,14 @@ min={receivedate}
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                      onClick={() => window.location.reload(false)}
+                      onClick={handleClearData}
                       style={{ marginTop: "20px", fontWeight: "600" }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset
                     </button>
                   </div>
                   <span className="fw-bold mt-2" style={{ color: "red" }}>
-                    Note:- If you are selecting any from date selection of to
+                    Note:- If you are selecting any from date selection, then to
                     date is Mandatory
                   </span>
                 </div>
@@ -1656,6 +1801,7 @@ min={receivedate}
             <div className="col-md-10">
               <input
                 type="text"
+                id="search"
                 className="form-control"
                 placeholder="Search By Bill ID...."
                 onClick={(e) => handleSearch(e)}
@@ -1675,7 +1821,7 @@ min={receivedate}
               <button
                 className="btn btn-sm btn-info text-white"
                 type="button"
-                onClick={() => window.location.reload(false)}
+                onClick={handleClearSearchData}
                 style={{ marginTop: "0px", fontWeight: "600" }}
               >
                 <i className="icofont-refresh text-white"></i> Reset
@@ -1689,24 +1835,25 @@ min={receivedate}
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
-            {isLoading == true ? <LoaderComponent /> :
-              <div className="col-sm-12">
-                {data && (
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    // defaultSortFieldId="billId"
-                    pagination
-                    selectableRows={false}
-                    defaultSortAsc={false}
-                    fixedHeader={true}
-                    fixedHeaderScrollHeight="900px"
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                )}
-              </div>
-}
+              {isLoading == true ? (
+                <LoaderComponent />
+              ) : (
+                <div className="col-sm-12">
+                  {AllBillCheckingData && (
+                    <DataTable
+                      columns={columns}
+                      data={data}
+                      pagination
+                      selectableRows={false}
+                      defaultSortAsc={false}
+                      fixedHeader={true}
+                      fixedHeaderScrollHeight="900px"
+                      className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                      highlightOnHover={true}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

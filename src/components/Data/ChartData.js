@@ -533,7 +533,7 @@ export const chartOverView =[
                     },
                     events: {
                         selection: function(chart, e) {
-                        console.log(new Date(e.xaxis.min) )
+                     
                         }
                     },
                 },

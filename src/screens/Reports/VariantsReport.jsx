@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { Table } from "react-bootstrap";
+import { Modal, Spinner, Table } from "react-bootstrap";
 import { Astrick } from "../../components/Utilities/Style";
 import ErrorLogService from "../../services/ErrorLogService";
 import UserService from "../../services/MastersService/UserService";
@@ -9,13 +9,20 @@ import PageHeader from "../../components/Common/PageHeader";
 import Select from "react-select";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import { getRoles } from "../Dashboard/DashboardAction";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ResourcePlanningReportComponent() {
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 38)
+  );
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -43,8 +50,9 @@ export default function ResourcePlanningReportComponent() {
       selector: (row) => row.task_start_Date,
       sortable: true,
     },
+
     {
-      name: "Hours Scheduled",
+      name: "Task Scheduled Hours",
       selector: (row) => row.task_scheduled_Hours,
       sortable: true,
     },
@@ -85,10 +93,13 @@ export default function ResourcePlanningReportComponent() {
   const loadData = async () => {
     const tempUserData = [];
     const exportTempData = [];
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res.data.data.filter(
+          (d) => d.is_active == 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -108,71 +119,73 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+    dispatch(getRoles());
 
-    const data = [];
-    await new ReportService()
-      .variantsReport()
-      .then((res) => {
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            data.push({
-              sr: counter++,
-              ticket_id: temp[key].ticket_id,
-              task_owner: temp[key].task_owner,
-              task_name: temp[key].task_name,
-              task_start_Date: temp[key].task_start_Date,
-              task_scheduled_Hours: temp[key].task_scheduled_Hours,
-              task_actual_worked: temp[key].task_actual_worked,
-              task_delivery_scheduled: temp[key].task_delivery_scheduled,
-              task_last_update: temp[key].task_last_update,
-              task_status: temp[key].task_status,
-              task_actual_status: temp[key].task_actual_status,
-              task_completed_at: temp[key].task_completed_at,
-            });
-          }
-          setData(null);
-          setData(data);
-          for (const i in temp) {
-            exportTempData.push({
-              sr: counter++,
-              ticket_id: temp[i].ticket_id,
-              task_owner: temp[i].task_owner,
-              task_name: temp[i].task_name,
-              task_start_Date: temp[i].task_start_Date,
-              task_scheduled_Hours: temp[i].task_scheduled_Hours,
-              task_actual_worked: temp[i].task_actual_worked,
-              task_delivery_scheduled: temp[i].task_delivery_scheduled,
-              task_last_update: temp[i].task_last_update,
-              task_status: temp[i].task_status,
-              task_actual_status: temp[i].task_actual_status,
-              task_completed_at: temp[i].task_completed_at,
-            });
-          }
+    // const data = [];
+    // await new ReportService()
+    //   .variantsReport()
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       let counter = 1;
+    //       const temp = res.data.data;
+    //       for (const key in temp) {
+    //         data.push({
+    //           sr: counter++,
+    //           ticket_id: temp[key].ticket_id,
+    //           task_owner: temp[key].task_owner,
+    //           task_name: temp[key].task_name,
+    //           task_start_Date: temp[key].task_start_Date,
+    //           task_scheduled_Hours: temp[key].task_scheduled_Hours,
+    //           task_actual_worked: temp[key].task_actual_worked,
+    //           task_delivery_scheduled: temp[key].task_delivery_scheduled,
+    //           task_last_update: temp[key].task_last_update,
+    //           task_status: temp[key].task_status,
+    //           task_actual_status: temp[key].task_actual_status,
+    //           task_completed_at: temp[key].task_completed_at,
+    //         });
+    //       }
+    // setData(null);
+    // setData(data);
+    // for (const i in temp) {
+    //   exportTempData.push({
+    //     sr: counter++,
+    //     ticket_id: temp[i].ticket_id,
+    //     task_owner: temp[i].task_owner,
+    //     task_name: temp[i].task_name,
+    //     task_start_Date: temp[i].task_start_Date,
+    //     task_scheduled_Hours: temp[i].task_scheduled_Hours,
+    //     task_actual_worked: temp[i].task_actual_worked,
+    //     task_delivery_scheduled: temp[i].task_delivery_scheduled,
+    //     task_last_update: temp[i].task_last_update,
+    //     task_status: temp[i].task_status,
+    //     task_actual_status: temp[i].task_actual_status,
+    //     task_completed_at: temp[i].task_completed_at,
+    //   });
+    // }
 
-          setExportData(null);
-          setExportData(exportTempData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          "VariantsReport",
-          "Get_VariantsReport",
-          "INSERT",
-          errorObject.data.message
-        );
-      });
+    //   setExportData(null);
+    //   setExportData(exportTempData);
+    // }
+    // }
+    // )
+    // .catch((error) => {
+    //   const { response } = error;
+    //   const { request, ...errorObject } = response;
+    //   new ErrorLogService().sendErrorLog(
+    //     "VariantsReport",
+    //     "Get_VariantsReport",
+    //     "INSERT",
+    //     errorObject.data.message
+    //   );
+    // });
   };
 
   const handleFromDate = (e) => {
@@ -199,6 +212,7 @@ export default function ResourcePlanningReportComponent() {
   };
 
   const handleForm = async (e) => {
+    setShowLoaderModal(true);
     e.preventDefault();
     const formData = new FormData(e.target);
     const tempData = [];
@@ -212,6 +226,7 @@ export default function ResourcePlanningReportComponent() {
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
+            setShowLoaderModal(false);
             if (res.data.status == 1) {
               let sr = 1;
               const data = res.data.data;
@@ -235,10 +250,10 @@ export default function ResourcePlanningReportComponent() {
                 }
                 setData(null);
                 setData(tempData);
-
+                let count = 1;
                 for (const key in data) {
                   exportTempData.push({
-                    sr: sr++,
+                    sr: count++,
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
                     task_name: data[key].task_name,
@@ -289,12 +304,12 @@ export default function ResourcePlanningReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[37].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -306,7 +321,9 @@ export default function ResourcePlanningReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label htmlFor="" className="">
-                  <b>Select User :</b>
+                  <b>
+                    Select User :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {userData && (
                   <Select
@@ -370,20 +387,22 @@ export default function ResourcePlanningReportComponent() {
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
               </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: "right",
-                  marginTop: "20px",
-                  fontWeight: "600",
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Variance Report"
-                />
-              </div>
+              {data && data.length > 0 && (
+                <div
+                  className="col-md-10"
+                  style={{
+                    textAlign: "right",
+                    marginTop: "20px",
+                    fontWeight: "600",
+                  }}
+                >
+                  <ExportToExcel
+                    className="btn btn-sm btn-danger"
+                    apiData={exportData && exportData}
+                    fileName="Variance Report"
+                  />
+                </div>
+              )}
             </div>
           </form>
         </div>
@@ -410,6 +429,18 @@ export default function ResourcePlanningReportComponent() {
           </div>
         </div>
       </div>
+
+      <Modal show={showLoaderModal} centered>
+        <Modal.Body className="text-center">
+          <Spinner animation="grow" variant="primary" />
+          <Spinner animation="grow" variant="secondary" />
+          <Spinner animation="grow" variant="success" />
+          <Spinner animation="grow" variant="danger" />
+          <Spinner animation="grow" variant="warning" />
+          <Spinner animation="grow" variant="info" />
+          <Spinner animation="grow" variant="dark" />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

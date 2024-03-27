@@ -5,28 +5,25 @@ import {
   SearchComponent,
 } from "../../../components/Utilities/Button/Button";
 
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import PageHeader from "../../../components/Common/PageHeader";
 import { Modal } from "react-bootstrap";
 import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
+
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import Select from "react-select";
-import { el } from "date-fns/locale";
 
 function TaskAndTicketTypeMaster(props) {
   const [selectedValue, setSelectedValue] = useState("");
   const [notify, setNotify] = useState();
   const [data, setData] = useState();
   const [parent, setParent] = useState();
-  const [loading, setLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
 
   const typeRef = useRef(null);
-  const parentRef = useRef(null);
+
   const typeNameRef = useRef(null);
 
   const [modal, setModal] = useState({
@@ -37,7 +34,6 @@ function TaskAndTicketTypeMaster(props) {
   const dropdownData = [
     { value: "TASK", label: "TASK" },
     { value: "TICKET", label: "TICKET" },
-    // Add more options as needed
   ];
   const loadData = async () => {
     const exportTempData = [];
@@ -101,12 +97,10 @@ function TaskAndTicketTypeMaster(props) {
         }));
         setParent(mappedData);
       } else {
-        console.error("error", res.status);
       }
     });
   };
   const columns = [
-    // Columns definition..
     {
       name: "Action",
       selector: (row) => {},
@@ -123,7 +117,7 @@ function TaskAndTicketTypeMaster(props) {
                 showModal: true,
                 modalData: row,
 
-                modalHeader: "Edit Type",
+                modalHeader: "Edit Task /Ticket Type",
               });
             }}
           >
@@ -276,17 +270,13 @@ function TaskAndTicketTypeMaster(props) {
             setModal({ showModal: false });
             loadData();
           } else {
-            // setLoading(false);
             setNotify({ type: "danger", message: res.data.message });
           }
         } else {
-          // setLoading(false);
           setNotify({ type: "danger", message: res.data.message });
         }
       });
     } else {
-      // console.log("loading" ,loading)
-      // setSelectedValue(modal?.modalData?.type);
       await new TaskTicketTypeService()._updateType(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
@@ -411,7 +401,7 @@ function TaskAndTicketTypeMaster(props) {
                         className="form-label font-weight-bold"
                         readOnly={true}
                       >
-                        Parent Task Type 
+                        Parent Task Type
                         <Astrick color="red" size="13px" />
                       </label>
                       <Select
@@ -421,12 +411,12 @@ function TaskAndTicketTypeMaster(props) {
                         required
                         defaultValue={
                           modal.modalData
-                            ? (modal.modalData &&
+                            ? modal.modalData &&
                               parent &&
                               parent.filter(
                                 (d) => d.value == modal.modalData.parent_id
                               )
-                            ):( parent && parent.filter((d) => d.value == 0))
+                            : parent && parent.filter((d) => d.value == 0)
                         }
                       />
                     </div>
@@ -599,7 +589,6 @@ function TaskAndTicketTypeMaster(props) {
           </form>
         </Modal.Body>
       </Modal>
-      {/* Modal For Add and Edit Data */}
 
       <div className="card mt-2">
         <div className="card-body">

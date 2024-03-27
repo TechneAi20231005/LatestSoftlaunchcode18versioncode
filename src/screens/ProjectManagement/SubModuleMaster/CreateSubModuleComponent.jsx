@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import SubModuleService from "../../../services/ProjectManagementService/SubModuleService"
@@ -12,13 +14,20 @@ import { Astrick } from "../../../components/Utilities/Style"
 import *  as Validation from '../../../components/Utilities/Validation';
 import Select from 'react-select';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 export default function CreateModuleComponent({ match }) {
 
     const history = useNavigate();
     const [notify, setNotify] = useState(null);
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
+    const dispatch = useDispatch();
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    );
+   
 
     const [data, setData] = useState({ project_id: null, module_id: null });
 
@@ -28,14 +37,8 @@ export default function CreateModuleComponent({ match }) {
     const [modules, setModules]=useState(null);
     const [modulesDropdown, setModulesDropdown]=useState(null);
 
-    // const handleDependent = (e, name) => {
-    //  console.log(e)
-    //     console.log(e.target.value);
-    //     setData({
-    //         ...data,
-    //         [name]: e.value
-    //     });
-    // }
+    
+    
 
     const handleChangevalue=(e)=>{
         setModulesDropdown(modules && modules.filter((d)=>d.project_id==e.value).map(d => ({ value: d.id, label: d.module_name })))
@@ -79,22 +82,27 @@ export default function CreateModuleComponent({ match }) {
         })
 
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-        // setShowLoaderModal(false);
+        dispatch(getRoles())
 
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+
+                
+
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
+        
 
         await new ModuleService().getModule().then(res => {
             if (res.status === 200) {
                 if (res.data.status == 1) {
                     setModules(res.data.data.filter(d => d.is_active === 1));
-                    //setProjectdropdown(res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.project_name })));
+                 
+                    
                 }
             }
         })
@@ -105,12 +113,12 @@ export default function CreateModuleComponent({ match }) {
     }, [])
 
     useEffect(()=>{
-        if(checkRole && checkRole[21].can_create === 0){
+        if(checkRole && checkRole[0]?.can_create === 0){
           // alert("Rushi")
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
         }
-      },[checkRole])
+      },[])
 
     return (
         <div className="container-xxl">
@@ -194,36 +202,8 @@ export default function CreateModuleComponent({ match }) {
                                     </div>
                                 </div>
 
-                                <div className="form-group row mt-3">
-                                    <label className="col-sm-2 col-form-label">
-                                        <b>Status : </b>
-                                    </label>
-                                    <div className="col-sm-10">
-                                        <div className="row">
-                                            <div className="col-md-2">
-                                                <div className="form-check">
-                                                    <input className="form-check-input" type="radio" name="is_active" id="is_active_1"
-                                                        value="1"
-                                                        defaultChecked={true}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="is_active_1">
-                                                        Active
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-1">
-                                                <div className="form-check">
-                                                    <input className="form-check-input" type="radio" name="is_active" id="is_active_0" value="0"
-                                                        readonly={true}
-                                                    />
-                                                    <label className="form-check-label" htmlFor="is_active_0">
-                                                        Deactive
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                           
+                           
 
                             </div> {/* CARD BODY */}
                         </div>{/* CARD */}
@@ -239,3 +219,6 @@ export default function CreateModuleComponent({ match }) {
         </div>
     )
 }
+
+
+

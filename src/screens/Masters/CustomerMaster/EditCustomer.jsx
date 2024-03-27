@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorLogService from "../../../services/ErrorLogService";
 import CustomerService from "../../../services/MastersService/CustomerService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+
 import CustomerType from "../../../services/MastersService/CustomerTypeService";
 import CountryService from "../../../services/MastersService/CountryService";
 import StateService from "../../../services/MastersService/StateService";
@@ -13,6 +13,8 @@ import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 function EditCustomer({ match }) {
   const history = useNavigate();
@@ -20,6 +22,10 @@ function EditCustomer({ match }) {
 
   const { id } = useParams();
   const customerId = id;
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+  );
 
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
@@ -39,7 +45,6 @@ function EditCustomer({ match }) {
   const stateRef = useRef(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
   const handleDependent = (e, name) => {
     setData({
@@ -49,7 +54,6 @@ function EditCustomer({ match }) {
   };
 
   const loadData = async () => {
-    const data = [];
     await new CustomerService()
       .getCustomerById(customerId)
       .then((res) => {
@@ -134,21 +138,30 @@ function EditCustomer({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles());
   };
 
+  const [emailError, setEmailError] = useState("");
+  const [mailError, setMailError] = useState(false);
+
+  const handleEmail = (e) => {
+    const email = e.target.value;
+    const emailRegex =
+      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+    if (emailRegex.test(email) === false) {
+      setEmailError("Invalid Email");
+      setMailError(true);
+    } else {
+      setEmailError("");
+      setMailError(false);
+    }
+  };
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
+
     setContactNumber(contactNumber);
     if (
       contactNumber.charAt(0) == "9" ||
@@ -170,8 +183,6 @@ function EditCustomer({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     var flag = 1;
-    // var a = JSON.stringify(Object.fromEntries(formData))
-    // console.log(a)
 
     var customerType = formData.getAll("customer_type_id");
     var selectEmail = formData.getAll("email_id");
@@ -189,29 +200,16 @@ function EditCustomer({ match }) {
       flag = 0;
       setNotify(null);
       if (customerType == "") {
-        // setNotify(null);
         alert("Please Select Customer Type");
-        // setNotify({ type: 'danger', message: "Please Select Customer Type" });
       } else if (selectEmail == "") {
-        // setNotify(null);
         alert("Please Select Email");
-        // setNotify({ type: 'danger', message: "Please Select Customer Type" });
       } else if (selectCountry == "") {
-        // setNotify(null);
         alert("Please Select Country");
-        // setNotify({ type: 'danger', message: "Please Select Country" });
       } else if (selectState == "") {
-        // setNotify(null);
         alert("Please Select State");
-        // setNotify({ type: 'danger', message: "Please Select State" });
       } else if (selectCity == "") {
-        // setNotify(null);
         alert("Please Select City");
-        // setNotify({ type: 'danger', message: "Please Select City" });
       } else {
-        // setNotify(null);
-        alert("Please Check Form");
-        // setNotify({ type: 'danger', message: "Please Check Form" });
       }
     }
 
@@ -222,14 +220,16 @@ function EditCustomer({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history({
-                pathname: `/${_base}/Customer`,
-             
-              },
-             { state: {
-                type: "success", message: res.data.message ,
-             }
-            } 
+              history(
+                {
+                  pathname: `/${_base}/Customer`,
+                },
+                {
+                  state: {
+                    type: "success",
+                    message: res.data.message,
+                  },
+                }
               );
             } else {
               setNotify({ type: "danger", message: res.data.message });
@@ -327,7 +327,7 @@ function EditCustomer({ match }) {
           : cityName
       );
     }
-    if (checkRole && checkRole[3].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [data, cityDropdown, checkRole]);
@@ -409,9 +409,15 @@ function EditCustomer({ match }) {
                         name="email_id"
                         placeholder="Email Address"
                         required
+                        onChange={handleEmail}
+                        onKeyPress={(e) => {
+                          Validation.emailOnly(e);
+                        }}
                         defaultValue={data.email_id}
-                        pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
                       />
+                      {mailError && (
+                        <div className="text-danger">{emailError}</div>
+                      )}
                     </div>
                   </div>
 
@@ -436,6 +442,7 @@ function EditCustomer({ match }) {
                         }}
                         onChange={handleMobileValidation}
                         autoComplete="off"
+                        required
                       />
                     </div>
                   </div>
@@ -460,6 +467,7 @@ function EditCustomer({ match }) {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
+                        defaultValue={data && data.remark}
                         maxLength={50}
                       />
                     </div>
@@ -480,7 +488,7 @@ function EditCustomer({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active
+                                data && data.is_active == 1
                                   ? true
                                   : !data
                                   ? true
@@ -505,7 +513,9 @@ function EditCustomer({ match }) {
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              //defaultChecked={data && data.is_active==1 ? true :false}
+                              defaultChecked={
+                                data && data.is_active == 0 ? true : false
+                              }
                             />
                             <label
                               className="form-check-label"
@@ -543,7 +553,7 @@ function EditCustomer({ match }) {
                         rows="3"
                         maxLength={250}
                         onKeyPress={(e) => {
-                          Validation.addressFieldOnly(e);
+                          Validation.addressField(e);
                         }}
                         required
                         defaultValue={data.address}
@@ -596,7 +606,6 @@ function EditCustomer({ match }) {
                             )
                           }
                           onChange={handleCountryChange}
-                          //defaultValue={data && countryDropdown && countryDropdown.filter(d => d.value == data.country_id)}
                         />
                       )}
                     </div>
@@ -613,7 +622,6 @@ function EditCustomer({ match }) {
                           options={stateDropdown}
                           id="state_id"
                           name="state_id"
-                          // defaultValue={data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id)}
                           defaultValue={stateName}
                           onChange={handleStateChange}
                           value={stateName}
@@ -636,7 +644,6 @@ function EditCustomer({ match }) {
                           options={cityDropdown}
                           id="city_id"
                           name="city_id"
-                          // defaultValue={data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id) : cityName}
                           defaultValue={cityName}
                           onChange={(e) => setCityName(e)}
                           value={cityName}
@@ -650,7 +657,7 @@ function EditCustomer({ match }) {
               {/* CARD */}
 
               <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[3].can_update === 1 ? (
+                {checkRole && checkRole[0]?.can_update === 1 ? (
                   <button type="submit" className="btn btn-primary">
                     Update
                   </button>

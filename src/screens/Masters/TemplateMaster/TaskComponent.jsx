@@ -1,15 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import TemplateService from "../../../services/MastersService/TemplateService";
 import { useParams } from "react-router-dom";
-import { _base } from "../../../settings/constants";
+
 import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+
 import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 import Select from "react-select";
+import { Astrick } from "../../../components/Utilities/Style";
+import { useDispatch, useSelector } from "react-redux";
+import { templateData } from "./TemplateComponetAction";
 export default function TaskComponent(props) {
-  const [data, setData] = useState({ task: props.taskData.task_name });
+  const [data, setData] = useState({
+    task: props.taskData.task_name,
+    days: props.taskData.days,
+    total_time: props.taskData.total_hours,
+    start_days: props.taskData.start_days,
+    days: props.taskData.task_days,
+    basket_id: props.taskData.basket_id,
+  });
+
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
+  const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
 
@@ -44,41 +56,31 @@ export default function TaskComponent(props) {
 
   const handleChange = (e, type) => {
     if (type === "select2") {
-      // Assuming e is an object like { value: 8, label: 'Task type test' }
       const selectedValue = e.value; // Access the 'value' property
-  
-  
-      // Assuming the name is 'task_type_id', you can adjust it as needed
+
       const name = "task_type_id";
-  
-      
-      const updatedData = { ...data, [name]: selectedValue};
+
+      const updatedData = { ...data, [name]: selectedValue };
       setData(updatedData);
-    } else if( type === "select3"){
+    } else if (type === "select3") {
       const name = "parent_id";
-      
-      const selectedValue = e.value
-      const updatedData = { ...data, [name]: selectedValue};
-      setData(updatedData)
-    }else {
-      // Handle standard input elements
+
+      const selectedValue = e.value;
+      const updatedData = { ...data, [name]: selectedValue };
+      setData(updatedData);
+    } else {
       const { name, value } = e.target;
-  
-  
+
       const updatedData = { ...data, [name]: value };
       setData(updatedData);
     }
   };
-  
-  
-  
+
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
-const [parent, setParent] = useState();
+  const [parent, setParent] = useState();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(async () => {
-
-    await new TaskTicketTypeService().getParent().then((res) => {
+  useEffect(() => {
+    new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           if (res.status === 200) {
@@ -89,41 +91,51 @@ const [parent, setParent] = useState();
 
             setParent(mappedData);
           } else {
-            console.error("error", res.status);
           }
         }
       }
     });
 
-
-
-    await new TaskTicketTypeService().getAllType().then((res) => {
+    new TaskTicketTypeService().getAllType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-// setTaskTypeDropdown(
-          //   temp
-          //     .filter((d) => d.type === "TICKET" && d.is_active == 1)
-          //     .map((d) => ({ value: d.id, label: d.type_name }))
-          // );
+
           setTaskTypeDropdown(
             temp
-              .filter((d) =>  d.is_active == 1)
+              .filter((d) => d.is_active == 1)
               .map((d) => ({ value: d.id, label: d.type_name }))
           );
         }
       }
     });
-
-
-
+    dispatch(templateData());
   }, []);
 
-
+  const handleCancle = () => {
+    setShow(false);
+  };
 
   const handleSubmit = (e) => {
+    const taskName = document.querySelector('input[name="task"]').value.trim();
+
+    const daysRequired = document
+      .querySelector('input[name="days"]')
+      .value.trim();
+    const hoursRequired = document
+      .querySelector('input[name="total_time"]')
+      .value.trim();
+    const startDays = document
+      .querySelector('input[name="start_days"]')
+      .value.trim();
+
+    if (!taskName || !daysRequired || !hoursRequired || !startDays) {
+      alert("Please fill out all required fields.");
+      return;
+    }
     setNotify(null);
     e.preventDefault();
+
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
       .then((res) => {
@@ -222,93 +234,118 @@ const [parent, setParent] = useState();
                     {show && (
                       <div className="">
                         <label>Task Name</label>
+                        <Astrick color="red" size="13px" />
+
                         <input
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
                           name="task"
-                          onInput={e=>handleChange(e, "standard")}
+                          onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
 
-<label>
-                          <b>
-                            Parent Task Type :
-                          </b>
-                        </label>
-                        <Select
-                          id="parent_id"
-                          name="parent_id"
-                          onChange={e=>handleChange(e,"select3")}
-                          className="col-7 form-control form-control-sm"
-                          options={parent && parent}
-                          defaultValue={
-                            parent &&
-                            parent.filter(
-                              (d) =>
-                                d.value == props.taskData.parent_id
-                            )
-                          }
-                        />
-                        <label>
-                          <b>
-                            Task Type :
-                          </b>
-                        </label>
-                        <Select
-                          id="task_type_id"
-                          name="task_type_id"
-                          onChange={e=>handleChange(e,"select2")}
-                          className="col-7 form-control form-control-sm"
-                          options={taskTypeDropdown && taskTypeDropdown}
-                          defaultValue={
-                            taskTypeDropdown &&
-                            taskTypeDropdown.filter(
-                              (d) =>
-                                d.value == props.taskData.task_type_id
-                            )
-                          }
-                        />
-
-
-
-
-                        <br />
                         <label>Days Required</label>
+                        <Astrick color="red" size="13px" />
+
                         <input
-                          type="number"
-                          min="1"
                           max="100"
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.task_days}
                           name="days"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          required
+                          onInput={(e) => {
+                            const value = parseInt(e.target.value);
+                            if (value > 100) {
+                              e.target.setCustomValidity(
+                                "Day should be maximum 100"
+                              );
+                            } else {
+                              e.target.setCustomValidity("");
+                            }
+                            handleChange(e, "standard");
+
+                            // Display error message manually
+                            const errorSpan = e.target.nextElementSibling; // Get the next element (error span)
+                            if (value > 100) {
+                              errorSpan.innerText = "Day should be maximum 100"; // Set error message
+                            } else {
+                              errorSpan.innerText = ""; // Clear error message
+                            }
+                          }}
+                        />
+                        <span className="error" style={{ color: "red" }}></span>
+
                         <br />
+
                         <label>Hours Required</label>
+                        <Astrick color="red" size="13px" />
                         <input
                           className="form-control form-control-sm"
                           defaultValue={
                             props.taskData.total_hours
                               ? props.taskData.total_hours
-                              : "00.00"
+                              : "00:00"
                           }
                           name="total_time"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          type="text"
+                          onInput={(e) => handleChange(e, "standard")}
+                        />
                         <br />
+
+                        {/* <label>
+                          <b>Parent Task Type :</b>
+                        </label>
+                        <Select
+                          id="parent_id"
+                          name="parent_id"
+                          onChange={(e) => handleChange(e, "select3")}
+                          className="col-7 form-control form-control-sm"
+                          options={parent && parent}
+                          defaultValue={
+                            parent &&
+                            parent.filter(
+                              (d) => d.value == props.taskData.parent_id
+                            )
+                          }
+                        /> */}
+
+                        {/* <label>
+                          <b>Task Type :</b>
+                        </label>
+                        <Select
+                          id="task_type_id"
+                          name="task_type_id"
+                          onChange={(e) => handleChange(e, "select2")}
+                          className="col-7 form-control form-control-sm"
+                          options={taskTypeDropdown && taskTypeDropdown}
+                          defaultValue={
+                            taskTypeDropdown &&
+                            taskTypeDropdown.filter(
+                              (d) => d.value == props.taskData.task_type_id
+                            )
+                          }
+                        /> */}
+
+                        <br />
+
                         <label>
                           Start task{" "}
-                          {props.taskData.AB === "START_FROM"
+                          {props.calculatedays === "START_FROM"
                             ? "after"
                             : "before"}{" "}
                           days :
                         </label>
+                        <Astrick color="red" size="13px" />
                         <input
                           type="number"
                           min="1"
                           max="100"
+                          required
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.start_days}
                           name="start_days"
-                          onInput={e=>handleChange(e, "standard")}                        />
+                          onChange={(e) => handleChange(e, "standard")} // Changed onInput to onChange
+                        />
                       </div>
                     )}
                   </div>
@@ -320,6 +357,13 @@ const [parent, setParent] = useState();
                     onClick={handleSubmit}
                   >
                     Update
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleCancle}
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Dropdown, Modal } from "react-bootstrap";
 import PageHeader from "../../../components/Common/PageHeader";
 import { _attachmentUrl, userSessionData } from "../../../settings/constants";
@@ -30,9 +30,8 @@ import { Spinner } from "react-bootstrap";
 
 export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
-  const {id} = useParams()
+  const { id } = useParams()
   const ticketId = id
-
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
@@ -41,12 +40,19 @@ export default function TaskComponent({ match }) {
   const [attachment, setAttachment] = useState();
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
+
+  //Basket Modal Related
+  const [basketModal, setBasketModal] = useState(false);
+  const [basketData, setBasketData] = useState(null);
+  const [showBasketModal, setShowBasketModal] = useState(false);
+
   const getTicketData = async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
@@ -71,17 +77,12 @@ export default function TaskComponent({ match }) {
       });
   };
 
-  //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
-
-  const [basketData, setBasketData] = useState(null);
-  const [showBasketModal, setShowBasketModal] = useState(false);
-
   const handleCloseBasketModal = () => {
     setShowBasketModal(false);
   };
 
   const handleShowBasketModal = async (id) => {
+
     setBasketData(null);
     if (id) {
       await new BasketService()
@@ -124,7 +125,6 @@ export default function TaskComponent({ match }) {
   const [taskHistory, setTaskHistory] = useState();
   const [tasksData, setTasksData] = useState();
   const [allTaskList, setAllTaskList] = useState([]); //Defined as empty array
-  // const [isRegularised, setIsRegularised] = useState([]);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -134,7 +134,6 @@ export default function TaskComponent({ match }) {
     const taskDataa = [];
     const tasksDataa = [];
     setIsLoading(true);
-
     await new BasketService()
 
       .getBasketTaskData(ticketId)
@@ -147,7 +146,7 @@ export default function TaskComponent({ match }) {
           if (res.data.status === 1) {
             setIsLoading(false);
 
-            
+
             const temp = res.data.data;
             sortingArr = res.data.basket_id_array;
             setIsReviewer(res.data.is_reviewer);
@@ -157,7 +156,6 @@ export default function TaskComponent({ match }) {
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
-
             res.data.data.map((tasks, index) => {
               tasks.taskData.forEach((d, i) => {
                 let taskOwnerNames = d.taskOwners
@@ -167,8 +165,8 @@ export default function TaskComponent({ match }) {
                   ticket_id_name: d.ticket_id_name,
                   Task_Names: d.task_name,
                   Task_Hours: d.task_hours,
-                  Start_Date: d.start_date,
-                  End_Date: d.end_date,
+                  Start_Date: d.task_start_date,
+                  End_Date: d.task_end_date,
                   Status: d.status,
                   Priority: d.priority,
                   Total_Worked: d.total_worked,
@@ -250,27 +248,7 @@ export default function TaskComponent({ match }) {
 
   /*  ********************************* PLANNER ************************************** */
   const [showPlannerModal, setShowPlannerModal] = useState(false);
-  // const [plannerData, setPlannerData] = useState(null);
-  // const handleShowPlannerModal = async (
-  //   taskId,
-  //   ticket_basket_id,
-  //   ticket_id
-  // ) => {
-  //   if (taskId) {
-  //     await getTaskPlanner(taskId).then((res) => {
-  //       if (res.status === 200) {
-  //         setPlannerData(null);
-  //         setPlannerData({
-  //           taskId: taskId,
-  //           ticket_basket_id: ticket_basket_id,
-  //           ticket_id: ticket_id,
-  //           data: res.data.data,
-  //         });
-  //       }
-  //     });
-  //   }
-  //   setShowPlannerModal(true);`
-  // };
+
 
   const handleClosePlannerModal = () => {
     setShowPlannerModal(false);
@@ -305,7 +283,7 @@ export default function TaskComponent({ match }) {
   //Suyash 31/5/22
   const [approvalRequest, setApprovalRequest] = useState({});
 
-  const handleRequestSubmit = (id, taskId) => {};
+  const handleRequestSubmit = (id, taskId) => { };
 
   const [regularizationRequest, setRegularizationRequest] = useState(0);
   const [taskRegularizationRequest, setTaskRegularizationRequest] = useState(0);
@@ -380,10 +358,7 @@ export default function TaskComponent({ match }) {
     };
 
     await new BasketService().pushForward(sendArray).then((res) => {
-      // loadData();
-      // getBasketData();
-      // getTicketData();
-      // handleRegularizationRequest();
+
     });
   };
 
@@ -435,9 +410,8 @@ export default function TaskComponent({ match }) {
   useEffect(() => {
     getBasketData();
     loadData();
-    // getTicketData();
-    // handleRegularizationRequest();
-    // handleTaskRegularizationRequest();
+    getTicketData();
+
   }, []);
 
   // created by Asmita Margaje
@@ -476,12 +450,10 @@ export default function TaskComponent({ match }) {
 
       <div className="card mt-2">
         <div className="card-body">
-          {/* {ticketData && ( */}
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5>
                 <strong>
-                  {/* Ticket - {ticketData && ticketData.ticket_id} {' '} */}
                   Ticket -{" "}
                   {tasksData &&
                     tasksData.length > 0 &&
@@ -533,8 +505,7 @@ export default function TaskComponent({ match }) {
                     />
                   </li>
                   <li>
-                    {ownership && JSON.stringify(ownership)}
-                    {ownership && 
+                    {ownership &&
                       (ownership === "TICKET" || ownership === "PROJECT") && (
                         <button
                           className="btn btn-sm btn-primary text-white btn-custom w-100"
@@ -553,11 +524,10 @@ export default function TaskComponent({ match }) {
                       </button>
                     </Link>
                   </li>
-                
+
                   <li>
                     {ownership && ownership !== "TASK" && (
                       <button
-                        // className="btn btn-sm btn-danger text-white"
                         className="btn btn-sm text-white" style={{ backgroundColor: "#d63384" }}
 
                         onClick={(e) => {
@@ -565,10 +535,10 @@ export default function TaskComponent({ match }) {
                           handleRegularizationRequest();
                         }}
                       >
-                        Time Regularization Rquest
+                        Time Regularization Request
                         {regularizationRequest && (
                           <span className="badge bg-primary p-2">
-                            {regularizationRequest.length}
+                            {regularizationRequest.length > 0 ? regularizationRequest.length : ""}
                           </span>
                         )}
                       </button>
@@ -585,11 +555,10 @@ export default function TaskComponent({ match }) {
                       Task Regularization Request
                       {taskRegularizationRequest && (
                         <span className="badge bg-warning p-2">
-                          {taskRegularizationRequest.length}
                         </span>
                       )}
                     </button>
-                    {/* )} */}
+
                   </li>
                 </Dropdown.Menu>
               </Dropdown>
@@ -641,7 +610,6 @@ export default function TaskComponent({ match }) {
               )}
             </div>
           </div>
-          {/* // )} */}
         </div>
       </div>
 
@@ -685,6 +653,7 @@ export default function TaskComponent({ match }) {
             );
           })}
       </div>
+
       <div>
         {isLoading == true ? (
           <LoaderComponent />
@@ -713,20 +682,19 @@ export default function TaskComponent({ match }) {
                           className="badge bg-success text-end mt-2 p-1 px-3"
                           style={{ fontSize: "14px" }}
                         >
+
                           {ele.total_worked ? ele.total_worked : 0}/
-                          {ele.total_hours}
+                          {ele?.total_hours}
                         </span>
                       </div>
 
+
                       <div className="p-0 m-0 d-flex justify-content-between mt-1">
-                        {ownership &&  (ownership === "TICKET" || ownership === "BASKET" || ownership === "PROJECT" )
-                          // ownership.some(
-                          //   (i) =>
-                          //     i.ownership === "TICKET" ||
-                          //     i.ownership === "BASKET" ||
-                          //     i.ownership === "PROJECT"
-                          // ) 
-                          
+
+                        {ele && (ele.ownership === "TICKET" || ele.ownership === "BASKET" || ele.ownership === "PROJECT")
+
+
+
                           && (
                             <button
                               type="button"
@@ -773,8 +741,8 @@ export default function TaskComponent({ match }) {
                           </div>
                         </form>
 
-                        {ownership && ( ownership === "TICKET" || ownership === "BASKET" || ownership === "PROJECT")
-                           && (
+                        {ele && (ele.ownership === "TICKET" || ele.ownership === "BASKET" || ele.ownership === "PROJECT")
+                          && (
                             <button
                               type="button"
                               className="btn btn-primary text-white btn-sm"
@@ -804,15 +772,10 @@ export default function TaskComponent({ match }) {
                                   key={task.id.toString()}
                                   data={task}
                                   loadBasket={getBasketData}
-                                  // ownership={ownership}
                                   onShowTaskModal={handleShowTaskModal}
-                                // onCloseTaskModal={handleCloseTaskModal}
-                                // openPlannerModal={handleShowPlannerModal}
-                                // openGroupModal={handleShowGroupModal}
-                                // moduleSetting={moduleSetting}
-                                isReviewer={isReviewer}
-                                // expectedSolveDate={expectedSolveDate}
-                                // ticketStartDate={ticketStartDate}
+
+                                  isReviewer={isReviewer}
+
                                 />
                               );
                             })}
@@ -836,7 +799,6 @@ export default function TaskComponent({ match }) {
                   ticketStartDate={ticketStartDate}
                 />
               )}
-
               {ticketData && (
                 <BasketDetails
                   ticketId={ticketId}
@@ -871,3 +833,7 @@ export default function TaskComponent({ match }) {
     </div>
   );
 }
+
+
+
+

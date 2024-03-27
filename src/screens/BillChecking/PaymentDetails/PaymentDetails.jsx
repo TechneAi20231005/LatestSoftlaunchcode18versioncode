@@ -19,32 +19,29 @@ import DropdownService from "../../../services/Bill Checking/Bill Checking Trans
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { PaymentDetailsSilce } from "./PaymentDetailsSlice";
+import { getPaymentDetails } from "./PaymentDetailsAction";
 
 function PaymentDetails({ location, match }) {
+  const { id } = useParams();
+  const [ip, setIp] = useState("");
 
-  const {id}=useParams()
-  const [ip, setIp] = useState('');
+  const dispatch = useDispatch();
+  const getPaymentDetailsData = useSelector(
+    (PaymentDetailsSilce) =>
+      PaymentDetailsSilce.paymentDetails.paymentDetailsData
+  );
 
-
-
-  
-
-  useEffect(()=>{
-    const fetchData = async()=>{
-      try{
-        const res=await axios.get("https://api.ipify.org/?format=json");
-        setIp(res.data.ip)
-
-      }catch (error){
-        console.error("Error fetching IP:", error)
-
-      }
-
-    }
-    fetchData()
-
-
-  },[])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("https://api.ipify.org/?format=json");
+        setIp(res.data.ip);
+      } catch (error) {}
+    };
+    fetchData();
+  }, []);
   const [data, setData] = useState(null);
   const [authorities, SetAuthorities] = useState();
   const [notify, setNotify] = useState();
@@ -63,43 +60,37 @@ function PaymentDetails({ location, match }) {
 
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
-  
+
     return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string'  && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === "string" &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
       return false;
     });
   }
-  
-  const handleSearch = () => {
-    const searchValue = searchRef.current.value;
-    const result = searchInData(data, searchValue);
-    setData(result);
-  }
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
-  // Assuming modal.modalData.payment_date is a valid date string
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [filteredData, setFilteredData] = useState([]);
+  const handleSearch = (value) => {};
 
   let formattedMaxDate;
   const paymentDateStr = modal.modalData.payment_date;
   const paymentDate = new Date(paymentDateStr);
-  if(paymentDate)
-{  if (!isNaN(paymentDate.getTime())) {
-    const maxDate = new Date(paymentDate);
+  if (paymentDate) {
+    if (!isNaN(paymentDate.getTime())) {
+      const maxDate = new Date(paymentDate);
 
-    maxDate.setFullYear(paymentDate.getFullYear() + 1);
+      maxDate.setFullYear(paymentDate.getFullYear() + 1);
 
-    // Format the payment_date to "YYYY-MM-DD"
-
-    const formattedPaymentDate = paymentDate.toISOString().split("T")[0];
-     formattedMaxDate = maxDate.toISOString().split("T")[0];
-  } 
+      const formattedPaymentDate = paymentDate.toISOString().split("T")[0];
+      formattedMaxDate = maxDate.toISOString().split("T")[0];
+    }
   }
 
   const [country, setCountry] = useState();
@@ -111,7 +102,9 @@ function PaymentDetails({ location, match }) {
   const fileInputRef = useRef(null);
   const userId = sessionStorage.getItem("id");
   const [exportData, setExportData] = useState();
+
   const loadData = async () => {
+    dispatch(getPaymentDetails(id, userId));
     const data = [];
     const ExportTempData = [];
     await new PaymentDetailsService()
@@ -119,9 +112,9 @@ function PaymentDetails({ location, match }) {
       .then((res) => {
         if (res.status === 200) {
           let counter = 1;
+
           const temp = res.data.data;
-          
-          
+
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -132,11 +125,12 @@ function PaymentDetails({ location, match }) {
               remark: temp[key].remark,
               actual_payment_date: temp[key].actual_payment_date,
               payment_ref_number: temp[key].payment_ref_number,
+              payment_reference_number: temp[key].payment_reference_number,
               payment_status: temp[key].payment_status,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_by: temp[key].updated_by,
-              bill_date: temp[key].bill_date
+              bill_date: temp[key].bill_date,
             });
           }
           setData(null);
@@ -152,7 +146,7 @@ function PaymentDetails({ location, match }) {
               payment_date: temp[key].payment_date,
               remark: temp[key].remark,
               actual_payment_date: temp[key].actual_payment_date,
-              payment_ref_number: temp[key].payment_ref_number,
+              payment_reference_number: temp[key].payment_reference_number,
             });
           }
           setExportData(ExportTempData);
@@ -191,8 +185,6 @@ function PaymentDetails({ location, match }) {
       sortable: false,
       cell: (row) => (
         <span>
-          {/* {row.payment_status_name!="Paid" && */}
-
           {row.payment_status_name === "Paid" ? (
             <button
               type="button"
@@ -221,11 +213,12 @@ function PaymentDetails({ location, match }) {
               className="btn btn-sm btn-info "
               data-bs-toggle="modal"
               disabled={
-                authorities &&
-                authorities.Update_Payment_Details === false &&
-                authorities.Prepone_Payment_Date === false &&
-                authorities &&
-                authorities.Payment_Status_Release === false
+                (authorities &&
+                  authorities.Update_Payment_Details === false &&
+                  authorities.Prepone_Payment_Date === false &&
+                  authorities &&
+                  authorities.Payment_Status_Release === false) ||
+                row.payment_status_name == "Confirmation Pending"
                   ? true
                   : false
               }
@@ -242,20 +235,8 @@ function PaymentDetails({ location, match }) {
               <i class="icofont-edit text-white"></i>
             </button>
           )}
-
-          {/* }  */}
         </span>
       ),
-
-      //     <button type="button"   className="btn btn-sm btn-info "
-      //     data-bs-toggle="modal"
-      //     onClick={(e) => {
-      //         handleModal({ showModal: true, modalData: row, modalHeader: 'Edit Payment Details' })
-      //       }}
-      //     data-bs-target="#depedit"
-      //     style={{ borderRadius: "20px" }}>
-      // <i class="icofont-edit text-white"></i>
-      //     </button>
     },
 
     { name: "Sr No", selector: (row) => row.counter, sortable: true },
@@ -303,7 +284,11 @@ function PaymentDetails({ location, match }) {
     e.preventDefault();
     var a = statusDropdownRef.current.getValue().map((d) => d.value);
     const form = new FormData(e.target);
-    form.append("payment_status", a);
+
+    if (!form.has("payment_status")) {
+      form.append("payment_status", modal.modalData.payment_status);
+    }
+
     form.append("created_by", modal.modalData.created_by);
     form.append("client_ip_address", ip);
 
@@ -341,27 +326,6 @@ function PaymentDetails({ location, match }) {
           errorObject.data.message
         );
       });
-    // } else {
-    //     await new PaymentTemplateService().updatePaymentTemplate(id, form).then(res => {
-    //         if (res.status === 200) {
-    //             if (res.data.status === 1) {
-    //                 setNotify({ type: 'success', message: res.data.message })
-    //                 setModal({ showModal: false, modalData: "", modalHeader: "" });
-    //                 loadData();
-    //             } else {
-    //                 setNotify({ type: 'danger', message: res.data.message });
-    //             }
-    //         } else {
-    //             setNotify({ type: 'danger', message: res.data.message })
-    //             new ErrorLogService().sendErrorLog("Payment_template", "Create_Payment_template", "INSERT", res.message);
-    //         }
-    //     }).catch(error => {
-    //         const { response } = error;
-    //         const { request, ...errorObject } = response;
-    //         setNotify({ type: 'danger', message: "Request Error !!!" })
-    //         new ErrorLogService().sendErrorLog("Payment_template", "Create_Payment_template", "INSERT", errorObject.data.message);
-    //     })
-    // }
   };
 
   useEffect(() => {
@@ -385,14 +349,14 @@ function PaymentDetails({ location, match }) {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-2">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={e=>handleSearch(e)}
-              onKeyDown={e=>handleKeyDown(e)}
+              onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -422,7 +386,33 @@ function PaymentDetails({ location, match }) {
               {data && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={getPaymentDetailsData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (
+                        typeof customer === "string" ||
+                        typeof customer === "number"
+                      ) {
+                        // Convert numbers to strings and check if it includes the searchTerm
+                        const customerString = customer.toString();
+                        return customerString.includes(
+                          searchTerm.toLowerCase()
+                        );
+                      } else if (typeof customer === "object") {
+                        // If customer is an object, check if any string or number value within the object includes the searchTerm
+                        const found = Object.values(customer).some(
+                          (value) =>
+                            (typeof value === "string" ||
+                              typeof value === "number") &&
+                            value
+                              .toString()
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                        return found;
+                      }
+                    }
+                    return false; // Default case: searchTerm or customer is not a string
+                  })}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -459,8 +449,6 @@ function PaymentDetails({ location, match }) {
           </Modal.Header>
           {deta && (
             <Modal.Body>
-
-              {/* {JSON.stringify(modal.modalData.bill_date)} */}
               <div className="deadline-form">
                 <input
                   type="hidden"
@@ -470,7 +458,7 @@ function PaymentDetails({ location, match }) {
                 />
 
                 <div className="row g-3 mb-3">
-                  {/* <div className="col-sm-3 mt-4">
+                  <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">
                       Amount To Be Paid :<Astrick color="red" size="13px" />
                     </label>
@@ -505,11 +493,15 @@ function PaymentDetails({ location, match }) {
                         const currentInput = e.target.value;
                         const decimalIndex = currentInput.indexOf(".");
 
+                        if (inputValue === "." && decimalIndex !== -1) {
+                          e.preventDefault(); // Prevent entering more than one decimal point
+                        }
+
                         if (
                           decimalIndex !== -1 &&
                           currentInput.length - decimalIndex > 2
                         ) {
-                          e.preventDefault();
+                          e.preventDefault(); // Prevent more than two decimal places
                         }
 
                         if (
@@ -517,7 +509,7 @@ function PaymentDetails({ location, match }) {
                           inputValue !== "." &&
                           decimalIndex === -1
                         ) {
-                          e.preventDefault();
+                          e.preventDefault(); // Limit total length excluding decimal point to 10 characters
                         }
                       }}
                       readOnly={
@@ -526,7 +518,8 @@ function PaymentDetails({ location, match }) {
                         (authorities &&
                           authorities.Update_Payment_Details === false &&
                           authorities.Payment_Status_Release === true) ||
-                          (authorities && authorities.Prepone_Payment_Date === true)
+                        (authorities &&
+                          authorities.Prepone_Payment_Date === true)
                           ? true
                           : false
                       }
@@ -534,64 +527,7 @@ function PaymentDetails({ location, match }) {
                         modal.modalData ? modal.modalData.amount_to_be_paid : ""
                       }
                     />
-                  </div> */}
-
-<div className="col-sm-3 mt-4">
-  <label className="form-label font-weight-bold">
-    Amount To Be Paid :<Astrick color="red" size="13px" />
-  </label>
-
-  <input
-    type="text"
-    className="form-control form-control-sm"
-    id="amount_to_be_paid"
-    name="amount_to_be_paid"
-    maxLength={13}
-    onKeyPress={(e) => {
-      const allowedKeys = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "Backspace"
-      ];
-      const inputValue = e.key;
-
-      if (!allowedKeys.includes(inputValue)) {
-        e.preventDefault();
-      }
-
-      const currentInput = e.target.value;
-      const decimalIndex = currentInput.indexOf(".");
-
-      if (inputValue === "." && decimalIndex !== -1) {
-        e.preventDefault(); // Prevent entering more than one decimal point
-      }
-
-      if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
-        e.preventDefault(); // Prevent more than two decimal places
-      }
-
-      if (
-        currentInput.length >= 10 &&
-        inputValue !== "." &&
-        decimalIndex === -1
-      ) {
-        e.preventDefault(); // Limit total length excluding decimal point to 10 characters
-      }
-    }}
-    readOnly={
-      (modal.modalData &&
-        modal.modalData.payment_status == 15) ||
-      (authorities &&
-        authorities.Update_Payment_Details === false &&
-        authorities.Payment_Status_Release === true) ||
-        (authorities && authorities.Prepone_Payment_Date === true)
-        ? true
-        : false
-    }
-    defaultValue={
-      modal.modalData ? modal.modalData.amount_to_be_paid : ""
-    }
-  />
-</div>
-
+                  </div>
 
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
@@ -603,8 +539,7 @@ function PaymentDetails({ location, match }) {
                           className="form-control"
                           id="payment_status"
                           name="payment_status"
-                          // options={stateDropdown}
-
+                          type="hidden"
                           options={
                             authorities &&
                             authorities.Payment_Status_Release === true
@@ -619,7 +554,6 @@ function PaymentDetails({ location, match }) {
                               authorities.Update_Payment_Details == true &&
                               authorities.Prepone_Payment_Date == false &&
                               authorities.Allow_Paid_Entry_Change === false) ||
-                            // (userSessionData.Update_Payment_Details == "true" && userSessionData.Prepone_Payment_Date == "false" && userSessionData.Allow_Paid_Entry_Change === "true")||
                             (authorities.Allow_Paid_Entry_Change == true &&
                               authorities.Update_Payment_Details == false &&
                               authorities.Prepone_Payment_Date == false) ||
@@ -654,107 +588,7 @@ function PaymentDetails({ location, match }) {
                         />
                       )}
                     </>
-                    {/* ) : (
-                      <>
-                        {statusDropDown && (
-                          <Select
-                            className="form-control"
-                            id="payment_status"
-                            name="payment_status"
-                            options={statusDropDown}
-                            ref={statusDropdownRef}
-                            isDisabled={userSessionData.Update_Payment_Details==="true"}
-                           
-                            
-                            required={true}
-                            defaultValue={
-                              modal.modalData &&
-                              statusDropDown.find(
-                                (d) => d.value == modal.modalData.payment_status
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    )} */}
-
-                    {/* {userSessionData.Allow_Paid_Entry_Change === "true" && (
-                      <>
-                        {statusDropDown && (
-                          <Select
-                            className="form-control"
-                            id="payment_status"
-                            name="payment_status"
-                            options={statusDropDown}
-                            ref={statusDropdownRef}
-                            isDisabled={false}
-                            required={true}
-                            defaultValue={
-                              modal.modalData &&
-                              statusDropDown.find(
-                                (d) => d.value == modal.modalData.payment_status
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    )} */}
-
-                    {/* {userSessionData.Allow_Paid_Entry_Change === "true" ? (
-                      <>
-                        {statusDropDown && (
-                          <Select
-                            className="form-control"
-                            id="payment_status"
-                            name="payment_status"
-                            options={statusDropDown}
-                            ref={statusDropdownRef}
-                            isDisabled={
-                              (userSessionData &&
-                                userSessionData.Prepone_Payment_Date ===
-                                  "true" &&
-                                userSessionData.Allow_Paid_Entry_Change ==
-                                  "true") ||
-                              userSessionData.Update_Payment_Details === "true"
-                                ? false
-                                : true
-                            }
-                            required={true}
-                            defaultValue={
-                              modal.modalData &&
-                              statusDropDown.find(
-                                (d) => d.value == modal.modalData.payment_status
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {statusDropDown && (
-                          <Select
-                            className="form-control"
-                            id="payment_status"
-                            name="payment_status"
-                            options={statusDropDown}
-                            ref={statusDropdownRef}
-                            isDisabled={false}
-                            required={true}
-                            defaultValue={
-                              modal.modalData &&
-                              statusDropDown.find(
-                                (d) => d.value == modal.modalData.payment_status
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    )} */}
                   </div>
-                
-               
-               
-
 
                   <div className="col-sm-3 mt-4">
                     <label className="form-label font-weight-bold">
@@ -778,20 +612,14 @@ function PaymentDetails({ location, match }) {
                         defaultValue={
                           modal.modalData ? modal.modalData.payment_date : ""
                         }
-                        //  min={modal.modalData.bill_date}
-                        
                         max={formattedMaxDate && formattedMaxDate}
-                        // min={
-                        //   (modal.modalData.payment_status_name === "Paid" &&
-                        //   modal.modalData.payment_date )
-                        // }
-                        min={modal.modalData.payment_status_name==="Paid"?modal.modalData.payment_date:modal.modalData.bill_date}
-
-
+                        min={
+                          modal.modalData.payment_status_name === "Paid"
+                            ? modal.modalData.payment_date
+                            : modal.modalData.bill_date
+                        }
                       />
                     ) : (
-
-                     
                       <input
                         type="date"
                         className="form-control"
@@ -808,7 +636,7 @@ function PaymentDetails({ location, match }) {
                           modal.modalData ? modal.modalData.payment_date : ""
                         }
                         min={modal.modalData.payment_date}
-                        // max={formattedMaxDate && formattedMaxDate}
+                        max={formattedMaxDate && formattedMaxDate}
                       />
                     )}
                   </div>
@@ -875,27 +703,7 @@ function PaymentDetails({ location, match }) {
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <div className="">
-              {/* <input type="hidden" class="form-control form-control-sm"
-                          id="test_case_id"
-                          name="test_case_id"
-                          value={data && data.map((e) => { return (e.test_case_id) })}
-                          required
-                        /> */}
-              {/* <input type="hidden" class="form-control form-control-sm"
-                          id="ticket_id"
-                          name="ticket_id"
-                          value={ticket_id}
-                          required
-                        /> */}
-
-              {/* <input type="hidden" class="form-control form-control-sm"
-                          id="task_id"
-                          name="task_id"
-                          value={task_id}
-                          required
-                        /> */}
-            </div>
+            <div className=""></div>
 
             <div className=" col-sm ">
               <label className="col-form-label">

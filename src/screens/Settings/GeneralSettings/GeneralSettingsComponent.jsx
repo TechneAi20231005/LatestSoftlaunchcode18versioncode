@@ -1,4 +1,8 @@
 
+
+
+
+
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -15,6 +19,11 @@ import UserService from "../../../services/MastersService/UserService";
 import GeneralSettingService from "../../../services/SettingService/GeneralSettingService";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import {useSelector,useDispatch} from "react-redux"
+import { getGeneralSettingData, postGeneralSettingData, updateGeneralSettingData } from "../SettingAction";
+import MyTicketComponentSlice from "../../TicketManagement/MyTicketComponentSlice";
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import {handleModalClose, handleGeneralModal} from "../SettingSlice"
 
 function GeneralSettings() {
   const [data, setData] = useState(null);
@@ -25,11 +34,18 @@ function GeneralSettings() {
   const [authority, setAuthority] = useState(["Upload ", "Delete", " Restore"]);
   const [generalSetting, setGeneralSetting] = useState([])
   const [checkRole, setCheckRole] = useState([])
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+
+
+
+const dispatch = useDispatch()
+
+const getAllgeneralSettingData = useSelector(SettingSlice=>SettingSlice.generalSetting.getAllgeneralSettingData)
+const User = useSelector(MyTicketComponentSlice=>MyTicketComponentSlice.myTicketComponent.user)
+const Notify = useSelector(SettingSlice=>SettingSlice.generalSetting.notify)
+const modal =useSelector(SettingSlice=>SettingSlice.generalSetting.modal)
+
+
+
   const [assignedUserModal, setAssignedUserModal] = useState({
     showModal: false,
     modalData: "",
@@ -63,17 +79,17 @@ function GeneralSettings() {
     setData(result);
   };
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+
 
 
 
   const loadData = async () => {
+    const inputRequired = "id,employee_id,first_name,last_name";
+    dispatch(getGeneralSettingData())
+    dispatch(getUserForMyTicketsData(inputRequired))
     setShowLoaderModal(null);
     const data = [];
     const exportTempData = [];
-    const inputRequired = "id,employee_id,first_name,last_name";
     const roleId = sessionStorage.getItem('role_id')
 
     await new ManageMenuService().getRole(roleId).then((res) => {
@@ -108,8 +124,8 @@ function GeneralSettings() {
         }
       }
     })
-
     await new GeneralSettingService().getGeneralSetting().then(res => {
+
       if (res.status === 200) {
         if (res.data.status === 1) {
           let data = [...res.data.data];
@@ -124,6 +140,7 @@ function GeneralSettings() {
     })
   };
 
+
   const handleForm = (id) => async (e) => {
     e.preventDefault();
 
@@ -134,78 +151,22 @@ function GeneralSettings() {
     for (let i = 0; i < userDet.length; i++) {
       arrayOfId.push(userDet[i].value);
     };
+    
     const form = {};
     form.user_id = arrayOfId;
+
     form.setting_name = settingName;
     form.remark = remark;
     form.is_active = true;
     setNotify(null);
     if (!id) {
-      await new GeneralSettingService()
-        .createGeneralSetting(form)
-        .then((res) => {
-
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify(null);
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            new ErrorLogService().sendErrorLog(
-              "City",
-              "Create_Setting",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "City",
-            "Create_Setting",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(postGeneralSettingData(form))
+   
+      
     } else {
-      await new GeneralSettingService()
-        .updateGeneralSetting(id, form)
-        .then((res) => {
-
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify(null);
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              loadData();
-            } else {
-              setNotify({ type: "danger", message: res.data.message });
-            }
-          } else {
-            new ErrorLogService().sendErrorLog(
-              "City",
-              "Create_Setting",
-              "INSERT",
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "City",
-            "Create_Setting",
-            "INSERT",
-            errorObject.data.message
-          );
-        });
+      dispatch(updateGeneralSettingData({id,payload:form}))
+    
+    
     }
 
 
@@ -217,10 +178,7 @@ function GeneralSettings() {
     }
   };
 
-  const handleAuthorizeForm = (data) => {
-    setModal(data)
-  }
-
+ 
 
   const columns = [
     {
@@ -237,11 +195,13 @@ function GeneralSettings() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Edit Settings",
-              });
+              
+              dispatch(
+                handleGeneralModal({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Edit Settings",
+                }))
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -269,11 +229,12 @@ function GeneralSettings() {
       width: "20%",
       cell: row => {
         let arr = [];
-        user.filter(el => {
+        User.filter(el => {
           if (row.user_id.includes(el.value)) {
             arr.push(el.label);
           }
-        });
+        }
+        );
 
         return (
           <>
@@ -326,12 +287,20 @@ function GeneralSettings() {
       name: "Created by",
       sortable: true,
       cell: row => {
-        let userList = user.filter(userData => row.created_by === userData.value);
-        return (
-          <>
-            {userList[0].label}
-          </>
-        )
+        let userList = User.filter(userData => row.created_by === userData.value);
+      //   return (
+      //     <>
+      //       {userList[0].label}
+      //     </>
+      //   )
+      // }
+      if (userList && userList.length > 0) {
+        return <>{userList[0].label}</>;
+      } else {
+        return( <>
+      {""}
+      </>)
+      }
       }
     },
     {
@@ -343,12 +312,15 @@ function GeneralSettings() {
       name: "Updated by",
       sortable: true,
       cell: row => {
-        let userList = user.filter(userData => row.updated_by === userData.value);
-        return (
-          <>
-            {/* {userList[0].label} */}
-          </>
-        )
+        let userList = User.filter(userData => row.updated_by === userData.value);
+        if (userList && userList.length > 0) {
+          return <>{userList[0].label}</>;
+        } else {
+          return( <>
+        {""}
+        </>)
+        }
+      
       }
     },
 
@@ -364,10 +336,10 @@ function GeneralSettings() {
 
   return (
     <div className="container-xxl">
-      {notify && (
+      {Notify && (
         <>
           {" "}
-          <Alert alertData={notify} />{" "}
+          <Alert alertData={Notify} />{" "}
         </>
       )}
       <PageHeader
@@ -376,18 +348,30 @@ function GeneralSettings() {
           return (
             <div className="col-auto d-flex w-sm-100">
 
-                {/* <button
+                <button
                   className="btn btn-dark btn-set-task w-sm-100"
+                  // onClick={() => {
+                  
+                  //   dispatch(
+                  //     handleModalInStore({
+                  //       showModal: true,
+                  //       modalData: null,
+                  //       modalHeader: "Add Setting",
+                  //     })
+                  //   );
+                  // }}
                   onClick={() => {
-                    handleModal({
-                      showModal: true,
-                      modalData: null,
-                      modalHeader: "Add Setting",
-                    });
+                    dispatch(
+                      handleGeneralModal({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: "Add Setting",
+                      })
+                    );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Setting
-                </button> */}
+                </button>
             </div>
           );
         }}
@@ -432,10 +416,10 @@ function GeneralSettings() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {generalSetting && (
+              {getAllgeneralSettingData && (
                 <DataTable
                   columns={columns}
-                  data={generalSetting}
+                  data={getAllgeneralSettingData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -463,19 +447,24 @@ function GeneralSettings() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
+        // onHide={(e) => {
+        //   handleModal({
+        //     showModal: false,
+        //     modalData: "",
+        //     modalHeader: "",
+        //   });
+        // }}
       >
         <form
           method="post"
           onSubmit={handleForm((modal.modalData ? modal.modalData.id : ""))}
         >
-          <Modal.Header closeButton>
+          <Modal.Header closeButton onClick={() => {dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: null,
+                        modalHeader: "Add Setting",
+                      }))}}>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -560,11 +549,18 @@ function GeneralSettings() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                // handleModal({
+                //   showModal: false,
+                //   modalData: "",
+                //   modalHeader: "",
+                // });
+                {dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  }))
+                }
               }}
             >
               Cancel

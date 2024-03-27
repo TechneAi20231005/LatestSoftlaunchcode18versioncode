@@ -62,7 +62,6 @@ const ApproveTaskRequestModal = (props) => {
 
         
 
-// console.log("props",props)
 
         const check = formData.payload.filter(d => { return d.is_checked == 1 });
         if (check.length > 0) {

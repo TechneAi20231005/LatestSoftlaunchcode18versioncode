@@ -8,7 +8,7 @@ import { postDataa } from "../../services/ForgetPasswordService/OtpService";
 import { postData } from "../../services/ForgetPasswordService/ForgotPasswordService";
 
 
-export default function StepAuthentication( ) {
+export default function StepAuthentication() {
   const location = useLocation()
 
   const history = useNavigate();
@@ -25,23 +25,22 @@ export default function StepAuthentication( ) {
   };
 
   const submitHandler = (e) => {
-    if(e){
-    e.preventDefault();
-    // setShowAlert(prevState => ({...prevState,show:false}));
-    postDataa(userData).then((res) => {
-      if (res.status == 200) {
-        if (res.data.status === 1) {
-          history({
-            pathname: `/${_base}/reset-password`,
-      
-          },{      state: { email: userData.email, otp: userData.otp },});
-        } else {
-          setNotify();
-          setNotify({ type: "danger", message: res.data.message });
+    if (e) {
+      e.preventDefault();
+      postDataa(userData).then((res) => {
+        if (res.status == 200) {
+          if (res.data.status === 1) {
+            history({
+              pathname: `/${_base}/reset-password`,
+
+            }, { state: { email: userData.email, otp: userData.otp }, });
+          } else {
+            setNotify();
+            setNotify({ type: "danger", message: res.data.message });
+          }
         }
-      }
-    });
-  }
+      });
+    }
   };
 
   const submitOtpHandler = (e) => {
@@ -50,14 +49,14 @@ export default function StepAuthentication( ) {
     postData(userData).then((res) => {
       if (res.status == 200) {
         if (res.data.status === 1) {
-          setNotify({type: 'success', message:res.data.message});
+          setNotify({ type: 'success', message: res.data.message });
 
         } else {
-            setNotify({type: 'danger', message:res.data.message});
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
         setNotify();
-        setNotify({type: 'danger', message:"Request Error"});
+        setNotify({ type: 'danger', message: "Request Error" });
       }
     });
   };
@@ -133,25 +132,25 @@ export default function StepAuthentication( ) {
               Verify Me
             </button>
           </div>
-          </form>
-          
-          <div className="col-12 text-center mt-4">
-              Haven't received it?..
-            <span className="text-muted">
-              {resendDisabled ? (
-                `Resend the code in ${resendTimer} seconds.`
-              ) : (
-                <button
+        </form>
+
+        <div className="col-12 text-center mt-4">
+          Haven't received it?..
+          <span className="text-muted">
+            {resendDisabled ? (
+              `Resend the code in ${resendTimer} seconds.`
+            ) : (
+              <button
                 type="submit"
-                onClick={e=>{handleResendClick(e);submitOtpHandler(e)}}
-                  style={{ border: "none", background: "none" }}
-                  className="text-secondary"
-                >
-                  Resend a new code.
-                </button>
-              )}
-            </span>
-          </div>
+                onClick={e => { handleResendClick(e); submitOtpHandler(e) }}
+                style={{ border: "none", background: "none" }}
+                className="text-secondary"
+              >
+                Resend a new code.
+              </button>
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Modal } from "react-bootstrap";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import DataTable from "react-data-table-component";
 
@@ -22,20 +22,52 @@ import UserService from "../../../services/MastersService/UserService";
 
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import {
+  creteAuthority,
+  getModuleSettingData,
+  getSubmoduleData,
+  updateAuthority,
+} from "../Slices/BillCheckingTransactionAction";
+import {
+  handleModalClose,
+  handleModalOpen,
+} from "../Slices/BillCheckingTransactionSlice";
+import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
-  const [userData, setUserData] = useState([]); // State to store user data
 
-  const [authorities, SetAuthorities] = useState();
   const roleId = sessionStorage.getItem("role_id");
+  const dispatch = useDispatch();
 
-  const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
+  );
+  console.log("checkRole",checkRole)  
+  const authorities = useSelector((BillCheckingTransactionSlice) =>BillCheckingTransactionSlice.billChecking.getModuleSettingData);
+  const userData = useSelector(
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
+  );
+  const submodulename = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getSubmoduleData
+  );
+  const notify = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.notify
+  );
+  const modal = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.modal
+  );
+  
   const [error, setError] = useState("");
 
   const [user, setUser] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [submodulename, SetSubmodulename] = useState();
 
   const [read, setRead] = useState(true);
 
@@ -52,18 +84,9 @@ const AuthorityMapping = () => {
     new Array(assign.length).fill("")
   );
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
-
-  const [notify, setNotify] = useState();
   const currentDate = new Date();
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
+  const handleModal = (data) => {};
   const searchRef = useRef();
 
   const columns = [
@@ -95,11 +118,13 @@ const AuthorityMapping = () => {
             data-bs-target="#depedit"
             onClick={(e) => {
               handleData(e, row);
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Assign Authority",
-              });
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Assign Authority",
+                })
+              );
             }}
             style={{ marginRight: "10px" }}
           >
@@ -111,11 +136,14 @@ const AuthorityMapping = () => {
             data-bs-target="#depedit"
             onClick={(e) => {
               handleData(e, row);
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: "Details",
-              });
+
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: "Details",
+                })
+              );
             }}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
@@ -150,9 +178,29 @@ const AuthorityMapping = () => {
 
     {
       name: "Authority Name",
-      selector: (row) => row.setting_name,
+      selector: (row) => row["Authority Name"],
       sortable: true,
       width: "175px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.setting_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.setting_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.setting_name && row.setting_name.length < 10
+                    ? row.setting_name
+                    : row.setting_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
 
     {
@@ -193,17 +241,11 @@ const AuthorityMapping = () => {
     });
   }
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleSearch = (value) => {};
 
   const handleChanges = (e) => {
     const inputValue = e.target.value;
@@ -224,7 +266,8 @@ const AuthorityMapping = () => {
     const updatedAssign = [...assign];
     updatedAssign[index] = {
       ...updatedAssign[index],
-      from_date: event.target.value,todayDate
+      from_date: event.target.value,
+      todayDate,
     };
 
     setAssign(updatedAssign);
@@ -242,11 +285,7 @@ const AuthorityMapping = () => {
   const current = new Date();
   const todayDate = `${current.getFullYear()}-${
     (current.getMonth() + 1 < 10 ? "0" : "") + (current.getMonth() + 1)
-  }-${
-    (current.getDate() < 10 ? "0" : "") + current.getDate()
-  }`;
-  
-
+  }-${(current.getDate() < 10 ? "0" : "") + current.getDate()}`;
 
   const todaysDate = `${current.getFullYear()}-${
     current.getMonth() + 1 < 10
@@ -271,10 +310,9 @@ const AuthorityMapping = () => {
     setRead(false);
   };
 
-
-  
   const handleRemoveSpecificRow = (index) => async () => {
     const id = assign[index].id;
+
 
     // Delete the item
     await new BillCheckingTransactionService()
@@ -294,7 +332,7 @@ const AuthorityMapping = () => {
   const mainJson = {
     updated_by: sessionStorage.getItem("id"),
     updated_at: new Date(),
-    setting_id: modal.modalData.id,
+    setting_id: modal?.modalData?.id,
     setting_value: "Y",
     user_details: assign.map((item) => ({
       user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
@@ -319,17 +357,26 @@ const AuthorityMapping = () => {
     updatedUserErrors[index] = "";
     setUserErrors(updatedUserErrors);
   };
+  console.log("data",modal.modalData)
   const handleData = async (e, row) => {
+    console.log("row",row);
     if (row.id) {
+
       await new BillCheckingTransactionService()
+
         .getModuleAuthorityUserSetting(row.id)
+
         .then((res) => {
+          console.log("res",res)
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
-                const from_dateReadOnly =item.from_date && new Date(item.from_date) < new Date(todayDate);
-                const to_dateReadOnly=item.to_date&& new Date(item.to_date)<new Date(todayDate)
-                  
+                const from_dateReadOnly =
+                  item.from_date &&
+                  new Date(item.from_date) < new Date(todayDate);
+                const to_dateReadOnly =
+                  item.to_date && new Date(item.to_date) < new Date(todayDate);
+
                 return {
                   ...item,
                   from_dateReadOnly,
@@ -341,195 +388,27 @@ const AuthorityMapping = () => {
           }
         });
     }
+    dispatch(getSubmoduleData(parseInt(row.submodule_name)));
+
   };
-  
-  
-
-  // const handleData = async (e, row) => {
-  //   if (row.id) {
-  //     await new BillCheckingTransactionService()
-  //       .getModuleAuthorityUserSetting(row.id)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             const updatedAssign = res.data.data.map((item) => {
-  //               // Modify the condition based on your logic to set readOnly for from_date
-  //               const from_dateReadOnly = item.from_date && new Date(item.from_date) < new Date();
-  //               // Modify the condition based on your logic to set readOnly for to_date
-  //               const to_dateReadOnly = item.to_date && new Date(item.to_date) < new Date();
-
-  //               return {
-  //                 ...item,
-  //                 from_dateReadOnly,
-  //                 to_dateReadOnly,
-  //               };
-  //             });
-  //             setAssign(updatedAssign);
-  //           }
-  //         }
-  //       });
-  //   }
-  // };
-
-  // const handleData = async (e, row) => {
-  //   if (row.id) {
-  //     await new BillCheckingTransactionService()
-  //       .getModuleAuthorityUserSetting(row.id)
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           if (res.data.status === 1) {
-  //             const updatedAssign = res.data.data.map((item) => {
-  //               // Modify the condition to set readOnly for from_date
-  //               const from_dateReadOnly =
-  //                 item.from_date && item.from_date < todayDate;
-  //               // Modify the condition to set readOnly for to_date
-  //               const to_dateReadOnly =
-  //                 item.to_date && item.to_date < todayDate;
-
-  //               return {
-  //                 ...item,
-  //                 from_dateReadOnly,
-  //                 to_dateReadOnly,
-  //               };
-  //             });
-  //             setAssign(updatedAssign);
-  //           }
-  //         }
-  //       });
-  //   }
-  // };
-
-
-
-//   const handleData = async (e, row) => {
-//   if (row.id) {
-//     await new BillCheckingTransactionService()
-//       .getModuleAuthorityUserSetting(row.id)
-//       .then((res) => {
-//         if (res.status === 200) {
-//           if (res.data.status === 1) {
-//             const updatedAssign = res.data.data.map((item) => {
-//               // Modify the condition to set readOnly for from_date
-//               const from_dateReadOnly =
-//                 item.from_date && new Date(item.from_date) >= new Date(todayDate);
-//               // Modify the condition to set readOnly for to_date
-//               const to_dateReadOnly =
-//                 item.to_date && new Date(item.to_date) < new Date(todayDate);
-
-//               return {
-//                 ...item,
-//                 from_dateReadOnly,
-//                 to_dateReadOnly,
-//               };
-//             });
-//             setAssign(updatedAssign);
-//           }
-//         }
-//       });
-//   }
-// };
-
 
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
 
+    dispatch(getModuleSettingData());
+
     const data = [];
     const exportTempData = [];
 
-    await new BillCheckingTransactionService()
-      .getModuleSetting()
-      .then((res) => {
-        if (res.status === 200) {
-          setUser(res.data.data);
-          setShowLoaderModal(false);
+    dispatch(getRoles());
 
-          let counter = 1;
-          const temp = res.data.data;
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
+    dispatch(getUserForMyTicketsData(inputRequired));
 
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              setting_name: temp[key].setting_name,
-              submodule_name: temp[key].submodule_name,
-              sub_module_name: temp[key].sub_module_name,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              Status: temp[key].Status,
-              created_at: temp[key].created_at,
-              created_by_name: temp[key].created_by_name,
-              updated_at: temp[key].updated_at,
-              updated_by_name: temp[key].updated_by_name,
-              user_id: temp[key].user_id,
-              setting_id: temp[key].setting_id,
-              from_date: temp[key].from_date,
-              to_date: temp[key].to_date,
-            });
-          }
+    dispatch(updateAuthority());
 
-          setData(null);
-          setData(data);
-
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              setting_name: data[i].setting_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by,
-            });
-          }
-        }
-      })
-      .catch((error) => {});
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
-
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUserData(
-            temp.map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }))
-          );
-        }
-      }
-    });
-    await new BillTransactionService().getUpdatedAuthorities().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const a = res.data.data;
-
-          SetAuthorities(res.data.data);
-        }
-      }
-    });
-
-    await new BillCheckingTransactionService().getSubmodule(45).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          SetSubmodulename(
-            res.data.data.map((d) => ({ value: d.id, label: d.name }))
-          );
-        }
-      }
-    });
   };
 
   function getCurrentDateString() {
@@ -542,7 +421,7 @@ const AuthorityMapping = () => {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
 
     const form = new FormData(e.target);
 
@@ -558,10 +437,6 @@ const AuthorityMapping = () => {
     const specialCharacters = /[!@#$%^&*(),.?":{}|<>]/;
 
     if (specialCharacters.test(inputValue)) {
-      setNotify({
-        type: "danger",
-        message: "Special characters are not allowed",
-      });
       return;
     }
 
@@ -578,31 +453,8 @@ const AuthorityMapping = () => {
         return;
       }
 
-      await new BillCheckingTransactionService()
-        .createModuleAuthorityUserSetting(mainJson)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-
-              loadData();
-            } else {
-              setError({ type: "danger", message: res.data.message });
-            }
-          } else {
-            setNotify({ type: "danger", message: res.message });
-            new ErrorLogService().sendErrorLog(
-              "Designation",
-              "Create_Designation",
-              "INSERT",
-              res.message
-            );
-          }
-        });
-      
-        
+      dispatch(creteAuthority(mainJson));
+      loadData();
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];
@@ -642,13 +494,10 @@ const AuthorityMapping = () => {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[50].can_read === 0) {
+    if (checkRole && checkRole[0]?.can_cre === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
-
-  
 
   return (
     <div className="container-xxl">
@@ -667,7 +516,7 @@ const AuthorityMapping = () => {
               type="text"
               className="form-control"
               placeholder="Search...."
-              onKeyDown={handleKeyDown}
+              onChange={(e) => setSearchTerm(e.target.value)}
               id="searchInput"
               ref={searchRef}
             />
@@ -676,7 +525,8 @@ const AuthorityMapping = () => {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              onClick={handleSearch}
+              value={searchTerm}
+              onClick={() => handleSearch(searchTerm)}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -690,18 +540,36 @@ const AuthorityMapping = () => {
           </div>
         </div>
       </div>
+      {console.log("authorities",authorities)}
 
       {/* DATA TABLE */}
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {authorities && (
                 <DataTable
                   columns={columns}
                   defaultSortField="title"
                   pagination
-                  data={data}
+                  data={authorities.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        );
+                      }
+                    }
+                    return false;
+                  })}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -717,19 +585,23 @@ const AuthorityMapping = () => {
         show={modal.showModal}
         aria-labelledby="contained-modal-title-vcenter"
         size="xl"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
       >
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: "",
+                  modalHeader: "",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
 
@@ -746,8 +618,7 @@ const AuthorityMapping = () => {
                     className="form-control"
                     id="setting_name"
                     name="setting_name"
-                    defaultValue={modal.modalData.setting_name}
-                    onKeyDown={handleKeyDown}
+                    defaultValue={modal?.modalData?.setting_name}
                     onChange={handleChanges}
                     ref={searchRef}
                     required={true}
@@ -778,6 +649,7 @@ const AuthorityMapping = () => {
                       />
                     </div>
                   )}
+                  
 
                   {modal.modalData && submodulename && (
                     <>
@@ -821,6 +693,9 @@ const AuthorityMapping = () => {
                     )}
                   </tr>
                 </thead>
+                {console.log("userData",userData)}
+                {console.log(assign)}
+
 
                 <tbody>
                   {assign && assign.length > 0 ? (
@@ -846,7 +721,7 @@ const AuthorityMapping = () => {
                               value={userData.filter((d) =>
                                 Array.isArray(item.user_id)
                                   ? item.user_id.includes(d.value)
-                                  : item.user_id === d.value
+                                  : item.user_id == d.value
                               )}
                               required
                               style={{ zIndex: "100" }}
@@ -863,8 +738,6 @@ const AuthorityMapping = () => {
                           )}
                         </td>
 
-                   
-                   
                         <td>
                           {assign && (
                             <input
@@ -876,7 +749,7 @@ const AuthorityMapping = () => {
                                 item.from_dateReadOnly ||
                                 modal.modalHeader === "Details"
                               }
-                               min={todayDate}
+                              min={todayDate}
                               onChange={(event) => handleFromDate(event, idx)}
                               required
                             />
@@ -898,45 +771,6 @@ const AuthorityMapping = () => {
                             required
                           />
                         </td>
-
-                        {/* {modal.modalHeader === "Assign Authority" && (
-                          <td>
-                            {idx === 0 ? (
-                              <>
-                                <div>
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-primary pull-left"
-                                    required
-                                    onClick={(e) => {
-                                      handleAddRow(e, idx, "ASSIGNED");
-                                    }}
-                                  >
-                                    <i className="icofont-plus-circle"></i>
-                                  </button>
-                                </div>
-
-                                <div>
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-danger btn-sm"
-                                    onClick={handleRemoveSpecificRow(idx)}
-                                  >
-                                    <i className="icofont-ui-delete"></i>
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <button
-                                type="button"
-                                className="btn btn-outline-danger btn-sm"
-                                onClick={handleRemoveSpecificRow(idx)}
-                              >
-                                <i className="icofont-ui-delete"></i>
-                              </button>
-                            )}
-                          </td>
-                        )} */}
 
                         {modal.modalHeader === "Assign Authority" && (
                           <td>
@@ -1044,7 +878,6 @@ const AuthorityMapping = () => {
                               className="form-control form-control-sm"
                               name="to_date"
                               min={date}
-                              // onChange={(event) => handleToDate(event, idx)}
                               required
                             />
                           </td>
@@ -1214,11 +1047,13 @@ const AuthorityMapping = () => {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: "",
+                    modalHeader: "",
+                  })
+                );
               }}
             >
               Cancel

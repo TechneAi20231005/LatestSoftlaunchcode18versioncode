@@ -11,7 +11,7 @@ const BillCheckingHistory = ({ match }) => {
   const { id } = useParams();
 
   const [data, setData] = useState();
-  
+
   const columns = [
     { name: "Sr", selector: (row) => row.counter, sortable: true },
     {
@@ -21,9 +21,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("operation"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("operation"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -34,7 +34,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "Bill Id",
       selector: (row) => row.bc_id,
@@ -42,9 +42,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("bc_id"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("bc_id"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -59,13 +59,13 @@ const BillCheckingHistory = ({ match }) => {
       name: "Bill Type",
       selector: (row) => row.bill_type,
       sortable: true,
-      width:"220px",
+      width: "220px",
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("bill_type"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("bill_type"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -83,9 +83,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("assign_to"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("assign_to"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -96,7 +96,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "Vendor Name",
       selector: (row) => row.vendor_name,
@@ -104,9 +104,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("vendor_name"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("vendor_name"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -124,9 +124,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("vendor_bill_no"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("vendor_bill_no"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -144,9 +144,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("bill_date"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("bill_date"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -157,7 +157,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "Received Date",
       selector: (row) => row.received_date,
@@ -165,9 +165,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("received_date"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("received_date"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -185,8 +185,8 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
+            row.changes &&
+            row.changes.length > 1 &&
             row.changes.includes("debit_advance"),
           style: {
             color: "red",
@@ -198,7 +198,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "Taxable Amount",
       selector: (row) => row.taxable_amount,
@@ -206,9 +206,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("taxable_amount"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("taxable_amount"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -223,13 +223,13 @@ const BillCheckingHistory = ({ match }) => {
       name: "Igst Amount",
       selector: (row) => row.igst_amount,
       sortable: true,
-      
+
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("igst_amount"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("igst_amount"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -240,7 +240,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "Gst Amount",
       selector: (row) => row.gst_amount,
@@ -248,9 +248,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("gst_amount"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("gst_amount"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -268,9 +268,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("round_off"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("round_off"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -288,9 +288,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("tcs"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("tcs"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -308,9 +308,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("bill_amount"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("bill_amount"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -329,18 +329,18 @@ const BillCheckingHistory = ({ match }) => {
         <div>
           {row.is_tds_applicable === 1 && (
             <span className="badge bg-primary">YES</span>
-            )}
+          )}
           {row.is_tds_applicable === 0 && (
             <span className="badge bg-danger">NO</span>
-            )}
+          )}
         </div>
       ),
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("is_tds_applicable"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("is_tds_applicable"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -351,7 +351,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    
+
     {
       name: "TCS Applicable",
       selector: (row) => row.is_tcs_applicable,
@@ -360,18 +360,18 @@ const BillCheckingHistory = ({ match }) => {
         <div>
           {row.is_tcs_applicable === 1 && (
             <span className="badge bg-primary">YES</span>
-            )}
+          )}
           {row.is_tcs_applicable === 0 && (
             <span className="badge bg-danger">NO</span>
-            )}
+          )}
         </div>
       ),
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("is_tcs_applicable"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("is_tcs_applicable"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -390,18 +390,18 @@ const BillCheckingHistory = ({ match }) => {
         <div>
           {row.is_original_bill_needed === 1 && (
             <span className="badge bg-primary">YES</span>
-            )}
+          )}
           {row.is_original_bill_needed === 0 && (
             <span className="badge bg-danger">NO</span>
-            )}
+          )}
         </div>
       ),
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("is_original_bill_needed"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("is_original_bill_needed"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -419,9 +419,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("tds_section"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("tds_section"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -439,9 +439,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("tds_constitution"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("tds_constitution"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -459,9 +459,9 @@ const BillCheckingHistory = ({ match }) => {
       conditionalCellStyles: [
         {
           when: (row) =>
-          row.changes &&
-          row.changes.length > 1 &&
-          row.changes.includes("tds_percentage"),
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes("tds_percentage"),
           style: {
             color: "red",
             fontWeight: "bold",
@@ -508,7 +508,7 @@ const BillCheckingHistory = ({ match }) => {
             "&:hover": {
               cursor: "pointer",
             },
-          },  
+          },
         },
       ],
     },
@@ -647,9 +647,6 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-    // { name: "Authorized by management", selector: (row) => row.authorized_by_managemnet, sortable: true },
-
-    // { name: "Authorized by management", selector: (row) => row.authorized_by_managemnet, sortable: true },
 
     {
       name: "Authorized by HOD",
@@ -706,7 +703,7 @@ const BillCheckingHistory = ({ match }) => {
       name: "Levels Of Approval",
       selector: (row) => row.level,
       sortable: true,
-      
+
       conditionalCellStyles: [
         {
           when: (row) =>
@@ -728,7 +725,7 @@ const BillCheckingHistory = ({ match }) => {
       name: "Pending from",
       selector: (row) => row.level_approver,
       sortable: true,
-      width:"250px",
+      width: "250px",
       cell: (row) => (
         <div
           className="btn-group"
@@ -785,6 +782,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
+
     {
       name: "Rejected by",
       selector: (row) => row.is_rejected_by,
@@ -811,12 +809,8 @@ const BillCheckingHistory = ({ match }) => {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 0 && (
-            <span className="badge bg-danger">YES</span>
-          )}
-          {row.is_active == 1 && (
-            <span className="badge bg-primary">NO</span>
-          )}
+          {row.is_active == 0 && <span className="badge bg-danger">YES</span>}
+          {row.is_active == 1 && <span className="badge bg-primary">NO</span>}
         </div>
       ),
       conditionalCellStyles: [
@@ -916,73 +910,7 @@ const BillCheckingHistory = ({ match }) => {
         },
       ],
     },
-
-    //   { name: "Assign From", selector: (row) => row.assigned_from, sortable: true },
-
-    //   { name: "Expected Bill Received Date", selector: (row) => row.expected_bill_received_date, sortable: true,
-    //   conditionalCellStyles: [
-    //     {
-    //       when: row => row.changes && row.changes.length > 1 && row.changes.includes("expected_solve_date"),
-    //       style: {
-    //         color: 'red',
-    //         fontWeight: 'bold',
-    //         '&:hover': {
-    //           cursor: 'pointer',
-    //         },
-    //       },
-    //     },
-
-    //   ]
-    // },
-
-    //   { name: "gst Amount", selector: (row) => row.gst_amount, sortable: true },
-
-    //   // { name: "Tds Percentage", selector: (row) => row.tds_percentage ,sortable: true },
-    //   { name: "IP Address", selector: (row) => row.ip_address ,sortable: true },
-
-    //   { name: "Hold Amount", selector: (row) => row.hold_amount, sortable: true },
-    //   { name: "Actual Amount Paid ", selector: (row) => row.actual_amount_paid, sortable: true },
-
-    //     { name: "Payment Date", selector: (row) => row.payment_date, sortable: true,
-    //     conditionalCellStyles: [
-    //       {
-    //           when: row => row.changes && row.changes.length > 1 && row.changes.includes("payment_date"),
-    //           style: {
-    //               color: 'red',
-    //               fontWeight: 'bold',
-    //               '&:hover': {
-    //                   cursor: 'pointer',
-    //                 },
-    //             },
-    //         },
-
-    //     ]
-    //   },
-    //     { name: "Is Active", selector: (row) => (row.is_active ===1 ? 'ACTIVE' : "DEACTIVE"), sortable: true ,
-    //     conditionalCellStyles: [
-    //       {
-    //           when: row => row.changes && row.changes.length > 1 && row.changes.includes("is_active"),
-    //           style: {
-    //               color: 'red',
-    //               fontWeight: 'bold',
-    //               '&:hover': {
-    //                   cursor: 'pointer',
-    //                 },
-    //             },
-    //         },
-
-    //     ]
-    //   },
   ];
-
-  // const conditionalRowStyles = [
-  //   {
-  //     when: row => row.operation=="UPDATE",
-  //     style: {
-  //       color: "red"
-  //     }
-  //   }
-  // ];
 
   const loadData = async () => {
     await new BillCheckingService().getBillCheckHistory(id).then((res) => {
@@ -1014,10 +942,10 @@ const BillCheckingHistory = ({ match }) => {
               round_off: temp[key].round_off,
               tcs: temp[key].tcs,
               bill_amount: temp[key].bill_amount,
-              payment_status:temp[key].payment_status,
+              payment_status: temp[key].payment_status,
               is_tds_applicable: temp[key].is_tds_applicable,
               is_tcs_applicable: temp[key].is_tcs_applicable,
-              level_approver:temp[key].level_approver,
+              level_approver: temp[key].level_approver,
               is_original_bill_needed: temp[key].is_original_bill_needed,
 
               tds_percentage: temp[key].tds_percentage,
@@ -1044,7 +972,7 @@ const BillCheckingHistory = ({ match }) => {
               vendor_id: temp[key].vendor_id,
               bill_type_name: temp[key].bill_type_name,
               changes: temp[key].changes,
-              is_canceled:temp[key].is_canceled,
+              is_canceled: temp[key].is_canceled,
               operation: temp[key].operation,
               ip_address: temp[key].ip_address,
               hold_amount: temp[key].hold_amount,
@@ -1070,7 +998,7 @@ const BillCheckingHistory = ({ match }) => {
     loadData();
   }, []);
 
-    return (
+  return (
     <>
       <div>
         {/* Page Header */}
@@ -1090,7 +1018,6 @@ const BillCheckingHistory = ({ match }) => {
                     selectableRows={false}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
-                    // conditionalRowStyles={conditionalRowStyles}
                   />
                 )}
               </div>

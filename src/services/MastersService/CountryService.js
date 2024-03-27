@@ -1,7 +1,7 @@
 import axios from "axios";
 import { userSessionData } from "../../settings/constants";
 import { masterURL } from "../../settings/constants";
-export const _apiUrl = "http://3.108.206.34/2_Testing/TSNewBackend/public/api";
+export const _apiUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api";
 
 
 const _URL = masterURL.country;
@@ -9,8 +9,8 @@ const _URL = masterURL.country;
 const _getAllCountry = _URL + "/getAllCountry";
 const _getAllCountrySort = _URL + "/getAllCountry/1/1";
 const _postCountry = _URL + "/createCountry";
-const _roleType =_apiUrl+ "/billCheckingMaster/getDropdowns";
-const _salarySlip=_apiUrl+"/salarySlip";
+const _roleType = _apiUrl + "/billCheckingMaster/getDropdowns";
+const _salarySlip = _apiUrl + "/salarySlip";
 
 const _getCountryById = _URL + "/getCountryById/";
 const _updateCountry = _URL + "/updateCountry/";
@@ -73,7 +73,7 @@ export default class CountryService {
       },
     };
     const used_for = "on_roll_type"
-    return axios.post(_roleType,{used_for}, config);
+    return axios.post(_roleType, { used_for }, config);
   }
 
 
@@ -85,7 +85,7 @@ export default class CountryService {
     //   year: data.get("year"),
     //   on_roll_type: data.get("on_roll_type")
     // };
-    
+
 
     const config = {
       headers: {
@@ -94,12 +94,9 @@ export default class CountryService {
         "Content-Type": "application/json",
       },
     };
- 
-    return axios.post(_salarySlip,payload, config);
+
+    return axios.post(_salarySlip, payload, config);
   }
-  
-
-  
 
 
 
@@ -108,7 +105,10 @@ export default class CountryService {
 
 
 
-  
+
+
+
+
 
   // getCountrySort() {
   //     return axios.get(_getAllCountrySort);

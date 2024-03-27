@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
@@ -11,9 +14,18 @@ import PageHeader from "../../../components/Common/PageHeader";
 import { Astrick } from "../../../components/Utilities/Style";
 import *  as Validation from '../../../components/Utilities/Validation';
 import Select from 'react-select';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function EditModuleComponent({ match }) {
     const history = useNavigate();
+  
+    
+    const dispatch = useDispatch();
+  
+    const checkRole = useSelector((DashboardSlice) =>
+      DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    );
     const [notify, setNotify] = useState(null);
    
     const {id} =useParams()
@@ -30,7 +42,7 @@ export default function EditModuleComponent({ match }) {
     const [modulesDropdown, setModulesDropdown] = useState(null);
 
     const roleId = sessionStorage.getItem("role_id")
-    const [checkRole, setCheckRole] = useState(null)
+    // const [checkRole, setCheckRole] = useState(null)
 
 
     // const handleDependent=(e,name)=>{
@@ -78,15 +90,17 @@ export default function EditModuleComponent({ match }) {
                 }
             }
         })
+        dispatch(getRoles())
 
-        await new ManageMenuService().getRole(roleId).then((res) => {
-            if (res.status === 200) {
-                if (res.data.status == 1) {
-                    const getRoleId = sessionStorage.getItem("role_id");
-                    setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-                }
-            }
-        })
+
+        // await new ManageMenuService().getRole(roleId).then((res) => {
+        //     if (res.status === 200) {
+        //         if (res.data.status == 1) {
+        //             const getRoleId = sessionStorage.getItem("role_id");
+        //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
+        //         }
+        //     }
+        // })
     }
 
     const handleForm = async (e) => {
@@ -121,17 +135,19 @@ export default function EditModuleComponent({ match }) {
         loadData();
 
         return () => {
-            console.log("");
+          
+            
         }
     }, [])
 
     useEffect(()=>{
-        if(checkRole && checkRole[21].can_update === 0){
-          // alert("Rushi")
+        if(checkRole && checkRole[0]?.can_update === 0){
+        
+            
       
           window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
         }
-      },[checkRole])
+      },[])
     return (
         <div className="container-xxl">
             {notify && <Alert alertData={notify} />}
@@ -269,7 +285,7 @@ export default function EditModuleComponent({ match }) {
                             </div>{/* CARD */}
 
                             <div className="mt-3" style={{ 'textAlign': 'right' }}>
-                                {checkRole && checkRole[21].can_update === 1 ? <button type="submit" className="btn btn-sm btn-primary">Update</button> : ""}
+                                {checkRole && checkRole[0]?.can_update === 1 ? <button type="submit" className="btn btn-sm btn-primary">Update</button> : ""}
                                 <Link to={`/${_base}/SubModule`} className="btn btn-sm btn-danger text-white">Cancel</Link>
                             </div>
 
@@ -280,3 +296,10 @@ export default function EditModuleComponent({ match }) {
         </div>
     )
 }
+
+
+
+
+
+
+

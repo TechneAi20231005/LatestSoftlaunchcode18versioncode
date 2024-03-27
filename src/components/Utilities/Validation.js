@@ -14,10 +14,10 @@ export const RequiredNumbersOnly = (e) => {
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   // Check if the input is 0
-  if (key === '0') {
-    e.preventDefault();
-    return false;
-  }
+  // if (key === '0') {
+  //   e.preventDefault();
+  //   return false;
+  // }
 
   if (!regex.test(key)) {
     e.preventDefault();
@@ -186,14 +186,14 @@ export const Characters = (e) => {
 };
 
 export const CharacterWithSpace = (e) => {
-  var regex = new RegExp("^[a-zA-Z ]+$");
-  // var regex = regex1.replace(/[^A-Za-z]/gi, "")
+  var regex = new RegExp("^[a-zA-Z0-9\\s@#$%^&*()_+={}\\[\\]:;\"'<>,.?/|]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
     return false;
   }
 };
+
 
 export const userNameOnly = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9]+$");
@@ -219,8 +219,8 @@ export const addressFieldOnly = (e) => {
   );
 
   if (e.keyCode === 13) {
-  
-    
+
+
     return true;
   }
 
@@ -231,15 +231,36 @@ export const addressFieldOnly = (e) => {
   }
 };
 
-export const CharactersOnly = (e) => {
-  // const reg = /^[A-Za-z]+$/
-  // let preval=e.target.value
-  // if (e.target.value === '' || reg.test(e.target.value))
-  // return true
-  // else
-  // e.target.value = preval.substring(0,(preval.length-1))
 
-  var regex = new RegExp("^[a-zA-Z]+$");
+export const addressField = (e) => {
+  const regex = new RegExp(
+    "^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:'\"\\/\\[\\]{}|`~\\n]{0,250}$"
+  );
+
+  if (e.keyCode === 13) {
+
+
+    return true;
+  }
+
+  const value =
+    e.target.value + String.fromCharCode(e.charCode || e.which || 0);
+  if (!regex.test(value)) {
+    e.preventDefault();
+  }
+};
+
+// export const CharactersOnly = (e) => {
+//   var regex = new RegExp("^[a-zA-Z]+$");
+//   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+//   if (!regex.test(key)) {
+//     e.preventDefault();
+//     return false;
+//   }
+// };
+
+export const CharactersOnly = (e) => {
+  var regex = new RegExp("^[a-zA-Z0-9]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -247,8 +268,9 @@ export const CharactersOnly = (e) => {
   }
 };
 
+
 export const CharactersNumbersOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z 0-9]+$");
+  var regex = new RegExp("^[a-zA-Z0-9 !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -286,8 +308,8 @@ export const validateTemplateName = (e, existingTemplates) => {
     return;
   }
 
-   // Check if existingTemplates is an array and not null or undefined
-   if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
+  // Check if existingTemplates is an array and not null or undefined
+  if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
     // Handle the case where existingTemplates is not valid
     console.error("Invalid or empty existingTemplates");
     return;
@@ -403,6 +425,23 @@ export const CharactersNumbersSpeicalOnly = (e) => {
   }
 };
 
+
+
+
+export const emailOnly = (e) => {
+  // Get the entered character
+  const key = e.key;
+
+  // Email regex pattern
+  const emailRegex = /^[a-zA-Z0-9._@]+$/;
+
+  // Check if the entered character is valid for an email address
+  if (!emailRegex.test(key)) {
+    e.preventDefault();
+    return false;
+  }
+};
+
 export const RefNumbersSpeicalOnly = (e) => {
   var regex = new RegExp(
     "^[0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?\\s-]{0,20}$"
@@ -493,25 +532,17 @@ export const CharacterFirstOnly = (e) => {
   }
 };
 
-// export const EmailOnly = (e) => {
-//   var regex = new RegExp("^([a-zd.-]+)@([a-zd-]+).([a-z]{2,8})(.[a-z]{2,8})?$");
-//   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-//   if (!regex.test(key)) {
-//     e.preventDefault();
-//     return false;
-//   }
-// };
-
 export const EmailOnly = (e) => {
-  var regex = new RegExp(
-    "^([a-zA-Z0-9_-.]+)@([a-zA-Z0-9_-.]+).([a-zA-Z]{2,5})$"
-  );
+  var regex = new RegExp("^([a-zd.-]+)@([a-zd-]+).([a-z]{2,8})(.[a-z]{2,8})?$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
     return false;
   }
 };
+
+
+
 
 export const imageOnly = (e) => {
   const imageFile = e.target.files[0];

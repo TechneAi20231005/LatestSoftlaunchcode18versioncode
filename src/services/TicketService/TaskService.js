@@ -180,7 +180,7 @@ export function resourcePlanningUserTask(payload){
 
 //Suyash 30/5/22
 export  function getTaskOwnerTime(payload){
-    // console.log('pppp',payload);
+
     const token = localStorage.getItem("jwt_token");
   
     const config = {

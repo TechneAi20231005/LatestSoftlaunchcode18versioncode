@@ -60,9 +60,9 @@ export default class MyTicketService {
 }
 
   postTicket(payload) {
-     payload.append("tenant_id", userSessionData.tenantId);
+    //  payload.append("tenant_id", userSessionData.tenantId);
     payload.append("created_by", userSessionData.userId);
-    payload.append("created_at", userSessionData.time);
+    // payload.append("created_at", userSessionData.time);
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -112,8 +112,10 @@ export default class MyTicketService {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
+        // Accept: "application/json",
+        // "Content-Type": "application/json",
         Accept: "application/json",
-        "Content-Type": "application/json",
+        'Content-Type': 'multipart/form-data'
       },
     };
     return axios.post(_updateTicket + id, payload, config);
@@ -214,8 +216,8 @@ export default class MyTicketService {
   }
 
   getBulkFormat(payload) {
-    payload.append("created_by", userSessionData.userId);
-    payload.append("created_at", userSessionData.time);
+    // payload.append("created_by", userSessionData.userId);
+    // payload.append("created_at", userSessionData.time);
     const token = localStorage.getItem("jwt_token");
 
     const config = {

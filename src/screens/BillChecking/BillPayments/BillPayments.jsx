@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from "react";
 import Alert from "../../../components/Common/Alert";
 import PageHeader from "../../../components/Common/PageHeader";
@@ -16,15 +14,16 @@ import ManageMenuService from "../../../services/MenuManagementService/ManageMen
 import axios from "axios";
 import { _attachmentUrl } from "../../../settings/constants";
 import { Astrick } from "../../../components/Utilities/Style";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 const BillPayments = () => {
+  const dispatch = useDispatch();
   const [filteredData, setFilteredData] = useState();
   const [exportFilteredData, setExportFilteredData] = useState();
 
   const [notify, setNotify] = useState();
   const roleId = sessionStorage.getItem("role_id");
-
-  const [checkRole, setCheckRole] = useState(null);
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
   const [data, setData] = useState();
@@ -49,33 +48,12 @@ const BillPayments = () => {
     setModals(data);
   };
 
-  // const handleModals = async(e) => {
-  //   const formData = new FormData(e.target);
-
-  //   formData.append("bill_type", props.ticketId);
-  //   await new BillTransactionService()
-  //   .getBillDetailsOfPaymentGrid()
-  //   .then((res) => {
-  //     if (res.status === 200) {
-  //       if (res.data.status == 1) {
-  //         setData(res.data.data);
-  //         setBillTypeDropdown(
-  //           res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
-  //         );
-  //       }
-  //     }
-  //   });
-  //     setModals(data);
-  //   };
-
   const handleData = async (e, row) => {
-
     const payload = {
-      "bill_type": row["bill Type Id"]? row["bill Type Id"] : "",
-      "vendor_id": row["Vendor id"],
-      "date": tillDate
-    }
-    // payload.append("id", userSessionData && userSessionData.userId)
+      bill_type: row["bill Type Id"] ? row["bill Type Id"] : "",
+      vendor_id: row["Vendor id"],
+      date: tillDate,
+    };
     await new BillTransactionService()
       .getBillDetailsOfPaymentGrid(userSessionData.userId, payload)
       .then((res) => {
@@ -100,8 +78,6 @@ const BillPayments = () => {
       sortable: false,
       cell: (row) => (
         <span>
-          {/* {row.payment_status_name!="Paid" && */}
-
           <button
             type="button"
             className="btn btn-sm btn-info "
@@ -119,7 +95,6 @@ const BillPayments = () => {
           >
             <i class="icofont-eye-alt text-white"></i>
           </button>
-          {/* }  */}
         </span>
       ),
     },
@@ -152,11 +127,7 @@ const BillPayments = () => {
       sortable: false,
     },
     { name: "Bill ID", selector: (row) => row["Bill ID"], sortable: false },
-    // {
-    //   name: "SBI Amount",
-    //   selector: (row) => row["SBI Amount"],
-    //   sortable: false,
-    // },
+
     { name: "Remark", selector: (row) => row["Remark"], sortable: false },
     {
       name: "Beneficiary name",
@@ -175,25 +146,6 @@ const BillPayments = () => {
       sortable: false,
     },
     { name: "IFSC Code", selector: (row) => row["IFSC Code"], sortable: false },
-
-    // { name: "ERP Name", selector: (row) => row.acme_account_name, sortable: false },
-    // { name: "ERP Balance", selector: (row) => row.balance, sortable: false },
-
-    // {
-    //   name: "Transaction",
-    //   selector: (row) => row.transaction_id,
-    //   sortable: false,
-    // },
-
-    // { name: "Acme No", selector: (row) => row.acme_no, sortable: false },
-    // { name: "Paid", selector: (row) => row.bc_id, sortable: false },
-
-    // { name: "Advance IDs", selector: (row) => row.remark, sortable: false },
-    // { name: "Advance Amount", selector: (row) => row.remark, sortable: false },
-
-    // { name: "Card Number", selector: (row) => row.card_number, sortable: false },
-    // { name: "Ref Number", selector: (row) => row.reference_number, sortable: false },
-    // { name: "Narration", selector: (row) => row.narration, sortable: false },
   ];
 
   const [tillDate, setTillDate] = useState("");
@@ -228,20 +180,12 @@ const BillPayments = () => {
         }
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    dispatch(getRoles());
 
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const a = res.data.data;
-          console.log("a", a);
 
           SetAuthorities(res.data.data);
         }
@@ -255,12 +199,9 @@ const BillPayments = () => {
     e.preventDefault();
     const form = new FormData(e.target);
     const tempData = [];
-    const FilterData=[]
+    const FilterData = [];
     form.append("requestFor", myForm.current.buttonId);
-    // Display the key/value pairs
-    // for (var pair of form.entries()) {
-    //     console.log(pair[0]+ ', ' + pair[1]);
-    // }
+
     if (form.get("requestFor") == "downloadButton") {
       await new BillPaymentServices().downloadTxtFile(form).then((res) => {
         if (res.status === 200) {
@@ -269,20 +210,6 @@ const BillPayments = () => {
             URL = "http://3.108.206.34/" + res.data.data;
             alert(res.data.data);
             window.open(URL, "_blank").focus();
-            // axios.get({
-            //     url: URL,
-            //     method: 'GET',
-            //     responseType: 'blob', // important
-            // }).then((response) => {
-            //     const href = URL.createObjectURL(response.data);
-            //     const link = document.createElement('a');
-            //     link.href = href;
-            //     link.setAttribute('download',a);
-            //     document.body.appendChild(link);
-            //     link.click();
-            //     document.body.removeChild(link);
-            //     URL.revokeObjectURL(href);
-            // });
           }
         }
       });
@@ -292,7 +219,6 @@ const BillPayments = () => {
           if (res.data.status == 1) {
             let counter = 1;
             const temp = res.data.data;
-            // console.log("temp",temp)
             if (temp.length > 0) {
               for (const key in temp) {
                 tempData.push({
@@ -324,26 +250,6 @@ const BillPayments = () => {
                   "Vendor id": temp[key].vendor_id,
                   "bill Type Id": temp[key].bill_type_id,
                   bill_amount: temp[key].bill_amount,
-
-                  // ifsc_code: temp[key].ifsc_code,
-                  // id: temp[key].id,
-                  // remark: temp[key].remark,
-
-                  // address: temp[key].address,
-
-                  // bank_name: temp[key].bank_name,
-                  // bank_branch_name: temp[key].bank_branch_name,
-                  // account_no: temp[key].account_no,
-
-                  // bill_no: temp[key].bill_no,
-
-                  // transaction_id: temp[key].transaction_id,
-
-                  // acme_account_name: temp[key].acme_account_name,
-                  // beneficiary_name: temp[key].beneficiary_name,
-                  // narration: temp[key].narration,
-                  // card_number: temp[key].card_number,
-                  // reference_number: temp[key].reference_number,
                 });
               }
               setFilteredData(tempData);
@@ -359,52 +265,16 @@ const BillPayments = () => {
                   "Payment Amount": temp[key].total_payment,
                   "Vendor Bill No": temp[key].bill_no,
                   "Bill ID": temp[key].bc_id,
-                  "SBI Amount": temp[key].balance,
-                  "Remark": temp[key].remark,
+                  Remark: temp[key].remark,
                   "Beneficiary name": temp[key].beneficiary_name,
                   "Bank Name": temp[key].bank_name,
                   "Branch Name": temp[key].bank_branch_name,
                   "Account Number": temp[key].account_no,
                   "IFSC Code": temp[key].ifsc_code,
-                  // "Tds": temp[key].tds_amount,
-                  // "IGST": temp[key].igst_amount,
-
-                  // "GST": temp[key].gst_amount,
-                  // "Net Payment": temp[key].net_payment,
-                  // "IFSC Code": temp[key].ifsc_code,
-
-                  // "Amount to be paid": temp[key].amount_to_be_paid,
-
-                  // "Payment status": temp[key].convention_name,
-
-
-                  // "Vendor id": temp[key].vendor_id,
-                  // "bill Type Id": temp[key].bill_type_id,
-                  // bill_amount: temp[key].bill_amount
-
-                  // ifsc_code: temp[key].ifsc_code,
-                  // id: temp[key].id,
-                  // remark: temp[key].remark,
-
-                  // address: temp[key].address,
-
-                  // bank_name: temp[key].bank_name,
-                  // bank_branch_name: temp[key].bank_branch_name,
-                  // account_no: temp[key].account_no,
-
-                  // bill_no: temp[key].bill_no,
-
-                  // transaction_id: temp[key].transaction_id,
-
-                  // acme_account_name: temp[key].acme_account_name,
-                  // beneficiary_name: temp[key].beneficiary_name,
-                  // narration: temp[key].narration,
-                  // card_number: temp[key].card_number,
-                  // reference_number: temp[key].reference_number,
                 });
               }
               setFilteredData(tempData);
-              setExportFilteredData(FilterData)
+              setExportFilteredData(FilterData);
             }
           }
         }
@@ -435,14 +305,6 @@ const BillPayments = () => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    if (checkRole && checkRole[46].can_read === 0) {
-      // alert("Rushi")
-
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    }
-  }, [checkRole]);
-
   return (
     <>
       <div className="container-xxl" style={{ width: "100%" }}>
@@ -453,7 +315,7 @@ const BillPayments = () => {
           renderRight={() => {
             return (
               <div className="d-flex flex-row-reverse">
-              {authorities && authorities.Bill_Payment === true &&
+                {authorities && authorities.Bill_Payment === true && (
                   <button
                     type="button"
                     style={{
@@ -462,7 +324,6 @@ const BillPayments = () => {
                           ? "none"
                           : "block",
                     }}
-                  
                     className="btn btn-primary btn-set-task w-sm-100"
                     onClick={(e) => {
                       handleModal({
@@ -475,31 +336,15 @@ const BillPayments = () => {
                     <i className="icofont-upload-alt me-2 fs-6"></i>Auto Update
                     Payment
                   </button>
-                                  }
+                )}
 
                 {filteredData && (
                   <ExportBillPaymentFile
                     className="btn btn-sm btn-danger"
                     apiData={exportFilteredData}
-                    // disabled={deta.Download_Payment == false ? true : false}
                     fileName="Bill Payemnt Report"
                   />
                 )}
-                {/* {deta &&
-                    <div className="col-md-5 mt-3 ">
-                      <button className="btn  btn-info text-white"
-                        // disabled={deta.Download_Payment == false ? true : false}
-                        name="buttonType"
-                        defaultValue="downloadButton"
-                        id="downloadButton"
-                        // onClick={e=>{handleDownloadPayment(e)}}
-                        type="submit"
-                        onClick={e => myForm.current.buttonId = e.target.id}
-                      >
-                        Download Txt Files <i className="icofont-download" />
-                      </button>
-                    </div>
-                  } */}
               </div>
             );
           }}
@@ -521,7 +366,6 @@ const BillPayments = () => {
                       id="bill_type"
                       name="bill_type[]"
                       placeholder="Bill Type"
-                      required
                     />
                   )}
                 </div>
@@ -556,28 +400,24 @@ const BillPayments = () => {
                       <i className="icofont-filter" /> Filter
                     </button>
                   </div>
-                  {filteredData && authorities&& authorities.Bill_Payment===true && (
-                    <div className="col-md-5 mt-3 ">
-                      <button
-                        className="btn  btn-info text-white"
-                        name="buttonType"
-                        defaultValue="downloadButton"
-                        id="downloadButton"
-                        //onClick={e=>{handleDownloadPayment(e)}}
-                        // style={{
-                        //   display:
-                        //     authorities && authorities.Bill_Payment === false
-                        //       ? "none"
-                        //       : "block",
-                        // }}
-                      
-                        type="submit"
-                        onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                      >
-                        Download Txt Files <i className="icofont-download" />
-                      </button>
-                    </div>
-                  )}
+                  {filteredData &&
+                    authorities &&
+                    authorities.Bill_Payment === true && (
+                      <div className="col-md-5 mt-3 ">
+                        <button
+                          className="btn  btn-info text-white"
+                          name="buttonType"
+                          defaultValue="downloadButton"
+                          id="downloadButton"
+                          type="submit"
+                          onClick={(e) =>
+                            (myForm.current.buttonId = e.target.id)
+                          }
+                        >
+                          Download Txt Files <i className="icofont-download" />
+                        </button>
+                      </div>
+                    )}
                 </div>
               </div>
             </form>
@@ -598,7 +438,9 @@ const BillPayments = () => {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
-              ): <b style={{marginLeft:"700px"}}> No Data Found </b>}
+              ) : (
+                <b style={{ marginLeft: "700px" }}> No Data Found </b>
+              )}
             </div>
           </div>
         </div>
@@ -649,8 +491,6 @@ const BillPayments = () => {
         </form>
       </Modal>
 
-      {/* modal for View Bill Payments */}
-
       <Modal
         centered
         show={modals.showModals}
@@ -678,12 +518,9 @@ const BillPayments = () => {
                   <th>IGST</th>
                   <th>GST</th>
                   <th>Net Payment</th>
-                  {/* <th>Acme Number</th> */}
                   <th>Amount To Be Paid </th>
                   <th>Payment Date </th>
                   <th>Payment Status </th>
-                  {/* <th>Actual Payment Date </th> */}
-                  {/* <th>Payment Ref No</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -691,19 +528,6 @@ const BillPayments = () => {
                   d.map((data) => {
                     return (
                       <tr>
-                        {/* {data && JSON.stringify(data["Payment status"])} */}
-                        {/* <td>{data["Bill ID"]}</td>
-                        <td>{data["Vendor Name"]}</td>
-                        <td>{data["Payment Amount"]}</td>
-
-                        <td>{data["Tds"]}</td>
-                        <td>{data["IGST"]}</td>
-                        <td width="100px">{data["GST"]}</td>
-                        <td width="100px">{data["Net Payment"]}</td>
-                        <td width="100px">{data["Amount to be paid"]}</td>
-                        <td width="100px">{data["Payment Date"]}</td>
-                        <td width="100px">{data["Payment status"]}</td> */}
-
                         <td>{data.bc_id}</td>
                         <td>{data.vendor_name}</td>
                         <td>{data.bill_amount}</td>
@@ -721,21 +545,10 @@ const BillPayments = () => {
               </tbody>
             </Table>
           </Modal.Body>
-          {/* <Modal.Footer className="justify-content-center">
-            <button type="submit"
-              className="btn btn-sm btn-primary"
-              style={{ backgroundColor: "#484C7F" }}>
-              Upload
-            </button>
-          </Modal.Footer> */}
         </form>
       </Modal>
     </>
   );
- 
-        }  
+};
 
 export default BillPayments;
-
-
-

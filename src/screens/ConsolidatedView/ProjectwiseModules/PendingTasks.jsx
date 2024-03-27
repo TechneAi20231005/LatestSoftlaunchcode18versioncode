@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { _base } from "../../../settings/constants";
 import { Dropdown } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -8,7 +8,8 @@ import DataTable from "react-data-table-component";
 import ConsolidatedService from '../../../services/ProjectManagementService/ConsolidatedService';
 const PendingTasks = ({match}) => {
 
-  const projectId= match.params.projectId
+  // const projectId= match.params.projectId
+  const { projectId } = useParams()
 
   const [data, setData] = useState(null)
 

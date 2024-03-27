@@ -18,15 +18,17 @@ import TemplateService from "../../../services/MastersService/TemplateService";
 import DynamicFormService from "../../../services/MastersService/DynamicFormService";
 import UserService from "../../../services/MastersService/UserService";
 
-import Table from 'react-bootstrap/Table';
+import Table from "react-bootstrap/Table";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
+  const dispatch=useDispatch()
 
-  const {id} =useParams() 
-  const mappingId = id
+  const { id } = useParams();
+  const mappingId = id;
   const [notify, setNotify] = useState();
-
 
   const [customerType, setCustomerType] = useState();
   const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
@@ -37,7 +39,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
-
 
   const [template, setTemplate] = useState();
   const [templateDropdown, setTemplateDropdown] = useState();
@@ -50,10 +51,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
-  const [ratioTotal,setRatioTotal] = useState(0);
+  const [ratioTotal, setRatioTotal] = useState(0);
 
-  const roleId = sessionStorage.getItem("role_id")
-  const [checkRole, setCheckRole] = useState(null)
+  const roleId = sessionStorage.getItem("role_id");
+  // const [checkRole, setCheckRole] = useState(null);
+  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
 
   const [data, setData] = useState({
     approach: null,
@@ -85,60 +87,64 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [userData, setUserData] = useState();
   const priority = ["Low", "Medium", "High", "Very High"];
 
-
   const loadData = async () => {
-    var tempData="";
-    await new CustomerMappingService().getCustomerMappingById(mappingId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-            tempData=res.data.data;
-            setData({ 
-                approach:tempData.approach ,
-                confirmation_required:tempData.confirmation_required,
-                created_at: tempData.created_at,
-                created_by: tempData.created_by,
-                customer_id: tempData.customer_id,
-                customer_type_id: tempData.customer_type_id,
-                department_id: tempData.department_id,
-                dynamic_form_id: tempData.dynamic_form_id,
-                id: tempData.id,
-                is_active: tempData.is_active,
-                is_default: tempData.is_default,
-                module_id: tempData.module_id,
-                priority: tempData.priority,
-                project_id:tempData.project_id ,
-                query_type_id: tempData.query_type_id,
-                remark: tempData.remark,
-                sla: tempData.sla,
-                sub_module_id: tempData.sub_module_id,
-                template_id:tempData.template_id,
-                tenant_id: tempData.tenant_id,
-                updated_at: tempData.updated_at,
-                updated_by: tempData.updated_by,
-                user_policy: tempData.user_policy,
-                user_policy_label: tempData.user_policy_label,
-            })
+    var tempData = "";
+    await new CustomerMappingService()
+      .getCustomerMappingById(mappingId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            tempData = res.data.data;
+            setData({
+              approach: tempData.approach,
+              confirmation_required: tempData.confirmation_required,
+              created_at: tempData.created_at,
+              created_by: tempData.created_by,
+              customer_id: tempData.customer_id,
+              customer_type_id: tempData.customer_type_id,
+              department_id: tempData.department_id,
+              dynamic_form_id: tempData.dynamic_form_id,
+              id: tempData.id,
+              is_active: tempData.is_active,
+              is_default: tempData.is_default,
+              module_id: tempData.module_id,
+              priority: tempData.priority,
+              project_id: tempData.project_id,
+              query_type_id: tempData.query_type_id,
+              remark: tempData.remark,
+              sla: tempData.sla,
+              sub_module_id: tempData.sub_module_id,
+              template_id: tempData.template_id,
+              tenant_id: tempData.tenant_id,
+              updated_at: tempData.updated_at,
+              updated_by: tempData.updated_by,
+              user_policy: tempData.user_policy,
+              user_policy_label: tempData.user_policy_label,
+            });
+          }
         }
-      }
-    });
+      });
 
+      
+      dispatch(getRoles())
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     // setShowLoaderModal(false);
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       // setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
 
     await new CustomerTypeService().getCustomerType().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.type_name }));
+          const select = res.data.data
+            .filter((d) => d.is_active)
+            .map((d) => ({ value: d.id, label: d.type_name }));
           setCustomerType(data);
           setCustomerTypeDropdown(select);
         }
@@ -148,8 +154,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     await new CustomerMappingService().getPriorityDropdown().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const select = res.data.data.filter((d) => d.is_active).map((d) => ({ value: d.id, label: d.label }));
-
+          const select = res.data.data
+            .filter((d) => d.is_active)
+            .map((d) => ({ value: d.id, label: d.label }));
         }
       }
     });
@@ -158,9 +165,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.map((d) => ({value: d.id,label: d.query_type_name}));
+          const select = res.data.data.map((d) => ({
+            value: d.id,
+            label: d.query_type_name,
+          }));
           setQueryType(data);
-          setQueryTypeDropdown(res.data.data.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.query_type_name }))
+          setQueryTypeDropdown(
+            res.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.query_type_name }))
           );
         }
       }
@@ -172,49 +185,52 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data.map((d) => ({value: d.id, label: d.template_name }));
+          console.log("data",data)
+          const select = res.data.data.map((d) => ({
+            value: d.id,
+            label: d.template_name,
+          }));
           setTemplate(data);
           setTemplateDropdown(select);
         }
       }
     });
     await getDepartment();
-    
+
     setUserDropdown(null);
 
-
-
-    if(tempData.approach=="RW" && tempData.user_policy){
-        tempData.user_policy.forEach((d,i)=>{
-            var x=d.split(":");
-            if(x.length > 1){
-                ratiowiseData[i]=parseInt(x[1]);   
-            }
-        })
-        var sum =  ratiowiseData.reduce((result,number)=> result+number);    
-        setRatioTotal(sum);  
-    };    
+    if (tempData.approach == "RW" && tempData.user_policy) {
+      tempData.user_policy.forEach((d, i) => {
+        var x = d.split(":");
+        if (x.length > 1) {
+          ratiowiseData[i] = parseInt(x[1]);
+        }
+      });
+      var sum = ratiowiseData.reduce((result, number) => result + number);
+      setRatioTotal(sum);
+    }
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: "", label: "Select User" }]
+          var defaultValue = [{ value: "", label: "Select User" }];
 
-          const dropdown = res.data.data.filter((d) => d.is_active == 1)
-                                        .filter((d) =>d.multiple_department_id.includes(tempData.department_id))
-                                        .map((d) => ({ value: d.id, 
-                                                      label: d.first_name + " " + d.last_name+" ("+ d.id +")" }));
-        
+          const dropdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .filter((d) =>
+              d.multiple_department_id.includes(tempData.department_id)
+            )
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+            }));
 
-          if(tempData.approach=="RW"){
+          if (tempData.approach == "RW") {
             //DONT DELETE
             // const q = res.data.data.filter((d) => d.is_active == 1).filter((d) => d.multiple_department_id.includes(e.value))
             //   .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")",ratio:0 }));
-            defaultValue=dropdown;
-
-
-
-          }else{
-            defaultValue = [...defaultValue, ...dropdown];  
+            defaultValue = dropdown;
+          } else {
+            defaultValue = [...defaultValue, ...dropdown];
           }
           setUserDropdown(defaultValue);
         }
@@ -224,20 +240,23 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     //await getUser();
   };
 
-const getDynamicForm = async () =>{
-  await new DynamicFormService().getDynamicForm().then((res) => {
-    if (res.status == 200) {
-      if (res.data.status == 1) {
-        const data = res.data.data.filter((d) => d.is_active == 1);
-        const select = res.data.data.map((d) => ({ value: d.id,label: d.template_name}));
-        setDynamicForm(data);
-        setDynamicFormDropdown(select);
+  const getDynamicForm = async () => {
+    await new DynamicFormService().getDynamicForm().then((res) => {
+      if (res.status == 200) {
+        if (res.data.status == 1) {
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data.map((d) => ({
+            value: d.id,
+            label: d.template_name,
+          }));
+          setDynamicForm(data);
+          setDynamicFormDropdown(select);
+        }
       }
-    }
-  });
-}
+    });
+  };
 
-  const handleQueryType = async(e) => {
+  const handleQueryType = async (e) => {
     setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
@@ -246,21 +265,22 @@ const getDynamicForm = async () =>{
 
     const queryTypeTemp = queryType.filter((d) => d.id == e.value);
 
-    const dynamicFormDropdownTemp = dynamicForm.filter((d) => d.id == queryTypeTemp[0].form_id)
-                                              .map((d) => ({ value: d.id, label: d.template_name }));
+    const dynamicFormDropdownTemp = dynamicForm
+      .filter((d) => d.id == queryTypeTemp[0].form_id)
+      .map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
-      setData(prev => {
-        const newPrev = { ...prev }
-        newPrev['dynamic_form_id'] = queryTypeTemp[0].form_id
-        return newPrev
-      })
-      setSelectedDynamicForm(dynamicFormDropdownTemp) ;
+      setData((prev) => {
+        const newPrev = { ...prev };
+        newPrev["dynamic_form_id"] = queryTypeTemp[0].form_id;
+        return newPrev;
+      });
+      setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
-        setNotify({
-          type: "warning",
-          message: "No Form is mapped but still you can map new form",
-        });
+      setNotify({
+        type: "warning",
+        message: "No Form is mapped but still you can map new form",
+      });
     }
   };
 
@@ -269,14 +289,16 @@ const getDynamicForm = async () =>{
       if (res.status == 200) {
         if (res.data.status == 1) {
           setDepartment(res.data.data.filter((d) => d.is_active == 1));
-          var defaultValue = [{ value: 0, label: "Select Department" }]
-          var dropwdown = res.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.department }));
+          var defaultValue = [{ value: 0, label: "Select Department" }];
+          var dropwdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
           setDepartmentDropdown(defaultValue);
         }
       }
     });
-  }
+  };
 
   const getUser = async () => {
     await new UserService().getUser().then((res) => {
@@ -284,154 +306,177 @@ const getDynamicForm = async () =>{
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
           setUser(data);
-          var defaultValue = [{ value: 0, label: "Select User" }]
-          var dropwdown = res.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")" }));
+          var defaultValue = [{ value: 0, label: "Select User" }];
+          var dropwdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+            }));
           defaultValue = [...defaultValue, ...dropwdown];
           setUserDropdown(dropwdown);
         }
       }
     });
-  }
-
+  };
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
     var value = type == "Select2" ? e.value : e.target.value;
     if (nameField == "approach" && value != data.approach) {
-        setRatiowiseData([]);
-        setDepartmentDropdown(null);
-        setUserDropdown(null);
-        setData(prev => {
-            const newPrev = { ...prev }
-            newPrev['department_id'] = null
-            newPrev['user_policy'] = null
-            newPrev['user_policy_label'] = null
-            return newPrev
-        })
-      handleGetDepartmentUsers(e)
+      setRatiowiseData([]);
+      setDepartmentDropdown(null);
+      setUserDropdown(null);
+      setData((prev) => {
+        const newPrev = { ...prev };
+        newPrev["department_id"] = null;
+        newPrev["user_policy"] = null;
+        newPrev["user_policy_label"] = null;
+        return newPrev;
+      });
+      handleGetDepartmentUsers(e);
       await getDepartment();
     }
 
-    if(nameField=="department_id" && data.department_id !=value){
-        setData(prev => {
-            const newPrev = { ...prev }
-            newPrev["user_policy_label"] = null;
-            return newPrev
-          })
+    if (nameField == "department_id" && data.department_id != value) {
+      setData((prev) => {
+        const newPrev = { ...prev };
+        newPrev["user_policy_label"] = null;
+        return newPrev;
+      });
     }
-    setData(prev => {
-      const newPrev = { ...prev }
-      newPrev[nameField] = value
-      return newPrev
-    })
-  }
+    setData((prev) => {
+      const newPrev = { ...prev };
+      newPrev[nameField] = value;
+      return newPrev;
+    });
+  };
 
-  const handleGetDepartmentUsers = async (e,additional_id=null) => {
+  const handleGetDepartmentUsers = async (e, additional_id = null) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: "", label: "Select User" }]
+          var defaultValue = [{ value: "", label: "Select User" }];
 
-          const dropdown = res.data.data.filter((d) => d.is_active == 1)
-                                        .filter((d) =>additional_id ? d.multiple_department_id.includes(additional_id) : d.multiple_department_id.includes(e.value))
-                                        .map((d) => ({ value: d.id, 
-                                                      label: d.first_name + " " + d.last_name+" ("+ d.id +")" }));
-        
-        
-          if(data.approach=="RW"){
+          const dropdown = res.data.data
+            .filter((d) => d.is_active == 1)
+            .filter((d) =>
+              additional_id
+                ? d.multiple_department_id.includes(additional_id)
+                : d.multiple_department_id.includes(e.value)
+            )
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+            }));
+
+          if (data.approach == "RW") {
             //DONT DELETE
             // const q = res.data.data.filter((d) => d.is_active == 1).filter((d) => d.multiple_department_id.includes(e.value))
             //   .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")",ratio:0 }));
-            defaultValue=dropdown;
-          }else{
-            defaultValue = [...defaultValue, ...dropdown];  
+            defaultValue = dropdown;
+          } else {
+            defaultValue = [...defaultValue, ...dropdown];
           }
 
           setUserDropdown(defaultValue);
         }
       }
     });
-  }
+  };
 
-  const handleRatioInput = index => async (e) =>  {
-        e.preventDefault();
-        const a=ratiowiseData;
-        var sum=0;
-        var value=e.target.value ? e.target.value : 0;
-    
-        if(parseInt(value) > 100)
-        {
-            e.target.value = 0;
-            ratiowiseData[index]=0;   
-            alert("Cannot Enter More than 100 !!!");
-        }else{
-            ratiowiseData[index]=parseInt(value);    
-            if(ratiowiseData.length > 0){
-                sum =  ratiowiseData.reduce((result,number)=> result+number);  
-                if(sum > 100){
-                    e.target.value = 0;
-                    ratiowiseData[index]=0;   
-                    alert("Ratio Total Must Be 100 !!!");
-                }
-            }
+  const handleRatioInput = (index) => async (e) => {
+    e.preventDefault();
+    const a = ratiowiseData;
+    var sum = 0;
+    var value = e.target.value ? e.target.value : 0;
+
+    if (parseInt(value) > 100) {
+      e.target.value = 0;
+      ratiowiseData[index] = 0;
+      alert("Cannot Enter More than 100 !!!");
+    } else {
+      ratiowiseData[index] = parseInt(value);
+      if (ratiowiseData.length > 0) {
+        sum = ratiowiseData.reduce((result, number) => result + number);
+        if (sum > 100) {
+          e.target.value = 0;
+          ratiowiseData[index] = 0;
+          alert("Ratio Total Must Be 100 !!!");
         }
-        sum =  ratiowiseData.reduce((result,number)=> result+number);    
-        if(sum > 100){
-            ratiowiseData[index]=0;
-            sum = ratiowiseData.reduce((result,number)=> result+number);
-        }
-        setRatioTotal(sum);        
-    } 
+      }
+    }
+    sum = ratiowiseData.reduce((result, number) => result + number);
+    if (sum > 100) {
+      ratiowiseData[index] = 0;
+      sum = ratiowiseData.reduce((result, number) => result + number);
+    }
+    setRatioTotal(sum);
+  };
 
   const handleForm = async (e) => {
-      e.preventDefault();
-      const form = new FormData(e.target);
-      var flag=1;
-        if(data.approach=="RW"){
-          if(ratioTotal > 100 || ratioTotal <= 0 )
-          {
-              alert("Sum Must Be 100");
-              flag=0;
-          }
-        }
+    e.preventDefault();
 
-      if(flag==1){
-        await new CustomerMappingService().updateCustomerMapping(mappingId,form).then(res => {
-            if(res.status===200){
-                if(res.data.status===1){
-                    history({
-                        pathname:`/${_base}/CustomerMapping`,
-                       
-                    },{ state: {alert : {type: 'success', message:res.data.message} }});
-                }else{
-                    setNotify({type: 'danger', message:res.data.message});
-                }
-            }else{
-                setNotify({type: 'danger', message:res.message});
-                new ErrorLogService().sendErrorLog("Customer","Create_Customer","INSERT",res.message);
-            }
-        }).catch(error => {
-            // const { response } = error;
-            // const { request, ...errorObject } = response; 
-            // new ErrorLogService().sendErrorLog("Status","Create_Status","INSERT",errorObject.data.message);
-        })
-      }else{
-        alert("Error No 25");
+    const form = new FormData(e.target);
+    var flag = 1;
+    if (data.approach === "RW") {
+      if (ratioTotal !== 100) {
+        alert("Sum Must Be 100");
+        flag = 0;
       }
-  }
+    }
+  
+ 
 
+    if (flag == 1) {
+      await new CustomerMappingService()
+        .updateCustomerMapping(mappingId, form)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              history(
+                {
+                  pathname: `/${_base}/CustomerMapping`,
+                },
+                {
+                  state: {
+                    alert: { type: "success", message: res.data.message },
+                  },
+                }
+              );
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
+          } else {
+            setNotify({ type: "danger", message: res.message });
+            new ErrorLogService().sendErrorLog(
+              "Customer",
+              "Create_Customer",
+              "INSERT",
+              res.message
+            );
+          }
+        })
+        .catch((error) => {
+
+        });
+    } 
+    
+
+    
+  };
 
   useEffect(() => {
     loadData();
-  },[]);
-  useEffect(()=>{
-    if(checkRole && checkRole[31].can_update === 0){
+  }, []);
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
@@ -441,113 +486,146 @@ const getDynamicForm = async () =>{
         <div className="col-sm-12">
           <div className="card mt-2">
             <div className="card-body">
-            {data  &&   
-              <form
-                onSubmit={handleForm}
-                method="post"
-                encType="multipart/form-data"
-              >
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Customer Type :<Astrick color="red" size="13px" /></b>
-                  </label>
-                  <div className="col-sm-4">
-                    {customerTypeDropdown && data && <Select
-                      id="customer_type_id"
-                      name="customer_type_id"
-                      options={customerTypeDropdown}
-                      defaultValue={data && customerTypeDropdown.filter((d)=>data.customer_type_id == d.value)}
-                      onChange={e => handleAutoChanges(e, 'Select2', 'customer_type_id')}
-                    />
-                    }
+              {console.log("data",data)}
+              {data && (
+                <form
+                  onSubmit={handleForm}
+                  method="post"
+                  encType="multipart/form-data"
+                >
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>
+                        Select Customer Type :
+                        <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <div className="col-sm-4">
+                      {customerTypeDropdown && data && (
+                        <Select
+                          id="customer_type_id"
+                          name="customer_type_id"
+                          options={customerTypeDropdown}
+                          defaultValue={
+                            data &&
+                            customerTypeDropdown.filter(
+                              (d) => data.customer_type_id == d.value
+                            )
+                          }
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "customer_type_id")
+                          }
+                        />
+                      )}
                     </div>
-
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Select Query Type :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                  {queryTypeDropdown && <Select
-                      id="query_type_id"
-                      name="query_type_id"
-                      options={queryTypeDropdown}
-                      defaultValue={ queryTypeDropdown.filter((d)=>data.query_type_id==d.value)}
-                      onChange={e => {handleAutoChanges(e, 'Select2', 'query_type_id');handleQueryType(e)}}
-                    />}
                   </div>
-                </div>
 
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Select Form : 
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                  {!selectedDynamicForm && dynamicFormDropdown && <Select
-                      id="dynamic_form_id"
-                      name="dynamic_form_id"
-                      options={dynamicFormDropdown}
-                      defaultValue={ dynamicFormDropdown.filter((d)=>data.dynamic_form_id==d.value)}
-                      onChange={e => handleAutoChanges(e, 'Select2', 'dynamic_form_id')}
-                    />
-                  }
-                  {selectedDynamicForm && dynamicFormDropdown && "H"&&<Select
-                      id="dynamic_form_id"
-                      name="dynamic_form_id"
-                      defaultValue={selectedDynamicForm}
-                      options={dynamicFormDropdown ? dynamicFormDropdown : ""}
-                      onChange={e => handleAutoChanges(e, 'Select2', 'dynamic_form_id')}
-                    />
-                  }
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>
+                        Select Query Type :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <div className="col-sm-4">
+                      {queryTypeDropdown && (
+                        <Select
+                          id="query_type_id"
+                          name="query_type_id"
+                          options={queryTypeDropdown}
+                          defaultValue={queryTypeDropdown.filter(
+                            (d) => data.query_type_id == d.value
+                          )}
+                          onChange={(e) => {
+                            handleAutoChanges(e, "Select2", "query_type_id");
+                            handleQueryType(e);
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Template :</b>
-                  </label>
-                  <div className="col-sm-4">
-                  {templateDropdown && <Select
-                      id="template_id"
-                      name="template_id"
-                      options={templateDropdown}
-                      defaultValue={ templateDropdown.filter((d)=>data.template_id==d.value)}
-                      onChange={e => handleAutoChanges(e, 'Select2', 'template_id')}
-                    />
-                  }
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>Select Form :</b>
+                    </label>
+                    <div className="col-sm-4">
+                      {!selectedDynamicForm && dynamicFormDropdown && (
+                        <Select
+                          id="dynamic_form_id"
+                          name="dynamic_form_id"
+                          options={dynamicFormDropdown}
+                          defaultValue={dynamicFormDropdown.filter(
+                            (d) => data.dynamic_form_id == d.value
+                          )}
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                          }
+                        />
+                      )}
+                      {selectedDynamicForm && dynamicFormDropdown && "H" && (
+                        <Select
+                          id="dynamic_form_id"
+                          name="dynamic_form_id"
+                          defaultValue={selectedDynamicForm}
+                          options={
+                            dynamicFormDropdown ? dynamicFormDropdown : ""
+                          }
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Priority :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                    <select
-                      className="form-control form-control-sm"
-                      id="priority"
-                      name="priority"
-                      required={true}
-                      onChange={e => handleAutoChanges(e, 'Select', 'priority')}
-                      value={data.priority}
-                    >
-                      <option value="">Select Priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                      <option value="Very High">Very High</option>
-                    </select>
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>Select Template :</b>
+                    </label>
+                    <div className="col-sm-4">
+                      {templateDropdown && (
+                        <Select
+                          id="template_id"
+                          name="template_id"
+                          options={templateDropdown}
+                          defaultValue={templateDropdown.filter(
+                            (d) => data.template_id == d.value
+                          )}
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "template_id")
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="form-group row mt-3">
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>
+                        Priority :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <div className="col-sm-4">
+                      <select
+                        className="form-control form-control-sm"
+                        id="priority"
+                        name="priority"
+                        required={true}
+                        onChange={(e) =>
+                          handleAutoChanges(e, "Select", "priority")
+                        }
+                        value={data.priority}
+                      >
+                        <option value="">Select Priority</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Very High">Very High</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>Status :</b>
                     </label>
@@ -561,10 +639,17 @@ const getDynamicForm = async () =>{
                               name="is_active"
                               id="is_active_1"
                               value="1"
-                              defaultChecked={data.is_active == 1 ? true : false}
+                              defaultChecked={
+                                data.is_active == 1 ? true : false
+                              }
                               key={Math.random()}
                             />
-                            <label className="form-check-label"  htmlFor="is_active_1">Active </label>
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
+                              Active{" "}
+                            </label>
                           </div>
                         </div>
 
@@ -576,203 +661,278 @@ const getDynamicForm = async () =>{
                               name="is_active"
                               id="is_active_0"
                               value="0"
-                              defaultChecked={data.is_active == 0 ? true : false }
+                              defaultChecked={
+                                data.is_active == 0 ? true : false
+                              }
                               key={Math.random()}
                             />
-                            <label className="form-check-label" htmlFor="is_active_0">Deactive</label>
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
+                              Deactive
+                            </label>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                <div className="row mt-2">
-                  <div className="col-sm-2">
-                    <label className="col-form-label">
-                      <b>Confirmation Required :</b>
-                    </label>
-                  </div>
+                  <div className="row mt-2">
+                    <div className="col-sm-2">
+                      <label className="col-form-label">
+                        <b>Confirmation Required :</b>
+                        <Astrick color="red" size="13px" />
+                      </label>
+                    </div>
 
-                  <div className="col-sm-1" style={{ textAlign: "left" }}>
-                    <div
-                      className="form-group mt-2 text-left d-flex justify-content-between"
-                      style={{ textAlign: "left" }}
-                    >
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="confirmation_required"
-                          id="confirmation_required_yes"
-                          value="1"
-                          key={Math.random()}
-                          defaultChecked={data.confirmation_required == 1 || data.confirmation_required == "1" }
-                        />
-                        <label className="form-check-label" htmlFor="confirmation_required_yes">
-                          Yes
-                        </label>
-                      </div>
+                    <div className="col-sm-1" style={{ textAlign: "left" }}>
+                      <div
+                        className="form-group mt-2 text-left d-flex justify-content-between"
+                        style={{ textAlign: "left" }}
+                      >
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="confirmation_required"
+                            id="confirmation_required_yes"
+                            value="1"
+                            required
+                            key={Math.random()}
+                            defaultChecked={
+                              data.confirmation_required == 1 ||
+                              data.confirmation_required == "1"
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="confirmation_required_yes"
+                          >
+                            Yes
+                          </label>
+                        </div>
 
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="confirmation_required"
-                          id="confirmation_required_no"
-                          value="0"
-                          key={Math.random()}
-                          defaultChecked={data.confirmation_required == 0 || data.confirmation_required == "0" }
-                        />
-                        <label className="form-check-label"  htmlFor="confirmation_required_no">
-                          No
-                        </label>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="confirmation_required"
+                            id="confirmation_required_no"
+                            value="0"
+                            required
+                            key={Math.random()}
+                            defaultChecked={
+                              data.confirmation_required == 0 ||
+                              data.confirmation_required == "0"
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="confirmation_required_no"
+                          >
+                            No
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Approach :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                    <select
-                      className="form-control form-control-sm"
-                      id="approach"
-                      
-                      name="approach"
-                      required={true}
-                      onChange={e => {handleAutoChanges(e, 'Select', 'approach')}}
-                      value={data.approach}
-                    >
-                      <option value="">Select Approach</option>
-                      <option value="RR">Departmentwise Round Robin</option>
-                      <option value="HLT">User Having Less Ticket</option>
-                      <option value="SP">Single Person</option>
-                      <option value="RW">Ratio Wise</option>
-                    </select>
-                  </div>
-                </div>
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>
-                        Select Department :<Astrick color="red" size="13px" />
+                        Approach :<Astrick color="red" size="13px" />
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      {departmentDropdown && <Select
-                        id="department_id"
-                        name="department_id"
-                        defaultValue={ departmentDropdown.filter((d)=>data.department_id==d.value)}
-                        options={departmentDropdown}
-                        onChange={e => { handleAutoChanges(e, 'Select2', 'department_id'); handleGetDepartmentUsers(e) }}
-                      />
-                      }
-                      {/* {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>} */}
+                      <select
+                        className="form-control form-control-sm"
+                        id="approach"
+                        name="approach"
+                        required={true}
+                        onChange={(e) => {
+                          handleAutoChanges(e, "Select", "approach");
+                        }}
+                        value={data.approach}
+                      >
+                        <option value="">Select Approach</option>
+                        <option value="RR">Departmentwise Round Robin</option>
+                        <option value="HLT">User Having Less Ticket</option>
+                        <option value="SP">Single Person</option>
+                        <option value="RW">Ratio Wise</option>
+                        <option value="SELF">Self</option>
+                      <option value="AU">Assign to user</option>
+                        
+
+                      </select>
                     </div>
                   </div>
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Select User :<Astrick color="red" size="13px" /></b>
-                    </label>
-                      {data && userDropdown && data.approach !="RW" &&
-                      <div className="col-sm-4">
-                        <Select
-                          isMulti={data.approach != "SP"}
-                          isSearchable={true}
-                          name="user_id[]"
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                          defaultValue={data && data.approach == "SP" ? userDropdown.filter(d=> d.value === data.user_policy?.user_id): data.user_policy?.map(d=>({value:d.user_id, label:d.user_name}))}
-                          options={userDropdown}
-                          required
-                          style={{ zIndex: "100" }}
-                        />
-                        </div>
-                      }
-                      {!userDropdown &&  <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span> }
+                  {data.approach !== "SELF" && data.approach !== "AU" &&(
+                       <div className="form-group row mt-3">
+                       <label className="col-sm-2 col-form-label">
+                         <b>
+                           Select Department :<Astrick color="red" size="13px" />
+                         </b>
+                       </label>
+                       <div className="col-sm-4">
+                         {departmentDropdown && (
+                           <Select
+                             id="department_id"
+                             name="department_id"
+                             defaultValue={departmentDropdown.filter(
+                               (d) => data.department_id == d.value
+                             )}
+                             options={departmentDropdown}
+                             onChange={(e) => {
+                               handleAutoChanges(e, "Select2", "department_id");
+                               handleGetDepartmentUsers(e);
+                             }}
+                           />
+                         )}
+                         {/* {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>} */}
+                       </div>
+                     </div>
 
-                    
-                      {userDropdown && data.approach =="RW" && data.department_id &&
-                        <div className="col-sm-6">
-                            <Table bordered className="mt-2" id="table">
-                            <thead>
-                              <tr className="text-center">
-                                <th>#</th>
-                                <th>Selected User</th>
-                                <th>Enter Ratio</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                            {userDropdown.map((ele, i) => {
-                                return <tr>   
-                                      <td>
-                                          {i+1}
-                                        </td>                           
-                                      <td>
-                                      <input type="hidden" className="form-control form-control-sm" 
-                                          id={`index_`+Math.random()} 
-                                          name="user_id[]" 
-                                          value={ele.value}
-                                          readOnly
-                                          />
-                                        <input type="text" className="form-control form-control-sm" 
-                                          id={`index_`+Math.random()} 
-                                          name="user_name[]" 
-                                          value={ele.label}
-                                          readOnly
-                                          />
-                                      </td>
-                                      <td>
-                                        <input type="text"   
-                                          className="form-control col-sm-2" 
-                                          name="ratio[]"
-                                          defaultValue={ratiowiseData ? ratiowiseData[i] : 0}
 
-                                          onInput={handleRatioInput(i)}
-                                          max="100"
-                                        /> 
-                                      </td>
-                                  </tr>                                
-                            })
-                          }
-                            <tr>   
-                                <td colSpan={2} className="text-right">
-                                    <b>TOTAL</b>
-                                </td>
+                  )}
+                    {data.approach !== "SELF" && data.approach !== "AU" &&(
+                         <div className="form-group row mt-3">
+                         <label className="col-sm-2 col-form-label">
+                           <b>
+                             Select User :<Astrick color="red" size="13px" />
+                           </b>
+                         </label>
+                         {data && userDropdown && data.approach != "RW" && (
+                           <div className="col-sm-4">
+                             <Select
+                               isMulti={data.approach != "SP"}
+                               isSearchable={true}
+                               name="user_id[]"
+                               className="basic-multi-select"
+                               classNamePrefix="select"
+                               defaultValue={
+                                 data && data.approach == "SP"
+                                   ? userDropdown.filter(
+                                       (d) => d.value === data.user_policy?.user_id
+                                     )
+                                   : data.user_policy?.map((d) => ({
+                                       value: d.user_id,
+                                       label: d.user_name,
+                                     }))
+                               }
+                               options={userDropdown}
+                               required
+                               style={{ zIndex: "100" }}
+                             />
+                           </div>
+                         )}
+                         {!userDropdown && (
+                           <span
+                             className="mt-2"
+                             style={{ marginTop: "10%", fontSize: "16px" }}
+                           >
+                             Loading.....
+                           </span>
+                         )}
+                         {console.log("userDropdown",userDropdown)}
+                         {console.log("data",data)}
+     
+                         {userDropdown &&
+                           data.approach == "RW" &&
+                           data.department_id && (
+                             <div className="col-sm-6">
+                               <Table bordered className="mt-2" id="table">
+                                 <thead>
+                                   <tr className="text-center">
+                                     <th>#</th>
+                                     <th>Selected User</th>
+                                     <th>Enter Ratio</th>
+                                   </tr>
+                                 </thead>
+                                 <tbody>
+                                   {userDropdown.map((ele, i) => {
+                                    // Find the corresponding user policy in user_policy array
+                                    const userPolicy = data.user_policy.find(policy => policy.startsWith(`${ele.value}:`));
+                                    // Extract the ratio value from the user policy
+                                    const defaultRatio = userPolicy ? parseInt(userPolicy.split(':')[1]) : 0;
+                                     return (
+                                       <tr>
+                                         <td>{i + 1}</td>
+                                         <td>
+                                           <input
+                                             type="hidden"
+                                             className="form-control form-control-sm"
+                                             id={`index_` + Math.random()}
+                                             name="user_id[]"
+                                             value={ele.value}
+                                             readOnly
+                                           />
+                                           <input
+                                             type="text"
+                                             className="form-control form-control-sm"
+                                             id={`index_` + Math.random()}
+                                             name="user_name[]"
+                                             value={ele.label}
+                                             readOnly
+                                           />
+                                         </td>
+                                         {console.log("ratiowiseData",ratiowiseData)}
+                                         <td>
+                                           <input
+                                             type="text"
+                                             className="form-control col-sm-2"
+                                             name="ratio[]"
+                                             defaultValue={defaultRatio}
+                                            //  defaultValue={
+                                            //    ratiowiseData ? ratiowiseData[i] : 0
+                                            //  }
+                                             onInput={handleRatioInput(i)}
+                                            //  max="100"
+                                           />
+                                         </td>
+                                       </tr>
+                                     );
+                                   })}
+                                   <tr>
+                                     <td colSpan={2} className="text-right">
+                                       <b>TOTAL</b>
+                                     </td>
+     
+                                     <td>
+                                       <input
+                                         type="text"
+                                         className="form-control col-sm-2"
+                                         id={`index_` + Math.random()}
+                                         value={ratioTotal}
+                                       />
+                                     </td>
+                                   </tr>
+                                 </tbody>
+                               </Table>
+                             </div>
+                           )}
+                       </div>
 
-                                <td>
-                                  <input type="text" className="form-control col-sm-2" 
-                                    id={`index_`+Math.random()} 
-                                    value={ratioTotal}/> 
-                                </td>
-                            </tr>
-                          </tbody>
-                        </Table>
-                      </div>
-                      }                   
-                  </div>
+
+                    )}
+               
+               
 
                   <div className="mt-3" style={{ textAlign: "right" }}>
-                  <button type="submit" className="btn btn-primary btn-sm">
-                    Update
-                  </button>
+                    <button type="submit" className="btn btn-primary btn-sm">
+                      Update
+                    </button>
 
-                  <Link
-                    to={`/${_base}/CustomerMapping`}
-                    className="btn btn-danger btn-sm text-white"
-                  >
-                    Cancel
-                  </Link>
-                </div>
-
-              </form>}
-                        
-                        
+                    <Link
+                      to={`/${_base}/CustomerMapping`}
+                      className="btn btn-danger btn-sm text-white"
+                    >
+                      Cancel
+                    </Link>
+                  </div>
+                </form>
+              )}
             </div>
-            
           </div>
         </div>
       </div>

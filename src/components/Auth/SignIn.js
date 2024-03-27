@@ -1,68 +1,41 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link, Route, useLocation } from "react-router-dom";
 import GoogleImg from "../../assets/images/google.svg";
 import Logo from "../../assets/images/logo.jpeg";
 import { _base } from "../../settings/constants";
+import { UseSelector, useDispatch, useSelector } from "react-redux";
 
 import { postData } from "../../services/loginService";
 import Alert from "../Common/Alert";
 import Dashboard from "../../screens/Dashboard/Dashboard";
+import { postLoginUser } from "./AuthSices/loginAction";
+import loginSlice from "./AuthSices/loginSlice";
 
 export default function SignIn() {
-  const location = useLocation()
+  const location = useLocation();
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
-  const [notify, setNotify] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
-  const submitHandler = async (e) => {
-    setNotify(null);
+  const notify = useSelector((loginSlice) => loginSlice.login.notify);
+
+  const submitHandler = (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
     const data = new FormData(e.target);
- await postData(data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data;
-          const token = res.data.token;
-
-          Object.keys(data).map((key) => {
-            sessionStorage.setItem(key, data[key]);
-            localStorage.setItem(key, data[key]);
-          });
-          // Object.keys(data.access).map((key) => {
-          //   sessionStorage.setItem(key, data.access[key]);
-          //   localStorage.setItem(key, data.access[key]);
-          // });
-
-          sessionStorage.setItem("jwt_token", token);
-          localStorage.setItem("jwt_token", token);
-
-          // Set token expiration time
-          const tokenExpirationTime = decodeToken(token).exp * 1000;
-          localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
-          if(localStorage.getItem("account_for") === "CUSTOMER"){
-            window.location.href = `${process.env.PUBLIC_URL}/Ticket`
-          }else{
-
-            setShouldNavigate(true);
-          }
-          // window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-          // var returnValue = {
-          //   show: true,
-          //   type: "success",
-          //   message: "Logged In !!!",
-          // };
-          // console.log(process.env.PUBLIC_URL);
-          // navigate({
-          //   pathname: `${process.env.PUBLIC_URL}/Dashboard`,
-          //   state: { alert: { type: "success", message: res.data.message } },
-          // });
-        } else {
-          setNotify();
-          setNotify({ type: "danger", message: res.data.message });
-        }
+    dispatch(postLoginUser(data)).then((success) => {
+      if (success.payload?.status === 1) {
+        const token = localStorage.getItem("jwt_token");
+        const tokenExpirationTime = decodeToken(token).exp * 1000;
+        localStorage.setItem("jwt_token_expiration", tokenExpirationTime);
+        window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
       } else {
-        setNotify({ type: "danger", message: "Permission not assigned !!!" });
+        setIsLoading(false);
       }
     });
   };
@@ -79,7 +52,6 @@ export default function SignIn() {
         })
         .join("")
     );
-
     return JSON.parse(jsonPayload);
   };
 
@@ -101,24 +73,16 @@ export default function SignIn() {
       sessionStorage.getItem("message_type") &&
       sessionStorage.getItem("message")
     ) {
-      setNotify({
-        type: sessionStorage.getItem("message_type"),
-        message: sessionStorage.getItem("message"),
-      });
       sessionStorage.setItem("message_type", null);
       sessionStorage.setItem("message", null);
     }
   };
-
-
   useEffect(() => {
     if (shouldNavigate) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`
-      // navigate("/Dashboard");
-      // navigate( `${location.pathname}Dashboard`)
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
       setShouldNavigate(false); // Reset flag to prevent multiple navigations
     }
-}, [shouldNavigate, navigate]);
+  }, [shouldNavigate, navigate]);
   useEffect(() => {
     loadData();
     checkTokenExpiration();
@@ -138,17 +102,8 @@ export default function SignIn() {
         <form onSubmit={submitHandler} className="row g-1 p-3 p-md-4">
           <div className="col-12 text-center mb-1 mb-lg-5">
             <h1 style={{ fontFamily: "Georgia, serif" }}>Sign In</h1>
-            {/* <span>Free access to our dashboard.</span> */}
           </div>
-          {/* <div className="col-12 text-center mb-4">
-                            <a className="btn btn-lg btn-outline-secondary btn-block" href="#!">
-                                <span className="d-flex justify-content-center align-items-center">
-                                    <img className="avatar xs me-2" src={GoogleImg} alt="Imag Description" />
-                                    Sign in with Google
-                                </span>
-                            </a>
-                            <span className="dividers text-muted mt-4">OR</span>
-                        </div> */}
+
           <div className="col-12">
             <div className="mb-2">
               <label className="form-label">
@@ -187,15 +142,7 @@ export default function SignIn() {
               />
             </div>
           </div>
-          {/* <div className="col-12">
 
-                            <div className="form-check">
-                                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                <label className="form-check-label" for="flexCheckDefault">
-                                    Remember me
-                                </label>
-                            </div>
-                        </div> */}
           <div className="col-12 text-center mt-4">
             <button
               type="submit"
@@ -205,10 +152,7 @@ export default function SignIn() {
               SIGN IN
             </button>
           </div>
-          {/* <div className="col-12 text-center mt-4">
-                            <span className="text-muted">Forget your password ? <b><Link to="sign-up" className="text-secondary">Reset Password</Link>
-                            </b></span>
-                        </div> */}
+
           <div className="col-12 text-center mt-4 mb-0">
             <span className="text-muted">
               <b>

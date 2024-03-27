@@ -1,43 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import ErrorLogService from "../../../services/ErrorLogService";
-import CustomerType from "../../../services/MastersService/CustomerTypeService";
-import CustomerService from "../../../services/MastersService/CustomerService";
-import CountryService from "../../../services/MastersService/CountryService";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
+
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import { Astrick } from "../../../components/Utilities/Style";
 import * as Validation from "../../../components/Utilities/Validation";
 import { _base } from "../../../settings/constants";
 import Select from "react-select";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  getCityData,
+  getCountryDataSort,
+  getCustomerData,
+  getCustomerType,
+  getRoles,
+  getStateData,
+  postCustomerData,
+} from "../../Dashboard/DashboardAction";
 export default function CreateCustomer({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+
   const [dependent, setDependent] = useState({
     country_id: null,
     state_id: null,
   });
-
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
-
-  const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
-  const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+
   const handleDependent = (e, name) => {
     setDependent({
       ...dependent,
@@ -48,6 +44,52 @@ export default function CreateCustomer({ match }) {
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
+
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const customerType = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.customerTypeData
+  );
+  const countryDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
+  );
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.FilterState
+  );
+
+  const AllcityDropDownData = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.FilterCity
+  );
+
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+  );
+
+  const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
+
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [email, setEmail] = useState("");
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+
+    if (newEmail.trim() === "") {
+      setIsValidEmail(true);
+    } else {
+      const isValid = validateEmail(newEmail);
+      setIsValidEmail(isValid);
+    }
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
     setContactNumber(contactNumber);
@@ -94,29 +136,17 @@ export default function CreateCustomer({ match }) {
       flag = 0;
       setNotify(null);
       if (customerType == "") {
-        // setNotify(null);
         alert("Please Select Customer Type");
-        // setNotify({ type: 'danger', message: "Please Select Customer Type" });
       } else if (selectEmail == "") {
-        // setNotify(null);
         alert("Please Select Email");
-        // setNotify({ type: 'danger', message: "Please Select Customer Type" });
       } else if (selectCountry == "") {
-        // setNotify(null);
         alert("Please Select Country");
-        // setNotify({ type: 'danger', message: "Please Select Country" });
       } else if (selectState == "") {
-        // setNotify(null);
         alert("Please Select State");
-        // setNotify({ type: 'danger', message: "Please Select State" });
       } else if (selectCity == "") {
-        // setNotify(null);
         alert("Please Select City");
-        // setNotify({ type: 'danger', message: "Please Select City" });
       } else {
-        // setNotify(null);
         alert("Please Check Form");
-        // setNotify({ type: 'danger', message: "Please Check Form" });
       }
     }
 
@@ -125,140 +155,40 @@ export default function CreateCustomer({ match }) {
       return false;
     } else {
       if (flag === 1) {
-        await new CustomerService().postCustomer(formData)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                history({
-                  pathname: `/${_base}/Customer`,
-                }
-                ,
-             { state: {
-                type: "success", message: res.data.message ,
-             }
-            } 
-                );
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setNotify({ type: "danger", message: res.message });
-              new ErrorLogService().sendErrorLog(
-                "Customer",
-                "Create_Customer",
-                "INSERT",
-                res.message
-              );
-            }
-          })
-
-          .catch((error) => {
-            if (error.response) {
-              const { response } = error;
-              const { request, ...errorObject } = response;
-              setNotify({ type: "danger", message: "Request Error !!!" });
-              new ErrorLogService().sendErrorLog(
-                "Customer",
-                "Create_Customer",
-                "INSERT",
-                errorObject.data.message
-              );
-            } else {
-              // Handle non-HTTP errors
-              console.error("Non-HTTP error occurred:", error.message);
-              setNotify({ type: "danger", message: "Non-HTTP error occurred" });
-            }
-          });
-          
-          // .catch((error) => {
-          //   const { response } = error;
-          //   const { request, ...errorObject } = response;
-          //   setNotify({ type: "danger", message: "Request Error !!!" });
-          //   new ErrorLogService().sendErrorLog(
-          //     "Customer",
-          //     "Create_Customer",
-          //     "INSERT",
-          //     errorObject.data.message
-          //   );
-          // });
+        dispatch(postCustomerData(formData)).then((res) => {
+          if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+            setNotify({
+              type: "success",
+              message: res?.payload?.data?.message,
+            });
+            dispatch(getCustomerData());
+            setTimeout(() => {
+              navigate(`/${_base}/Customer`, {
+                state: {
+                  alert: {
+                    type: "success",
+                    message: res?.payload?.data?.message,
+                  },
+                },
+              });
+            }, 3000);
+          } else {
+            setNotify({ type: "danger", message: res?.payload?.data?.message });
+          }
+        });
       }
     }
   };
 
-  const loadData = async () => {
-    await new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        setCustomerType(
-          data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ label: d.type_name, value: d.id }))
-        );
-      }
-    });
-
-    //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
-          setCountryDropdown(
-            res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
-    //  ************************** State load data**************************************
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
-          setStateDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.state }))
-          );
-        }
-      }
-    });
-    //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.city }))
-          );
-        }
-      }
-    });
-
-
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        // setShowLoaderModal(false);
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-        }
-      }
-    })
-  };
+  const loadData = async () => {};
 
   const handleCountryChange = (e) => {
-    // setStateDropdown(state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })))
-    // const newStatus = { ...updateStatus, statedrp: 1 }
-    // setUpdateStatus(newStatus)
-    setStateDropdown(
-      state
-        .filter((d) => d.country_id == e.value)
+    setStateDropdownData(
+      stateDropdown
+        .filter((filterState) => filterState.country_id === e.value)
         .map((d) => ({ value: d.id, label: d.state }))
     );
+
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
@@ -266,15 +196,12 @@ export default function CreateCustomer({ match }) {
   };
 
   const handleStateChange = (e) => {
-    // setCityDropdown(city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })))
-    // const newStatus = { ...updateStatus, citydrp: 1 }
-    // setUpdateStatus(newStatus)
-
-    setCityDropdown(
-      city
-        .filter((d) => d.state_id == e.value)
-        .map((d) => ({ value: d.id, label: d.city }))
+    setCityDropdownData(
+      AllcityDropDownData.filter(
+        (filterState) => filterState.state_id === e.value
+      ).map((d) => ({ value: d.id, label: d.city }))
     );
+
     const newStatus = { ...updateStatus, citydrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(e);
@@ -284,7 +211,6 @@ export default function CreateCustomer({ match }) {
   const onTestChange = () => {
     var key = window.event.keyCode;
 
-    // If the user has pressed enter
     if (key === 13) {
       document.getElementById("txtArea").value =
         document.getElementById("txtArea").value + "\n*";
@@ -294,20 +220,35 @@ export default function CreateCustomer({ match }) {
     }
   };
 
-  useEffect(()=>{
-    loadData();
-
-  },[])
   useEffect(() => {
-    if(checkRole && checkRole[3].can_create === 0){
+    dispatch(getCityData());
+    dispatch(getStateData());
+    dispatch(getCountryDataSort());
+    dispatch(getCityData());
+    if (!customerType.length) {
+      dispatch(getCustomerType());
+    }
+    if (!stateDropdown.length) {
+    }
+    if (!countryDropdown.length) {
+    }
+    if (!checkRole.length) {
+      dispatch(getRoles());
+    }
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+    if (!cityDropdownData.length) {
+    }
+  }, []);
+
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_create === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {Notify && <Alert alertData={Notify} />}
 
       <PageHeader headerTitle="Add Customer" />
 
@@ -366,20 +307,25 @@ export default function CreateCustomer({ match }) {
                       Email Address :<Astrick color="red" size="13px" />
                     </b>
                   </label>
+
                   <div className="col-sm-4">
                     <input
                       type="email"
-                      className="form-control form-control-sm"
+                      className={`form-control form-control-sm ${
+                        isValidEmail ? "" : "is-invalid"
+                      }`}
                       id="email_id"
                       name="email_id"
                       placeholder="Email Address"
-                      onKeyPress={(e) => {
-                        Validation.CharactersNumbersSpeicalOnly(e);
-                      }}
-                      // onChange={handleEmail}
+                      value={email}
+                      onChange={handleEmailChange}
                       required
-                      pattern="^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$"
                     />
+                    {!isValidEmail && (
+                      <div className="invalid-feedback">
+                        Please enter a valid email address.
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -442,17 +388,10 @@ export default function CreateCustomer({ match }) {
                       required
                       maxLength={250}
                       onChange={onTestChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                        }
-                      }}
                       onKeyPress={(e) => {
                         if (e.key === "Enter") {
-                          // Perform any desired action when the Enter key is pressed
-                          // Example: handleEnterKey();
                         } else {
-                          Validation.addressFieldOnly(e);
+                          Validation.addressField(e);
                         }
                       }}
                       rows="3"
@@ -496,7 +435,6 @@ export default function CreateCustomer({ match }) {
                       id="country_id"
                       name="country_id"
                       onChange={handleCountryChange}
-                      //defaultValue={modal.modalData ? countryDropdown.filter(d=>modal.modalData.country_id==d.value) : ""}
                       required
                     />
                   </div>
@@ -510,7 +448,9 @@ export default function CreateCustomer({ match }) {
                   <div className="col-sm-4">
                     <Select
                       options={
-                        updateStatus.statedrp !== undefined ? stateDropdown : []
+                        updateStatus.statedrp !== undefined
+                          ? stateDropdownData
+                          : []
                       }
                       id="state_id"
                       name="state_id"
@@ -533,7 +473,9 @@ export default function CreateCustomer({ match }) {
                   <div className="col-sm-4">
                     <Select
                       options={
-                        updateStatus.citydrp !== undefined ? cityDropdown : []
+                        updateStatus.citydrp !== undefined
+                          ? cityDropdownData
+                          : []
                       }
                       id="city_id"
                       name="city_id"

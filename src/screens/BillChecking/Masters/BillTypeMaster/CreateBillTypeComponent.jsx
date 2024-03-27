@@ -46,21 +46,31 @@ const CreateBillTypeComponent = () => {
   const inputRefs = useRef([]);
   const select1Refs = useRef([]);
   const assignedUserRef = useRef();
-const requiredUserRef = useRef();
-
+  const requiredUserRef = useRef();
 
   const handleIncrement = (e, index) => {
     const newData = [...approverData.data];
-    var firstAmount = newData[index].amount;
+
+    // Extract the amount from the current slab
+    let firstAmount = newData[index].amount;
+
+    // If the amount is not a number or null, set it to 0
     if (isNaN(firstAmount)) {
       firstAmount = 0.0;
     }
+
+    // On the first click, if the amount is 0 or null, show an alert
     if (firstAmount === null || firstAmount === 0) {
       alert("Please enter an amount first.");
       return;
     }
 
-    // Use a for loop to check the new amount against all existing amounts
+    // If this is not the first click, increment the amount by 1
+    if (newData.length > 1) {
+      firstAmount += 1;
+    }
+
+    // Use a for loop to validate the new amount against all existing amounts
     for (let i = 0; i < newData.length; i++) {
       if (i === index) {
         // Skip the current slab
@@ -68,25 +78,15 @@ const requiredUserRef = useRef();
       }
 
       // Check if the new amount is greater than or equal to the previous amount
-      if (i === newData.length - 1 && firstAmount >= newData[i].amount) {
-        // The last slab can have the same amount as the previous one
-        continue;
-      }
       if (firstAmount <= newData[i].amount) {
-        if (firstAmount >= newData[i].amount) {
-          alert(
-            `Amount in section ${
-              index + 1
-            } should be greater than the previous tab.`
-          );
-          return; // Exit the function without adding a new slab
-        }
+        alert(
+          `Amount in section ${
+            index + 1
+          } should be greater than the previous tab.`
+        );
+        return; // Exit the function without adding a new slab
       }
     }
-
-    // Calculate the new amount based on the previous section
-    const previousSection = newData[newData.length - 1];
-    const newAmount = previousSection ? previousSection.amount || 0 : 1;
 
     // Create a new section with the calculated amount
     const newSection = {
@@ -114,6 +114,11 @@ const requiredUserRef = useRef();
     for (let i = 0; i < newData.length; i++) {
       newData[i].slab = i + 1;
     }
+
+    // Update the last amount after adding new sections
+    newData[newData.length - 1].amount = firstAmount;
+
+    // Update state with the modified data
     setApproverData({ data: newData });
   };
 
@@ -147,6 +152,7 @@ const requiredUserRef = useRef();
   };
 
   const handleRemoveSection = (indexToRemove) => {
+    setAmountErr("");
     const newData = [...approverData.data];
 
     // Remove the section at the specified index
@@ -175,6 +181,7 @@ const requiredUserRef = useRef();
     setApproverData({ data: newData });
   };
 
+  const [amountErr, setAmountErr] = useState("");
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
     var amountValue = parseFloat(value);
@@ -194,11 +201,17 @@ const requiredUserRef = useRef();
       newData[index + 1].amount = amountValue;
       setApproverData({ data: newData });
     }
+
+    if (newData[index + 1]?.amount <= newData[index - 1]?.amount) {
+      setAmountErr(
+        `Amount in section ${
+          index + 1
+        } should be greater than the previous tab.`
+      );
+    } else {
+      setAmountErr("");
+    }
   };
-
-
-
-
 
   const validateAmounts = (e, index) => {
     const slabsData = approverData.data;
@@ -214,7 +227,10 @@ const requiredUserRef = useRef();
 
     if (index === 0) {
       // Special case for the last index
-      const previousAmount = index === 0 ? slabsData[index+1].amount :slabsData[index - 1].amount;
+      const previousAmount =
+        index === 0
+          ? slabsData[index + 1]?.amount
+          : slabsData[index - 1]?.amount;
       if (index === 0 && newValue > previousAmount) {
         alert(
           `Amount in section ${
@@ -224,7 +240,7 @@ const requiredUserRef = useRef();
         e.target.value = previousAmount;
         slabsData[index].amount = previousAmount;
         newValue = previousAmount;
-      }else {
+      } else {
         // Update the last slab's amount
         slabsData[index].amount = newValue;
       }
@@ -242,9 +258,9 @@ const requiredUserRef = useRef();
       }
     } else {
       // For all other indices
-      if(index > 0 ){
-      var previousAmount = slabsData[index - 1].amount;
-      var nextAmount = slabsData[index + 1].amount;
+      if (index > 0) {
+        var previousAmount = slabsData[index - 1].amount;
+        var nextAmount = slabsData[index + 1].amount;
       }
 
       if (index === numSlabs - 2) {
@@ -283,9 +299,9 @@ const requiredUserRef = useRef();
     setApproverData({ data: slabsData });
   };
 
-
   const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -460,6 +476,11 @@ const requiredUserRef = useRef();
       alert("Please select at least one user in the 'Required To' field");
       return;
     }
+
+    if (amountErr) {
+      alert("Please fix the error before submitting the form.");
+      return;
+    }
     // Check if any field is empty
     const isEmpty = approverData.data.some((section) => {
       return section.level.some((levelItem) => {
@@ -469,7 +490,6 @@ const requiredUserRef = useRef();
           levelItem.required_numbers === null ||
           section.amount === null ||
           section.slab === null
-          // section.assignToUser.length === 0
         );
       });
     });
@@ -486,11 +506,15 @@ const requiredUserRef = useRef();
 
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/billTypeMaster`
-            },
-            { state: { alert: { type: "success", message: res.data.message } }}
-
+            history(
+              {
+                pathname: `/${_base}/billTypeMaster`,
+              },
+              {
+                state: {
+                  alert: { type: "success", message: res.data.message },
+                },
+              }
             );
           } else {
             setNotify({ type: "danger", message: res.data.message });
@@ -498,7 +522,6 @@ const requiredUserRef = useRef();
         }
       } catch (error) {
         // Handle error appropriately
-        console.error("Error:", error);
       }
     }
   };
@@ -526,7 +549,6 @@ const requiredUserRef = useRef();
               <input
                 type="hidden"
                 id="user_id"
-                // name="user_id"
                 value={sessionStorage.getItem("id")}
               />
               <div className="col-sm-4 ">
@@ -538,7 +560,6 @@ const requiredUserRef = useRef();
                   type="text"
                   className="form-control"
                   id="bill_type"
-                  // name="bill_type"
                   required={true}
                   maxLength={25}
                 />
@@ -591,7 +612,15 @@ const requiredUserRef = useRef();
                           : null
                       }
                       type="number"
+                      required
                       key={index}
+                      min={
+                        approverData &&
+                        index > 0 &&
+                        approverData.data
+                          ?.filter((d) => d.slab == 1)
+                          .map((i) => i.amount + 1)
+                      }
                       maxLength="10"
                       value={item.amount ? item.amount : ""}
                       onKeyPress={(e) => {
@@ -619,12 +648,12 @@ const requiredUserRef = useRef();
                         type="button"
                         variant="primary"
                         className="sm"
+                        disabled={!item.amount ? true : false}
                         onClick={(e) => handleIncrement(e, index)}
                       >
                         <i className="icofont-plus-circle" />
                       </Button>
                     ) : null}
-
                     {approverData.data.length > 1 &&
                     index !== approverData.data.length - 1 ? (
                       <Button
@@ -636,6 +665,11 @@ const requiredUserRef = useRef();
                       </Button>
                     ) : null}
                   </Col>
+                  {index > 0 && index === approverData.data.length - 2 && (
+                    <small style={{ color: "red", display: "block" }}>
+                      {amountErr}
+                    </small>
+                  )}
                 </Row>
 
                 <Table className="mt-2">
@@ -644,7 +678,7 @@ const requiredUserRef = useRef();
                       <th>Sr</th>
                       <th>Assinged Approvers</th>
                       <th>Required Approvers </th>
-                      <th>Required Numbers</th>
+                      <th>Required Members</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -690,7 +724,7 @@ const requiredUserRef = useRef();
                                   levelItem.required_users.includes(user.value)
                                 )
                               }
-ref={requiredUserRef}
+                              ref={requiredUserRef}
                               options={getAvailableOptions(
                                 assignedUserData,
                                 index,
@@ -711,7 +745,12 @@ ref={requiredUserRef}
                         <td>
                           <input
                             type="number"
-disabled ={levelItem.employee_id && levelItem.employee_id != null  ? false : true}
+                            disabled={
+                              levelItem.employee_id &&
+                              levelItem.employee_id != null
+                                ? false
+                                : true
+                            }
                             max={
                               approverData.data[index].level[rowIndex]
                                 .required_users?.length || ""
@@ -719,6 +758,7 @@ disabled ={levelItem.employee_id && levelItem.employee_id != null  ? false : tru
                             onKeyPress={(e) => {
                               Validation.RequiredNumbersOnly(e);
                             }}
+                            min={1}
                             ref={(el) => {
                               if (!inputRefs.current[index]) {
                                 inputRefs.current[index] = [];

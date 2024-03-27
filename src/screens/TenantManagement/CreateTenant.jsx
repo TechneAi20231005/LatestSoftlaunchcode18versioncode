@@ -14,13 +14,43 @@ import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTenant } from "./TenantConponentAction";
+
+
+import {
+  getCityData,
+  getCountryDataSort,
+  getRoles,
+  getStateData,
+  getStateDataSort,
+
+} from "../Dashboard/DashboardAction";
+import DashbordSlice from "../Dashboard/DashbordSlice";
+import { posttenantData } from "./TenantConponentAction";
+import { tenantmasterSlice, handleError } from "./TenantComponentSlice";
 
 export default function CreateTenant({ match }) {
-  const history = useNavigate();
-  const [notify, setNotify] = useState();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
+  const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
+
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
+  );
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
+  // const [checkRole, setCheckRole] = useState(null);
   const isMasterAdmin = localStorage.getItem("role_name");
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
@@ -38,96 +68,183 @@ export default function CreateTenant({ match }) {
       value: "Community Interest Company",
     },
   ];
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
+  // const [country, setCountry] = useState(null);
+  // const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
+  // const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
+  // const [cityDropdown, setCityDropdown] = useState(null);
+  const [stateDropdownData, setStateDropdownData] = useState(false);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
+      // setStateDropdown(
+      //   state
+      //     .filter((d) => d.country_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.state }))
+      // );
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
+
     }
     if (type == "STATE") {
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
+      // setCityDropdown(
+      //   city
+      //     .filter((d) => d.state_id == e.value)
+      //     .map((d) => ({ value: d.id, label: d.city }))
+      // );
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
+
     }
   };
-  const loadData = async () => {
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data);
-          setCountryDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+  const [inputState, setInputState] = useState({
 
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data);
-          setStateDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.state }))
-          );
-        }
+  });
+
+  const [contactValid, setContactValid] = useState(false);
+
+  const [contactNumber, setContactNumber] = useState(null);
+  const handleContactValidation = (e) => {
+    const contactValidation = e.target.value;
+
+
+    if (contactValidation.length === 0) {
+      setInputState({
+        ...state,
+        contactNoErr: "",
+      });
+      return;
+    }
+    if (
+      contactValidation.charAt(0) == "9" ||
+      contactValidation.charAt(0) == "8" ||
+      contactValidation.charAt(0) == "7" ||
+      contactValidation.charAt(0) == "6"
+    ) {
+      setInputState({ ...state, contactNoErr: "" });
+      setContactValid(false);
+    } else {
+      setContactValid(true);
+    }
+
+    if (contactValidation.includes("000000000")) {
+      setInputState({
+        ...state,
+        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 10) {
+      if (contactValidation.length === 0) {
+        setInputState({
+          ...state,
+          contactNoErr: "please enter Mobile Number",
+        });
+        setContactValid(true);
       }
-    });
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data);
-          setCityDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.city }))
-          );
-        }
-      }
-    });
+      setInputState({
+        ...state,
+        contactNoErr: "Invalid Mobile Number",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 11) {
+      setContactNumber(contactValidation);
+    }
   };
 
+  const loadData = async () => {
+    // await new CountryService().getCountry().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setCountry(res.data.data);
+    //       setCountryDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.country }))
+    //       );
+    //     }
+    //   }
+    // });
+    dispatch(getCountryDataSort());
+    dispatch(getRoles());
+    dispatch(getStateDataSort());
+    dispatch(getCityData());
+    dispatch(getStateData());
+
+    // await new ManageMenuService().getRole(roleId).then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+    //     }
+    //   }
+    // });
+
+    // await new StateService().getState().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status == 1) {
+    //       setState(res.data.data);
+    //       setStateDropdown(
+    //         res.data.data.map((d) => ({ value: d.id, label: d.state }))
+    //       );
+    //     }
+    //   }
+    // });
+    //   await new CityService().getCity().then((res) => {
+    //     if (res.status === 200) {
+    //       if (res.data.status == 1) {
+    //         setCity(res.data.data);
+    //         setCityDropdown(
+    //           res.data.data.map((d) => ({ value: d.id, label: d.city }))
+    //         );
+    //       }
+    //     }
+    //   });
+    // };
+  };
   const handleForm = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
-    setNotify(null);
-    await new TenantService().postTenant(formData).then((res) => {
-      if (res.status === 200) {
-        console.log("tenant");
-        if (res.data.status == 1) {
-          console.log("tenant1");
-          history(
-            {
-              pathname: `/${_base}/TenantMaster`,
-            },
-            { state: { alert: { type: "success", message: res.data.message } } }
-          );
-        } else {
-          console.log("tenant2", res);
-          setNotify({ type: "danger", message: res?.data?.message });
-        }
+    // setNotify(null);
+    // await new TenantService().postTenant(formData).then((res) => {
+    //   if (res.status === 200) {
+    //     console.log("tenant");
+    //     if (res.data.status == 1) {
+    //       console.log("tenant1");
+    //       history(
+    //         {
+    //           pathname: `/${_base}/TenantMaster`,
+    //         },
+    //         { state: { alert: { type: "success", message: res.data.message } } }
+    //       );
+    //     } else {
+    //       console.log("tenant2", res);
+    //       setNotify({ type: "danger", message: res?.data?.message });
+    //     }
+    //   }
+    // });
+
+    dispatch(posttenantData(formData)).then((res) => {
+
+      if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+
+        navigate(`/${_base}/TenantMaster`);
+        dispatch(getAllTenant())
+        dispatch(handleError({ type: "success", message: res.payload.data.message }))
+
+      } else {
+        dispatch(handleError({ type: "danger", message: res.payload.data.message }))
       }
     });
   };
 
+
+
   useEffect(() => {
+    dispatch(handleError(null))
     if (isMasterAdmin !== "MasterAdmin") {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -135,7 +252,7 @@ export default function CreateTenant({ match }) {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[32].can_create === 0) {
+    if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -144,10 +261,9 @@ export default function CreateTenant({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && (
+      {notify?.type === "danger" && (
         <>
-          {" "}
-          <Alert alertData={notify} />{" "}
+          <Alert alertData={notify} />
         </>
       )}
       <PageHeader headerTitle="Add Tenant" />
@@ -197,13 +313,17 @@ export default function CreateTenant({ match }) {
             </label>
             <div className="col-sm-4">
               <input
-                type="email"
+                type="text"
                 className="form-control form-control-sm"
+
                 id="email_id"
                 name="email_id"
                 placeholder="Email Address"
                 required
+                onKeyPress={e => { Validation.emailOnly(e) }}
+              // value={email}
               />
+
             </div>
           </div>
 
@@ -223,11 +343,23 @@ export default function CreateTenant({ match }) {
                 required
                 minLength={10}
                 maxLength={10}
+                onChange={handleContactValidation}
+
                 onKeyPress={(e) => {
-                  Validation.NumbersOnly(e);
+                  Validation.MobileNumbersOnly(e);
                 }}
               />
+              {inputState && (
+                <small
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {inputState.contactNoErr}
+                </small>
+              )}
             </div>
+
           </div>
         </div>
 
@@ -261,8 +393,8 @@ export default function CreateTenant({ match }) {
                   name="pincode"
                   minLength={6}
                   maxLength={6}
-                  onKeyPress={(e) => {
-                    Validation.NumbersOnly(e);
+                  onChange={(e) => {
+                    Validation.NumbersOnlyForPincode(e);
                   }}
                 />
               </div>
@@ -274,9 +406,9 @@ export default function CreateTenant({ match }) {
                 <b>Country : </b>
               </label>
               <div className="col-sm-4">
-                {countryDropdown && (
+                {CountryData && (
                   <Select
-                    options={countryDropdown}
+                    options={CountryData}
                     id="country_id"
                     name="country_id"
                     onChange={(e) => handleDependentChange(e, "COUNTRY")}
@@ -290,9 +422,9 @@ export default function CreateTenant({ match }) {
                 <b>State : </b>
               </label>
               <div className="col-sm-4">
-                {stateDropdown && (
+                {stateDropdownData && (
                   <Select
-                    options={stateDropdown}
+                    options={stateDropdownData}
                     id="state_id"
                     name="state_id"
                     onChange={(e) => handleDependentChange(e, "STATE")}
@@ -308,9 +440,9 @@ export default function CreateTenant({ match }) {
               </label>
 
               <div className="col-sm-4">
-                {cityDropdown && (
+                {cityDropdownData && (
                   <Select
-                    options={cityDropdown}
+                    options={cityDropdownData}
                     id="city_id"
                     name="city_id"
                     onChange={(e) => handleDependentChange(e, "CITY")}
@@ -323,7 +455,7 @@ export default function CreateTenant({ match }) {
 
           <div className="mt-3" style={{ textAlign: "right" }}>
             <button type="submit" className="btn btn-primary">
-              Update
+              Submit
             </button>
             <Link
               to={`/${_base}/TenantMaster`}

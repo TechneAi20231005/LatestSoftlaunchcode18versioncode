@@ -13,14 +13,34 @@ import CountryService from "../../services/MastersService/CountryService";
 import StateService from "../../services/MastersService/StateService";
 import CityService from "../../services/MastersService/CityService";
 import Alert from "../../components/Common/Alert";
+import { useDispatch, useSelector } from "react-redux"
+import { getCityData, getCountryDataSort, getStateData, getStateDataSort } from "../Dashboard/DashboardAction";
+import { getRoles } from "../Dashboard/DashboardAction";
+import { getAllTenant, updatetenantData } from "./TenantConponentAction";
+import { handleError } from "./TenantComponentSlice";
 
 export default function EditTenant({ match }) {
-  const history = useNavigate();
-  const [notify, setNotify] = useState();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cityDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdowns = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredStateData);
+  const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
   const [data, setData] = useState();
-  console.log("data",data);
   const [toggleRadio, setToggleRadio] = useState(false);
+  const [clearFlag, setClearFlag] = useState(false);
   const { id } = useParams();
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify)
+  const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
+  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  const [stateDropdownData, setStateDropdownData] = useState([]);
+  const [cityDropdownData, setCityDropdownData] = useState(false);
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
+  );
   const tenanatId = id;
   const companyType = [
     { label: "Private Limited Company", value: "Private Limited Company" },
@@ -40,65 +60,88 @@ export default function EditTenant({ match }) {
   ];
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
-  console.log("countryDropdown",   
-  countryDropdown &&
-  countryDropdown.filter((d) => d.value ));
   const [state, setState] = useState(null);
-  const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
-  const [cityDropdown, setCityDropdown] = useState(null);
 
   const roleId = sessionStorage.getItem("role_id");
-  const [checkRole, setCheckRole] = useState(null);
 
+
+  const [inputState, setInputState] = useState({
+
+  });
+
+  const [contactValid, setContactValid] = useState(false);
+
+  const [contactNumber, setContactNumber] = useState(null);
+  const handleContactValidation = (e) => {
+    const contactValidation = e.target.value;
+
+
+    if (contactValidation.length === 0) {
+      setInputState({
+        ...state,
+        contactNoErr: "",
+      });
+      return;
+    }
+    if (
+      contactValidation.charAt(0) == "9" ||
+      contactValidation.charAt(0) == "8" ||
+      contactValidation.charAt(0) == "7" ||
+      contactValidation.charAt(0) == "6"
+    ) {
+      setInputState({ ...state, contactNoErr: "" });
+      setContactValid(false);
+    } else {
+      setContactValid(true);
+    }
+
+    if (contactValidation.includes("000000000")) {
+      setInputState({
+        ...state,
+        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 10) {
+      if (contactValidation.length === 0) {
+        setInputState({
+          ...state,
+          contactNoErr: "please enter Mobile Number",
+        });
+        setContactValid(true);
+      }
+      setInputState({
+        ...state,
+        contactNoErr: "Invalid Mobile Number",
+      });
+      setContactValid(true);
+    }
+
+    if (contactValidation.length < 11) {
+      setContactNumber(contactValidation);
+    }
+  };
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-      setStateDropdown(
-        state
-          .filter((d) => d.country_id == e.value)
-          .map((d) => ({ value: d.id, label: d.state }))
-      );
+      setClearFlag(true)
+      setStateDropdownData(stateDropdown.filter((filterState) => filterState.is_active === 1 && filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
     }
     if (type == "STATE") {
-      setCityDropdown(
-        city
-          .filter((d) => d.state_id == e.value)
-          .map((d) => ({ value: d.id, label: d.city }))
-      );
+      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.is_active === 1 && filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
+
     }
   };
   const loadData = async () => {
-    await new CountryService().getCountry().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data);
-          setCountryDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
 
-    await new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data);
-          setStateDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.state }))
-          );
-        }
-      }
-    });
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data);
-          setCityDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.city }))
-          );
-        }
-      }
-    });
+    dispatch(getCountryDataSort());
+
+    dispatch(getRoles());
+    dispatch(getStateDataSort())
+    dispatch(getStateData());
+    dispatch(getCityData());
+   
 
     await new TenantService().getTenantById(tenanatId).then((res) => {
       if (res.status === 200) {
@@ -113,36 +156,27 @@ export default function EditTenant({ match }) {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-        }
-      }
-    });
+    
   };
+
 
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("is_active", toggleRadio ? 1 : 0);
-    setNotify(null);
-    await new TenantService().updateTenant(tenanatId, formData).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          history(
-            {
-              pathname: `/${_base}/TenantMaster`,
-            },
-            { state: { alert: { type: "success", message: res.data.message } } }
-          );
-        } else {
+    dispatch(updatetenantData({ id: tenanatId, payload: formData })).then((res) => {
 
-          setNotify({ type: "danger", message: res.data.message });
-        }
+      if (res.payload.data.status === 1 && res.payload.status === 200) {
+        navigate(`/${_base}/TenantMaster`)
+        dispatch(getAllTenant())
+        dispatch(handleError({ type: "success", message: res.payload.data.message }))
+
+      } else {
+        dispatch(handleError({ type: "danger", message: res.payload.data.message }))
       }
-    });
+    })
+
+   
   };
   const handleRadios = (e) => {
     if (e === "active") {
@@ -151,14 +185,16 @@ export default function EditTenant({ match }) {
       setToggleRadio(false);
     }
   };
+  const useDataState = stateDropdown.filter((d) => d.id === data?.state_id);
 
   useEffect(() => {
+
+    dispatch(handleError(null))
     loadData();
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[32].can_update === 0) {
-      // alert("Rushi")
+    if (checkRole && checkRole[0]?.can_update === 0) {
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -166,7 +202,7 @@ export default function EditTenant({ match }) {
   return (
     <div className="container-xxl">
 
-      {notify && <Alert alertData={notify} />}
+      {notify && notify?.type === "danger" && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
         <form onSubmit={handleForm}>
@@ -229,6 +265,7 @@ export default function EditTenant({ match }) {
                   placeholder="Email Address"
                   required
                   defaultValue={data && data.email_id}
+                  onKeyPress={e => { Validation.emailOnly(e) }}
                 />
               </div>
             </div>
@@ -249,11 +286,22 @@ export default function EditTenant({ match }) {
                   required
                   minLength={10}
                   maxLength={10}
+                  onChange={handleContactValidation}
+
                   defaultValue={data && data.contact_no}
                   onKeyPress={(e) => {
-                    Validation.NumbersOnly(e);
+                    Validation.MobileNumbersOnly(e);
                   }}
                 />
+                {inputState && (
+                  <small
+                    style={{
+                      color: "red",
+                    }}
+                  >
+                    {inputState.contactNoErr}
+                  </small>
+                )}
               </div>
             </div>
           </div>
@@ -303,15 +351,15 @@ export default function EditTenant({ match }) {
                   <b>Country : </b>
                 </label>
                 <div className="col-sm-4">
-                  {countryDropdown && data && (
+                  {CountryData && data && (
                     <Select
-                      options={countryDropdown}
+                      options={CountryData}
                       id="country_id"
                       name="country_id"
                       defaultValue={
                         data &&
-                        countryDropdown &&
-                        countryDropdown.filter((d) => d.value == data.country_id)
+                        CountryData &&
+                        CountryData.filter((d) => data?.country_id == d.value)
                       }
                       onChange={(e) => handleDependentChange(e, "COUNTRY")}
                     />
@@ -323,16 +371,20 @@ export default function EditTenant({ match }) {
                 <label className="col-sm-2 col-form-label">
                   <b>State : </b>
                 </label>
+              
                 <div className="col-sm-4">
+
                   {stateDropdown && data && (
                     <Select
-                      options={stateDropdown}
+                      options={stateDropdownData}
                       id="state_id"
                       name="state_id"
-                      defaultValue={
+                      defaultValue={clearFlag ? { label: "" } :
                         data &&
                         stateDropdown &&
-                        stateDropdown.filter((d) => d.value == data.state_id)
+                        stateDropdown
+                          .filter((d) => d.id === data.state_id)
+                          .map((stateName) => ({ value: stateName.id, label: stateName.state }))
                       }
                       onChange={(e) => handleDependentChange(e, "STATE")}
                     />
@@ -347,15 +399,16 @@ export default function EditTenant({ match }) {
                 </label>
 
                 <div className="col-sm-4">
-                  {cityDropdown && data && (
+
+                  {AllcityDropDownData && data && (
                     <Select
-                      options={cityDropdown}
+                      options={cityDropdownData}
                       id="city_id"
                       name="city_id"
                       defaultValue={
                         data &&
-                        cityDropdown &&
-                        cityDropdown.filter((d) => d.value == data.city_id)
+                        AllcityDropDownData &&
+                        AllcityDropDownData.filter((d) => d.id == data.city_id).map(city => ({ value: city.id, label: city.city }))
                       }
                       onChange={(e) => handleDependentChange(e, "CITY")}
                     />
@@ -395,7 +448,7 @@ export default function EditTenant({ match }) {
             {/* CARD BODY*/}
 
             <div className="mt-3" style={{ textAlign: "right" }}>
-              {checkRole && checkRole[32].can_update === 1 ? (
+              {checkRole && checkRole[0]?.can_update === 1 ? (
                 <button type="submit" className="btn btn-primary">
                   Update
                 </button>

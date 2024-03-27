@@ -71,7 +71,7 @@ export default class BillPaymentServices{
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
-            "Content-Type": "application/json",
+            'Content-Type': 'multipart/form-data'
           },
         };
         return axios.post(_URL+"/postPaymentUpdate", payload,config)

@@ -128,7 +128,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { _base } from "../../../settings/constants";
 import { Dropdown } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -137,7 +137,8 @@ import ConsolidatedService from '../../../services/ProjectManagementService/Cons
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 const CompletedTickets = ({ match }) => {
-  const projectId = match.params.projectId
+  // const projectId = match.params.projectId
+  const { projectId } = useParams()
   const [data, setData] = useState(null)
 
   const loadData = async () => {

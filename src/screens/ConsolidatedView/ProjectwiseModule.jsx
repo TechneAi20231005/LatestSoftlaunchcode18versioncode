@@ -81,8 +81,7 @@ export default function ProjectwiseModule() {
           );
           setIsModuleActive(findModuleActivity[0]?.is_active);
 
-          setModuleDropdown(
-            temp
+          setModuleDropdown( temp
               .filter((d) => d.id == moduleId)
               .map((d) => ({ value: d.id, label: d.module_name }))
           );
@@ -155,11 +154,12 @@ export default function ProjectwiseModule() {
           }
         });
     } catch (error) {
-      console.error("Error fetching authority data:", error);
+   
     }
   };
 
   const changeSubModuleHandle = async (e, type) => {
+
     if (e === null) {
       return;
     }
@@ -683,9 +683,9 @@ export default function ProjectwiseModule() {
                       className="w-100"
                       options={moduleDropdown}
                       ref={moduleRef}
-                      onChange={(e) => {
-                        changeSubModuleHandle(e, "MODULE");
-                      }}
+                      // onChange={(e) => {
+                      //   changeSubModuleHandle(e, "MODULE");
+                      // }}
                       name="submodule_id"
                     />
                   )}
@@ -699,9 +699,9 @@ export default function ProjectwiseModule() {
                       className="w-100"
                       options={subModuleDropdown}
                       ref={submoduleRef}
-                      onChange={(e) => {
-                        changeSubModuleHandle(e, "SUBMODULE");
-                      }}
+                      // onChange={(e) => {
+                      //   changeSubModuleHandle(e, "SUBMODULE");
+                      // }}
                       name="submodule_id"
                     />
                   </div>

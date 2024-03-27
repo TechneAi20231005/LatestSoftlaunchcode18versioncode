@@ -107,7 +107,7 @@ function CreateDynamicForm() {
                 rows[idx].inputAddOn.inputRangeMin = e.target.value;
             }
             else if (e.target.name == "inputRangeMax") {
-                console.log(rows[idx].inputAddOn.inputRangeMin)
+               
                 if (rows[idx].inputAddOn.inputRangeMin > e.target.value) {
                     alert("Please select grater value");
                     return false;
@@ -138,35 +138,13 @@ function CreateDynamicForm() {
                 })
             }
             else if (e.target.name == "inputDataSource") {
-                // console.log(e.target.value)
-                // const test = e.target.value.split('|');
-                // console.log(test)
-                // const _URL = masterURL[test[0]];
-                // console.log(_URL)
-                // const _Value = test[1];
-                // const _Label = test[2];
-                // console.log(_Value)
-                // console.log(_Value)
-
-                // getData(_URL).then(res => {
-                //     let counter = 1;
-                //     const tempData = [];
-                //     for (const key in res.data) {
-                //         const t = res.data[key];
-                //         tempData.push({
-                //             value: t[_Value],
-                //             label: t[_Label]
-                //         })
-                //     }
-                //     rows[idx].inputAddOn.inputDataSourceData = tempData
-                // });
-                // rows[idx].inputAddOn.inputDataSource = e.target.value;
+              
 
                 const test = e.target.value;
                 rows[idx].inputAddOn.inputDataSource = test;
                 if(test){
                     await new DynamicFormDropdownMasterService().getDropdownById(test).then((res) => {
-                        console.log(res.data.data.dropdown)
+                       
                         if (res.status == 200) {
                             if (res.data.status == 1) {
                                 const temp = [];
@@ -186,29 +164,10 @@ function CreateDynamicForm() {
             alert("Not Allowed to use entered Keywork");
             rows[idx].inputLabel = "";
         }
-        // const rows = [...rows];
-        // rows[idx] = {
-        //     [name]: value
-        // };
-        // setRows({
-        //     rows
-        // });
+       
     };
 
-    // loadDynamicData = (_URL) =>{
-    // getData(_URL).then(res =>{
-    //     let counter=1;
-    //     for (const key in res.data) {
-    //         tempData.push({
-    //           counter:counter++,
-    //           id: res.data[key].id,
-    //           city: res.data[key].city
-    //         })
-    //     }
-    //     setData(tempData);
-    // });
-    // }
-
+   
     const handleAddRow = async () => {
         setNotify(null)
         let flag = 1;
@@ -264,13 +223,12 @@ function CreateDynamicForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // const data=new FormData(e.target);
+   
         const data = {
             template_name: e.target.template_name.value,
             data: JSON.stringify(rows)
         }
-        // var a = JSON.stringify(Object.fromEntries(data))
-        // console.log(a)
+     
         await new DynamicFormService().postDynamicForm(data).then(res => {
             if (res.status === 200) {
                 if (res.data.status === 1) {
@@ -293,12 +251,7 @@ function CreateDynamicForm() {
         await new DynamicFormDropdownMasterService().getAllDropdown().then((res) => {
             if (res.status == 200) {
                 if (res.data.status == 1) {
-                    // const temp=[];
-                    // res.data.data.forEach(d=>{
-                    //     temp.push({'label':d.dropdown_name,'value':d.id});
-                    // })
-                    // setDropdown(temp);
-
+               
                     setDropdown(res.data.data.map((d) => ({ label: d.dropdown_name, value: d.id })))
                 }
             }
@@ -324,10 +277,7 @@ function CreateDynamicForm() {
                                 <div className="card-header d-flex justify-content-between bg-transparent
                                 border-bottom-0">
                                     <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
-                                    {/* <Link to="Country/Create/" className="btn btn-dark btn-sm btn-set-task w-sm-100">
-                                        <i className="icofont-plus-circle me-2 fs-6" />
-                                        Add
-                                    </Link> */}
+                                 
                                 </div>
                             </div>
                             {notify && <Alert alertData={notify} />}
@@ -409,16 +359,7 @@ function CreateDynamicForm() {
                                                                     <option value="col-sm-12">XX-Large</option>
                                                                 </select>
                                                             </td>
-                                                            {/* <td>
-                                                        <input
-                                                            type="text"
-                                                            name="inputName"
-                                                            defaultValue={item.inputName}
-                                                            onChange={handleChange(idx)}
-                                                            className="form-control form-control-sm"
-                                                            required
-                                                        />
-                                                    </td> */}
+                                                        
                                                             <td>
                                                                 <input
                                                                     type="text"
@@ -569,18 +510,7 @@ function CreateDynamicForm() {
                                                     >{data.inputDefaultValue}</textarea>
                                                 }
 
-                                                {/* {data.inputType === 'date' &&                                                    
-                                                    <input
-                                                        type={data.inputType}
-                                                        id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                                                        name={data.inputName}
-                                                        format="yyyy/mm/dd"
-                                                        defaultValue={data.inputDefaultValue}
-                                                        min={data.inputAddOn.inputRangeMin}
-                                                        max={data.inputAddOn.inputRangeMax}
-                                                        className="form-control form-control-sm"
-                                                    />
-                                                } */}
+                                              
 
                                                 {data.inputType === 'date' &&
                                                     <div className='form-control'>
@@ -629,21 +559,7 @@ function CreateDynamicForm() {
                                                 }
 
                                                 {data.inputType === 'select' &&
-                                                    // <select
-                                                    //     id={data.inputName ? data.inputName.replace(/ /g, "_").toLowerCase() : ''}
-                                                    //     name={data.inputName}
-                                                    //     className="form-control form-control-sm"
-
-                                                    // >
-                                                    //     <option>Select {data.inputName}</option>
-                                                    //     {
-                                                    //         data.inputAddOn.inputDataSourceData &&
-                                                    //         data.inputAddOn.inputDataSourceData.map((option) => {
-                                                    //             return <option value={option.value}>{option.label}</option>
-                                                    //         })
-                                                    //     }
-                                                    // </select>
-
+                                                 
                                                     <Select
                                                         options={inputDataSource}
                                                         isMulti
