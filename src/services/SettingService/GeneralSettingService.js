@@ -1,22 +1,13 @@
-import { settingMasterUrl } from "../../settings/constants"
+import { settingMasterUrl } from "../../settings/constants";
 import axios from "axios";
 
-
-
-const URL = settingMasterUrl.getGeneralSetting
-const createSetting = URL + "/createGeneralSetting"
-const getGeneralSetting = URL + "/getGeneralSetting"
-
-
+const URL = settingMasterUrl.getGeneralSetting;
+const createSetting = URL + "/createGeneralSetting";
+const getGeneralSetting = URL + "/getGeneralSetting";
 
 const getAuthorityCheck = URL + "/getCheckSettingAuthority";
 
-
-
-
-
 export default class GeneralSettingService {
-
   createGeneralSetting(payload) {
     const token = localStorage.getItem("jwt_token");
 
@@ -27,7 +18,7 @@ export default class GeneralSettingService {
         "Content-Type": "application/json",
       },
     };
-    return axios.post(createSetting, payload, config)
+    return axios.post(createSetting, payload, config);
   }
   updateGeneralSetting(id, payload) {
     const token = localStorage.getItem("jwt_token");
@@ -39,7 +30,7 @@ export default class GeneralSettingService {
         "Content-Type": "application/json",
       },
     };
-    return axios.post(createSetting + "/" + id, payload, config)
+    return axios.post(createSetting + "/" + id, payload, config);
   }
 
   getGeneralSetting() {
@@ -52,8 +43,7 @@ export default class GeneralSettingService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(getGeneralSetting, config)
-
+    return axios.get(getGeneralSetting, config);
   }
 
   getAuthorityCheck(userId, projectId) {
