@@ -22,7 +22,7 @@ export const posttenantData = createAsyncThunk(
     try {
       const service = new TenantService();
       const response = await service.postTenant(config);
-      console.log("response", response);
+  
 
       return response;
     } catch (error) {

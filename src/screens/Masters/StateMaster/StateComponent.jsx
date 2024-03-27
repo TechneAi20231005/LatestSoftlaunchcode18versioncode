@@ -52,7 +52,7 @@ function StateComponent() {
 
   const dispatch = useDispatch();
   const stateData = useSelector( (dashboardSlice) => dashboardSlice.dashboard.stateData);
-  console.log("stateData",stateData);
+
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
   );
@@ -99,7 +99,7 @@ function StateComponent() {
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+   
   };
 
   const columns = [

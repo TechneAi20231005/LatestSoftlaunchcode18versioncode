@@ -113,8 +113,7 @@ export default function BasketComponent({ match }) {
 
     const handleRemoveSpecificRow = (idx) => () => {
          const filteredArray = data.filter(item=> item.id !== idx)
-         console.log('filterdArray' ,filteredArray);
-         console.log("idxxxxx" ,idx)
+        
          setData(filteredArray)
         
         // if (idx > 0) {
@@ -256,7 +255,7 @@ export default function BasketComponent({ match }) {
                                         <tr id={`addr_${idx}`} key={idx}
                                             style={{ zIndex: 1000 }}>
                                             <td>{idx + 1}</td>
-                                            {console.log("item",item)}
+                                        
                                             <td>
                                                 <input
                                                     type="text"

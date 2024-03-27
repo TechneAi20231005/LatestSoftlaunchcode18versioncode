@@ -366,7 +366,7 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
-          console.log("data", data);
+        
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -607,9 +607,7 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + " " + d.last_name + "(" + d.id + ")",
         }));
-      console.log("select", select);
-      console.log("user", user);
-
+   
       setUserDropdown(select);
       setUserName(null);
     }

@@ -40,7 +40,7 @@ export const postGeneralSettingData = createAsyncThunk("postGeneralSettingData",
 export const updateGeneralSettingData = createAsyncThunk("updateGeneralSettingData",async(payload,thunkapi)=>{
     try{
         const service = new GeneralSettingService();
-        console.log("c",payload)
+      
         const response = await service.updateGeneralSetting(payload.id,payload.payload)
         return ("response",response)
     }catch (error){

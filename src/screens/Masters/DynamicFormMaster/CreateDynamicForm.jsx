@@ -78,7 +78,7 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
-  console.log("departmentDropdown", departmentDropdown);
+
 
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
@@ -859,8 +859,7 @@ function CreateDynamicForm() {
                                         name="inputOnChangeSource"
                                         // defaultValue={selectedValue}
                                       >
-                                        {console.log("selected", selectedValue)}
-                                        {console.log("selected", selectedValue)}
+                                      
 
                                         <option>Select Data Source</option>
 

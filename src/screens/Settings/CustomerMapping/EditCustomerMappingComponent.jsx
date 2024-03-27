@@ -185,7 +185,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
-          console.log("data",data)
+   
           const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.template_name,
@@ -486,7 +486,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         <div className="col-sm-12">
           <div className="card mt-2">
             <div className="card-body">
-              {console.log("data",data)}
+           
               {data && (
                 <form
                   onSubmit={handleForm}
@@ -834,8 +834,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                              Loading.....
                            </span>
                          )}
-                         {console.log("userDropdown",userDropdown)}
-                         {console.log("data",data)}
+                    
      
                          {userDropdown &&
                            data.approach == "RW" &&

@@ -219,7 +219,7 @@ function Profile() {
       }
     });
   };
-  console.log("data", data);
+
   const fileChangedHandler = (e) => {
     let file_size = e.target.files[0].size;
     if (file_size > 2000000) {

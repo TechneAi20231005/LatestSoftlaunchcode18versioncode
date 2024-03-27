@@ -190,7 +190,7 @@ export default function EditDropdownComponent({ match }) {
                             <label className="col-sm-2 col-form-label">
                                 <b>Status :</b>
                             </label>
-                            {console.log("master dropdown", master)}
+                   
                             <div className="col-sm-4">
                                 <div className="row">
                                     <div className="col-md-2">
