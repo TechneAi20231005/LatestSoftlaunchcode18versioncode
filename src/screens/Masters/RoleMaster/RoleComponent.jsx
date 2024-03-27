@@ -43,7 +43,7 @@ function RoleComponent({ location }) {
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
   );
 
-  console.log("moadal", exportData);
+
 
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
@@ -94,7 +94,7 @@ function RoleComponent({ location }) {
   const [filteredData, setFilteredData] = useState([]);
   
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
+
   };
   
 

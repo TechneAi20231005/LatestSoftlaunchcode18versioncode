@@ -25,7 +25,7 @@ function TemplateComponent() {
   );
  
   const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportData)
-  console.log("exportData",exportData)
+
 
 
 

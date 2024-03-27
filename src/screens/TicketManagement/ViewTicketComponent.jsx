@@ -213,7 +213,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-            {console.log("dd", data)}
+        
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
@@ -358,13 +358,11 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )}
 
-                        {console.log("dataV", data)}
+                     
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                              console.log("radio==", d.value);
-                              console.log("radio=== ", data.inputDefaultValue);
-
+                          
                               return (
                                 <div>
                                   <input
@@ -484,7 +482,7 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )} */}
 
-                        {console.log("data", data)}
+                       
 
                         {data.inputType === "select" && (
                           <select

@@ -102,7 +102,7 @@ export default function CreateTicketComponent() {
   const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-  console.log("selectedFiles",selectedFiles)
+
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
@@ -190,11 +190,10 @@ export default function CreateTicketComponent() {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
       }
     }
-    console.log("formData",formData)
-    console.log("selectedFiles",selectedFiles)
+  
 
     var flag = 1;
-    console.log("selectQueryGroup", selectQueryGroup)
+  
     if (selectQueryGroup && selectQueryGroup.length > 0) {
       formData.append("dynamicForm", JSON.stringify(rows));
       var selectCountry = formData.getAll("customer_id");
@@ -1152,7 +1151,7 @@ export default function CreateTicketComponent() {
                           );
                         })
                         : ""}
-                        {console.log("data",data)}
+                      
 
                       {data.inputType === "number" && (
                         <input

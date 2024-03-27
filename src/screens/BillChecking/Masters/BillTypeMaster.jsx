@@ -319,7 +319,7 @@ function BillTypeMaster() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  console.log("checkRole",checkRole)
+
 
   return (
     <div className="container-xxl">

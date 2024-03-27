@@ -455,7 +455,7 @@ const TestCases = ({ match }) => {
       .then(res => {
         setData(null) // Clear existing data
         setUserTypeData(null) // Clear existing user type data
-        console.log(res.data);
+      
         const temp = res.data.data.data// Get the test case data from the API response
         const userType = res.data.type // Get the user type from the API response
         const execution = res.data.execution // Get the execution data from the API response

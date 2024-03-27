@@ -23,7 +23,7 @@ export default function CreateModuleComponent({match}) {
     const checkRole = useSelector((DashboardSlice) =>
       DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==21)
     );
-    console.log("checkRole",checkRole)
+  
     
     const history = useNavigate();
     const [notify,setNotify] = useState(null);

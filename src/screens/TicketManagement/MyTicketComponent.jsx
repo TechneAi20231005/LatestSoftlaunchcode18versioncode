@@ -197,7 +197,7 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            console.log("confirm ticket", res.data.data)
+       
             setNotify({ type: "success", message: res.data.message });
             setConfirmationModal({
               showModal: false,
@@ -2349,7 +2349,7 @@ export default function MyTicketComponent() {
   };
 
   useEffect(() => {
-    console.log('location before timeout', locationState)
+   
     setLocationState(location.state)
     const timeoutId = setTimeout(() => {
       const a = null;

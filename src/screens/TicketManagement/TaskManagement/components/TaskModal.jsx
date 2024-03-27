@@ -40,7 +40,7 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-  console.log("fromdate", fromdate)
+ 
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -619,8 +619,7 @@ export default function TaskModal(props) {
                 )}
               </div>
 
-              {console.log("pp", props)}
-              {console.log("pp1", fromdate?.length > 0 ? 1 : 0)}
+            
               <div className="col-md-4">
                 <label className="form-label">
                   <b>End Date :<Astrick color="red" size="13px" /></b>
