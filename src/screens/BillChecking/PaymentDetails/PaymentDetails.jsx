@@ -220,7 +220,7 @@ function PaymentDetails({ location, match }) {
                   authorities.Payment_Status_Release === false) ||
                 row.payment_status_name == "Confirmation Pending"
                   ? true
-                  : false
+                  : false``
               }
               onClick={(e) => {
                 handleModal({

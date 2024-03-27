@@ -1,5 +1,5 @@
 import axios from "axios";
-import { dashboardUrl } from '../settings/constants';
+import { dashboardUrl } from "../settings/constants";
 
 const _URL = dashboardUrl;
 
@@ -7,14 +7,11 @@ const _URL = dashboardUrl;
 //     return axios.get(_URL+"/"+id);
 // }
 
-
-
 // export function getData(id){
 //     return axios.get(_URL+"/"+id);
 // }
 
 export function getData() {
-
   const token = localStorage.getItem("jwt_token");
 
   const config = {
@@ -25,7 +22,9 @@ export function getData() {
     },
   };
 
-  return axios.get(`http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/dashboard`, config);
+  return axios.get(
+    // `http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/dashboard`
+    `${_URL}`,
+    config
+  );
 }
-
-

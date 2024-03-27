@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { Spinner, Modal } from "react-bootstrap";
 import Alert from "../../components/Common/Alert";
-import { _base } from "../../settings/constants";
+import { _attachmentUrl, _base, attachmentUrl } from "../../settings/constants";
 import ProfileImg from "../../assets/images/profile_av.png";
 import UserService from "../../services/MastersService/UserService";
 import * as Validation from "../../components/Utilities/Validation";
@@ -211,14 +211,15 @@ function Profile() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           res.data.data.profile_picture =
-            "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" +
+            `${_attachmentUrl}` +
+            // "http://3.108.206.34/3_SoftLaunch/TSNewBackend/" +
             res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
     });
   };
-
+  console.log("data", data);
   const fileChangedHandler = (e) => {
     let file_size = e.target.files[0].size;
     if (file_size > 2000000) {
