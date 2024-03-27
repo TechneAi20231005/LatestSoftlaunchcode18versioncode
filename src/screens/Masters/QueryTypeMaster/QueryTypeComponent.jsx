@@ -18,7 +18,6 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 
 import Dropdown from "react-bootstrap/Dropdown";
 
-
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +27,7 @@ function QueryTypeComponent() {
   const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
+  console.log("data", data);
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
 
@@ -710,6 +710,7 @@ function QueryTypeComponent() {
     setNotify(null);
     var selectFormId = form.getAll("form_id");
     var selectCustomerId = form.getAll("customer_id");
+    console.log("selectCustomerId", selectCustomerId);
     var selectQueryGroup = form.getAll("query_group_data[]");
 
     if (selectFormId.length === 0) {
@@ -885,7 +886,7 @@ function QueryTypeComponent() {
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {data && (
+                {data && data && (
                   <DataTable
                     columns={columns}
                     data={data}
