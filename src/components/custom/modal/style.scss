@@ -1,0 +1,12 @@
+.custom_modal {
+  .modal-content {
+    .close_icon {
+      position: absolute;
+      top: 5%;
+      right: 2%;
+      font-size: 24px;
+      z-index: 1;
+      cursor: pointer;
+    }
+  }
+}
