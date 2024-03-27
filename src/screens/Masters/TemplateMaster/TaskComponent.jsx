@@ -208,6 +208,7 @@ export default function TaskComponent(props) {
               <i className="icofont-ui-edit"></i>
             </button>
           </div>
+
           <div
             className="modal fade show"
             id="createproject"
@@ -220,7 +221,7 @@ export default function TaskComponent(props) {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title  fw-bold" id="createprojectlLabel">
-                    Update task
+                    Update task gggggggggggggggggggggggggggg ;lkjhdfgt
                   </h5>
                   <button
                     className="btn btn-sm btn-primary"
