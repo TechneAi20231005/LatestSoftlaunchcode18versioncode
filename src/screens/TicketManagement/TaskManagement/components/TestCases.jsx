@@ -26,7 +26,7 @@ import Select from 'react-select'
 const TestCases = ({ match }) => {
   // All THE STATES ARE MENTIONED
   // Getting the ticket ID from URL parameters
-  const {ticketId, taskId, moduleId} = useParams()
+  const { ticketId, taskId, moduleId } = useParams()
   const ticket_id = ticketId
   // Getting the task ID from URL parameters
   const task_id = taskId
@@ -532,7 +532,7 @@ const TestCases = ({ match }) => {
         }
         setExportData(ExportTempData)
       })
-  
+
 
     // Fetch all testing types data
     await new TestingTypeServices().getAlltestingType().then(res => {
@@ -570,39 +570,39 @@ const TestCases = ({ match }) => {
 
   // Columns for DataTable
   const columns = [
-    ...(executable !==1 ?[
-    {
-      
-      name: ' Enable/Disable',
-      cell: row => (
-        <div
-          class='form-check form-switch'
+    ...(executable !== 1 ? [
+      {
+
+        name: ' Enable/Disable',
+        cell: row => (
+          <div
+            class='form-check form-switch'
           //  onClick={() => handleEnabledChange(row.id)}
-        >
-          {executable == 0 && (
-            <input
-              class='form-check-input'
-              type='checkbox'
-              role='switch'
-              name='is_enabled'
-              id={`is_enabled_${row.id}`}
-              // key={Math.random}
-              // onBlur={e=>updateEnable(e, row.index)}
-              defaultChecked={row.is_enabled == 1 ? true : false} // Check if row is in selectedRows state
-              onChange={e => {
-                toggleRowSelection(e, row.id, row)
-                updateEnable(e, row.index)
-              }}
-            />
-          )}
-        </div>
-      )
-    } ]:[]),
-  
+          >
+            {executable == 0 && (
+              <input
+                class='form-check-input'
+                type='checkbox'
+                role='switch'
+                name='is_enabled'
+                id={`is_enabled_${row.id}`}
+                // key={Math.random}
+                // onBlur={e=>updateEnable(e, row.index)}
+                defaultChecked={row.is_enabled == 1 ? true : false} // Check if row is in selectedRows state
+                onChange={e => {
+                  toggleRowSelection(e, row.id, row)
+                  updateEnable(e, row.index)
+                }}
+              />
+            )}
+          </div>
+        )
+      }] : []),
+
 
     {
       name: 'Action',
-      selector: row => {},
+      selector: row => { },
       sortable: false,
       width: '100px',
       cell: row => (
@@ -661,7 +661,7 @@ const TestCases = ({ match }) => {
       selector: row => row.test_case_id,
       sortable: true
     },
-   
+
     {
       name: 'Function',
       selector: row => row.function,
@@ -844,7 +844,7 @@ const TestCases = ({ match }) => {
         </div>
       )
     },
-    
+
 
     {
       name: 'Tester Comments',
@@ -1100,21 +1100,21 @@ const TestCases = ({ match }) => {
             // Update page navigation based on copied data index
             setNotify({ type: 'success', message: res.data.message }) // Set success notification
             loadData() // Reload the data
-            if ( copiedData.data.index !== null && data && 
+            if (copiedData.data.index !== null && data &&
               copiedData.data.index < data.length - 1 &&
               button_type == 'UPDATE'
-            ) { 
+            ) {
               document.getElementById('plus1').click()
             } else if (copiedData.data.index > 0 && button_type == 'UPDATE') {
               document.getElementById('minus1').click()
-            }else{
+            } else {
 
             }
 
             // Clear form inputs after successful submission
             // ...
 
-          
+
           } else {
             setNotify({ type: 'danger', message: res.data.message }) // Set error notification
           }
@@ -1318,18 +1318,18 @@ const TestCases = ({ match }) => {
     }
   }
   // get test suite data
-  const getTestSuite = async(e)=>{
-       // Fetch all test suites data
-       await new TestCasesService().getAllTestSuites().then(res => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const temp = res.data.data
-            setTestSuiteDropdown(
-              temp.map(d => ({ value: d.id, label: d.testsuit_name })) // Create test suite dropdown options
-            )
-          }
+  const getTestSuite = async (e) => {
+    // Fetch all test suites data
+    await new TestCasesService().getAllTestSuites().then(res => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data
+          setTestSuiteDropdown(
+            temp.map(d => ({ value: d.id, label: d.testsuit_name })) // Create test suite dropdown options
+          )
         }
-      })
+      }
+    })
   }
   // Function to add selected test cases to an existing test suite
   const addToExistingTestSuite = async e => {
@@ -1623,8 +1623,8 @@ const TestCases = ({ match }) => {
                     )}
                   </div>
 
-                 
-                  
+
+
 
                   <div className='col-sm-3 mt-2'>
                     <label className='col-form-label'>
@@ -1792,7 +1792,7 @@ const TestCases = ({ match }) => {
                           value='PASS'
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'PASS'
+                              copiedData?.data.tester_status == 'PASS'
                               ? true
                               : false
                           }
@@ -1804,7 +1804,7 @@ const TestCases = ({ match }) => {
                           value='FAIL'
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'FAIL'
+                              copiedData?.data.tester_status == 'FAIL'
                               ? true
                               : false
                           }
@@ -1816,7 +1816,7 @@ const TestCases = ({ match }) => {
                           value='UNDER_DEVELOPMENT'
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'UNDER_DEVELOPMENT'
+                              copiedData?.data.tester_status == 'UNDER_DEVELOPMENT'
                               ? true
                               : false
                           }
@@ -1828,7 +1828,7 @@ const TestCases = ({ match }) => {
                           value='SUGGESTION'
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'SUGGESTION'
+                              copiedData?.data.tester_status == 'SUGGESTION'
                               ? true
                               : false
                           }
@@ -1840,7 +1840,7 @@ const TestCases = ({ match }) => {
                           value='REOPEN'
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'REOPEN'
+                              copiedData?.data.tester_status == 'REOPEN'
                               ? true
                               : false
                           }
@@ -1867,7 +1867,7 @@ const TestCases = ({ match }) => {
                       key={Math.random()}
                       required
                       disabled={executable == 1 ? true : false}
-                      // style={{ backgroundColor: `${priority}`, color: 'white' }}
+                    // style={{ backgroundColor: `${priority}`, color: 'white' }}
                     >
                       <option></option>
                       <option
@@ -1884,7 +1884,7 @@ const TestCases = ({ match }) => {
                         value='MEDIUM'
                         selected={
                           copiedData.data &&
-                          copiedData.data.severity == 'MEDIUM'
+                            copiedData.data.severity == 'MEDIUM'
                             ? true
                             : false
                         }
@@ -2144,7 +2144,7 @@ const TestCases = ({ match }) => {
                   {userTypeData === 'TESTER' && executable == 0 && (
                     <div>
                       <a
-                        href='http://3.108.206.34/TSNewBackend/public/TestCases/downloadSampleFormat.csv'
+                        href='http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/TestCases/downloadSampleFormat.csv'
                         className='btn btn-warning'
                         download
                       >
@@ -2244,21 +2244,21 @@ const TestCases = ({ match }) => {
 
                 {data && (
                   <DataTableExtensions {...tableData}>
-                  <DataTable
-                    columns={columns}
-                    defaultSortField='title'
-                    data={data}
-                    pagination
-                    conditionalRowStyles={conditionalRowStyles}
-                    expandableRows={true}
-                    selectableRows={true}
-                    paginationComponentOptions={paginationComponentOptions}
-                    onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
-                    className='table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline'
-                    expandableRowsComponent={ExpandedComponent}
-                    responsive={true}
-                    onRowClicked={(e, row) => toggleRowSelection(e, row.id)} // Call toggleRowSelection when a row is clicked
-                  />
+                    <DataTable
+                      columns={columns}
+                      defaultSortField='title'
+                      data={data}
+                      pagination
+                      conditionalRowStyles={conditionalRowStyles}
+                      expandableRows={true}
+                      selectableRows={true}
+                      paginationComponentOptions={paginationComponentOptions}
+                      onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
+                      className='table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline'
+                      expandableRowsComponent={ExpandedComponent}
+                      responsive={true}
+                      onRowClicked={(e, row) => toggleRowSelection(e, row.id)} // Call toggleRowSelection when a row is clicked
+                    />
                   </DataTableExtensions>
                 )}
                 {/* import test cases modal */}

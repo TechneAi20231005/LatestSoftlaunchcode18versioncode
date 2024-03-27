@@ -20,8 +20,8 @@ export const _pincodeUrl = "https://api.postalpincode.in/pincode/"
 // export const _attachmentUrl="http://15.207.120.175/TechTicketDummyDevelopment/";
 
 export const _base = '3_SoftLaunch/TechTicket';
-export const _apiUrl = "http://3.108.206.34/TSNewBackend/public/api/";
-export const _attachmentUrl = "http://3.108.206.34/TSNewBackend/";
+export const _apiUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
+export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
 
 
 export const loginURL = _apiUrl + "login";
