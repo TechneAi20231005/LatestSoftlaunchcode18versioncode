@@ -1,16 +1,20 @@
 import React, { memo } from 'react';
-import { Modal, ModalBody } from 'reactstrap';
-import { IoCloseOutline } from 'react-icons/io5';
+import { Modal, ModalBody, ModalHeader } from 'react-bootstrap';
+import { RenderIf } from '../../../utils';
 import './style.scss';
 
-function CustomModal({ children, width, title, isOpen, onClose }) {
+function CustomModal({ children, width, title, show, onClose }) {
   return (
-    <Modal size={width || 'md'} backdrop="static" isOpen={isOpen} centered className="custom_modal">
-      {onClose && <IoCloseOutline className="close_icon " onClick={onClose} />}
-      <ModalBody className="position-relative">
-        <div>
+    <Modal size={width || 'md'} backdrop="static" show={show} centered className="custom_modal">
+      <RenderIf render={title}>
+        <ModalHeader>
+          <h5 className="text_primary">{title}</h5>
+        </ModalHeader>
+      </RenderIf>
+      <ModalBody className="position-relative pt-1">
+        {/* <div>
           <h5 className="modal-title text-center mb-2 w-100">{title}</h5>
-        </div>
+        </div> */}
 
         {children}
       </ModalBody>

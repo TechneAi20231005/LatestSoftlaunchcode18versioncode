@@ -8,5 +8,14 @@
       z-index: 1;
       cursor: pointer;
     }
+    .modal-header {
+      border-color: #d9d9d9;
+      padding-bottom: 0;
+    }
+  }
+}
+.custom_alert_modal {
+  i {
+    font-size: 85px;
   }
 }

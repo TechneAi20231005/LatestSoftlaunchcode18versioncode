@@ -13,7 +13,6 @@
   }
 }
 
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -40,6 +39,9 @@
 
 .cp {
   cursor: pointer;
+}
+.text_primary {
+  color: var(--primary-color);
 }
 
 .skeleton {

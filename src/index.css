@@ -4,7 +4,7 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: red !important;
+  /* background-color: red !important; */
 }
 
 code {
@@ -12,6 +12,7 @@ code {
 }
 
 :root {
+  /* --primary_color: #484c7f; */
   --skeleton-bg-1: hsl(200, 20%, 80%);
   --skeleton-bg-2: hsl(200, 20%, 95%);
 }

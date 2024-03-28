@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormikContext, getIn } from 'formik';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
-import './inputs.scss';
+import './style.scss';
 
 export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {
   const touch = getIn(touched, field.name);
@@ -11,7 +11,8 @@ export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {
     <div className={`${props.styleData} space-y-10`}>
       {!props.withOutLabel && (
         <label>
-          {props.label} {props.requiredField && <span className="mandatory_sign">*</span>}
+          {props.label}
+          {props.requiredField && <span className="mendatory_sign">*</span>}
         </label>
       )}
       <input
@@ -29,7 +30,10 @@ export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) =
 
   return (
     <div className={`${props.styleData} space-y-10 ${props.pswClassName}`}>
-      {!props.withOutLabel && <label>{props.label}</label>}
+      <label>
+        {props.label}
+        {props.requiredField && <span className="mendatory_sign">*</span>}
+      </label>
       <div className="psw_input_container">
         <input
           {...field}
@@ -55,7 +59,10 @@ export const CustomTextArea = ({ field, form: { touched, errors }, ...props }) =
 
   return (
     <div className={`${props.styleData} space-y-10`}>
-      {!props.withOutLabel && <label>{props.label}</label>}
+      <label>
+        {props.label}
+        {props.requiredField && <span className="mendatory_sign">*</span>}
+      </label>
       <textarea
         {...field}
         {...props}
