@@ -16,10 +16,10 @@ const Chatbox = (props) => {
   const handleComment = async (e) => {
     e.preventDefault();
     setMessage("");
-    if (!mentionId.length) {
-      alert("Kindly mention user");
-      return;
-    }
+    // if (!mentionId.length) {
+    //   alert("Kindly mention user");
+    //   return;
+    // }
     await new MyTicketService()
       .postComment({
         ticket_id: ticketId,
@@ -39,7 +39,6 @@ const Chatbox = (props) => {
         const res = await new UserService().getUserForMyTickets(inputRequired);
 
         if (res.status === 200 && res.data.status === 1) {
-   
           const data = res.data.data.filter(
             (d) => d.is_active === 1 && d.account_for
           );
