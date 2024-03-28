@@ -22,5 +22,5 @@ export function getData() {
     },
   };
 
-  return axios.get(`http://3.108.206.34/2_Testing/TSNewBackend/public/api/dashboard`, config);
+  return axios.get(`${_URL}`, config);
 }

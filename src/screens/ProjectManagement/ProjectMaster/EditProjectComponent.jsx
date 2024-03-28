@@ -164,8 +164,7 @@ export default function EditProjectComponent({ match }) {
   };
 
   const handleShowLogo = e => {
-    var URL =
-      'http://3.108.206.34/2_Testing/TSNewBackend/storage/app/Attachment/project/' + data.logo;
+    var URL = 'http://3.108.206.34/TSNewBackend/storage/app/Attachment/project/' + data.logo;
     window.open(URL, '_blank');
   };
 

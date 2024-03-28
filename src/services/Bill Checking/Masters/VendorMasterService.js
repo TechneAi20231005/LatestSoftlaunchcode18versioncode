@@ -208,7 +208,7 @@ export default class VendorMasterService {
       },
     };
     return axios.get(
-      `http://3.108.206.34/2_Testing/TSNewBackend/public/api/billCheckingMaster/deleteAttachment/${attachment_id}`,
+      `http://3.108.206.34/TSNewBackend/public/api/billCheckingMaster/deleteAttachment/${attachment_id}`,
       config,
     );
   }

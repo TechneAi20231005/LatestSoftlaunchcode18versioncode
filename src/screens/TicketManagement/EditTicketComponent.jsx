@@ -347,11 +347,10 @@ export default function EditTicketComponent({ match }) {
     setShowLoaderModal(true);
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      "id,employee_id,first_name,last_name,middle_name,is_active,department_id";
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
-          console.log("res",res.payload.data.data)
           const data = res.payload.data.data.filter(
             (d) => d.is_active == 1 && d.account_for === "SELF"
           );
@@ -362,7 +361,7 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
-          console.log("data",data)
+          console.log("data", data);
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -602,8 +601,8 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + " " + d.last_name + "(" + d.id + ")",
         }));
-        console.log("select",select)
-        console.log("user",user)
+      console.log("select", select);
+      console.log("user", user);
 
       setUserDropdown(select);
       setUserName(null);
@@ -1270,9 +1269,6 @@ export default function EditTicketComponent({ match }) {
                           </div>
                         )}
 
-    
-    
-
                         {data.inputType === "datetime-local" && (
                           <div className="form-control">
                             <input
@@ -1316,7 +1312,6 @@ export default function EditTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
