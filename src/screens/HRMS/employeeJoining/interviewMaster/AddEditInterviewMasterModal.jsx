@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Field, Form, Formik, useFormikContext } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 
 // // static import
@@ -38,9 +38,6 @@ const employeeName = [
 
 function AddEditInterviewMasterModal({ show, close }) {
   // // initial state
-  const valuessss = useFormikContext();
-  console.log(valuessss);
-
   const addInterviewInitialValue = {
     department: '',
     designation: '',
@@ -177,7 +174,7 @@ function AddEditInterviewMasterModal({ show, close }) {
       <CustomAlertModal
         show={openConfirmModal}
         type="success"
-        message="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Expedita, ea?"
+        message="Do you want to Add Assignment for It department to software Developer"
         onSuccess={() => setOpenConfirmModal(false)}
         onClose={() => setOpenConfirmModal(false)}
       />

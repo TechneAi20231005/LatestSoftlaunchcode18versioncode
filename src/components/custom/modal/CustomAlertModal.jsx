@@ -13,6 +13,8 @@ function CustomAlertModal({
   onSuccess,
   btnCloseName,
   btnSuccessName,
+  heading,
+  footerMsg,
 }) {
   return (
     <Modal
@@ -37,15 +39,24 @@ function CustomAlertModal({
             <i className="icofont-check-circled text-danger" />
           ) : null}
         </div>
-
-        <p className="py-3">{message}</p>
+        <RenderIf render={heading}>
+          <p className="fw-bold text-center">{heading}</p>
+        </RenderIf>
+        <p className={`${heading || footerMsg ? 'py-1' : 'py-3'} text-center`}>{message}</p>
+        <RenderIf render={footerMsg}>
+          <p className="fw-bold text-center">{footerMsg}</p>
+        </RenderIf>
         <div className="d-flex justify-content-center gap-2">
-          <button className="btn btn-dark px-5" onClick={onSuccess}>
-            {btnSuccessName || 'Yes'}
-          </button>
-          <button onClick={onClose} className="btn btn-shadow-light px-5">
-            {btnCloseName || 'No'}
-          </button>
+          {onSuccess && (
+            <button className="btn btn-dark px-5" onClick={onSuccess}>
+              {btnSuccessName || 'Yes'}
+            </button>
+          )}
+          {onClose && (
+            <button onClick={onClose} className="btn btn-shadow-light px-5">
+              {btnCloseName || 'No'}
+            </button>
+          )}
         </div>
       </ModalBody>
     </Modal>

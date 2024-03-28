@@ -5,9 +5,9 @@ import DataTable from 'react-data-table-component';
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
-import AddEditInterviewMasterModal from './AddEditInterviewMasterModal';
+import AddCandidatesModal from './AddCandidatesModal';
 
-function InterviewMaster() {
+function CandidateList() {
   // // static data
   const columns = [
     {
@@ -19,57 +19,50 @@ function InterviewMaster() {
 
     { name: 'Action', selector: row => {}, sortable: false },
     {
-      name: 'Status',
+      name: 'Candidate Name',
       sortable: true,
-      selector: row => row?.status,
+      selector: row => row?.candidateName,
     },
 
     {
-      name: 'Department',
-      selector: row => row?.department,
+      name: 'Applied Position',
+      selector: row => row?.appliedPosition,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Designation',
-      selector: row => row?.designation,
+      name: 'Date of Application',
+      selector: row => row?.dateOfApplication,
       sortable: true,
       width: '175px',
     },
     {
-      name: 'Steps',
-      selector: row => row?.steps,
+      name: 'Status',
+      selector: row => row?.status,
       sortable: true,
       width: '175px',
     },
     {
-      name: 'First Title',
-      selector: row => row?.firstTitle,
+      name: 'Source',
+      selector: row => row?.source,
       sortable: true,
       width: '175px',
     },
   ];
   // // local state
   const [searchValue, setSearchValue] = useState('');
-  const [addEditInterviewModal, setAddEditInterviewModal] = useState({
-    open: false,
-    type: '',
-    data: '',
-  });
+  const [addCandidateModal, setAddCandidateModal] = useState(false);
 
   return (
     <>
       <Container fluid>
         <PageHeader
-          headerTitle="Interview Master"
+          headerTitle="Candidate List"
           renderRight={() => {
             return (
-              <button
-                className="btn btn-dark px-5"
-                onClick={prev => setAddEditInterviewModal({ ...prev, open: true })}
-              >
+              <button className="btn btn-dark px-5" onClick={() => setAddCandidateModal(true)}>
                 <i className="icofont-plus me-2 fs-6" />
-                Add Steps
+                Add Data
               </button>
             );
           }}
@@ -81,7 +74,7 @@ function InterviewMaster() {
               name="interview_search"
               value={searchValue}
               onChange={e => setSearchValue(e?.target?.value)}
-              placeholder="Enter interview name..."
+              placeholder="Enter candidate name..."
               className="form-control"
             />
           </Col>
@@ -99,7 +92,7 @@ function InterviewMaster() {
             <ExportToExcel
               className="btn btn-danger"
               apiData={[]}
-              fileName="Interview master Records"
+              fileName="Candidates Lists Records"
             />
           </Col>
         </Row>
@@ -113,12 +106,10 @@ function InterviewMaster() {
           highlightOnHover={true}
         />
       </Container>
-      <AddEditInterviewMasterModal
-        show={addEditInterviewModal?.open}
-        close={prev => setAddEditInterviewModal({ ...prev, open: false })}
-      />
+
+      <AddCandidatesModal show={addCandidateModal} close={() => setAddCandidateModal(false)} />
     </>
   );
 }
 
-export default InterviewMaster;
+export default CandidateList;

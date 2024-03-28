@@ -20,6 +20,19 @@
     }
   }
 }
+.currency_input_container {
+  position: relative;
+  input {
+    padding-left: 35px;
+  }
+  i {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    margin: 0 12px;
+  }
+}
 label {
   margin-bottom: 5px;
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { useFormikContext, getIn } from 'formik';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
+import Select from 'react-select';
+
 import './style.scss';
 
 export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {
@@ -46,6 +48,30 @@ export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) =
           ) : (
             <IoEyeOff onClick={() => props.setShow(true)} className="cp" />
           )}
+        </div>
+      </div>
+      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+    </div>
+  );
+};
+export const CustomCurrencyInput = ({ field, form: { touched, errors }, ...props }) => {
+  const touch = getIn(touched, field.name);
+  const error = getIn(errors, field.name);
+
+  return (
+    <div className={`${props.styleData} space-y-10 ${props.pswClassName}`}>
+      <label>
+        {props.label}
+        {props.requiredField && <span className="mendatory_sign">*</span>}
+      </label>
+      <div className="currency_input_container">
+        <input
+          {...field}
+          {...props}
+          className={`form-control ${error && touch && 'is-invalid'} ${props.inputClassName} `}
+        />
+        <div className={error && touch && 'input_invalid'}>
+          <i className="icofont-rupee cp" />
         </div>
       </div>
       {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
@@ -110,6 +136,56 @@ export const CustomDropdown = ({ field, form: { touched, errors }, ...props }) =
       </select>
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </div>
+  );
+};
+
+export const CustomReactSelect = ({
+  field,
+  options,
+  isMulti = false,
+  form: { touched, errors },
+  ...props
+}) => {
+  const touch = getIn(touched, field.name);
+  const error = getIn(errors, field.name);
+  const { setFieldValue } = useFormikContext();
+  const onChange = option => {
+    setFieldValue(field.name, isMulti ? option.map(item => item.value) : option.value);
+  };
+  const getValue = () => {
+    if (options) {
+      return isMulti
+        ? options.filter(option => field?.value?.indexOf(option.value) >= 0)
+        : options.find(option => option.value === field.value);
+    } else {
+      return isMulti ? [] : '';
+    }
+  };
+  let optionsWithOther;
+  if (props.addOtherOption) {
+    optionsWithOther = [...options, { label: 'Other', value: 'other' }];
+  }
+  return (
+    <>
+      <div className={props.styleData + ' max_250'} style={props.style}>
+        {!props.withOutLabel && (
+          <label>
+            {props.label}
+            {props.requiredField && <span className="mendatory_sign">*</span>}
+          </label>
+        )}
+        <Select
+          name={field.name}
+          value={getValue()}
+          onChange={onChange}
+          placeholder={props.placeholder}
+          options={props.addOtherOption ? optionsWithOther : options}
+          isMulti={isMulti}
+          className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+        />
+        {error && touch && <div className="invalid-feedback">{error}</div>}
+      </div>
+    </>
   );
 };
 
