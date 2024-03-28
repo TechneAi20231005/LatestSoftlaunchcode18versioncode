@@ -361,7 +361,6 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
-          console.log("data", data);
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -371,10 +370,10 @@ export default function EditTicketComponent({ match }) {
     await new MyTicketService().getTicketById(ticketId).then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
-        setProjectId(res.data.data.project_id);
-        setUsers(res.data.data.ticket_users);
-        setTicketStatus(data.status_id);
-        setRows(res.data.data.dynamic_form);
+        setProjectId(res.data.data?.project_id);
+        setUsers(res.data.data?.ticket_users);
+        setTicketStatus(data?.status_id);
+        setRows(res.data.data?.dynamic_form);
         if (data.status_id == 3) {
           setIsSolved(true);
         }
@@ -601,8 +600,6 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + " " + d.last_name + "(" + d.id + ")",
         }));
-      console.log("select", select);
-      console.log("user", user);
 
       setUserDropdown(select);
       setUserName(null);
