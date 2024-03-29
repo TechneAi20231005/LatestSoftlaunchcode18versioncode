@@ -22,7 +22,7 @@ function AddEditBranchModal({ show, close, type }) {
 
   return (
     <>
-      <CustomModal show={show} title="Add Branch" width="md">
+      <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Branch`} width="md">
         <Formik
           initialValues={addInterviewInitialValue}
           validationSchema={addEditBranchValidation}

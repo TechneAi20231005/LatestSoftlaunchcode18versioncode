@@ -67,7 +67,7 @@ function BranchMaster() {
             return (
               <button
                 className="btn btn-dark px-5"
-                onClick={() => setAddEditCandidateModal({ type: 'EDIT', data: '', open: true })}
+                onClick={() => setAddEditCandidateModal({ type: 'ADD', data: '', open: true })}
               >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Branch
