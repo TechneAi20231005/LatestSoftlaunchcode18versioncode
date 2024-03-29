@@ -360,9 +360,17 @@ export default function EditTicketComponent({ match }) {
               value: d.id,
               label: d.first_name + " " + d.last_name,
             }));
+
+          const entryUserselect = res.payload.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }));
+
           setUser(data);
           setUserDropdown(select);
-          setUserdrp(select);
+          setUserdrp(entryUserselect);
         }
       }
     });
@@ -952,6 +960,7 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
+
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Entry User : </b>
