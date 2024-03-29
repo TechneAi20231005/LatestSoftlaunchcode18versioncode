@@ -199,10 +199,13 @@ export const CustomRadioButton = ({ field, form: { touched, errors }, ...props }
           <input
             {...props}
             {...field}
-            className={` ${error && touch && 'is-invalid'}`}
+            className={`${props.inputClassName} ${error && touch && 'is-invalid'}`}
             id={props.label}
             onChange={e => {
-              props.handleChange(e);
+              field.onChange(e);
+              if (props.handleChange) {
+                props.handleChange(e);
+              }
             }}
           />
           <span className="label-span">{props.label}</span>

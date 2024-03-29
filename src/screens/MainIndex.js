@@ -152,6 +152,7 @@ import StepAuthentication from '../components/Auth/StepAuthentication';
 // // // employeeJoining
 import InterviewMaster from './HRMS/employeeJoining/interviewMaster/InterviewMaster';
 import CandidateList from './HRMS/employeeJoining/candidateList/CandidateList';
+import BranchMaster from './HRMS/employeeJoining/branchMaster/BranchMaster';
 
 class MainIndex extends React.Component {
   constructor(props) {
@@ -449,6 +450,7 @@ class MainIndex extends React.Component {
             {/* Employee Joining routes */}
             <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
             <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
+            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
             {/* <Route
               exact
               path={`/${_base}/forget-password`}
