@@ -360,9 +360,17 @@ export default function EditTicketComponent({ match }) {
               value: d.id,
               label: d.first_name + " " + d.last_name,
             }));
+
+          const entryUserSelect = res.payload.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }));
+
           setUser(data);
           setUserDropdown(select);
-          setUserdrp(select);
+          setUserdrp(entryUserSelect);
         }
       }
     });
