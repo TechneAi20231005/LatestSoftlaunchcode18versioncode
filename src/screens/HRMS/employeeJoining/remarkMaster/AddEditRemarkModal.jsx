@@ -5,14 +5,14 @@ import { Col, Row } from 'react-bootstrap';
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
 import { CustomInput, CustomRadioButton } from '../../../../components/custom/inputs/CustomInputs';
-import { addEditSourceValidation } from './validation/addEditSource';
+import { addEditRemarkValidation } from './validation/addEditRemark';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
 
-function AddEditSourceModal({ show, close, type }) {
+function AddEditRemarkModal({ show, close, type }) {
   // // initial state
   const addInterviewInitialValue = {
-    source: '',
+    remarkTitle: '',
     remarks: '',
     status: 'active',
   };
@@ -22,10 +22,10 @@ function AddEditSourceModal({ show, close, type }) {
 
   return (
     <>
-      <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Source`} width="md">
+      <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Remark`} width="md">
         <Formik
           initialValues={addInterviewInitialValue}
-          validationSchema={addEditSourceValidation}
+          validationSchema={addEditRemarkValidation}
           onSubmit={(values, errors) => {
             setOpenConfirmModal(true);
           }}
@@ -36,9 +36,9 @@ function AddEditSourceModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="source"
-                    label="Source"
-                    placeholder="Enter Source Name"
+                    name="remarkTitle"
+                    label="Remark Title"
+                    placeholder="Enter Remark Title"
                     requiredField
                   />
                 </Col>
@@ -100,4 +100,4 @@ function AddEditSourceModal({ show, close, type }) {
   );
 }
 
-export default AddEditSourceModal;
+export default AddEditRemarkModal;

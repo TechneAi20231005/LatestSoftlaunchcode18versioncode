@@ -154,6 +154,7 @@ import InterviewMaster from './HRMS/employeeJoining/interviewMaster/InterviewMas
 import CandidateList from './HRMS/employeeJoining/candidateList/CandidateList';
 import BranchMaster from './HRMS/employeeJoining/branchMaster/BranchMaster';
 import SourceMaster from './HRMS/employeeJoining/sourceMaster/SourceMaster';
+import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
 
 class MainIndex extends React.Component {
   constructor(props) {
@@ -453,6 +454,7 @@ class MainIndex extends React.Component {
             <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
             <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
             <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
+            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
             {/* <Route
               exact
               path={`/${_base}/forget-password`}
