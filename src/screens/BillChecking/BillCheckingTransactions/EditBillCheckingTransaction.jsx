@@ -1762,6 +1762,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <b>Original Bill Needed</b>
                       </label>
                     </div>
+                    {console.log("data==>", data)}
                     {data &&
                       data.approvers_id.length > 0 &&
                       data.approvers_id.includes(
