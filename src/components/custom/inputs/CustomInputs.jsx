@@ -70,8 +70,10 @@ export const CustomCurrencyInput = ({ field, form: { touched, errors }, ...props
           {...props}
           className={`form-control ${error && touch && 'is-invalid'} ${props.inputClassName} `}
         />
+
+        <i className="icofont-rupee cp" />
         <div className={error && touch && 'input_invalid'}>
-          <i className="icofont-rupee cp" />
+          <small>/{props?.duration || 'Month'}</small>
         </div>
       </div>
       {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}

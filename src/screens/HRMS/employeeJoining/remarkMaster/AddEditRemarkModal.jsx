@@ -11,7 +11,7 @@ import { RenderIf } from '../../../../utils';
 
 function AddEditRemarkModal({ show, close, type }) {
   // // initial state
-  const addInterviewInitialValue = {
+  const addEditRemarkInitialValue = {
     remarkTitle: '',
     remarks: '',
     status: 'active',
@@ -24,7 +24,7 @@ function AddEditRemarkModal({ show, close, type }) {
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Remark`} width="md">
         <Formik
-          initialValues={addInterviewInitialValue}
+          initialValues={addEditRemarkInitialValue}
           validationSchema={addEditRemarkValidation}
           onSubmit={(values, errors) => {
             setOpenConfirmModal(true);

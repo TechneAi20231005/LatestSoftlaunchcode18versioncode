@@ -11,7 +11,7 @@ import { RenderIf } from '../../../../utils';
 
 function AddEditSourceModal({ show, close, type }) {
   // // initial state
-  const addInterviewInitialValue = {
+  const sourceInitialValue = {
     source: '',
     remarks: '',
     status: 'active',
@@ -24,7 +24,7 @@ function AddEditSourceModal({ show, close, type }) {
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Source`} width="md">
         <Formik
-          initialValues={addInterviewInitialValue}
+          initialValues={sourceInitialValue}
           validationSchema={addEditSourceValidation}
           onSubmit={(values, errors) => {
             setOpenConfirmModal(true);

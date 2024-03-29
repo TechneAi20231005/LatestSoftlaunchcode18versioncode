@@ -32,7 +32,7 @@ const preferredLocation = [
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
-  const addInterviewInitialValue = {
+  const candidatesInitialValue = {
     source: '',
     fullName: '',
     dob: '',
@@ -53,7 +53,7 @@ function AddCandidatesModal({ show, close }) {
     <>
       <CustomModal show={show} title="Add Data" width="lg">
         <Formik
-          initialValues={addInterviewInitialValue}
+          initialValues={candidatesInitialValue}
           validationSchema={addCandidatesValidation}
           onSubmit={(values, errors) => {
             console.log(values);

@@ -11,7 +11,7 @@ import { RenderIf } from '../../../../utils';
 
 function AddEditBranchModal({ show, close, type }) {
   // // initial state
-  const addInterviewInitialValue = {
+  const branchInitialValue = {
     branch: '',
     remarks: '',
     status: 'active',
@@ -24,7 +24,7 @@ function AddEditBranchModal({ show, close, type }) {
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Branch`} width="md">
         <Formik
-          initialValues={addInterviewInitialValue}
+          initialValues={branchInitialValue}
           validationSchema={addEditBranchValidation}
           onSubmit={(values, errors) => {
             setOpenConfirmModal(true);
