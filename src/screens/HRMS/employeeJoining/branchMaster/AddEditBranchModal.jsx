@@ -53,7 +53,9 @@ function AddEditBranchModal({ show, close, type }) {
               </Row>
               <RenderIf render={type === 'EDIT'}>
                 <div className="d-flex align-items-center mt-3">
-                  <p className="mb-2 pe-2">Status:</p>
+                  <p className="mb-2 pe-2">
+                    Status<span className="mendatory_sign">*</span> :
+                  </p>
                   <Field
                     component={CustomRadioButton}
                     type="radio"

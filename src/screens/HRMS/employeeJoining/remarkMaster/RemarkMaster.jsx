@@ -20,15 +20,20 @@ function RemarkMaster() {
     { name: 'Action', selector: row => {}, sortable: false },
 
     {
+      name: 'Remark Description',
+      sortable: true,
+      selector: row => row?.remarkDescription,
+    },
+    {
+      name: 'Supporting Remark',
+      sortable: true,
+      selector: row => row?.supposingRemark,
+    },
+    {
       name: 'Status',
       selector: row => row?.status,
       sortable: true,
       width: '175px',
-    },
-    {
-      name: 'Remark Title',
-      sortable: true,
-      selector: row => row?.remarkName,
     },
     {
       name: 'Created At',
@@ -46,6 +51,12 @@ function RemarkMaster() {
     {
       name: 'Updated At',
       selector: row => row?.updatedAt,
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Updated By',
+      selector: row => row?.updatedBy,
       sortable: true,
       width: '175px',
     },

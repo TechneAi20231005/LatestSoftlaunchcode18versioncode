@@ -18,7 +18,6 @@ function SalaryMaster() {
     },
 
     { name: 'Action', selector: row => {}, sortable: false },
-
     {
       name: 'Department',
       selector: row => row?.department,
@@ -37,10 +36,28 @@ function SalaryMaster() {
       width: '150px',
     },
     {
-      name: 'Max Salary (in hand)',
-      selector: row => row?.location,
+      name: 'Experience Level',
+      selector: row => row?.experienceLevel,
       sortable: true,
       width: '150px',
+    },
+    {
+      name: 'Salary (Net)',
+      selector: row => row?.salaryNet,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Status',
+      selector: row => row?.status,
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Remark',
+      selector: row => row?.remark,
+      sortable: true,
+      width: '175px',
     },
     {
       name: 'Created By',
@@ -48,10 +65,15 @@ function SalaryMaster() {
       sortable: true,
       width: '175px',
     },
-
     {
       name: 'Updated At',
       selector: row => row?.updatedAt,
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Updated By',
+      selector: row => row?.updatedBy,
       sortable: true,
       width: '175px',
     },

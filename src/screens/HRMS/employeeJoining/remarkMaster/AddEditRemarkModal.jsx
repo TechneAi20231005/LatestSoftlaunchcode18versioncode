@@ -12,8 +12,8 @@ import { RenderIf } from '../../../../utils';
 function AddEditRemarkModal({ show, close, type }) {
   // // initial state
   const addEditRemarkInitialValue = {
-    remarkTitle: '',
-    remarks: '',
+    remarkDescription: '',
+    supportingRemark: '',
     status: 'active',
   };
 
@@ -36,24 +36,26 @@ function AddEditRemarkModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="remarkTitle"
-                    label="Remark Title"
-                    placeholder="Enter Remark Title"
+                    name="remarkDescription"
+                    label="Remark Description"
+                    placeholder="Enter Remark Description"
                     requiredField
                   />
                 </Col>
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="remarks"
-                    label="Remarks"
-                    placeholder="Enter Remarks"
+                    name="supportingRemark"
+                    label="Supporting Remark"
+                    placeholder="Enter Supporting Remark"
                   />
                 </Col>
               </Row>
               <RenderIf render={type === 'EDIT'}>
                 <div className="d-flex align-items-center mt-3">
-                  <p className="mb-2 pe-2">Status:</p>
+                  <p className="mb-2 pe-2">
+                    Status<span className="mendatory_sign">*</span> :
+                  </p>
                   <Field
                     component={CustomRadioButton}
                     type="radio"

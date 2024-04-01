@@ -20,15 +20,20 @@ function BranchMaster() {
     { name: 'Action', selector: row => {}, sortable: false },
 
     {
+      name: 'Branch Name',
+      sortable: true,
+      selector: row => row?.branchName,
+    },
+    {
       name: 'Status',
       selector: row => row?.status,
       sortable: true,
       width: '175px',
     },
     {
-      name: 'Branch',
+      name: 'Remark',
       sortable: true,
-      selector: row => row?.branchName,
+      selector: row => row?.remark,
     },
     {
       name: 'Created At',
@@ -46,6 +51,12 @@ function BranchMaster() {
     {
       name: 'Updated At',
       selector: row => row?.updatedAt,
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Updated By',
+      selector: row => row?.updatedBy,
       sortable: true,
       width: '175px',
     },

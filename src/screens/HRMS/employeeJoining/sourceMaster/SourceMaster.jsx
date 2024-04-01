@@ -20,15 +20,21 @@ function SourceMaster() {
     { name: 'Action', selector: row => {}, sortable: false },
 
     {
-      name: 'Status',
-      selector: row => row?.status,
+      name: 'Source Name',
+      sortable: true,
+      selector: row => row?.sourceName,
+    },
+    {
+      name: 'Remark',
+      selector: row => row?.remark,
       sortable: true,
       width: '175px',
     },
     {
-      name: 'Source',
+      name: 'Status',
+      selector: row => row?.status,
       sortable: true,
-      selector: row => row?.sourceName,
+      width: '175px',
     },
     {
       name: 'Created At',
@@ -46,6 +52,12 @@ function SourceMaster() {
     {
       name: 'Updated At',
       selector: row => row?.updatedAt,
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Updated By',
+      selector: row => row?.updatedBy,
       sortable: true,
       width: '175px',
     },
