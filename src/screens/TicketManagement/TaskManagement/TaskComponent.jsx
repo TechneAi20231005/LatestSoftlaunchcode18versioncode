@@ -439,7 +439,7 @@ export default function TaskComponent({ match }) {
       }
     });
   };
-  console.log("sprintDropDownRef", sprintDropDownRef);
+
   const sprintDropDownHandler = (e) => {
     setDisableNextBtn(false);
     setDisablePrevBtn(false);
@@ -454,7 +454,6 @@ export default function TaskComponent({ match }) {
     setDisableNextBtn(false);
     setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    console.log("currentSprintCard", currentSprintCard);
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
@@ -481,9 +480,10 @@ export default function TaskComponent({ match }) {
 
   const getSprintReport = async (sprintId) => {
     // /setSprintReport
+    setNotify({ type: "info", message: "Comming Soon" });
     await new SprintService()
       .getSprintReportById(sprintId)
-      .then((res) => console.log("report sprint", res.data));
+      .then((res) => setNotify({ type: "info", message: "Comming Soon" }));
   };
 
   const viewSprint = (sprintCard) => {
@@ -492,8 +492,6 @@ export default function TaskComponent({ match }) {
       modalData: sprintCard,
       modalHeader: "View",
     });
-
-    console.log("data for view in modal", sprintModal?.modalData);
   };
 
   const updateSprint = async (sprintCard) => {
@@ -792,7 +790,6 @@ export default function TaskComponent({ match }) {
                           )}
                       </li>
                       {/* Add Sprint Button  in hamburger*/}
-                      {console.log("ownership", ownership)}
                       <li>
                         <button
                           className="btn btn-sm btn-primary text-white btn-custom w-100"
