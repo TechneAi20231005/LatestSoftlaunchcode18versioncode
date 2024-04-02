@@ -52,7 +52,7 @@ export default class SprintService {
     return axios.post(`${_URL}/createSprint`, payload, config);
   }
 
-  getSprintReportById(sprint_id) {
+  getSprintReportById(ticket_id, sprint_id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
       headers: {
@@ -61,7 +61,10 @@ export default class SprintService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${_URL}/getSprintReport/${sprint_id}`, config);
+    return axios.get(
+      `${_URL}/getSprintReport/${ticket_id}/${sprint_id}`,
+      config
+    );
   }
 
   // http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/createSprint/5
