@@ -22260,6 +22260,13 @@ body.rtl_mode
   border-color: var(--color-fff);
   color: var(--color-700);
 }
+.btn.btn-shadow-light {
+  background-color: #fff;
+  border-color: #fff;
+  color: var(--primary-color);
+  font-weight: 600;
+  box-shadow: rgb(180 177 177) 0px 2px 11px 0px;
+}
 .btn.btn-dark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);

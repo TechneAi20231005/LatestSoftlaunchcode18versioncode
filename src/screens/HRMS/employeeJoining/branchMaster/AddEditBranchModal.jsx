@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -8,26 +9,32 @@ import { CustomInput, CustomRadioButton } from '../../../../components/custom/in
 import { addEditBranchValidation } from './validation/AddEditBranch';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
+import {
+  addBranchMasterThunk,
+  editBranchMasterThunk,
+  getBranchMasterListThunk,
+} from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 
-function AddEditBranchModal({ show, close, type }) {
+function AddEditBranchModal({ show, close, type, currentBranchData }) {
   // // initial state
+  const dispatch = useDispatch();
   const branchInitialValue = {
-    branch: '',
-    remarks: '',
-    status: 'active',
+    location_name: type === 'EDIT' ? currentBranchData?.location_name : '',
+    remark: type === 'EDIT' ? currentBranchData?.remark || '' : '',
+    is_active: type === 'EDIT' ? currentBranchData?.is_active?.toString() : 1,
   };
-
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
   return (
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Branch`} width="md">
         <Formik
           initialValues={branchInitialValue}
+          enableReinitialize
           validationSchema={addEditBranchValidation}
           onSubmit={(values, errors) => {
-            setOpenConfirmModal(true);
+            setOpenConfirmModal({ open: true, formData: values });
           }}
         >
           {() => (
@@ -36,7 +43,7 @@ function AddEditBranchModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="branch"
+                    name="location_name"
                     label="Branch"
                     placeholder="Enter Branch Name"
                     requiredField
@@ -45,7 +52,7 @@ function AddEditBranchModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="remarks"
+                    name="remark"
                     label="Remarks"
                     placeholder="Enter Remarks"
                   />
@@ -59,17 +66,17 @@ function AddEditBranchModal({ show, close, type }) {
                   <Field
                     component={CustomRadioButton}
                     type="radio"
-                    name="status"
+                    name="is_active"
                     label="Active"
-                    value="active"
+                    value="1"
                     inputClassName="me-1"
                   />
                   <Field
                     component={CustomRadioButton}
                     type="radio"
-                    name="status"
+                    name="is_active"
                     label="Deactivate"
-                    value="deActive"
+                    value="0"
                     inputClassName="me-1"
                   />
                 </div>
@@ -79,7 +86,7 @@ function AddEditBranchModal({ show, close, type }) {
                 <button className="btn btn-dark px-4" type="submit">
                   {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3">
+                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
                   Cancel
                 </button>
               </div>
@@ -88,15 +95,44 @@ function AddEditBranchModal({ show, close, type }) {
         </Formik>
       </CustomModal>
 
+      {/* Add location_name master confirmation modal */}
       <CustomAlertModal
-        show={openConfirmModal}
+        show={openConfirmModal.open}
         type="success"
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
         onSuccess={() => {
-          setOpenConfirmModal(false);
-          close();
+          if (type === 'ADD') {
+            dispatch(
+              addBranchMasterThunk({
+                formData: openConfirmModal?.formData,
+                onSuccessHandler: () => {
+                  setOpenConfirmModal({ open: false });
+                  close();
+                  dispatch(getBranchMasterListThunk());
+                },
+                onErrorHandler: () => {
+                  setOpenConfirmModal({ open: false });
+                },
+              }),
+            );
+          } else {
+            dispatch(
+              editBranchMasterThunk({
+                currentId: currentBranchData?.id,
+                formData: openConfirmModal?.formData,
+                onSuccessHandler: () => {
+                  setOpenConfirmModal({ open: false });
+                  close();
+                  dispatch(getBranchMasterListThunk());
+                },
+                onErrorHandler: () => {
+                  setOpenConfirmModal({ open: false });
+                },
+              }),
+            );
+          }
         }}
-        onClose={() => setOpenConfirmModal(false)}
+        onClose={() => setOpenConfirmModal({ open: false })}
       />
     </>
   );
