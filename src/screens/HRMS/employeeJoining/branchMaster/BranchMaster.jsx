@@ -94,10 +94,12 @@ function BranchMaster() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = branchMasterList.filter(branch => {
-      const branchValues = Object.values(branch);
+    const filteredList = branchMasterList?.filter(branch => {
+      const branchValues = Object?.values(branch);
       return branchValues.some(value => {
-        return typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase());
+        return (
+          typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
+        );
       });
     });
     setFilteredBranchMasterList(filteredList);
@@ -110,14 +112,15 @@ function BranchMaster() {
   };
 
   const transformDataForExport = data => {
-    return data.map((row, index) => ({
+    return data?.map((row, index) => ({
       'Sr No.': index + 1,
-      'Branch Name': row.location_name || '--',
-      Status: row.is_active ? 'Active' : 'Inactive',
-      'Created At': row.created_at || '--',
-      'Created By': row.created_by || '--',
-      'Updated At': row.updated_at || '--',
-      'Updated By': row.updated_by || '--',
+      'Branch Name': row?.location_name || '--',
+      Remark: row?.remark || '--',
+      Status: row?.is_active ? 'Active' : 'Deactive',
+      'Created At': row?.created_at || '--',
+      'Created By': row?.created_by || '--',
+      'Updated At': row?.updated_at || '--',
+      'Updated By': row?.updated_by || '--',
     }));
   };
 

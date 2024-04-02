@@ -26,6 +26,38 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
+  const handelAddEditBranch = () => {
+    if (type === 'ADD') {
+      dispatch(
+        addBranchMasterThunk({
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getBranchMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        }),
+      );
+    } else {
+      dispatch(
+        editBranchMasterThunk({
+          currentId: currentBranchData?.id,
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getBranchMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        }),
+      );
+    }
+  };
   return (
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Branch`} width="md">
@@ -95,43 +127,12 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
         </Formik>
       </CustomModal>
 
-      {/* Add location_name master confirmation modal */}
+      {/* Add branch master confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
         type="success"
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
-        onSuccess={() => {
-          if (type === 'ADD') {
-            dispatch(
-              addBranchMasterThunk({
-                formData: openConfirmModal?.formData,
-                onSuccessHandler: () => {
-                  setOpenConfirmModal({ open: false });
-                  close();
-                  dispatch(getBranchMasterListThunk());
-                },
-                onErrorHandler: () => {
-                  setOpenConfirmModal({ open: false });
-                },
-              }),
-            );
-          } else {
-            dispatch(
-              editBranchMasterThunk({
-                currentId: currentBranchData?.id,
-                formData: openConfirmModal?.formData,
-                onSuccessHandler: () => {
-                  setOpenConfirmModal({ open: false });
-                  close();
-                  dispatch(getBranchMasterListThunk());
-                },
-                onErrorHandler: () => {
-                  setOpenConfirmModal({ open: false });
-                },
-              }),
-            );
-          }
-        }}
+        onSuccess={handelAddEditBranch}
         onClose={() => setOpenConfirmModal({ open: false })}
       />
     </>

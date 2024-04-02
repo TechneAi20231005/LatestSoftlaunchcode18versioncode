@@ -37,7 +37,8 @@ import DashbordSlice from '../../screens/Dashboard/DashbordSlice';
 import DynamicFormDropDownSlice from '../../screens/Masters/DynamicFormDropdown/Slices/DynamicFormDropDownSlice';
 
 // // HRMS>>Employee Joining
-import branchMaster from '../slices/hrms/employeeJoining/branchMaster';
+import branchMasterSlice from '../slices/hrms/employeeJoining/branchMaster';
+import sourceMasterSlice from '../slices/hrms/employeeJoining/sourceMaster';
 
 export const store = configureStore({
   reducer: {
@@ -74,7 +75,8 @@ export const store = configureStore({
     consolidatedData: ConsolidatedSlice,
 
     // // HRMS>>Employee Joining
-    branchMaster: branchMaster,
+    branchMaster: branchMasterSlice,
+    sourceMaster: sourceMasterSlice,
   },
 
   middleware: getDefaultMiddleware =>
