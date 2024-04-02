@@ -381,7 +381,6 @@ export default function Header() {
                       />
                     )}
                   </div>
-                  {console.log('profile', data)}
                   <div className="card-body pb-0" style={{ zIndex: 500 }}>
                     <div className="d-flex py-1" style={{ zIndex: 500 }}>
                       <img
