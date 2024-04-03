@@ -26,6 +26,8 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
+  // // function
+
   const handelAddEditBranch = () => {
     if (type === 'ADD') {
       dispatch(
@@ -127,7 +129,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
         </Formik>
       </CustomModal>
 
-      {/* Add branch master confirmation modal */}
+      {/* Add edit branch master confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
         type="success"

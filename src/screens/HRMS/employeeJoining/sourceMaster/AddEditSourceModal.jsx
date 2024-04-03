@@ -65,6 +65,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Source`} width="md">
         <Formik
           initialValues={sourceInitialValue}
+          enableReinitialize
           validationSchema={addEditSourceValidation}
           onSubmit={(values, errors) => {
             setOpenConfirmModal({ open: true, formData: values });
@@ -128,7 +129,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
         </Formik>
       </CustomModal>
 
-      {/* Add branch master confirmation modal */}
+      {/* Add edit branch master confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
         type="success"
