@@ -117,7 +117,7 @@ export default function TaskComponent({ match }) {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setBasketData(null);
-              var temp = res.data.data;
+              var temp = res?.data?.data;
               setBasketData(temp);
             }
           }
@@ -459,7 +459,7 @@ export default function TaskComponent({ match }) {
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
-    if (currentIndex !== -1 && currentIndex + 1 < sprintData.length) {
+    if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       setSprintCardData([sprintData[currentIndex + 1]]);
     } else {
       setDisableNextBtn(true);
@@ -731,7 +731,7 @@ export default function TaskComponent({ match }) {
                 <strong>
                   Ticket -{" "}
                   {tasksData &&
-                    tasksData.length > 0 &&
+                    tasksData?.length > 0 &&
                     tasksData[0].ticket_id_name}
                   <i onClick={detailsHandler} style={{ cursor: "pointer" }}>
                     {showDetails ? (
@@ -847,8 +847,8 @@ export default function TaskComponent({ match }) {
                             Time Regularization Request
                             {regularizationRequest && (
                               <span className="badge bg-primary p-2">
-                                {regularizationRequest.length > 0
-                                  ? regularizationRequest.length
+                                {regularizationRequest?.length > 0
+                                  ? regularizationRequest?.length
                                   : ""}
                               </span>
                             )}
@@ -928,7 +928,7 @@ export default function TaskComponent({ match }) {
         </div>
       </div>
       {/* Sprint data view */}
-      {sprintCardData.length > 0 && (
+      {sprintCardData?.length > 0 && (
         <div className=" card mt-2">
           <div className="card-body">
             <div className="d-flex justify-content-around align-items-center p-2">
