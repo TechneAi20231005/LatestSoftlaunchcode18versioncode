@@ -83,11 +83,11 @@ export default function TaskComponent({ match }) {
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
-            getAttachment(res.data.data.id, "TICKET").then((resp) => {
-              if (resp.status === 200) {
-                setAttachment(resp.data.data);
-              }
-            });
+            // getAttachment(res.data.data.id, "TICKET").then((resp) => {
+            //   if (resp.status === 200) {
+            //     setAttachment(resp.data.data);
+            //   }
+            // });
           }
         }
       })
@@ -627,6 +627,12 @@ export default function TaskComponent({ match }) {
     {
       name: "Task status",
       selector: (row) => row?.task_status,
+      sortable: true,
+      width: "10%",
+    },
+    {
+      name: "Task actual status",
+      selector: (row) => row?.task_actual_status,
       sortable: true,
       width: "10%",
     },
