@@ -1509,7 +1509,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
-                            data.current_user_is_approver == 0)
+                            data.current_user_is_approver == 1)
                             ? false
                             : true
                         }
@@ -1567,7 +1567,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
-                                data.current_user_is_approver == 0)
+                                data.current_user_is_approver == 1)
                                 ? false
                                 : true
                             }
@@ -1611,7 +1611,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 (data.current_user_is_approver == 1 &&
                                   authorities &&
                                   authorities.All_Update_Bill == true &&
-                                  data.current_user_is_approver == 0)
+                                  data.current_user_is_approver == 1)
                                   ? false
                                   : true
                               }
