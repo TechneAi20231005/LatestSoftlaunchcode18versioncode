@@ -323,7 +323,7 @@ export default function Header() {
                     <Link
                       to={`/${_base}/ApprovedNotification`}
                       className={`card-footer text-center border-top-0 ${
-                        showApprovedOnly ? 'bg-info' : ''
+                        showApprovedOnly ? "bg-info" : ""
                       }`}
                       onClick={() => setShowApprovedOnly(true)}
                     >
@@ -381,7 +381,6 @@ export default function Header() {
                       />
                     )}
                   </div>
-                  {console.log('profile', data)}
                   <div className="card-body pb-0" style={{ zIndex: 500 }}>
                     <div className="d-flex py-1" style={{ zIndex: 500 }}>
                       <img

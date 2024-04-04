@@ -4,7 +4,7 @@ import { masterURL, ticketUrl } from "../../settings/constants";
 const _URL = masterURL.sprintMaster;
 
 export default class SprintService {
-  getAllSprint() {
+  getAllSprint(sprint_id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
       headers: {
@@ -13,10 +13,10 @@ export default class SprintService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${_URL}/getSprint`, config);
+    return axios.get(`${_URL}/getSprint/${sprint_id}`, config);
   }
 
-  getSprintById(id) {
+  getSprintById(ticket_id, sprint_id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
       headers: {
@@ -25,7 +25,7 @@ export default class SprintService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${_URL}/getSprint/${id}`, config);
+    return axios.get(`${_URL}/getSprint/${ticket_id}/${sprint_id}`, config);
   }
 
   getSprintByTicketId(ticketid) {
@@ -37,7 +37,7 @@ export default class SprintService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${_URL}/getSprintByTicketId/${ticketid}`, config);
+    return axios.get(`${_URL}/getSprint/${ticketid}`, config);
   }
 
   postSprintForTicket(payload) {
@@ -52,7 +52,7 @@ export default class SprintService {
     return axios.post(`${_URL}/createSprint`, payload, config);
   }
 
-  getSprintReportById(sprint_id) {
+  getSprintReportById(ticket_id, sprint_id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
       headers: {
@@ -61,7 +61,10 @@ export default class SprintService {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(`${_URL}/getSprintReport/${sprint_id}`, config);
+    return axios.get(
+      `${_URL}/getSprintReport/${ticket_id}/${sprint_id}`,
+      config
+    );
   }
 
   // http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/createSprint/5
