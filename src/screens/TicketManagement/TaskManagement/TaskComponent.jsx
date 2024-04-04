@@ -438,6 +438,8 @@ export default function TaskComponent({ match }) {
             setSprintDropDown(temp);
           }
         });
+      } else {
+        setNotify({ type: "danger", message: res?.data?.message });
       }
     });
   };
@@ -1400,7 +1402,7 @@ export default function TaskComponent({ match }) {
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <div>
+                    <form className="">
                       <div className="mb-3">
                         <label
                           for="exampleFormControlInput1"
@@ -1420,6 +1422,7 @@ export default function TaskComponent({ match }) {
                           disabled={sprintModal?.modalHeader == "View"}
                           defaultValue={sprintModal?.modalData?.name}
                           onChange={(e) => sprintInputChangeHandler(e)}
+                          maxlength={50}
                           required={true}
                         />
                       </div>
@@ -1457,7 +1460,6 @@ export default function TaskComponent({ match }) {
                               <Astrick color="red" size="13px" /> :
                             </b>
                           </label>
-
                           <input
                             type="date"
                             className="form-control form-control-sm"
@@ -1493,7 +1495,7 @@ export default function TaskComponent({ match }) {
                           />
                         </div>
                       </div>
-                    </div>
+                    </form>
                   </Modal.Body>
                   <Modal.Footer>
                     <button

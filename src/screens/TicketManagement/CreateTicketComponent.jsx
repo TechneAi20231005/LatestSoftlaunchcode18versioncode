@@ -245,7 +245,7 @@ export default function CreateTicketComponent() {
                 setIsSubmitted(false);
               } else {
                 var URL = `${_attachmentUrl}` + res.data.data;
-                window.open(URL, "_blank").focus();
+                // window.open(URL, "_blank").focus();
                 setIsSubmitted(false);
 
                 setNotify({ type: "danger", message: res.data.message });
