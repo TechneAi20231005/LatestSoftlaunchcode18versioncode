@@ -204,16 +204,12 @@ function Profile() {
     new UserService().getUserById(localStorage.getItem('id')).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-
-          res.data.data.profile_picture =
-            `${_attachmentUrl}` + res.data.data.profile_picture
+          res.data.data.profile_picture = `${_attachmentUrl}` + res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
     });
   };
-
-
   const fileChangedHandler = e => {
     let file_size = e.target.files[0].size;
     if (file_size > 2000000) {
