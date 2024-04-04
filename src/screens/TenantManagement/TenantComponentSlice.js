@@ -1,10 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import {
-  getAllTenant,
-  posttenantData,
-  updatetenantData,
-} from "./TenantConponentAction";
+import { getAllTenant, posttenantData, updatetenantData } from "./TenantConponentAction";
 
 const initialState = {
   status: "",
@@ -17,7 +13,9 @@ const initialState = {
   },
   exportRoleData: [],
   exportAllTenantData: [],
-  getAllTenant: [],
+  getAllTenant: []
+
+
 };
 
 export const tenantmasterSlice = createSlice({
@@ -34,8 +32,8 @@ export const tenantmasterSlice = createSlice({
       state.modal = action.payload;
     },
     handleError: (state, action) => {
-      state.notify = action.payload;
-    },
+      state.notify = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getAllTenant.pending, (state) => {
@@ -53,15 +51,13 @@ export const tenantmasterSlice = createSlice({
           getAllTenant[i].counter = count++;
         }
         state.getAllTenant = [...getAllTenant];
-        state.exportAllTenantData = [...getAllTenant];
+        state.exportAllTenantData = [...getAllTenant]
         let sr = 1;
         let exportAllTenantData = [];
         for (const i in getAllTenant) {
           exportAllTenantData.push({
             Sr: sr++,
             TenantName: getAllTenant[i].company_name,
-            TenantIdSeries: getAllTenant[i].series,
-
             Country: getAllTenant[i].company_name,
             State: getAllTenant[i].company_name,
             City: getAllTenant[i].company_name,
@@ -74,7 +70,7 @@ export const tenantmasterSlice = createSlice({
             updated_by: getAllTenant[i].updated_by,
           });
         }
-        state.exportAllTenantData = exportAllTenantData;
+        state.exportAllTenantData = exportAllTenantData
       }
     });
     builder.addCase(getAllTenant.rejected, (state) => {
@@ -84,11 +80,12 @@ export const tenantmasterSlice = createSlice({
     //__________________________PostTenant________________________________
     builder.addCase(posttenantData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      state.notify = null
     });
     builder.addCase(posttenantData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
+
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
         let posttenantData = payload.data.data;
         state.status = "succeded";
@@ -101,14 +98,16 @@ export const tenantmasterSlice = createSlice({
       state.status = "rejected";
     });
 
+
     builder.addCase(updatetenantData.pending, (state) => {
       state.status = "loading";
-      state.notify = null;
+      state.notify = null
     });
     builder.addCase(updatetenantData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.data?.status === 1) {
         // state.notify = { type: "success", message: payload.data.message };
+
       }
     });
     builder.addCase(updatetenantData.rejected, (state) => {
@@ -116,9 +115,10 @@ export const tenantmasterSlice = createSlice({
     });
 
     //___________________________________________UpdateRole_________________________________
+
+    
   },
 });
 
-export const { handleModalOpen, handleModalClose, handleError } =
-  tenantmasterSlice.actions;
+export const { handleModalOpen, handleModalClose, handleError } = tenantmasterSlice.actions;
 export default tenantmasterSlice.reducer;

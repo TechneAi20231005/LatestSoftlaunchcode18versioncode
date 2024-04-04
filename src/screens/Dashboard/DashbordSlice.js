@@ -36,11 +36,11 @@ const initialState = {
   isLoading: false,
   cityUserDetail: {},
   cityData: [],
-  FilterCity: [],
+  FilterCity:[],
   countryData: [],
   sortedCityData: [],
   stateData: [],
-  FilterState: [],
+  FilterState:[],
   employeeData: [],
   showLoaderModal: false,
   exportData: [],
@@ -75,7 +75,7 @@ const initialState = {
     modalHeader: "",
   },
   customerTypeData: [],
-  getUserById: [],
+  getUserById: []
 };
 
 export const DashbordSlice = createSlice({
@@ -106,9 +106,10 @@ export const DashbordSlice = createSlice({
     builder.addCase(getCityData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let cityData = payload.data.data;
-        let FilterCity = payload.data.data.filter((d) => d.is_active === 1);
-        state.FilterCity = FilterCity;
+        let cityData = payload.data.data
+        let FilterCity= payload.data.data
+        .filter((d) => d.is_active === 1)
+state.FilterCity=FilterCity
         state.status = "succeded";
         state.showLoaderModal = false;
         let sortedCityData = payload.data.data
@@ -131,6 +132,7 @@ export const DashbordSlice = createSlice({
             Country: cityData[i].country,
             State: cityData[i].state,
             City: cityData[i].city,
+
 
             Status: cityData[i].is_active ? "Active" : "Deactive",
             Remark: cityData[i].remark,
@@ -335,8 +337,8 @@ export const DashbordSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let stateData = payload.data.data;
 
-        let FilterState = payload.data.data.filter((d) => d.is_active == 1);
-        state.FilterState = FilterState;
+        let FilterState = payload.data.data.filter((d)=>d.is_active==1)
+        state.FilterState= FilterState
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -386,8 +388,9 @@ export const DashbordSlice = createSlice({
 
         state.filteredStateData = filteredStateData;
 
-        let activeState = payload.data.data.filter((d) => d.is_active == 1);
-        state.activeState = activeState;
+        let activeState = payload.data.data.filter((d) => d.is_active == 1)
+        state.activeState = activeState
+
 
         state.states = payload.data.data.filter((d) => d.is_active === 1);
         state.status = "succeded";
@@ -442,6 +445,7 @@ export const DashbordSlice = createSlice({
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
         state.showLoaderModal = false;
+     
 
         state.updateState = updateState;
 
@@ -537,7 +541,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(postUserData.fulfilled, (state, action) => {
       const { payload } = action;
       if (state.isLoading) {
-        return;
+        return
       }
       state.isLoading = true;
       if (payload?.status === 200 && payload?.data?.status === 1) {
@@ -548,6 +552,7 @@ export const DashbordSlice = createSlice({
         state.notify = { type: "success", message: payload.data.message };
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
+
       } else {
         let notify = { type: "danger", message: payload.data.message };
         state.notify = null;
@@ -633,7 +638,8 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoles = payload.data.data;
-
+        console.log("getRoles",getRoles)
+      
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -657,7 +663,7 @@ export const DashbordSlice = createSlice({
 
         state.status = "succeded";
         state.showLoaderModal = false;
-
+      
         state.getAllRoles = [...getAllRoles];
       }
     });
@@ -748,12 +754,15 @@ export const DashbordSlice = createSlice({
         state.status = "succeded";
         state.showLoaderModal = false;
 
+       
         state.customerTypeData = [...customerTypeData];
       }
     });
     builder.addCase(getCustomerType.rejected, (state) => {
       state.status = "rejected";
     });
+
+   
 
     builder.addCase(getCustomerByIdData.pending, (state) => {
       state.status = "loading";
@@ -769,7 +778,9 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: "", modalHeader: "" };
         state.modal = modal;
         state.customerByIdData = customerByIdData;
+     
       } else {
+       
       }
     });
     builder.addCase(getCustomerByIdData.rejected, (state) => {
@@ -849,6 +860,9 @@ export const DashbordSlice = createSlice({
     builder.addCase(getAllUserById.rejected, (state) => {
       state.status = "rejected";
     });
+
+
+   
   },
 });
 
