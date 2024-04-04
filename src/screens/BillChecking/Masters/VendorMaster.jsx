@@ -110,9 +110,10 @@ function VendorMaster({ match }) {
   const panAttachmentRef = useRef(null);
   const columns = [
     {
-      name: 'Action',
-      className: 'font-weight-bold',
-      selector: row => {},
+      name: "Action",
+      className: "font-weight-bold",
+      selector: (row) => {},
+
       sortable: false,
       cell: row => (
         <div className="btn-group" role="group" aria-label="Basic outlined example">
@@ -915,12 +916,12 @@ function VendorMaster({ match }) {
       }
     });
   };
-
   const uploadPanAttachmentHandler = async (e, type, id = null, attachmentId) => {
     if (type === 'UPLOAD') {
       if (panattachment?.length + (panAttachmentRef?.current?.files?.length || 0) > 2) {
         panAttachmentRef.current.value = '';
         alert('Cannot attach more than 2 attachments');
+
         return;
       }
       const files = panAttachmentRef?.current?.files;
@@ -949,7 +950,6 @@ function VendorMaster({ match }) {
       }
     }
   };
-
   const uploadAdharAttachmentHandler = async (e, type, id = null, attachmentId) => {
     if (type === 'UPLOAD') {
       if (adharattachment?.length + (aadharAttachmentRef?.current?.files?.length || 0) > 2) {
@@ -984,11 +984,13 @@ function VendorMaster({ match }) {
     }
   };
 
+
   const uploadMSMEAttachmentHandler = async (e, type, id = null, attachmentId) => {
     if (type === 'UPLOAD') {
       if (MSMEselectedFiles?.length + (msmeInputRef?.current?.files?.length || 0) > 2) {
         msmeInputRef.current.value = '';
         alert('Cannot attach more than 2 attachments');
+
         return;
       }
       const files = msmeInputRef?.current?.files;
@@ -1018,11 +1020,13 @@ function VendorMaster({ match }) {
     }
   };
 
+
   const uploadPassBookAttachmentHandler = async (e, type, id = null, attachmentId) => {
     if (type === 'UPLOAD') {
       if (passBookSelectedFiles?.length + (passbookInputRef?.current?.files?.length || 0) > 2) {
         passbookInputRef.current.value = '';
         alert('Cannot attach more than 2 attachments');
+
         return;
       }
       const files = passbookInputRef?.current?.files;
@@ -1422,7 +1426,9 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           URL = `${_attachmentUrl}` + res.data.data;
+
           window.open(URL, '_blank').focus();
+
         }
       }
     });
@@ -1450,10 +1456,12 @@ function VendorMaster({ match }) {
           setNotify({ type: 'danger', message: res.data.message });
           loadData();
         } else {
+
           setError({ type: 'danger', message: res.data.message });
           URL = `${_attachmentUrl}` + res.data.data;
           window.open(URL, '_blank')?.focus();
           setNotify({ type: 'danger', message: res.data.message });
+
         }
       }
     });
@@ -1735,9 +1743,11 @@ function VendorMaster({ match }) {
                         onChange={handleCountryChange}
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
+
                             ? CountryDropdown.filter(d => d.label === modal.modalData.country)
                             : CountryDropdown.filter(
                                 d => d.value === parseInt(modal.modalData.country),
+
                               )
                         }
                         required={true}
@@ -1760,8 +1770,10 @@ function VendorMaster({ match }) {
                         ref={stateRef}
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
+
                             ? stateDropdown.filter(d => d.label == modal.modalData.state)
                             : stateDropdown.filter(d => d.value == parseInt(modal.modalData.state))
+
                         }
                         required={true}
                       />
@@ -1780,6 +1792,7 @@ function VendorMaster({ match }) {
                         options={cityDropdown}
                         defaultValue={
                           modal.modalData && modal.modalData.country !== Number
+
                             ? cityDropdown.filter(d => d.label == modal.modalData.city)
                             : cityDropdown.filter(d => d.value == parseInt(modal.modalData.city))
                         }
@@ -2454,7 +2467,9 @@ function VendorMaster({ match }) {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
+
                           authorities && authorities.Edit_Vendor_Master_Bank_Details === false
+
                             ? true
                             : false
                         }
@@ -2630,7 +2645,9 @@ function VendorMaster({ match }) {
                         id="account_no"
                         name="account_no"
                         readOnly={
+
                           authorities && authorities.Edit_Vendor_Master_Bank_Details === false
+
                             ? true
                             : false
                         }
@@ -2838,7 +2855,9 @@ function VendorMaster({ match }) {
                         name="ifsc_code"
                         maxLength="11"
                         readOnly={
+
                           authorities && authorities.Edit_Vendor_Master_Bank_Details === false
+
                             ? true
                             : false
                         }
@@ -2942,7 +2961,9 @@ function VendorMaster({ match }) {
                         className="form-control form-control-sm"
                         id="beneficiary_name"
                         readOnly={
+
                           authorities && authorities.Edit_Vendor_Master_Bank_Details === false
+
                             ? true
                             : false
                         }
@@ -3024,7 +3045,9 @@ function VendorMaster({ match }) {
                           Validation.CharacterWithSpace(e);
                         }}
                         readOnly={
+
                           authorities && authorities.Edit_Vendor_Master_Bank_Details === false
+
                             ? true
                             : false
                         }
