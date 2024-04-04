@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { dashboardUrl } from '../settings/constants';
+import axios from "axios";
+import { dashboardUrl } from "../settings/constants";
 
 const _URL = dashboardUrl;
 
@@ -12,15 +12,19 @@ const _URL = dashboardUrl;
 // }
 
 export function getData() {
-  const token = localStorage.getItem('jwt_token');
+  const token = localStorage.getItem("jwt_token");
 
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
   };
 
-  return axios.get(`${_URL}`, config);
+  return axios.get(
+
+    `${_URL}`,
+    config
+  );
 }

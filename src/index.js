@@ -1,35 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import './assetsNew/css/my-task.style.min.css';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import { store } from './redux/store/store';
-import './index.css';
+import { store } from './redux/store/store'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const renderApp = () => {
   root.render(
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter >
         <App />
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          theme="colored"
-          icon={true}
-        />
       </BrowserRouter>
-    </Provider>,
+    </Provider>
   );
 };
 

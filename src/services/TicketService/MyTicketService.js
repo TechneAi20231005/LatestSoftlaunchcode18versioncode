@@ -3,8 +3,8 @@ import { userSessionData } from "../../settings/constants";
 import { ticketUrl, _apiUrl } from "../../settings/constants";
 
 const _URL = ticketUrl.ticket;
-const _getAllTicket = _URL + "/getAllTicket/" + userSessionData.userId;
-const _getAllTicketTest = _URL + "/getAllTicketTest";
+const _getAllTicket =_URL +"/getAllTicket/"+ userSessionData.userId;
+const _getAllTicketTest = _URL +"/getAllTicketTest"
 const _getAllTicketNew = _URL + "/getAllTicketNew";
 
 const _createTicket = _URL + "/createTicket";
@@ -12,10 +12,11 @@ const _updateTicket = _URL + "/updateTicket/";
 const _getTicketById = _URL + "/getTicketById/";
 const _createComment = _URL + "/comment/createComment";
 const _getAllComment = _URL + "/comment/getAllComment/";
-const _createGanttChart = _apiUrl + "hoursWiseTaskRecord/";
+const _createGanttChart =_apiUrl+"hoursWiseTaskRecord/";
 
 const _passTicket = _URL + "/passTicket";
 const _passBulkTicket = _URL + "/bulkpassTicket";
+
 
 export default class MyTicketService {
   getUserTickets() {
@@ -41,12 +42,12 @@ export default class MyTicketService {
         "Content-Type": "application/json",
       },
     };
-    return axios.post(_getAllTicketTest, payload, config);
+    return axios.post(_getAllTicketTest,payload, config);
   }
 
-  getExpectedSolveDate(cuMappingId) {
+   getExpectedSolveDate(cuMappingId){
     const token = localStorage.getItem("jwt_token");
-
+      
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,8 +56,8 @@ export default class MyTicketService {
       },
     };
 
-    return axios.get(_URL + "/selectDate/" + cuMappingId, config);
-  }
+    return axios.get(_URL+"/selectDate/"+cuMappingId,config);
+}
 
   postTicket(payload) {
     //  payload.append("tenant_id", userSessionData.tenantId);
@@ -75,7 +76,7 @@ export default class MyTicketService {
   }
 
   getAllTicketNew(payload) {
-    payload.append("tenant_id", userSessionData.tenantId);
+    payload.append('tenant_id',userSessionData.tenantId);
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -99,13 +100,12 @@ export default class MyTicketService {
         "Content-Type": "application/json",
       },
     };
-    console.log("_getTicketById", _getTicketById);
-    return axios.get(_getTicketById + id, config);
+    return axios.get(_getTicketById + id,  config);
   }
 
   updateTicket(id, payload) {
     payload.append("updated_by", userSessionData.userId);
-    payload.append("tenant_id", userSessionData.tenantId);
+     payload.append("tenant_id", userSessionData.tenantId);
     payload.append("updated_at", userSessionData.time);
     const token = localStorage.getItem("jwt_token");
 
@@ -115,7 +115,7 @@ export default class MyTicketService {
         // Accept: "application/json",
         // "Content-Type": "application/json",
         Accept: "application/json",
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data'
       },
     };
     return axios.post(_updateTicket + id, payload, config);
@@ -153,6 +153,7 @@ export default class MyTicketService {
     return axios.get(_getAllComment + id, config);
   }
 
+
   getGanttChart(id) {
     const token = localStorage.getItem("jwt_token");
 
@@ -179,6 +180,8 @@ export default class MyTicketService {
     };
     return axios.post(_passTicket, payload, config);
   }
+
+  
 
   sendTicketConfirmationOtp(ticket_id) {
     const token = localStorage.getItem("jwt_token");
