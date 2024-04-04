@@ -25,6 +25,7 @@ export const RequiredNumbersOnly = (e) => {
   }
 };
 
+
 export const MobileNumbersOnly = (e) => {
   //angka only
   var regex = new RegExp("^(?!0{9})[0-9 \b]+$");
@@ -69,7 +70,9 @@ export const mobileNumbersOnly = (e) => {
 
 export const GSTNumberOnly = (e) => {
   //angka only
-  var regex = new RegExp("^[a-zA-Z0-9]+$");
+  var regex = new RegExp(
+    "^[a-zA-Z0-9]+$"
+  );
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -157,12 +160,13 @@ export const NumbersSpecialOnlyDecimal = (e) => {
     e.preventDefault();
     return false;
   }
-  var parts = value.split(".");
+  var parts = value.split('.');
   if (parts.length > 1 && parts[1].length > 2) {
     e.preventDefault();
     return false;
   }
 };
+
 
 export const NumbersSpeicalOnly = (e) => {
   var regex = new RegExp("[0-9*,#+]+$");
@@ -181,25 +185,6 @@ export const Characters = (e) => {
   }
 };
 
-// export const onlyCapitalLetter = (e) => {
-//   var regex = new RegExp("^[A-Za-z0-9 ]+$");
-//   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-//   if (!regex.test(key)) {
-//     e.preventDefault();
-//     return false;
-//   }
-// };
-
-export const onlyCapitalLetter = (e) => {
-  var regex = new RegExp("^[A-Z ]$");
-  var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-  if (!regex.test(key)) {
-    e.preventDefault();
-    return false;
-  }
-  return true;
-};
-
 export const CharacterWithSpace = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9\\s@#$%^&*()_+={}\\[\\]:;\"'<>,.?/|]+$");
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -208,6 +193,7 @@ export const CharacterWithSpace = (e) => {
     return false;
   }
 };
+
 
 export const userNameOnly = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9]+$");
@@ -233,6 +219,8 @@ export const addressFieldOnly = (e) => {
   );
 
   if (e.keyCode === 13) {
+
+
     return true;
   }
 
@@ -243,12 +231,15 @@ export const addressFieldOnly = (e) => {
   }
 };
 
+
 export const addressField = (e) => {
   const regex = new RegExp(
     "^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:'\"\\/\\[\\]{}|`~\\n]{0,250}$"
   );
 
   if (e.keyCode === 13) {
+
+
     return true;
   }
 
@@ -276,6 +267,7 @@ export const CharactersOnly = (e) => {
     return false;
   }
 };
+
 
 export const CharactersNumbersOnly = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9 !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]+$");
@@ -371,19 +363,15 @@ export const validatePAN = (e) => {
 export const CharactersNumberAccountNumberonly = (e) => {
   // Only allow numbers (0-9)
   var regex = new RegExp("^[0-9]+$");
-  var inputValue =
-    e.target.value + String.fromCharCode(!e.charCode ? e.which : e.charCode);
+  var inputValue = e.target.value + String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   // Check if the input length is between 10 and 25 characters
-  if (
-    inputValue.length < 10 ||
-    inputValue.length > 25 ||
-    !regex.test(inputValue)
-  ) {
+  if (inputValue.length < 10 || inputValue.length > 25 || !regex.test(inputValue)) {
     e.preventDefault();
     return false;
   }
 };
+
 
 const bank = (e) => {
   var regex = new RegExp("^[a-zA-Z0-9\\s]+$"); // allow characters, numbers, and spaces
@@ -437,6 +425,9 @@ export const CharactersNumbersSpeicalOnly = (e) => {
   }
 };
 
+
+
+
 export const emailOnly = (e) => {
   // Get the entered character
   const key = e.key;
@@ -487,6 +478,8 @@ export const NarrationAlphanumeric = (e) => {
     e.preventDefault();
   }
 
+
+
   // Check if the new character being typed is an alphabet
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
@@ -494,6 +487,10 @@ export const NarrationAlphanumeric = (e) => {
     return false;
   }
 };
+
+
+
+
 
 export const RefNumbersSpecialAlphanumeric = (e) => {
   var regex = new RegExp(
@@ -513,20 +510,18 @@ export const RefNumbersSpecialAlphanumeric = (e) => {
   }
 };
 
+
 export const CardNumbersOnly = (e) => {
   var regex = new RegExp("^[0-9]{0,20}$");
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
-  if (
-    !regex.test(key) &&
-    key.toUpperCase() !== "N" &&
-    key.toUpperCase() !== "A"
-  ) {
+  if (!regex.test(key) && key.toUpperCase() !== "N" && key.toUpperCase() !== "A") {
     e.preventDefault();
     return false;
   }
 };
+
 
 export const CharacterFirstOnly = (e) => {
   var regex = new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$");
@@ -545,6 +540,9 @@ export const EmailOnly = (e) => {
     return false;
   }
 };
+
+
+
 
 export const imageOnly = (e) => {
   const imageFile = e.target.files[0];
