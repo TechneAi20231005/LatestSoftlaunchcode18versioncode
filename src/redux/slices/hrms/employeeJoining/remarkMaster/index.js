@@ -7,7 +7,7 @@ import {
 
 const initialState = {
   remarkMasterList: [],
-  isLading: {
+  isLoading: {
     getRemarkMasterList: false,
     addRemarkMaster: false,
     editRemarkMaster: false,
@@ -24,42 +24,42 @@ const remarkMasterSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getRemarkMasterListThunk.pending, (state, action) => {
-        state.isLading.getRemarkMasterList = true;
+        state.isLoading.getRemarkMasterList = true;
       })
       .addCase(getRemarkMasterListThunk.fulfilled, (state, action) => {
-        state.isLading.getRemarkMasterList = false;
+        state.isLoading.getRemarkMasterList = false;
         state.remarkMasterList = action.payload.data;
         state.successMsg.getRemarkMasterList = action.payload.msg;
       })
       .addCase(getRemarkMasterListThunk.rejected, (state, action) => {
-        state.isLading.getRemarkMasterList = false;
+        state.isLoading.getRemarkMasterList = false;
         state.remarkMasterList = [];
         state.errorMsg.getRemarkMasterList = action.error.message;
       })
 
       // // add remark master
       .addCase(addRemarkMasterThunk.pending, (state, action) => {
-        state.isLading.addRemarkMaster = true;
+        state.isLoading.addRemarkMaster = true;
       })
       .addCase(addRemarkMasterThunk.fulfilled, (state, action) => {
-        state.isLading.addRemarkMaster = false;
+        state.isLoading.addRemarkMaster = false;
         state.successMsg.addRemarkMaster = action.payload;
       })
       .addCase(addRemarkMasterThunk.rejected, (state, action) => {
-        state.isLading.addRemarkMaster = false;
+        state.isLoading.addRemarkMaster = false;
         state.errorMsg.addRemarkMaster = action.error.message;
       })
 
       // // edit remark master
       .addCase(editRemarkMasterThunk.pending, (state, action) => {
-        state.isLading.editRemarkMaster = true;
+        state.isLoading.editRemarkMaster = true;
       })
       .addCase(editRemarkMasterThunk.fulfilled, (state, action) => {
-        state.isLading.editRemarkMaster = false;
+        state.isLoading.editRemarkMaster = false;
         state.successMsg.editRemarkMaster = action.payload;
       })
       .addCase(editRemarkMasterThunk.rejected, (state, action) => {
-        state.isLading.editRemarkMaster = false;
+        state.isLoading.editRemarkMaster = false;
         state.errorMsg.editRemarkMaster = action.error.message;
       });
   },

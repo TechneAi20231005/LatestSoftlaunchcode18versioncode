@@ -5,17 +5,19 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import AddEditBranchModal from './AddEditBranchModal';
-import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
+import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
+import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
+import { customSearchHandler } from '../../../../utils/customFunction';
 
 function BranchMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { branchMasterList, isLading } = useSelector(state => state?.branchMaster);
+  const { branchMasterList, isLoading } = useSelector(state => state?.branchMaster);
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
@@ -94,14 +96,7 @@ function BranchMaster() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = branchMasterList?.filter(branch => {
-      const branchValues = Object?.values(branch);
-      return branchValues.some(value => {
-        return (
-          typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
-        );
-      });
-    });
+    const filteredList = customSearchHandler(branchMasterList, searchValue);
     setFilteredBranchMasterList(filteredList);
   };
 
@@ -190,6 +185,8 @@ function BranchMaster() {
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getBranchMasterList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
 

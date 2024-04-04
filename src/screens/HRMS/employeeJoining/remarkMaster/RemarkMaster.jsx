@@ -9,13 +9,15 @@ import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToEx
 import AddEditRemarkModal from './AddEditRemarkModal';
 import { getRemarkMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/remarkMaster';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../../utils/customFunction';
 
 function RemarkMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { remarkMasterList, isLading } = useSelector(state => state?.remarkMaster);
+  const { remarkMasterList, isLoading } = useSelector(state => state?.remarkMaster);
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
@@ -98,14 +100,7 @@ function RemarkMaster() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = remarkMasterList?.filter(remark => {
-      const remarkValues = Object?.values(remark);
-      return remarkValues.some(value => {
-        return (
-          typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
-        );
-      });
-    });
+    const filteredList = customSearchHandler(remarkMasterList, searchValue);
     setFilteredRemarkMasterList(filteredList);
   };
 
@@ -194,6 +189,8 @@ function RemarkMaster() {
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getRemarkMasterList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
 

@@ -40,6 +40,7 @@ import DynamicFormDropDownSlice from '../../screens/Masters/DynamicFormDropdown/
 import branchMasterSlice from '../slices/hrms/employeeJoining/branchMaster';
 import sourceMasterSlice from '../slices/hrms/employeeJoining/sourceMaster';
 import remarkMasterSlice from '../slices/hrms/employeeJoining/remarkMaster';
+import salaryMasterSlice from '../slices/hrms/employeeJoining/salaryMaster';
 
 export const store = configureStore({
   reducer: {
@@ -79,6 +80,7 @@ export const store = configureStore({
     branchMaster: branchMasterSlice,
     sourceMaster: sourceMasterSlice,
     remarkMaster: remarkMasterSlice,
+    salaryMaster: salaryMasterSlice,
   },
 
   middleware: getDefaultMiddleware =>

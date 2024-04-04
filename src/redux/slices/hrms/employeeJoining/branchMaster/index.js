@@ -7,7 +7,7 @@ import {
 
 const initialState = {
   branchMasterList: [],
-  isLading: {
+  isLoading: {
     getBranchMasterList: false,
     addBranchMaster: false,
     editBranchMaster: false,
@@ -24,42 +24,42 @@ const branchMasterSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getBranchMasterListThunk.pending, (state, action) => {
-        state.isLading.getBranchMasterList = true;
+        state.isLoading.getBranchMasterList = true;
       })
       .addCase(getBranchMasterListThunk.fulfilled, (state, action) => {
-        state.isLading.getBranchMasterList = false;
+        state.isLoading.getBranchMasterList = false;
         state.branchMasterList = action.payload.data;
         state.successMsg.getBranchMasterList = action.payload.msg;
       })
       .addCase(getBranchMasterListThunk.rejected, (state, action) => {
-        state.isLading.getBranchMasterList = false;
+        state.isLoading.getBranchMasterList = false;
         state.branchMasterList = [];
         state.errorMsg.getBranchMasterList = action.error.message;
       })
 
       // // add branch master
       .addCase(addBranchMasterThunk.pending, (state, action) => {
-        state.isLading.addBranchMaster = true;
+        state.isLoading.addBranchMaster = true;
       })
       .addCase(addBranchMasterThunk.fulfilled, (state, action) => {
-        state.isLading.addBranchMaster = false;
+        state.isLoading.addBranchMaster = false;
         state.successMsg.addBranchMaster = action.payload;
       })
       .addCase(addBranchMasterThunk.rejected, (state, action) => {
-        state.isLading.addBranchMaster = false;
+        state.isLoading.addBranchMaster = false;
         state.errorMsg.addBranchMaster = action.error.message;
       })
 
       // // edit branch master
       .addCase(editBranchMasterThunk.pending, (state, action) => {
-        state.isLading.editBranchMaster = true;
+        state.isLoading.editBranchMaster = true;
       })
       .addCase(editBranchMasterThunk.fulfilled, (state, action) => {
-        state.isLading.editBranchMaster = false;
+        state.isLoading.editBranchMaster = false;
         state.successMsg.editBranchMaster = action.payload;
       })
       .addCase(editBranchMasterThunk.rejected, (state, action) => {
-        state.isLading.editBranchMaster = false;
+        state.isLoading.editBranchMaster = false;
         state.errorMsg.editBranchMaster = action.error.message;
       });
   },

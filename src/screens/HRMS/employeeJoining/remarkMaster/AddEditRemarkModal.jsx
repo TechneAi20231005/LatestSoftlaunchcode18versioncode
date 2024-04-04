@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -23,6 +23,9 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
     supporting_remark: type === 'EDIT' ? currentRemarkData?.supporting_remark || '' : '',
     is_active: type === 'EDIT' ? currentRemarkData?.is_active?.toString() : 1,
   };
+
+  // // redux state
+  const { isLoading } = useSelector(state => state?.remarkMaster);
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
@@ -68,7 +71,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
           initialValues={addEditRemarkInitialValue}
           enableReinitialize
           validationSchema={addEditRemarkValidation}
-          onSubmit={(values, errors) => {
+          onSubmit={values => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -137,6 +140,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
         onSuccess={handelAddEditRemark}
         onClose={() => setOpenConfirmModal({ open: false })}
+        isLoading={isLoading?.addRemarkMaster || isLoading?.editRemarkMaster}
       />
     </>
   );

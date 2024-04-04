@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../../http/axios';
+import { errorHandler } from '../../../../../utils';
 
 export const getSourceMasterListThunk = createAsyncThunk('sourceMaster/getSourceList', async () => {
   try {
@@ -9,11 +10,11 @@ export const getSourceMasterListThunk = createAsyncThunk('sourceMaster/getSource
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        toast.error(response?.data?.message);
+        errorHandler(response);
       }
     }
   } catch (error) {
-    toast.error(error?.response?.data?.message);
+    errorHandler(error?.response);
     return Promise.reject(error?.response?.data?.message);
   }
 });
@@ -29,12 +30,12 @@ export const addSourceMasterThunk = createAsyncThunk(
           return response?.data?.message;
         } else {
           onErrorHandler();
-          toast.error(response?.data?.message);
+          errorHandler(response);
         }
       }
     } catch (error) {
       onErrorHandler();
-      toast.error(error?.response?.data?.message);
+      errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
   },
@@ -52,12 +53,12 @@ export const editSourceMasterThunk = createAsyncThunk(
           return response?.data?.message;
         } else {
           onErrorHandler();
-          toast.error(response?.data?.message);
+          errorHandler(response);
         }
       }
     } catch (error) {
       onErrorHandler();
-      toast.error(error?.response?.data?.message);
+      errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
   },

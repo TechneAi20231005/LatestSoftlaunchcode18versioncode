@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -23,11 +23,14 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
     remark: type === 'EDIT' ? currentBranchData?.remark || '' : '',
     is_active: type === 'EDIT' ? currentBranchData?.is_active?.toString() : 1,
   };
+
+  // // redux state
+  const { isLoading } = useSelector(state => state?.branchMaster);
+
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
   // // function
-
   const handelAddEditBranch = () => {
     if (type === 'ADD') {
       dispatch(
@@ -60,6 +63,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
       );
     }
   };
+
   return (
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Branch`} width="md">
@@ -67,7 +71,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
           initialValues={branchInitialValue}
           enableReinitialize
           validationSchema={addEditBranchValidation}
-          onSubmit={(values, errors) => {
+          onSubmit={values => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -136,6 +140,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
         onSuccess={handelAddEditBranch}
         onClose={() => setOpenConfirmModal({ open: false })}
+        isLoading={isLoading?.addBranchMaster || isLoading?.editBranchMaster}
       />
     </>
   );

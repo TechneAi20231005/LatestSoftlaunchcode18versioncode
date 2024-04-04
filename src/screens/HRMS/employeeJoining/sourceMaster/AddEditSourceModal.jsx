@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -23,6 +23,9 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
     remark: type === 'EDIT' ? currentSourceData?.remark || '' : '',
     is_active: type === 'EDIT' ? currentSourceData?.is_active?.toString() : 1,
   };
+
+  // // redux state
+  const { isLoading } = useSelector(state => state?.sourceMaster);
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
@@ -67,7 +70,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
           initialValues={sourceInitialValue}
           enableReinitialize
           validationSchema={addEditSourceValidation}
-          onSubmit={(values, errors) => {
+          onSubmit={values => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -136,6 +139,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
         onSuccess={handelAddEditSource}
         onClose={() => setOpenConfirmModal({ open: false })}
+        isLoading={isLoading?.addSourceMaster || isLoading?.editSourceMaster}
       />
     </>
   );
