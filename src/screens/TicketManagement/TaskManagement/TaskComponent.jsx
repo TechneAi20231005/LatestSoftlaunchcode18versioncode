@@ -691,8 +691,6 @@ export default function TaskComponent({ match }) {
     getTicketData();
   }, []);
 
-  // created by Asmita Margaje
-  // Define a functional component named LoaderComponent
   function LoaderComponent() {
     return (
       // Container to center-align the spinner and loading text
@@ -1446,7 +1444,8 @@ export default function TaskComponent({ match }) {
                             disabled={sprintModal?.modalHeader === "View"}
                             onChange={(e) => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.description}
-                            required
+                            maxlength={1000}
+                            required={true}
                           ></textarea>
                           <label for="floatingTextarea2">Description</label>
                         </div>
@@ -1502,7 +1501,7 @@ export default function TaskComponent({ match }) {
                       className={
                         sprintModal?.modalHeader === "View"
                           ? "d-none"
-                          : "btn btn-sm  text-white btn-custom"
+                          : "px-4 btn btn-sm  text-white btn-custom"
                       }
                       style={{ backgroundColor: "#484C7F" }}
                       onClick={
@@ -1511,15 +1510,15 @@ export default function TaskComponent({ match }) {
                           : sprintFormHandle
                       }
                     >
-                      Save Changes
+                      {sprintModal.modalHeader === "Update" ? "Update" : "Save"}
                     </button>
                     <button
-                      className="btn btn-sm btn-warning px-5 text-white"
+                      className="btn btn-sm btn-warning px-4 text-white"
                       onClick={() => {
                         setSprintModal({ ...sprintModal, showModal: false });
                       }}
                     >
-                      Close
+                      Cancel
                     </button>
                   </Modal.Footer>
                 </Modal>
