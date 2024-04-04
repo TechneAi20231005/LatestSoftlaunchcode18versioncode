@@ -29,23 +29,18 @@ function TenantComponent() {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33)
   );
-  const getAllEmployeeData = useSelector(
-    (DashboardSlice) => DashboardSlice.dashboard.employeeData
+  const getAllEmployeeData = useSelector(DashboardSlice => DashboardSlice.dashboard.employeeData
   );
-  const exportAllTenantData = useSelector(
-    (TenantComponentSlice) =>
-      TenantComponentSlice.tenantMaster.exportAllTenantData
-  );
+  const exportAllTenantData = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.exportAllTenantData)
   const [data, setData] = useState(null);
   // const [notify, setNotify] = useState(null);
-  const notify = useSelector(
-    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
+  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
   );
   const roleId = sessionStorage.getItem("role_id");
   const isMasterAdmin = localStorage.getItem("role_name");
   // const [checkRole, setCheckRole] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("")
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -72,7 +67,7 @@ function TenantComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => {},
+      selector: (row) => { },
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -86,7 +81,6 @@ function TenantComponent() {
         </div>
       ),
     },
-
     {
       name: "Sr",
       selector: (row) => row.counter,
@@ -94,8 +88,6 @@ function TenantComponent() {
       width: "100px",
     },
     { name: "Name", selector: (row) => row.company_name, sortable: true },
-    { name: "Ticket ID Series", selector: (row) => row.series, sortable: true },
-
     { name: "Type", selector: (row) => row.company_type, sortable: true },
     {
       name: "Status",
@@ -122,16 +114,10 @@ function TenantComponent() {
     {
       name: "Created By",
       cell: (row) => {
-        let tenantCreatedBy = getAllEmployeeData?.filter(
-          (filterEmployee) => filterEmployee.id === row.created_by
-        );
-        return (
-          <div>
-            {tenantCreatedBy[0]?.first_name
-              ? `${tenantCreatedBy[0]?.first_name}  ${tenantCreatedBy[0]?.last_name}`
-              : ""}
-          </div>
-        );
+        let tenantCreatedBy = getAllEmployeeData?.filter(filterEmployee => filterEmployee.id === row.created_by)
+        return (<div>
+          {tenantCreatedBy[0]?.first_name ? `${tenantCreatedBy[0]?.first_name}  ${tenantCreatedBy[0]?.last_name}` : ''}
+        </div>)
       },
       sortable: true,
     },
@@ -140,6 +126,7 @@ function TenantComponent() {
       selector: (row) => row.updated_at,
       sortable: true,
       // width: "100px",
+
     },
     {
       name: "Updated By",
@@ -198,8 +185,9 @@ function TenantComponent() {
   };
 
   useEffect(() => {
+
     loadData();
-    dispatch(getEmployeeData());
+    dispatch(getEmployeeData())
     // if (location && location.state) {
 
     //   // setNotify(location.state.alert);
@@ -209,8 +197,10 @@ function TenantComponent() {
   useEffect(() => {
     loadData();
 
+
     dispatch(getAllTenant());
     dispatch(getRoles());
+
   }, []);
 
   useEffect(() => {
@@ -224,6 +214,7 @@ function TenantComponent() {
   return (
     <div className="container-xxl">
       {notify?.type === "success" && <Alert alertData={notify} />}
+
 
       <PageHeader
         headerTitle="Tenant Master"
@@ -303,7 +294,9 @@ function TenantComponent() {
                     return Object.values(customer).some(
                       (value) =>
                         typeof value === "string" &&
-                        value.toLowerCase().includes(searchTerm.toLowerCase())
+                        value
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                     );
                   }
                 }
