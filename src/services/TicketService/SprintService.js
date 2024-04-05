@@ -67,7 +67,7 @@ export default class SprintService {
     );
   }
 
-  // http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/createSprint/5
+  // http://3.108.206.34/2_Testing/TSNewBackend/public/api/sprintMaster/createSprint/5
 
   updateSprintDetail(payload, sprint_id) {
     const token = localStorage.getItem("jwt_token");
