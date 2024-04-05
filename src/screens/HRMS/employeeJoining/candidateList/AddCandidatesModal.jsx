@@ -12,6 +12,7 @@ import {
 } from '../../../../components/custom/inputs/CustomInputs';
 import { addCandidatesValidation } from './validation/addCandidates';
 import OtpVerificationModal from './OtpVerificationModal';
+import { RenderIf } from '../../../../utils';
 
 // // static data
 const sourceType = [
@@ -56,11 +57,11 @@ function AddCandidatesModal({ show, close }) {
           initialValues={candidatesInitialValue}
           validationSchema={addCandidatesValidation}
           onSubmit={(values, errors) => {
-            console.log(values);
+            console.log(values, errors);
             setOtpModal(true);
           }}
         >
-          {({ setFieldValue }) => (
+          {({ touched, errors, setFieldValue }) => (
             <Form>
               <Stack gap={3}>
                 <Row className="gap-3 gap-sm-0">
@@ -170,13 +171,19 @@ function AddCandidatesModal({ show, close }) {
                 </Row>
                 <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
-                    <Field
-                      component={CustomInput}
-                      name="resume"
+                    <input
                       type="file"
-                      label="Upload Resume"
-                      requiredField
+                      name="resume"
+                      className={`form-control ${
+                        errors.resume && touched.resume ? 'is-invalid' : ''
+                      }`}
+                      onChange={event => {
+                        setFieldValue('resume', event.currentTarget.files[0]);
+                      }}
                     />
+                    <RenderIf render={errors.resume && touched.resume}>
+                      <div className="invalid-feedback">{errors.resume}</div>
+                    </RenderIf>
                   </Col>
                 </Row>
               </Stack>

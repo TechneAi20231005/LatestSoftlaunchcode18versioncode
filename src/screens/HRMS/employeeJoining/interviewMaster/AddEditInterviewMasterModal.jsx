@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Field, Form, Formik } from 'formik';
+import { Field, FieldArray, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
-import { CustomDropdown, CustomInput } from '../../../../components/custom/inputs/CustomInputs';
+import {
+  CustomDropdown,
+  CustomInput,
+  CustomRadioButton,
+} from '../../../../components/custom/inputs/CustomInputs';
 import { RenderIf } from '../../../../utils';
 import addEditInterviewMaster from './validation/addEditInterviewMaster';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
@@ -20,51 +24,63 @@ const designationType = [
   { label: 'Software Testing', value: 'softwareTesting' },
   { label: 'UI/UX Designer', value: 'uiUxDesigner' },
 ];
+
 const experienceLevel = [
-  { label: '0-2 years', value: '0-2' },
-  { label: '2-3 years', value: '2-3' },
-  { label: '3-4 years', value: '3-4' },
+  { label: 'Fresher', value: 'fresher' },
+  { label: '0-1 years of experience', value: '0-1' },
+  { label: '1-3 years of experience', value: '1-3' },
+  { label: '3-5 years of experience', value: '3-5' },
+  { label: '5+ years of experience', value: '5+' },
 ];
-const stepCount = [
-  { label: '2', value: '2' },
-  { label: '3', value: '3' },
-  { label: '4', value: '4' },
-];
+
 const employeeName = [
   { label: 'Test1', value: 'test1' },
   { label: 'Test2', value: 'test2' },
   { label: 'Test3', value: 'test3' },
 ];
 
-function AddEditInterviewMasterModal({ show, close }) {
+function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }) {
   // // initial state
   const addInterviewInitialValue = {
-    department: '',
-    designation: '',
-    experienceLevel: '',
-    stepCount: '',
+    department: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.department : '',
+    designation: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.designation : '',
+    experience_level:
+      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.experience_level : '',
+    interview_step: [
+      {
+        step_title: '',
+        designation_id: '',
+        name: '',
+        email: '',
+      },
+    ],
+    remark: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.remark || '' : '',
+    is_active: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.is_active?.toString() : 1,
   };
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+
   return (
     <>
-      <CustomModal show={show} title="Add Interview Steps" width="xl">
+      <CustomModal
+        show={show}
+        title={`${type === 'ADD' ? 'Add' : type === 'VIEW' ? 'View' : 'Edit'} Interview Steps`}
+        width="xl"
+      >
         <h6 className="text_primary fs-6 mb-0">Opening Details:</h6>
         <hr className="primary_divider" />
         <Formik
           initialValues={addInterviewInitialValue}
           validationSchema={addEditInterviewMaster}
           onSubmit={(values, errors) => {
-            console.log(values);
-            setOpenConfirmModal(true);
+            setOpenConfirmModal({ open: true, formData: values });
           }}
         >
           {({ values }) => (
             <Form>
-              {/* {console.log(values?.stepCount)} */}
               <Row className="">
-                <Col sm={6} md={6} lg={3}>
+                <Col md={4} lg={4}>
                   <Field
                     data={departmentType}
                     component={CustomDropdown}
@@ -72,9 +88,10 @@ function AddEditInterviewMasterModal({ show, close }) {
                     label="Department"
                     placeholder="Select"
                     requiredField
+                    disabled={type === 'VIEW'}
                   />
                 </Col>
-                <Col sm={6} md={6} lg={3}>
+                <Col md={4} lg={4}>
                   <Field
                     data={designationType}
                     component={CustomDropdown}
@@ -82,89 +99,174 @@ function AddEditInterviewMasterModal({ show, close }) {
                     label="Designation"
                     placeholder="Select"
                     requiredField
-                    disabled={!values?.department}
+                    disabled={type === 'VIEW'}
                   />
                 </Col>
-                <Col sm={6} md={6} lg={3}>
+                <Col md={4} lg={4}>
                   <Field
                     data={experienceLevel}
                     component={CustomDropdown}
-                    name="experienceLevel"
+                    name="experience_level"
                     label="Experience Level"
                     placeholder="Select"
                     requiredField
-                    disabled={!values?.designation}
-                  />
-                </Col>
-                <Col sm={6} md={6} lg={3}>
-                  <Field
-                    data={stepCount}
-                    component={CustomDropdown}
-                    name="stepCount"
-                    label="Steps Count"
-                    placeholder="Select"
-                    requiredField
-                    disabled={!values?.experienceLevel}
+                    disabled={type === 'VIEW'}
                   />
                 </Col>
               </Row>
-              <RenderIf render={values?.stepCount}>
-                <h6 className="text_primary fs-6 mb-0 mt-2">Step Details:</h6>
-                <hr className="dark_divider" />
-                {Array.from({ length: parseInt(values?.stepCount) || 0 })?.map((item, index) => (
-                  <>
-                    <Row>
-                      <p className="text_primary">Step {index + 1}. Interviewer Details</p>
-                      <Col sm={6} md={6} lg={3}>
-                        <Field
-                          component={CustomInput}
-                          name={`stepTitle_${index + 1}`}
-                          label="Step Title"
-                          requiredField
-                        />
-                      </Col>
-                      <Col sm={6} md={6} lg={3}>
-                        <Field
-                          data={designationType}
-                          component={CustomDropdown}
-                          name={`designation_${index + 1}`}
-                          label="Designation"
-                          placeholder="Select"
-                          requiredField
-                        />
-                      </Col>
-                      <Col sm={6} md={6} lg={3}>
-                        <Field
-                          data={employeeName}
-                          component={CustomDropdown}
-                          name={`name_${index + 1}`}
-                          label="Name"
-                          placeholder="Select"
-                          requiredField
-                        />
-                      </Col>
-                      <Col sm={6} md={6} lg={3}>
-                        <Field
-                          component={CustomInput}
-                          type="email"
-                          name={`email_${index + 1}`}
-                          label="Email"
-                          requiredField
-                        />
-                      </Col>
-                    </Row>
-                    <hr />
-                  </>
-                ))}
+              <h6 className="text_primary fs-6 mb-0 mt-2">Step Details:</h6>
+              <hr className="dark_divider" />
+              <FieldArray name="interview_step">
+                {({ push, remove }) =>
+                  values?.interview_step?.map((interviewer, index) => (
+                    <>
+                      <Row key={index}>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <p className="text_primary mb-0">Step {index + 1}. Interviewer Details</p>
+                          <RenderIf render={type !== 'VIEW'}>
+                            <RenderIf render={values.interview_step.length === 1 && index === 0}>
+                              <div className="d-flex justify-content-end">
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-dark"
+                                  onClick={() =>
+                                    push({
+                                      step_title: '',
+                                      designation_id: '',
+                                      name: '',
+                                      email: '',
+                                    })
+                                  }
+                                >
+                                  <i class="icofont-plus" />
+                                </button>
+                              </div>
+                            </RenderIf>
+                            <RenderIf render={values.interview_step.length > 1}>
+                              <div className="d-flex justify-content-between">
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-danger"
+                                  onClick={() => remove(index)}
+                                >
+                                  <i class="icofont-ui-remove" />
+                                </button>
+                                <RenderIf render={index === values.interview_step.length - 1}>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-dark"
+                                    onClick={() =>
+                                      push({
+                                        step_title: '',
+                                        designation_id: '',
+                                        name: '',
+                                        email: '',
+                                      })
+                                    }
+                                  >
+                                    <i class="icofont-plus" />
+                                  </button>
+                                </RenderIf>
+                              </div>
+                            </RenderIf>
+                          </RenderIf>
+                        </div>
+                        <Col sm={6} md={6} lg={3}>
+                          <Field
+                            component={CustomInput}
+                            name={`interview_step[${index}].step_title`}
+                            label="Step Title"
+                            requiredField
+                            disabled={type === 'VIEW'}
+                          />
+                        </Col>
+                        <Col sm={6} md={6} lg={3}>
+                          <Field
+                            data={designationType}
+                            component={CustomDropdown}
+                            name={`interview_step[${index}].designation_id`}
+                            label="Designation"
+                            placeholder="Select"
+                            requiredField
+                            disabled={type === 'VIEW'}
+                          />
+                        </Col>
+                        <Col sm={6} md={6} lg={3}>
+                          <Field
+                            data={employeeName}
+                            component={CustomDropdown}
+                            name={`interview_step[${index}].name`}
+                            label="Name"
+                            placeholder="Select"
+                            requiredField
+                            disabled={type === 'VIEW'}
+                          />
+                        </Col>
+                        <Col sm={6} md={6} lg={3}>
+                          <Field
+                            component={CustomInput}
+                            type="email"
+                            name={`interview_step[${index}].email`}
+                            label="Email"
+                            requiredField
+                            disabled={type === 'VIEW'}
+                          />
+                        </Col>
+                      </Row>
+                      <hr />
+                    </>
+                  ))
+                }
+              </FieldArray>
+              <Col sm={12}>
+                <Field
+                  component={CustomInput}
+                  name="remark"
+                  label="Remark"
+                  placeholder="Enter Remark"
+                  disabled={type === 'VIEW'}
+                />
+              </Col>
+              <RenderIf render={type !== 'ADD'}>
+                <div className="d-flex align-items-center mt-3">
+                  <p className="mb-2 pe-2">
+                    Status<span className="mendatory_sign">*</span> :
+                  </p>
+                  <Field
+                    component={CustomRadioButton}
+                    type="radio"
+                    name="is_active"
+                    label="Active"
+                    value="1"
+                    inputClassName="me-1"
+                    disabled={type === 'VIEW'}
+                  />
+                  <Field
+                    component={CustomRadioButton}
+                    type="radio"
+                    name="is_active"
+                    label="Deactive"
+                    value="0"
+                    inputClassName="me-1"
+                    disabled={type === 'VIEW'}
+                  />
+                </div>
               </RenderIf>
-
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit" disabled={!values?.stepCount}>
-                  Save
-                </button>
-                <button onClick={close} className="btn btn-shadow-light px-3">
-                  Cancel
-                </button>
+                {type === 'VIEW' ? (
+                  <button onClick={close} className="btn btn-dark px-4" type="button">
+                    Ok
+                  </button>
+                ) : (
+                  <>
+                    <button className="btn btn-dark px-4" type="submit">
+                      {type === 'ADD' ? 'Save' : 'Update'}
+                    </button>
+                    <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                      Cancel
+                    </button>
+                  </>
+                )}
               </div>
             </Form>
           )}
@@ -172,11 +274,13 @@ function AddEditInterviewMasterModal({ show, close }) {
       </CustomModal>
 
       <CustomAlertModal
-        show={openConfirmModal}
+        show={openConfirmModal.open}
+        message={`Do you want to ${
+          type === 'ADD' ? 'Add' : 'update'
+        } Assignment for It department to software Developer?`}
         type="success"
-        message="Do you want to Add Assignment for It department to software Developer"
-        onSuccess={() => setOpenConfirmModal(false)}
-        onClose={() => setOpenConfirmModal(false)}
+        onSuccess={() => setOpenConfirmModal({ open: false })}
+        onClose={() => setOpenConfirmModal({ open: false })}
       />
     </>
   );

@@ -23,10 +23,8 @@ export const addCandidatesValidation = Yup.object().shape({
   currentMonthlySalary: Yup.number().positive('Current monthly salary must be positive'),
   noticePeriod: Yup.number().positive('Notice Period must be positive'),
   resume: Yup.mixed()
-    .test(
-      'fileSize',
-      'Image size must be less than 2MB',
-      (value, file) => !file || file?.size <= 2 * 1024 * 1024,
-    )
+    .test('fileSize', 'Resume size must be less than 2MB', value => {
+      return value?.size <= 2000000; //2mb
+    })
     .required('Resume is required'),
 });
