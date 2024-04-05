@@ -27,6 +27,7 @@ import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeS
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 import { getRoles } from "../Dashboard/DashboardAction";
+
 export default function CreateTicketComponent() {
   const history = useNavigate();
   const navigate = useNavigate();
@@ -189,9 +190,6 @@ export default function CreateTicketComponent() {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
       }
     }
-
-    console.log("selectedFiles", selectedFiles);
-
     var flag = 1;
 
     if (selectQueryGroup && selectQueryGroup.length > 0) {
@@ -217,26 +215,12 @@ export default function CreateTicketComponent() {
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
               setNotify({ type: "success", message: res.data.message });
               setTimeout(() => {
                 navigate(`/${_base}/Ticket`);
-              }, 3000);
-
-              // setNotify({ type: "success", message: res.data.message });
-
-              // history(
-              //   {
-              //     pathname: `/${_base}/Ticket`,
-              //   },
-              //   {
-              //     state: {
-              //       type: "success",
-              //       message: res.data.message,
-              //     },
-              //   }
-              // );
+              }, 2000);
 
               setIsSubmitted(false);
             } else {
@@ -244,11 +228,15 @@ export default function CreateTicketComponent() {
                 setNotify({ type: "danger", message: res.data.message });
                 setIsSubmitted(false);
               } else {
-                var URL = `${_attachmentUrl}` + res.data.data;
-                // window.open(URL, "_blank").focus();
-                setIsSubmitted(false);
-
+                if (!res?.data?.data) {
+                  setNotify({ type: "danger", message: res.data.message });
+                  setIsSubmitted(false);
+                  return;
+                }
                 setNotify({ type: "danger", message: res.data.message });
+                let url = `${_attachmentUrl}` + res.data.data;
+                window.open(url, "_blank").focus();
+                setIsSubmitted(false);
               }
             }
           } else {
@@ -541,8 +529,8 @@ export default function CreateTicketComponent() {
     await new MyTicketService().getBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          URL = `${_attachmentUrl}` + res.data.data;
-          window.open(URL, "_blank")?.focus();
+          let url = `${_attachmentUrl}` + res.data.data;
+          window.open(url, "_blank")?.focus();
           setIsFileGenerated(res.data.data);
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -1159,7 +1147,6 @@ export default function CreateTicketComponent() {
                             );
                           })
                         : ""}
-                      {console.log("data", data)}
 
                       {data.inputType === "number" && (
                         <input
