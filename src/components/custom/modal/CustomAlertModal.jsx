@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Modal, ModalBody, ModalHeader } from 'react-bootstrap';
+import { Modal, ModalBody, ModalHeader, Spinner } from 'react-bootstrap';
 import { RenderIf } from '../../../utils';
 import './style.scss';
 
@@ -15,6 +15,7 @@ function CustomAlertModal({
   btnSuccessName,
   heading,
   footerMsg,
+  isLoading,
 }) {
   return (
     <Modal
@@ -48,8 +49,12 @@ function CustomAlertModal({
         </RenderIf>
         <div className="d-flex justify-content-center gap-2">
           {onSuccess && (
-            <button className="btn btn-dark px-5" onClick={onSuccess}>
-              {btnSuccessName || 'Yes'}
+            <button
+              className="btn btn-dark px-5"
+              onClick={!isLoading ? onSuccess : ''}
+              disabled={isLoading}
+            >
+              {isLoading ? <Spinner animation="border" size="sm" /> : btnSuccessName || 'Yes'}
             </button>
           )}
           {onClose && (

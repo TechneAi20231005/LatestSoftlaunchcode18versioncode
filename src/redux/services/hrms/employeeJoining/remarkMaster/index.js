@@ -3,9 +3,9 @@ import { toast } from 'react-toastify';
 import customAxios from '../../../../../http/axios';
 import { errorHandler } from '../../../../../utils';
 
-export const getBranchMasterListThunk = createAsyncThunk('branchMaster/getBranchList', async () => {
+export const getRemarkMasterListThunk = createAsyncThunk('remarkMaster/getRemarkList', async () => {
   try {
-    const response = await customAxios.get(`/locationMaster`);
+    const response = await customAxios.get(`/remarkMaster`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
@@ -18,11 +18,11 @@ export const getBranchMasterListThunk = createAsyncThunk('branchMaster/getBranch
     return Promise.reject(error?.response?.data?.message);
   }
 });
-export const addBranchMasterThunk = createAsyncThunk(
-  'branchMaster/addBranch',
+export const addRemarkMasterThunk = createAsyncThunk(
+  'remarkMaster/addRemark',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`/locationMaster`, formData);
+      const response = await customAxios.post(`/remarkMaster`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -41,11 +41,11 @@ export const addBranchMasterThunk = createAsyncThunk(
   },
 );
 
-export const editBranchMasterThunk = createAsyncThunk(
-  'branchMaster/editBranch',
+export const editRemarkMasterThunk = createAsyncThunk(
+  'remarkMaster/editRemark',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/locationMaster/${currentId}`, formData);
+      const response = await customAxios.post(`/remarkMaster/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

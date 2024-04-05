@@ -15,4 +15,8 @@ code {
   /* --primary_color: #484c7f; */
   --skeleton-bg-1: hsl(200, 20%, 80%);
   --skeleton-bg-2: hsl(200, 20%, 95%);
+  --toastify-color-success: #42ba96;
+  --toastify-color-error: #df4759;
+  --toastify-color-warning: #ffc107;
+  --toastify-color-info: #467fd0;
 }

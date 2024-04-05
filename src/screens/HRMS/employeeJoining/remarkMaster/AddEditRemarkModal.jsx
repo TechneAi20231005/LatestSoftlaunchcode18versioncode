@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -8,26 +9,70 @@ import { CustomInput, CustomRadioButton } from '../../../../components/custom/in
 import { addEditRemarkValidation } from './validation/addEditRemark';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
+import {
+  addRemarkMasterThunk,
+  editRemarkMasterThunk,
+  getRemarkMasterListThunk,
+} from '../../../../redux/services/hrms/employeeJoining/remarkMaster';
 
-function AddEditRemarkModal({ show, close, type }) {
+function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
   // // initial state
+  const dispatch = useDispatch();
   const addEditRemarkInitialValue = {
-    remarkDescription: '',
-    supportingRemark: '',
-    status: 'active',
+    remark_description: type === 'EDIT' ? currentRemarkData?.remark_description : '',
+    supporting_remark: type === 'EDIT' ? currentRemarkData?.supporting_remark || '' : '',
+    is_active: type === 'EDIT' ? currentRemarkData?.is_active?.toString() : 1,
   };
 
+  // // redux state
+  const { isLoading } = useSelector(state => state?.remarkMaster);
+
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+
+  // // function
+  const handelAddEditRemark = () => {
+    if (type === 'ADD') {
+      dispatch(
+        addRemarkMasterThunk({
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getRemarkMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        }),
+      );
+    } else {
+      dispatch(
+        editRemarkMasterThunk({
+          currentId: currentRemarkData?.id,
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getRemarkMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        }),
+      );
+    }
+  };
 
   return (
     <>
       <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Remark`} width="md">
         <Formik
           initialValues={addEditRemarkInitialValue}
+          enableReinitialize
           validationSchema={addEditRemarkValidation}
-          onSubmit={(values, errors) => {
-            setOpenConfirmModal(true);
+          onSubmit={values => {
+            setOpenConfirmModal({ open: true, formData: values });
           }}
         >
           {() => (
@@ -36,7 +81,7 @@ function AddEditRemarkModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="remarkDescription"
+                    name="remark_description"
                     label="Remark Description"
                     placeholder="Enter Remark Description"
                     requiredField
@@ -45,7 +90,7 @@ function AddEditRemarkModal({ show, close, type }) {
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="supportingRemark"
+                    name="supporting_remark"
                     label="Supporting Remark"
                     placeholder="Enter Supporting Remark"
                   />
@@ -59,17 +104,17 @@ function AddEditRemarkModal({ show, close, type }) {
                   <Field
                     component={CustomRadioButton}
                     type="radio"
-                    name="status"
+                    name="is_active"
                     label="Active"
-                    value="active"
+                    value="1"
                     inputClassName="me-1"
                   />
                   <Field
                     component={CustomRadioButton}
                     type="radio"
-                    name="status"
+                    name="is_active"
                     label="Deactivate"
-                    value="deActive"
+                    value="0"
                     inputClassName="me-1"
                   />
                 </div>
@@ -79,7 +124,7 @@ function AddEditRemarkModal({ show, close, type }) {
                 <button className="btn btn-dark px-4" type="submit">
                   {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3">
+                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
                   Cancel
                 </button>
               </div>
@@ -88,15 +133,14 @@ function AddEditRemarkModal({ show, close, type }) {
         </Formik>
       </CustomModal>
 
+      {/* Add edit remark master confirmation modal */}
       <CustomAlertModal
-        show={openConfirmModal}
+        show={openConfirmModal?.open}
         type="success"
         message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
-        onSuccess={() => {
-          setOpenConfirmModal(false);
-          close();
-        }}
-        onClose={() => setOpenConfirmModal(false)}
+        onSuccess={handelAddEditRemark}
+        onClose={() => setOpenConfirmModal({ open: false })}
+        isLoading={isLoading?.addRemarkMaster || isLoading?.editRemarkMaster}
       />
     </>
   );

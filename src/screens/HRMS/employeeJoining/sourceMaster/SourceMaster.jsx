@@ -9,13 +9,15 @@ import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToEx
 import AddEditSourceModal from './AddEditSourceModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../../utils/customFunction';
 
 function SourceMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { sourceMasterList, isLading } = useSelector(state => state?.sourceMaster);
+  const { sourceMasterList, isLoading } = useSelector(state => state?.sourceMaster);
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
@@ -96,14 +98,7 @@ function SourceMaster() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = sourceMasterList?.filter(source => {
-      const sourceValues = Object?.values(source);
-      return sourceValues.some(value => {
-        return (
-          typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
-        );
-      });
-    });
+    const filteredList = customSearchHandler(sourceMasterList, searchValue);
     setFilteredSourceMasterList(filteredList);
   };
 
@@ -192,6 +187,8 @@ function SourceMaster() {
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getSourceMasterList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
 

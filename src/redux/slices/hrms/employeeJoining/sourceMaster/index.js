@@ -7,7 +7,7 @@ import {
 
 const initialState = {
   sourceMasterList: [],
-  isLading: {
+  isLoading: {
     getSourceMasterList: false,
     addSourceMaster: false,
     editSourceMaster: false,
@@ -24,42 +24,42 @@ const sourceMasterSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getSourceMasterListThunk.pending, (state, action) => {
-        state.isLading.getSourceMasterList = true;
+        state.isLoading.getSourceMasterList = true;
       })
       .addCase(getSourceMasterListThunk.fulfilled, (state, action) => {
-        state.isLading.getSourceMasterList = false;
+        state.isLoading.getSourceMasterList = false;
         state.sourceMasterList = action.payload.data;
         state.successMsg.getSourceMasterList = action.payload.msg;
       })
       .addCase(getSourceMasterListThunk.rejected, (state, action) => {
-        state.isLading.getSourceMasterList = false;
+        state.isLoading.getSourceMasterList = false;
         state.sourceMasterList = [];
         state.errorMsg.getSourceMasterList = action.error.message;
       })
 
       // // add source master
       .addCase(addSourceMasterThunk.pending, (state, action) => {
-        state.isLading.addSourceMaster = true;
+        state.isLoading.addSourceMaster = true;
       })
       .addCase(addSourceMasterThunk.fulfilled, (state, action) => {
-        state.isLading.addSourceMaster = false;
+        state.isLoading.addSourceMaster = false;
         state.successMsg.addSourceMaster = action.payload;
       })
       .addCase(addSourceMasterThunk.rejected, (state, action) => {
-        state.isLading.addSourceMaster = false;
+        state.isLoading.addSourceMaster = false;
         state.errorMsg.addSourceMaster = action.error.message;
       })
 
       // // edit source master
       .addCase(editSourceMasterThunk.pending, (state, action) => {
-        state.isLading.editSourceMaster = true;
+        state.isLoading.editSourceMaster = true;
       })
       .addCase(editSourceMasterThunk.fulfilled, (state, action) => {
-        state.isLading.editSourceMaster = false;
+        state.isLoading.editSourceMaster = false;
         state.successMsg.editSourceMaster = action.payload;
       })
       .addCase(editSourceMasterThunk.rejected, (state, action) => {
-        state.isLading.editSourceMaster = false;
+        state.isLoading.editSourceMaster = false;
         state.errorMsg.editSourceMaster = action.error.message;
       });
   },

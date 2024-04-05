@@ -1,16 +1,16 @@
 import * as Yup from 'yup';
 
 export const addEditSalaryValidation = Yup.object().shape({
-  department: Yup.string().required('Department is required'),
-  designation: Yup.string().required('Designation is required'),
-  location: Yup.array()
+  department_id: Yup.string().required('Department is required'),
+  designation_id: Yup.string().required('Designation is required'),
+  location_id: Yup.array()
     .min(1, 'Please select at least one location')
     .required('Preferred role is required'),
-  experienceLevel: Yup.string().required('Experience level is required'),
-  maxSalary: Yup.number()
+  experience_level: Yup.string().required('Experience level is required'),
+  max_salary: Yup.number()
     .positive('Max salary must be positive')
     .required('Max salary is required'),
-  remarks: Yup.string()
-    .min(5, 'Remark must be at least 5 characters')
-    .max(30, 'Remark must be at most 30 characters'),
+  remark: Yup.string()
+    .min(2, 'Remark must be at least 2 characters')
+    .max(1000, 'Remark must be at most 1000 characters'),
 });

@@ -3,9 +3,9 @@ import { toast } from 'react-toastify';
 import customAxios from '../../../../../http/axios';
 import { errorHandler } from '../../../../../utils';
 
-export const getBranchMasterListThunk = createAsyncThunk('branchMaster/getBranchList', async () => {
+export const getSalaryMasterListThunk = createAsyncThunk('salaryMaster/getSalaryList', async () => {
   try {
-    const response = await customAxios.get(`/locationMaster`);
+    const response = await customAxios.get(`/salaryMaster`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
@@ -14,15 +14,16 @@ export const getBranchMasterListThunk = createAsyncThunk('branchMaster/getBranch
       }
     }
   } catch (error) {
-    errorHandler(error?.response);
+    errorHandler(error?.response || '');
     return Promise.reject(error?.response?.data?.message);
   }
 });
-export const addBranchMasterThunk = createAsyncThunk(
-  'branchMaster/addBranch',
+
+export const addSalaryMasterThunk = createAsyncThunk(
+  'salaryMaster/addSalary',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`/locationMaster`, formData);
+      const response = await customAxios.post(`/salaryMaster`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -41,11 +42,11 @@ export const addBranchMasterThunk = createAsyncThunk(
   },
 );
 
-export const editBranchMasterThunk = createAsyncThunk(
-  'branchMaster/editBranch',
+export const editSalaryMasterThunk = createAsyncThunk(
+  'salaryMaster/editSalary',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/locationMaster/${currentId}`, formData);
+      const response = await customAxios.post(`/salaryMaster/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
