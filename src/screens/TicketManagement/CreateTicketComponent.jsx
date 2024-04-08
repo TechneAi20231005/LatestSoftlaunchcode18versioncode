@@ -1218,6 +1218,7 @@ export default function CreateTicketComponent() {
                         />
                       )} */}
 
+                      {console.log("datas", data)}
                       {data.inputType === "select" && (
                         <select
                           id={
