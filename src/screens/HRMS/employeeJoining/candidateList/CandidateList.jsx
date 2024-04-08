@@ -1,44 +1,82 @@
 import React, { useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
+import { useNavigate } from 'react-router-dom';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import AddCandidatesModal from './AddCandidatesModal';
+import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
+import { _base } from '../../../../settings/constants';
 
 function CandidateList() {
+  // // initial state
+  const navigate = useNavigate();
+  console.log(navigate);
+
+  // // local state
+  const [searchValue, setSearchValue] = useState('');
+  const [addCandidateModal, setAddCandidateModal] = useState(false);
+
   // // static data
+  const demoData = [
+    {
+      srNo: 1,
+      candidate_name: 'John Doe',
+      applied_position: 'Software Engineer',
+      date_of_application: '2024-04-05',
+      is_active: true,
+      source: 'LinkedIn',
+    },
+    {
+      srNo: 2,
+      candidate_name: 'Jane Smith',
+      applied_position: 'Marketing Manager',
+      date_of_application: '2024-04-04',
+      is_active: false,
+      source: 'Indeed',
+    },
+  ];
+
   const columns = [
     {
       name: 'Sr. No.',
       selector: row => row?.srNo,
       sortable: false,
-      width: '15%',
     },
 
-    { name: 'Action', selector: row => {}, sortable: false },
+    {
+      name: 'Action',
+      selector: row => (
+        <i
+          className="icofont-external-link text-primary cp"
+          onClick={() => navigate(`${row?.srNo}`)}
+        />
+      ),
+      sortable: false,
+    },
     {
       name: 'Candidate Name',
       sortable: true,
-      selector: row => row?.candidateName,
+      selector: row => row?.candidate_name,
     },
 
     {
       name: 'Applied Position',
-      selector: row => row?.appliedPosition,
+      selector: row => row?.applied_position,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Date of Application',
-      selector: row => row?.dateOfApplication,
+      selector: row => row?.date_of_application,
       sortable: true,
       width: '175px',
     },
     {
       name: 'Status',
-      selector: row => row?.status,
+      selector: row => <StatusBadge status={row?.is_active} />,
       sortable: true,
       width: '175px',
     },
@@ -49,9 +87,6 @@ function CandidateList() {
       width: '175px',
     },
   ];
-  // // local state
-  const [searchValue, setSearchValue] = useState('');
-  const [addCandidateModal, setAddCandidateModal] = useState(false);
 
   return (
     <>
@@ -98,7 +133,7 @@ function CandidateList() {
         </Row>
         <DataTable
           columns={columns}
-          data={[]}
+          data={demoData}
           defaultSortField="role_id"
           pagination
           selectableRows={false}

@@ -57,11 +57,11 @@ function InterviewMaster() {
       selector: row => (
         <>
           <i
-            className="icofont-edit cp me-3"
+            className="icofont-edit text-primary cp me-3"
             onClick={() => setAddEditInterviewModal({ type: 'EDIT', data: row, open: true })}
           />
           <i
-            class="icofont-eye-alt cp"
+            class="icofont-eye-alt text-primary cp"
             onClick={() => setAddEditInterviewModal({ type: 'VIEW', data: row, open: true })}
           />
         </>

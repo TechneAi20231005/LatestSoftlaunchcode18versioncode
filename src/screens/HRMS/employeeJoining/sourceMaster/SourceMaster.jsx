@@ -40,7 +40,7 @@ function SourceMaster() {
       name: 'Action',
       selector: row => (
         <i
-          className="icofont-edit cp"
+          className="icofont-edit text-primary cp"
           onClick={() => setAddEditSourceModal({ type: 'EDIT', data: row, open: true })}
         />
       ),

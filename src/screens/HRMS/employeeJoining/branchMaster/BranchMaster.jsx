@@ -39,7 +39,7 @@ function BranchMaster() {
       name: 'Action',
       selector: row => (
         <i
-          className="icofont-edit cp"
+          className="icofont-edit text-primary cp"
           onClick={() => setAddEditCandidateModal({ type: 'EDIT', data: row, open: true })}
         />
       ),

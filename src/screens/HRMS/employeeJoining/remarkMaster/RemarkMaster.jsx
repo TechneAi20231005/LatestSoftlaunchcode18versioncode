@@ -40,7 +40,7 @@ function RemarkMaster() {
       name: 'Action',
       selector: row => (
         <i
-          className="icofont-edit cp"
+          className="icofont-edit text-primary cp"
           onClick={() => setAddEditRemarkModal({ type: 'EDIT', data: row, open: true })}
         />
       ),

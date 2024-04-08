@@ -1,0 +1,20 @@
+.tab_container {
+  ul {
+    display: flex;
+    list-style: none;
+    border-bottom: 1px solid var(--color-400);
+    padding-left: 0;
+    li {
+      margin-right: 20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      color: var(--color-400);
+      cursor: pointer;
+    }
+    .tab_active {
+      color: var(--primary-color) !important;
+      border-bottom: 2px solid var(--primary-color);
+      font-weight: 600;
+    }
+  }
+}
