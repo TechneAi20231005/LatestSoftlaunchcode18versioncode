@@ -141,6 +141,14 @@ export default function CreateTicketComponent() {
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+          alert(
+            "File size exceeds 5MB. Please upload a file smaller than 5MB."
+          );
+          continue; // Skip this file and move to the next one
+        }
         const reader = new FileReader();
 
         reader.onload = ((file) => {
