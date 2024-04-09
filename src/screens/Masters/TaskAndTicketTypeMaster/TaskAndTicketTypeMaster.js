@@ -381,125 +381,6 @@ function TaskAndTicketTypeMaster(props) {
         }
       });
 
-    // await new TaskTicketTypeService()
-    //   .getAllTaskTicketType(selectedType)
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       if (res.data.status == 1) {
-    //         let counter = 1;
-    //         var tempData = [];
-    //         const temp = res.data.data;
-    //         console.log("resData", temp);
-    //         for (const key in temp) {
-    //           tempData.push({
-    //             counter: counter++,
-    //             id: temp[key].id,
-    //             type: temp[key].type,
-    //             parent_id: temp[key].parent_id,
-    //             type_name: temp[key].type_name,
-    //             remark: temp[key].remark,
-    //             is_active: temp[key].is_active,
-    //             created_at: temp[key].created_at,
-    //             created_by: temp[key].created_by,
-    //             updated_at: temp[key].updated_at,
-    //             updated_by: temp[key].updated_by,
-    //           });
-    //         }
-    //         setData(null);
-    //         setData(tempData);
-    //         for (const i in temp) {
-    //           exportTempData.push({
-    //             SrNo: exportTempData.length + 1,
-
-    //             id: temp[i].id,
-    //             type: temp[i].type,
-
-    //             parent_name: temp[i].parent_name,
-    //             type_name: temp[i].type_name,
-    //             remark: temp[i].remark,
-    //             is_active: temp[i].is_active,
-    //             created_at: temp[i].created_at,
-    //             created_by: temp[i].created_by,
-    //             updated_at: temp[i].updated_at,
-    //             updated_by: temp[i].updated_by,
-    //           });
-    //         }
-
-    //         setExportData(null);
-
-    //         setExportData(exportTempData);
-    //       }
-    //     }
-    //   });
-
-    // await new TaskTicketTypeService().getAllType().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       let counter = 1;
-    //       var tempData = [];
-    //       const temp = res.data.data;
-
-    //       for (const key in temp) {
-    //         if (temp[key].type === "TASK" && selectedType === "TASK") {
-    //           tempData.push({
-    //             counter: counter++,
-    //             id: temp[key].id,
-    //             type: temp[key].type,
-    //             parent_id: temp[key].parent_id,
-    //             type_name: temp[key].type_name,
-    //             remark: temp[key].remark,
-    //             is_active: temp[key].is_active,
-    //             created_at: temp[key].created_at,
-    //             created_by: temp[key].created_by,
-    //             updated_at: temp[key].updated_at,
-    //             updated_by: temp[key].updated_by,
-    //           });
-    //         } else if (
-    //           temp[key].type === "TICKET" &&
-    //           selectedType === "TICKET"
-    //         ) {
-    //           tempData.push({
-    //             counter: counter++,
-    //             id: temp[key].id,
-    //             type: temp[key].type,
-    //             parent_id: temp[key].parent_id,
-    //             type_name: temp[key].type_name,
-    //             remark: temp[key].remark,
-    //             is_active: temp[key].is_active,
-    //             created_at: temp[key].created_at,
-    //             created_by: temp[key].created_by,
-    //             updated_at: temp[key].updated_at,
-    //             updated_by: temp[key].updated_by,
-    //           });
-    //         }
-    //       }
-    //       setData(null);
-    //       setData(tempData);
-    //       for (const i in temp) {
-    //         exportTempData.push({
-    //           SrNo: exportTempData.length + 1,
-
-    //           id: temp[i].id,
-    //           type: temp[i].type,
-
-    //           parent_name: temp[i].parent_name,
-    //           type_name: temp[i].type_name,
-    //           remark: temp[i].remark,
-    //           is_active: temp[i].is_active,
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: temp[i].updated_at,
-    //           updated_by: temp[i].updated_by,
-    //         });
-    //       }
-
-    //       setExportData(null);
-
-    //       setExportData(exportTempData);
-    //     }
-    //   }
-    // });
-
     await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
         const mappedData = res.data.data.map((d) => ({
@@ -529,61 +410,6 @@ function TaskAndTicketTypeMaster(props) {
   const handleSelectOptionClick = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  // function transformData(taskData) {
-  //   return taskData.map((item) => {
-  //     const label = item.type_name;
-
-  //     const options =
-  //       item.children && item.children.length > 0
-  //         ? item.children.map((child) => ({
-  //             value: child.id,
-  //             label: child.type_name,
-  //             options: transformData(child.children), // Recursively process children
-  //           }))
-  //         : [];
-
-  //     const ID = item.parent_id;
-  //     return { ID, label, options };
-  //   });
-  // }
-  // // Transform the taskData
-  // const transformedOptions = transformData(taskData);
-
-  // function transformData(taskData) {
-  //   const primaryLabel = "Primary";
-
-  //   const options = [];
-
-  //   // Push the primary label separately
-  //   options.push({
-  //     ID: null,
-  //     label: primaryLabel,
-  //     isStatic: true,
-  //     options: [],
-  //   });
-
-  //   // Process the taskData
-  //   taskData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children ? transformData(item.children) : [],
-  //       });
-  //     } else {
-  //       // Skip pushing the primary label into its own options array
-  //       return;
-  //     }
-  //   });
-
-  //   return options;
-  // }
-
-  // const transformedOptions = transformData(taskData);
 
   function transformData(taskData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
@@ -622,41 +448,6 @@ function TaskAndTicketTypeMaster(props) {
   // Transform the taskData
   const transformedOptions = transformData(taskData);
 
-  // function transformDataTicket(ticketData) {
-  //   const primaryLabel = "Primary";
-
-  //   const options = [];
-
-  //   // Push the primary label separately
-  //   options.push({
-  //     ID: null,
-  //     label: primaryLabel,
-  //     isStatic: true,
-  //     options: [],
-  //   });
-
-  //   // Process the taskData
-  //   ticketData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children ? transformDataTicket(item.children) : [],
-  //       });
-  //     } else {
-  //       // Skip pushing the primary label into its own options array
-  //       return;
-  //     }
-  //   });
-
-  //   return options;
-  // }
-
-  // const transformedOptionsTicket = transformDataTicket(ticketData);
-
   function transformDataTicket(ticketData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
     const options = [];
@@ -693,25 +484,6 @@ function TaskAndTicketTypeMaster(props) {
 
   // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketData);
-
-  // function transformDataTicket(ticketData) {
-  //   return ticketData.map((item) => {
-  //     const label = item.type_name;
-
-  //     const options =
-  //       item.children && item.children.length > 0
-  //         ? item.children.map((child) => ({
-  //             value: child.id,
-  //             label: child.type_name,
-  //             options: transformDataTicket(child.children), // Recursively process children
-  //           }))
-  //         : [];
-
-  //     const ID = item.parent_id;
-  //     return { ID, label, options };
-  //   });
-  // }
-  // Transform the taskData
 
   const [expandedRows, setExpandedRows] = useState([]);
 
@@ -1006,15 +778,6 @@ function TaskAndTicketTypeMaster(props) {
             <div className="col-auto d-flex w-sm-100">
               <button
                 className="btn btn-dark btn-set-task w-sm-100"
-                // onClick={() => {
-                //   handleModal({
-                //     showModal: true,
-                //     modalData: "",
-                //     modalHeader:  {selectedType && selectedType === "task" ?  "Add Task Type" : "Add Ticket Type"}
-                //   });
-                //   setSelectedValue("");
-                // }}
-
                 onClick={() => {
                   if (!selectedType) {
                     alert("Please select a type first");
