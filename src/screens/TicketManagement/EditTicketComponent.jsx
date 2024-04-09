@@ -368,7 +368,6 @@ export default function EditTicketComponent({ match }) {
     });
 
     await new MyTicketService().getTicketById(ticketId).then((res) => {
-      
       if (res.status === 200) {
         const data = res.data.data;
         setProjectId(res.data.data?.project_id);
@@ -802,7 +801,7 @@ export default function EditTicketComponent({ match }) {
                 value={data.object_id}
                 readOnly={true}
               />
-              {console.log("datadd", data)}
+
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row d-flex justify-content-between">
@@ -1191,8 +1190,6 @@ export default function EditTicketComponent({ match }) {
               {rows && rows.length > 0 && (
                 <div className="row">
                   {rows.map((data, index) => {
-                    console.log("datadynamic", data);
-
                     var range = "";
 
                     return (

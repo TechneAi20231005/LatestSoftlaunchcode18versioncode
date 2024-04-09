@@ -29,7 +29,7 @@ export default function ViewTicketComponent({ match }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState(null);
-  // const [checkRole, setCheckRole] = useState(null);
+ 
   const roleId = sessionStorage.getItem("role_id");
   const [isSolved, setIsSolved] = useState(false);
   const [chart, setChart] = useState(null);
@@ -44,9 +44,6 @@ export default function ViewTicketComponent({ match }) {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
   );
 
-  //   const onAddMention = (e) => {
-  //     setIdCount((idCount) => [...idCount, e.id]);
-  //   };
 
   const loadData = async () => {
     await new MyTicketService().getGanttChart(ticketId).then((res) => {
@@ -92,14 +89,7 @@ export default function ViewTicketComponent({ match }) {
 
     dispatch(getRoles());
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+
   };
 
   const loadComments = async () => {
@@ -213,7 +203,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-            {console.log("dd", data)}
+         
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
@@ -278,7 +268,7 @@ export default function ViewTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-                        {console.log("data", data)}
+                      
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
