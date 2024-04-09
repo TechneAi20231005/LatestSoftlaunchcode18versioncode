@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Container, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import AddEditInterviewMasterModal from './AddEditInterviewMasterModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
+import { getInterviewMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
+import { customSearchHandler } from '../../../../utils/customFunction';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 
 function InterviewMaster() {
+  // // initial state
+  const dispatch = useDispatch();
+
+  // // redux state
+  const { interviewMasterList, isLoading } = useSelector(state => state?.interviewMaster);
+
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [addEditInterviewModal, setAddEditInterviewModal] = useState({
@@ -16,39 +26,13 @@ function InterviewMaster() {
     type: '',
     data: '',
   });
+  const [filteredInterviewMasterList, setFilteredInterviewMasterList] = useState([]);
 
   // // static data
-  const demoData = [
-    {
-      srNo: 1,
-      department: 'Engineering',
-      designation: 'Software Engineer',
-      experienceLevel: 'Junior',
-      is_active: 1,
-      step_count: 3,
-      step_title: 'Step 1',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      remark: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    },
-    {
-      srNo: 2,
-      department: 'Marketing',
-      designation: 'Marketing Manager',
-      experienceLevel: 'Senior',
-      is_active: 0,
-      step_count: 2,
-      step_title: 'Step 2',
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      remark: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    },
-  ];
-
   const columns = [
     {
       name: 'Sr. No.',
-      selector: row => row?.srNo,
+      selector: (row, index) => index + 1,
       sortable: false,
     },
 
@@ -71,19 +55,55 @@ function InterviewMaster() {
 
     {
       name: 'Department',
-      selector: row => row?.department,
+      // selector: row =>
+      //   row?.details?.length ? (
+      //     <OverlayTrigger
+      //       placement="top"
+      //       overlay={
+      //         <Tooltip id={`tooltip-${row.id}`}>
+      //           {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
+      //         </Tooltip>
+      //       }
+      //     >
+      //       <span>
+      //         {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
+      //       </span>
+      //     </OverlayTrigger>
+      //   ) : (
+      //     '--'
+      //   ),
+      selector: row => row?.department || '--',
       sortable: true,
       width: '120px',
     },
     {
       name: 'Designation',
-      selector: row => row?.designation,
+      // selector: row =>
+      //   row?.details?.length ? (
+      //     <OverlayTrigger
+      //       placement="top"
+      //       overlay={
+      //         <Tooltip id={`tooltip-${row.id}`}>
+      //           {row?.details?.map(detail =>
+      //             detail?.designation ? `${detail?.designation}, ` : '',
+      //           )}
+      //         </Tooltip>
+      //       }
+      //     >
+      //       <span>
+      //         {row?.details?.map(detail => (detail?.designation ? `${detail?.designation}, ` : ''))}
+      //       </span>
+      //     </OverlayTrigger>
+      //   ) : (
+      //     '--'
+      //   ),
+      selector: row => row?.designation || '--',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Experience Level',
-      selector: row => row?.designation,
+      selector: row => row?.experience_level || '--',
       sortable: true,
       width: '175px',
     },
@@ -94,36 +114,145 @@ function InterviewMaster() {
     },
     {
       name: 'Step Count',
-      selector: row => row?.step_count,
+      selector: row => row?.steps_count || '--',
       sortable: true,
       width: '110px',
     },
     {
       name: 'Step Title',
-      selector: row => row?.step_title,
+      selector: row =>
+        row?.details?.length ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>
+                {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
+              </Tooltip>
+            }
+          >
+            <span>
+              {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
+            </span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+
       sortable: true,
       width: '150px',
     },
     {
       name: 'Name',
-      selector: row => row?.name,
+      selector: row =>
+        row?.details?.length ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>
+                {row?.details?.map(detail =>
+                  detail?.employee_name ? `${detail?.employee_name}, ` : '',
+                )}
+              </Tooltip>
+            }
+          >
+            <span>
+              {row?.details?.map(detail =>
+                detail?.employee_name ? `${detail?.employee_name}, ` : '',
+              )}
+            </span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
       width: '175px',
     },
     {
       name: 'Email',
-      selector: row => row?.email,
+      selector: row =>
+        row?.details?.length ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>
+                {row?.details?.map(detail =>
+                  detail?.employee_email ? `${detail?.employee_email}, ` : '',
+                )}
+              </Tooltip>
+            }
+          >
+            <span>
+              {row?.details?.map(detail =>
+                detail?.employee_email ? `${detail?.employee_email}, ` : '',
+              )}
+            </span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+
       sortable: true,
       width: '175px',
     },
     {
       name: 'Remark',
-      selector: row => row?.remark,
+      selector: row =>
+        row?.remark ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+          >
+            <span>{row?.remark || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
       width: '175px',
     },
   ];
 
+  // Function to handle search button click
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(interviewMasterList, searchValue);
+    setFilteredInterviewMasterList(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchValue('');
+    setFilteredInterviewMasterList(interviewMasterList);
+  };
+
+  const transformDataForExport = data => {
+    return data?.map((row, index) => ({
+      'Sr No.': index + 1,
+      Department: row?.department || '--',
+      Designation: row?.designation || '--',
+      'Experience Level': row?.experience_level || '--',
+      Status: row?.is_active ? 'Active' : 'Deactive',
+      'Step Count': row?.steps_count || '--',
+      'Step Title': row?.details?.map(detail => detail?.step_title || '--').join(', '),
+      Name: row?.details?.map(detail => detail?.employee_name || '--').join(', '),
+      Email: row?.details?.map(detail => detail?.employee_email || '--').join(', '),
+      Remark: row?.remark || '--',
+    }));
+  };
+
+  // // life cycle
+  useEffect(() => {
+    dispatch(getInterviewMasterListThunk());
+  }, []);
+
+  // Update the useEffect to update the filtered list when interviewMasterList changes
+  useEffect(() => {
+    setFilteredInterviewMasterList(interviewMasterList);
+  }, [interviewMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
   return (
     <>
       <Container fluid>
@@ -153,31 +282,30 @@ function InterviewMaster() {
             />
           </Col>
           <Col xs={12} md={4} xxl={3} className="text-end mt-2 mt-md-0">
-            <button className="btn btn-warning text-white" type="button">
+            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
               <i className="icofont-search-1 " /> Search
             </button>
-            <button
-              className="btn btn-info text-white"
-              type="button"
-              onClick={() => setSearchValue('')}
-            >
+            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
               <i className="icofont-refresh text-white" /> Reset
             </button>
             <ExportToExcel
               className="btn btn-danger"
-              apiData={[]}
+              apiData={transformDataForExport(filteredInterviewMasterList)}
               fileName="Interview master Records"
+              disabled={!filteredInterviewMasterList?.length}
             />
           </Col>
         </Row>
         <DataTable
           columns={columns}
-          data={demoData}
+          data={filteredInterviewMasterList}
           defaultSortField="role_id"
           pagination
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getInterviewMasterList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
       <AddEditInterviewMasterModal
