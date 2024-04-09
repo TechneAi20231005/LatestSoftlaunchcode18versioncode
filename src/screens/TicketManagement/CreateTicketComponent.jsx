@@ -1336,58 +1336,58 @@ export default function CreateTicketComponent() {
           </span>
         )}
 
-        {/* {data.ticket_uploading === "BULK_UPLOADING" && isFileGenerated && ( */}
-        <div className="card mt-2">
-          <div className="card-body">
-            <div className="form-group row mt-3">
-              <div className="col-sm-12">
-                <h5 className="text-danger">
-                  <b>Important Note:</b>
-                </h5>
-                <ul>
-                  <li>Do not make any changes in first row</li>
-                  <li>Do not change query type after export in file</li>
-                </ul>
+        {data.ticket_uploading === "BULK_UPLOADING" && isFileGenerated && (
+          <div className="card mt-2">
+            <div className="card-body">
+              <div className="form-group row mt-3">
+                <div className="col-sm-12">
+                  <h5 className="text-danger">
+                    <b>Important Note:</b>
+                  </h5>
+                  <ul>
+                    <li>Do not make any changes in first row</li>
+                    <li>Do not change query type after export in file</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="row">
+                <label className="col-form-label">
+                  <b>
+                    Upload Generated File <Astrick color="red" /> :
+                  </b>
+                </label>
+                <input
+                  type="file"
+                  className="form-control form-control-sm"
+                  id="bulk_upload_file"
+                  name="bulk_upload_file"
+                  onChange={(e) => {
+                    uploadAttachmentHandler(e, "UPLOAD", "");
+                  }}
+                  required
+                />
+              </div>
+
+              <div className="row">
+                <label className="col-form-label">
+                  <b>Upload Attachment :{/* <Astrick color="red" /> : */}</b>
+                </label>
+                <input
+                  type="file"
+                  className="form-control form-control-sm"
+                  id="bulk_images[]"
+                  name="bulk_images[]"
+                  multiple
+                  // required
+                  onChange={(e) => {
+                    uploadAttachmentHandler(e, "UPLOAD", "");
+                  }}
+                />
               </div>
             </div>
-
-            <div className="row">
-              <label className="col-form-label">
-                <b>
-                  Upload Generated File <Astrick color="red" /> :
-                </b>
-              </label>
-              <input
-                type="file"
-                className="form-control form-control-sm"
-                id="bulk_upload_file"
-                name="bulk_upload_file"
-                onChange={(e) => {
-                  uploadAttachmentHandler(e, "UPLOAD", "");
-                }}
-                required
-              />
-            </div>
-
-            <div className="row">
-              <label className="col-form-label">
-                <b>Upload Attachment :{/* <Astrick color="red" /> : */}</b>
-              </label>
-              <input
-                type="file"
-                className="form-control form-control-sm"
-                id="bulk_images[]"
-                name="bulk_images[]"
-                multiple
-                // required
-                onChange={(e) => {
-                  uploadAttachmentHandler(e, "UPLOAD", "");
-                }}
-              />
-            </div>
           </div>
-        </div>
-        {/* )} */}
+        )}
         <div className="mt-3" style={{ textAlign: "right" }}>
           {data.ticket_uploading == "REGULAR" && (
             <button

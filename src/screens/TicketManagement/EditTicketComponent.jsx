@@ -368,6 +368,7 @@ export default function EditTicketComponent({ match }) {
     });
 
     await new MyTicketService().getTicketById(ticketId).then((res) => {
+      
       if (res.status === 200) {
         const data = res.data.data;
         setProjectId(res.data.data?.project_id);
@@ -801,6 +802,7 @@ export default function EditTicketComponent({ match }) {
                 value={data.object_id}
                 readOnly={true}
               />
+              {console.log("datadd", data)}
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row d-flex justify-content-between">
@@ -1327,9 +1329,7 @@ export default function EditTicketComponent({ match }) {
                                     // }
                                     value={d.value}
                                     onChange={handleRadioChange}
-                                    defaultChecked={
-                                      d.value == data.value
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -1359,9 +1359,7 @@ export default function EditTicketComponent({ match }) {
                                     }
                                     value={d.value}
                                     onChange={handleCheckBoxChange}
-                                    defaultChecked={
-                                      d.value == data.value
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
