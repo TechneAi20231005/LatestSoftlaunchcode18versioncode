@@ -33,6 +33,9 @@ export default function TaskModal(props) {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const [taskData, setTaskData] = useState([]);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -40,7 +43,6 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-  console.log("fromdate", fromdate)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
     // const gettodatevalue = e.target.value;
@@ -53,6 +55,12 @@ export default function TaskModal(props) {
     // setTodateformat(settodateformat);
   };
 
+  const handleSelect = (label, ID) => {
+    setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    // closeAllDropdowns();
+  };
   const handleToDate = (e) => {
     // const getfromdatevalue = e.target.value;
     // const setfromformat = getfromdatevalue.split("-");
@@ -64,11 +72,149 @@ export default function TaskModal(props) {
     // setFromdateformat(setfromformatdate);
   };
 
-  const handleClose = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // for Task Type Name Field created custome menuOption
+
+  const CustomOption = ({ label, options, onClick, closeDropdown }) => {
+    const [expanded, setExpanded] = useState(false);
+    const [openOptions, setOpenOptions] = useState([]);
+
+    const handleClick = (e) => {
+      setExpanded(!expanded);
+      onClick(label);
+      closeDropdown(); // Close the dropdown after clicking the option
+    };
+
+    const handleSelect = () => {
+      setOpenOptions([]);
+    };
+
+    return (
+      <div
+        style={{
+          padding: "8px",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        {label}
+        {expanded && options && (
+          <div style={{ marginLeft: "20px" }}>
+            {options.map((option) => (
+              <CustomOption
+                key={option.label}
+                label={option.label}
+                options={option.options}
+                onClick={handleSelect}
+                ID={option.ID}
+                openOptions={openOptions}
+                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // for Task Type Name Field created custome menuList
+
+  const CustomMenuList = ({ options, onSelect, ID }) => {
+    const [openOptions, setOpenOptions] = useState([]);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const closeDropdown = () => {
+      setOpenOptions([]);
+      // setIsMenuOpen(false); // Close the menu when the dropdown is closed
+    };
+
+    const handleSelect = (label, ID, openOptions) => {
+      setOpenOptions([]);
+      closeDropdown();
+      onSelect(label, ID);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderBottom: "1px solid #ccc",
+              fontWeight:
+                option.label === "Primary" || option.options.length > 0
+                  ? "bold"
+                  : "normal",
+            }}
+          >
+            {option.options.length > 0 && (
+              <i
+                className="icofont-rounded-right"
+                style={{ marginRight: "5px", cursor: "pointer" }}
+                onClick={() => toggleOptions(option.label)}
+              ></i>
+            )}
+
+            <CustomOption
+              label={option.label}
+              options={option.options}
+              onClick={handleSelect}
+              openOptions={options}
+              isMenuOpen={isMenuOpen}
+              ID={option.ID}
+              closeDropdown={closeDropdown}
+            />
+          </div>
+          {openOptions.includes(option.label) && option.options && (
+            <div style={{ marginLeft: "20px" }}>
+              {renderOptions(option.options)}
+            </div>
+          )}
+        </React.Fragment>
+      ));
+    };
+
+    return (
+      <>
+        {!isMenuOpen && ( // Render the menu only when isMenuOpen is false
+          <div
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "0",
+              width: "100%",
+              maxHeight: "400px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+          >
+            {renderOptions(options)}
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const handleClose = () => {
     props.close();
     props.loadBasket();
-
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
@@ -97,7 +243,9 @@ export default function TaskModal(props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         const data1 = res.data.data;
-        const data = data1.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = data1.filter(
+          (d) => d.is_active === 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -162,9 +310,14 @@ export default function TaskModal(props) {
             setParent(mappedData);
             // parentName(mappedData);
           } else {
-
           }
         }
+      }
+    });
+
+    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+      if (res?.status === 200) {
+        setTaskData(res?.data?.data);
       }
     });
   };
@@ -183,9 +336,44 @@ export default function TaskModal(props) {
     }
   };
 
+  function transformData(taskData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the taskData
+    taskData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the taskData
+  const transformedOptions = transformData(taskData);
+
   const uploadAttachmentHandler = (e, type, id = null) => {
-
-
     if (type === "UPLOAD") {
       const selectedFilesCount = selectedFile.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
@@ -227,12 +415,9 @@ export default function TaskModal(props) {
           ]);
         }
 
-
-
         // Clear the input field
         fileInputRef.current.value = "";
       }
-
     } else if (type === "DELETE") {
       let filteredFileArray = selectedFile.filter(
         (item, index) => id !== index
@@ -262,6 +447,7 @@ export default function TaskModal(props) {
 
     e.preventDefault();
     const formData = new FormData(e.target);
+    formData.append("parent_id", selectedOptionId);
     setNotify(null);
     //Appeding File in selected State
     formData.delete("attachment[]");
@@ -280,7 +466,6 @@ export default function TaskModal(props) {
     }
 
     var flag = 1;
-
 
     if (todateformat > fromdateformat) {
       alert("Please select End Date Greater than Start date");
@@ -308,7 +493,6 @@ export default function TaskModal(props) {
         alert("Please select End Date Greater than Start date");
       } else {
         if (formData.get("id")) {
-
           const taskTypeId = typeRef?.current?.props?.value.map((d) => {
             return d.value;
           });
@@ -338,7 +522,7 @@ export default function TaskModal(props) {
               }
             })
             .catch((error) => {
-              setLoading(false)
+              setLoading(false);
               const { response } = error;
               const { request, ...errorObject } = response;
               new ErrorLogService().sendErrorLog(
@@ -372,7 +556,6 @@ export default function TaskModal(props) {
               );
             }
           });
-
         }
       }
     }
@@ -395,8 +578,6 @@ export default function TaskModal(props) {
       }
     });
   };
-
-
 
   useEffect(() => {
     loadData();
@@ -507,15 +688,15 @@ export default function TaskModal(props) {
             <div className="row mt-2">
               <div className="col-md-12">
                 <label className="form-label">
-                  <b>Task Name :<Astrick color="red" size="13px" /></b>
-
+                  <b>
+                    Task Name :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.task_name === null ? (
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     name="task_name"
-
                     required
                   />
                 ) : (
@@ -524,17 +705,73 @@ export default function TaskModal(props) {
                     className="form-control form-control-sm"
                     name="task_name"
                     defaultValue={props.data.task_name}
-
-
                     required
                   />
                 )}
-
-
               </div>
             </div>
 
-            <div className="col-md-12">
+            <div>
+              <label className="form-label font-weight-bold" readOnly={true}>
+                Task Type Name: <Astrick color="red" size="13px" />
+              </label>
+
+              <div>
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      cursor: "pointer",
+                      width: "100%",
+                    }}
+                    onClick={(e) => handleSelectOptionClick(e)}
+                  >
+                    {selectedOption ? selectedOption : "Select an option"}
+                  </div>
+                  {/* {isMenuOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        width: "100%", // Set the width to 100% to match the parent's width
+                        top: "100%",
+                      }}
+                    >
+                      <CustomMenuList
+                        options={transformedOptions}
+                        onSelect={(label, ID) => handleSelect(label, ID)}
+                        // closeAllDropdowns={closeAllDropdowns}
+                      />
+                    </div>
+                  )} */}
+
+                  {isMenuOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        width: "100%", // Set the width to 100% to match the parent's width
+                        top: "100%",
+                      }}
+                    >
+                      <CustomMenuList
+                        options={transformedOptions}
+                        onSelect={(label, ID) => handleSelect(label, ID)}
+                        isMenuOpen={isMenuOpen}
+                        onClick={(e) => handleSelectOptionClick(e)}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="col-md-12">
               <label className="form-label">
                 <b>Parent Task Type : </b>
               </label>
@@ -577,13 +814,15 @@ export default function TaskModal(props) {
                   />
                 )}
               </div>
-            )}
+            )} */}
 
             {/* *****************START DATE, END DATE , TASK HOURS**************** */}
             <div className="row mt-3">
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Start Date :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Start Date :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.start_date == null ? (
                   <input
@@ -594,11 +833,9 @@ export default function TaskModal(props) {
                     onChange={handleFromDate}
                     // max={props.expectedSolveDate}
                     min={props.ticketStartDate}
-
-
                     required
 
-                  // min={new Date().toISOString().slice(0, 10)}
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                 ) : (
                   <input
@@ -614,16 +851,16 @@ export default function TaskModal(props) {
 
                     required
 
-                  // min={new Date().toISOString().slice(0, 10)}
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                 )}
               </div>
 
-              {console.log("pp", props)}
-              {console.log("pp1", fromdate?.length > 0 ? 1 : 0)}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>End Date :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    End Date :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.end_date == null ? (
                   <input
@@ -632,12 +869,13 @@ export default function TaskModal(props) {
                     name="end_date"
                     // defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
+                    min={
+                      fromdate?.length > 0 ? fromdate : props.data.start_date
+                    }
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-
                     required
-                  // onChange={e=>handleMinDate(e)}
+                    // onChange={e=>handleMinDate(e)}
                   />
                 ) : (
                   <input
@@ -646,12 +884,13 @@ export default function TaskModal(props) {
                     name="end_date"
                     defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
+                    min={
+                      fromdate?.length > 0 ? fromdate : props.data.start_date
+                    }
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-
                     required
-                  // onChange={e=>handleMinDate(e)}
+                    // onChange={e=>handleMinDate(e)}
                   />
                 )}
               </div>
@@ -660,7 +899,9 @@ export default function TaskModal(props) {
                 props.moduleSetting["RequiredHour"] == 1 && ( */}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Task Hours :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Task Hours :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.task_hours == null ? (
                   <input
@@ -671,7 +912,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 ) : (
                   <input
@@ -682,7 +923,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -693,7 +934,9 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Task Priority :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Task Priority :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
 
                 <select
@@ -819,7 +1062,9 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Assign to user :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Assign to user :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
 
                 {defaultUserData?.length > 0 && userData && (
@@ -859,7 +1104,7 @@ export default function TaskModal(props) {
                         .filter((d) => d.value == localStorage.getItem("id"))
                     }
                     isClearable
-                  // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -1059,6 +1304,3 @@ export default function TaskModal(props) {
     </>
   );
 }
-
-
-

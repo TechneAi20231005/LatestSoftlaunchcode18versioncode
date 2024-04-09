@@ -62,6 +62,7 @@ import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
 import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
 import { getUserForMyTicketsData } from "./MyTicketComponentAction";
 import { getRoles } from "../Dashboard/DashboardAction";
+import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -129,6 +130,7 @@ export default function EditTicketComponent({ match }) {
   const [confirmationModalDetails, setConfirmationModalDetails] =
     useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [ticketsData, setTicketsData] = useState([]);
 
   const [updateStatus, setUpdateStatus] = useState({});
   const [dateErr, setDateErr] = useState(null);
@@ -232,6 +234,8 @@ export default function EditTicketComponent({ match }) {
       }
     }
 
+    formData.append("parent_id", selectedOptionId);
+
     if (
       data.status_id == 3 &&
       proceed == false &&
@@ -284,6 +288,152 @@ export default function EditTicketComponent({ match }) {
           );
         });
     }
+  };
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const handleSelect = (label, ID) => {
+    setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    // closeAllDropdowns();
+  };
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
+    const [expanded, setExpanded] = useState(false);
+    const handleClick = (e) => {
+      setExpanded(!expanded);
+      onClick(label);
+      closeDropdown(); // Close the dropdown after clicking the option
+    };
+
+    return (
+      <div
+        style={{
+          padding: "8px",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        {label}
+        {expanded && options && (
+          <div style={{ marginLeft: "20px" }}>
+            {options.map((option) => (
+              <CustomOptionTicket
+                key={option.label}
+                label={option.label}
+                options={option.options}
+                onClick={onClick}
+                ID={option.ID}
+                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const CustomMenuListTicket = ({
+    options,
+    onSelect,
+    ID,
+    selectedOptionId,
+  }) => {
+    const [openOptions, setOpenOptions] = useState([]);
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const closeDropdown = () => {
+      setOpenOptions([]); // Close the dropdown by resetting openOptions
+    };
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const handleSelect = (label, ID, openOptions) => {
+      // Close all open options except the one that was just selected
+      setOpenOptions([]);
+      closeDropdown();
+      setIsMenuOpen(!isMenuOpen);
+      // Pass the label and ID to the provided onSelect function
+      onSelect(label, ID);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderBottom: "1px solid #ccc",
+              fontWeight:
+                option.label === "Primary" || option.options.length > 0
+                  ? "bold"
+                  : "normal",
+            }}
+          >
+            {option.options.length > 0 && (
+              <i
+                className="icofont-rounded-right"
+                style={{
+                  marginRight: "5px",
+                  cursor: "pointer",
+                }}
+                onClick={() => toggleOptions(option.label)}
+              ></i>
+            )}
+            <CustomOptionTicket
+              label={option.label}
+              options={option.options}
+              onClick={handleSelect}
+              ID={option.ID}
+              closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
+            />
+          </div>
+          {openOptions.includes(option.label) && option.options && (
+            <div style={{ marginLeft: "20px" }}>
+              {renderOptions(option.options)}
+            </div>
+          )}
+        </React.Fragment>
+      ));
+    };
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "0",
+              width: "100%", // Adjust the width here
+              maxHeight: "400px", // Adjust the maxHeight here
+              overflowY: "auto",
+              border: "1px solid #ccc", // Border style
+              borderWidth: "2px", // Border width
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px", // Border radius
+              borderBottomLeftRadius: "4px", // Border radius
+            }}
+          >
+            {renderOptions(options)}
+          </div>
+        )}
+      </>
+    );
   };
 
   const [selectedDropdown, setSelectedDropdown] = useState([]);
@@ -546,9 +696,52 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
+    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
+      if (res?.status === 200) {
+        setTicketsData(res?.data?.data);
+      }
+    });
+
     loadComments();
     setShowLoaderModal(false);
   };
+
+  function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the ticketData
+    ticketsData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformDataTicket(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the ticketData
+  const transformedOptionsTicket = transformDataTicket(ticketsData);
 
   const loadComments = async () => {
     setIsLoading(true);
@@ -967,7 +1160,7 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
-                    <div className="col-sm-4">
+                    {/* <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Parent : </b>
                       </label>
@@ -979,6 +1172,46 @@ export default function EditTicketComponent({ match }) {
                         readOnly
                         name="parent_id"
                       />
+                    </div> */}
+
+                    <div className="col-sm-3">
+                      <label className="col-form-label" readOnly={true}>
+                        Ticket Type Name: <Astrick color="red" size="13px" />
+                      </label>
+                      <div
+                        style={{
+                          position: "relative",
+                          display: "inline-block",
+                          width: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            padding: "8px",
+                            border: "1px solid #ccc",
+                            cursor: "pointer",
+                            width: "100%",
+                          }}
+                          onClick={(e) => handleSelectOptionClick(e)}
+                        >
+                          {selectedOption ? selectedOption : "Select an option"}
+                        </div>
+                        {isMenuOpen && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              width: "100%", // Set the width to 100% to match the parent's width
+                              top: "100%",
+                              zIndex: 999, // Adjust the z-index as needed
+                            }}
+                          >
+                            <CustomMenuListTicket
+                              options={transformedOptionsTicket}
+                              onSelect={(label, ID) => handleSelect(label, ID)}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="col-sm-4">
@@ -1189,6 +1422,10 @@ export default function EditTicketComponent({ match }) {
               {rows && rows.length > 0 && (
                 <div className="row">
                   {rows.map((data, index) => {
+                    {
+                      console.log("data", data);
+                    }
+
                     var range = "";
                     return (
                       <div className={`${data.inputWidth} mt-2`}>

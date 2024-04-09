@@ -35,7 +35,6 @@ export default function TaskData(props) {
   const isRegularisedData = props.data.regularized_data;
   const allData = props;
 
-
   const [userTypeData, setUserTypeData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +50,6 @@ export default function TaskData(props) {
   if (data.priority === "Very High") {
     priorityColor = "bg-danger";
   }
-
 
   // if((taskOwners.filter((d)=>d.is_started === "YES")) && userSessionData.id == taskOwners.filter((d)=>d.id))
 
@@ -151,9 +149,7 @@ export default function TaskData(props) {
   //Group Activity
   const [showGroupActivityModal, setShowGroupActivityModal] = useState(false);
   const showGroupActivity = (e, taskOwners, taskId, dataa) => {
-   
     setShowGroupActivityModal(true);
-    
   };
 
   const hideGroupActivity = (e, taskOwners, taskId, dataa) => {
@@ -330,7 +326,6 @@ export default function TaskData(props) {
           })}
       </div>
 
-
       <div className="d-flex justify-content-between mt-1">
         {props.data.taskOwnersId &&
           props.data.taskOwnersId.indexOf(
@@ -408,7 +403,7 @@ export default function TaskData(props) {
         {props.data.type == "GROUP_ACTIVITY" &&
           props.data.status !== "COMPLETED" && (
             <div>
-              {(timerState === "START" || timerState == null)   && (
+              {(timerState === "START" || timerState == null) && (
                 <button
                   type="button"
                   style={{
