@@ -109,6 +109,10 @@ export default function CreateTicketComponent() {
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
+
+
+  
+
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       const files = e.target.files;
