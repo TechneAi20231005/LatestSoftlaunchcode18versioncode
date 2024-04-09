@@ -109,32 +109,6 @@ export default function CreateTicketComponent() {
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     console.log("tempSelectedFile", tempSelectedFile);
-  //     for (var i = 0; i < e.target?.files?.length; i++) {
-  //       var file = e.target.files[i];
-  //       console.log("file", file);
-  //       var reader = new FileReader();
-  //       reader.onload = function (event) {
-  //         tempSelectedFile.push({
-  //           file: file,
-  //           fileName: file.name,
-  //           tempUrl: event.target.result,
-  //         });
-  //         setSelectedFiles(tempSelectedFile);
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   } else if (type === "DELETE") {
-  //     fileInputRef.current.value = "";
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       const files = e.target.files;
@@ -1218,7 +1192,6 @@ export default function CreateTicketComponent() {
                         />
                       )} */}
 
-                 
                       {data.inputType === "select" && (
                         <select
                           id={
