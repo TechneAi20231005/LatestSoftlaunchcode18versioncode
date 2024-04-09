@@ -1186,6 +1186,7 @@ export default function EditTicketComponent({ match }) {
                 </div>
               )}
 
+              {console.log(data)}
               {rows && rows.length > 0 && (
                 <div className="row">
                   {rows.map((data, index) => {

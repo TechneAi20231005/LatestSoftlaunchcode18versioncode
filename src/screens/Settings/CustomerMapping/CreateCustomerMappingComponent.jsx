@@ -40,7 +40,6 @@ export default function CreateCustomerMappingComponent() {
 
   const [customerType, setCustomerType] = useState();
 
-
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
 
@@ -114,11 +113,7 @@ export default function CreateCustomerMappingComponent() {
   const priority = ["Low", "Medium", "High", "Very High"];
 
   const loadData = async () => {
-    
-
     await getDynamicForm();
-
-   
   };
 
   const getDynamicForm = async () => {
@@ -201,9 +196,12 @@ export default function CreateCustomerMappingComponent() {
       }
     });
   };
+  const [customerTypedd, setCustomerTypedd] = useState("");
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
+    console.log("e", e);
+    setCustomerTypedd(e);
     var value = type == "Select2" ? e.value : e.target.value;
     if (nameField == "approach" && value != data.approach) {
       setDepartmentDropdown(null);
@@ -265,15 +263,11 @@ export default function CreateCustomerMappingComponent() {
       }
     }
     setRatioTotal(sum);
-
-  
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-
-  
 
     var flag = 1;
     if (data.approach == "RW") {
@@ -339,11 +333,9 @@ export default function CreateCustomerMappingComponent() {
       dispatch(getRoles());
     }
     if (!customerTypeDropdown.length) {
-
     }
-  
+
     if (!templateDropdown.length) {
-     
     }
   }, []);
 
@@ -480,8 +472,6 @@ export default function CreateCustomerMappingComponent() {
                   </div>
                 </div>
 
-               
-
                 <div className="row mt-2">
                   <div className="col-sm-2">
                     <label className="col-form-label">
@@ -565,7 +555,9 @@ export default function CreateCustomerMappingComponent() {
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
-                      <option value="SELF">Self</option>
+                      <option value="SELF" hidden={customerTypedd}>
+                        Self
+                      </option>
                       <option value="AU">Assign to user</option>
                     </select>
                   </div>

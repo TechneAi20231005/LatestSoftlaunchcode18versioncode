@@ -18,7 +18,6 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 
 import Dropdown from "react-bootstrap/Dropdown";
 
-
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
@@ -973,7 +972,7 @@ function QueryTypeComponent() {
                       required={true}
                     />
                   </div>
-                  <div className="col-sm-12">
+                  {/* <div className="col-sm-12">
                     <label className="form-label font-weight-bold">
                       Select Customer :
                     </label>
@@ -989,7 +988,7 @@ function QueryTypeComponent() {
                         )
                       }
                     />
-                  </div>
+                  </div> */}
 
                   <div className="row mt-3">
                     <div className="col-md-10">
