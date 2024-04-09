@@ -278,6 +278,7 @@ export default function ViewTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
+                        {console.log("data", data)}
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
@@ -318,7 +319,7 @@ export default function ViewTicketComponent({ match }) {
                               }
                               // onChange={dynamicChangeHandle}
                               // value={dateValue}
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               // format={data.inputFormat}
                               style={{ width: "100%" }}
                             />
@@ -336,7 +337,7 @@ export default function ViewTicketComponent({ match }) {
                                   ? true
                                   : false
                               }
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -353,17 +354,13 @@ export default function ViewTicketComponent({ match }) {
                             }
                             readOnly
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             className="form-control form-control-sm"
                           />
                         )}
 
-
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                              console.log("radio==", d.value);
-                              console.log("radio=== ", data.inputDefaultValue);
-
                               return (
                                 <div>
                                   <input
@@ -435,7 +432,7 @@ export default function ViewTicketComponent({ match }) {
 
                             // }
 
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             required={
                               data.inputMandatory == true ? true : false
                             }
@@ -458,7 +455,7 @@ export default function ViewTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
                             maxLength={parseInt(data.inputAddOn.inputRangeMax)}
@@ -483,8 +480,6 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )} */}
 
-
-
                         {data.inputType === "select" && (
                           <select
                             id={
@@ -495,7 +490,7 @@ export default function ViewTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -528,7 +523,7 @@ export default function ViewTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >

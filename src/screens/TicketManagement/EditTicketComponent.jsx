@@ -1189,7 +1189,10 @@ export default function EditTicketComponent({ match }) {
               {rows && rows.length > 0 && (
                 <div className="row">
                   {rows.map((data, index) => {
+                    console.log("datadynamic", data);
+
                     var range = "";
+
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
                         <label>
@@ -1260,7 +1263,7 @@ export default function EditTicketComponent({ match }) {
                                   : false
                               }
                               readOnly
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1278,7 +1281,7 @@ export default function EditTicketComponent({ match }) {
                               }
                               readOnly
                               onChange={dynamicChangeHandle}
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1297,7 +1300,7 @@ export default function EditTicketComponent({ match }) {
                             readOnly
                             name={data.inputName}
                             defaultValue={
-                              data.inputDefaultValue
+                              data.value
                               // selectedDropdown
                               //   ? selectedDropdown[data.inputName]
                               //   : ""
@@ -1325,7 +1328,7 @@ export default function EditTicketComponent({ match }) {
                                     value={d.value}
                                     onChange={handleRadioChange}
                                     defaultChecked={
-                                      d.value == data.inputDefaultValue
+                                      d.value == data.value
                                     }
                                     name={data.inputName}
                                     className="mx-2"
@@ -1357,7 +1360,7 @@ export default function EditTicketComponent({ match }) {
                                     value={d.value}
                                     onChange={handleCheckBoxChange}
                                     defaultChecked={
-                                      d.value == data.inputDefaultValue
+                                      d.value == data.value
                                     }
                                     name={data.inputName}
                                     className="mx-2"
@@ -1381,7 +1384,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             required={
                               data.inputMandatory == true ? true : false
                             }
@@ -1406,7 +1409,7 @@ export default function EditTicketComponent({ match }) {
                               data.inputMandatory == true ? true : false
                             }
                             readOnly
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -1452,7 +1455,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -1520,7 +1523,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             disabled
                             className="form-control form-control-sm"
