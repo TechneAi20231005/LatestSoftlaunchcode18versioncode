@@ -66,9 +66,6 @@ export default class SprintService {
       config
     );
   }
-
-  // http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/createSprint/5
-
   updateSprintDetail(payload, sprint_id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
