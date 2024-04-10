@@ -499,14 +499,7 @@ export default function CreateTicketComponent() {
 
     dispatch(getRoles());
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
-    //     }
-    //   }
-    // });
+ 
   };
 
   const handleDownloadFormat = async (e) => {

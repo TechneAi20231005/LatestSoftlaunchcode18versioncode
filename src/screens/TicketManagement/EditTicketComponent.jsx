@@ -1628,58 +1628,58 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
+
               <div
                 className="d-flex justify-content-start mt-2"
                 style={{ overflowX: "auto" }}
               >
-                {attachment &&
-                  attachment.map((attach, index) => {
-                    return (
+                {data.attachment &&
+                  data.attachment.map((attach, index) => (
+                    <div
+                      className="justify-content-start"
+                      key={index}
+                      style={{
+                        marginRight: "20px",
+                        padding: "0px",
+                        width: "200px",
+                      }}
+                    >
                       <div
-                        className="justify-content-start"
-                        style={{
-                          marginRight: "20px",
-                          padding: "0px",
-                          width: "200px",
-                        }}
+                        className="card"
+                        style={{ backgroundColor: "#EBF5FB" }}
                       >
-                        <div
-                          className="card"
-                          style={{ backgroundColor: "#EBF5FB" }}
-                        >
-                          <div className="card-header">
-                            <p style={{ fontSize: "12px" }}>
-                              <b>{attach.name}</b>
-                            </p>
-                            <div className="d-flex justify-content-end p-0">
-                              <a
-                                href={`${_attachmentUrl + "/" + attach.path}`}
-                                target="_blank"
-                                className="btn btn-warning btn-sm p-0 px-1"
-                              >
-                                <i
-                                  className="icofont-download"
-                                  style={{ fontSize: "12px", height: "15px" }}
-                                ></i>
-                              </a>
-                              <button
-                                className="btn btn-danger text-white btn-sm p-0 px-1"
-                                type="button"
-                                onClick={(e) => {
-                                  handleDeleteAttachment(e, attach.id);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "12px" }}
-                                ></i>
-                              </button>
-                            </div>
+                        <div className="card-header">
+                          <p style={{ fontSize: "12px" }}>
+                            <b>{attach.name}</b>
+                          </p>
+                          <div className="d-flex justify-content-end p-0">
+                            <a
+                              href={`${_attachmentUrl + "/" + attach.path}`}
+                              target="_blank"
+                              className="btn btn-warning btn-sm p-0 px-1"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "12px", height: "15px" }}
+                              ></i>
+                            </a>
+                            <button
+                              className="btn btn-danger text-white btn-sm p-0 px-1"
+                              type="button"
+                              onClick={(e) =>
+                                handleDeleteAttachment(e, attach.id)
+                              }
+                            >
+                              <i
+                                className="icofont-ui-delete"
+                                style={{ fontSize: "12px" }}
+                              ></i>
+                            </button>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
               </div>
 
               <div className="mt-3" style={{ textAlign: "right" }}>

@@ -29,7 +29,7 @@ export default function ViewTicketComponent({ match }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState(null);
- 
+
   const roleId = sessionStorage.getItem("role_id");
   const [isSolved, setIsSolved] = useState(false);
   const [chart, setChart] = useState(null);
@@ -43,7 +43,6 @@ export default function ViewTicketComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
   );
-
 
   const loadData = async () => {
     await new MyTicketService().getGanttChart(ticketId).then((res) => {
@@ -88,8 +87,6 @@ export default function ViewTicketComponent({ match }) {
     });
 
     dispatch(getRoles());
-
-
   };
 
   const loadComments = async () => {
@@ -203,7 +200,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-         
+
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
@@ -268,7 +265,7 @@ export default function ViewTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-                      
+
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
@@ -557,7 +554,7 @@ export default function ViewTicketComponent({ match }) {
               </div>
             </div>
           </div>
-
+         
           <div className="row g-3 ">
             <div className="col-lg-6 col-md-6">
               {/* <AttechedCard data={BugImageAttechedData} /> */}
@@ -569,41 +566,40 @@ export default function ViewTicketComponent({ match }) {
               <div className="card mb-3">
                 <div className="card-body">
                   <h6 className="fw-bold mb-3 text-danger">Attachments</h6>
-                  {/* <Attachment refId={data ? data.id : ""}/> */}
-                  {attachment && (
+                  {data?.attachment && data?.attachment.length > 0 ? (
                     <div className="flex-grow-1">
-                      {attachment.map((data, i) => {
-                        return (
-                          <div
-                            key={"cuhdus" + i}
-                            className=" d-flex align-items-center border-bottom"
-                          >
-                            <div className="d-flex ms-3 align-items-center flex-fill">
-                              <span
-                                className={`avatar lg fw-bold  rounded-circle text-center d-flex align-items-center justify-content-center`}
-                              >
-                                {i + 1}
-                              </span>
-                              <div className="d-flex flex-column ">
-                                <h6 className="fw-bold mb-0 small-14">
-                                  {data.name}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="mr-1">
-                              <a
-                                href={`${_attachmentUrl}${data.path}`}
-                                target="_blank"
-                                download
-                                className="btn btn-primary btn-sm"
-                              >
-                                <i class="icofont-download"></i> Download
-                              </a>
+                      {data?.attachment.map((attachment, index) => (
+                        <div
+                          key={`attachment_${attachment?.id}`}
+                          className="d-flex align-items-center border-bottom"
+                        >
+                          <div className="d-flex ms-3 align-items-center flex-fill">
+                            <span
+                              className={`avatar lg fw-bold rounded-circle text-center d-flex align-items-center justify-content-center`}
+                            >
+                              {index + 1}
+                            </span>
+                            <div className="d-flex flex-column">
+                              <h6 className="fw-bold mb-0 small-14">
+                                {attachment?.name}
+                              </h6>
                             </div>
                           </div>
-                        );
-                      })}
+                          <div className="mr-1">
+                            <a
+                              href={`${_attachmentUrl}${attachment?.path}`}
+                              target="_blank"
+                              download
+                              className="btn btn-primary btn-sm"
+                            >
+                              <i className="icofont-download"></i> Download
+                            </a>
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                  ) : (
+                    <p>No attachments found.</p>
                   )}
                 </div>
               </div>
