@@ -246,6 +246,7 @@ export default function TaskComponent({ match }) {
     };
     if (id) {
       await getTaskData(id).then((res) => {
+        console.log("res==>", res);
         if (res.status === 200) {
           if (res.data.status === 1) {
             temp = res.data.data;
