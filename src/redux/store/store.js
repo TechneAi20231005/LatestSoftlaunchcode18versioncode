@@ -43,6 +43,7 @@ import remarkMasterSlice from '../slices/hrms/employeeJoining/remarkMaster';
 import salaryMasterSlice from '../slices/hrms/employeeJoining/salaryMaster';
 import interviewMasterSlice from '../slices/hrms/employeeJoining/interviewListMaster';
 import candidatesMasterSlice from '../slices/hrms/employeeJoining/candidatesListMaster';
+import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 
 export const store = configureStore({
   reducer: {
@@ -85,6 +86,7 @@ export const store = configureStore({
     salaryMaster: salaryMasterSlice,
     interviewMaster: interviewMasterSlice,
     candidatesMaster: candidatesMasterSlice,
+    candidatesFollowUp: candidatesFollowUpSlice,
   },
 
   middleware: getDefaultMiddleware =>
