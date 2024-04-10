@@ -1,8 +1,6 @@
 import axios from "axios";
 import { attachmentUrl } from "../../settings/constants";
-
-const _URL = attachmentUrl;
-
+const _URL = `${_attachmentUrl}/public/api/`;
 export function getAttachment(id, type) {
   if (id) {
     const token = localStorage.getItem("jwt_token");
