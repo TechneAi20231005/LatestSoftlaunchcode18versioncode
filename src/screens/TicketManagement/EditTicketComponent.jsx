@@ -801,6 +801,7 @@ export default function EditTicketComponent({ match }) {
                 value={data.object_id}
                 readOnly={true}
               />
+
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row d-flex justify-content-between">
@@ -1190,6 +1191,7 @@ export default function EditTicketComponent({ match }) {
                 <div className="row">
                   {rows.map((data, index) => {
                     var range = "";
+
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
                         <label>
@@ -1260,7 +1262,7 @@ export default function EditTicketComponent({ match }) {
                                   : false
                               }
                               readOnly
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1278,7 +1280,7 @@ export default function EditTicketComponent({ match }) {
                               }
                               readOnly
                               onChange={dynamicChangeHandle}
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1297,7 +1299,7 @@ export default function EditTicketComponent({ match }) {
                             readOnly
                             name={data.inputName}
                             defaultValue={
-                              data.inputDefaultValue
+                              data.value
                               // selectedDropdown
                               //   ? selectedDropdown[data.inputName]
                               //   : ""
@@ -1324,9 +1326,7 @@ export default function EditTicketComponent({ match }) {
                                     // }
                                     value={d.value}
                                     onChange={handleRadioChange}
-                                    defaultChecked={
-                                      d.value == data.inputDefaultValue
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -1356,9 +1356,7 @@ export default function EditTicketComponent({ match }) {
                                     }
                                     value={d.value}
                                     onChange={handleCheckBoxChange}
-                                    defaultChecked={
-                                      d.value == data.inputDefaultValue
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
@@ -1381,7 +1379,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             required={
                               data.inputMandatory == true ? true : false
                             }
@@ -1406,7 +1404,7 @@ export default function EditTicketComponent({ match }) {
                               data.inputMandatory == true ? true : false
                             }
                             readOnly
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -1452,7 +1450,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -1520,7 +1518,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             disabled
                             className="form-control form-control-sm"
@@ -1630,58 +1628,58 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
+
               <div
                 className="d-flex justify-content-start mt-2"
                 style={{ overflowX: "auto" }}
               >
-                {attachment &&
-                  attachment.map((attach, index) => {
-                    return (
+                {data.attachment &&
+                  data.attachment.map((attach, index) => (
+                    <div
+                      className="justify-content-start"
+                      key={index}
+                      style={{
+                        marginRight: "20px",
+                        padding: "0px",
+                        width: "200px",
+                      }}
+                    >
                       <div
-                        className="justify-content-start"
-                        style={{
-                          marginRight: "20px",
-                          padding: "0px",
-                          width: "200px",
-                        }}
+                        className="card"
+                        style={{ backgroundColor: "#EBF5FB" }}
                       >
-                        <div
-                          className="card"
-                          style={{ backgroundColor: "#EBF5FB" }}
-                        >
-                          <div className="card-header">
-                            <p style={{ fontSize: "12px" }}>
-                              <b>{attach.name}</b>
-                            </p>
-                            <div className="d-flex justify-content-end p-0">
-                              <a
-                                href={`${_attachmentUrl + "/" + attach.path}`}
-                                target="_blank"
-                                className="btn btn-warning btn-sm p-0 px-1"
-                              >
-                                <i
-                                  className="icofont-download"
-                                  style={{ fontSize: "12px", height: "15px" }}
-                                ></i>
-                              </a>
-                              <button
-                                className="btn btn-danger text-white btn-sm p-0 px-1"
-                                type="button"
-                                onClick={(e) => {
-                                  handleDeleteAttachment(e, attach.id);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "12px" }}
-                                ></i>
-                              </button>
-                            </div>
+                        <div className="card-header">
+                          <p style={{ fontSize: "12px" }}>
+                            <b>{attach.name}</b>
+                          </p>
+                          <div className="d-flex justify-content-end p-0">
+                            <a
+                              href={`${_attachmentUrl + "/" + attach.path}`}
+                              target="_blank"
+                              className="btn btn-warning btn-sm p-0 px-1"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "12px", height: "15px" }}
+                              ></i>
+                            </a>
+                            <button
+                              className="btn btn-danger text-white btn-sm p-0 px-1"
+                              type="button"
+                              onClick={(e) =>
+                                handleDeleteAttachment(e, attach.id)
+                              }
+                            >
+                              <i
+                                className="icofont-ui-delete"
+                                style={{ fontSize: "12px" }}
+                              ></i>
+                            </button>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
               </div>
 
               <div className="mt-3" style={{ textAlign: "right" }}>
