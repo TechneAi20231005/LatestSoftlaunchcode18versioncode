@@ -273,7 +273,7 @@ export default function TaskData(props) {
           {data.status !== "COMPLETED" && (
             <h6 className="mb-0 fw-bold fs-6 mb-2" style={{ fontSize: "10px" }}>
               {" "}
-              {data.task_name.length < 50
+              {data?.task_name?.length < 50
                 ? data.task_name
                 : data.task_name.substring(0, 40) + "...."}
             </h6>
@@ -281,7 +281,7 @@ export default function TaskData(props) {
           {data.status === "COMPLETED" && (
             <strike>
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {data.task_name.length < 50
+                {data?.task_name?.length < 50
                   ? data.task_name
                   : data.task_name.substring(0, 40) + "...."}
               </h6>
@@ -290,7 +290,7 @@ export default function TaskData(props) {
         </div>
       </div>
       <div className="d-flex justify-content-start">
-        {data.taskOwners &&
+        {data?.taskOwners &&
           data.taskOwners.length > 7 &&
           data.taskOwners
             .filter((d, i) => i < 7)

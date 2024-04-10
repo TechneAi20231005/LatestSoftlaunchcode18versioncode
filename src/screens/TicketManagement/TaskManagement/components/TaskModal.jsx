@@ -236,7 +236,7 @@ export default function TaskModal(props) {
     // });
 
     setFilteredOptions(
-      props.taskDropdown.filter((d) => d.value != props.data.id)
+      props?.taskDropdown?.filter((d) => d.value != props.data.id)
     );
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
@@ -375,7 +375,7 @@ export default function TaskModal(props) {
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
-      const selectedFilesCount = selectedFile.length;
+      const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
 
       // Calculate the total size of video files in the existing selected files
@@ -391,7 +391,7 @@ export default function TaskModal(props) {
           show_to_project_owner: 0,
         }));
 
-      if (newFiles.length === 0) {
+      if (newFiles?.length === 0) {
         // All available slots already used
         alert("You can only upload a maximum of 5 files.");
       } else {
@@ -454,7 +454,7 @@ export default function TaskModal(props) {
     formData.delete("show_to_customer[]");
     formData.delete("show_to_project_owner[]");
     if (selectedFile) {
-      for (var i = 0; i < selectedFile.length; i++) {
+      for (var i = 0; i < selectedFile?.length; i++) {
         formData.append("attachment[]", selectedFile[i].file);
 
         formData.append("show_to_customer[]", selectedFile[i].show_to_customer);
@@ -710,6 +710,7 @@ export default function TaskModal(props) {
                 )}
               </div>
             </div>
+            {console.log("props==>", props.data)}
 
             <div>
               <label className="form-label font-weight-bold" readOnly={true}>

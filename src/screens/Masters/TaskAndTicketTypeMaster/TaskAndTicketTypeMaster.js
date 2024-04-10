@@ -95,8 +95,115 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
 
 //for task type created CustomMenuList function
 
-const CustomMenuList = ({ options, onSelect, ID }) => {
+// const CustomMenuList = ({ options, onSelect, ID }) => {
+//   const [openOptions, setOpenOptions] = useState([]);
+
+//   const toggleOptions = (label) => {
+//     if (openOptions.includes(label)) {
+//       setOpenOptions(openOptions.filter((item) => item !== label));
+//     } else {
+//       setOpenOptions([...openOptions, label]);
+//     }
+//   };
+
+//   const closeDropdown = () => {
+//     setOpenOptions([]); // Close the dropdown by resetting openOptions
+//   };
+
+//   // const handleSelect = (label, ID) => {
+//   //   onSelect(label, ID); // Pass the label and ID to the provided onSelect function
+//   // };
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+//   const handleSelect = (label, ID, openOptions) => {
+//     // Close all open options except the one that was just selected
+//     setOpenOptions([]);
+//     closeDropdown();
+//     setIsMenuOpen(!isMenuOpen);
+//     // Pass the label and ID to the provided onSelect function
+//     onSelect(label, ID);
+//   };
+
+//   const renderOptions = (options) => {
+//     return options.map((option) => (
+//       <React.Fragment key={option.label}>
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             borderBottom: "1px solid #ccc",
+//             fontWeight:
+//               option.label === "Primary" || option.options.length > 0
+//                 ? "bold"
+//                 : "normal",
+//           }}
+//         >
+//           {option.options.length > 0 && (
+//             <i
+//               className="icofont-rounded-right"
+//               style={{ marginRight: "5px", cursor: "pointer" }}
+//               onClick={() => toggleOptions(option.label)}
+//             ></i>
+//           )}
+
+//           <CustomOption
+//             label={option.label}
+//             options={option.options}
+//             onClick={handleSelect}
+//             openOptions={options}
+//             isMenuOpen={isMenuOpen}
+//             ID={option.ID}
+//             closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
+//           />
+//         </div>
+//         {openOptions &&
+//           openOptions.length > 0 &&
+//           openOptions.includes(option.label) &&
+//           option.options && (
+//             <div style={{ marginLeft: "20px" }}>
+//               {renderOptions(option.options)}
+//             </div>
+//           )}
+//       </React.Fragment>
+//     ));
+//   };
+
+//   return (
+//     <>
+//       {isMenuOpen === false && (
+//         <div
+//           style={{
+//             position: "absolute",
+//             top: "100%",
+//             left: "0",
+//             width: "100%", // Adjust the width here
+//             maxHeight: "400px", // Adjust the maxHeight here
+//             overflowY: "auto",
+//             border: "1px solid #ccc", // Border style
+//             borderWidth: "2px", // Border width
+//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+//             backgroundColor: "white",
+//             borderBottomRightRadius: "4px", // Border radius
+//             borderBottomLeftRadius: "4px", // Border radius
+//           }}
+//         >
+//           {renderOptions(options)}
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+const CustomMenuList = ({ options, onSelect }) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [openOptions, setOpenOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setOpenOptions(true);
+    }
+  };
 
   const toggleOptions = (label) => {
     if (openOptions.includes(label)) {
@@ -106,24 +213,31 @@ const CustomMenuList = ({ options, onSelect, ID }) => {
     }
   };
 
-  const closeDropdown = () => {
-    setOpenOptions([]); // Close the dropdown by resetting openOptions
-  };
-
-  // const handleSelect = (label, ID) => {
-  //   onSelect(label, ID); // Pass the label and ID to the provided onSelect function
-  // };
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleSelect = (label, ID, openOptions) => {
-    // Close all open options except the one that was just selected
-    setOpenOptions([]);
-    closeDropdown();
-    setIsMenuOpen(!isMenuOpen);
-    // Pass the label and ID to the provided onSelect function
+  const handleSelect = (label, ID) => {
+    setSelectedOption(label);
     onSelect(label, ID);
+    setOpenOptions([]);
+    setIsMenuOpen(!isMenuOpen);
   };
 
+  // Filter options based on search term
+  // const filteredOptions = options.filter((option) =>
+  //   option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const filterOptions = (options, term) => {
+    return options.filter((option) => {
+      const lowerCaseTerm = term.toLowerCase();
+      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const matchChildOptions =
+        option.options && option.options.length > 0
+          ? filterOptions(option.options, term).length > 0
+          : false;
+
+      return matchLabel || matchChildOptions;
+    });
+  };
+
+  const filteredOptions = filterOptions(options, searchTerm);
   const renderOptions = (options) => {
     return options.map((option) => (
       <React.Fragment key={option.label}>
@@ -146,15 +260,12 @@ const CustomMenuList = ({ options, onSelect, ID }) => {
             ></i>
           )}
 
-          <CustomOption
-            label={option.label}
-            options={option.options}
-            onClick={handleSelect}
-            openOptions={options}
-            isMenuOpen={isMenuOpen}
-            ID={option.ID}
-            closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
-          />
+          <div
+            onClick={() => handleSelect(option.label, option.ID)}
+            style={{ cursor: "pointer" }}
+          >
+            {option.label}
+          </div>
         </div>
         {openOptions &&
           openOptions.length > 0 &&
@@ -173,9 +284,7 @@ const CustomMenuList = ({ options, onSelect, ID }) => {
       {isMenuOpen === false && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: "0",
+            position: "relative",
             width: "100%", // Adjust the width here
             maxHeight: "400px", // Adjust the maxHeight here
             overflowY: "auto",
@@ -186,8 +295,21 @@ const CustomMenuList = ({ options, onSelect, ID }) => {
             borderBottomRightRadius: "4px", // Border radius
             borderBottomLeftRadius: "4px", // Border radius
           }}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
         >
-          {renderOptions(options)}
+          <input
+            type="text"
+            placeholder="Search..."
+            style={{
+              padding: "8px",
+              border: "none",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {renderOptions(filteredOptions)}
         </div>
       )}
     </>
@@ -196,9 +318,102 @@ const CustomMenuList = ({ options, onSelect, ID }) => {
 
 //for ticket type created CustomMenuListTicket  function
 
-const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
-  const [openOptions, setOpenOptions] = useState([]);
+// const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
+//   const [openOptions, setOpenOptions] = useState([]);
 
+//   const toggleOptions = (label) => {
+//     if (openOptions.includes(label)) {
+//       setOpenOptions(openOptions.filter((item) => item !== label));
+//     } else {
+//       setOpenOptions([...openOptions, label]);
+//     }
+//   };
+
+//   const closeDropdown = () => {
+//     setOpenOptions([]); // Close the dropdown by resetting openOptions
+//   };
+
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+//   const handleSelect = (label, ID, openOptions) => {
+//     // Close all open options except the one that was just selected
+//     setOpenOptions([]);
+//     closeDropdown();
+//     setIsMenuOpen(!isMenuOpen);
+//     // Pass the label and ID to the provided onSelect function
+//     onSelect(label, ID);
+//   };
+//   const renderOptions = (options) => {
+//     return options.map((option) => (
+//       <React.Fragment key={option.label}>
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             borderBottom: "1px solid #ccc",
+//             fontWeight:
+//               option.label === "Primary" || option.options.length > 0
+//                 ? "bold"
+//                 : "normal",
+//           }}
+//         >
+//           {option.options.length > 0 && (
+//             <i
+//               className="icofont-rounded-right"
+//               style={{
+//                 marginRight: "5px",
+//                 cursor: "pointer",
+//               }}
+//               onClick={() => toggleOptions(option.label)}
+//             ></i>
+//           )}
+//           <CustomOptionTicket
+//             label={option.label}
+//             options={option.options}
+//             onClick={handleSelect}
+//             ID={option.ID}
+//             closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
+//           />
+//         </div>
+//         {openOptions.includes(option.label) && option.options && (
+//           <div style={{ marginLeft: "20px" }}>
+//             {renderOptions(option.options)}
+//           </div>
+//         )}
+//       </React.Fragment>
+//     ));
+//   };
+
+//   return (
+//     <>
+//       {isMenuOpen === false && (
+//         <div
+//           style={{
+//             position: "absolute",
+//             top: "100%",
+//             left: "0",
+//             width: "100%", // Adjust the width here
+//             maxHeight: "400px", // Adjust the maxHeight here
+//             overflowY: "auto",
+//             border: "1px solid #ccc", // Border style
+//             borderWidth: "2px", // Border width
+//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+//             backgroundColor: "white",
+//             borderBottomRightRadius: "4px", // Border radius
+//             borderBottomLeftRadius: "4px", // Border radius
+//           }}
+//         >
+//           {renderOptions(options)}
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openOptions, setOpenOptions] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleOptions = (label) => {
     if (openOptions.includes(label)) {
       setOpenOptions(openOptions.filter((item) => item !== label));
@@ -211,16 +426,33 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
     setOpenOptions([]); // Close the dropdown by resetting openOptions
   };
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleSelect = (label, ID, openOptions) => {
+  const handleSelect = (label, ID) => {
     // Close all open options except the one that was just selected
     setOpenOptions([]);
     closeDropdown();
-    setIsMenuOpen(!isMenuOpen);
     // Pass the label and ID to the provided onSelect function
     onSelect(label, ID);
+    setIsMenuOpen(!isMenuOpen);
   };
+
+  // Search function for nested options
+  const searchOptions = (options, term) => {
+    let results = [];
+    for (const option of options) {
+      if (option.label.toLowerCase().includes(term.toLowerCase())) {
+        results.push(option);
+      }
+      if (option.options && option.options.length > 0) {
+        const nestedResults = searchOptions(option.options, term);
+        results = results.concat(nestedResults);
+      }
+    }
+    return results;
+  };
+
+  // Filter options based on search term
+  const filteredOptions = searchOptions(options, searchTerm);
+
   const renderOptions = (options) => {
     return options.map((option) => (
       <React.Fragment key={option.label}>
@@ -281,7 +513,18 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
             borderBottomLeftRadius: "4px", // Border radius
           }}
         >
-          {renderOptions(options)}
+          <input
+            type="text"
+            placeholder="Search..."
+            style={{
+              padding: "8px",
+              border: "none",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {renderOptions(filteredOptions)}
         </div>
       )}
     </>
@@ -664,6 +907,13 @@ function TaskAndTicketTypeMaster(props) {
   ];
   const searchRef = useRef();
 
+  const handleReset = () => {
+    setSearchTerm(""); // Clear the search term state
+    if (searchRef.current) {
+      searchRef.current.value = ""; // Clear the input field value
+    }
+  };
+
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -827,7 +1077,8 @@ function TaskAndTicketTypeMaster(props) {
             <button
               className="btn btn-sm btn-info text-white"
               type="button"
-              onClick={() => window.location.reload(false)}
+              // onClick={() => window.location.reload(false)}
+              onClick={handleReset}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-refresh text-white"></i> Reset
