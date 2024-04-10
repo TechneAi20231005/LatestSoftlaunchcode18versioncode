@@ -1,5 +1,5 @@
 import axios from "axios";
-import { attachmentUrl } from "../../settings/constants";
+import { _attachmentUrl } from "../../settings/constants";
 const _URL = `${_attachmentUrl}/public/api/`;
 export function getAttachment(id, type) {
   if (id) {
