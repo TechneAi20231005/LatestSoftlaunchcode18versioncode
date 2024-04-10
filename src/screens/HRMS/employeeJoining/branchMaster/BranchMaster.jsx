@@ -21,7 +21,7 @@ function BranchMaster() {
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
-  const [addEditBranchModal, setAddEditCandidateModal] = useState({
+  const [addEditBranchModal, setAddEditBranchModal] = useState({
     type: '',
     data: '',
     open: false,
@@ -34,63 +34,71 @@ function BranchMaster() {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
+      width: '100px',
     },
     {
       name: 'Action',
       selector: row => (
         <i
           className="icofont-edit text-primary cp"
-          onClick={() => setAddEditCandidateModal({ type: 'EDIT', data: row, open: true })}
+          onClick={() => setAddEditBranchModal({ type: 'EDIT', data: row, open: true })}
         />
       ),
       sortable: false,
+      width: '100px',
     },
     {
       name: 'Branch Name',
       sortable: true,
       selector: row => row?.location_name || '--',
+      width: '200px',
     },
     {
       name: 'Status',
       selector: row => <StatusBadge status={row?.is_active} />,
       sortable: true,
+      width: '100px',
     },
     {
       name: 'Remark',
       sortable: true,
-      selector: row => row?.remark || '--',
-      // selector: row =>
-      //   row?.remark ? (
-      //     <OverlayTrigger
-      //       placement="top"
-      //       overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
-      //     >
-      //       <span>{row?.remark || '--'}</span>
-      //     </OverlayTrigger>
-      //   ) : (
-      //     '--'
-      //   ),
+      selector: row =>
+        row?.remark ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+          >
+            <span>{row?.remark || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      width: '300px',
     },
     {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
+      width: '150px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
+      width: '150px',
     },
   ];
 
@@ -143,7 +151,7 @@ function BranchMaster() {
             return (
               <button
                 className="btn btn-dark px-5"
-                onClick={() => setAddEditCandidateModal({ type: 'ADD', data: '', open: true })}
+                onClick={() => setAddEditBranchModal({ type: 'ADD', data: '', open: true })}
               >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Branch
@@ -194,7 +202,7 @@ function BranchMaster() {
         show={addEditBranchModal?.open}
         type={addEditBranchModal?.type}
         currentBranchData={addEditBranchModal?.data}
-        close={prev => setAddEditCandidateModal({ ...prev, open: false })}
+        close={prev => setAddEditBranchModal({ ...prev, open: false })}
       />
     </>
   );

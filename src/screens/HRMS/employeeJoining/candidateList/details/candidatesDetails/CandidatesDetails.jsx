@@ -12,6 +12,7 @@ import { RenderIf } from '../../../../../../utils';
 import CandidateEditHistory from './CandidateEditHistory';
 import { editCandidatesValidation } from './validation/editCandidatesDetails';
 import CustomAlertModal from '../../../../../../components/custom/modal/CustomAlertModal';
+import { NumbersOnly } from '../../../../../../components/Utilities/Validation';
 
 function CandidatesDetails() {
   // // local state
@@ -62,8 +63,8 @@ function CandidatesDetails() {
                     disabled={currentMode === 'VIEW'}
                     component={CustomInput}
                     name="fullName"
-                    label="Full Name"
-                    placeholder="Enter Full Name"
+                    label="Full name"
+                    placeholder="Enter full name"
                     requiredField
                   />
                 </Col>
@@ -83,7 +84,7 @@ function CandidatesDetails() {
                     options={preferredRole}
                     component={CustomReactSelect}
                     name="preferredRole"
-                    label="Preferred Role"
+                    label="Preferred role"
                     placeholder="Select"
                     requiredField
                     isMulti
@@ -97,7 +98,7 @@ function CandidatesDetails() {
                     options={preferredLocation}
                     component={CustomReactSelect}
                     name="preferredLocation"
-                    label="Preferred Location"
+                    label="Preferred location"
                     placeholder="Select"
                     requiredField
                     isMulti
@@ -108,7 +109,7 @@ function CandidatesDetails() {
                     disabled={currentMode === 'VIEW'}
                     component={CustomInput}
                     name="phoneNumber"
-                    label="Phone Number"
+                    label="Phone number"
                     placeholder="Enter contact number"
                     requiredField
                     type="number"
@@ -118,6 +119,7 @@ function CandidatesDetails() {
                   <Field
                     disabled={currentMode === 'VIEW'}
                     component={CustomCurrencyInput}
+                    onKeyDown={NumbersOnly}
                     name="currentMonthlySalary"
                     label="Current monthly salary"
                     placeholder="Enter current monthly salary"
@@ -130,6 +132,7 @@ function CandidatesDetails() {
                   <Field
                     disabled={currentMode === 'VIEW'}
                     component={CustomCurrencyInput}
+                    onKeyDown={NumbersOnly}
                     name="expectedMonthlySalary"
                     label="Expected monthly salary (Net)"
                     placeholder="Enter expected monthly salary"
@@ -141,7 +144,7 @@ function CandidatesDetails() {
                     disabled={currentMode === 'VIEW'}
                     component={CustomInput}
                     name="noticePeriod"
-                    label="Notice Period (In days)"
+                    label="Notice period (In days)"
                     placeholder="Enter notice period in days"
                     type="number"
                   />

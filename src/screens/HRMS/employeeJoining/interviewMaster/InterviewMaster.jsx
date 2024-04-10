@@ -34,6 +34,7 @@ function InterviewMaster() {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
+      width: '100px',
     },
 
     {
@@ -51,6 +52,7 @@ function InterviewMaster() {
         </>
       ),
       sortable: false,
+      width: '100px',
     },
 
     {
@@ -74,7 +76,7 @@ function InterviewMaster() {
       //   ),
       selector: row => row?.department || '--',
       sortable: true,
-      width: '120px',
+      width: '200px',
     },
     {
       name: 'Designation',
@@ -99,24 +101,25 @@ function InterviewMaster() {
       //   ),
       selector: row => row?.designation || '--',
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
     {
       name: 'Experience Level',
       selector: row => row?.experience_level || '--',
       sortable: true,
-      width: '175px',
+      width: '150px',
     },
     {
       name: 'Status',
       sortable: true,
       selector: row => <StatusBadge status={row?.is_active} />,
+      with: '100px',
     },
     {
       name: 'Step Count',
       selector: row => row?.steps_count || '--',
       sortable: true,
-      width: '110px',
+      width: '100px',
     },
     {
       name: 'Step Title',
@@ -139,7 +142,7 @@ function InterviewMaster() {
         ),
 
       sortable: true,
-      width: '150px',
+      width: '300px',
     },
     {
       name: 'Name',
@@ -165,7 +168,7 @@ function InterviewMaster() {
           '--'
         ),
       sortable: true,
-      width: '175px',
+      width: '300px',
     },
     {
       name: 'Email',
@@ -192,7 +195,7 @@ function InterviewMaster() {
         ),
 
       sortable: true,
-      width: '175px',
+      width: '300px',
     },
     {
       name: 'Remark',
@@ -208,7 +211,7 @@ function InterviewMaster() {
           '--'
         ),
       sortable: true,
-      width: '175px',
+      width: '300px',
     },
   ];
 

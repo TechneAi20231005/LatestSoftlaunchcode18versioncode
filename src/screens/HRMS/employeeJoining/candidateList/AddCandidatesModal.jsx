@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
-import { Col, Container, Row, Stack } from 'react-bootstrap';
+import { Col, Row, Stack } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
@@ -13,43 +14,80 @@ import {
 import { addCandidatesValidation } from './validation/addCandidates';
 import OtpVerificationModal from './OtpVerificationModal';
 import { RenderIf } from '../../../../utils';
-
-// // static data
-const sourceType = [
-  { label: 'Pune Shop 1', value: 'puneShop1' },
-  { label: 'Kothrud Shop', value: 'kothrudShop' },
-];
-
-const preferredRole = [
-  { label: 'Software Developer', value: 'softwareDeveloper' },
-  { label: 'Software Testing', value: 'softwareTesting' },
-  { label: 'UI/UX Designer', value: 'uiUxDesigner' },
-];
-
-const preferredLocation = [
-  { label: 'Pune', value: 'pune' },
-  { label: 'Hyderabad', value: 'hyderabad' },
-];
+import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
+import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
+import { getRoleData } from '../../../Masters/RoleMaster/RoleMasterAction';
+import { NumbersOnly } from '../../../../components/Utilities/Validation';
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
+  const dispatch = useDispatch();
+
   const candidatesInitialValue = {
-    source: '',
-    fullName: '',
+    source_id: '',
+    full_name: '',
     dob: '',
-    preferredRole: '',
-    preferredLocation: '',
-    phoneNumber: '',
+    designation_id: '',
+    location_id: '',
+    mobile_no: '',
     email: '',
-    expectedMonthlySalary: '',
-    currentMonthlySalary: '',
-    noticePeriod: '',
-    resume: null,
+    relevant_experience: '',
+    expected_ctc: '',
+    current_ctc: '',
+    notice_period: '',
+    resume_path: null,
   };
+
+  // // redux state
+  const { branchMasterList, isLoading } = useSelector(state => state?.branchMaster);
+  const { getRoleData: roleMasterList, status } = useSelector(
+    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  );
+  const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
+    state => state?.sourceMaster,
+  );
+
+  // // static data
+
+  const preferredRole = roleMasterList?.map(item => ({
+    label: item?.role,
+    value: item?.id,
+  }));
+
+  const preferredLocation = branchMasterList?.map(item => ({
+    label: item?.location_name,
+    value: item?.id,
+  }));
+
+  const sourceType = sourceMasterList?.map(item => ({
+    label: item?.source_name,
+    value: item?.id,
+  }));
+
+  const experienceLevel = [
+    { label: 'Fresher', value: 'fresher' },
+    { label: '0-1 years of experience', value: '0-1' },
+    { label: '1-3 years of experience', value: '1-3' },
+    { label: '3-5 years of experience', value: '3-5' },
+    { label: '5+ years of experience', value: '5+' },
+  ];
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
 
+  useEffect(() => {
+    if (show) {
+      if (!branchMasterList?.length) {
+        dispatch(getRoleData());
+      }
+      if (!branchMasterList?.length) {
+        dispatch(getBranchMasterListThunk());
+      }
+      if (!sourceMasterList?.length) {
+        dispatch(getSourceMasterListThunk());
+      }
+    }
+  }, [show]);
   return (
     <>
       <CustomModal show={show} title="Add Data" width="lg">
@@ -69,18 +107,20 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       data={sourceType}
                       component={CustomDropdown}
-                      name="source"
+                      name="source_id"
                       label="Source"
-                      placeholder="Select"
+                      placeholder={
+                        sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'
+                      }
                       requiredField
                     />
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
-                      name="fullName"
-                      label="Full Name"
-                      placeholder="Enter Full Name"
+                      name="full_name"
+                      label="Full name"
+                      placeholder="Enter full name"
                       requiredField
                     />
                   </Col>
@@ -91,7 +131,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="dob"
                       type="date"
-                      label="Date of Birth"
+                      label="Date of birth"
                       requiredField
                     />
                   </Col>
@@ -99,9 +139,9 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       options={preferredRole}
                       component={CustomReactSelect}
-                      name="preferredRole"
-                      label="Preferred Role"
-                      placeholder="Select"
+                      name="designation_id"
+                      label="Preferred role"
+                      placeholder={status === 'loading' ? 'Loading...' : 'Select'}
                       requiredField
                       isMulti
                     />
@@ -112,9 +152,9 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       options={preferredLocation}
                       component={CustomReactSelect}
-                      name="preferredLocation"
-                      label="Preferred Location"
-                      placeholder="Select"
+                      name="location_id"
+                      label="Preferred location"
+                      placeholder={isLoading?.getBranchMasterList ? 'Loading...' : 'Select'}
                       requiredField
                       isMulti
                     />
@@ -122,8 +162,8 @@ function AddCandidatesModal({ show, close }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
-                      name="phoneNumber"
-                      label="Phone Number"
+                      name="mobile_no"
+                      label="Phone number"
                       placeholder="Enter contact number"
                       requiredField
                       type="number"
@@ -141,48 +181,63 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      data={experienceLevel}
+                      component={CustomDropdown}
+                      name="relevant_experience"
+                      label="Current years of work experience"
+                      placeholder="Select"
+                      requiredField
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
                       component={CustomCurrencyInput}
-                      name="expectedMonthlySalary"
+                      onKeyDown={NumbersOnly}
+                      name="expected_ctc"
                       label="Expected monthly salary (Net)"
                       placeholder="Enter expected monthly salary"
                       type="number"
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      name="currentMonthlySalary"
+                      onKeyDown={NumbersOnly}
+                      name="current_ctc"
                       label="Current monthly salary"
                       placeholder="Enter current monthly salary"
                       type="number"
                     />
                   </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
-                      name="noticePeriod"
-                      label="Notice Period (In days)"
+                      name="notice_period"
+                      label="Notice period (In days)"
                       placeholder="Enter notice period in days"
                       type="number"
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
+                    <label>
+                      Upload resume <span className="mendatory_sign">*</span>
+                    </label>
                     <input
                       type="file"
-                      name="resume"
+                      name="resume_path"
                       className={`form-control ${
-                        errors.resume && touched.resume ? 'is-invalid' : ''
+                        errors.resume_path && touched.resume_path ? 'is-invalid' : ''
                       }`}
                       onChange={event => {
-                        setFieldValue('resume', event.currentTarget.files[0]);
+                        setFieldValue('resume_path', event.currentTarget.files[0]);
                       }}
                     />
-                    <RenderIf render={errors.resume && touched.resume}>
-                      <div className="invalid-feedback">{errors.resume}</div>
+                    <RenderIf render={errors.resume_path && touched.resume_path}>
+                      <div className="invalid-feedback">{errors.resume_path}</div>
                     </RenderIf>
                   </Col>
                 </Row>

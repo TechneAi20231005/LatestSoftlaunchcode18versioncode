@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
@@ -9,41 +10,30 @@ import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToEx
 import AddCandidatesModal from './AddCandidatesModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { _base } from '../../../../settings/constants';
+import { customSearchHandler } from '../../../../utils/customFunction';
+import { getCandidatesMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 
 function CandidateList() {
   // // initial state
   const navigate = useNavigate();
-  console.log(navigate);
+  const dispatch = useDispatch();
+
+  // // redux state
+  const { candidatesMasterList, isLoading } = useSelector(state => state?.candidatesMaster);
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [addCandidateModal, setAddCandidateModal] = useState(false);
+  const [filteredCandidatesMasterList, setFilteredCandidatesMasterList] = useState([]);
 
   // // static data
-  const demoData = [
-    {
-      srNo: 1,
-      candidate_name: 'John Doe',
-      applied_position: 'Software Engineer',
-      date_of_application: '2024-04-05',
-      is_active: true,
-      source: 'LinkedIn',
-    },
-    {
-      srNo: 2,
-      candidate_name: 'Jane Smith',
-      applied_position: 'Marketing Manager',
-      date_of_application: '2024-04-04',
-      is_active: false,
-      source: 'Indeed',
-    },
-  ];
-
   const columns = [
     {
       name: 'Sr. No.',
-      selector: row => row?.srNo,
+      selector: (row, index) => index + 1,
       sortable: false,
+      width: '100px',
     },
 
     {
@@ -51,43 +41,82 @@ function CandidateList() {
       selector: row => (
         <i
           className="icofont-external-link text-primary cp"
-          onClick={() => navigate(`${row?.srNo}`)}
+          onClick={() => navigate(`${row?.id}`)}
         />
       ),
       sortable: false,
+      width: '100px',
     },
     {
       name: 'Candidate Name',
       sortable: true,
-      selector: row => row?.candidate_name,
+      selector: row => row?.full_name || '--',
+      width: '230px',
     },
 
     {
       name: 'Applied Position',
-      selector: row => row?.applied_position,
+      selector: row => row?.designation || '--',
       sortable: true,
-      width: '150px',
+      width: '230px',
     },
     {
       name: 'Date of Application',
-      selector: row => row?.date_of_application,
+      selector: row => row?.application_date || '--',
       sortable: true,
-      width: '175px',
+      width: '200px',
     },
     {
       name: 'Status',
       selector: row => <StatusBadge status={row?.is_active} />,
       sortable: true,
-      width: '175px',
+      width: '150px',
     },
     {
       name: 'Source',
-      selector: row => row?.source,
+      selector: row => row?.source_name || '--',
       sortable: true,
-      width: '175px',
+      width: '100px',
     },
   ];
 
+  // Function to handle search button click
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(candidatesMasterList, searchValue);
+    setFilteredCandidatesMasterList(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchValue('');
+    setFilteredCandidatesMasterList(candidatesMasterList);
+  };
+
+  const transformDataForExport = data => {
+    return data?.map((row, index) => ({
+      'Sr No.': index + 1,
+      'Candidates Name': row?.full_name || '--',
+      'Applied Position': row?.designation || '--',
+      'Date of Application': row?.application_date || '--',
+      Status: row?.status || '--',
+      Source: row?.source_name || '--',
+    }));
+  };
+
+  // // life cycle
+  useEffect(() => {
+    dispatch(getCandidatesMasterListThunk());
+  }, []);
+
+  // Update the useEffect to update the filtered list when candidatesMasterList changes
+  useEffect(() => {
+    setFilteredCandidatesMasterList(candidatesMasterList);
+  }, [candidatesMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
   return (
     <>
       <Container fluid>
@@ -114,31 +143,30 @@ function CandidateList() {
             />
           </Col>
           <Col xs={12} md={4} xxl={3} className="text-end mt-2 mt-md-0">
-            <button className="btn btn-warning text-white" type="button">
+            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
               <i className="icofont-search-1 " /> Search
             </button>
-            <button
-              className="btn btn-info text-white"
-              type="button"
-              onClick={() => setSearchValue('')}
-            >
+            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
               <i className="icofont-refresh text-white" /> Reset
             </button>
             <ExportToExcel
               className="btn btn-danger"
-              apiData={[]}
+              apiData={transformDataForExport(filteredCandidatesMasterList)}
               fileName="Candidates Lists Records"
+              disabled={!filteredCandidatesMasterList.length}
             />
           </Col>
         </Row>
         <DataTable
           columns={columns}
-          data={demoData}
+          data={filteredCandidatesMasterList}
           defaultSortField="role_id"
           pagination
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getCandidatesMasterList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
 

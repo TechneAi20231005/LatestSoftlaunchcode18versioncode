@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -34,6 +34,7 @@ function RemarkMaster() {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
+      width: '100px',
     },
 
     {
@@ -45,56 +46,61 @@ function RemarkMaster() {
         />
       ),
       sortable: false,
+      width: '100px',
     },
 
     {
       name: 'Remark Description',
       sortable: true,
       selector: row => row?.remark_description || '--',
-      width: '175px',
+      width: '250px',
     },
     {
       name: 'Supporting Remark',
       sortable: true,
-      selector: row => row?.supporting_remark || '--',
-      // selector: row =>
-      //   row?.remark ? (
-      //     <OverlayTrigger
-      //       placement="top"
-      //       overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.supporting_remark}</Tooltip>}
-      //     >
-      //       <span>{row?.remark || '--'}</span>
-      //     </OverlayTrigger>
-      //   ) : (
-      //     '--'
-      //   ),
-      width: '175px',
+      selector: row =>
+        row?.remark ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.supporting_remark}</Tooltip>}
+          >
+            <span>{row?.remark || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      width: '300px',
     },
     {
       name: 'Status',
       selector: row => <StatusBadge status={row?.is_active} />,
       sortable: true,
+      width: '100px',
     },
     {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
+      width: '150px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
+      width: '150px',
     },
   ];
 
