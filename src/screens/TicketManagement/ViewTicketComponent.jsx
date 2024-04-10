@@ -358,7 +358,6 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )}
 
-                        {console.log("dataV", data)}
 
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
@@ -484,7 +483,7 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )} */}
 
-                        {console.log("data", data)}
+
 
                         {data.inputType === "select" && (
                           <select

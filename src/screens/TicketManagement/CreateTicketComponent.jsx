@@ -27,6 +27,7 @@ import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeS
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 import { getRoles } from "../Dashboard/DashboardAction";
+
 export default function CreateTicketComponent() {
   const history = useNavigate();
   const navigate = useNavigate();
@@ -35,17 +36,18 @@ export default function CreateTicketComponent() {
   const departmentRef = useRef();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
-);
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
+  );
 
   const departmentDropdownRef = useRef();
   const current = new Date();
-  const [isMultipleDepartment, setisMultipleDepartment] = useState([])
+  const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
-  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
-    ? "0" + current.getMonth() + 1
-    : current.getMonth() + 1
-    }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${
+    current.getMonth() + 1 < 10
+      ? "0" + current.getMonth() + 1
+      : current.getMonth() + 1
+  }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
@@ -102,7 +104,6 @@ export default function CreateTicketComponent() {
   const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-  console.log("selectedFiles",selectedFiles)
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
@@ -111,10 +112,10 @@ export default function CreateTicketComponent() {
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
   //     var tempSelectedFile = [];
-  //     console.log("tempSelectedFile",tempSelectedFile)
+  //     console.log("tempSelectedFile", tempSelectedFile);
   //     for (var i = 0; i < e.target?.files?.length; i++) {
   //       var file = e.target.files[i];
-  //       console.log("file",file )
+  //       console.log("file", file);
   //       var reader = new FileReader();
   //       reader.onload = function (event) {
   //         tempSelectedFile.push({
@@ -141,7 +142,7 @@ export default function CreateTicketComponent() {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const reader = new FileReader();
-        
+
         reader.onload = ((file) => {
           return function (event) {
             uploadedFiles.push({
@@ -154,7 +155,7 @@ export default function CreateTicketComponent() {
             }
           };
         })(file);
-        
+
         reader.readAsDataURL(file);
       }
     } else if (type === "DELETE") {
@@ -163,7 +164,6 @@ export default function CreateTicketComponent() {
       setSelectedFiles(filteredFiles);
     }
   };
-  
 
   const roleId = sessionStorage.getItem("role_id");
   const ticketTypeRefs = useRef();
@@ -175,7 +175,7 @@ export default function CreateTicketComponent() {
     e.preventDefault();
     if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
       // Here you can proceed with form submission
-      alert('At least one checkbox must be selected');
+      alert("At least one checkbox must be selected");
       return false;
     }
 
@@ -187,14 +187,11 @@ export default function CreateTicketComponent() {
     const formData = new FormData(e.target);
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
-        formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
+        formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
       }
     }
-    console.log("formData",formData)
-    console.log("selectedFiles",selectedFiles)
-
     var flag = 1;
-    console.log("selectQueryGroup", selectQueryGroup)
+
     if (selectQueryGroup && selectQueryGroup.length > 0) {
       formData.append("dynamicForm", JSON.stringify(rows));
       var selectCountry = formData.getAll("customer_id");
@@ -218,28 +215,12 @@ export default function CreateTicketComponent() {
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-
-              setNotify({ type: "success",  message: res.data.message });
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
               setTimeout(() => {
                 navigate(`/${_base}/Ticket`);
-              }, 3000);
-
-
-              // setNotify({ type: "success", message: res.data.message });
-
-              // history(
-              //   {
-              //     pathname: `/${_base}/Ticket`,
-              //   },
-              //   {
-              //     state: {
-              //       type: "success",
-              //       message: res.data.message,
-              //     },
-              //   }
-              // );
+              }, 2000);
 
               setIsSubmitted(false);
             } else {
@@ -247,11 +228,15 @@ export default function CreateTicketComponent() {
                 setNotify({ type: "danger", message: res.data.message });
                 setIsSubmitted(false);
               } else {
-                var URL = `${_attachmentUrl}` + res.data.data;
-                window.open(URL, "_blank").focus();
-                setIsSubmitted(false);
-
+                if (!res?.data?.data) {
+                  setNotify({ type: "danger", message: res.data.message });
+                  setIsSubmitted(false);
+                  return;
+                }
                 setNotify({ type: "danger", message: res.data.message });
+                let url = `${_attachmentUrl}` + res.data.data;
+                window.open(url, "_blank").focus();
+                setIsSubmitted(false);
               }
             }
           } else {
@@ -353,7 +338,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => { });
+          .catch((err) => {});
         setRows(dynamicForm);
       }
     }
@@ -371,7 +356,10 @@ export default function CreateTicketComponent() {
       formdata.append("key", key);
       formdata.append("value", e.value);
       formdata.append("dropdownName", dependanceDropdownName);
-      formdata.append("dropdownId", currentData[0]?.inputAddOn?.inputDataSource);
+      formdata.append(
+        "dropdownId",
+        currentData[0]?.inputAddOn?.inputDataSource
+      );
 
       var dropdown = [];
       await new DynamicFormDropdownMasterService()
@@ -391,7 +379,7 @@ export default function CreateTicketComponent() {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-          currentData[0].inputAddOn.inputDataSource
+            currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -506,8 +494,7 @@ export default function CreateTicketComponent() {
       .getDepartmentMappingByEmployeeId(userSessionData.userId)
       .then((resp) => {
         if (resp.data.status === 1) {
-
-          setisMultipleDepartment(resp.data.data)
+          setisMultipleDepartment(resp.data.data);
           setUserDepartments(
             resp.data.data.map((d) => ({
               value: d.department_id,
@@ -524,7 +511,7 @@ export default function CreateTicketComponent() {
         }
       });
 
-      dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -542,8 +529,8 @@ export default function CreateTicketComponent() {
     await new MyTicketService().getBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          URL = `${_attachmentUrl}` + res.data.data;
-          window.open(URL, "_blank").focus();
+          let url = `${_attachmentUrl}` + res.data.data;
+          window.open(url, "_blank")?.focus();
           setIsFileGenerated(res.data.data);
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -636,8 +623,8 @@ export default function CreateTicketComponent() {
     });
   };
 
-  const [selectedValue, setSelectedValue] = useState('');
-  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -728,11 +715,16 @@ export default function CreateTicketComponent() {
                   {userDepartments && (
                     <Select
                       defaultValue={
-                        userDepartments?.length == 1 ? userDepartments[0] : isMultipleDepartment?.map(department => {
-                          if (department?.is_default) {
-                            return { value: department?.department_id, label: department?.department }
-                          }
-                        })
+                        userDepartments?.length == 1
+                          ? userDepartments[0]
+                          : isMultipleDepartment?.map((department) => {
+                              if (department?.is_default) {
+                                return {
+                                  value: department?.department_id,
+                                  label: department?.department,
+                                };
+                              }
+                            })
                       }
                       options={userDepartments}
                       name="from_department_id"
@@ -1100,59 +1092,61 @@ export default function CreateTicketComponent() {
 
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                          return (
-                            <div>
-                              <input
-                                // id={
-                                //   data.inputName
-                                //     ? data.inputName
-                                //         .replace(/ /g, "_")
-                                //         .toLowerCase()
-                                //     : ""
-                                // }
-                                value={d.value}
-                                onChange={handleRadioChange}
-                                defaultChecked={selectedValue === d.value}
-                                name={data.inputName}
-                                className="mx-2"
-                                type="radio"
-                              />
-                              <label for={d.value}>{d.label}</label>
-                            </div>
-                          );
-                        })
+                            return (
+                              <div>
+                                <input
+                                  // id={
+                                  //   data.inputName
+                                  //     ? data.inputName
+                                  //         .replace(/ /g, "_")
+                                  //         .toLowerCase()
+                                  //     : ""
+                                  // }
+                                  value={d.value}
+                                  onChange={handleRadioChange}
+                                  defaultChecked={selectedValue === d.value}
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="radio"
+                                />
+                                <label for={d.value}>{d.label}</label>
+                              </div>
+                            );
+                          })
                         : ""}
-
 
                       {data.inputType == "checkbox" &&
-                        data.inputAddOn.inputRadio
+                      data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                          return (
-                            <div>
-                              <input
-                                // id={
-                                //   data.inputName
-                                //     ? data.inputName
-                                //         .replace(/ /g, "_")
-                                //         .toLowerCase()
-                                //     : ""
-                                // }
+                            return (
+                              <div>
+                                <input
+                                  // id={
+                                  //   data.inputName
+                                  //     ? data.inputName
+                                  //         .replace(/ /g, "_")
+                                  //         .toLowerCase()
+                                  //     : ""
+                                  // }
 
-                                value={d.value}
-                                onChange={handleCheckBoxChange}
-                                defaultChecked={selectedCheckBoxValue === d.value}
-
-                                required={data.inputMandatory && selectedCheckBoxValue === d.value}
-                                name={data.inputName}
-                                className="mx-2"
-                                type="checkbox"
-                              />
-                              <label for={d.value}> {d.label}</label>
-                            </div>
-                          );
-                        })
+                                  value={d.value}
+                                  onChange={handleCheckBoxChange}
+                                  defaultChecked={
+                                    selectedCheckBoxValue === d.value
+                                  }
+                                  required={
+                                    data.inputMandatory &&
+                                    selectedCheckBoxValue === d.value
+                                  }
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="checkbox"
+                                />
+                                <label for={d.value}> {d.label}</label>
+                              </div>
+                            );
+                          })
                         : ""}
-                        {console.log("data",data)}
 
                       {data.inputType === "number" && (
                         <input
@@ -1167,9 +1161,7 @@ export default function CreateTicketComponent() {
                           required={data.inputMandatory == true ? true : false}
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
-                         
                           max={data.inputAddOn.inputRangeMax}
-
                           // min={data.inputAddOn.inputRange ? range[0] : ""}
                           // max={data.inputAddOn.inputRange ? range[1] : ""}
                           className="form-control form-control-sm"
@@ -1222,9 +1214,7 @@ export default function CreateTicketComponent() {
                         <select
                           id={
                             data.inputName
-                              ? data.inputName
-                                .replace(/ /g, "_")
-                                .toLowerCase()
+                              ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
                           name={data.inputName}
@@ -1237,8 +1227,7 @@ export default function CreateTicketComponent() {
                                 <option
                                   selected={
                                     parseInt(
-                                      data &&
-                                      data?.inputAddOn?.inputDataSource
+                                      data && data?.inputAddOn?.inputDataSource
                                     ) === option.value
                                   }
                                   value={option.value}
@@ -1270,7 +1259,7 @@ export default function CreateTicketComponent() {
                                     selected={
                                       parseInt(
                                         data &&
-                                        data?.inputAddOn?.inputDataSourceData
+                                          data?.inputAddOn?.inputDataSourceData
                                       ) === option.value
                                     }
                                     value={option.value}
@@ -1364,15 +1353,16 @@ export default function CreateTicketComponent() {
                   className="form-control form-control-sm"
                   id="bulk_upload_file"
                   name="bulk_upload_file"
+                  onChange={(e) => {
+                    uploadAttachmentHandler(e, "UPLOAD", "");
+                  }}
                   required
                 />
               </div>
 
               <div className="row">
                 <label className="col-form-label">
-                  <b>
-                    Upload Attachment <Astrick color="red" /> :
-                  </b>
+                  <b>Upload Attachment :{/* <Astrick color="red" /> : */}</b>
                 </label>
                 <input
                   type="file"
@@ -1380,7 +1370,7 @@ export default function CreateTicketComponent() {
                   id="bulk_images[]"
                   name="bulk_images[]"
                   multiple
-                  required
+                  // required
                   onChange={(e) => {
                     uploadAttachmentHandler(e, "UPLOAD", "");
                   }}

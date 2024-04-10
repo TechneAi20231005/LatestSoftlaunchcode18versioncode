@@ -360,17 +360,9 @@ export default function EditTicketComponent({ match }) {
               value: d.id,
               label: d.first_name + " " + d.last_name,
             }));
-
-          const entryUserSelect = res.payload.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }));
-
           setUser(data);
           setUserDropdown(select);
-          setUserdrp(entryUserSelect);
+          setUserdrp(select);
         }
       }
     });
@@ -387,7 +379,7 @@ export default function EditTicketComponent({ match }) {
         }
         setData(null);
         setData(data);
-        handleAttachment("GetAttachment", ticketId);
+        // handleAttachment("GetAttachment", ticketId);
         if (rows) {
           var dynamicForm = res.data.data.dynamic_form;
           const returnedData = [];
@@ -568,26 +560,26 @@ export default function EditTicketComponent({ match }) {
     });
   };
 
-  const handleAttachment = (type, ticket_id, attachmentId = null) => {
-    if (type === "GetAttachment") {
-      getAttachment(ticket_id, "TICKET").then((res) => {
-        if (res.status === 200) {
-          setAttachment(res.data.data);
-        }
-      });
-    }
-    if (type === "DeleteAttachment") {
-      deleteAttachment(attachmentId).then((res) => {
-        if (res.status === 200) {
-          getAttachment(ticket_id, "TICKET").then((resp) => {
-            if (resp.status === 200) {
-              setAttachment(resp.data.data);
-            }
-          });
-        }
-      });
-    }
-  };
+  // const handleAttachment = (type, ticket_id, attachmentId = null) => {
+  //   if (type === "GetAttachment") {
+  //     getAttachment(ticket_id, "TICKET").then((res) => {
+  //       if (res.status === 200) {
+  //         setAttachment(res.data.data);
+  //       }
+  //     });
+  //   }
+  //   if (type === "DeleteAttachment") {
+  //     deleteAttachment(attachmentId).then((res) => {
+  //       if (res.status === 200) {
+  //         getAttachment(ticket_id, "TICKET").then((resp) => {
+  //           if (resp.status === 200) {
+  //             setAttachment(resp.data.data);
+  //           }
+  //         });
+  //       }
+  //     });
+  //   }
+  // };
 
   const handleDateChange = (e) => {
     if (e.target.value === "") {
@@ -674,16 +666,16 @@ export default function EditTicketComponent({ match }) {
 
   const loadAttachment = async () => {
     setNotify(null);
-    if (ticketId) {
-      await getAttachment(ticketId, "TICKET").then((res) => {
-        if (res.status === 200) {
-          setAttachment(null);
-          setAttachment(res.data.data);
-        }
-      });
-    } else {
-      setAttachment(null);
-    }
+    // if (ticketId) {
+    //   await getAttachment(ticketId, "TICKET").then((res) => {
+    //     if (res.status === 200) {
+    //       setAttachment(null);
+    //       setAttachment(res.data.data);
+    //     }
+    //   });
+    // } else {
+    //   setAttachment(null);
+    // }
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {

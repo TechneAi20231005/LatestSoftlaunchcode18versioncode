@@ -27,6 +27,8 @@ export const fpURL = _apiUrl + "reset/forgetPasswordOtp";
 export const otpURL = _apiUrl + "reset/sendOtp";
 export const rpURL = _apiUrl + "reset/resetPassword";
 
+export const attachmentUrl = _apiUrl + "attachment";
+
 export const userSessionData = {
   tenantId: sessionStorage.getItem("tenant_id"),
   userId: sessionStorage.getItem("id"),
@@ -92,6 +94,7 @@ export const masterURL = {
   dynamicFormDropdownMaster: _apiUrl + "dynamicFormDropdownMaster",
   testingTypeMaster: _apiUrl + "testingTypeMaster",
   taskTicketTypeMaster: _apiUrl + "taskticketTypeMaster",
+  sprintMaster: _apiUrl + "sprintMaster",
 };
 
 export const dynamicURL = {
@@ -158,8 +161,6 @@ export const menuManagementUrl = {
 export const dashboardUrl = _apiUrl + "dashboard";
 
 export const notificationUrl = _apiUrl + "notification";
-
-export const attachmentUrl = _apiUrl + "attachment";
 
 export const settingMasterUrl = {
   customerMapping: _apiUrl + "customerMapping",

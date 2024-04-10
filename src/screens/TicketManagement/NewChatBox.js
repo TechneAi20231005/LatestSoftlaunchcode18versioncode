@@ -4,6 +4,7 @@ import { Form, Button, ListGroup } from "react-bootstrap";
 import UserService from "../../services/MastersService/UserService"; // Import your UserService
 import classNames from "./example.module.css";
 import MyTicketService from "../../services/TicketService/MyTicketService";
+import { Astrick } from "../../components/Utilities/Style";
 
 const Chatbox = (props) => {
   const { ticketId, loadComment, commentData, statusName } = props;
@@ -16,10 +17,10 @@ const Chatbox = (props) => {
   const handleComment = async (e) => {
     e.preventDefault();
     setMessage("");
-    if (!mentionId.length) {
-      alert("Kindly mention user");
-      return;
-    }
+    // if (!mentionId.length) {
+    //   alert("Kindly mention user");
+    //   return;
+    // }
     await new MyTicketService()
       .postComment({
         ticket_id: ticketId,
@@ -89,6 +90,61 @@ const Chatbox = (props) => {
                 </Button>
               </div>
             </div>
+            <div className="card mt-2">
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-sm-6 mt-3">
+                    <input
+                      type="file"
+                      id="attachment"
+                      name="attachment"
+                      // className="form-control"
+                      accept="image/jpg,image/jpeg,image/png,application/pdf"
+                      // ref={fileInputRef}
+                      capture="camera"
+                      multiple
+                      // required={
+                      //   selectedFiles && selectedFiles.length <= 0 ? true : false
+                      // }
+                      onChange={(e) => {
+                        const selectedFile = e.target.files[0];
+
+                        // Check if the file type is one of the allowed types
+                        // if (
+                        //   selectedFile.type === "image/jpg" ||
+                        //   selectedFile.type === "image/jpeg" ||
+                        //   selectedFile.type === "image/png" ||
+                        //   selectedFile.type === "application/pdf"
+                        // ) {
+                        //   // File type is allowed
+                        // } else {
+                        //   // Check if the file type is BMP
+                        //   if (selectedFile.type === "image/bmp") {
+                        //     alert(
+                        //       "Invalid file format. BMP files are not allowed."
+                        //     );
+                        //   } else {
+                        //     alert(
+                        //       "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                        //     );
+                        //   }
+                        //   e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                        // }
+
+                        // uploadAttachmentHandler(e, "UPLOAD", "");
+                        // maxLengthCheck(e, "UPLOAD");
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-6 d-flex justify-content-end">
+                    <Button variant="primary" className="mt-2" type="submit">
+                      upload
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <ListGroup
               className="mt-3"
               style={{ overflowY: "scroll", height: "70vh" }}
