@@ -109,38 +109,24 @@ export default function CreateTicketComponent() {
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     console.log("tempSelectedFile", tempSelectedFile);
-  //     for (var i = 0; i < e.target?.files?.length; i++) {
-  //       var file = e.target.files[i];
-  //       console.log("file", file);
-  //       var reader = new FileReader();
-  //       reader.onload = function (event) {
-  //         tempSelectedFile.push({
-  //           file: file,
-  //           fileName: file.name,
-  //           tempUrl: event.target.result,
-  //         });
-  //         setSelectedFiles(tempSelectedFile);
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   } else if (type === "DELETE") {
-  //     fileInputRef.current.value = "";
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
+
+
+  
+
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       const files = e.target.files;
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+          alert(
+            "File size exceeds 5MB. Please upload a file smaller than 5MB."
+          );
+          continue; // Skip this file and move to the next one
+        }
         const reader = new FileReader();
 
         reader.onload = ((file) => {
@@ -513,14 +499,7 @@ export default function CreateTicketComponent() {
 
     dispatch(getRoles());
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
-    //     }
-    //   }
-    // });
+ 
   };
 
   const handleDownloadFormat = async (e) => {
