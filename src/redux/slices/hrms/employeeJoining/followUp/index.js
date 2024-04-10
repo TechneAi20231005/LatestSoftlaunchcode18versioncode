@@ -9,10 +9,9 @@ const initialState = {
   isLoading: {
     getFollowUpList: false,
     addFollowUp: false,
-    editFollowUp: false,
   },
-  errorMsg: { getFollowUpList: '', addFollowUp: '', editFollowUp: '' },
-  successMsg: { getFollowUpList: '', addFollowUp: '', editFollowUp: '' },
+  errorMsg: { getFollowUpList: '', addFollowUp: '' },
+  successMsg: { getFollowUpList: '', addFollowUp: '' },
 };
 const followUpSlice = createSlice({
   name: 'Remark master',
@@ -36,7 +35,6 @@ const followUpSlice = createSlice({
         state.errorMsg.getFollowUpList = action.error.message;
       })
 
-      // // add remark master
       .addCase(addFollowUpThunk.pending, (state, action) => {
         state.isLoading.addFollowUp = true;
       })

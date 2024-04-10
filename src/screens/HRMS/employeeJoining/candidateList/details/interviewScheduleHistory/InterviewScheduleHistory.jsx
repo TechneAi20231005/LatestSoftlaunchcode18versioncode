@@ -40,37 +40,44 @@ function InterviewScheduleHistory() {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
+      minWidth: '100px',
     },
     {
       name: 'Status',
       selector: row => row?.status || '--',
       sortable: true,
+      minWidth: '100px',
     },
     {
       name: 'Schedule Date & Time',
       selector: row => row?.schedule_date_time || '--',
       sortable: true,
+      minWidth: '200px',
     },
     {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
+      minWidth: '150px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
+      minWidth: '150px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
+      minWidth: '150px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
+      minWidth: '150px',
     },
   ];
   return (
