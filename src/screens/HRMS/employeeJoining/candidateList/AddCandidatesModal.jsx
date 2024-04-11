@@ -88,8 +88,13 @@ function AddCandidatesModal({ show, close }) {
     candidatesData.append('source_id', formData.source_id);
     candidatesData.append('full_name', formData.full_name);
     candidatesData.append('dob', formData.dob);
-    candidatesData.append('designation_id', formData.designation_id);
-    candidatesData.append('location_id', formData.location_id);
+    formData.designation_id.forEach(id => {
+      candidatesData.append('designation_id[]', id);
+    });
+    formData.location_id.forEach(id => {
+      candidatesData.append('location_id[]', id);
+    });
+
     candidatesData.append('mobile_no', formData.mobile_no);
     candidatesData.append('email', formData.email);
     candidatesData.append('relevant_experience', formData.relevant_experience);
