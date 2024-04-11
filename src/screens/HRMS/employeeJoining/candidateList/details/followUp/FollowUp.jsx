@@ -2,6 +2,7 @@ import React from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Stack, Col, Row, Container, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // // static import
 import {
@@ -19,6 +20,8 @@ import {
 function FollowUp() {
   // // initial state
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { currentCandidateId } = location.state;
 
   const followUpInitialValue = {
     add_follow_up: '',
@@ -34,6 +37,7 @@ function FollowUp() {
     followUpData.append('add_follow_up', formData.add_follow_up);
     followUpData.append('next_follow_up_date', formData.next_follow_up_date);
     followUpData.append('attachment_file', formData.attachment_file);
+    followUpData.append('candidate_id', currentCandidateId);
     dispatch(
       addFollowUpThunk({
         formData: followUpData,
@@ -92,6 +96,7 @@ function FollowUp() {
                     onChange={event => {
                       setFieldValue('attachment_file', event.target.files[0]);
                     }}
+                    accept=".jpg, .jpeg, .pdf, .doc, .csv"
                   />
                   <RenderIf render={errors.attachment_file && touched.attachment_file}>
                     <div className="invalid-feedback">{errors.attachment_file}</div>

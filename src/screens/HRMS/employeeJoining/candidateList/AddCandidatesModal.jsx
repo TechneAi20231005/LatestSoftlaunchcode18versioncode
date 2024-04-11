@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
-import { Col, Row, Stack } from 'react-bootstrap';
+import { Col, Row, Stack, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
@@ -18,6 +18,10 @@ import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employ
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
 import { getRoleData } from '../../../Masters/RoleMaster/RoleMasterAction';
 import { NumbersOnly } from '../../../../components/Utilities/Validation';
+import {
+  addCandidatesMasterThunk,
+  getCandidatesMasterListThunk,
+} from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
@@ -39,7 +43,11 @@ function AddCandidatesModal({ show, close }) {
   };
 
   // // redux state
-  const { branchMasterList, isLoading } = useSelector(state => state?.branchMaster);
+  const { isLoading } = useSelector(state => state?.candidatesMaster);
+
+  const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
+    state => state?.branchMaster,
+  );
   const { getRoleData: roleMasterList, status } = useSelector(
     RoleMasterSlice => RoleMasterSlice?.rolemaster,
   );
@@ -47,8 +55,7 @@ function AddCandidatesModal({ show, close }) {
     state => state?.sourceMaster,
   );
 
-  // // static data
-
+  // // dropdown data
   const preferredRole = roleMasterList?.map(item => ({
     label: item?.role,
     value: item?.id,
@@ -75,6 +82,36 @@ function AddCandidatesModal({ show, close }) {
   // // local state
   const [otpModal, setOtpModal] = useState(false);
 
+  // // handel add candidates
+  const handelAddCandidates = formData => {
+    const candidatesData = new FormData();
+    candidatesData.append('source_id', formData.source_id);
+    candidatesData.append('full_name', formData.full_name);
+    candidatesData.append('dob', formData.dob);
+    candidatesData.append('designation_id', formData.designation_id);
+    candidatesData.append('location_id', formData.location_id);
+    candidatesData.append('mobile_no', formData.mobile_no);
+    candidatesData.append('email', formData.email);
+    candidatesData.append('relevant_experience', formData.relevant_experience);
+    candidatesData.append('expected_ctc', formData.expected_ctc);
+    candidatesData.append('current_ctc', formData.current_ctc);
+    candidatesData.append('notice_period', formData.notice_period);
+    candidatesData.append('resume_path', formData.resume_path);
+
+    dispatch(
+      addCandidatesMasterThunk({
+        formData: candidatesData,
+        onSuccessHandler: () => {
+          close();
+          dispatch(getCandidatesMasterListThunk());
+        },
+        // onErrorHandler: () => {
+        //   setOpenConfirmModal({ open: false });
+        // },
+      }),
+    );
+  };
+
   useEffect(() => {
     if (show) {
       if (!branchMasterList?.length) {
@@ -94,9 +131,9 @@ function AddCandidatesModal({ show, close }) {
         <Formik
           initialValues={candidatesInitialValue}
           validationSchema={addCandidatesValidation}
-          onSubmit={(values, errors) => {
-            console.log(values, errors);
-            setOtpModal(true);
+          onSubmit={values => {
+            handelAddCandidates(values);
+            // setOtpModal(true);
           }}
         >
           {({ touched, errors, setFieldValue }) => (
@@ -154,7 +191,9 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred location"
-                      placeholder={isLoading?.getBranchMasterList ? 'Loading...' : 'Select'}
+                      placeholder={
+                        branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                      }
                       requiredField
                       isMulti
                     />
@@ -235,6 +274,7 @@ function AddCandidatesModal({ show, close }) {
                       onChange={event => {
                         setFieldValue('resume_path', event.currentTarget.files[0]);
                       }}
+                      accept=".jpg, .jpeg, .png, .pdf, .docx,"
                     />
                     <RenderIf render={errors.resume_path && touched.resume_path}>
                       <div className="invalid-feedback">{errors.resume_path}</div>
@@ -244,8 +284,16 @@ function AddCandidatesModal({ show, close }) {
               </Stack>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit">
-                  Add
+                <button
+                  className="btn btn-dark px-4"
+                  type="submit"
+                  disabled={isLoading?.addCandidatesMaster}
+                >
+                  {isLoading?.addCandidatesMaster ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    'Add'
+                  )}
                 </button>
                 <button onClick={close} className="btn btn-shadow-light px-3">
                   Close

@@ -41,7 +41,7 @@ function CandidateList() {
       selector: row => (
         <i
           className="icofont-external-link text-primary cp"
-          onClick={() => navigate(`${row?.id}`)}
+          onClick={() => navigate(`${row?.id}`, { state: { currentCandidateId: row?.id } })}
         />
       ),
       sortable: false,

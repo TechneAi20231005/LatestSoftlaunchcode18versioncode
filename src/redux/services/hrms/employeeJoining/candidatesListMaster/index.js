@@ -21,6 +21,26 @@ export const getCandidatesMasterListThunk = createAsyncThunk(
     }
   },
 );
+
+export const getCandidatesDetailsThunk = createAsyncThunk(
+  'candidatesMaster/getCandidatesDetails',
+  async ({ currentId }) => {
+    try {
+      const response = await customAxios.get(`/candidateMaster/${currentId}`);
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  },
+);
+
 export const addCandidatesMasterThunk = createAsyncThunk(
   'candidatesMaster/addCandidates',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Stack, Col, Row, Container } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // // static import
 import {
   CustomCurrencyInput,
+  CustomDropdown,
   CustomInput,
   CustomReactSelect,
 } from '../../../../../../components/custom/inputs/CustomInputs';
@@ -13,32 +16,118 @@ import CandidateEditHistory from './CandidateEditHistory';
 import { editCandidatesValidation } from './validation/editCandidatesDetails';
 import CustomAlertModal from '../../../../../../components/custom/modal/CustomAlertModal';
 import { NumbersOnly } from '../../../../../../components/Utilities/Validation';
+import {
+  editCandidatesMasterThunk,
+  getCandidatesDetailsThunk,
+} from '../../../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
+import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction';
+import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
+import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
+import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../../../../../config/envConfig';
 
 function CandidatesDetails() {
+  // // initial state
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { currentCandidateId } = location.state;
+
+  // getCandidatesDetailsData
+  // // redux state
+  const { candidateDetailsData, isLoading } = useSelector(state => state?.candidatesMaster);
+  const { details } = candidateDetailsData;
+
+  const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
+    state => state?.branchMaster,
+  );
+  const { getRoleData: roleMasterList, status } = useSelector(
+    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  );
+  const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
+    state => state?.sourceMaster,
+  );
+
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
   const [currentMode, setCurrentMode] = useState('VIEW');
 
+  // form initial data
   const editCandidateInitialValue = {
-    fullName: '',
-    dob: '',
-    preferredLocation: '',
-    preferredRole: '',
-    phoneNumber: '',
-    currentMonthlySalary: '',
-    expectedMonthlySalary: '',
-    noticePeriod: '',
+    source_id: details?.source_id,
+    full_name: details?.full_name,
+    dob: details?.dob,
+    designation_id: details?.designation_id,
+    location_id: details?.location_id?.map(id => +id),
+    mobile_no: details?.mobile_no,
+    email: details?.email,
+    relevant_experience: details?.relevant_experience,
+    expected_ctc: details?.expected_monthly_salary,
+    current_ctc: details?.current_monthly_salary,
+    notice_period: details?.notice_period,
+    resume_path: `${REACT_APP_3_SOFT_LUNCH_API_URL}${details?.resume}`,
   };
-  const preferredRole = [
-    { label: 'Software Developer', value: 'softwareDeveloper' },
-    { label: 'Software Testing', value: 'softwareTesting' },
-    { label: 'UI/UX Designer', value: 'uiUxDesigner' },
+
+  // // dropdown data
+  const preferredRole = roleMasterList?.map(item => ({
+    label: item?.role,
+    value: item?.id,
+  }));
+
+  const preferredLocation = branchMasterList?.map(item => ({
+    label: item?.location_name,
+    value: item?.id,
+  }));
+
+  const sourceType = sourceMasterList?.map(item => ({
+    label: item?.source_name,
+    value: item?.id,
+  }));
+
+  const experienceLevel = [
+    { label: 'Fresher', value: 'fresher' },
+    { label: '0-1 years of experience', value: '0-1' },
+    { label: '1-3 years of experience', value: '1-3' },
+    { label: '3-5 years of experience', value: '3-5' },
+    { label: '5+ years of experience', value: '5+' },
   ];
 
-  const preferredLocation = [
-    { label: 'Pune', value: 'pune' },
-    { label: 'Hyderabad', value: 'hyderabad' },
-  ];
+  // // handel add candidates
+  const handelEditCandidates = () => {
+    const candidatesData = new FormData();
+    candidatesData.append('relevant_experience', openConfirmModal?.formData?.relevant_experience);
+    candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
+    candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
+    candidatesData.append('notice_period', openConfirmModal?.formData?.notice_period);
+    candidatesData.append('resume_path', openConfirmModal?.formData?.resume_path);
+
+    dispatch(
+      editCandidatesMasterThunk({
+        formData: candidatesData,
+        currentId: currentCandidateId,
+        onSuccessHandler: () => {
+          setOpenConfirmModal({ open: false });
+          dispatch(getCandidatesDetailsThunk());
+        },
+        onErrorHandler: () => {
+          setOpenConfirmModal({ open: false });
+        },
+      }),
+    );
+  };
+
+  // // life cycle
+  useEffect(() => {
+    dispatch(getCandidatesDetailsThunk({ currentId: currentCandidateId }));
+    if (!branchMasterList?.length) {
+      dispatch(getRoleData());
+    }
+    if (!branchMasterList?.length) {
+      dispatch(getBranchMasterListThunk());
+    }
+    if (!sourceMasterList?.length) {
+      dispatch(getSourceMasterListThunk());
+    }
+  }, [currentCandidateId]);
+
   return (
     <Container className="employee_joining_details_container">
       <div className="d-flex justify-content-between align-items-center text-primary">
@@ -54,104 +143,162 @@ function CandidatesDetails() {
           setOpenConfirmModal({ open: true, formData: values });
         }}
       >
-        {({ resetForm }) => (
+        {({ touched, errors, setFieldValue, resetForm }) => (
           <Form>
             <Stack gap={3}>
               <Row className="gap-3 gap-sm-0">
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
-                    disabled={currentMode === 'VIEW'}
+                    data={sourceType}
+                    component={CustomDropdown}
+                    name="source_id"
+                    label="Source"
+                    placeholder={sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'}
+                    disabled
+                  />
+                </Col>
+                <Col sm={6} md={6}>
+                  <Field
                     component={CustomInput}
-                    name="fullName"
+                    name="full_name"
                     label="Full name"
                     placeholder="Enter full name"
-                    requiredField
+                    disabled
                   />
                 </Col>
-                <Col md={4}>
+              </Row>
+              <Row className="gap-3 gap-sm-0">
+                <Col sm={6} md={6}>
                   <Field
-                    disabled={currentMode === 'VIEW'}
                     component={CustomInput}
                     name="dob"
-                    label="DOB"
                     type="date"
-                    requiredField
+                    label="Date of birth"
+                    disabled
                   />
                 </Col>
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
-                    disabled={currentMode === 'VIEW'}
                     options={preferredRole}
                     component={CustomReactSelect}
-                    name="preferredRole"
+                    name="designation_id"
                     label="Preferred role"
-                    placeholder="Select"
-                    requiredField
-                    isMulti
+                    placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                    disabled
                   />
                 </Col>
               </Row>
               <Row className="gap-3 gap-sm-0">
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
-                    disabled={currentMode === 'VIEW'}
                     options={preferredLocation}
                     component={CustomReactSelect}
-                    name="preferredLocation"
+                    name="location_id"
                     label="Preferred location"
-                    placeholder="Select"
-                    requiredField
+                    placeholder={branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'}
                     isMulti
+                    disabled
                   />
                 </Col>
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
-                    disabled={currentMode === 'VIEW'}
                     component={CustomInput}
-                    name="phoneNumber"
+                    name="mobile_no"
                     label="Phone number"
                     placeholder="Enter contact number"
-                    requiredField
                     type="number"
-                  />
-                </Col>
-                <Col md={4}>
-                  <Field
-                    disabled={currentMode === 'VIEW'}
-                    component={CustomCurrencyInput}
-                    onKeyDown={NumbersOnly}
-                    name="currentMonthlySalary"
-                    label="Current monthly salary"
-                    placeholder="Enter current monthly salary"
-                    type="number"
+                    disabled
                   />
                 </Col>
               </Row>
               <Row className="gap-3 gap-sm-0">
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
+                    component={CustomInput}
+                    name="email"
+                    label="Email"
+                    placeholder="Enter email address"
+                    disabled
+                  />
+                </Col>
+                <Col sm={6} md={6}>
+                  <Field
+                    data={experienceLevel}
+                    component={CustomDropdown}
+                    name="relevant_experience"
+                    label="Current years of work experience"
+                    placeholder="Select"
+                    requiredField
                     disabled={currentMode === 'VIEW'}
+                  />
+                </Col>
+              </Row>
+              <Row className="gap-3 gap-sm-0">
+                <Col sm={6} md={6}>
+                  <Field
                     component={CustomCurrencyInput}
                     onKeyDown={NumbersOnly}
-                    name="expectedMonthlySalary"
+                    name="expected_ctc"
                     label="Expected monthly salary (Net)"
                     placeholder="Enter expected monthly salary"
                     type="number"
+                    disabled={currentMode === 'VIEW'}
                   />
                 </Col>
-                <Col md={4}>
+                <Col sm={6} md={6}>
                   <Field
+                    component={CustomCurrencyInput}
+                    onKeyDown={NumbersOnly}
+                    name="current_ctc"
+                    label="Current monthly salary"
+                    placeholder="Enter current monthly salary"
+                    type="number"
                     disabled={currentMode === 'VIEW'}
+                  />
+                </Col>
+              </Row>
+              <Row className="gap-3 gap-sm-0">
+                <Col sm={6} md={6}>
+                  <Field
                     component={CustomInput}
-                    name="noticePeriod"
+                    name="notice_period"
                     label="Notice period (In days)"
                     placeholder="Enter notice period in days"
                     type="number"
+                    disabled={currentMode === 'VIEW'}
                   />
                 </Col>
-                <Col md={4}>
-                  <p className="mb-1">Candidate CV</p>
-                  <a>Resume.pdf</a>
+                <Col sm={6} md={6}>
+                  <label>
+                    Resume <span className="mendatory_sign">*</span>
+                  </label>
+                  {currentMode === 'VIEW' ? (
+                    <div>
+                      <a
+                        href={`${REACT_APP_3_SOFT_LUNCH_API_URL}${details?.resume}`}
+                        target="_blank"
+                      >
+                        Resume.file
+                      </a>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="file"
+                        name="resume_path"
+                        className={`form-control ${
+                          errors.resume_path && touched.resume_path ? 'is-invalid' : ''
+                        }`}
+                        onChange={event => {
+                          setFieldValue('resume_path', event.currentTarget.files[0]);
+                        }}
+                        accept=".jpeg, .jpg, .png, .pdf, .docx"
+                      />
+                      <RenderIf render={errors.resume_path && touched.resume_path}>
+                        <div className="invalid-feedback">{errors.resume_path}</div>
+                      </RenderIf>
+                    </>
+                  )}
                 </Col>
               </Row>
             </Stack>
@@ -181,8 +328,9 @@ function CandidatesDetails() {
         show={openConfirmModal.open}
         type="success"
         message={`Do you want to edit candidates details?`}
-        onSuccess={() => setOpenConfirmModal({ open: false })}
+        onSuccess={handelEditCandidates}
         onClose={() => setOpenConfirmModal({ open: false })}
+        isLoading={isLoading?.editCandidatesMaster}
       />
 
       {/* candidates edit history */}

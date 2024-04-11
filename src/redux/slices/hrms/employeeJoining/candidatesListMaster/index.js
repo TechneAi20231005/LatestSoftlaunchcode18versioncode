@@ -3,17 +3,30 @@ import {
   addCandidatesMasterThunk,
   editCandidatesMasterThunk,
   getCandidatesMasterListThunk,
+  getCandidatesDetailsThunk,
 } from '../../../../services/hrms/employeeJoining/candidatesListMaster';
 
 const initialState = {
   candidatesMasterList: [],
+  candidateDetailsData: [],
   isLoading: {
     getCandidatesMasterList: false,
+    getCandidatesDetailsData: false,
     addCandidatesMaster: false,
     editCandidatesMaster: false,
   },
-  errorMsg: { getCandidatesMasterList: '', addCandidatesMaster: '', editCandidatesMaster: '' },
-  successMsg: { getCandidatesMasterList: '', addCandidatesMaster: '', editCandidatesMaster: '' },
+  errorMsg: {
+    getCandidatesMasterList: '',
+    addCandidatesMaster: '',
+    editCandidatesMaster: '',
+    getCandidatesDetailsData: '',
+  },
+  successMsg: {
+    getCandidatesMasterList: '',
+    addCandidatesMaster: '',
+    editCandidatesMaster: '',
+    getCandidatesDetailsData: '',
+  },
 };
 const candidatesMasterSlice = createSlice({
   name: 'Candidates master',
@@ -35,6 +48,21 @@ const candidatesMasterSlice = createSlice({
         state.isLoading.getCandidatesMasterList = false;
         state.candidatesMasterList = [];
         state.errorMsg.getCandidatesMasterList = action.error.message;
+      })
+
+      // // get candidates details slices
+      .addCase(getCandidatesDetailsThunk.pending, (state, action) => {
+        state.isLoading.getCandidatesDetailsData = true;
+      })
+      .addCase(getCandidatesDetailsThunk.fulfilled, (state, action) => {
+        state.isLoading.getCandidatesDetailsData = false;
+        state.candidateDetailsData = action.payload.data;
+        state.successMsg.getCandidatesDetailsData = action.payload.msg;
+      })
+      .addCase(getCandidatesDetailsThunk.rejected, (state, action) => {
+        state.isLoading.getCandidatesDetailsData = false;
+        state.candidateDetailsData = [];
+        state.successMsg.getCandidatesDetailsData = action.error.message;
       })
 
       // // add candidates master
