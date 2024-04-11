@@ -73,6 +73,7 @@ export default function TaskComponent({ match }) {
   const [disablePrevtBtn, setDisablePrevBtn] = useState(false);
   const [sprintReport, setSprintReport] = useState([]);
   const [showSprintReport, setShowSprintReport] = useState(false);
+  const [exportSprintData, setExportSprintData] = useState([]);
 
   const getTicketData = async () => {
     await new MyTicketService()
@@ -499,10 +500,10 @@ export default function TaskComponent({ match }) {
     );
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       setSprintCardData([sprintData[currentIndex + 1]]);
+      await getBasketData(sprintData[currentIndex + 1]?.id);
     } else {
       setDisableNextBtn(true);
     }
-    await getBasketData(sprintData[currentIndex + 1]?.id);
   };
 
   const showPrevious = async () => {
@@ -514,10 +515,10 @@ export default function TaskComponent({ match }) {
     );
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
       setSprintCardData([sprintData[currentIndex - 1]]);
+      await getBasketData(sprintData[currentIndex - 1]?.id);
     } else {
       setDisablePrevBtn(true);
     }
-    await getBasketData(sprintData[currentIndex - 1]?.id);
   };
 
   const getSprintReport = async (sprintId) => {
@@ -529,10 +530,26 @@ export default function TaskComponent({ match }) {
           setSprintReport(temp);
           setShowSprintReport(true);
           let exportSprintReport = [];
-          let count = 1;
+          let count = 0;
           for (let i = 0; i < temp.length; i++) {
-            temp[i].counter = count++;
+            count++;
+            temp[i].counter = count;
+            exportSprintReport.push({
+              "Sr no": count,
+              "Sprint Start date": temp[i]?.sprint_start_date,
+              "Sprint End Date": temp[i]?.sprint_end_date,
+              "Task Name": temp[i]?.task_name,
+              "Task Users": temp[i]?.task_owner,
+              "Task Start Date": temp[i]?.task_creation_Date,
+              "Task End Date": temp[i]?.task_end_date,
+              "Task actual completed date": temp[i]?.task_completed_at,
+              "Task scheduled hours": temp[i]?.task_scheduled_Hours,
+              "Task actual hours played": temp[i]?.task_actual_worked,
+              "Task status": temp[i]?.task_status,
+              "Actual status": temp[i]?.task_actual_status,
+            });
           }
+          setExportSprintData([...exportSprintReport]);
         }
       });
   };
@@ -549,21 +566,29 @@ export default function TaskComponent({ match }) {
     const tenantId = localStorage.getItem("tenant_id");
     const ticket_id = data[0]?.ticket_id;
     let sprint_id = sprintModal?.modalData?.id;
+    const { startDate, endDate } = sprintInput;
+    if (!startDate || !endDate) {
+      setNotify({
+        type: "danger",
+        message: "Date is missing !!!",
+      });
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      setNotify({
+        type: "danger",
+        message: "Start Date should be greater than end date",
+      });
+      return;
+    }
     const payload = {
       tenant_id: tenantId,
       ticket_id,
-      name: sprintInput.sprintName
-        ? sprintInput.sprintName
-        : sprintModal?.modalData?.name,
-      description: sprintInput.sprintDescription
-        ? sprintInput.sprintDescription
-        : sprintModal?.modalData?.description,
-      start_date: sprintInput.startDate
-        ? sprintInput.startDate
-        : sprintModal?.modalData?.start_date,
-      end_date: sprintInput.endDate
-        ? sprintInput.endDate
-        : sprintModal?.modalData?.end_date,
+      name: sprintInput?.sprintName,
+      description: sprintInput?.sprintDescription,
+      start_date: sprintInput?.startDate,
+      end_date: sprintInput?.endDate,
     };
 
     await new SprintService()
@@ -1119,13 +1144,19 @@ export default function TaskComponent({ match }) {
                     viewBox="0 0 28 28"
                     fill="none"
                     role="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setSprintInput({
+                        sprintName: sprintCardData[0]?.name,
+                        sprintDescription: sprintCardData[0]?.description,
+                        startDate: sprintCardData[0]?.start_date,
+                        endDate: sprintCardData[0]?.end_date,
+                      });
                       setSprintModal({
                         showModal: true,
                         modalData: sprintCardData[0],
                         modalHeader: "Update",
-                      })
-                    }
+                      });
+                    }}
                   >
                     <g clip-path="url(#clip0_399_8555)">
                       <rect width="28" height="28" rx="8" fill="#484C7F" />
@@ -1151,7 +1182,7 @@ export default function TaskComponent({ match }) {
                     </defs>
                   </svg>
                 </button>
-
+                {console.log("sprint update", sprintCardData[0])}
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1250,7 +1281,7 @@ export default function TaskComponent({ match }) {
         <div className="text-end">
           <ExportToExcel
             className="my-3 py-2 btn btn-sm btn-danger"
-            apiData={sprintReport}
+            apiData={exportSprintData}
             fileName="Sprint Report"
           />
           {<DataTable columns={column} data={sprintReport} />}
