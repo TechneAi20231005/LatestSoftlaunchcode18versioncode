@@ -28,15 +28,9 @@ function InterviewMaster() {
   });
   const [filteredInterviewMasterList, setFilteredInterviewMasterList] = useState([]);
 
+  // // All commented code will remove after BA confirmation
   // // static data
   const columns = [
-    {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '100px',
-    },
-
     {
       name: 'Action',
       selector: row => (
@@ -52,166 +46,196 @@ function InterviewMaster() {
         </>
       ),
       sortable: false,
-      width: '100px',
-    },
-
-    {
-      name: 'Department',
-      // selector: row =>
-      //   row?.details?.length ? (
-      //     <OverlayTrigger
-      //       placement="top"
-      //       overlay={
-      //         <Tooltip id={`tooltip-${row.id}`}>
-      //           {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
-      //         </Tooltip>
-      //       }
-      //     >
-      //       <span>
-      //         {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
-      //       </span>
-      //     </OverlayTrigger>
-      //   ) : (
-      //     '--'
-      //   ),
-      selector: row => row?.department || '--',
-      sortable: true,
-      width: '200px',
+      width: '80px',
     },
     {
-      name: 'Designation',
-      // selector: row =>
-      //   row?.details?.length ? (
-      //     <OverlayTrigger
-      //       placement="top"
-      //       overlay={
-      //         <Tooltip id={`tooltip-${row.id}`}>
-      //           {row?.details?.map(detail =>
-      //             detail?.designation ? `${detail?.designation}, ` : '',
-      //           )}
-      //         </Tooltip>
-      //       }
-      //     >
-      //       <span>
-      //         {row?.details?.map(detail => (detail?.designation ? `${detail?.designation}, ` : ''))}
-      //       </span>
-      //     </OverlayTrigger>
-      //   ) : (
-      //     '--'
-      //   ),
-      selector: row => row?.designation || '--',
-      sortable: true,
-      width: '200px',
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px',
     },
-    {
-      name: 'Experience Level',
-      selector: row => row?.experience_level || '--',
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Status',
-      sortable: true,
-      selector: row => <StatusBadge status={row?.is_active} />,
-      with: '100px',
-    },
+    // {
+    //   name: 'Department',
+    //   // selector: row =>
+    //   //   row?.details?.length ? (
+    //   //     <OverlayTrigger
+    //   //       placement="top"
+    //   //       overlay={
+    //   //         <Tooltip id={`tooltip-${row.id}`}>
+    //   //           {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
+    //   //         </Tooltip>
+    //   //       }
+    //   //     >
+    //   //       <span>
+    //   //         {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
+    //   //       </span>
+    //   //     </OverlayTrigger>
+    //   //   ) : (
+    //   //     '--'
+    //   //   ),
+    //   selector: row => row?.department || '--',
+    //   sortable: true,
+    //   width: '200px',
+    // },
+    // {
+    //   name: 'Designation',
+    //   // selector: row =>
+    //   //   row?.details?.length ? (
+    //   //     <OverlayTrigger
+    //   //       placement="top"
+    //   //       overlay={
+    //   //         <Tooltip id={`tooltip-${row.id}`}>
+    //   //           {row?.details?.map(detail =>
+    //   //             detail?.designation ? `${detail?.designation}, ` : '',
+    //   //           )}
+    //   //         </Tooltip>
+    //   //       }
+    //   //     >
+    //   //       <span>
+    //   //         {row?.details?.map(detail => (detail?.designation ? `${detail?.designation}, ` : ''))}
+    //   //       </span>
+    //   //     </OverlayTrigger>
+    //   //   ) : (
+    //   //     '--'
+    //   //   ),
+    //   selector: row => row?.designation || '--',
+    //   sortable: true,
+    //   width: '200px',
+    // },
+    // {
+    //   name: 'Experience Level',
+    //   selector: row => row?.experience_level || '--',
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Step Count',
       selector: row => row?.steps_count || '--',
       sortable: true,
-      width: '100px',
+      width: '120px',
     },
-    {
-      name: 'Step Title',
-      selector: row =>
-        row?.details?.length ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id={`tooltip-${row.id}`}>
-                {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
-              </Tooltip>
-            }
-          >
-            <span>
-              {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
-            </span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
+    // {
+    //   name: 'Step Title',
+    //   selector: row =>
+    //     row?.details?.length ? (
+    //       <OverlayTrigger
+    //         placement="top"
+    //         overlay={
+    //           <Tooltip id={`tooltip-${row.id}`}>
+    //             {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
+    //           </Tooltip>
+    //         }
+    //       >
+    //         <span>
+    //           {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
+    //         </span>
+    //       </OverlayTrigger>
+    //     ) : (
+    //       '--'
+    //     ),
 
-      sortable: true,
-      width: '300px',
-    },
-    {
-      name: 'Name',
-      selector: row =>
-        row?.details?.length ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id={`tooltip-${row.id}`}>
-                {row?.details?.map(detail =>
-                  detail?.employee_name ? `${detail?.employee_name}, ` : '',
-                )}
-              </Tooltip>
-            }
-          >
-            <span>
-              {row?.details?.map(detail =>
-                detail?.employee_name ? `${detail?.employee_name}, ` : '',
-              )}
-            </span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
-      sortable: true,
-      width: '300px',
-    },
-    {
-      name: 'Email',
-      selector: row =>
-        row?.details?.length ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id={`tooltip-${row.id}`}>
-                {row?.details?.map(detail =>
-                  detail?.employee_email ? `${detail?.employee_email}, ` : '',
-                )}
-              </Tooltip>
-            }
-          >
-            <span>
-              {row?.details?.map(detail =>
-                detail?.employee_email ? `${detail?.employee_email}, ` : '',
-              )}
-            </span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
+    //   sortable: true,
+    //   width: '300px',
+    // },
+    // {
+    //   name: 'Name',
+    //   selector: row =>
+    //     row?.details?.length ? (
+    //       <OverlayTrigger
+    //         placement="top"
+    //         overlay={
+    //           <Tooltip id={`tooltip-${row.id}`}>
+    //             {row?.details?.map(detail =>
+    //               detail?.employee_name ? `${detail?.employee_name}, ` : '',
+    //             )}
+    //           </Tooltip>
+    //         }
+    //       >
+    //         <span>
+    //           {row?.details?.map(detail =>
+    //             detail?.employee_name ? `${detail?.employee_name}, ` : '',
+    //           )}
+    //         </span>
+    //       </OverlayTrigger>
+    //     ) : (
+    //       '--'
+    //     ),
+    //   sortable: true,
+    //   width: '300px',
+    // },
+    // {
+    //   name: 'Email',
+    //   selector: row =>
+    //     row?.details?.length ? (
+    //       <OverlayTrigger
+    //         placement="top"
+    //         overlay={
+    //           <Tooltip id={`tooltip-${row.id}`}>
+    //             {row?.details?.map(detail =>
+    //               detail?.employee_email ? `${detail?.employee_email}, ` : '',
+    //             )}
+    //           </Tooltip>
+    //         }
+    //       >
+    //         <span>
+    //           {row?.details?.map(detail =>
+    //             detail?.employee_email ? `${detail?.employee_email}, ` : '',
+    //           )}
+    //         </span>
+    //       </OverlayTrigger>
+    //     ) : (
+    //       '--'
+    //     ),
 
+    //   sortable: true,
+    //   width: '300px',
+    // },
+    // {
+    //   name: 'Remark',
+    //   selector: row =>
+    //     row?.remark ? (
+    //       <OverlayTrigger
+    //         placement="top"
+    //         overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+    //       >
+    //         <span>{row?.remark || '--'}</span>
+    //       </OverlayTrigger>
+    //     ) : (
+    //       '--'
+    //     ),
+    //   sortable: true,
+    //   width: '300px',
+    // },
+    {
+      name: 'Status',
       sortable: true,
-      width: '300px',
+      selector: row => <StatusBadge status={row?.is_active} />,
+      with: '120px',
     },
     {
-      name: 'Remark',
-      selector: row =>
-        row?.remark ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
-          >
-            <span>{row?.remark || '--'}</span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
+      name: 'Created At',
+      selector: row => row?.created_at || '--',
       sortable: true,
-      width: '300px',
+      width: '175px',
+    },
+    {
+      name: 'Created By',
+      selector: row => row?.created_by || '--',
+      sortable: true,
+      width: '175px',
+    },
+
+    {
+      name: 'Updated At',
+      selector: row => row?.updated_at || '--',
+      sortable: true,
+      width: '175px',
+    },
+    {
+      name: 'Updated By',
+      selector: row => row?.updated_by || '--',
+      sortable: true,
+      width: '175px',
     },
   ];
 
@@ -233,12 +257,16 @@ function InterviewMaster() {
       Department: row?.department || '--',
       Designation: row?.designation || '--',
       'Experience Level': row?.experience_level || '--',
-      Status: row?.is_active ? 'Active' : 'Deactive',
       'Step Count': row?.steps_count || '--',
       'Step Title': row?.details?.map(detail => detail?.step_title || '--').join(', '),
       Name: row?.details?.map(detail => detail?.employee_name || '--').join(', '),
       Email: row?.details?.map(detail => detail?.employee_email || '--').join(', '),
       Remark: row?.remark || '--',
+      Status: row?.is_active ? 'Active' : 'Deactive',
+      'Created At': row?.created_at || '--',
+      'Created By': row?.created_by || '--',
+      'Updated At': row?.updated_at || '--',
+      'Updated By': row?.updated_by || '--',
     }));
   };
 

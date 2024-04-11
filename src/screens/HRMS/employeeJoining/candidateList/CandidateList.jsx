@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import AddCandidatesModal from './AddCandidatesModal';
-import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
+import { ApplicationStatusBadge } from '../../../../components/custom/Badges/StatusBadge';
 import { _base } from '../../../../settings/constants';
 import { customSearchHandler } from '../../../../utils/customFunction';
 import { getCandidatesMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
@@ -30,13 +30,6 @@ function CandidateList() {
   // // static data
   const columns = [
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '100px',
-    },
-
-    {
       name: 'Action',
       selector: row => (
         <i
@@ -45,38 +38,64 @@ function CandidateList() {
         />
       ),
       sortable: false,
-      width: '100px',
+      width: '70px',
+    },
+    {
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px',
     },
     {
       name: 'Candidate Name',
       sortable: true,
       selector: row => row?.full_name || '--',
-      width: '230px',
+      width: '200px',
     },
-
     {
       name: 'Applied Position',
       selector: row => row?.designation || '--',
       sortable: true,
-      width: '230px',
-    },
-    {
-      name: 'Date of Application',
-      selector: row => row?.application_date || '--',
-      sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
-      sortable: true,
-      width: '150px',
+      width: '220px',
     },
     {
       name: 'Source',
       selector: row => row?.source_name || '--',
       sortable: true,
-      width: '100px',
+      width: '175px',
+    },
+    {
+      name: 'Status',
+      selector: row => (
+        <ApplicationStatusBadge
+          type={
+            row?.application_status_name === 'APPLIED'
+              ? 'primary'
+              : row?.application_status_name === 'IN PROCESS'
+              ? 'warning'
+              : row?.application_status_name === 'OFFER SENT'
+              ? 'success'
+              : 'danger'
+          }
+          name={
+            row?.application_status_name === 'APPLIED'
+              ? 'Applied'
+              : row?.application_status_name === 'IN PROCESS'
+              ? 'In Process'
+              : row?.application_status_name === 'OFFER SENT'
+              ? 'Offer Sent'
+              : 'Rejected'
+          }
+        />
+      ),
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Date of Application',
+      selector: row => row?.application_date || '--',
+      sortable: true,
+      width: '175px',
     },
   ];
 
@@ -117,6 +136,7 @@ function CandidateList() {
   useEffect(() => {
     handleSearch();
   }, [searchValue]);
+
   return (
     <>
       <Container fluid>

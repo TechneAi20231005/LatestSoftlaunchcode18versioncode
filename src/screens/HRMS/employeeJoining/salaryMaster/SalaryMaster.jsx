@@ -30,13 +30,6 @@ function SalaryMaster() {
   // // static data
   const columns = [
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '100px',
-    },
-
-    {
       name: 'Action',
       selector: row => (
         <i
@@ -45,7 +38,13 @@ function SalaryMaster() {
         />
       ),
       sortable: false,
-      width: '100px',
+      width: '70px',
+    },
+    {
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px',
     },
     {
       name: 'Department',
@@ -99,14 +98,9 @@ function SalaryMaster() {
       name: 'Salary (Net)',
       selector: row => row?.max_salary || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
-    {
-      name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
-      sortable: true,
-      width: '100px',
-    },
+
     {
       name: 'Remark',
       sortable: true,
@@ -125,29 +119,35 @@ function SalaryMaster() {
       width: '300px',
     },
     {
+      name: 'Status',
+      selector: row => <StatusBadge status={row?.is_active} />,
+      sortable: true,
+      width: '120px',
+    },
+    {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
   ];
 

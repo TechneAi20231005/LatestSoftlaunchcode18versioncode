@@ -31,33 +31,27 @@ function BranchMaster() {
   // // static data
   const columns = [
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '100px',
-    },
-    {
       name: 'Action',
       selector: row => (
         <i
-          className="icofont-edit text-primary cp"
+          className="icofont-edit text-primary cp text-center"
           onClick={() => setAddEditBranchModal({ type: 'EDIT', data: row, open: true })}
         />
       ),
       sortable: false,
-      width: '100px',
+      width: '70px',
+    },
+    {
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px',
     },
     {
       name: 'Branch Name',
       sortable: true,
       selector: row => row?.location_name || '--',
       width: '200px',
-    },
-    {
-      name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
-      sortable: true,
-      width: '100px',
     },
     {
       name: 'Remark',
@@ -76,29 +70,35 @@ function BranchMaster() {
       width: '300px',
     },
     {
+      name: 'Status',
+      selector: row => <StatusBadge status={row?.is_active} />,
+      sortable: true,
+      width: '120px',
+    },
+    {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
-      width: '150px',
+      width: '175px',
     },
   ];
 
