@@ -403,6 +403,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     });
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
+      console.log("res", res);
       if (res.status === 200) {
         if (res.data.status == 1) {
           SetAuthorities(res.data.data);
@@ -1492,6 +1493,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
                         readOnly={true}
                       />
+                      {console.log("authorities", authorities)}
                     </div>
                     <div className=" col-md-3 mt-4">
                       <input
