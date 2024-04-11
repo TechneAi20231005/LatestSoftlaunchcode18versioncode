@@ -2414,22 +2414,22 @@ export default function MyTicketComponent() {
                   }}
                 />
               </div>
+
+              <div className="col-md-3">
+                <label className="">
+                  <b>Select User :</b>
+                </label>
+                {userData && (
+                  <Select
+                    options={userData}
+                    isMulti={true}
+                    id="assign_to_user_id[]"
+                    name="assign_to_user_id[]"
+                  />
+                )}
+              </div>
               {localStorage.getItem("account_for") === "SELF" && (
                 <>
-                  <div className="col-md-3">
-                    <label className="">
-                      <b>Select User :</b>
-                    </label>
-                    {userData && (
-                      <Select
-                        options={userData}
-                        isMulti={true}
-                        id="assign_to_user_id[]"
-                        name="assign_to_user_id[]"
-                      />
-                    )}
-                  </div>
-
                   <div className="col-md-3">
                     <label className="">
                       <b>Select Department :</b>
@@ -2859,71 +2859,71 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {/* {localStorage.getItem("account_for") === "SELF" && ( */}
-                <Tab
-                  eventKey="departmenyourTaskt"
-                  title="Departmentwise Tickets"
-                >
-                  <div className="card mb-3 ">
-                    <div className="card-body">
-                      {departmentwiseTicket && (
-                        <ExportAllTicketsToExcel
-                          className="btn btn-sm btn-danger mt-3"
-                          fileName="Departmentwise Ticket"
-                          typeOf="DepartmentWise"
-                        />
-                      )}
-                      {departmentwiseTicket && (
-                        <DataTable
-                          columns={departmentwisetTicketColumns}
-                          data={departmentwiseTicket}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={"800px"}
-                          selectableRows={false}
-                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                          highlightOnHover={true}
-                        />
-                      )}
-                      <div className="back-to-top pull-right mt-2 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleDepartmentWiseRowChanged(e, "LIMIT");
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {departmentWiseData && (
-                          <small>
-                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
-                            {departmentWiseData.total}
-                          </small>
+                {localStorage.getItem("account_for") === "SELF" && (
+                  <Tab
+                    eventKey="departmenyourTaskt"
+                    title="Departmentwise Tickets"
+                  >
+                    <div className="card mb-3 ">
+                      <div className="card-body">
+                        {departmentwiseTicket && (
+                          <ExportAllTicketsToExcel
+                            className="btn btn-sm btn-danger mt-3"
+                            fileName="Departmentwise Ticket"
+                            typeOf="DepartmentWise"
+                          />
                         )}
-                        <button
-                          onClick={(e) => {
-                            handleDepartmentWiseRowChanged(e, "MINUS");
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleDepartmentWiseRowChanged(e, "PLUS");
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
+                        {departmentwiseTicket && (
+                          <DataTable
+                            columns={departmentwisetTicketColumns}
+                            data={departmentwiseTicket}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={"800px"}
+                            selectableRows={false}
+                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            highlightOnHover={true}
+                          />
+                        )}
+                        <div className="back-to-top pull-right mt-2 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleDepartmentWiseRowChanged(e, "LIMIT");
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {departmentWiseData && (
+                            <small>
+                              {departmentWiseData.from}-{departmentWiseData.to}{" "}
+                              of {departmentWiseData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleDepartmentWiseRowChanged(e, "MINUS");
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleDepartmentWiseRowChanged(e, "PLUS");
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Tab>
-                {/* )} */}
+                  </Tab>
+                )}
 
                 {localStorage.getItem("account_for") === "SELF" && (
                   <Tab eventKey="your_task" title="Your Task">
