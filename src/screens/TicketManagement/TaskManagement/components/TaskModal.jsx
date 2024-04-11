@@ -315,7 +315,7 @@ export default function TaskModal(props) {
       }
     });
 
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getTaskType("Task")?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data);
       }
@@ -726,15 +726,16 @@ export default function TaskModal(props) {
                   }}
                 >
                   <div
-                    style={{
-                      padding: "8px",
-                      border: "1px solid #ccc",
-                      cursor: "pointer",
-                      width: "100%",
-                    }}
+                    // style={{
+                    //   padding: "8px",
+                    //   border: "1px solid #ccc",
+                    //   cursor: "pointer",
+                    //   width: "100%",
+                    // }}
+                    className="form-control form-control-sm"
                     onClick={(e) => handleSelectOptionClick(e)}
                   >
-                    {selectedOption ? selectedOption : "Select an option"}
+                    {selectedOption ? selectedOption : props?.data?.parent_name}
                   </div>
                   {/* {isMenuOpen && (
                     <div
