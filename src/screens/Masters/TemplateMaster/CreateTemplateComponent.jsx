@@ -207,9 +207,17 @@ const CreateTemplateComponent = () => {
     );
   };
 
-  const CustomMenuList = ({ options, onSelect, ID }) => {
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
     const toggleOptions = (label) => {
       if (openOptions.includes(label)) {
         setOpenOptions(openOptions.filter((item) => item !== label));
@@ -218,17 +226,27 @@ const CreateTemplateComponent = () => {
       }
     };
 
-    const closeDropdown = () => {
-      setOpenOptions([]);
-      // setIsMenuOpen(false); // Close the menu when the dropdown is closed
-    };
-
-    const handleSelect = (label, ID, openOptions) => {
-      setOpenOptions([]);
-      closeDropdown();
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
       onSelect(label, ID);
+      setOpenOptions([]);
       setIsMenuOpen(!isMenuOpen);
     };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const filteredOptions = filterOptions(options, searchTerm);
 
     const renderOptions = (options) => {
       return options.map((option) => (
@@ -237,58 +255,74 @@ const CreateTemplateComponent = () => {
             style={{
               display: "flex",
               alignItems: "center",
-              borderBottom: "1px solid #ccc",
-              fontWeight:
-                option.label === "Primary" || option.options.length > 0
-                  ? "bold"
-                  : "normal",
+              padding: "0.5rem",
             }}
           >
             {option.options.length > 0 && (
               <i
-                className="icofont-rounded-right"
+                // className="icofont-rounded-right"
+                className={
+                  openOptions.includes(option.label)
+                    ? "icofont-rounded-down"
+                    : "icofont-rounded-right"
+                }
                 style={{ marginRight: "5px", cursor: "pointer" }}
                 onClick={() => toggleOptions(option.label)}
               ></i>
             )}
 
-            <CustomOption
-              label={option.label}
-              options={option.options}
-              onClick={handleSelect}
-              openOptions={options}
-              isMenuOpen={isMenuOpen}
-              ID={option.ID}
-              closeDropdown={closeDropdown}
-            />
-          </div>
-          {openOptions.includes(option.label) && option.options && (
-            <div style={{ marginLeft: "20px" }}>
-              {renderOptions(option.options)}
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{ cursor: "pointer" }}
+            >
+              {option.label}
             </div>
-          )}
+          </div>
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "20px" }}>
+                {renderOptions(option.options)}
+              </div>
+            )}
         </React.Fragment>
       ));
     };
 
     return (
       <>
-        {!isMenuOpen && ( // Render the menu only when isMenuOpen is false
+        {isMenuOpen === false && (
           <div
             style={{
-              position: "absolute",
-              top: "100%",
-              left: "0",
+              position: "relative",
               width: "100%",
-              maxHeight: "400px",
+
               overflowY: "auto",
               border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
               backgroundColor: "white",
               borderBottomRightRadius: "4px",
               borderBottomLeftRadius: "4px",
             }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
           >
-            {renderOptions(options)}
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
           </div>
         )}
       </>
@@ -924,6 +958,53 @@ const CreateTemplateComponent = () => {
                                       </div>
                                     )}
                                   </div>
+                                  {/* <label>
+                                    <b>
+                                      Task Type Name:
+                                      <Astrick color="red" size="13px" />
+                                    </b>
+                                  </label>
+                                  <div
+                                    style={{
+                                      position: "relative",
+                                      display: "inline-block",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        padding: "8px",
+                                        border: "1px solid #ccc",
+                                        cursor: "pointer",
+                                        width: "100%",
+                                      }}
+                                      onClick={(e) =>
+                                        handleSelectOptionClick(e)
+                                      }
+                                    >
+                                      {selectedOptions
+                                        ? selectedOptions
+                                        : "Select an option"}
+                                    </div>
+                                    {isMenuOpen && (
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          width: "100%", // Set the width to 100% to match the parent's width
+                                          top: "100%",
+                                          zIndex: 999, // Adjust the z-index as needed
+                                        }}
+                                      >
+                                        <CustomMenuList
+                                          options={transformedOptions}
+                                          onSelect={(label, ID) =>
+                                            handleSelect(label, ID)
+                                          }
+                                          // closeAllDropdowns={closeAllDropdowns}
+                                        />
+                                      </div>
+                                    )}
+                                  </div> */}
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>

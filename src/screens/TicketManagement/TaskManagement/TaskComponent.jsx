@@ -244,6 +244,7 @@ export default function TaskComponent({ match }) {
       assign_to_user_id: null,
       total_time: null,
       attachment: null,
+      parent_name: null,
     };
     if (id) {
       await getTaskData(id).then((res) => {
@@ -252,6 +253,7 @@ export default function TaskComponent({ match }) {
           if (res.data.status === 1) {
             temp = res.data.data;
             setTaskModalData(temp);
+            console.log("temp", temp);
           }
         }
       });
