@@ -757,7 +757,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   }, [checkRole]);
 
-  console.log(checkRole);
+  
 
   const [roundOffError, setRoundOffError] = useState("");
 
@@ -1307,7 +1307,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       readOnly={true}
                     />
                   </div>
-                  {console.log("authority", authorities)}
+                 
 
                   <div className=" col-md-2 mt-4">
                     <input
