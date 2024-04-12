@@ -59,6 +59,8 @@ export default function TaskModal(props) {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
+    setParentTaskName("");
+
     // closeAllDropdowns();
   };
   const handleToDate = (e) => {
@@ -124,9 +126,17 @@ export default function TaskModal(props) {
 
   // for Task Type Name Field created custome menuList
 
-  const CustomMenuList = ({ options, onSelect, ID }) => {
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
     const toggleOptions = (label) => {
       if (openOptions.includes(label)) {
         setOpenOptions(openOptions.filter((item) => item !== label));
@@ -135,17 +145,27 @@ export default function TaskModal(props) {
       }
     };
 
-    const closeDropdown = () => {
-      setOpenOptions([]);
-      // setIsMenuOpen(false); // Close the menu when the dropdown is closed
-    };
-
-    const handleSelect = (label, ID, openOptions) => {
-      setOpenOptions([]);
-      closeDropdown();
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
       onSelect(label, ID);
+      setOpenOptions([]);
       setIsMenuOpen(!isMenuOpen);
     };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const filteredOptions = filterOptions(options, searchTerm);
 
     const renderOptions = (options) => {
       return options.map((option) => (
@@ -154,58 +174,74 @@ export default function TaskModal(props) {
             style={{
               display: "flex",
               alignItems: "center",
-              borderBottom: "1px solid #ccc",
-              fontWeight:
-                option.label === "Primary" || option.options.length > 0
-                  ? "bold"
-                  : "normal",
+              padding: "0.5rem",
             }}
           >
             {option.options.length > 0 && (
               <i
-                className="icofont-rounded-right"
+                // className="icofont-rounded-right"
+                className={
+                  openOptions.includes(option.label)
+                    ? "icofont-rounded-down"
+                    : "icofont-rounded-right"
+                }
                 style={{ marginRight: "5px", cursor: "pointer" }}
                 onClick={() => toggleOptions(option.label)}
               ></i>
             )}
 
-            <CustomOption
-              label={option.label}
-              options={option.options}
-              onClick={handleSelect}
-              openOptions={options}
-              isMenuOpen={isMenuOpen}
-              ID={option.ID}
-              closeDropdown={closeDropdown}
-            />
-          </div>
-          {openOptions.includes(option.label) && option.options && (
-            <div style={{ marginLeft: "20px" }}>
-              {renderOptions(option.options)}
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{ cursor: "pointer" }}
+            >
+              {option.label}
             </div>
-          )}
+          </div>
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "20px" }}>
+                {renderOptions(option.options)}
+              </div>
+            )}
         </React.Fragment>
       ));
     };
 
     return (
       <>
-        {!isMenuOpen && ( // Render the menu only when isMenuOpen is false
+        {isMenuOpen === false && (
           <div
             style={{
-              position: "absolute",
-              top: "100%",
-              left: "0",
+              position: "relative",
               width: "100%",
-              maxHeight: "400px",
+
               overflowY: "auto",
               border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
               backgroundColor: "white",
               borderBottomRightRadius: "4px",
               borderBottomLeftRadius: "4px",
             }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
           >
-            {renderOptions(options)}
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
           </div>
         )}
       </>
@@ -218,6 +254,7 @@ export default function TaskModal(props) {
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
+  const [parentTaskName, setParentTaskName] = useState(null);
 
   const loadData = async () => {
     setSelectedFile([]);
@@ -447,72 +484,126 @@ export default function TaskModal(props) {
 
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("parent_id", selectedOptionId);
-    setNotify(null);
-    //Appeding File in selected State
-    formData.delete("attachment[]");
-    formData.delete("show_to_customer[]");
-    formData.delete("show_to_project_owner[]");
-    if (selectedFile) {
-      for (var i = 0; i < selectedFile?.length; i++) {
-        formData.append("attachment[]", selectedFile[i].file);
-
-        formData.append("show_to_customer[]", selectedFile[i].show_to_customer);
+    if (!selectedOption && !formData.get("id")) {
+      setParentTaskName("Please select a parent task type.");
+    } else {
+      setParentTaskName(""); // Clear the error message if present
+      if (selectedOptionId === "Primary") {
+        formData.append("parent_id", 0);
+      } else {
         formData.append(
-          "show_to_project_owner[]",
-          selectedFile[i].show_to_project_owner
+          "parent_id",
+          // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+          selectedOptionId
+            ? selectedOptionId
+            : props?.data?.parent_name !== null
+            ? props?.data?.parent_name
+            : "Primary"
         );
       }
-    }
+      setNotify(null);
+      //Appeding File in selected State
+      formData.delete("attachment[]");
+      formData.delete("show_to_customer[]");
+      formData.delete("show_to_project_owner[]");
+      if (selectedFile) {
+        for (var i = 0; i < selectedFile?.length; i++) {
+          formData.append("attachment[]", selectedFile[i].file);
 
-    var flag = 1;
-
-    if (todateformat > fromdateformat) {
-      alert("Please select End Date Greater than Start date");
-      flag = 0;
-      e.preventDefault();
-    }
-
-    var totalCount = 0;
-    for (const pair of formData.entries()) {
-      if (pair[0] == "assign_to_user[]") {
-        totalCount++;
+          formData.append(
+            "show_to_customer[]",
+            selectedFile[i].show_to_customer
+          );
+          formData.append(
+            "show_to_project_owner[]",
+            selectedFile[i].show_to_project_owner
+          );
+        }
       }
-    }
 
-    if (formData.get("type") == "GROUP_ACTIVITY") {
-      if (totalCount <= 1) {
-        alert("Please select minimum 2 user for group activity !!!");
+      var flag = 1;
+
+      if (todateformat > fromdateformat) {
+        alert("Please select End Date Greater than Start date");
         flag = 0;
         e.preventDefault();
       }
-    }
 
-    if (flag == 1) {
-      if (todateformat > fromdateformat) {
-        alert("Please select End Date Greater than Start date");
-      } else {
-        if (formData.get("id")) {
-          const taskTypeId = typeRef?.current?.props?.value.map((d) => {
-            return d.value;
-          });
-          formData.append("task_type_id", taskTypeId);
-          await updateTask(formData.get("id"), formData)
-            .then((res) => {
+      var totalCount = 0;
+      for (const pair of formData.entries()) {
+        if (pair[0] == "assign_to_user[]") {
+          totalCount++;
+        }
+      }
+
+      if (formData.get("type") == "GROUP_ACTIVITY") {
+        if (totalCount <= 1) {
+          alert("Please select minimum 2 user for group activity !!!");
+          flag = 0;
+          e.preventDefault();
+        }
+      }
+
+      if (flag == 1) {
+        if (todateformat > fromdateformat) {
+          alert("Please select End Date Greater than Start date");
+        } else {
+          if (formData.get("id")) {
+            const taskTypeId = typeRef?.current?.props?.value.map((d) => {
+              return d.value;
+            });
+            formData.append("task_type_id", taskTypeId);
+            await updateTask(formData.get("id"), formData)
+              .then((res) => {
+                if (res.status === 200) {
+                  if (res.data.status === 1) {
+                    // props.loadBasket();
+                    setNotify({ type: "success", message: res.data.message });
+                    setLoading(false);
+
+                    handleClose();
+                  } else {
+                    setLoading(false);
+                    setNotify({ type: "danger", message: res.data.message });
+                  }
+                } else {
+                  setLoading(false);
+                  setNotify({ type: "danger", message: res.message });
+                  new ErrorLogService().sendErrorLog(
+                    "Ticket",
+                    "Edit_Task",
+                    "INSERT",
+                    res.message
+                  );
+                }
+              })
+              .catch((error) => {
+                setLoading(false);
+                const { response } = error;
+                const { request, ...errorObject } = response;
+                new ErrorLogService().sendErrorLog(
+                  "Task",
+                  "Edit_Task",
+                  "INSERT",
+                  errorObject.data.message
+                );
+              });
+          } else {
+            await postTask(formData).then((res) => {
               if (res.status === 200) {
                 if (res.data.status === 1) {
-                  // props.loadBasket();
                   setNotify({ type: "success", message: res.data.message });
                   setLoading(false);
 
                   handleClose();
+                  // props.loadBasket();
                 } else {
                   setLoading(false);
                   setNotify({ type: "danger", message: res.data.message });
                 }
               } else {
                 setLoading(false);
-                setNotify({ type: "danger", message: res.message });
+                setNotify({ type: "danger", message: res.data.message });
                 new ErrorLogService().sendErrorLog(
                   "Ticket",
                   "Edit_Task",
@@ -520,42 +611,8 @@ export default function TaskModal(props) {
                   res.message
                 );
               }
-            })
-            .catch((error) => {
-              setLoading(false);
-              const { response } = error;
-              const { request, ...errorObject } = response;
-              new ErrorLogService().sendErrorLog(
-                "Task",
-                "Edit_Task",
-                "INSERT",
-                errorObject.data.message
-              );
             });
-        } else {
-          await postTask(formData).then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setLoading(false);
-
-                handleClose();
-                // props.loadBasket();
-              } else {
-                setLoading(false);
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setLoading(false);
-              setNotify({ type: "danger", message: res.data.message });
-              new ErrorLogService().sendErrorLog(
-                "Ticket",
-                "Edit_Task",
-                "INSERT",
-                res.message
-              );
-            }
-          });
+          }
         }
       }
     }
@@ -710,67 +767,77 @@ export default function TaskModal(props) {
                 )}
               </div>
             </div>
-            {console.log("props==>", props.data)}
 
             <div>
               <label className="form-label font-weight-bold" readOnly={true}>
-                Task Type Name: <Astrick color="red" size="13px" />
+                Parent Task Type: <Astrick color="red" size="13px" />
               </label>
 
-              <div>
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-block",
+                  width: "100%",
+                }}
+              >
                 <div
+                  // style={{
+                  //   padding: "8px",
+                  //   border: "1px solid #ccc",
+                  //   cursor: "pointer",
+                  //   width: "100%",
+                  //   borderRadius: "1px",
+                  // }}
+                  className="form-control form-control-sm"
+                  onClick={(e) => handleSelectOptionClick(e)}
+                >
+                  {/* {selectedOption
+                          ? selectedOption
+                          : modal?.modalData?.parent_name} */}
+
+                  {selectedOption ? selectedOption : props?.data?.parent_name}
+                </div>
+                {isMenuOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      width: "100%", // Set the width to 100% to match the parent's width
+                      top: "100%",
+
+                      maxHeight: "150px", // Adjust the maxHeight here as needed
+                      overflowY: "auto", // Enable vertical scrolling
+                      scrollbarWidth: "none", // Hide scrollbar in Firefox
+                      msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                      "&::-webkit-scrollbar": {
+                        display: "none", // Hide scrollbar in Webkit browsers
+                      },
+                    }}
+                  >
+                    <CustomMenuList
+                      options={transformedOptions}
+                      onSelect={(label, ID) => handleSelect(label, ID)}
+                      // closeAllDropdowns={closeAllDropdowns}
+                      isMenuOpen={isMenuOpen}
+                      onClick={(e) => handleSelectOptionClick(e)}
+                    />
+                  </div>
+                )}
+
+                {/* {!selectedOptionId && (
+                        <div style={{ color: "red", marginTop: "5px" }}>
+                          Please select a parent task type.
+                        </div>
+                      )} */}
+              </div>
+              {parentTaskName && (
+                <small
                   style={{
-                    position: "relative",
-                    display: "inline-block",
-                    width: "100%",
+                    color: "red",
                   }}
                 >
-                  <div
-                    // style={{
-                    //   padding: "8px",
-                    //   border: "1px solid #ccc",
-                    //   cursor: "pointer",
-                    //   width: "100%",
-                    // }}
-                    className="form-control form-control-sm"
-                    onClick={(e) => handleSelectOptionClick(e)}
-                  >
-                    {selectedOption ? selectedOption : props?.data?.parent_name}
-                  </div>
-                  {/* {isMenuOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        width: "100%", // Set the width to 100% to match the parent's width
-                        top: "100%",
-                      }}
-                    >
-                      <CustomMenuList
-                        options={transformedOptions}
-                        onSelect={(label, ID) => handleSelect(label, ID)}
-                        // closeAllDropdowns={closeAllDropdowns}
-                      />
-                    </div>
-                  )} */}
-
-                  {isMenuOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        width: "100%", // Set the width to 100% to match the parent's width
-                        top: "100%",
-                      }}
-                    >
-                      <CustomMenuList
-                        options={transformedOptions}
-                        onSelect={(label, ID) => handleSelect(label, ID)}
-                        isMenuOpen={isMenuOpen}
-                        onClick={(e) => handleSelectOptionClick(e)}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
+                  {parentTaskName}
+                </small>
+              )}
             </div>
 
             {/* <div className="col-md-12">

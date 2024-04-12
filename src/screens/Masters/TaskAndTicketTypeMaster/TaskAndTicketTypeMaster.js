@@ -11,7 +11,8 @@ import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTy
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 // for task type created customoption function
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
@@ -789,10 +790,15 @@ function TaskAndTicketTypeMaster(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const [parentTaskName, setParentTaskName] = useState(null);
+  const [parentTicketName, setParentTicketName] = useState(null);
+
   const handleSelect = (label, ID, isMenuOpen) => {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     closeAllDropdowns();
+    setParentTaskName("");
+    setParentTicketName("");
   };
   const toggleDropdown = (e) => {
     setIsOpen(!isOpen);
@@ -850,12 +856,14 @@ function TaskAndTicketTypeMaster(props) {
               exportTempData.push({
                 SrNo: exportTempData.length + 1,
 
-                id: temp[i].id,
+                // id: temp[i].id,
                 type: temp[i].type,
 
                 type_name: temp[i].type_name,
+                parent_name: temp[i].parent_name,
+
                 remark: temp[i].remark,
-                is_active: temp[i].is_active,
+                is_active: temp[i].is_active == 1 ? "Active" : "Deactive",
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
@@ -1101,11 +1109,39 @@ function TaskAndTicketTypeMaster(props) {
         }
       },
     },
+
+    // {
+    //   name: "Type Name",
+    //   selector: (row) => row.type_name,
+    //   sortable: true,
+    //   width: "125px",
+    // },
+
     {
       name: "Type Name",
+      width: "150px",
       selector: (row) => row.type_name,
       sortable: true,
-      width: "125px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.type_name && row.type_name.length < 120
+                    ? row.type_name
+                    : row.type_name.substring(0, 120) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
 
     {
@@ -1216,47 +1252,62 @@ function TaskAndTicketTypeMaster(props) {
     }
     setNotify(null);
     const form = new FormData(e.target);
-    if (selectedOptionId === "Primary") {
-      form.append("parent_id", 0);
+    if (!selectedOption && !id) {
+      setParentTaskName("Please select a parent task type.");
+      setParentTicketName("Please select a parent ticket type.");
     } else {
-      form.append(
-        "parent_id",
-        selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-      );
-    }
-    form.append("type", selectedType);
+      setParentTaskName(""); // Clear the error message if present
+      setParentTicketName("");
 
-    if (!id) {
-      await new TaskTicketTypeService().postType(form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            // loadData();
+      if (selectedOptionId === "Primary") {
+        form.append("parent_id", 0);
+      } else {
+        form.append(
+          "parent_id",
+          // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+          selectedOptionId
+            ? selectedOptionId
+            : modal?.modalData?.parent_name !== null
+            ? modal?.modalData?.parent_name
+            : "Primary"
+        );
+      }
+
+      form.append("type", selectedType);
+
+      if (!id) {
+        await new TaskTicketTypeService().postType(form).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false });
+
+              loadData();
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
-    } else {
-      await new TaskTicketTypeService()._updateType(id, form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            // loadData();
+        });
+      } else {
+        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false });
+              loadData();
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
           } else {
+            // setLoading(false);
             setNotify({ type: "danger", message: res.data.message });
           }
-        } else {
-          // setLoading(false);
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
+        });
+      }
+      // setLoading(false);
     }
-    // setLoading(false);
   };
 
   useEffect(() => {
@@ -1368,7 +1419,11 @@ function TaskAndTicketTypeMaster(props) {
             <ExportToExcel
               className="btn btn-sm btn-danger"
               apiData={exportData}
-              fileName="State master Records"
+              fileName={
+                selectedType === "TASK"
+                  ? "Task master Records"
+                  : "Ticket Master Record"
+              }
             />
           </div>
         </div>
@@ -1462,9 +1517,14 @@ function TaskAndTicketTypeMaster(props) {
                             className="form-control form-control-sm"
                             onClick={(e) => handleSelectOptionClick(e)}
                           >
+                            {/* {selectedOption
+                              ? selectedOption
+                              : modal?.modalData?.parent_name} */}
                             {selectedOption
                               ? selectedOption
-                              : modal?.modalData?.parent_name}
+                              : modal?.modalData?.parent_name !== null
+                              ? modal?.modalData?.parent_name
+                              : "Primary"}
                           </div>
                           {isMenuOpen && (
                             <div
@@ -1491,6 +1551,15 @@ function TaskAndTicketTypeMaster(props) {
                             </div>
                           )}
                         </div>
+                        {parentTicketName && (
+                          <small
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            {parentTicketName}
+                          </small>
+                        )}
                       </div>
 
                       <div className="col-sm-12 mt-2">
@@ -1504,6 +1573,7 @@ function TaskAndTicketTypeMaster(props) {
                           id="type_name"
                           name="type_name"
                           ref={typeNameRef}
+                          maxLength={100}
                           required
                           defaultValue={
                             modal.modalData && modal?.modalData?.type_name
@@ -1521,6 +1591,7 @@ function TaskAndTicketTypeMaster(props) {
                           className="form-control form-control-sm"
                           id="remark"
                           name="remark"
+                          maxLength={100}
                           defaultValue={
                             modal.modalData && modal.modalData.remark
                           }
@@ -1555,11 +1626,16 @@ function TaskAndTicketTypeMaster(props) {
                         className="form-control form-control-sm"
                         onClick={(e) => handleSelectOptionClick(e)}
                       >
+                        {/* {selectedOption
+                          ? selectedOption
+                          : modal?.modalData?.parent_name} */}
+
                         {selectedOption
                           ? selectedOption
-                          : modal?.modalData?.parent_name}
+                          : modal?.modalData?.parent_name !== null
+                          ? modal?.modalData?.parent_name
+                          : "Primary"}
                       </div>
-
                       {isMenuOpen && (
                         <div
                           style={{
@@ -1585,6 +1661,21 @@ function TaskAndTicketTypeMaster(props) {
                           />
                         </div>
                       )}
+
+                      {/* {!selectedOptionId && (
+                        <div style={{ color: "red", marginTop: "5px" }}>
+                          Please select a parent task type.
+                        </div>
+                      )} */}
+                      {parentTaskName && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {parentTaskName}
+                        </small>
+                      )}
                     </div>
 
                     <div className="col-sm-12 mt-2">
@@ -1598,6 +1689,7 @@ function TaskAndTicketTypeMaster(props) {
                         id="type_name"
                         name="type_name"
                         ref={typeNameRef}
+                        maxLength={100}
                         required
                         defaultValue={
                           modal.modalData && modal?.modalData?.type_name
@@ -1612,6 +1704,7 @@ function TaskAndTicketTypeMaster(props) {
                       <textarea
                         type="text"
                         rows={4}
+                        maxLength={100}
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
