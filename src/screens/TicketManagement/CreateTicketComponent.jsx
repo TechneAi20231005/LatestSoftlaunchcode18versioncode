@@ -117,7 +117,6 @@ export default function CreateTicketComponent() {
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
-
   // const uploadAttachmentHandler = (e, type, id = null) => {
   //   if (type === "UPLOAD") {
   //     var tempSelectedFile = [];
@@ -186,13 +185,113 @@ export default function CreateTicketComponent() {
     );
   };
 
-  const CustomMenuListTicket = ({
-    options,
-    onSelect,
-    ID,
-    selectedOptionId,
-  }) => {
+  // const CustomMenuListTicket = ({
+  //   options,
+  //   onSelect,
+  //   ID,
+  //   selectedOptionId,
+  // }) => {
+  //   const [openOptions, setOpenOptions] = useState([]);
+
+  //   const toggleOptions = (label) => {
+  //     if (openOptions.includes(label)) {
+  //       setOpenOptions(openOptions.filter((item) => item !== label));
+  //     } else {
+  //       setOpenOptions([...openOptions, label]);
+  //     }
+  //   };
+
+  //   const closeDropdown = () => {
+  //     setOpenOptions([]); // Close the dropdown by resetting openOptions
+  //   };
+
+  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  //   const handleSelect = (label, ID, openOptions) => {
+  //     // Close all open options except the one that was just selected
+  //     setOpenOptions([]);
+  //     closeDropdown();
+  //     setIsMenuOpen(!isMenuOpen);
+  //     // Pass the label and ID to the provided onSelect function
+  //     onSelect(label, ID);
+  //   };
+  //   const renderOptions = (options) => {
+  //     return options.map((option) => (
+  //       <React.Fragment key={option.label}>
+  //         <div
+  //           style={{
+  //             display: "flex",
+  //             alignItems: "center",
+  //             borderBottom: "1px solid #ccc",
+  //             fontWeight:
+  //               option.label === "Primary" || option.options.length > 0
+  //                 ? "bold"
+  //                 : "normal",
+  //           }}
+  //         >
+  //           {option.options.length > 0 && (
+  //             <i
+  //               className="icofont-rounded-right"
+  //               style={{
+  //                 marginRight: "5px",
+  //                 cursor: "pointer",
+  //               }}
+  //               onClick={() => toggleOptions(option.label)}
+  //             ></i>
+  //           )}
+  //           <CustomOptionTicket
+  //             label={option.label}
+  //             options={option.options}
+  //             onClick={handleSelect}
+  //             ID={option.ID}
+  //             closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
+  //           />
+  //         </div>
+  //         {openOptions.includes(option.label) && option.options && (
+  //           <div style={{ marginLeft: "20px" }}>
+  //             {renderOptions(option.options)}
+  //           </div>
+  //         )}
+  //       </React.Fragment>
+  //     ));
+  //   };
+
+  //   return (
+  //     <>
+  //       {isMenuOpen === false && (
+  //         <div
+  //           style={{
+  //             position: "absolute",
+  //             top: "100%",
+  //             left: "0",
+  //             width: "100%", // Adjust the width here
+  //             maxHeight: "400px", // Adjust the maxHeight here
+  //             overflowY: "auto",
+  //             border: "1px solid #ccc", // Border style
+  //             borderWidth: "2px", // Border width
+  //             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+  //             backgroundColor: "white",
+  //             borderBottomRightRadius: "4px", // Border radius
+  //             borderBottomLeftRadius: "4px", // Border radius
+  //           }}
+  //         >
+  //           {renderOptions(options)}
+  //         </div>
+  //       )}
+  //     </>
+  //   );
+  // };
+
+  const CustomMenuListTicket = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
 
     const toggleOptions = (label) => {
       if (openOptions.includes(label)) {
@@ -202,20 +301,28 @@ export default function CreateTicketComponent() {
       }
     };
 
-    const closeDropdown = () => {
-      setOpenOptions([]); // Close the dropdown by resetting openOptions
-    };
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const handleSelect = (label, ID, openOptions) => {
-      // Close all open options except the one that was just selected
-      setOpenOptions([]);
-      closeDropdown();
-      setIsMenuOpen(!isMenuOpen);
-      // Pass the label and ID to the provided onSelect function
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
       onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
     };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const filteredOptions = filterOptions(options, searchTerm);
+
     const renderOptions = (options) => {
       return options.map((option) => (
         <React.Fragment key={option.label}>
@@ -223,36 +330,37 @@ export default function CreateTicketComponent() {
             style={{
               display: "flex",
               alignItems: "center",
-              borderBottom: "1px solid #ccc",
-              fontWeight:
-                option.label === "Primary" || option.options.length > 0
-                  ? "bold"
-                  : "normal",
+              padding: "0.5rem",
             }}
           >
             {option.options.length > 0 && (
               <i
-                className="icofont-rounded-right"
-                style={{
-                  marginRight: "5px",
-                  cursor: "pointer",
-                }}
+                // className="icofont-rounded-right"
+                className={
+                  openOptions.includes(option.label)
+                    ? "icofont-rounded-down"
+                    : "icofont-rounded-right"
+                }
+                style={{ marginRight: "5px", cursor: "pointer" }}
                 onClick={() => toggleOptions(option.label)}
               ></i>
             )}
-            <CustomOptionTicket
-              label={option.label}
-              options={option.options}
-              onClick={handleSelect}
-              ID={option.ID}
-              closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
-            />
-          </div>
-          {openOptions.includes(option.label) && option.options && (
-            <div style={{ marginLeft: "20px" }}>
-              {renderOptions(option.options)}
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{ cursor: "pointer" }}
+            >
+              {option.label}
             </div>
-          )}
+          </div>
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "20px" }}>
+                {renderOptions(option.options)}
+              </div>
+            )}
         </React.Fragment>
       ));
     };
@@ -262,27 +370,39 @@ export default function CreateTicketComponent() {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "absolute",
-              top: "100%",
-              left: "0",
-              width: "100%", // Adjust the width here
-              maxHeight: "400px", // Adjust the maxHeight here
+              position: "relative",
+              width: "100%",
+
               overflowY: "auto",
-              border: "1px solid #ccc", // Border style
-              borderWidth: "2px", // Border width
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
               backgroundColor: "white",
-              borderBottomRightRadius: "4px", // Border radius
-              borderBottomLeftRadius: "4px", // Border radius
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
             }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
           >
-            {renderOptions(options)}
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
           </div>
         )}
       </>
     );
   };
-
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
@@ -683,8 +803,6 @@ export default function CreateTicketComponent() {
       });
 
     dispatch(getRoles());
-
- 
   };
 
   const handleDownloadFormat = async (e) => {
@@ -1082,7 +1200,7 @@ export default function CreateTicketComponent() {
                   </div>
                 </div> */}
 
-                <div className="col-sm-3">
+                {/* <div className="col-sm-3">
                   <label className="col-form-label" readOnly={true}>
                     Ticket Type Name: <Astrick color="red" size="13px" />
                   </label>
@@ -1119,6 +1237,76 @@ export default function CreateTicketComponent() {
                         />
                       </div>
                     )}
+                  </div>
+                </div> */}
+                <div className="col-sm-3 mt-2">
+                  <label
+                    className="form-label font-weight-bold"
+                    readOnly={true}
+                  >
+                    Parent ticket Type:
+                  </label>
+
+                  <div>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        // style={{
+                        //   padding: "8px",
+                        //   border: "1px solid #ccc",
+                        //   cursor: "pointer",
+                        //   width: "100%",
+                        //   borderRadius: "1px",
+                        // }}
+                        className="form-control form-control-sm"
+                        onClick={(e) => handleSelectOptionClick(e)}
+                      >
+                        {/* {selectedOption
+                              ? selectedOption
+                              : modal?.modalData?.parent_name} */}
+                        {selectedOption}
+                      </div>
+                      {isMenuOpen && (
+                        <div
+                          // style={{
+                          //   position: "absolute",
+                          //   width: "100%", // Set the width to 100% to match the parent's width
+                          //   top: "100%",
+
+                          //   maxHeight: "150px", // Adjust the maxHeight here as needed
+                          //   overflowY: "auto", // Enable vertical scrolling
+                          //   scrollbarWidth: "none", // Hide scrollbar in Firefox
+                          //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                          //   "&::-webkit-scrollbar": {
+                          //     display: "none", // Hide scrollbar in Webkit browsers
+                          //   },
+                          // }}
+                          style={{
+                            position: "absolute",
+                            width: "100%", // Set the width to 100% to match the parent's width
+                            top: "100%", // Position the menu at the top of the parent element
+                            zIndex: "1", // Ensure the menu is on top of other elements
+                            maxHeight: "150px", // Adjust the maxHeight here as needed
+                            overflowY: "auto", // Enable vertical scrolling
+                            scrollbarWidth: "none", // Hide scrollbar in Firefox
+                            msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                            "&::-webkit-scrollbar": {
+                              display: "none", // Hide scrollbar in Webkit browsers
+                            },
+                          }}
+                        >
+                          <CustomMenuListTicket
+                            options={transformedOptionsTicket}
+                            onSelect={(label, ID) => handleSelect(label, ID)}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

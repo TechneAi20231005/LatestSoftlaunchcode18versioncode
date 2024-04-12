@@ -236,6 +236,16 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
+
+            <div className="col-md-4">
+              <StatusCard
+                progress={data ? data.type_name : ""}
+                progressBg="bg-success"
+                iconClass="icofont-user fs-4"
+                iconbg="bg-lightblue"
+                title="Ticket Type"
+              />
+            </div>
           </div>
 
           {rows && (
@@ -554,7 +564,7 @@ export default function ViewTicketComponent({ match }) {
               </div>
             </div>
           </div>
-         
+
           <div className="row g-3 ">
             <div className="col-lg-6 col-md-6">
               {/* <AttechedCard data={BugImageAttechedData} /> */}
