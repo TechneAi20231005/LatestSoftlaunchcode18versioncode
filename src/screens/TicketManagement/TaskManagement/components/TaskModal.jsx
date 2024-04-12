@@ -552,42 +552,61 @@ export default function TaskModal(props) {
             const taskTypeId = typeRef?.current?.props?.value.map((d) => {
               return d.value;
             });
-            formData.append("task_type_id", taskTypeId);
-            await updateTask(formData.get("id"), formData)
-              .then((res) => {
-                if (res.status === 200) {
-                  if (res.data.status === 1) {
-                    // props.loadBasket();
-                    setNotify({ type: "success", message: res.data.message });
-                    setLoading(false);
 
-                    handleClose();
+            if (!selectedOption && formData.get("id")) {
+              setParentTaskName("Please select a parent task type.");
+            } else {
+              setParentTaskName(""); // Clear the error message if present
+              if (selectedOptionId === "Primary") {
+                formData.append("parent_id", 0);
+              } else {
+                formData.append(
+                  "parent_id",
+                  // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+                  selectedOptionId
+                    ? selectedOptionId
+                    : props?.data?.parent_name !== null
+                    ? props?.data?.parent_name
+                    : "Primary"
+                );
+              }
+              // formData.append("task_type_id", taskTypeId);
+              await updateTask(formData.get("id"), formData)
+                .then((res) => {
+                  if (res.status === 200) {
+                    if (res.data.status === 1) {
+                      // props.loadBasket();
+                      setNotify({ type: "success", message: res.data.message });
+                      setLoading(false);
+
+                      handleClose();
+                    } else {
+                      setLoading(false);
+                      setNotify({ type: "danger", message: res.data.message });
+                    }
                   } else {
                     setLoading(false);
-                    setNotify({ type: "danger", message: res.data.message });
+                    setNotify({ type: "danger", message: res.message });
+                    new ErrorLogService().sendErrorLog(
+                      "Ticket",
+                      "Edit_Task",
+                      "INSERT",
+                      res.message
+                    );
                   }
-                } else {
+                })
+                .catch((error) => {
                   setLoading(false);
-                  setNotify({ type: "danger", message: res.message });
+                  const { response } = error;
+                  const { request, ...errorObject } = response;
                   new ErrorLogService().sendErrorLog(
-                    "Ticket",
+                    "Task",
                     "Edit_Task",
                     "INSERT",
-                    res.message
+                    errorObject.data.message
                   );
-                }
-              })
-              .catch((error) => {
-                setLoading(false);
-                const { response } = error;
-                const { request, ...errorObject } = response;
-                new ErrorLogService().sendErrorLog(
-                  "Task",
-                  "Edit_Task",
-                  "INSERT",
-                  errorObject.data.message
-                );
-              });
+                });
+            }
           } else {
             await postTask(formData).then((res) => {
               if (res.status === 200) {
