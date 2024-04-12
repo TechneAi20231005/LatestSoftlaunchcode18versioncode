@@ -1,0 +1,93 @@
+.stepper_wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  .stepper_item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+
+    &::before {
+      position: absolute;
+      content: '';
+      border-bottom: 2px dotted var(--bs-gray-600);
+      width: 100%;
+      top: 12px;
+      left: -50%;
+      z-index: 2;
+    }
+    &::after {
+      position: absolute;
+      content: '';
+      border-bottom: 2px dotted var(--bs-gray-600);
+      width: 100%;
+      top: 12px;
+      left: 50%;
+      z-index: 2;
+    }
+    .step_counter {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #f9fbfd;
+      border: 1px solid var(--bs-gray-600);
+      margin-bottom: 6px;
+      i {
+        font-size: 20px;
+      }
+      .icofont-sand-clock {
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+.stepper_item.active {
+  font-weight: bold;
+}
+.stepper_item.completed .step_counter {
+  background-color: var(--bs-green);
+  border: 1px solid var(--bs-green);
+
+  i {
+    color: #f9fbfd;
+  }
+}
+.stepper_item.rejected .step_counter {
+  background-color: var(--bs-danger);
+  border: 1px solid var(--bs-danger);
+  span {
+    color: #f9fbfd;
+  }
+}
+.stepper_item.complete_active .step_counter {
+  background-color: var(--bs-gray-500);
+  border: 1px solid var(--bs-gray-500);
+  i {
+    color: var(--bs-green);
+  }
+}
+
+.stepper_item.completed::after {
+  position: absolute;
+  content: '';
+  border-bottom: 2px solid var(--bs-green);
+  width: 100%;
+  top: 12px;
+  left: 50%;
+  z-index: 3;
+}
+
+.stepper_item:first-child::before {
+  content: none;
+}
+.stepper_item:last-child::after {
+  content: none;
+}

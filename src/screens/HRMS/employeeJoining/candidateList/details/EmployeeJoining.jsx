@@ -9,10 +9,11 @@ import CandidatesDetails from './candidatesDetails/CandidatesDetails';
 import RemarkHistory from './remarkHistory/RemarkHistory';
 import InterviewScheduleHistory from './interviewScheduleHistory/InterviewScheduleHistory';
 import FollowUp from './followUp/FollowUp';
+import InterviewProcess from './candidatesDetails/interviewProcess/InterviewProcess';
 import './style.scss';
 
 function EmployeeJoining() {
-  const [currentTab, setCurrentTab] = useState('candidates_details');
+  const [currentTab, setCurrentTab] = useState('interviews_process');
   const tabsLabel = [
     {
       label: 'Candidates Details',
@@ -24,7 +25,7 @@ function EmployeeJoining() {
     { label: 'Interview Schedule History', value: 'interviews_schedule_history' },
   ];
   return (
-    <Container>
+    <Container fluid>
       <PageHeader
         headerTitle={
           <>
@@ -38,6 +39,9 @@ function EmployeeJoining() {
       </div>
       <RenderIf render={currentTab === 'candidates_details'}>
         <CandidatesDetails />
+      </RenderIf>
+      <RenderIf render={currentTab === 'interviews_process'}>
+        <InterviewProcess />
       </RenderIf>
       <RenderIf render={currentTab === 'follow_up'}>
         <FollowUp />
