@@ -1504,15 +1504,20 @@ export default function CreateBillCheckingTransaction({ match }) {
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                          data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
-                          (data.current_user_is_approver == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true &&
-                            data.current_user_is_approver == 1)
-                            ? false
-                            : true
+                          authorities && authorities.TDS_Applicable === false
+                            ? true
+                            : false
                         }
+                        // disabled={
+                        //   data.is_rejected == 1 ||
+                        //   data.created_by == localStorage.getItem("id") ||
+                        //   (data.current_user_is_approver == 1 &&
+                        //     authorities &&
+                        //     authorities.All_Update_Bill == true &&
+                        //     data.current_user_is_approver == 1)
+                        //     ? false
+                        //     : true
+                        // }
                       />
                       <label className="col-form-label">
                         <b>TDS Applicable:</b>

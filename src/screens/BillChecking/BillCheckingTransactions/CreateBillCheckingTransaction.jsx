@@ -1307,6 +1307,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       readOnly={true}
                     />
                   </div>
+                  {console.log("authorities", authorities)}
 
                   <div className=" col-md-2 mt-4">
                     <input
@@ -1314,6 +1315,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
+                      disabled={
+                        authorities && authorities.TDS_Applicable === false
+                          ? true
+                          : false
+                      }
                       onChange={(e) => handleTdsApplicable(e)}
                     />
                     <label
