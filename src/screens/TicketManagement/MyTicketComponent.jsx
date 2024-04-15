@@ -32,6 +32,8 @@ export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
+  const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
+
   // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
@@ -195,7 +197,6 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            console.log("confirm ticket", res.data.data);
             setNotify({ type: "success", message: res.data.message });
             setConfirmationModal({
               showModal: false,
@@ -1584,6 +1585,13 @@ export default function MyTicketComponent() {
               label: d.first_name + " " + d.last_name,
             }));
 
+          const select2 = res.data.data
+            .filter((d) => d.is_active == 1 && d.account_for === "CUSTOMER")
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }));
+
           setUserData(null);
           const aa = tempData.sort(function (a, b) {
             return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
@@ -1591,6 +1599,7 @@ export default function MyTicketComponent() {
           setUserData(aa);
           setAssignUserDropdown(select);
           setUserDropdown(select);
+          setCustomerUserDropdown(select2);
         }
       })
       .catch((error) => {
@@ -2353,7 +2362,6 @@ export default function MyTicketComponent() {
   };
 
   useEffect(() => {
-    console.log("location before timeout", locationState);
     setLocationState(location.state);
     const timeoutId = setTimeout(() => {
       const a = null;
@@ -2414,22 +2422,22 @@ export default function MyTicketComponent() {
                   }}
                 />
               </div>
+
+              <div className="col-md-3">
+                <label className="">
+                  <b>Select User :</b>
+                </label>
+                {userData && (
+                  <Select
+                    options={userData}
+                    isMulti={true}
+                    id="assign_to_user_id[]"
+                    name="assign_to_user_id[]"
+                  />
+                )}
+              </div>
               {localStorage.getItem("account_for") === "SELF" && (
                 <>
-                  <div className="col-md-3">
-                    <label className="">
-                      <b>Select User :</b>
-                    </label>
-                    {userData && (
-                      <Select
-                        options={userData}
-                        isMulti={true}
-                        id="assign_to_user_id[]"
-                        name="assign_to_user_id[]"
-                      />
-                    )}
-                  </div>
-
                   <div className="col-md-3">
                     <label className="">
                       <b>Select Department :</b>
@@ -2546,78 +2554,83 @@ export default function MyTicketComponent() {
                 {/* ********************************* */}
 
                 {/* *****************Entry Department,Entry User **************** */}
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <>
-                    <div className="row mt-3">
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Assigned Department :</b>
-                        </label>
-                        {departmentData && (
-                          <Select
-                            options={departmentData}
-                            isMulti={true}
-                            ref={selectInputRef}
-                            id="assign_to_department_id[]"
-                            name="assign_to_department_id[]"
-                            onChange={handleAssignedDepartment}
-                            defaultValue={assignedDepartmentValue}
-                          />
-                        )}
-                      </div>
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Assigned User :</b>
-                        </label>
+                {/* {localStorage.getItem("account_for") === "SELF" && ( */}
+                <>
+                  <div className="row mt-3">
+                    <div className="col-md-6">
+                      <label className="">
+                        <b>Assigned Department :</b>
+                      </label>
+                      {departmentData && (
                         <Select
-                          options={assignUserDropdown}
+                          options={departmentData}
                           isMulti={true}
-                          id="assign_to_user_id[]"
-                          name="assign_to_user_id[]"
-                          ref={selectAssignUserRef}
-                          onChange={handleChangeAssignedUser}
-                          defaultValue={assignedUser}
+                          ref={selectInputRef}
+                          id="assign_to_department_id[]"
+                          name="assign_to_department_id[]"
+                          onChange={handleAssignedDepartment}
+                          defaultValue={assignedDepartmentValue}
                         />
-                      </div>
+                      )}
                     </div>
-                    {/* ********************************* **************** */}
+                    <div className="col-md-6">
+                      <label className="">
+                        <b>Assigned User :</b>
+                      </label>
+                      <Select
+                        options={assignUserDropdown}
+                        isMulti={true}
+                        id="assign_to_user_id[]"
+                        name="assign_to_user_id[]"
+                        ref={selectAssignUserRef}
+                        onChange={handleChangeAssignedUser}
+                        defaultValue={assignedUser}
+                      />
+                    </div>
+                  </div>
+                  {/* ********************************* **************** */}
 
-                    {/* *****************Entry Department,Entry User **************** */}
-                    <div className="row mt-3">
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Entry Department :</b>
-                        </label>
-                        {departmentData && (
-                          <Select
-                            options={departmentData}
-                            isMulti={true}
-                            id="department_id[]"
-                            name="department_id[]"
-                            onChange={handleDepartment}
-                            defaultValue={entryDepartment}
-                            ref={selectEntryDeptRef}
-                          />
-                        )}
-                      </div>
-
-                      <div className="col-md-6">
-                        <label className="">
-                          <b>Entry User :</b>
-                        </label>
+                  {/* *****************Entry Department,Entry User **************** */}
+                  <div className="row mt-3">
+                    <div className="col-md-6">
+                      <label className="">
+                        <b>Entry Department :</b>
+                      </label>
+                      {departmentData && (
                         <Select
-                          options={userDropdown}
+                          options={departmentData}
                           isMulti={true}
-                          ref={selectUserRef}
-                          id="user_id[]"
-                          name="user_id[]"
-                          onChange={handleChangeEntryUser}
-                          defaultValue={entryUser}
+                          id="department_id[]"
+                          name="department_id[]"
+                          onChange={handleDepartment}
+                          defaultValue={entryDepartment}
+                          ref={selectEntryDeptRef}
                         />
-                      </div>
+                      )}
                     </div>
-                  </>
-                )}
+
+                    <div className="col-md-6">
+                      <label className="">
+                        <b>Entry User :</b>
+                      </label>
+                      <Select
+                        // options={ userDropdown}
+                        options={
+                          localStorage.getItem("account_for") === "SELF"
+                            ? userDropdown
+                            : customerUserDropdown
+                        }
+                        isMulti={true}
+                        ref={selectUserRef}
+                        id="user_id[]"
+                        name="user_id[]"
+                        onChange={handleChangeEntryUser}
+                        defaultValue={entryUser}
+                      />
+                    </div>
+                  </div>
+                </>
+                {/* )} */}
                 {/********************************** ****************************/}
 
                 {/* ***************************Status**************** */}
@@ -2859,71 +2872,71 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {/* {localStorage.getItem("account_for") === "SELF" && ( */}
-                <Tab
-                  eventKey="departmenyourTaskt"
-                  title="Departmentwise Tickets"
-                >
-                  <div className="card mb-3 ">
-                    <div className="card-body">
-                      {departmentwiseTicket && (
-                        <ExportAllTicketsToExcel
-                          className="btn btn-sm btn-danger mt-3"
-                          fileName="Departmentwise Ticket"
-                          typeOf="DepartmentWise"
-                        />
-                      )}
-                      {departmentwiseTicket && (
-                        <DataTable
-                          columns={departmentwisetTicketColumns}
-                          data={departmentwiseTicket}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={"800px"}
-                          selectableRows={false}
-                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                          highlightOnHover={true}
-                        />
-                      )}
-                      <div className="back-to-top pull-right mt-2 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleDepartmentWiseRowChanged(e, "LIMIT");
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {departmentWiseData && (
-                          <small>
-                            {departmentWiseData.from}-{departmentWiseData.to} of{" "}
-                            {departmentWiseData.total}
-                          </small>
+                {localStorage.getItem("account_for") === "SELF" && (
+                  <Tab
+                    eventKey="departmenyourTaskt"
+                    title="Departmentwise Tickets"
+                  >
+                    <div className="card mb-3 ">
+                      <div className="card-body">
+                        {departmentwiseTicket && (
+                          <ExportAllTicketsToExcel
+                            className="btn btn-sm btn-danger mt-3"
+                            fileName="Departmentwise Ticket"
+                            typeOf="DepartmentWise"
+                          />
                         )}
-                        <button
-                          onClick={(e) => {
-                            handleDepartmentWiseRowChanged(e, "MINUS");
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleDepartmentWiseRowChanged(e, "PLUS");
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
+                        {departmentwiseTicket && (
+                          <DataTable
+                            columns={departmentwisetTicketColumns}
+                            data={departmentwiseTicket}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={"800px"}
+                            selectableRows={false}
+                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            highlightOnHover={true}
+                          />
+                        )}
+                        <div className="back-to-top pull-right mt-2 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleDepartmentWiseRowChanged(e, "LIMIT");
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {departmentWiseData && (
+                            <small>
+                              {departmentWiseData.from}-{departmentWiseData.to}{" "}
+                              of {departmentWiseData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleDepartmentWiseRowChanged(e, "MINUS");
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleDepartmentWiseRowChanged(e, "PLUS");
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Tab>
-                {/* )} */}
+                  </Tab>
+                )}
 
                 {localStorage.getItem("account_for") === "SELF" && (
                   <Tab eventKey="your_task" title="Your Task">

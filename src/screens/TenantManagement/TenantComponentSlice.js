@@ -46,6 +46,7 @@ export const tenantmasterSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllTenant = payload.data.data;
+        console.log("getAllTenant", getAllTenant);
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -57,14 +58,15 @@ export const tenantmasterSlice = createSlice({
         let sr = 1;
         let exportAllTenantData = [];
         for (const i in getAllTenant) {
+          console.log("getAll", getAllTenant);
           exportAllTenantData.push({
             Sr: sr++,
             TenantName: getAllTenant[i].company_name,
-            TenantIdSeries: getAllTenant[i].series,
+            TicketIDSeries: getAllTenant[i].series,
 
-            Country: getAllTenant[i].company_name,
-            State: getAllTenant[i].company_name,
-            City: getAllTenant[i].company_name,
+            Country: getAllTenant[i].country_id,
+            State: getAllTenant[i].state_id,
+            City: getAllTenant[i].city_id,
             Role: getAllTenant[i].role,
             Status: getAllTenant[i].is_active ? "Active" : "Deactive",
             Remark: getAllTenant[i].remark,
