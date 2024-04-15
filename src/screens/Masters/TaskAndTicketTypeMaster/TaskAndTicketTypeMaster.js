@@ -366,21 +366,21 @@ const CustomMenuList = ({ options, onSelect }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            padding: "0.5rem",
+            padding: "0.4rem",
           }}
         >
-          {option.options.length > 0 && (
-            <i
-              // className="icofont-rounded-right"
-              className={
-                openOptions.includes(option.label)
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
-              }
-              style={{ marginRight: "5px", cursor: "pointer" }}
-              onClick={() => toggleOptions(option.label)}
-            ></i>
-          )}
+          {/* {option.options.length > 0 && ( */}
+          <i
+            // className="icofont-rounded-right"
+            className={
+              openOptions.includes(option.label) && option.options.length > 0
+                ? "icofont-rounded-down"
+                : "icofont-rounded-right"
+            }
+            style={{ marginRight: "5px", cursor: "pointer" }}
+            onClick={() => toggleOptions(option.label)}
+          ></i>
+          {/* )} */}
 
           <div
             onClick={() => handleSelect(option.label, option.ID)}
@@ -389,12 +389,23 @@ const CustomMenuList = ({ options, onSelect }) => {
             {option.label}
           </div>
         </div>
-        {openOptions &&
+        {/* {openOptions &&
           openOptions.length > 0 &&
           openOptions.includes(option.label) &&
           option.options && (
             <div style={{ marginLeft: "20px" }}>
               {renderOptions(option.options)}
+            </div>
+          )} */}
+
+        {openOptions &&
+          openOptions.length > 0 &&
+          openOptions.includes(option.label) &&
+          option.options && (
+            <div style={{ marginLeft: "1rem" }}>
+              <div style={{ marginLeft: "2rem" }}>
+                {renderOptions(option.options)}
+              </div>
             </div>
           )}
       </React.Fragment>
