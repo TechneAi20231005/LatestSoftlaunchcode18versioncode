@@ -11,7 +11,8 @@ import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTy
 import Alert from "../../../components/Common/Alert";
 import DataTable from "react-data-table-component";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 // for task type created customoption function
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
@@ -194,6 +195,129 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
 //   );
 // };
 
+// const CustomMenuList = ({ options, onSelect }) => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [openOptions, setOpenOptions] = useState([]);
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const handleKeyDown = (e) => {
+//     if (e.key === "Enter") {
+//       setOpenOptions(true);
+//     }
+//   };
+
+//   const toggleOptions = (label) => {
+//     if (openOptions.includes(label)) {
+//       setOpenOptions(openOptions.filter((item) => item !== label));
+//     } else {
+//       setOpenOptions([...openOptions, label]);
+//     }
+//   };
+
+//   const handleSelect = (label, ID) => {
+//     setSelectedOption(label);
+//     onSelect(label, ID);
+//     setOpenOptions([]);
+//     setIsMenuOpen(!isMenuOpen);
+//   };
+
+//   // Filter options based on search term
+//   // const filteredOptions = options.filter((option) =>
+//   //   option.label.toLowerCase().includes(searchTerm.toLowerCase())
+//   // );
+//   const filterOptions = (options, term) => {
+//     return options.filter((option) => {
+//       const lowerCaseTerm = term.toLowerCase();
+//       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+//       const matchChildOptions =
+//         option.options && option.options.length > 0
+//           ? filterOptions(option.options, term).length > 0
+//           : false;
+
+//       return matchLabel || matchChildOptions;
+//     });
+//   };
+
+//   const filteredOptions = filterOptions(options, searchTerm);
+//   const renderOptions = (options) => {
+//     return options.map((option) => (
+//       <React.Fragment key={option.label}>
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             padding: "0.5rem",
+//             // borderBottom: "1px solid #ccc",
+//             // fontWeight:
+//             //   option.label === "Primary" || option.options.length > 0
+//             //     ? "bold"
+//             //     : "normal",
+//           }}
+//         >
+//           {option.options.length > 0 && (
+//             <i
+//               className="icofont-rounded-right"
+//               style={{ marginRight: "5px", cursor: "pointer" }}
+//               onClick={() => toggleOptions(option.label)}
+//             ></i>
+//           )}
+
+//           <div
+//             onClick={() => handleSelect(option.label, option.ID)}
+//             style={{ cursor: "pointer" }}
+//           >
+//             {option.label}
+//           </div>
+//         </div>
+//         {openOptions &&
+//           openOptions.length > 0 &&
+//           openOptions.includes(option.label) &&
+//           option.options && (
+//             <div style={{ marginLeft: "20px" }}>
+//               {renderOptions(option.options)}
+//             </div>
+//           )}
+//       </React.Fragment>
+//     ));
+//   };
+
+//   return (
+//     <>
+//       {isMenuOpen === false && (
+//         <div
+//           style={{
+//             position: "relative",
+//             width: "100%", // Adjust the width here
+//             // maxHeight: "400px", // Adjust the maxHeight here
+//             overflowY: "auto",
+//             border: "1px solid #ccc", // Border style
+//             borderWidth: "2px", // Border width
+//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+//             backgroundColor: "white",
+//             borderBottomRightRadius: "4px", // Border radius
+//             borderBottomLeftRadius: "4px", // Border radius
+//           }}
+//           tabIndex={0}
+//           onKeyDown={handleKeyDown}
+//         >
+//           <input
+//             type="text"
+//             placeholder="Search..."
+//             style={{
+//               padding: "8px",
+//               border: "none",
+//               width: "100%",
+//               boxSizing: "border-box",
+//             }}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//           {renderOptions(filteredOptions)}
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
 const CustomMenuList = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openOptions, setOpenOptions] = useState([]);
@@ -220,10 +344,6 @@ const CustomMenuList = ({ options, onSelect }) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Filter options based on search term
-  // const filteredOptions = options.filter((option) =>
-  //   option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
   const filterOptions = (options, term) => {
     return options.filter((option) => {
       const lowerCaseTerm = term.toLowerCase();
@@ -238,6 +358,7 @@ const CustomMenuList = ({ options, onSelect }) => {
   };
 
   const filteredOptions = filterOptions(options, searchTerm);
+
   const renderOptions = (options) => {
     return options.map((option) => (
       <React.Fragment key={option.label}>
@@ -245,16 +366,17 @@ const CustomMenuList = ({ options, onSelect }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            borderBottom: "1px solid #ccc",
-            fontWeight:
-              option.label === "Primary" || option.options.length > 0
-                ? "bold"
-                : "normal",
+            padding: "0.5rem",
           }}
         >
           {option.options.length > 0 && (
             <i
-              className="icofont-rounded-right"
+              // className="icofont-rounded-right"
+              className={
+                openOptions.includes(option.label)
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
               style={{ marginRight: "5px", cursor: "pointer" }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -285,15 +407,15 @@ const CustomMenuList = ({ options, onSelect }) => {
         <div
           style={{
             position: "relative",
-            width: "100%", // Adjust the width here
-            maxHeight: "400px", // Adjust the maxHeight here
+            width: "100%",
+
             overflowY: "auto",
-            border: "1px solid #ccc", // Border style
-            borderWidth: "2px", // Border width
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+            border: "1px solid #ccc",
+            borderWidth: "2px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             backgroundColor: "white",
-            borderBottomRightRadius: "4px", // Border radius
-            borderBottomLeftRadius: "4px", // Border radius
+            borderBottomRightRadius: "4px",
+            borderBottomLeftRadius: "4px",
           }}
           tabIndex={0}
           onKeyDown={handleKeyDown}
@@ -309,7 +431,9 @@ const CustomMenuList = ({ options, onSelect }) => {
             }}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {renderOptions(filteredOptions)}
+          <div style={{ overflowY: "auto" }}>
+            {renderOptions(filteredOptions)}
+          </div>
         </div>
       )}
     </>
@@ -410,10 +534,138 @@ const CustomMenuList = ({ options, onSelect }) => {
 //   );
 // };
 
-const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
+// const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [openOptions, setOpenOptions] = useState([]);
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const toggleOptions = (label) => {
+//     if (openOptions.includes(label)) {
+//       setOpenOptions(openOptions.filter((item) => item !== label));
+//     } else {
+//       setOpenOptions([...openOptions, label]);
+//     }
+//   };
+
+//   const closeDropdown = () => {
+//     setOpenOptions([]); // Close the dropdown by resetting openOptions
+//   };
+
+//   const handleSelect = (label, ID) => {
+//     // Close all open options except the one that was just selected
+//     setOpenOptions([]);
+//     closeDropdown();
+//     // Pass the label and ID to the provided onSelect function
+//     onSelect(label, ID);
+//     setIsMenuOpen(!isMenuOpen);
+//   };
+
+//   // Search function for nested options
+//   const searchOptions = (options, term) => {
+//     let results = [];
+//     for (const option of options) {
+//       if (option.label.toLowerCase().includes(term.toLowerCase())) {
+//         results.push(option);
+//       }
+//       if (option.options && option.options.length > 0) {
+//         const nestedResults = searchOptions(option.options, term);
+//         results = results.concat(nestedResults);
+//       }
+//     }
+//     return results;
+//   };
+
+//   // Filter options based on search term
+//   const filteredOptions = searchOptions(options, searchTerm);
+
+//   const renderOptions = (options) => {
+//     return options.map((option) => (
+//       <React.Fragment key={option.label}>
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             // borderBottom: "1px solid #ccc",
+//             // fontWeight:
+//             //   option.label === "Primary" || option.options.length > 0
+//             //     ? "bold"
+//             //     : "normal",
+//           }}
+//         >
+//           {option.options.length > 0 && (
+//             <i
+//               className="icofont-rounded-right"
+//               style={{
+//                 marginRight: "5px",
+//                 cursor: "pointer",
+//               }}
+//               onClick={() => toggleOptions(option.label)}
+//             ></i>
+//           )}
+//           <CustomOptionTicket
+//             label={option.label}
+//             options={option.options}
+//             onClick={handleSelect}
+//             ID={option.ID}
+//             closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
+//           />
+//         </div>
+//         {openOptions.includes(option.label) && option.options && (
+//           <div style={{ marginLeft: "20px" }}>
+//             {renderOptions(option.options)}
+//           </div>
+//         )}
+//       </React.Fragment>
+//     ));
+//   };
+
+//   return (
+//     <>
+//       {isMenuOpen === false && (
+//         <div
+//           style={{
+//             position: "absolute",
+//             top: "100%",
+//             left: "0",
+//             width: "100%", // Adjust the width here
+//             // maxHeight: "400px", // Adjust the maxHeight here
+//             overflowY: "auto",
+//             border: "1px solid #ccc", // Border style
+//             borderWidth: "2px", // Border width
+//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+//             backgroundColor: "white",
+//             borderBottomRightRadius: "4px", // Border radius
+//             borderBottomLeftRadius: "4px", // Border radius
+//           }}
+//         >
+//           <input
+//             type="text"
+//             placeholder="Search..."
+//             style={{
+//               padding: "8px",
+//               border: "none",
+//               width: "100%",
+//               boxSizing: "border-box",
+//             }}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//           {renderOptions(filteredOptions)}
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openOptions, setOpenOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setOpenOptions(true);
+    }
+  };
+
   const toggleOptions = (label) => {
     if (openOptions.includes(label)) {
       setOpenOptions(openOptions.filter((item) => item !== label));
@@ -422,36 +674,27 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
     }
   };
 
-  const closeDropdown = () => {
-    setOpenOptions([]); // Close the dropdown by resetting openOptions
-  };
-
   const handleSelect = (label, ID) => {
-    // Close all open options except the one that was just selected
-    setOpenOptions([]);
-    closeDropdown();
-    // Pass the label and ID to the provided onSelect function
+    setSelectedOption(label);
     onSelect(label, ID);
+    setOpenOptions([]);
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Search function for nested options
-  const searchOptions = (options, term) => {
-    let results = [];
-    for (const option of options) {
-      if (option.label.toLowerCase().includes(term.toLowerCase())) {
-        results.push(option);
-      }
-      if (option.options && option.options.length > 0) {
-        const nestedResults = searchOptions(option.options, term);
-        results = results.concat(nestedResults);
-      }
-    }
-    return results;
+  const filterOptions = (options, term) => {
+    return options.filter((option) => {
+      const lowerCaseTerm = term.toLowerCase();
+      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const matchChildOptions =
+        option.options && option.options.length > 0
+          ? filterOptions(option.options, term).length > 0
+          : false;
+
+      return matchLabel || matchChildOptions;
+    });
   };
 
-  // Filter options based on search term
-  const filteredOptions = searchOptions(options, searchTerm);
+  const filteredOptions = filterOptions(options, searchTerm);
 
   const renderOptions = (options) => {
     return options.map((option) => (
@@ -460,36 +703,37 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            borderBottom: "1px solid #ccc",
-            fontWeight:
-              option.label === "Primary" || option.options.length > 0
-                ? "bold"
-                : "normal",
+            padding: "0.5rem",
           }}
         >
           {option.options.length > 0 && (
             <i
-              className="icofont-rounded-right"
-              style={{
-                marginRight: "5px",
-                cursor: "pointer",
-              }}
+              // className="icofont-rounded-right"
+              className={
+                openOptions.includes(option.label)
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{ marginRight: "5px", cursor: "pointer" }}
               onClick={() => toggleOptions(option.label)}
             ></i>
           )}
-          <CustomOptionTicket
-            label={option.label}
-            options={option.options}
-            onClick={handleSelect}
-            ID={option.ID}
-            closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
-          />
-        </div>
-        {openOptions.includes(option.label) && option.options && (
-          <div style={{ marginLeft: "20px" }}>
-            {renderOptions(option.options)}
+
+          <div
+            onClick={() => handleSelect(option.label, option.ID)}
+            style={{ cursor: "pointer" }}
+          >
+            {option.label}
           </div>
-        )}
+        </div>
+        {openOptions &&
+          openOptions.length > 0 &&
+          openOptions.includes(option.label) &&
+          option.options && (
+            <div style={{ marginLeft: "20px" }}>
+              {renderOptions(option.options)}
+            </div>
+          )}
       </React.Fragment>
     ));
   };
@@ -499,19 +743,19 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
       {isMenuOpen === false && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: "0",
-            width: "100%", // Adjust the width here
-            maxHeight: "400px", // Adjust the maxHeight here
+            position: "relative",
+            width: "100%",
+
             overflowY: "auto",
-            border: "1px solid #ccc", // Border style
-            borderWidth: "2px", // Border width
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
+            border: "1px solid #ccc",
+            borderWidth: "2px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             backgroundColor: "white",
-            borderBottomRightRadius: "4px", // Border radius
-            borderBottomLeftRadius: "4px", // Border radius
+            borderBottomRightRadius: "4px",
+            borderBottomLeftRadius: "4px",
           }}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
         >
           <input
             type="text"
@@ -524,7 +768,9 @@ const CustomMenuListTicket = ({ options, onSelect, ID, selectedOptionId }) => {
             }}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {renderOptions(filteredOptions)}
+          <div style={{ overflowY: "auto" }}>
+            {renderOptions(filteredOptions)}
+          </div>
         </div>
       )}
     </>
@@ -544,10 +790,15 @@ function TaskAndTicketTypeMaster(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const [parentTaskName, setParentTaskName] = useState(null);
+  const [parentTicketName, setParentTicketName] = useState(null);
+
   const handleSelect = (label, ID, isMenuOpen) => {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     closeAllDropdowns();
+    setParentTaskName("");
+    setParentTicketName("");
   };
   const toggleDropdown = (e) => {
     setIsOpen(!isOpen);
@@ -589,6 +840,8 @@ function TaskAndTicketTypeMaster(props) {
                 type: temp[key].type,
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
+                parent_name: temp[key].parent_name,
+
                 remark: temp[key].remark,
                 is_active: temp[key].is_active,
                 created_at: temp[key].created_at,
@@ -603,13 +856,14 @@ function TaskAndTicketTypeMaster(props) {
               exportTempData.push({
                 SrNo: exportTempData.length + 1,
 
-                id: temp[i].id,
+                // id: temp[i].id,
                 type: temp[i].type,
 
-                parent_name: temp[i].parent_name,
                 type_name: temp[i].type_name,
+                parent_name: temp[i].parent_name,
+
                 remark: temp[i].remark,
-                is_active: temp[i].is_active,
+                is_active: temp[i].is_active == 1 ? "Active" : "Deactive",
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
@@ -650,7 +904,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleSelectOptionClick = () => {
+  const handleSelectOptionClick = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
@@ -757,6 +1011,7 @@ function TaskAndTicketTypeMaster(props) {
                 type: temp[key].type,
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
+                parent_name: temp[key].parent_name,
                 remark: temp[key].remark,
                 is_active: temp[key].is_active,
                 created_at: temp[key].created_at,
@@ -854,11 +1109,39 @@ function TaskAndTicketTypeMaster(props) {
         }
       },
     },
+
+    // {
+    //   name: "Type Name",
+    //   selector: (row) => row.type_name,
+    //   sortable: true,
+    //   width: "125px",
+    // },
+
     {
       name: "Type Name",
+      width: "150px",
       selector: (row) => row.type_name,
       sortable: true,
-      width: "125px",
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.type_name && row.type_name.length < 120
+                    ? row.type_name
+                    : row.type_name.substring(0, 120) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
     },
 
     {
@@ -969,49 +1252,99 @@ function TaskAndTicketTypeMaster(props) {
     }
     setNotify(null);
     const form = new FormData(e.target);
-    if (selectedOptionId === "Primary") {
-      form.append("parent_id", 0);
+    if (!selectedOption && !id) {
+      setParentTaskName("Please select a parent task type.");
+      setParentTicketName("Please select a parent ticket type.");
     } else {
-      form.append("parent_id", selectedOptionId);
-    }
-    form.append("type", selectedType);
+      setParentTaskName(""); // Clear the error message if present
+      setParentTicketName("");
 
-    if (!id) {
-      await new TaskTicketTypeService().postType(form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            loadData();
+      if (selectedOptionId === "Primary") {
+        form.append("parent_id", 0);
+      } else {
+        form.append(
+          "parent_id",
+          // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+          selectedOptionId
+            ? selectedOptionId
+            : modal?.modalData?.parent_name !== null
+            ? modal?.modalData?.parent_name
+            : "Primary"
+        );
+      }
+
+      form.append("type", selectedType);
+
+      if (!id) {
+        await new TaskTicketTypeService().postType(form).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false });
+
+              loadData();
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
           } else {
             setNotify({ type: "danger", message: res.data.message });
           }
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
-    } else {
-      await new TaskTicketTypeService()._updateType(id, form).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setModal({ showModal: false });
-            loadData();
+        });
+      } else {
+        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false });
+              loadData();
+            } else {
+              setNotify({ type: "danger", message: res.data.message });
+            }
           } else {
+            // setLoading(false);
             setNotify({ type: "danger", message: res.data.message });
           }
-        } else {
-          // setLoading(false);
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      });
+        });
+      }
+      // setLoading(false);
     }
-    // setLoading(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    // Check if the modal is closed
+    if (!modal.showModal) {
+      setIsMenuOpen(false); // Close the menu when modal is closed
+      setSelectedOption(null);
+    }
+  }, [modal.showModal]);
+
+  function extractLabelsAndParentIDs(taskData) {
+    const result = [];
+
+    function extractLabelsAndParentIDsRecursive(obj, id = null) {
+      if (obj.type_name) {
+        result.push({ label: obj.type_name, parentId: id });
+      }
+      if (obj.children && obj.children.length > 0) {
+        obj.children.forEach((option) => {
+          extractLabelsAndParentIDsRecursive(option, obj.id);
+        });
+      }
+    }
+
+    taskData.forEach((item) => {
+      extractLabelsAndParentIDsRecursive(item);
+    });
+
+    return result;
+  }
+
+  // Assuming your data is stored in a variable called `data`
+  const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
 
   return (
     <div className="container-xxl">
@@ -1086,7 +1419,11 @@ function TaskAndTicketTypeMaster(props) {
             <ExportToExcel
               className="btn btn-sm btn-danger"
               apiData={exportData}
-              fileName="State master Records"
+              fileName={
+                selectedType === "TASK"
+                  ? "Task master Records"
+                  : "Ticket Master Record"
+              }
             />
           </div>
         </div>
@@ -1170,18 +1507,24 @@ function TaskAndTicketTypeMaster(props) {
                           }}
                         >
                           <div
-                            style={{
-                              padding: "8px",
-                              border: "1px solid #ccc",
-                              cursor: "pointer",
-                              width: "100%",
-                              borderRadius: "1px",
-                            }}
+                            // style={{
+                            //   padding: "8px",
+                            //   border: "1px solid #ccc",
+                            //   cursor: "pointer",
+                            //   width: "100%",
+                            //   borderRadius: "1px",
+                            // }}
+                            className="form-control form-control-sm"
                             onClick={(e) => handleSelectOptionClick(e)}
                           >
+                            {/* {selectedOption
+                              ? selectedOption
+                              : modal?.modalData?.parent_name} */}
                             {selectedOption
                               ? selectedOption
-                              : "Select an option"}
+                              : modal?.modalData?.parent_name !== null
+                              ? modal?.modalData?.parent_name
+                              : "Primary"}
                           </div>
                           {isMenuOpen && (
                             <div
@@ -1189,6 +1532,14 @@ function TaskAndTicketTypeMaster(props) {
                                 position: "absolute",
                                 width: "100%", // Set the width to 100% to match the parent's width
                                 top: "100%",
+
+                                maxHeight: "150px", // Adjust the maxHeight here as needed
+                                overflowY: "auto", // Enable vertical scrolling
+                                scrollbarWidth: "none", // Hide scrollbar in Firefox
+                                msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                                "&::-webkit-scrollbar": {
+                                  display: "none", // Hide scrollbar in Webkit browsers
+                                },
                               }}
                             >
                               <CustomMenuListTicket
@@ -1200,6 +1551,15 @@ function TaskAndTicketTypeMaster(props) {
                             </div>
                           )}
                         </div>
+                        {parentTicketName && (
+                          <small
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            {parentTicketName}
+                          </small>
+                        )}
                       </div>
 
                       <div className="col-sm-12 mt-2">
@@ -1213,6 +1573,7 @@ function TaskAndTicketTypeMaster(props) {
                           id="type_name"
                           name="type_name"
                           ref={typeNameRef}
+                          maxLength={100}
                           required
                           defaultValue={
                             modal.modalData && modal?.modalData?.type_name
@@ -1230,6 +1591,7 @@ function TaskAndTicketTypeMaster(props) {
                           className="form-control form-control-sm"
                           id="remark"
                           name="remark"
+                          maxLength={100}
                           defaultValue={
                             modal.modalData && modal.modalData.remark
                           }
@@ -1246,45 +1608,74 @@ function TaskAndTicketTypeMaster(props) {
                       Parent Task Type: <Astrick color="red" size="13px" />
                     </label>
 
-                    <div>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        width: "100%",
+                      }}
+                    >
                       <div
-                        style={{
-                          position: "relative",
-                          display: "inline-block",
-                          width: "100%",
-                        }}
+                        // style={{
+                        //   padding: "8px",
+                        //   border: "1px solid #ccc",
+                        //   cursor: "pointer",
+                        //   width: "100%",
+                        //   borderRadius: "1px",
+                        // }}
+                        className="form-control form-control-sm"
+                        onClick={(e) => handleSelectOptionClick(e)}
                       >
+                        {/* {selectedOption
+                          ? selectedOption
+                          : modal?.modalData?.parent_name} */}
+
+                        {selectedOption
+                          ? selectedOption
+                          : modal?.modalData?.parent_name !== null
+                          ? modal?.modalData?.parent_name
+                          : "Primary"}
+                      </div>
+                      {isMenuOpen && (
                         <div
                           style={{
-                            padding: "8px",
-                            border: "1px solid #ccc",
-                            cursor: "pointer",
-                            width: "100%",
-                            borderRadius: "1px",
-                          }}
-                          onClick={(e) => handleSelectOptionClick(e)}
-                        >
-                          {selectedOption ? selectedOption : "Select an option"}
-                        </div>
+                            position: "absolute",
+                            width: "100%", // Set the width to 100% to match the parent's width
+                            top: "100%",
 
-                        {isMenuOpen && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              width: "100%", // Set the width to 100% to match the parent's width
-                              top: "100%",
-                            }}
-                          >
-                            <CustomMenuList
-                              options={transformedOptions}
-                              onSelect={(label, ID) => handleSelect(label, ID)}
-                              closeAllDropdowns={closeAllDropdowns}
-                              isMenuOpen={isMenuOpen}
-                              onClick={(e) => handleSelectOptionClick(e)}
-                            />
-                          </div>
-                        )}
-                      </div>
+                            maxHeight: "150px", // Adjust the maxHeight here as needed
+                            overflowY: "auto", // Enable vertical scrolling
+                            scrollbarWidth: "none", // Hide scrollbar in Firefox
+                            msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                            "&::-webkit-scrollbar": {
+                              display: "none", // Hide scrollbar in Webkit browsers
+                            },
+                          }}
+                        >
+                          <CustomMenuList
+                            options={transformedOptions}
+                            onSelect={(label, ID) => handleSelect(label, ID)}
+                            closeAllDropdowns={closeAllDropdowns}
+                            isMenuOpen={isMenuOpen}
+                            onClick={(e) => handleSelectOptionClick(e)}
+                          />
+                        </div>
+                      )}
+
+                      {/* {!selectedOptionId && (
+                        <div style={{ color: "red", marginTop: "5px" }}>
+                          Please select a parent task type.
+                        </div>
+                      )} */}
+                      {parentTaskName && (
+                        <small
+                          style={{
+                            color: "red",
+                          }}
+                        >
+                          {parentTaskName}
+                        </small>
+                      )}
                     </div>
 
                     <div className="col-sm-12 mt-2">
@@ -1298,6 +1689,7 @@ function TaskAndTicketTypeMaster(props) {
                         id="type_name"
                         name="type_name"
                         ref={typeNameRef}
+                        maxLength={100}
                         required
                         defaultValue={
                           modal.modalData && modal?.modalData?.type_name
@@ -1312,6 +1704,7 @@ function TaskAndTicketTypeMaster(props) {
                       <textarea
                         type="text"
                         rows={4}
+                        maxLength={100}
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
