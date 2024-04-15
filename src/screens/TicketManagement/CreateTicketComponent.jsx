@@ -859,8 +859,10 @@ export default function CreateTicketComponent() {
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
+      console.log(res);
       if (res.status == 200) {
         if (res.data.status == 1) {
+          console.log(res.data);
           var defaultValue = [{ value: "", label: "Select User" }];
 
           const dropdown = res.data.data
@@ -870,6 +872,7 @@ export default function CreateTicketComponent() {
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
+          console.log("dropdown", dropdown);
 
           if (data.approach == "RW") {
             defaultValue = dropdown;

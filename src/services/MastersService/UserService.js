@@ -17,7 +17,7 @@ export default class UserService {
         "Content-Type": "application/json",
       },
     };
-      
+
     return axios.get(_URL, config);
   }
 
@@ -33,15 +33,12 @@ export default class UserService {
   //   };
 
   //   const url = `${_URL}?type=EXPORT`
-      
+
   //   return axios.get(url, config);
 
   // }
 
-
-  
-
-getExportTicket() {
+  getExportTicket() {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -53,14 +50,10 @@ getExportTicket() {
     };
 
     // const url = `${_URL}?type=EXPORT`
-      
-    return axios.get(_URL + "/export" +"/getData", config);
 
+    return axios.get(_URL + "/export" + "/getData", config);
   }
 
-
-
-  
   getUserForMyTickets(queryParams) {
     const token = localStorage.getItem("jwt_token");
     const config = {
@@ -71,10 +64,8 @@ getExportTicket() {
       },
     };
     const url = `${_URL}?input_required=${queryParams}`;
-      
-    return axios.get(url, config);
 
-    
+    return axios.get(url, config);
   }
 
   // getUsers(id){
@@ -95,12 +86,11 @@ getExportTicket() {
     return axios.get(_URL + "/except/" + id, config);
   }
 
-//   getUserWithMultipleDepartment() {
-//     return axios.get(_URL + "/getUserWithMultipleDepartment");
-//   }
+  //   getUserWithMultipleDepartment() {
+  //     return axios.get(_URL + "/getUserWithMultipleDepartment");
+  //   }
 
-
-getUserWithMultipleDepartment(id) {
+  getUserWithMultipleDepartment(id) {
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -113,7 +103,6 @@ getUserWithMultipleDepartment(id) {
 
     return axios.get(_URL + "/getUserWithMultipleDepartment", config);
   }
-
 
   postUser(payload) {
     payload.append("tenant_id", userSessionData.tenantId);
@@ -131,15 +120,14 @@ getUserWithMultipleDepartment(id) {
       },
     };
 
-    return axios.post(_URL,payload, config);
+    return axios.post(_URL, payload, config);
   }
 
-//   getUserById(id) {
-//     return axios.get(_URL + "/" + id);
-//   }
+  //   getUserById(id) {
+  //     return axios.get(_URL + "/" + id);
+  //   }
 
-
-getUserById(id) {
+  getUserById(id) {
     const token = localStorage.getItem("jwt_token");
     const config = {
       headers: {
@@ -148,7 +136,7 @@ getUserById(id) {
         "Content-Type": "application/json",
       },
     };
-    return axios.get(_URL + "/" + id,config);
+    return axios.get(_URL + "/" + id, config);
   }
 
   updateUser(id, payload) {
@@ -156,7 +144,7 @@ getUserById(id) {
     payload.append("updated_by", localStorage.getItem("id"));
     payload.append("updated_at", getDateTime());
     // return axios.post(_URL + "/" + id, payload);
-    
+
     const token = localStorage.getItem("jwt_token");
 
     const config = {
@@ -167,10 +155,8 @@ getUserById(id) {
       },
     };
 
-    return axios.post(_URL + "/" + id,payload, config);
+    return axios.post(_URL + "/" + id, payload, config);
   }
-
-  
 
   updateAccountDetails(id, payload) {
     payload.append("updated_by", localStorage.getItem("id"));
@@ -183,11 +169,11 @@ getUserById(id) {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         // "Content-Type": "application/json",
-        'Content-Type': 'multipart/form-data'
+        "Content-Type": "multipart/form-data",
       },
     };
 
-    return axios.post(_URL + "/updateAccountDetails/" + id,payload, config);
+    return axios.post(_URL + "/updateAccountDetails/" + id, payload, config);
   }
 
   updatePasswordDetails(id, payload) {
@@ -204,6 +190,6 @@ getUserById(id) {
       },
     };
 
-    return axios.post(_URL + "/updatePasswordDetails/" + id,payload, config);
+    return axios.post(_URL + "/updatePasswordDetails/" + id, payload, config);
   }
 }
