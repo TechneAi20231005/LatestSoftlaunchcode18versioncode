@@ -239,7 +239,7 @@ export default function ViewTicketComponent({ match }) {
 
             <div className="col-md-4">
               <StatusCard
-                progress={data ? data.type_name : ""}
+                progress={data ? data.parent_name : ""}
                 progressBg="bg-success"
                 iconClass="icofont-user fs-4"
                 iconbg="bg-lightblue"

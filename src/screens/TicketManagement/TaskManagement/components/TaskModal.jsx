@@ -45,14 +45,6 @@ export default function TaskModal(props) {
   // const [taskDropdown, setTaskDropdown] = useState();
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
-    // const gettodatevalue = e.target.value;
-    // const setdateformat = gettodatevalue.split('-');
-    // const settoyear = setdateformat[0];
-    // const settomonth = setdateformat[1];
-    // const settodate = setdateformat[2];
-    // const settodateformat = settoyear + "" + settomonth + "" + settodate;
-    // setTodate(gettodatevalue);
-    // setTodateformat(settodateformat);
   };
 
   const handleSelect = (label, ID) => {
@@ -63,16 +55,7 @@ export default function TaskModal(props) {
 
     // closeAllDropdowns();
   };
-  const handleToDate = (e) => {
-    // const getfromdatevalue = e.target.value;
-    // const setfromformat = getfromdatevalue.split("-");
-    // const setfromyear = setfromformat[0];
-    // const setfrommonth = setfromformat[1];
-    // const setfromdate = setfromformat[2];
-    // const setfromformatdate = setfromyear + "" + setfrommonth + "" + setfromdate;
-    // setFromdate(getfromdatevalue);
-    // setFromdateformat(setfromformatdate);
-  };
+  const handleToDate = (e) => {};
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -131,6 +114,8 @@ export default function TaskModal(props) {
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         setOpenOptions(true);
@@ -165,49 +150,69 @@ export default function TaskModal(props) {
       });
     };
 
-    const filteredOptions = filterOptions(options, searchTerm);
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
 
     const renderOptions = (options) => {
-      return options.map((option) => (
+      return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              padding: "0.5rem",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
             }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
           >
-            {option.options.length > 0 && (
-              <i
-                // className="icofont-rounded-right"
-                className={
-                  openOptions.includes(option.label)
-                    ? "icofont-rounded-down"
-                    : "icofont-rounded-right"
-                }
-                style={{ marginRight: "5px", cursor: "pointer" }}
-                onClick={() => toggleOptions(option.label)}
-              ></i>
-            )}
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
 
             <div
               onClick={() => handleSelect(option.label, option.ID)}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
             >
               {option.label}
             </div>
           </div>
+
           {openOptions &&
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "20px" }}>
-                {renderOptions(option.options)}
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
               </div>
             )}
         </React.Fragment>
       ));
     };
+    const filteredOptions = filterOptions(options, searchTerm);
 
     return (
       <>
@@ -216,7 +221,8 @@ export default function TaskModal(props) {
             style={{
               position: "relative",
               width: "100%",
-
+              zIndex: 1000,
+              maxHeight: "300px",
               overflowY: "auto",
               border: "1px solid #ccc",
               borderWidth: "2px",
@@ -789,7 +795,7 @@ export default function TaskModal(props) {
 
             <div>
               <label className="form-label font-weight-bold" readOnly={true}>
-                Parent Task Type: <Astrick color="red" size="13px" />
+                Task Type Name: <Astrick color="red" size="13px" />
               </label>
 
               <div
@@ -800,20 +806,9 @@ export default function TaskModal(props) {
                 }}
               >
                 <div
-                  // style={{
-                  //   padding: "8px",
-                  //   border: "1px solid #ccc",
-                  //   cursor: "pointer",
-                  //   width: "100%",
-                  //   borderRadius: "1px",
-                  // }}
                   className="form-control form-control-sm"
                   onClick={(e) => handleSelectOptionClick(e)}
                 >
-                  {/* {selectedOption
-                          ? selectedOption
-                          : modal?.modalData?.parent_name} */}
-
                   {selectedOption ? selectedOption : props?.data?.parent_name}
                 </div>
                 {isMenuOpen && (
@@ -824,7 +819,7 @@ export default function TaskModal(props) {
                       top: "100%",
 
                       maxHeight: "150px", // Adjust the maxHeight here as needed
-                      overflowY: "auto", // Enable vertical scrolling
+                      // overflowY: "auto", // Enable vertical scrolling
                       scrollbarWidth: "none", // Hide scrollbar in Firefox
                       msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                       "&::-webkit-scrollbar": {
@@ -841,12 +836,6 @@ export default function TaskModal(props) {
                     />
                   </div>
                 )}
-
-                {/* {!selectedOptionId && (
-                        <div style={{ color: "red", marginTop: "5px" }}>
-                          Please select a parent task type.
-                        </div>
-                      )} */}
               </div>
               {parentTaskName && (
                 <small
@@ -858,51 +847,6 @@ export default function TaskModal(props) {
                 </small>
               )}
             </div>
-
-            {/* <div className="col-md-12">
-              <label className="form-label">
-                <b>Parent Task Type : </b>
-              </label>
-              {parent && (
-                <Select
-                  name="parent_id"
-                  id="parent_id"
-                  options={parent}
-                  onChange={(e) => handleParentchange(e)}
-                  isDisabled={props.data.parent_id}
-                  defaultValue={
-                    props.data &&
-                    tasktypeDropdown &&
-                    tasktypeDropdown.filter(
-                      (d) => d.value == props.data.parent_id
-                    )
-                  }
-                />
-              )}
-            </div>
-            {tasktypeDropdown && (
-              <div className="col-md-12">
-                <label className="form-label">
-                  <b>Task Type Name : </b>
-                </label>
-                {tasktypeDropdown && (
-                  <Select
-                    name="task_type_id"
-                    id="task_type_id"
-                    ref={typeRef}
-                    options={tasktypeDropdown}
-                    isDisabled={props.data.task_type_id}
-                    defaultValue={
-                      props.data &&
-                      tasktypeDropdown &&
-                      tasktypeDropdown.filter(
-                        (d) => d.value == props.data.task_type_id
-                      )
-                    }
-                  />
-                )}
-              </div>
-            )} */}
 
             {/* *****************START DATE, END DATE , TASK HOURS**************** */}
             <div className="row mt-3">
@@ -1358,8 +1302,6 @@ export default function TaskModal(props) {
                   );
                 })}
             </div>
-            {/* {props && JSON.stringify(props.expectedSolveDate)} */}
-            {/* { document.getElementById("task_type_group_activity").checked} */}
           </Modal.Body>
           <Modal.Footer>
             <button
@@ -1369,14 +1311,6 @@ export default function TaskModal(props) {
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
               Submit
-              {/* {loading ? (
-                <span>
-                  <i className="fa fa-spinner fa-spin" /> Loading...
-                </span>
-              ) : (
-                "Submit"
-              )} */}
-              {/* Submit */}
             </button>
             <button
               type="button"
