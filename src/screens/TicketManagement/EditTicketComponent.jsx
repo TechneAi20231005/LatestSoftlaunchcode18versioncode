@@ -338,128 +338,6 @@ export default function EditTicketComponent({ match }) {
     );
   };
 
-  // const CustomMenuListTicket = ({ options, onSelect }) => {
-  //   const [searchTerm, setSearchTerm] = useState("");
-  //   const [openOptions, setOpenOptions] = useState([]);
-  //   const [selectedOption, setSelectedOption] = useState(null);
-  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  //   const handleKeyDown = (e) => {
-  //     if (e.key === "Enter") {
-  //       setOpenOptions(true);
-  //     }
-  //   };
-
-  //   const toggleOptions = (label) => {
-  //     if (openOptions.includes(label)) {
-  //       setOpenOptions(openOptions.filter((item) => item !== label));
-  //     } else {
-  //       setOpenOptions([...openOptions, label]);
-  //     }
-  //   };
-
-  //   const handleSelect = (label, ID) => {
-  //     setSelectedOption(label);
-  //     onSelect(label, ID);
-  //     setOpenOptions([]);
-  //     setIsMenuOpen(!isMenuOpen);
-  //   };
-
-  //   const filterOptions = (options, term) => {
-  //     return options.filter((option) => {
-  //       const lowerCaseTerm = term.toLowerCase();
-  //       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
-  //       const matchChildOptions =
-  //         option.options && option.options.length > 0
-  //           ? filterOptions(option.options, term).length > 0
-  //           : false;
-
-  //       return matchLabel || matchChildOptions;
-  //     });
-  //   };
-
-  //   const filteredOptions = filterOptions(options, searchTerm);
-
-  //   const renderOptions = (options) => {
-  //     return options.map((option) => (
-  //       <React.Fragment key={option.label}>
-  //         <div
-  //           style={{
-  //             display: "flex",
-  //             alignItems: "center",
-  //             padding: "0.5rem",
-  //           }}
-  //         >
-  //           {option.options.length > 0 && (
-  //             <i
-  //               // className="icofont-rounded-right"
-  //               className={
-  //                 openOptions.includes(option.label)
-  //                   ? "icofont-rounded-down"
-  //                   : "icofont-rounded-right"
-  //               }
-  //               style={{ marginRight: "5px", cursor: "pointer" }}
-  //               onClick={() => toggleOptions(option.label)}
-  //             ></i>
-  //           )}
-
-  //           <div
-  //             onClick={() => handleSelect(option.label, option.ID)}
-  //             style={{ cursor: "pointer" }}
-  //           >
-  //             {option.label}
-  //           </div>
-  //         </div>
-  //         {openOptions &&
-  //           openOptions.length > 0 &&
-  //           openOptions.includes(option.label) &&
-  //           option.options && (
-  //             <div style={{ marginLeft: "20px" }}>
-  //               {renderOptions(option.options)}
-  //             </div>
-  //           )}
-  //       </React.Fragment>
-  //     ));
-  //   };
-
-  //   return (
-  //     <>
-  //       {isMenuOpen === false && (
-  //         <div
-  //           style={{
-  //             position: "relative",
-  //             width: "100%",
-
-  //             overflowY: "auto",
-  //             border: "1px solid #ccc",
-  //             borderWidth: "2px",
-  //             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  //             backgroundColor: "white",
-  //             borderBottomRightRadius: "4px",
-  //             borderBottomLeftRadius: "4px",
-  //           }}
-  //           tabIndex={0}
-  //           onKeyDown={handleKeyDown}
-  //         >
-  //           <input
-  //             type="text"
-  //             placeholder="Search..."
-  //             style={{
-  //               padding: "8px",
-  //               border: "none",
-  //               width: "100%",
-  //               boxSizing: "border-box",
-  //             }}
-  //             onChange={(e) => setSearchTerm(e.target.value)}
-  //           />
-  //           <div style={{ overflowY: "auto" }}>
-  //             {renderOptions(filteredOptions)}
-  //           </div>
-  //         </div>
-  //       )}
-  //     </>
-  //   );
-  // };
-
   const CustomMenuListTicket = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
@@ -1443,7 +1321,7 @@ export default function EditTicketComponent({ match }) {
                                 zIndex: "1", // Ensure the menu is on top of other elements
                                 maxHeight: "150px", // Adjust the maxHeight here as needed
                                 // overflowY: "auto", // Enable vertical scrolling
-                                scrollbarWidth: "none", // Hide scrollbar in Firefox
+                                // scrollbarWidth: "none", // Hide scrollbar in Firefox
                                 msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                                 "&::-webkit-scrollbar": {
                                   display: "none", // Hide scrollbar in Webkit browsers

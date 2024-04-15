@@ -45,14 +45,6 @@ export default function TaskModal(props) {
   // const [taskDropdown, setTaskDropdown] = useState();
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
-    // const gettodatevalue = e.target.value;
-    // const setdateformat = gettodatevalue.split('-');
-    // const settoyear = setdateformat[0];
-    // const settomonth = setdateformat[1];
-    // const settodate = setdateformat[2];
-    // const settodateformat = settoyear + "" + settomonth + "" + settodate;
-    // setTodate(gettodatevalue);
-    // setTodateformat(settodateformat);
   };
 
   const handleSelect = (label, ID) => {
@@ -63,16 +55,7 @@ export default function TaskModal(props) {
 
     // closeAllDropdowns();
   };
-  const handleToDate = (e) => {
-    // const getfromdatevalue = e.target.value;
-    // const setfromformat = getfromdatevalue.split("-");
-    // const setfromyear = setfromformat[0];
-    // const setfrommonth = setfromformat[1];
-    // const setfromdate = setfromformat[2];
-    // const setfromformatdate = setfromyear + "" + setfrommonth + "" + setfromdate;
-    // setFromdate(getfromdatevalue);
-    // setFromdateformat(setfromformatdate);
-  };
+  const handleToDate = (e) => {};
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -125,128 +108,6 @@ export default function TaskModal(props) {
   };
 
   // for Task Type Name Field created custome menuList
-
-  // const CustomMenuList = ({ options, onSelect }) => {
-  //   const [searchTerm, setSearchTerm] = useState("");
-  //   const [openOptions, setOpenOptions] = useState([]);
-  //   const [selectedOption, setSelectedOption] = useState(null);
-  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  //   const handleKeyDown = (e) => {
-  //     if (e.key === "Enter") {
-  //       setOpenOptions(true);
-  //     }
-  //   };
-
-  //   const toggleOptions = (label) => {
-  //     if (openOptions.includes(label)) {
-  //       setOpenOptions(openOptions.filter((item) => item !== label));
-  //     } else {
-  //       setOpenOptions([...openOptions, label]);
-  //     }
-  //   };
-
-  //   const handleSelect = (label, ID) => {
-  //     setSelectedOption(label);
-  //     onSelect(label, ID);
-  //     setOpenOptions([]);
-  //     setIsMenuOpen(!isMenuOpen);
-  //   };
-
-  //   const filterOptions = (options, term) => {
-  //     return options.filter((option) => {
-  //       const lowerCaseTerm = term.toLowerCase();
-  //       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
-  //       const matchChildOptions =
-  //         option.options && option.options.length > 0
-  //           ? filterOptions(option.options, term).length > 0
-  //           : false;
-
-  //       return matchLabel || matchChildOptions;
-  //     });
-  //   };
-
-  //   const filteredOptions = filterOptions(options, searchTerm);
-
-  //   const renderOptions = (options) => {
-  //     return options.map((option) => (
-  //       <React.Fragment key={option.label}>
-  //         <div
-  //           style={{
-  //             display: "flex",
-  //             alignItems: "center",
-  //             padding: "0.5rem",
-  //           }}
-  //         >
-  //           {option.options.length > 0 && (
-  //             <i
-  //               // className="icofont-rounded-right"
-  //               className={
-  //                 openOptions.includes(option.label)
-  //                   ? "icofont-rounded-down"
-  //                   : "icofont-rounded-right"
-  //               }
-  //               style={{ marginRight: "5px", cursor: "pointer" }}
-  //               onClick={() => toggleOptions(option.label)}
-  //             ></i>
-  //           )}
-
-  //           <div
-  //             onClick={() => handleSelect(option.label, option.ID)}
-  //             style={{ cursor: "pointer" }}
-  //           >
-  //             {option.label}
-  //           </div>
-  //         </div>
-  //         {openOptions &&
-  //           openOptions.length > 0 &&
-  //           openOptions.includes(option.label) &&
-  //           option.options && (
-  //             <div style={{ marginLeft: "20px" }}>
-  //               {renderOptions(option.options)}
-  //             </div>
-  //           )}
-  //       </React.Fragment>
-  //     ));
-  //   };
-
-  //   return (
-  //     <>
-  //       {isMenuOpen === false && (
-  //         <div
-  //           style={{
-  //             position: "relative",
-  //             width: "100%",
-
-  //             overflowY: "auto",
-  //             border: "1px solid #ccc",
-  //             borderWidth: "2px",
-  //             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-  //             backgroundColor: "white",
-  //             borderBottomRightRadius: "4px",
-  //             borderBottomLeftRadius: "4px",
-  //           }}
-  //           tabIndex={0}
-  //           onKeyDown={handleKeyDown}
-  //         >
-  //           <input
-  //             type="text"
-  //             placeholder="Search..."
-  //             style={{
-  //               padding: "8px",
-  //               border: "none",
-  //               width: "100%",
-  //               boxSizing: "border-box",
-  //             }}
-  //             onChange={(e) => setSearchTerm(e.target.value)}
-  //           />
-  //           <div style={{ overflowY: "auto" }}>
-  //             {renderOptions(filteredOptions)}
-  //           </div>
-  //         </div>
-  //       )}
-  //     </>
-  //   );
-  // };
 
   const CustomMenuList = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -945,20 +806,9 @@ export default function TaskModal(props) {
                 }}
               >
                 <div
-                  // style={{
-                  //   padding: "8px",
-                  //   border: "1px solid #ccc",
-                  //   cursor: "pointer",
-                  //   width: "100%",
-                  //   borderRadius: "1px",
-                  // }}
                   className="form-control form-control-sm"
                   onClick={(e) => handleSelectOptionClick(e)}
                 >
-                  {/* {selectedOption
-                          ? selectedOption
-                          : modal?.modalData?.parent_name} */}
-
                   {selectedOption ? selectedOption : props?.data?.parent_name}
                 </div>
                 {isMenuOpen && (
@@ -986,12 +836,6 @@ export default function TaskModal(props) {
                     />
                   </div>
                 )}
-
-                {/* {!selectedOptionId && (
-                        <div style={{ color: "red", marginTop: "5px" }}>
-                          Please select a parent task type.
-                        </div>
-                      )} */}
               </div>
               {parentTaskName && (
                 <small
@@ -1003,51 +847,6 @@ export default function TaskModal(props) {
                 </small>
               )}
             </div>
-
-            {/* <div className="col-md-12">
-              <label className="form-label">
-                <b>Parent Task Type : </b>
-              </label>
-              {parent && (
-                <Select
-                  name="parent_id"
-                  id="parent_id"
-                  options={parent}
-                  onChange={(e) => handleParentchange(e)}
-                  isDisabled={props.data.parent_id}
-                  defaultValue={
-                    props.data &&
-                    tasktypeDropdown &&
-                    tasktypeDropdown.filter(
-                      (d) => d.value == props.data.parent_id
-                    )
-                  }
-                />
-              )}
-            </div>
-            {tasktypeDropdown && (
-              <div className="col-md-12">
-                <label className="form-label">
-                  <b>Task Type Name : </b>
-                </label>
-                {tasktypeDropdown && (
-                  <Select
-                    name="task_type_id"
-                    id="task_type_id"
-                    ref={typeRef}
-                    options={tasktypeDropdown}
-                    isDisabled={props.data.task_type_id}
-                    defaultValue={
-                      props.data &&
-                      tasktypeDropdown &&
-                      tasktypeDropdown.filter(
-                        (d) => d.value == props.data.task_type_id
-                      )
-                    }
-                  />
-                )}
-              </div>
-            )} */}
 
             {/* *****************START DATE, END DATE , TASK HOURS**************** */}
             <div className="row mt-3">
@@ -1503,8 +1302,6 @@ export default function TaskModal(props) {
                   );
                 })}
             </div>
-            {/* {props && JSON.stringify(props.expectedSolveDate)} */}
-            {/* { document.getElementById("task_type_group_activity").checked} */}
           </Modal.Body>
           <Modal.Footer>
             <button
@@ -1514,14 +1311,6 @@ export default function TaskModal(props) {
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
               Submit
-              {/* {loading ? (
-                <span>
-                  <i className="fa fa-spinner fa-spin" /> Loading...
-                </span>
-              ) : (
-                "Submit"
-              )} */}
-              {/* Submit */}
             </button>
             <button
               type="button"
