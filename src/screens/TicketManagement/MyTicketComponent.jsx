@@ -32,6 +32,8 @@ export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
+  const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
+
   // const [checkRole, setCheckRole] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
 
@@ -195,7 +197,6 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            console.log("confirm ticket", res.data.data);
             setNotify({ type: "success", message: res.data.message });
             setConfirmationModal({
               showModal: false,
@@ -1584,6 +1585,13 @@ export default function MyTicketComponent() {
               label: d.first_name + " " + d.last_name,
             }));
 
+          const select2 = res.data.data
+            .filter((d) => d.is_active == 1 && d.account_for === "CUSTOMER")
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }));
+
           setUserData(null);
           const aa = tempData.sort(function (a, b) {
             return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
@@ -1591,6 +1599,7 @@ export default function MyTicketComponent() {
           setUserData(aa);
           setAssignUserDropdown(select);
           setUserDropdown(select);
+          setCustomerUserDropdown(select2);
         }
       })
       .catch((error) => {
@@ -2353,7 +2362,6 @@ export default function MyTicketComponent() {
   };
 
   useEffect(() => {
-    console.log("location before timeout", locationState);
     setLocationState(location.state);
     const timeoutId = setTimeout(() => {
       const a = null;
@@ -2606,7 +2614,12 @@ export default function MyTicketComponent() {
                         <b>Entry User :</b>
                       </label>
                       <Select
-                        options={userDropdown}
+                        // options={ userDropdown}
+                        options={
+                          localStorage.getItem("account_for") === "SELF"
+                            ? userDropdown
+                            : customerUserDropdown
+                        }
                         isMulti={true}
                         ref={selectUserRef}
                         id="user_id[]"
