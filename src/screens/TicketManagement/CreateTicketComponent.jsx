@@ -150,40 +150,40 @@ export default function CreateTicketComponent() {
   //   setOpenOptions([]);
   // };
 
-  const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
-    const [expanded, setExpanded] = useState(false);
-    const handleClick = (e) => {
-      setExpanded(!expanded);
-      onClick(label);
-      closeDropdown(); // Close the dropdown after clicking the option
-    };
+  // const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
+  //   const [expanded, setExpanded] = useState(false);
+  //   const handleClick = (e) => {
+  //     setExpanded(!expanded);
+  //     onClick(label);
+  //     closeDropdown(); // Close the dropdown after clicking the option
+  //   };
 
-    return (
-      <div
-        style={{
-          padding: "8px",
-          cursor: "pointer",
-        }}
-        onClick={handleClick}
-      >
-        {label}
-        {expanded && options && (
-          <div style={{ marginLeft: "20px" }}>
-            {options.map((option) => (
-              <CustomOptionTicket
-                key={option.label}
-                label={option.label}
-                options={option.options}
-                onClick={onClick}
-                ID={option.ID}
-                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
+  //   return (
+  //     <div
+  //       style={{
+  //         padding: "8px",
+  //         cursor: "pointer",
+  //       }}
+  //       onClick={handleClick}
+  //     >
+  //       {label}
+  //       {expanded && options && (
+  //         <div style={{ marginLeft: "20px" }}>
+  //           {options.map((option) => (
+  //             <CustomOptionTicket
+  //               key={option.label}
+  //               label={option.label}
+  //               options={option.options}
+  //               onClick={onClick}
+  //               ID={option.ID}
+  //               closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+  //             />
+  //           ))}
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   // const CustomMenuListTicket = ({
   //   options,
@@ -282,11 +282,135 @@ export default function CreateTicketComponent() {
   //   );
   // };
 
+  // const CustomMenuListTicket = ({ options, onSelect }) => {
+  //   const [searchTerm, setSearchTerm] = useState("");
+  //   const [openOptions, setOpenOptions] = useState([]);
+  //   const [selectedOption, setSelectedOption] = useState(null);
+  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  //   const handleKeyDown = (e) => {
+  //     if (e.key === "Enter") {
+  //       setOpenOptions(true);
+  //     }
+  //   };
+
+  //   const toggleOptions = (label) => {
+  //     if (openOptions.includes(label)) {
+  //       setOpenOptions(openOptions.filter((item) => item !== label));
+  //     } else {
+  //       setOpenOptions([...openOptions, label]);
+  //     }
+  //   };
+
+  //   const handleSelect = (label, ID) => {
+  //     setSelectedOption(label);
+  //     onSelect(label, ID);
+  //     setOpenOptions([]);
+  //     setIsMenuOpen(!isMenuOpen);
+  //   };
+
+  //   const filterOptions = (options, term) => {
+  //     return options.filter((option) => {
+  //       const lowerCaseTerm = term.toLowerCase();
+  //       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+  //       const matchChildOptions =
+  //         option.options && option.options.length > 0
+  //           ? filterOptions(option.options, term).length > 0
+  //           : false;
+
+  //       return matchLabel || matchChildOptions;
+  //     });
+  //   };
+
+  //   const filteredOptions = filterOptions(options, searchTerm);
+
+  //   const renderOptions = (options) => {
+  //     return options.map((option) => (
+  //       <React.Fragment key={option.label}>
+  //         <div
+  //           style={{
+  //             display: "flex",
+  //             alignItems: "center",
+  //             padding: "0.5rem",
+  //           }}
+  //         >
+  //           {option.options.length > 0 && (
+  //             <i
+  //               // className="icofont-rounded-right"
+  //               className={
+  //                 openOptions.includes(option.label)
+  //                   ? "icofont-rounded-down"
+  //                   : "icofont-rounded-right"
+  //               }
+  //               style={{ marginRight: "5px", cursor: "pointer" }}
+  //               onClick={() => toggleOptions(option.label)}
+  //             ></i>
+  //           )}
+
+  //           <div
+  //             onClick={() => handleSelect(option.label, option.ID)}
+  //             style={{ cursor: "pointer" }}
+  //           >
+  //             {option.label}
+  //           </div>
+  //         </div>
+  //         {openOptions &&
+  //           openOptions.length > 0 &&
+  //           openOptions.includes(option.label) &&
+  //           option.options && (
+  //             <div style={{ marginLeft: "20px" }}>
+  //               {renderOptions(option.options)}
+  //             </div>
+  //           )}
+  //       </React.Fragment>
+  //     ));
+  //   };
+
+  //   return (
+  //     <>
+  //       {isMenuOpen === false && (
+  //         <div
+  //           style={{
+  //             position: "relative",
+  //             width: "100%",
+
+  //             overflowY: "auto",
+  //             border: "1px solid #ccc",
+  //             borderWidth: "2px",
+  //             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  //             backgroundColor: "white",
+  //             borderBottomRightRadius: "4px",
+  //             borderBottomLeftRadius: "4px",
+  //           }}
+  //           tabIndex={0}
+  //           onKeyDown={handleKeyDown}
+  //         >
+  //           <input
+  //             type="text"
+  //             placeholder="Search..."
+  //             style={{
+  //               padding: "8px",
+  //               border: "none",
+  //               width: "100%",
+  //               boxSizing: "border-box",
+  //             }}
+  //             onChange={(e) => setSearchTerm(e.target.value)}
+  //           />
+  //           <div style={{ overflowY: "auto" }}>
+  //             {renderOptions(filteredOptions)}
+  //           </div>
+  //         </div>
+  //       )}
+  //     </>
+  //   );
+  // };
+
   const CustomMenuListTicket = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         setOpenOptions(true);
@@ -323,47 +447,110 @@ export default function CreateTicketComponent() {
 
     const filteredOptions = filterOptions(options, searchTerm);
 
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
     const renderOptions = (options) => {
-      return options.map((option) => (
+      return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              padding: "0.5rem",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
             }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
           >
-            {option.options.length > 0 && (
-              <i
-                // className="icofont-rounded-right"
-                className={
-                  openOptions.includes(option.label)
-                    ? "icofont-rounded-down"
-                    : "icofont-rounded-right"
-                }
-                style={{ marginRight: "5px", cursor: "pointer" }}
-                onClick={() => toggleOptions(option.label)}
-              ></i>
-            )}
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
 
             <div
               onClick={() => handleSelect(option.label, option.ID)}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
             >
               {option.label}
             </div>
           </div>
+
           {openOptions &&
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "20px" }}>
-                {renderOptions(option.options)}
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
               </div>
             )}
         </React.Fragment>
       ));
     };
+
+    // const renderOptions = (options) => {
+    //   return options.map((option) => (
+    //     <React.Fragment key={option.label}>
+    //       <div
+    //         style={{
+    //           display: "flex",
+    //           alignItems: "center",
+    //           padding: "0.5rem",
+    //         }}
+    //       >
+    //         {option.options.length > 0 && (
+    //           <i
+    //             // className="icofont-rounded-right"
+    //             className={
+    //               openOptions.includes(option.label)
+    //                 ? "icofont-rounded-down"
+    //                 : "icofont-rounded-right"
+    //             }
+    //             style={{ marginRight: "5px", cursor: "pointer" }}
+    //             onClick={() => toggleOptions(option.label)}
+    //           ></i>
+    //         )}
+
+    //         <div
+    //           onClick={() => handleSelect(option.label, option.ID)}
+    //           style={{ cursor: "pointer" }}
+    //         >
+    //           {option.label}
+    //         </div>
+    //       </div>
+    //       {openOptions &&
+    //         openOptions.length > 0 &&
+    //         openOptions.includes(option.label) &&
+    //         option.options && (
+    //           <div style={{ marginLeft: "20px" }}>
+    //             {renderOptions(option.options)}
+    //           </div>
+    //         )}
+    //     </React.Fragment>
+    //   ));
+    // };
 
     return (
       <>
@@ -1241,7 +1428,7 @@ export default function CreateTicketComponent() {
                     className="form-label font-weight-bold"
                     readOnly={true}
                   >
-                    Parent ticket Type:
+                    Ticket Type Name:
                   </label>
 
                   <div>
@@ -1289,7 +1476,7 @@ export default function CreateTicketComponent() {
                             top: "100%", // Position the menu at the top of the parent element
                             zIndex: "1", // Ensure the menu is on top of other elements
                             maxHeight: "150px", // Adjust the maxHeight here as needed
-                            overflowY: "auto", // Enable vertical scrolling
+                            // overflowY: "auto", // Enable vertical scrolling
                             scrollbarWidth: "none", // Hide scrollbar in Firefox
                             msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                             "&::-webkit-scrollbar": {
