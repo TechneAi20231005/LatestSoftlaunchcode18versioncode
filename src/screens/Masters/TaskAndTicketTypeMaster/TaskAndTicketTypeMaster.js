@@ -419,7 +419,8 @@ const CustomMenuList = ({ options, onSelect }) => {
           style={{
             position: "relative",
             width: "100%",
-
+            zIndex: 1000,
+            maxHeight: "300px",
             overflowY: "auto",
             border: "1px solid #ccc",
             borderWidth: "2px",
@@ -1544,7 +1545,7 @@ function TaskAndTicketTypeMaster(props) {
                                 width: "100%", // Set the width to 100% to match the parent's width
                                 top: "100%",
 
-                                maxHeight: "150px", // Adjust the maxHeight here as needed
+                                maxHeight: "250px", // Adjust the maxHeight here as needed
                                 overflowY: "auto", // Enable vertical scrolling
                                 scrollbarWidth: "none", // Hide scrollbar in Firefox
                                 msOverflowStyle: "none", // Hide scrollbar in IE/Edge
@@ -1654,9 +1655,9 @@ function TaskAndTicketTypeMaster(props) {
                             width: "100%", // Set the width to 100% to match the parent's width
                             top: "100%",
 
-                            maxHeight: "150px", // Adjust the maxHeight here as needed
-                            overflowY: "auto", // Enable vertical scrolling
-                            scrollbarWidth: "none", // Hide scrollbar in Firefox
+                            maxHeight: "220px", // Adjust the maxHeight here as needed
+                            // overflowY: "auto", // Enable vertical scrolling
+                            // scrollbarWidth: "none", // Hide scrollbar in Firefox
                             msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                             "&::-webkit-scrollbar": {
                               display: "none", // Hide scrollbar in Webkit browsers
