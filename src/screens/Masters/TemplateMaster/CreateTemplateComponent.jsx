@@ -212,6 +212,8 @@ const CreateTemplateComponent = () => {
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         setOpenOptions(true);
@@ -246,49 +248,69 @@ const CreateTemplateComponent = () => {
       });
     };
 
-    const filteredOptions = filterOptions(options, searchTerm);
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
 
     const renderOptions = (options) => {
-      return options.map((option) => (
+      return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              padding: "0.5rem",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
             }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
           >
-            {option.options.length > 0 && (
-              <i
-                // className="icofont-rounded-right"
-                className={
-                  openOptions.includes(option.label)
-                    ? "icofont-rounded-down"
-                    : "icofont-rounded-right"
-                }
-                style={{ marginRight: "5px", cursor: "pointer" }}
-                onClick={() => toggleOptions(option.label)}
-              ></i>
-            )}
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
 
             <div
               onClick={() => handleSelect(option.label, option.ID)}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
             >
               {option.label}
             </div>
           </div>
+
           {openOptions &&
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "20px" }}>
-                {renderOptions(option.options)}
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
               </div>
             )}
         </React.Fragment>
       ));
     };
+    const filteredOptions = filterOptions(options, searchTerm);
 
     return (
       <>
@@ -297,7 +319,8 @@ const CreateTemplateComponent = () => {
             style={{
               position: "relative",
               width: "100%",
-
+              zIndex: 1000,
+              maxHeight: "300px",
               overflowY: "auto",
               border: "1px solid #ccc",
               borderWidth: "2px",

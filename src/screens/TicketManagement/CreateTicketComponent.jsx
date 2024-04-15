@@ -117,176 +117,16 @@ export default function CreateTicketComponent() {
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     console.log("tempSelectedFile", tempSelectedFile);
-  //     for (var i = 0; i < e.target?.files?.length; i++) {
-  //       var file = e.target.files[i];
-  //       console.log("file", file);
-  //       var reader = new FileReader();
-  //       reader.onload = function (event) {
-  //         tempSelectedFile.push({
-  //           file: file,
-  //           fileName: file.name,
-  //           tempUrl: event.target.result,
-  //         });
-  //         setSelectedFiles(tempSelectedFile);
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   } else if (type === "DELETE") {
-  //     fileInputRef.current.value = "";
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
-
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
-  // const handleSelect = () => {
-  //   setOpenOptions([]);
-  // };
-
-  const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
-    const [expanded, setExpanded] = useState(false);
-    const handleClick = (e) => {
-      setExpanded(!expanded);
-      onClick(label);
-      closeDropdown(); // Close the dropdown after clicking the option
-    };
-
-    return (
-      <div
-        style={{
-          padding: "8px",
-          cursor: "pointer",
-        }}
-        onClick={handleClick}
-      >
-        {label}
-        {expanded && options && (
-          <div style={{ marginLeft: "20px" }}>
-            {options.map((option) => (
-              <CustomOptionTicket
-                key={option.label}
-                label={option.label}
-                options={option.options}
-                onClick={onClick}
-                ID={option.ID}
-                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // const CustomMenuListTicket = ({
-  //   options,
-  //   onSelect,
-  //   ID,
-  //   selectedOptionId,
-  // }) => {
-  //   const [openOptions, setOpenOptions] = useState([]);
-
-  //   const toggleOptions = (label) => {
-  //     if (openOptions.includes(label)) {
-  //       setOpenOptions(openOptions.filter((item) => item !== label));
-  //     } else {
-  //       setOpenOptions([...openOptions, label]);
-  //     }
-  //   };
-
-  //   const closeDropdown = () => {
-  //     setOpenOptions([]); // Close the dropdown by resetting openOptions
-  //   };
-
-  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  //   const handleSelect = (label, ID, openOptions) => {
-  //     // Close all open options except the one that was just selected
-  //     setOpenOptions([]);
-  //     closeDropdown();
-  //     setIsMenuOpen(!isMenuOpen);
-  //     // Pass the label and ID to the provided onSelect function
-  //     onSelect(label, ID);
-  //   };
-  //   const renderOptions = (options) => {
-  //     return options.map((option) => (
-  //       <React.Fragment key={option.label}>
-  //         <div
-  //           style={{
-  //             display: "flex",
-  //             alignItems: "center",
-  //             borderBottom: "1px solid #ccc",
-  //             fontWeight:
-  //               option.label === "Primary" || option.options.length > 0
-  //                 ? "bold"
-  //                 : "normal",
-  //           }}
-  //         >
-  //           {option.options.length > 0 && (
-  //             <i
-  //               className="icofont-rounded-right"
-  //               style={{
-  //                 marginRight: "5px",
-  //                 cursor: "pointer",
-  //               }}
-  //               onClick={() => toggleOptions(option.label)}
-  //             ></i>
-  //           )}
-  //           <CustomOptionTicket
-  //             label={option.label}
-  //             options={option.options}
-  //             onClick={handleSelect}
-  //             ID={option.ID}
-  //             closeDropdown={closeDropdown} // Pass closeDropdown to CustomOption
-  //           />
-  //         </div>
-  //         {openOptions.includes(option.label) && option.options && (
-  //           <div style={{ marginLeft: "20px" }}>
-  //             {renderOptions(option.options)}
-  //           </div>
-  //         )}
-  //       </React.Fragment>
-  //     ));
-  //   };
-
-  //   return (
-  //     <>
-  //       {isMenuOpen === false && (
-  //         <div
-  //           style={{
-  //             position: "absolute",
-  //             top: "100%",
-  //             left: "0",
-  //             width: "100%", // Adjust the width here
-  //             maxHeight: "400px", // Adjust the maxHeight here
-  //             overflowY: "auto",
-  //             border: "1px solid #ccc", // Border style
-  //             borderWidth: "2px", // Border width
-  //             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Box shadow
-  //             backgroundColor: "white",
-  //             borderBottomRightRadius: "4px", // Border radius
-  //             borderBottomLeftRadius: "4px", // Border radius
-  //           }}
-  //         >
-  //           {renderOptions(options)}
-  //         </div>
-  //       )}
-  //     </>
-  //   );
-  // };
 
   const CustomMenuListTicket = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         setOpenOptions(true);
@@ -323,42 +163,63 @@ export default function CreateTicketComponent() {
 
     const filteredOptions = filterOptions(options, searchTerm);
 
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
     const renderOptions = (options) => {
-      return options.map((option) => (
+      return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              padding: "0.5rem",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
             }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
           >
-            {option.options.length > 0 && (
-              <i
-                // className="icofont-rounded-right"
-                className={
-                  openOptions.includes(option.label)
-                    ? "icofont-rounded-down"
-                    : "icofont-rounded-right"
-                }
-                style={{ marginRight: "5px", cursor: "pointer" }}
-                onClick={() => toggleOptions(option.label)}
-              ></i>
-            )}
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
 
             <div
               onClick={() => handleSelect(option.label, option.ID)}
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
             >
               {option.label}
             </div>
           </div>
+
           {openOptions &&
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "20px" }}>
-                {renderOptions(option.options)}
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
               </div>
             )}
         </React.Fragment>
@@ -1244,7 +1105,7 @@ export default function CreateTicketComponent() {
                     className="form-label font-weight-bold"
                     readOnly={true}
                   >
-                    Parent ticket Type:
+                    Ticket Type Name:
                   </label>
 
                   <div>
@@ -1292,8 +1153,8 @@ export default function CreateTicketComponent() {
                             top: "100%", // Position the menu at the top of the parent element
                             zIndex: "1", // Ensure the menu is on top of other elements
                             maxHeight: "150px", // Adjust the maxHeight here as needed
-                            overflowY: "auto", // Enable vertical scrolling
-                            scrollbarWidth: "none", // Hide scrollbar in Firefox
+                            // overflowY: "auto", // Enable vertical scrolling
+                            // scrollbarWidth: "none", // Hide scrollbar in Firefox
                             msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                             "&::-webkit-scrollbar": {
                               display: "none", // Hide scrollbar in Webkit browsers
