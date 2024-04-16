@@ -243,6 +243,152 @@ const CustomMenuList = ({ options, onSelect }) => {
 
 //for ticket type created CustomMenuListTicket  function
 
+// const CustomMenuListTicket = ({ options, onSelect }) => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [openOptions, setOpenOptions] = useState([]);
+//   const [selectedOption, setSelectedOption] = useState(null);
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+//   const handleKeyDown = (e) => {
+//     if (e.key === "Enter") {
+//       setOpenOptions(true);
+//     }
+//   };
+
+//   const toggleOptions = (label) => {
+//     if (openOptions.includes(label)) {
+//       setOpenOptions(openOptions.filter((item) => item !== label));
+//     } else {
+//       setOpenOptions([...openOptions, label]);
+//     }
+//   };
+
+//   const handleSelect = (label, ID) => {
+//     setSelectedOption(label);
+//     onSelect(label, ID);
+//     setOpenOptions([]);
+//     setIsMenuOpen(!isMenuOpen);
+//   };
+
+//   const filterOptions = (options, term) => {
+//     return options.filter((option) => {
+//       const lowerCaseTerm = term.toLowerCase();
+//       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+//       const matchChildOptions =
+//         option.options && option.options.length > 0
+//           ? filterOptions(option.options, term).length > 0
+//           : false;
+
+//       return matchLabel || matchChildOptions;
+//     });
+//   };
+
+//   const filteredOptions = filterOptions(options, searchTerm);
+
+//   const handleMouseEnter = (label) => {
+//     setHoveredIndex(label);
+//   };
+
+//   const handleMouseLeave = () => {
+//     setHoveredIndex(null);
+//   };
+
+//   const renderOptions = (options) => {
+//     return options.map((option, index) => (
+//       <React.Fragment key={option.label}>
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             padding: "0.4rem",
+//             // overflowY: "auto",
+//             backgroundColor:
+//               hoveredIndex === option.label
+//                 ? "rgba(79, 184, 201, 0.5)"
+//                 : "white",
+//             transition: "background-color 0.3s",
+//           }}
+//           onMouseEnter={() => handleMouseEnter(option.label)}
+//           onMouseLeave={handleMouseLeave}
+//         >
+//           <i
+//             className={
+//               openOptions.includes(option.label) && option.options.length > 0
+//                 ? "icofont-rounded-down"
+//                 : "icofont-rounded-right"
+//             }
+//             style={{
+//               marginRight: "5px",
+//               cursor: "pointer",
+//             }}
+//             onClick={() => toggleOptions(option.label)}
+//           ></i>
+
+//           <div
+//             onClick={() => handleSelect(option.label, option.ID)}
+//             style={{
+//               cursor: "pointer",
+//               transition: "color 0.3s",
+//             }}
+//           >
+//             {option.label}
+//           </div>
+//         </div>
+
+//         {openOptions &&
+//           openOptions.length > 0 &&
+//           openOptions.includes(option.label) &&
+//           option.options && (
+//             <div style={{ marginLeft: "1rem" }}>
+//               <div style={{ marginLeft: "1rem" }}>
+//                 {renderOptions(option.options)}
+//               </div>
+//             </div>
+//           )}
+//       </React.Fragment>
+//     ));
+//   };
+
+//   return (
+//     <>
+//       {isMenuOpen === false && (
+//         <div
+//           style={{
+//             position: "relative",
+//             width: "100%",
+
+//             overflowY: "auto",
+//             border: "1px solid #ccc",
+//             borderWidth: "2px",
+//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+//             backgroundColor: "white",
+//             borderBottomRightRadius: "4px",
+//             borderBottomLeftRadius: "4px",
+//           }}
+//           tabIndex={0}
+//           onKeyDown={handleKeyDown}
+//         >
+//           <input
+//             type="text"
+//             placeholder="Search..."
+//             style={{
+//               padding: "8px",
+//               border: "none",
+//               width: "100%",
+//               boxSizing: "border-box",
+//             }}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//           <div style={{ overflowY: "auto" }}>
+//             {renderOptions(filteredOptions)}
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
 const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openOptions, setOpenOptions] = useState([]);
@@ -284,8 +430,6 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
     });
   };
 
-  const filteredOptions = filterOptions(options, searchTerm);
-
   const handleMouseEnter = (label) => {
     setHoveredIndex(label);
   };
@@ -302,7 +446,6 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             display: "flex",
             alignItems: "center",
             padding: "0.4rem",
-            overflowY: "auto",
             backgroundColor:
               hoveredIndex === option.label
                 ? "rgba(79, 184, 201, 0.5)"
@@ -349,48 +492,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
       </React.Fragment>
     ));
   };
-
-  // const renderOptions = (options) => {
-  //   return options.map((option) => (
-  //     <React.Fragment key={option.label}>
-  //       <div
-  //         style={{
-  //           display: "flex",
-  //           alignItems: "center",
-  //           padding: "0.5rem",
-  //         }}
-  //       >
-  //         {option.options.length > 0 && (
-  //           <i
-  //             // className="icofont-rounded-right"
-  //             className={
-  //               openOptions.includes(option.label)
-  //                 ? "icofont-rounded-down"
-  //                 : "icofont-rounded-right"
-  //             }
-  //             style={{ marginRight: "5px", cursor: "pointer" }}
-  //             onClick={() => toggleOptions(option.label)}
-  //           ></i>
-  //         )}
-
-  //         <div
-  //           onClick={() => handleSelect(option.label, option.ID)}
-  //           style={{ cursor: "pointer" }}
-  //         >
-  //           {option.label}
-  //         </div>
-  //       </div>
-  //       {openOptions &&
-  //         openOptions.length > 0 &&
-  //         openOptions.includes(option.label) &&
-  //         option.options && (
-  //           <div style={{ marginLeft: "20px" }}>
-  //             {renderOptions(option.options)}
-  //           </div>
-  //         )}
-  //     </React.Fragment>
-  //   ));
-  // };
+  const filteredOptions = filterOptions(options, searchTerm);
 
   return (
     <>
@@ -399,7 +501,8 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
           style={{
             position: "relative",
             width: "100%",
-
+            zIndex: 1000,
+            maxHeight: "300px",
             overflowY: "auto",
             border: "1px solid #ccc",
             borderWidth: "2px",
@@ -480,7 +583,7 @@ function TaskAndTicketTypeMaster(props) {
     const exportTempData = [];
 
     await new TaskTicketTypeService()
-      .getAllTaskTicketType("TASK")
+      .getAllTaskTicketType(selectedType)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
@@ -494,7 +597,10 @@ function TaskAndTicketTypeMaster(props) {
                 type: temp[key].type,
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
-                parent_name: temp[key].parent_name,
+                parent_name:
+                  temp[key].parent_name === null && temp[key].parent_id == 0
+                    ? "Primary"
+                    : temp[key].parent_name,
 
                 remark: temp[key].remark,
                 is_active: temp[key].is_active,
@@ -665,7 +771,10 @@ function TaskAndTicketTypeMaster(props) {
                 type: temp[key].type,
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
-                parent_name: temp[key].parent_name,
+                parent_name:
+                  temp[key].parent_name === null && temp[key].parent_id == 0
+                    ? "Primary"
+                    : temp[key].parent_name,
                 remark: temp[key].remark,
                 is_active: temp[key].is_active,
                 created_at: temp[key].created_at,
@@ -740,29 +849,14 @@ function TaskAndTicketTypeMaster(props) {
       sortable: true,
     },
 
-    {
-      name: "Type",
-      // selectedType === "TASK" ? "Task Type" : "Ticket Type",
-      selector: (row) => row.type,
+    // {
+    //   name: "Type",
+    //   // selectedType === "TASK" ? "Task Type" : "Ticket Type",
+    //   selector: (row) => row.type,
 
-      sortable: true,
-      width: "125px",
-    },
-    {
-      name: "Parent",
-      width: "150px",
-      cell: (row) => {
-        if (parent) {
-          const parent_name =
-            parent &&
-            parent
-
-              ?.filter((d) => d.value == row.parent_id)
-              .map((d) => ({ value: d.value, label: d.label }));
-          return <span>{parent_name[0]?.label}</span>;
-        }
-      },
-    },
+    //   sortable: true,
+    //   width: "125px",
+    // },
 
     // {
     //   name: "Type Name",
@@ -787,9 +881,9 @@ function TaskAndTicketTypeMaster(props) {
               <div>
                 <span className="ms-1">
                   {" "}
-                  {row.type_name && row.type_name.length < 120
+                  {row.type_name && row.type_name.length < 10
                     ? row.type_name
-                    : row.type_name.substring(0, 120) + "...."}
+                    : row.type_name.substring(0, 10) + "...."}
                 </span>
               </div>
             </OverlayTrigger>
@@ -797,6 +891,48 @@ function TaskAndTicketTypeMaster(props) {
         </div>
       ),
     },
+
+    {
+      name: "Parent Name",
+      width: "150px",
+      selector: (row) => row.parent_name,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.parent_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.parent_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {" "}
+                  {row.parent_name && row.parent_name.length < 10
+                    ? row.parent_name
+                    : row.parent_name.substring(0, 10) + "...."}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+    },
+    // {
+    //   name: "Parent",
+    //   width: "150px",
+    //   cell: (row) => {
+    //     if (parent) {
+    //       const parent_name =
+    //         parent &&
+    //         parent
+
+    //           ?.filter((d) => d.value == row.parent_id)
+    //           .map((d) => ({ value: d.value, label: d.label }));
+    //       return <span>{parent_name[0]?.label.substring(0, 10)}</span>;
+    //     }
+    //   },
+    // },
 
     {
       name: "Status",
