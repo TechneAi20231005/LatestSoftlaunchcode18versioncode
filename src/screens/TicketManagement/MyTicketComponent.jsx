@@ -247,7 +247,8 @@ export default function MyTicketComponent() {
               {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
                 (data.status_name !== "Solved" &&
-                  data.passed_status !== "REJECT" && (
+                  data.passed_status !== "REJECT" &&
+                  localStorage.getItem("account_for" === "SELF") && (
                     <li>
                       <Link
                         to={`/${_base}/Ticket/Edit/` + data.id}
@@ -289,7 +290,8 @@ export default function MyTicketComponent() {
 
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0 &&
-                data.status_name != "Solved" && (
+                data.status_name != "Solved" &&
+                localStorage.getItem("account_for" === "SELF") && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
