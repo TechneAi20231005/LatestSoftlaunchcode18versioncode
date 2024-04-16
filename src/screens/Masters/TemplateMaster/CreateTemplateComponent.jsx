@@ -433,6 +433,7 @@ const CreateTemplateComponent = () => {
     });
     if (a > 0) {
     } else {
+      // rows.append("parent_id", selectedOptionId);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
           setNotify({ type: "success", message: res?.payload?.data?.message });
@@ -471,14 +472,15 @@ const CreateTemplateComponent = () => {
     var form = new FormData(e.target);
     var temp = {
       task_name: form.get("taskName"),
-      task_type_id: form.get("task_type_id"),
-      parent_id: form.get("parent_id"),
+      // task_type_id: form.get("task_type_id"),
+      // parent_id: form.get("parent_id"),
       total_time: form.get("hours"),
       days: form.get("days"),
       start_days: form.get("start_days"),
+      task_type_id: selectedOptionId,
     };
+
     var basket_id = form.get("basket_id");
-    form.append("parent_id", selectedOptionId);
 
     var tempData = rows;
     tempData.template_data[basket_id].basket_task.push(temp);
