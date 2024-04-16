@@ -28,14 +28,17 @@ import {
   getEmployeeData,
   getRoles,
 } from "../../Dashboard/DashboardAction";
-import { clearRoleDropdown, rolemasterSlice } from "../RoleMaster/RoleMasterSlice";
+import {
+  clearRoleDropdown,
+  rolemasterSlice,
+} from "../RoleMaster/RoleMasterSlice";
 import { getRoleData } from "../RoleMaster/RoleMasterAction";
 import RoleService from "../../../services/MastersService/RoleService";
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState("All_Tickets");
-  const [roleDropdown,setRoleDropdown]=useState([])
+  const [roleDropdown, setRoleDropdown] = useState([]);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -50,9 +53,6 @@ function EditUserComponent({ match }) {
   // const roleDropdown = useSelector(
   //   (rolemasterSlice) => rolemasterSlice?.rolemaster?.filterRoleData
   // );
-
-
-
 
   const { id } = useParams();
   const userId = parseInt(id);
@@ -412,14 +412,14 @@ function EditUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-const [selectRole,setSelctRole]=useState(null)
-const handleSelectRole = (e) => {
-  const newValue = e;
-  setSelctRole(newValue);
-};
+  const [selectRole, setSelctRole] = useState(null);
+  const handleSelectRole = (e) => {
+    const newValue = e;
+    setSelctRole(newValue);
+  };
 
   const accountForChange = async (account_for) => {
-    setSelctRole(null)
+    setSelctRole(null);
     setAccountFor(account_for);
     const accountFor = account_for;
     const filteredAsAccountFor = roleDropdown.filter((filterData) => {
@@ -430,10 +430,8 @@ const handleSelectRole = (e) => {
       }
     });
     // dispatch(clearRoleDropdown())
-    
   };
-  
-  
+
   const loadData = async () => {
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
@@ -520,14 +518,12 @@ const handleSelectRole = (e) => {
       .getUserById(userId)
       .then((res) => {
         if (res.status === 200) {
-
           if (res.data.status == 1) {
             const temp = res.data.data;
             setSelctRole(
               roleDropdown &&
-              roleDropdown.filter(
-                (d) => d.value == temp?.role_id
-              ))
+                roleDropdown.filter((d) => d.value == temp?.role_id)
+            );
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
@@ -760,36 +756,35 @@ const handleSelectRole = (e) => {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    
+
     // if (!roleDropdown.length) {
     // }
   }, []);
 
-
-useEffect(() => {
-  const fetchRoleData = async () => {
-    try {
-      const res = await new RoleService().getRole();
-      if (res.status === 200 && res.data.status === 1) {
-        const data = res.data.data.filter((d) => d.is_active === 1);
-        const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
-        setRoleDropdown(dropdownData);
+  useEffect(() => {
+    const fetchRoleData = async () => {
+      try {
+        const res = await new RoleService().getRole();
+        if (res.status === 200 && res.data.status === 1) {
+          const data = res.data.data.filter((d) => d.is_active === 1);
+          const dropdownData = data.map((d) => ({
+            value: d.id,
+            label: d.role,
+          }));
+          setRoleDropdown(dropdownData);
+        }
+      } catch (error) {
+        // Handle error
       }
-    } catch (error) {
-      // Handle error
-    }
-  };
+    };
 
-  fetchRoleData();
-}, []); // Empty dependency array ensures the effect runs only once after component mounts
+    fetchRoleData();
+  }, []); // Empty dependency array ensures the effect runs only once after component mounts
 
-
-  useEffect(()=>{
+  useEffect(() => {
     loadData();
+  }, [roleDropdown]);
 
-  },[roleDropdown])
-
- 
   useEffect(() => {
     if (
       data !== null &&
@@ -847,7 +842,6 @@ useEffect(() => {
       );
     }
   }, [data, cityDropdown]);
-
 
   return (
     <div className="container-xxl">
@@ -1157,14 +1151,16 @@ useEffect(() => {
                           <input
                             type="checkbox"
                             id="check1"
-                            defaultChecked={data.contact_no == data.whats_app_contact_no ? true : false}
+                            defaultChecked={
+                              data.contact_no == data.whats_app_contact_no
+                                ? true
+                                : false
+                            }
                             onChange={copyTextValue}
                             style={{ position: "absolute", top: "32%" }}
                           />
                         </label>
 
-                       
-                        
                         {data?.contact_no == data?.whats_app_contact_no ? (
                           <>
                             <div className="col-sm-3">
@@ -1368,7 +1364,7 @@ useEffect(() => {
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          {roleDropdown  && (
+                          {roleDropdown && (
                             <Select
                               id="role_id"
                               name="role_id"
@@ -1385,12 +1381,9 @@ useEffect(() => {
                               //   )
                               // }
                               value={selectRole}
-                        onChange={(e) => handleSelectRole(e)}
-
-                              
+                              onChange={(e) => handleSelectRole(e)}
                             />
                           )}
-                        
 
                           {inputState && (
                             <small

@@ -29,7 +29,6 @@ function TemplateComponent() {
   const exportData = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
   );
-  console.log("exportData", exportData);
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
