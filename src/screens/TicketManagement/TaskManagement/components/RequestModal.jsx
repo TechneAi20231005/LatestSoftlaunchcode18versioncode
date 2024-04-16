@@ -25,16 +25,11 @@
 //   const [toTime, setToTime] = useState('');
 //   const [timeDifference, setTimeDifference] = useState('');
 
-
-
 //   const currentDate = new Date();
 //   const year = currentDate.getFullYear();
 //   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
 //   const day = String(currentDate.getDate()).padStart(2, '0');
 //   const formattedDate = `${year}-${month}-${day}`;
-
-
-
 
 //   const handleFromDate = (e) => {
 //     setDate(e.target.value);
@@ -46,7 +41,6 @@
 //   var ticket_basket_id = props.data.ticket_basket_id;
 //   var task_owner_id = localStorage.getItem("id");
 //   var ticket_task_id = props.data.id;
-
 
 //   const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
 //   const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
@@ -70,9 +64,6 @@
 //     }
 //   };
 
-
-
-
 //   // const [rows, setRows] = useState([{ increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
 //   const addRow = () => {
 //     setRows(prevRows => [...prevRows, { increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
@@ -87,22 +78,18 @@
 //     updatedRows[index].increaseChecked = true;
 
 //     // Set the 'decreaseChecked' property of the same row to false.
-    
+
 //     updatedRows[index].decreaseChecked = false;
 
 //     // Update the state with the modified array of rows.
 //     setRows(updatedRows);
 //   };
 
-
 //   const handleActualChange = (index) => {
 //     const updatedRows = [...rows];
 //     updatedRows[index].actual_time = timeDifference;
 //     setRows(updatedRows);
 //   };
-
-
-
 
 //   // This function is called when the checkbox for regularization time decrease is clicked.
 //   const handleDecreaseChange = (index) => {
@@ -119,24 +106,18 @@
 //     setRows(updatedRows);
 //   };
 
-
-
-
-
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 //     setNotify(null);
 
-
 //     const data = new FormData(e.target);
 //     data.append('scheduled_time', props.data.task_hours);
-//     // data.append('actual_total_time',"00:30");        
+//     // data.append('actual_total_time',"00:30");
 
 //     await new requestRegularizationTime(data).then((res) => {
 //       if (res.status === 200) {
 //         if (res.data.status === 1) {
 //           setNotify({ type: "success", message: res.data.message });
-
 
 //           handleClose();
 
@@ -148,10 +129,6 @@
 
 //     });
 //   };
-
-
-
-
 
 //   // handle click event of the Remove button
 //   const handleRemoveClick = (index) => {
@@ -169,7 +146,6 @@
 //   const [approveData, setApproveData] = useState()
 
 //   const getApproveData = () => {
-
 
 //     new getRegularizationTime(props.data.ticket_id).then(res => {
 
@@ -208,8 +184,6 @@
 //         // setData(null);
 //         setRegularizeTimeData(res.data.data)
 
-
-
 //       }
 //     })
 
@@ -224,7 +198,6 @@
 //     setRows(updatedRows);
 //   }, [timeDifference]);
 
-
 //   useEffect(() => {
 //     setNotify(null);
 //     getApproveData()
@@ -234,13 +207,10 @@
 //     loadData()
 //   }, []);
 
-
 //   const [rows, setRows] = useState([
 //     { from_date: '', to_date: '', from_time: '', to_time: '', actual_time: '' },
 //     // Add more rows as needed
 //   ]);
-
-
 
 //   const calculateTimeDifference = (fromDate, toDate, fromTime, toTime) => {
 //     if (fromDate && toDate && fromTime && toTime) {
@@ -272,7 +242,6 @@
 //     return '';
 //   };
 
-
 //   const handleActualTimeChange = (index, fromTime, toTime) => {
 //     const fromDate = rows[index].from_date;
 //     const toDate = rows[index].to_date;
@@ -294,14 +263,10 @@
 //     });
 //   };
 
-
-
 //   const [fromDate, setFromDate] = useState(''); // State for from_date
 //   const [toDate, setToDate] = useState('');
 
-
 //   const handleDateChange = (index, dateType, value, fromTime, toTime) => {
-
 
 //     if (dateType === 'from_date') {
 //       setFromDate((prevFromDates) => ({
@@ -371,17 +336,12 @@
 //     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 //   }
 
-
-
-
 //   // Define a function to handle row removal
 //   const handleRemoveClickk = (index) => {
 //     const updatedData = [...regularizeTimeData];
 //     updatedData.splice(index, 1); // Remove the row at the specified index
 //     setRegularizeTimeData(updatedData);
 //   };
-
-
 
 //   // Define a function to add a new row
 //   const addRoww = () => {
@@ -402,8 +362,6 @@
 //       props.close();
 //       clearInterval(timer)
 //     }, 5000)
-
-
 
 //   };
 //   return (
@@ -443,7 +401,6 @@
 //               </div>
 //             </div>
 
-
 //           </Modal.Title>
 //         </Modal.Header>
 
@@ -482,14 +439,12 @@
 //                     <th className="text-center"> To Time </th>
 //                     <th className="text-center"> Actual Time </th>
 
-
 //                     <th className="text-center"> Remark </th>
 //                     <th className="text-center"> Action</th>
 //                   </tr>
 //                 </thead>
 //                 <tbody>
 //                   {regularizeTimeData && regularizeTimeData.length > 0 ? <>
-
 
 //                     {regularizeTimeData && regularizeTimeData.map((row, index) => {
 //                       const handleFromDateChange = (index, value, dateType) => {
@@ -504,7 +459,6 @@
 //                             [index]: value,
 //                           }));
 //                         }
-
 
 //                         const updatedData = [...regularizeTimeData];
 //                         updatedData[index].from_date = value;
@@ -566,12 +520,9 @@
 //                               onChange={(e) => handleToDateChange(index, e.target.value, 'to_date')}
 //                               disabled={row.status != "REJECTED" && !row.isAddingNewRow}
 
-
 //                               required
 //                             />
 //                           </td>
-
-
 
 //                           <td>
 //                             <input
@@ -581,7 +532,6 @@
 //                               value={row.from_time}
 //                               onChange={(e) => handleFromTimeChange(index, e.target.value)}
 //                               disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
 
 //                               required
 //                             />
@@ -597,7 +547,6 @@
 //                               required
 //                               disabled={row.status != "REJECTED" && !row.isAddingNewRow}
 
-
 //                             />
 //                           </td>
 //                           <td>
@@ -609,7 +558,6 @@
 //                               value={row.actual_time ? row.actual_time : row.total_time}
 //                               required
 //                               disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
 
 //                             />
 //                           </td>
@@ -623,7 +571,6 @@
 //                               onChange={e => handleAddClick(e)}
 //                               required
 //                               disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
 
 //                             />
 //                           </td>
@@ -714,7 +661,6 @@
 //                             />
 //                           </td>
 
-
 //                           <td>
 //                             <input
 //                               title={remark && remark ? remark : ""}
@@ -725,10 +671,10 @@
 //                               required
 //                             />
 //                           </td>
-                          
+
 //                           <td>
 
-//                             {index + 1 == 1 && (  
+//                             {index + 1 == 1 && (
 //                               <button
 //                                 onClick={addRow}
 //                                 className="btn btn-primary"
@@ -771,25 +717,23 @@
 
 // export default RequestModal;
 
-
-
 // // created by Asmita Margaje
-
-
 
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Table } from "react-bootstrap";
 import ErrorLogService from "../../../../services/ErrorLogService";
 import Alert from "../../../../components/Common/Alert";
 import { requestRegularizationTime } from "../../../../services/TicketService/TaskService";
-import { getRegularizationTime, getRegularizationTimeData, changeStatusRegularizationTime } from '../../../../services/TicketService/TaskService';
+import {
+  getRegularizationTime,
+  getRegularizationTimeData,
+  changeStatusRegularizationTime,
+} from "../../../../services/TicketService/TaskService";
 
-
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import TimeRegularizationSlice from "../../BasketManagement/Slices/TimeRegularizationSlice";
 import { postTimeRegularizationData } from "../../BasketManagement/Slices/TimeRegularizationAction";
 const RequestModal = (props) => {
-
   const [notify, setNotify] = useState(null);
   const [inputList, setInputList] = useState([
     {
@@ -797,31 +741,30 @@ const RequestModal = (props) => {
       from_time: "00:00",
       to_time: "00:00",
       from_date: null,
-      to_date: null
+      to_date: null,
     },
   ]);
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState(null);
 
-  const [fromTime, setFromTime] = useState('');
-  const [toTime, setToTime] = useState('');
-  const [timeDifference, setTimeDifference] = useState('');
-const dispatch = useDispatch()
+  const [fromTime, setFromTime] = useState("");
+  const [toTime, setToTime] = useState("");
+  const [timeDifference, setTimeDifference] = useState("");
+  const dispatch = useDispatch();
 
-const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.timeRegularization.notify)
+  const Notify = useSelector(
+    (TimeRegularizationSlice) =>
+      TimeRegularizationSlice.timeRegularization.notify
+  );
   const currentDate = new Date();
   const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  const day = String(currentDate.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
-
-
-
 
   const handleFromDate = (e) => {
     setDate(e.target.value);
-
   };
 
   const [timeData, setTimeData] = useState({});
@@ -829,7 +772,6 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   var ticket_basket_id = props.data.ticket_basket_id;
   var task_owner_id = localStorage.getItem("id");
   var ticket_task_id = props.data.id;
-
 
   const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
   const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
@@ -853,12 +795,17 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     }
   };
 
-
-
-
   // const [rows, setRows] = useState([{ increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
   const addRow = () => {
-    setRows(prevRows => [...prevRows, { increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
+    setRows((prevRows) => [
+      ...prevRows,
+      {
+        increaseChecked: false,
+        decreaseChecked: false,
+        value: 0,
+        actual_time: null,
+      },
+    ]);
   };
 
   // This function is called when the checkbox for regularization time increase is clicked.
@@ -870,22 +817,18 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     updatedRows[index].increaseChecked = true;
 
     // Set the 'decreaseChecked' property of the same row to false.
-    
+
     updatedRows[index].decreaseChecked = false;
 
     // Update the state with the modified array of rows.
     setRows(updatedRows);
   };
 
-
   const handleActualChange = (index) => {
     const updatedRows = [...rows];
     updatedRows[index].actual_time = timeDifference;
     setRows(updatedRows);
   };
-
-
-
 
   // This function is called when the checkbox for regularization time decrease is clicked.
   const handleDecreaseChange = (index) => {
@@ -902,27 +845,21 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     setRows(updatedRows);
   };
 
-
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setNotify(null);
 
-
     const data = new FormData(e.target);
-    data.append('scheduled_time', props.data.task_hours);
-    // data.append('actual_total_time',"00:30"); 
-    
-    dispatch(postTimeRegularizationData(data))
+    data.append("scheduled_time", props.data.task_hours);
+    // data.append('actual_total_time',"00:30");
+
+    dispatch(postTimeRegularizationData(data));
     handleClose();
 
     // await new requestRegularizationTime(data).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status === 1) {
     //       setNotify({ type: "success", message: res.data.message });
-
 
     //       handleClose();
 
@@ -935,10 +872,6 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     // });
   };
 
-
-
-
-
   // handle click event of the Remove button
   const handleRemoveClick = (index) => {
     const list = [...rows];
@@ -947,15 +880,14 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   };
 
   // handle click event of the Add button
-  const [remark, setRemark] = useState()
+  const [remark, setRemark] = useState();
   const handleAddClick = (e) => {
-    setRemark(e.target.value)
+    setRemark(e.target.value);
     // setInputList([...inputList, { name: null, id: null }]);
   };
   // const [approveData, setApproveData] = useState()
 
   // const getApproveData = () => {
-
 
   //   new getRegularizationTime(props.data.ticket_id).then(res => {
 
@@ -985,31 +917,28 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   //   })
 
   // }
-  const [regularizeTimeData, setRegularizeTimeData] = useState([])
+  const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
   const loadData = () => {
-
-    new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(res => {
-      if (res.data.data) {
-        // setData(null);
-        setRegularizeTimeData(res.data.data)
-
-
-
+    new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(
+      (res) => {
+        if (res.data.data) {
+          // setData(null);
+          setRegularizeTimeData(res.data.data);
+          console.log("res==>", res.data.data);
+        }
       }
-    })
-
-  }
+    );
+  };
 
   useEffect(() => {
     // Code to update the actual_time value automatically
-    const updatedRows = rows.map(row => ({
+    const updatedRows = rows.map((row) => ({
       ...row,
-      actual_time: timeDifference
+      actual_time: timeDifference,
     }));
     setRows(updatedRows);
   }, [timeDifference]);
-
 
   useEffect(() => {
     setNotify(null);
@@ -1017,16 +946,13 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   }, []);
 
   useEffect(() => {
-    loadData()
+    loadData();
   }, []);
 
-
   const [rows, setRows] = useState([
-    { from_date: '', to_date: '', from_time: '', to_time: '', actual_time: '' },
+    { from_date: "", to_date: "", from_time: "", to_time: "", actual_time: "" },
     // Add more rows as needed
   ]);
-
-
 
   const calculateTimeDifference = (fromDate, toDate, fromTime, toTime) => {
     if (fromDate && toDate && fromTime && toTime) {
@@ -1034,10 +960,10 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
       const toDateObj = new Date(toDate);
 
       // Extract hours and minutes from the time strings
-      const fromHours = Number(fromTime.split(':')[0]);
-      const fromMinutes = Number(fromTime.split(':')[1]);
-      const toHours = Number(toTime.split(':')[0]);
-      const toMinutes = Number(toTime.split(':')[1]);
+      const fromHours = Number(fromTime.split(":")[0]);
+      const fromMinutes = Number(fromTime.split(":")[1]);
+      const toHours = Number(toTime.split(":")[0]);
+      const toMinutes = Number(toTime.split(":")[1]);
 
       fromDateObj.setHours(fromHours, fromMinutes);
       toDateObj.setHours(toHours, toMinutes);
@@ -1050,20 +976,24 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
 
       const timeDiffMinutes = Math.floor(positiveTimeDiffMs / (1000 * 60));
       const hours = Math.floor(timeDiffMinutes / 60);
-      const minutes = (timeDiffMinutes % 60).toString().padStart(2, '0');
+      const minutes = (timeDiffMinutes % 60).toString().padStart(2, "0");
 
       return `${hours}:${minutes}`;
     }
 
-    return '';
+    return "";
   };
-
 
   const handleActualTimeChange = (index, fromTime, toTime) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
-
-    const actualTime = calculateTimeDifference(fromDate, toDate, fromTime, toTime);
+    console.log("from", fromDate);
+    const actualTime = calculateTimeDifference(
+      fromDate,
+      toDate,
+      fromTime,
+      toTime
+    );
 
     setRows((prev) => {
       return prev.map((data, rowIndex) => {
@@ -1080,21 +1010,16 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     });
   };
 
-
-
-  const [fromDate, setFromDate] = useState(''); // State for from_date
-  const [toDate, setToDate] = useState('');
-
+  const [fromDate, setFromDate] = useState(""); // State for from_date
+  const [toDate, setToDate] = useState("");
 
   const handleDateChange = (index, dateType, value, fromTime, toTime) => {
-
-
-    if (dateType === 'from_date') {
+    if (dateType === "from_date") {
       setFromDate((prevFromDates) => ({
         ...prevFromDates,
         [index]: value,
       }));
-    } else if (dateType === 'to_date') {
+    } else if (dateType === "to_date") {
       setToDate((prevToDates) => ({
         ...prevToDates,
         [index]: value,
@@ -1104,7 +1029,12 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     setRows((prev) => {
       const updatedRows = prev.map((data, rowIndex) => {
         if (rowIndex === index) {
-          return { ...data, [dateType]: value, from_time: fromTime, to_time: toTime };
+          return {
+            ...data,
+            [dateType]: value,
+            from_time: fromTime,
+            to_time: toTime,
+          };
         } else {
           return data;
         }
@@ -1119,6 +1049,7 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
       );
 
       updatedRows[index].actual_time = actualTime;
+
       return updatedRows;
     });
   };
@@ -1133,6 +1064,7 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   };
 
   function calculateActualTime(fromDate, toDate, fromTime, toTime) {
+    console.log("fromDate", fromDate);
     // Combine date and time into a single string
     const fromDateTime = `${fromDate} ${fromTime}`;
     const toDateTime = `${toDate} ${toTime}`;
@@ -1151,14 +1083,13 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
 
     // Convert the time difference to hours and minutes
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
     // Format the result as HH:mm
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
   }
-
-
-
 
   // Define a function to handle row removal
   const handleRemoveClickk = (index) => {
@@ -1166,8 +1097,6 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
     updatedData.splice(index, 1); // Remove the row at the specified index
     setRegularizeTimeData(updatedData);
   };
-
-
 
   // Define a function to add a new row
   const addRoww = () => {
@@ -1186,14 +1115,10 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
   const handleClose = () => {
     const timer = setTimeout(() => {
       props.close();
-      clearInterval(timer)
-    }, 5000)
-
-
-
+      clearInterval(timer);
+    }, 5000);
   };
   return (
-
     <div>
       <Modal
         show={props.show}
@@ -1204,32 +1129,30 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
       >
         {Notify && <Alert alertData={Notify} />}
 
-        <Modal.Header
-          closeButton
-        >
+        <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
             Time Regularization
           </Modal.Title>
         </Modal.Header>
         <Modal.Header>
           <Modal.Title id="example-custom-modal-styling-title">
-
             <div className="row">
-
-              <div className="col-md" >
-                <h6 style={{ fontWeight: 'bold', width: '300px' }}>{`Ticket ID: ${props.data.ticket_id_name}`}</h6>
+              <div className="col-md">
+                <h6
+                  style={{ fontWeight: "bold", width: "300px" }}
+                >{`Ticket ID: ${props.data.ticket_id_name}`}</h6>
               </div>
               <div className="col-md ">
-                <h6 style={{ fontWeight: 'bold', width: '580px' }}>{`Task Name:
+                <h6 style={{ fontWeight: "bold", width: "580px" }}>{`Task Name:
   ${props.data.task_name}`}</h6>
               </div>
 
               <div className="col-md">
-                <h6 style={{ fontWeight: 'bold' }}>{`Scheduled Time: ${props.data.task_hours}`}</h6>
+                <h6
+                  style={{ fontWeight: "bold" }}
+                >{`Scheduled Time: ${props.data.task_hours}`}</h6>
               </div>
             </div>
-
-
           </Modal.Title>
         </Modal.Header>
 
@@ -1268,274 +1191,380 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
                     <th className="text-center"> To Time </th>
                     <th className="text-center"> Actual Time </th>
 
-
                     <th className="text-center"> Remark </th>
                     <th className="text-center"> Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {regularizeTimeData && regularizeTimeData.length > 0 ? <>
+                  {console.log("regularizeTimeData", regularizeTimeData)}
+                  {console.log("regularizeTimeDatap", props.data)}
 
+                  {regularizeTimeData && regularizeTimeData.length > 0 ? (
+                    <>
+                      {regularizeTimeData &&
+                        regularizeTimeData.map((row, index) => {
+                          console.log("row", row);
+                          const handleFromDateChange = (
+                            index,
+                            value,
+                            dateType
+                          ) => {
+                            if (dateType === "from_date") {
+                              setFromDate((prevFromDates) => ({
+                                ...prevFromDates,
+                                [index]: value,
+                              }));
+                            } else if (dateType === "to_date") {
+                              setToDate((prevToDates) => ({
+                                ...prevToDates,
+                                [index]: value,
+                              }));
+                            }
 
-                    {regularizeTimeData && regularizeTimeData.map((row, index) => {
-                      const handleFromDateChange = (index, value, dateType) => {
-                        if (dateType === 'from_date') {
-                          setFromDate((prevFromDates) => ({
-                            ...prevFromDates,
-                            [index]: value,
-                          }));
-                        } else if (dateType === 'to_date') {
-                          setToDate((prevToDates) => ({
-                            ...prevToDates,
-                            [index]: value,
-                          }));
-                        }
+                            const updatedData = [...regularizeTimeData];
+                            updatedData[index].from_date = value;
+                            // Calculate or set the 'actual_time' based on your logic here
+                            updatedData[index].actual_time =
+                              calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                            console.log("dddd", updatedData);
+                          };
 
+                          // const handleFromDateChange = (index, value) => {
+                          //   const updatedData = [...regularizeTimeData];
+                          //   updatedData[index].to_date = value;
+                          //   // Calculate or set the 'actual_time' based on your logic here
+                          //   updatedData[index].actual_time =
+                          //     calculateActualTime(
+                          //       updatedData[index].from_date,
+                          //       updatedData[index].to_date,
+                          //       updatedData[index].from_time,
+                          //       updatedData[index].to_time
+                          //     );
+                          //   setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                          // };
 
-                        const updatedData = [...regularizeTimeData];
-                        updatedData[index].from_date = value;
-                        // Calculate or set the 'actual_time' based on your logic here
-                        updatedData[index].actual_time = calculateActualTime(updatedData[index].from_date, updatedData[index].to_date, updatedData[index].from_time, updatedData[index].to_time);
-                        setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
-                      };
+                          const handleToDateChange = (index, value) => {
+                            const updatedData = [...regularizeTimeData];
+                            updatedData[index].to_date = value;
+                            // Calculate or set the 'actual_time' based on your logic here
+                            updatedData[index].actual_time =
+                              calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                          };
 
-                      const handleToDateChange = (index, value) => {
-                        const updatedData = [...regularizeTimeData];
-                        updatedData[index].to_date = value;
-                        // Calculate or set the 'actual_time' based on your logic here
-                        updatedData[index].actual_time = calculateActualTime(updatedData[index].from_date, updatedData[index].to_date, updatedData[index].from_time, updatedData[index].to_time);
-                        setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
-                      };
+                          const handleFromTimeChange = (index, value) => {
+                            const updatedData = [...regularizeTimeData];
+                            updatedData[index].from_time = value;
+                            // Calculate or set the 'actual_time' based on your logic here
+                            updatedData[index].actual_time =
+                              calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                          };
 
-                      const handleFromTimeChange = (index, value) => {
-                        const updatedData = [...regularizeTimeData];
-                        updatedData[index].from_time = value;
-                        // Calculate or set the 'actual_time' based on your logic here
-                        updatedData[index].actual_time = calculateActualTime(updatedData[index].from_date, updatedData[index].to_date, updatedData[index].from_time, updatedData[index].to_time);
-                        setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
-                      };
+                          const handleToTimeChange = (index, value) => {
+                            const updatedData = [...regularizeTimeData];
+                            updatedData[index].to_time = value;
+                            // Calculate or set the 'actual_time' based on your logic here
+                            updatedData[index].actual_time =
+                              calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                          };
 
-                      const handleToTimeChange = (index, value) => {
-                        const updatedData = [...regularizeTimeData];
-                        updatedData[index].to_time = value;
-                        // Calculate or set the 'actual_time' based on your logic here
-                        updatedData[index].actual_time = calculateActualTime(updatedData[index].from_date, updatedData[index].to_date, updatedData[index].from_time, updatedData[index].to_time);
-                        setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
-                      };
+                          return (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>
+                                <input
+                                  type="date"
+                                  className="form-control form-control-sm"
+                                  name={`from_date[${index}]`}
+                                  min={fromDate[index]}
+                                  max={formattedDate}
+                                  value={row.from_date}
+                                  onChange={(e) =>
+                                    handleFromDateChange(
+                                      index,
+                                      e.target.value,
+                                      "from_date"
+                                    )
+                                  }
+                                  required
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                />
+                              </td>
 
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              name={`from_date[${index}]`}
-                              min={fromDate[index]}
-                              max={formattedDate}
-                              value={row.from_date}
-                              onChange={(e) => handleFromDateChange(index, e.target.value, 'from_date')}
-                              required
+                              <td>
+                                <input
+                                  type="date"
+                                  className="form-control form-control-sm"
+                                  name={`to_date[${index}]`}
+                                  min={fromDate[index]}
+                                  max={formattedDate}
+                                  value={row.to_date}
+                                  onChange={(e) =>
+                                    handleToDateChange(
+                                      index,
+                                      e.target.value,
+                                      "to_date"
+                                    )
+                                  }
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                  required
+                                />
+                              </td>
 
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-                            />
-                          </td>
+                              <td>
+                                <input
+                                  type="time"
+                                  className="form-control form-control-sm"
+                                  name={`from_time[${index}]`}
+                                  value={row.from_time}
+                                  onChange={(e) =>
+                                    handleFromTimeChange(index, e.target.value)
+                                  }
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                  required
+                                />
+                                <i className="icofont-clock"></i>
+                              </td>
+                              <td>
+                                <input
+                                  type="time"
+                                  className="form-control form-control-sm"
+                                  name={`to_time[${index}]`}
+                                  value={row.to_time}
+                                  onChange={(e) =>
+                                    handleToTimeChange(index, e.target.value)
+                                  }
+                                  required
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  className="form-control form-control-sm-2"
+                                  name={`actual_time[${index}]`}
+                                  style={{ width: "5rem", height: 32 }}
+                                  // value={
+                                  //   row.actual_time
+                                  //     ? row.actual_time
+                                  //     : row.total_time
+                                  // }
+                                  value={
+                                    row.actual_time &&
+                                    row.actual_time !== "NaN:NaN"
+                                      ? row.actual_time
+                                      : row.total_time || "00:00"
+                                  }
+                                  required
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                />
+                              </td>
+                              {console.log("rowAc", row.actual_time)}
 
-                          <td>
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              name={`to_date[${index}]`}
-                              min={fromDate[index]}
-                              max={formattedDate}
-                              value={row.to_date}
-                              onChange={(e) => handleToDateChange(index, e.target.value, 'to_date')}
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
-
-                              required
-                            />
-                          </td>
-
-
-
-                          <td>
-                            <input
-                              type="time"
-                              className="form-control form-control-sm"
-                              name={`from_time[${index}]`}
-                              value={row.from_time}
-                              onChange={(e) => handleFromTimeChange(index, e.target.value)}
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
-
-                              required
-                            />
-                            <i className="icofont-clock"></i>
-                          </td>
-                          <td>
-                            <input
-                              type="time"
-                              className="form-control form-control-sm"
-                              name={`to_time[${index}]`}
-                              value={row.to_time}
-                              onChange={(e) => handleToTimeChange(index, e.target.value)}
-                              required
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
-
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="form-control form-control-sm-2"
-                              name={`actual_time[${index}]`}
-                              style={{ width: "5rem", height: 32 }}
-                              value={row.actual_time ? row.actual_time : row.total_time}
-                              required
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
-
-                            />
-                          </td>
-                          <td>
-                            <input
-                              title={remark && remark ? remark : ""}
-                              type="text"
-                              className="form-control form-control-sm"
-                              name={`remark[${index}]`}
-                              defaultValue={row.remark}
-                              onChange={e => handleAddClick(e)}
-                              required
-                              disabled={row.status != "REJECTED" && !row.isAddingNewRow}
-
-
-                            />
-                          </td>
-                          <td>
-                            {index + 1 === 1 && (
-                              <button
-                                onClick={addRoww}
-                                className="btn btn-primary"
-                                style={{ backgroundColor: "#484C7F" }}
-                              >
-                                <i className="icofont-plus-circle"></i>
-                              </button>
-                            )}
-                            {index + 1 > 1 && (
-                              <button
-                                className="mr10 mr-1 btn btn-danger"
-                                onClick={() => handleRemoveClickk(index)}
-                              >
-                                <i className="icofont-ui-delete"></i>
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-
-                  </> :
+                              <td>
+                                <input
+                                  title={remark && remark ? remark : ""}
+                                  type="text"
+                                  className="form-control form-control-sm"
+                                  name={`remark[${index}]`}
+                                  defaultValue={row.remark}
+                                  onChange={(e) => handleAddClick(e)}
+                                  required
+                                  disabled={
+                                    row.status != "REJECTED" &&
+                                    !row.isAddingNewRow
+                                  }
+                                />
+                              </td>
+                              <td>
+                                {index + 1 === 1 && (
+                                  <button
+                                    onClick={addRoww}
+                                    className="btn btn-primary"
+                                    style={{ backgroundColor: "#484C7F" }}
+                                  >
+                                    <i className="icofont-plus-circle"></i>
+                                  </button>
+                                )}
+                                {index + 1 > 1 && (
+                                  <button
+                                    className="mr10 mr-1 btn btn-danger"
+                                    onClick={() => handleRemoveClickk(index)}
+                                  >
+                                    <i className="icofont-ui-delete"></i>
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </>
+                  ) : (
                     <>
                       {rows.map((row, index) => {
-                        return <tr key={index}>
-
-                          <td>{index + 1}</td>
-                          <td>
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              name={`from_date[${index}]`}
-                              min={fromDate[index]}
-                              max={formattedDate}
-                              value={row.from_date}
-                              onChange={(e) => handleDateChange(index, 'from_date', e.target.value, row.from_time)}
-                              required
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              name={`to_date[${index}]`}
-                              min={fromDate[index]}
-                              max={formattedDate}
-                              value={row.to_date}
-                              onChange={(e) => handleDateChange(index, 'to_date', e.target.value, row.from_time, row.to_time)}
-                              required
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="time"
-                              className="form-control form-control-sm"
-                              name={`from_time[${index}]`}
-                              value={row.from_time}
-                              onChange={(e) => handleActualTimeChange(index, e.target.value, row.to_time)}
-                              required
+                        return (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>
+                              <input
+                                type="date"
+                                className="form-control form-control-sm"
+                                name={`from_date[${index}]`}
+                                min={fromDate[index]}
+                                max={formattedDate}
+                                value={row.from_date}
+                                onChange={(e) =>
+                                  handleDateChange(
+                                    index,
+                                    "from_date",
+                                    e.target.value,
+                                    row.from_time
+                                  )
+                                }
+                                required
                               />
-                            <i className="icofont-clock"></i>
-                          </td>
+                            </td>
+                            <td>
+                              <input
+                                type="date"
+                                className="form-control form-control-sm"
+                                name={`to_date[${index}]`}
+                                min={fromDate[index]}
+                                max={formattedDate}
+                                value={row.to_date}
+                                onChange={(e) =>
+                                  handleDateChange(
+                                    index,
+                                    "to_date",
+                                    e.target.value,
+                                    row.from_time,
+                                    row.to_time
+                                  )
+                                }
+                                required
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="time"
+                                className="form-control form-control-sm"
+                                name={`from_time[${index}]`}
+                                value={row.from_time}
+                                onChange={(e) =>
+                                  handleActualTimeChange(
+                                    index,
+                                    e.target.value,
+                                    row.to_time
+                                  )
+                                }
+                                required
+                              />
+                              <i className="icofont-clock"></i>
+                            </td>
 
-                          <td>
-                            <input
-                              type="time"
-                              className="form-control form-control-sm"
-                              name={`to_time[${index}]`}
-                              value={row.to_time}
-                              onChange={(e) => handleActualTimeChange(index, row.from_time, e.target.value)}
-                              required
-                             />
-                          </td>
+                            <td>
+                              <input
+                                type="time"
+                                className="form-control form-control-sm"
+                                name={`to_time[${index}]`}
+                                value={row.to_time}
+                                onChange={(e) =>
+                                  handleActualTimeChange(
+                                    index,
+                                    row.from_time,
+                                    e.target.value
+                                  )
+                                }
+                                required
+                              />
+                            </td>
 
-                          <td>
-                            <input
-                              type="text"
-                              className="form-control form-control-sm-2"
-                              name={`actual_time[${index}]`}
-                              style={{ width: "5rem", height: 32 }}
-                              value={row.actual_time}
-                              required
-                            />
-                          </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="form-control form-control-sm-2"
+                                name={`actual_time[${index}]`}
+                                style={{ width: "5rem", height: 32 }}
+                                value={row.actual_time}
+                                required
+                              />
+                              {console.log("rowA", row.actual_time)}
+                            </td>
 
+                            <td>
+                              <input
+                                title={remark && remark ? remark : ""}
+                                type="text"
+                                className="form-control form-control-sm"
+                                name={`remark[${index}]`}
+                                defaultValue={row && row.remark}
+                                required
+                              />
+                            </td>
 
-                          <td>
-                            <input
-                              title={remark && remark ? remark : ""}
-                              type="text"
-                              className="form-control form-control-sm"
-                              name={`remark[${index}]`}
-                              defaultValue={row && row.remark}
-                              required
-                            />
-                          </td>
-                          
-                          <td>
-
-                            {index + 1 == 1 && (  
-                              <button
-                                onClick={addRow}
-                                className="btn btn-primary"
-                                style={{ backgroundColor: "#484C7F" }}
+                            <td>
+                              {index + 1 == 1 && (
+                                <button
+                                  onClick={addRow}
+                                  className="btn btn-primary"
+                                  style={{ backgroundColor: "#484C7F" }}
                                 >
-                                <i className="icofont-plus-circle"></i>
-                              </button>
-                            )}
+                                  <i className="icofont-plus-circle"></i>
+                                </button>
+                              )}
 
-                            {index + 1 > 1 && (
-                              <button
-                                className="mr10 mr-1 btn btn-danger"
-                                onClick={() => handleRemoveClick()}
-                              >
-                                <i className="icofont-ui-delete"></i>
-                              </button>
-                            )}
-                          </td>
-                     </tr>
-                      })}</>
-                  }
+                              {index + 1 > 1 && (
+                                <button
+                                  className="mr10 mr-1 btn btn-danger"
+                                  onClick={() => handleRemoveClick()}
+                                >
+                                  <i className="icofont-ui-delete"></i>
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1556,7 +1585,5 @@ const Notify = useSelector(TimeRegularizationSlice=>TimeRegularizationSlice.time
 };
 
 export default RequestModal;
-
-
 
 // created by Asmita Margaje

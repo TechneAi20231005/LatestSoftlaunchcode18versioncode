@@ -505,6 +505,29 @@ export default function TaskData(props) {
                     <i className="icofont-listing-number"></i> Subtask
                   </button>
                 </li>
+                {props.data.time_status !== "STOP" && (
+                  <li
+                    onClick={(e) => {
+                      handleRequestModal();
+                      RegularizaLoadData();
+                    }}
+                  >
+                    {data &&
+                      data.taskOwners.map((d) => {
+                        if (d.id == localStorage.getItem("id")) {
+                          return (
+                            <button
+                              className="btn btn-sm text-white w-100"
+                              style={{ backgroundColor: "#d63384" }}
+                            >
+                              <i className="icofont-listing-number"></i> Time
+                              Regularization
+                            </button>
+                          );
+                        }
+                      })}
+                  </li>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           </>
@@ -573,30 +596,29 @@ export default function TaskData(props) {
                 </button>
               </li>
 
-              {props.data.status != "COMPLETED" &&
-                props.data.time_status !== "STOP" && (
-                  <li
-                    onClick={(e) => {
-                      handleRequestModal();
-                      RegularizaLoadData();
-                    }}
-                  >
-                    {data &&
-                      data.taskOwners.map((d) => {
-                        if (d.id == localStorage.getItem("id")) {
-                          return (
-                            <button
-                              className="btn btn-sm text-white w-100"
-                              style={{ backgroundColor: "#d63384" }}
-                            >
-                              <i className="icofont-listing-number"></i> Time
-                              Regularization
-                            </button>
-                          );
-                        }
-                      })}
-                  </li>
-                )}
+              {props.data.time_status !== "STOP" && (
+                <li
+                  onClick={(e) => {
+                    handleRequestModal();
+                    RegularizaLoadData();
+                  }}
+                >
+                  {data &&
+                    data.taskOwners.map((d) => {
+                      if (d.id == localStorage.getItem("id")) {
+                        return (
+                          <button
+                            className="btn btn-sm text-white w-100"
+                            style={{ backgroundColor: "#d63384" }}
+                          >
+                            <i className="icofont-listing-number"></i> Time
+                            Regularization
+                          </button>
+                        );
+                      }
+                    })}
+                </li>
+              )}
 
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
