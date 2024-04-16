@@ -290,7 +290,8 @@ export default function MyTicketComponent() {
 
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0 &&
-                data.status_name != "Solved" && (
+                data.status_name != "Solved" &&
+                localStorage.getItem("account_for" === "SELF") && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
