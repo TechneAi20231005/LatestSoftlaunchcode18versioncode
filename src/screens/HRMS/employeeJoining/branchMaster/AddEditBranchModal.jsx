@@ -82,7 +82,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                   <Field
                     component={CustomInput}
                     name="location_name"
-                    label="Branch"
+                    label="Branch Name"
                     placeholder="Enter Branch Name"
                     requiredField
                   />
@@ -91,8 +91,8 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                   <Field
                     component={CustomInput}
                     name="remark"
-                    label="Remarks"
-                    placeholder="Enter Remarks"
+                    label="Remark"
+                    placeholder="Enter Remark"
                   />
                 </Col>
               </Row>

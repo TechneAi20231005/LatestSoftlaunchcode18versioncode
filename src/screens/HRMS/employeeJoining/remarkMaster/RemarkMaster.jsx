@@ -50,7 +50,17 @@ function RemarkMaster() {
     {
       name: 'Remark Description',
       sortable: true,
-      selector: row => row?.remark_description || '--',
+      selector: row =>
+        row?.remark_description ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark_description}</Tooltip>}
+          >
+            <span>{row?.remark_description || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       width: '200px',
     },
     {

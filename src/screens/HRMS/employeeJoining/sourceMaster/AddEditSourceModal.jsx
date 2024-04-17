@@ -81,7 +81,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
                   <Field
                     component={CustomInput}
                     name="source_name"
-                    label="Source"
+                    label="Source Name"
                     placeholder="Enter Source Name"
                     requiredField
                   />
