@@ -1504,7 +1504,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                          authorities && authorities.TDS_Applicable === true
+                          authorities && authorities.All_Update_Bill === true
                             ? false
                             : true
                         }
@@ -1576,7 +1576,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                             //     : true
                             // }
                             isDisabled={
-                              authorities && authorities.TDS_Applicable === true
+                              authorities &&
+                              authorities.All_Update_Bill === true
                                 ? false
                                 : true
                             }
@@ -1626,7 +1627,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               // }
                               isDisabled={
                                 authorities &&
-                                authorities.TDS_Applicable === true
+                                authorities.All_Update_Bill === true
                                   ? false
                                   : true
                               }

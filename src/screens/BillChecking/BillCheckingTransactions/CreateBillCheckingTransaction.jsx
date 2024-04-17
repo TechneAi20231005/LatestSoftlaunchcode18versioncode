@@ -1307,7 +1307,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       readOnly={true}
                     />
                   </div>
-                  {console.log("authorities", authorities)}
 
                   <div className=" col-md-2 mt-4">
                     <input
@@ -1316,7 +1315,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       style={{ marginRight: "8px", marginLeft: "10px" }}
                       id="is_tds_applicable"
                       disabled={
-                        authorities && authorities.TDS_Applicable === false
+                        authorities && authorities.All_Update_Bill === false
                           ? true
                           : false
                       }
