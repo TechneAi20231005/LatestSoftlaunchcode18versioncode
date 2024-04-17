@@ -113,7 +113,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                     component={CustomRadioButton}
                     type="radio"
                     name="is_active"
-                    label="Deactivate"
+                    label="Deactive"
                     value="0"
                     inputClassName="me-1"
                   />

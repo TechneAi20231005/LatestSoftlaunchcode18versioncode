@@ -48,7 +48,7 @@ function FollowUp() {
     );
   };
   return (
-    <Container className="employee_joining_details_container">
+    <Container fluid className="employee_joining_details_container">
       <h5 className="mb-0 text-primary">Follow Up</h5>
       <hr className="primary_divider mt-1" />
 
@@ -68,7 +68,7 @@ function FollowUp() {
                   <Field
                     component={CustomTextArea}
                     name="add_follow_up"
-                    label="Add follow-up"
+                    label="Add Follow-Up"
                     placeholder="Enter follow-up"
                     requiredField
                     // rows={4}
@@ -81,7 +81,7 @@ function FollowUp() {
                     component={CustomInput}
                     type="datetime-local"
                     name="next_follow_up_date"
-                    label="Next follow-up date & time"
+                    label="Next Follow-Up Date & Time"
                     requiredField
                   />
                 </Col>

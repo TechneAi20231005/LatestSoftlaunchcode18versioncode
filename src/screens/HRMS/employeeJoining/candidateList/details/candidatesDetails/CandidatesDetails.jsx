@@ -117,7 +117,7 @@ function CandidatesDetails() {
   // // life cycle
   useEffect(() => {
     dispatch(getCandidatesDetailsThunk({ currentId: currentCandidateId }));
-    if (!branchMasterList?.length) {
+    if (!roleMasterList?.length) {
       dispatch(getRoleData());
     }
     if (!branchMasterList?.length) {
@@ -129,9 +129,13 @@ function CandidatesDetails() {
   }, [currentCandidateId]);
 
   return (
-    <Container className="employee_joining_details_container">
+    <Container fluid className="employee_joining_details_container">
       <div className="d-flex justify-content-between align-items-center text-primary">
-        <h5 className="mb-0">Candidates Details</h5>
+        <h5 className="mb-0">
+          Candidates Details{' '}
+          <span className="fs-6 text-black opacity-50 ml-1">&nbsp; #{details?.id}</span>
+        </h5>
+
         <i className="icofont-edit me-1 cp" onClick={() => setCurrentMode('EDIT')} />
       </div>
       <hr className="primary_divider mt-1" />
@@ -161,7 +165,7 @@ function CandidatesDetails() {
                   <Field
                     component={CustomInput}
                     name="full_name"
-                    label="Full name"
+                    label="Full Name"
                     placeholder="Enter full name"
                     disabled
                   />
@@ -173,7 +177,7 @@ function CandidatesDetails() {
                     component={CustomInput}
                     name="dob"
                     type="date"
-                    label="Date of birth"
+                    label="Date Of Birth"
                     disabled
                   />
                 </Col>
@@ -182,7 +186,7 @@ function CandidatesDetails() {
                     options={preferredRole}
                     component={CustomReactSelect}
                     name="designation_id"
-                    label="Preferred role"
+                    label="Preferred Role"
                     placeholder={status === 'loading' ? 'Loading...' : 'Select'}
                     disabled
                   />
@@ -194,7 +198,7 @@ function CandidatesDetails() {
                     options={preferredLocation}
                     component={CustomReactSelect}
                     name="location_id"
-                    label="Preferred location"
+                    label="Preferred Location"
                     placeholder={branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'}
                     isMulti
                     disabled
@@ -204,7 +208,7 @@ function CandidatesDetails() {
                   <Field
                     component={CustomInput}
                     name="mobile_no"
-                    label="Phone number"
+                    label="Phone Number"
                     placeholder="Enter contact number"
                     type="number"
                     disabled
@@ -226,7 +230,7 @@ function CandidatesDetails() {
                     data={experienceLevel}
                     component={CustomDropdown}
                     name="relevant_experience"
-                    label="Current years of work experience"
+                    label="Current Years Of Work Experience"
                     placeholder="Select"
                     requiredField
                     disabled={currentMode === 'VIEW'}
@@ -239,7 +243,7 @@ function CandidatesDetails() {
                     component={CustomCurrencyInput}
                     onKeyDown={NumbersOnly}
                     name="expected_ctc"
-                    label="Expected monthly salary (Net)"
+                    label="Expected Monthly Salary (Net)"
                     placeholder="Enter expected monthly salary"
                     type="number"
                     disabled={currentMode === 'VIEW'}
@@ -250,7 +254,7 @@ function CandidatesDetails() {
                     component={CustomCurrencyInput}
                     onKeyDown={NumbersOnly}
                     name="current_ctc"
-                    label="Current monthly salary"
+                    label="Current Monthly Salary"
                     placeholder="Enter current monthly salary"
                     type="number"
                     disabled={currentMode === 'VIEW'}
@@ -262,7 +266,7 @@ function CandidatesDetails() {
                   <Field
                     component={CustomInput}
                     name="notice_period"
-                    label="Notice period (In days)"
+                    label="Notice Period (In days)"
                     placeholder="Enter notice period in days"
                     type="number"
                     disabled={currentMode === 'VIEW'}

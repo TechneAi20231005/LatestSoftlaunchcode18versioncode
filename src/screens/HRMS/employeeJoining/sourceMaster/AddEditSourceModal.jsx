@@ -112,7 +112,7 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
                     component={CustomRadioButton}
                     type="radio"
                     name="is_active"
-                    label="Deactivate"
+                    label="Deactive"
                     value="0"
                     inputClassName="me-1"
                   />

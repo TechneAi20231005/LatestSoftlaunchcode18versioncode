@@ -1,69 +1,54 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+
 import './style.scss';
 function Steeper() {
-  const stepData = {
-    details: {
-      id: 2,
-    },
-    step_details: [
-      {
-        id: 1,
-        stepTitle: 'Application Submitted',
-        status: 'completed',
-      },
-      { id: 2, stepTitle: 'Interview', status: '' },
-      {
-        id: 3,
-        stepTitle: 'HOD Interview',
-        status: '',
-      },
-      {
-        id: 4,
-        stepTitle: 'Directer Interview',
-        status: '',
-      },
-      {
-        id: 5,
-        stepTitle: 'Job Offer',
-        status: '',
-      },
-      {
-        id: 6,
-        stepTitle: 'Onboarding',
-        status: '',
-      },
-    ],
-  };
+  // // redux state
+  const { interviewProcessData, isLoading } = useSelector(state => state?.interViewProcess);
+
   return (
     <div className="stepper_wrapper">
-      {stepData?.step_details?.map((step, index) => (
+      {interviewProcessData?.details?.map(stepData => (
         <div
           className={`stepper_item ${
-            step?.id === stepData?.details?.id && step?.status === 'completed'
+            interviewProcessData?.application_status === 2
+              ? stepData?.status === 1
+                ? 'completed'
+                : stepData?.status === 2
+                ? 'rejected'
+                : interviewProcessData?.step_details_id === stepData?.step_details_id
+                ? 'active'
+                : ''
+              : interviewProcessData?.application_status === stepData?.application_status_id &&
+                stepData?.status === 1
               ? 'complete_active'
-              : step?.status === 'completed'
+              : stepData?.status === 1
               ? 'completed'
-              : step?.status === 'rejected'
+              : stepData?.status === 2
               ? 'rejected'
-              : step?.id === stepData?.details?.id
+              : interviewProcessData?.application_status === stepData?.application_status_id
               ? 'active'
               : ''
           }   `}
-          // className="stepper_item completed"
         >
           <div className="step_counter">
-            {step?.status === 'completed' ? (
+            {stepData?.status === 1 ? (
               <i className="icofont-check" />
-            ) : step?.status === 'rejected' ? (
-              // <i className="icofont-error" />
+            ) : stepData?.status === 2 ? (
               <span>&#10006;</span>
-            ) : step?.id === stepData?.details?.id ? (
+            ) : interviewProcessData?.application_status === 2 ? (
+              interviewProcessData?.step_details_id === stepData?.step_details_id ? (
+                <i className="icofont-sand-clock" />
+              ) : (
+                ''
+              )
+            ) : interviewProcessData?.application_status === stepData?.application_status_id ? (
               <i className="icofont-sand-clock" />
             ) : (
               ''
             )}
           </div>
-          <p className="text-center step_name">{step?.stepTitle}</p>
+          <p className="text-center step_name">{stepData?.step_title}</p>
         </div>
       ))}
     </div>

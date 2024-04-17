@@ -52,7 +52,8 @@
 .stepper_item.active {
   font-weight: bold;
 }
-.stepper_item.completed .step_counter {
+.stepper_item.completed .step_counter,
+.stepper_item.complete_active .step_counter {
   background-color: var(--bs-green);
   border: 1px solid var(--bs-green);
 
@@ -67,13 +68,13 @@
     color: #f9fbfd;
   }
 }
-.stepper_item.complete_active .step_counter {
-  background-color: var(--bs-gray-500);
-  border: 1px solid var(--bs-gray-500);
-  i {
-    color: var(--bs-green);
-  }
-}
+// .stepper_item.complete_active .step_counter {
+//   background-color: var(--bs-gray-500);
+//   border: 1px solid var(--bs-gray-500);
+//   i {
+//     color: var(--bs-green);
+//   }
+// }
 
 .stepper_item.completed::after {
   position: absolute;
@@ -90,4 +91,8 @@
 }
 .stepper_item:last-child::after {
   content: none;
+}
+
+.row_gap_3 {
+  row-gap: 8px;
 }

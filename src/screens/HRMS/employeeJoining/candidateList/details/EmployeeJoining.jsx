@@ -13,7 +13,7 @@ import InterviewProcess from './candidatesDetails/interviewProcess/InterviewProc
 import './style.scss';
 
 function EmployeeJoining() {
-  const [currentTab, setCurrentTab] = useState('interviews_process');
+  const [currentTab, setCurrentTab] = useState('candidates_details');
   const tabsLabel = [
     {
       label: 'Candidates Details',
@@ -26,14 +26,7 @@ function EmployeeJoining() {
   ];
   return (
     <Container fluid>
-      <PageHeader
-        headerTitle={
-          <>
-            Employee Joining
-            <span className="fs-6 text-black opacity-50 ml-1">&nbsp; #{Math.random()}</span>
-          </>
-        }
-      />
+      <PageHeader headerTitle="Employee Joining" />
       <div className="mt-3">
         <CustomTab tabsData={tabsLabel} currentTab={currentTab} setCurrentTab={setCurrentTab} />
       </div>

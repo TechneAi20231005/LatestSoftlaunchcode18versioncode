@@ -45,6 +45,8 @@ import interviewMasterSlice from '../slices/hrms/employeeJoining/interviewListMa
 import candidatesMasterSlice from '../slices/hrms/employeeJoining/candidatesListMaster';
 import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkHistory';
+import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
+import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoining/interviewScheduleHistory';
 
 export const store = configureStore({
   reducer: {
@@ -89,6 +91,8 @@ export const store = configureStore({
     candidatesMaster: candidatesMasterSlice,
     candidatesFollowUp: candidatesFollowUpSlice,
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
+    interViewProcess: interViewProcessDataSlice,
+    candidateInterviewScheduleHistory: candidateInterviewScheduleHistorySlice,
   },
 
   middleware: getDefaultMiddleware =>

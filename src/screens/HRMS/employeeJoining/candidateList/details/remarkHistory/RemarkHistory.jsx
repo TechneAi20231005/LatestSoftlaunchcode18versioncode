@@ -19,7 +19,7 @@ function RemarkHistory() {
     }
   }, []);
   return (
-    <Container className="employee_joining_details_container">
+    <Container fluid className="employee_joining_details_container">
       <h5 className="mb-0 text-primary">Remark History</h5>
       <hr className="primary_divider mt-1" />
       {isLoading?.getRemarkHistoryList ? (

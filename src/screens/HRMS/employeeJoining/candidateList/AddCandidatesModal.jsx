@@ -161,7 +161,7 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       component={CustomInput}
                       name="full_name"
-                      label="Full name"
+                      label="Full Name"
                       placeholder="Enter full name"
                       requiredField
                     />
@@ -173,7 +173,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="dob"
                       type="date"
-                      label="Date of birth"
+                      label="Date Of Birth"
                       requiredField
                     />
                   </Col>
@@ -182,7 +182,7 @@ function AddCandidatesModal({ show, close }) {
                       options={preferredRole}
                       component={CustomReactSelect}
                       name="designation_id"
-                      label="Preferred role"
+                      label="Preferred Role"
                       placeholder={status === 'loading' ? 'Loading...' : 'Select'}
                       requiredField
                       isMulti
@@ -195,7 +195,7 @@ function AddCandidatesModal({ show, close }) {
                       options={preferredLocation}
                       component={CustomReactSelect}
                       name="location_id"
-                      label="Preferred location"
+                      label="Preferred Location"
                       placeholder={
                         branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
                       }
@@ -207,7 +207,7 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       component={CustomInput}
                       name="mobile_no"
-                      label="Phone number"
+                      label="Phone Number"
                       placeholder="Enter contact number"
                       requiredField
                       type="number"
@@ -228,7 +228,7 @@ function AddCandidatesModal({ show, close }) {
                       data={experienceLevel}
                       component={CustomDropdown}
                       name="relevant_experience"
-                      label="Current years of work experience"
+                      label="Current Years Of Work Experience"
                       placeholder="Select"
                       requiredField
                     />
@@ -240,7 +240,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       onKeyDown={NumbersOnly}
                       name="expected_ctc"
-                      label="Expected monthly salary (Net)"
+                      label="Expected Monthly Salary (Net)"
                       placeholder="Enter expected monthly salary"
                       type="number"
                     />
@@ -250,7 +250,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       onKeyDown={NumbersOnly}
                       name="current_ctc"
-                      label="Current monthly salary"
+                      label="Current Monthly Salary"
                       placeholder="Enter current monthly salary"
                       type="number"
                     />
@@ -261,14 +261,14 @@ function AddCandidatesModal({ show, close }) {
                     <Field
                       component={CustomInput}
                       name="notice_period"
-                      label="Notice period (In days)"
+                      label="Notice Period (In days)"
                       placeholder="Enter notice period in days"
                       type="number"
                     />
                   </Col>
                   <Col sm={6} md={6}>
                     <label>
-                      Upload resume <span className="mendatory_sign">*</span>
+                      Upload Resume <span className="mendatory_sign">*</span>
                     </label>
                     <input
                       type="file"
