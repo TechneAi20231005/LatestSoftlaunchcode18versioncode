@@ -1504,9 +1504,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                           data.is_tds_applicable == 1 ? true : false
                         }
                         disabled={
-                          authorities && authorities.TDS_Applicable === false
-                            ? true
-                            : false
+                          authorities && authorities.TDS_Applicable === true
+                            ? false
+                            : true
                         }
                         // disabled={
                         //   data.is_rejected == 1 ||
@@ -1514,7 +1514,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         //   (data.current_user_is_approver == 1 &&
                         //     authorities &&
                         //     authorities.All_Update_Bill == true &&
-                        //     data.current_user_is_approver == 1)
+                        //     data.current_user_is_approver == 0)
                         //     ? false
                         //     : true
                         // }
@@ -1553,7 +1553,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           name="tds_section"
                           value={data && data.tds_section}
                         />
-
                         <label className="col-form-label">
                           <b>TDS section : </b>
                         </label>
@@ -1566,13 +1565,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                             placeholder="select..."
                             options={sectionDropdown}
                             ref={sectionRef}
+                            // isDisabled={
+                            //   data.is_rejected == 1 ||
+                            //   data.created_by == localStorage.getItem("id") ||
+                            //   (data.current_user_is_approver == 1 &&
+                            //     authorities &&
+                            //     authorities.All_Update_Bill == true &&
+                            //     data.current_user_is_approver == 0)
+                            //     ? false
+                            //     : true
+                            // }
                             isDisabled={
-                              data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem("id") ||
-                              (data.current_user_is_approver == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true &&
-                                data.current_user_is_approver == 1)
+                              authorities && authorities.TDS_Applicable === true
                                 ? false
                                 : true
                             }
@@ -1610,13 +1614,19 @@ export default function CreateBillCheckingTransaction({ match }) {
                               name="tds_constitution"
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
+                              // isDisabled={
+                              //   data.is_rejected == 1 ||
+                              //   data.created_by == localStorage.getItem("id") ||
+                              //   (data.current_user_is_approver == 1 &&
+                              //     authorities &&
+                              //     authorities.All_Update_Bill == true &&
+                              //     data.current_user_is_approver == 0)
+                              //     ? false
+                              //     : true
+                              // }
                               isDisabled={
-                                data.is_rejected == 1 ||
-                                data.created_by == localStorage.getItem("id") ||
-                                (data.current_user_is_approver == 1 &&
-                                  authorities &&
-                                  authorities.All_Update_Bill == true &&
-                                  data.current_user_is_approver == 1)
+                                authorities &&
+                                authorities.TDS_Applicable === true
                                   ? false
                                   : true
                               }
@@ -1767,7 +1777,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <b>Original Bill Needed</b>
                       </label>
                     </div>
-                    {console.log("data==>", data)}
                     {data &&
                       data.approvers_id.length > 0 &&
                       data.approvers_id.includes(
