@@ -243,152 +243,6 @@ const CustomMenuList = ({ options, onSelect }) => {
 
 //for ticket type created CustomMenuListTicket  function
 
-// const CustomMenuListTicket = ({ options, onSelect }) => {
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [openOptions, setOpenOptions] = useState([]);
-//   const [selectedOption, setSelectedOption] = useState(null);
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [hoveredIndex, setHoveredIndex] = useState(null);
-
-//   const handleKeyDown = (e) => {
-//     if (e.key === "Enter") {
-//       setOpenOptions(true);
-//     }
-//   };
-
-//   const toggleOptions = (label) => {
-//     if (openOptions.includes(label)) {
-//       setOpenOptions(openOptions.filter((item) => item !== label));
-//     } else {
-//       setOpenOptions([...openOptions, label]);
-//     }
-//   };
-
-//   const handleSelect = (label, ID) => {
-//     setSelectedOption(label);
-//     onSelect(label, ID);
-//     setOpenOptions([]);
-//     setIsMenuOpen(!isMenuOpen);
-//   };
-
-//   const filterOptions = (options, term) => {
-//     return options.filter((option) => {
-//       const lowerCaseTerm = term.toLowerCase();
-//       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
-//       const matchChildOptions =
-//         option.options && option.options.length > 0
-//           ? filterOptions(option.options, term).length > 0
-//           : false;
-
-//       return matchLabel || matchChildOptions;
-//     });
-//   };
-
-//   const filteredOptions = filterOptions(options, searchTerm);
-
-//   const handleMouseEnter = (label) => {
-//     setHoveredIndex(label);
-//   };
-
-//   const handleMouseLeave = () => {
-//     setHoveredIndex(null);
-//   };
-
-//   const renderOptions = (options) => {
-//     return options.map((option, index) => (
-//       <React.Fragment key={option.label}>
-//         <div
-//           style={{
-//             display: "flex",
-//             alignItems: "center",
-//             padding: "0.4rem",
-//             // overflowY: "auto",
-//             backgroundColor:
-//               hoveredIndex === option.label
-//                 ? "rgba(79, 184, 201, 0.5)"
-//                 : "white",
-//             transition: "background-color 0.3s",
-//           }}
-//           onMouseEnter={() => handleMouseEnter(option.label)}
-//           onMouseLeave={handleMouseLeave}
-//         >
-//           <i
-//             className={
-//               openOptions.includes(option.label) && option.options.length > 0
-//                 ? "icofont-rounded-down"
-//                 : "icofont-rounded-right"
-//             }
-//             style={{
-//               marginRight: "5px",
-//               cursor: "pointer",
-//             }}
-//             onClick={() => toggleOptions(option.label)}
-//           ></i>
-
-//           <div
-//             onClick={() => handleSelect(option.label, option.ID)}
-//             style={{
-//               cursor: "pointer",
-//               transition: "color 0.3s",
-//             }}
-//           >
-//             {option.label}
-//           </div>
-//         </div>
-
-//         {openOptions &&
-//           openOptions.length > 0 &&
-//           openOptions.includes(option.label) &&
-//           option.options && (
-//             <div style={{ marginLeft: "1rem" }}>
-//               <div style={{ marginLeft: "1rem" }}>
-//                 {renderOptions(option.options)}
-//               </div>
-//             </div>
-//           )}
-//       </React.Fragment>
-//     ));
-//   };
-
-//   return (
-//     <>
-//       {isMenuOpen === false && (
-//         <div
-//           style={{
-//             position: "relative",
-//             width: "100%",
-
-//             overflowY: "auto",
-//             border: "1px solid #ccc",
-//             borderWidth: "2px",
-//             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-//             backgroundColor: "white",
-//             borderBottomRightRadius: "4px",
-//             borderBottomLeftRadius: "4px",
-//           }}
-//           tabIndex={0}
-//           onKeyDown={handleKeyDown}
-//         >
-//           <input
-//             type="text"
-//             placeholder="Search..."
-//             style={{
-//               padding: "8px",
-//               border: "none",
-//               width: "100%",
-//               boxSizing: "border-box",
-//             }}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//           />
-//           <div style={{ overflowY: "auto" }}>
-//             {renderOptions(filteredOptions)}
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
 const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openOptions, setOpenOptions] = useState([]);
@@ -620,7 +474,10 @@ function TaskAndTicketTypeMaster(props) {
                 type: temp[i].type,
 
                 type_name: temp[i].type_name,
-                parent_name: temp[i].parent_name,
+                parent_name:
+                  temp[i].parent_name === null && temp[i].parent_id == 0
+                    ? "Primary"
+                    : temp[i].parent_name,
 
                 remark: temp[i].remark,
                 is_active: temp[i].is_active == 1 ? "Active" : "Deactive",
@@ -825,10 +682,6 @@ function TaskAndTicketTypeMaster(props) {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              // if (!selectedType) {
-              //   alert("Please select a type first");
-              //   return; // Exit the function if selectedType is not selected
-              // }
               const modalHeader =
                 selectedType === "TASK" ? "Edit Task Type" : "Edit Ticket Type";
               handleModal({
@@ -848,22 +701,6 @@ function TaskAndTicketTypeMaster(props) {
       selector: (row) => row.counter,
       sortable: true,
     },
-
-    // {
-    //   name: "Type",
-    //   // selectedType === "TASK" ? "Task Type" : "Ticket Type",
-    //   selector: (row) => row.type,
-
-    //   sortable: true,
-    //   width: "125px",
-    // },
-
-    // {
-    //   name: "Type Name",
-    //   selector: (row) => row.type_name,
-    //   sortable: true,
-    //   width: "125px",
-    // },
 
     {
       name: "Type Name",
@@ -918,21 +755,6 @@ function TaskAndTicketTypeMaster(props) {
         </div>
       ),
     },
-    // {
-    //   name: "Parent",
-    //   width: "150px",
-    //   cell: (row) => {
-    //     if (parent) {
-    //       const parent_name =
-    //         parent &&
-    //         parent
-
-    //           ?.filter((d) => d.value == row.parent_id)
-    //           .map((d) => ({ value: d.value, label: d.label }));
-    //       return <span>{parent_name[0]?.label.substring(0, 10)}</span>;
-    //     }
-    //   },
-    // },
 
     {
       name: "Status",
@@ -1028,12 +850,6 @@ function TaskAndTicketTypeMaster(props) {
   const handleForm = (id) => async (e) => {
     e.preventDefault();
 
-    // if (!id) {
-    //   if (selectedValue === "") {
-    //     alert("Type is required.");
-    //     return;
-    //   }
-    // }
     if (id) {
       if (modal.modalData.type === "") {
         alert("Type is required.");
@@ -1066,6 +882,7 @@ function TaskAndTicketTypeMaster(props) {
       form.append("type", selectedType);
 
       if (!id) {
+        setNotify(null);
         await new TaskTicketTypeService().postType(form).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
@@ -1076,8 +893,6 @@ function TaskAndTicketTypeMaster(props) {
             } else {
               setNotify({ type: "danger", message: res.data.message });
             }
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
           }
         });
       } else {
@@ -1412,20 +1227,9 @@ function TaskAndTicketTypeMaster(props) {
                       }}
                     >
                       <div
-                        // style={{
-                        //   padding: "8px",
-                        //   border: "1px solid #ccc",
-                        //   cursor: "pointer",
-                        //   width: "100%",
-                        //   borderRadius: "1px",
-                        // }}
                         className="form-control form-control-sm"
                         onClick={(e) => handleSelectOptionClick(e)}
                       >
-                        {/* {selectedOption
-                          ? selectedOption
-                          : modal?.modalData?.parent_name} */}
-
                         {selectedOption
                           ? selectedOption
                           : modal?.modalData?.parent_name !== null
@@ -1438,18 +1242,13 @@ function TaskAndTicketTypeMaster(props) {
                             position: "absolute",
                             width: "100%", // Set the width to 100% to match the parent's width
                             top: "100%",
-                            // color: isHovered ? "red" : "black",
                             transition: "color 0.3s",
                             maxHeight: "220px", // Adjust the maxHeight here as needed
-                            // overflowY: "auto", // Enable vertical scrolling
-                            // scrollbarWidth: "none", // Hide scrollbar in Firefox
                             msOverflowStyle: "none", // Hide scrollbar in IE/Edge
                             "&::-webkit-scrollbar": {
                               display: "none", // Hide scrollbar in Webkit browsers
                             },
                           }}
-                          // onMouseEnter={handleMouseEnter}
-                          // onMouseLeave={handleMouseLeave}
                         >
                           <CustomMenuList
                             options={transformedOptions}
@@ -1461,11 +1260,6 @@ function TaskAndTicketTypeMaster(props) {
                         </div>
                       )}
 
-                      {/* {!selectedOptionId && (
-                        <div style={{ color: "red", marginTop: "5px" }}>
-                          Please select a parent task type.
-                        </div>
-                      )} */}
                       {parentTaskName && (
                         <small
                           style={{
@@ -1599,7 +1393,6 @@ function TaskAndTicketTypeMaster(props) {
               {data && (
                 <DataTable
                   columns={columns}
-                  // data={data}
                   data={data.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
