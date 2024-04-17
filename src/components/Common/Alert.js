@@ -3,21 +3,26 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Alert({ alertData }) {
+  const existingToast = toast.isActive(alertData.message);
   useEffect(() => {
     if (alertData) {
-      // Show the toast notification
-      toast(alertData.message, {
-        type: alertData.type,
-        autoClose: 3000, // Adjust as needed
-        hideProgressBar: true, // Adjust as needed
-        position: "top-right", // Adjust as needed
-        style: {
-          backgroundColor: getBackgroundColor(alertData.type), // Function to get background color based on type
-          color: "white", // Adjust text color as needed
-          fontSize: "18px", // Adjust font size as needed
-          zIndex: "100", // Adjust zIndex as needed
-        },
-      });
+      if (!existingToast) {
+        // Show the toast notification
+        toast(alertData.message, {
+          type: alertData.type,
+          autoClose: 3000, // Adjust as needed
+          hideProgressBar: true, // Adjust as needed
+          position: "top-right", // Adjust as needed
+
+          style: {
+            backgroundColor: getBackgroundColor(alertData.type), // Function to get background color based on type
+            color: "white", // Adjust text color as needed
+            fontSize: "18px", // Adjust font size as needed
+            zIndex: "100", // Adjust zIndex as needed
+          },
+          toastId: alertData.message,
+        });
+      }
     }
   }, [alertData]);
 

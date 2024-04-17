@@ -161,8 +161,6 @@ export default function CreateTicketComponent() {
       });
     };
 
-    const filteredOptions = filterOptions(options, searchTerm);
-
     const handleMouseEnter = (label) => {
       setHoveredIndex(label);
     };
@@ -225,6 +223,7 @@ export default function CreateTicketComponent() {
         </React.Fragment>
       ));
     };
+    const filteredOptions = filterOptions(options, searchTerm);
 
     return (
       <>
@@ -233,7 +232,8 @@ export default function CreateTicketComponent() {
             style={{
               position: "relative",
               width: "100%",
-
+              zIndex: 1000,
+              maxHeight: "300px",
               overflowY: "auto",
               border: "1px solid #ccc",
               borderWidth: "2px",
@@ -720,10 +720,8 @@ export default function CreateTicketComponent() {
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
-      console.log(res);
       if (res.status == 200) {
         if (res.data.status == 1) {
-          console.log(res.data);
           var defaultValue = [{ value: "", label: "Select User" }];
 
           const dropdown = res.data.data
@@ -733,7 +731,6 @@ export default function CreateTicketComponent() {
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
-          console.log("dropdown", dropdown);
 
           if (data.approach == "RW") {
             defaultValue = dropdown;

@@ -379,8 +379,6 @@ export default function EditTicketComponent({ match }) {
       });
     };
 
-    const filteredOptions = filterOptions(options, searchTerm);
-
     const handleMouseEnter = (label) => {
       setHoveredIndex(label);
     };
@@ -443,48 +441,7 @@ export default function EditTicketComponent({ match }) {
         </React.Fragment>
       ));
     };
-
-    // const renderOptions = (options) => {
-    //   return options.map((option) => (
-    //     <React.Fragment key={option.label}>
-    //       <div
-    //         style={{
-    //           display: "flex",
-    //           alignItems: "center",
-    //           padding: "0.5rem",
-    //         }}
-    //       >
-    //         {option.options.length > 0 && (
-    //           <i
-    //             // className="icofont-rounded-right"
-    //             className={
-    //               openOptions.includes(option.label)
-    //                 ? "icofont-rounded-down"
-    //                 : "icofont-rounded-right"
-    //             }
-    //             style={{ marginRight: "5px", cursor: "pointer" }}
-    //             onClick={() => toggleOptions(option.label)}
-    //           ></i>
-    //         )}
-
-    //         <div
-    //           onClick={() => handleSelect(option.label, option.ID)}
-    //           style={{ cursor: "pointer" }}
-    //         >
-    //           {option.label}
-    //         </div>
-    //       </div>
-    //       {openOptions &&
-    //         openOptions.length > 0 &&
-    //         openOptions.includes(option.label) &&
-    //         option.options && (
-    //           <div style={{ marginLeft: "20px" }}>
-    //             {renderOptions(option.options)}
-    //           </div>
-    //         )}
-    //     </React.Fragment>
-    //   ));
-    // };
+    const filteredOptions = filterOptions(options, searchTerm);
 
     return (
       <>
@@ -493,7 +450,8 @@ export default function EditTicketComponent({ match }) {
             style={{
               position: "relative",
               width: "100%",
-
+              zIndex: 1000,
+              maxHeight: "300px",
               overflowY: "auto",
               border: "1px solid #ccc",
               borderWidth: "2px",
@@ -524,7 +482,6 @@ export default function EditTicketComponent({ match }) {
       </>
     );
   };
-
   const [selectedDropdown, setSelectedDropdown] = useState([]);
   const dynamicDependancyHandle = async (key, e, dependanceDropdownName) => {
     setSelectedDropdown({ ...selectedDropdown, [key]: e });
