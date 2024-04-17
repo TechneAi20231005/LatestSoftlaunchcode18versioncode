@@ -29,7 +29,6 @@ function TemplateComponent() {
   const exportData = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
   );
-  console.log("exportData", exportData);
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
@@ -128,32 +127,6 @@ function TemplateComponent() {
       ),
     },
 
-    {
-      name: "Type Name",
-      width: "150px",
-      selector: (row) => row.type_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.type_name && row.type_name.length < 120
-                    ? row.type_name
-                    : row.type_name.substring(0, 120) + "...."}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-    },
     {
       name: "Status",
       selector: (row) => row.is_active,

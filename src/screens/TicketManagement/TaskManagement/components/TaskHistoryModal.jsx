@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Modal, Table } from 'react-bootstrap';
+import React, { useEffect, useState, useRef } from "react";
+import { Modal, Table } from "react-bootstrap";
 import SubtaskService from "../../../../services/TicketService/SubtaskService";
 import ErrorLogService from "../../../../services/ErrorLogService";
 import Alert from "../../../../components/Common/Alert";
@@ -11,7 +11,7 @@ import { Spinner } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { getTaskHistory } from "../../../../services/TicketService/TaskService";
 export default function TaskHistoryModal(props) {
-  const formRef = useRef()
+  const formRef = useRef();
 
   const [notify, setNotify] = useState();
 
@@ -19,192 +19,168 @@ export default function TaskHistoryModal(props) {
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-
   const columns = [
-    { name: "Sr", selector: (row) => row.Sr_No, sortable: true, },
-    { name: "Task Id", selector: (row) => row.Task_Id, sortable: true, },
+    { name: "Sr", selector: (row) => row.Sr_No, sortable: true },
+    { name: "Task Id", selector: (row) => row.Task_Id, sortable: true },
+    { name: "Task Type", selector: (row) => row.type_name, sortable: true },
 
     {
-      name: "Task Name", selector: (row) => (
+      name: "Task Name",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.task_name && (
-
-            <div >
+            <div>
               <input
-                type='text'
+                type="text"
                 defaultValue={row.task_name}
                 style={{ border: "none" }}
                 readOnly
                 title={row && row.task_name ? row.task_name : ""}
               />
-
             </div>
           )}
         </div>
-
-      )
+      ),
     },
 
     {
-      name: "Basket Name", selector: (row) => (
+      name: "Basket Name",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.basket_name && (
-
             <div>
               <input
-                type='text'
+                type="text"
                 defaultValue={row.basket_name}
                 style={{ border: "none" }}
                 readOnly
                 title={row && row.basket_name ? row.basket_name : ""}
               />
             </div>
-
           )}
         </div>
-
-      )
+      ),
     },
-    { name: "Start Date", selector: (row) => row.start_date, sortable: true, },
-    { name: "End Date", selector: (row) => row.end_date, sortable: true, },
+    { name: "Start Date", selector: (row) => row.start_date, sortable: true },
+    { name: "End Date", selector: (row) => row.end_date, sortable: true },
 
-    { name: "Priority", selector: (row) => row.priority, sortable: true, },
+    { name: "Priority", selector: (row) => row.priority, sortable: true },
 
-    { name: "Status", selector: (row) => row.status, sortable: true, },
+    { name: "Status", selector: (row) => row.status, sortable: true },
 
     {
-      name: "Description", selector: (row) => (
+      name: "Description",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.task_desc && (
-
             <div>
               <input
-                type='text'
+                type="text"
                 defaultValue={row.task_desc}
                 style={{ border: "none" }}
                 readOnly
                 title={row && row.task_desc ? row.task_desc : ""}
               />
             </div>
-
           )}
         </div>
-
-      )
+      ),
     },
 
-
-    { name: "Task Hours", selector: (row) => row.task_hours, sortable: true, },
+    { name: "Task Hours", selector: (row) => row.task_hours, sortable: true },
     {
-      name: "Created At", selector: (row) => (
+      name: "Created At",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.created_at && (
-            <OverlayTrigger
-
-
-              overlay={<Tooltip>{row.created_at} </Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.created_at.split(" ")[0]}
-                </span>
+                <span className="ms-1"> {row.created_at.split(" ")[0]}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-
-      )
+      ),
     },
     {
-      name: "Updated At", selector: (row) => (
+      name: "Updated At",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.updated_at && (
-            <OverlayTrigger
-
-
-              overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {" "}
-                  {row.updated_at.split(" ")[0]}
-                </span>
+                <span className="ms-1"> {row.updated_at.split(" ")[0]}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      )
+      ),
     },
     {
-      name: "Created By", selector: (row) => (
+      name: "Created By",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.created_by_name && (
-
             <div>
               <input
-                type='text'
+                type="text"
                 style={{ border: "none" }}
                 defaultValue={row.created_by_name}
                 readOnly
                 title={row && row.basket_name ? row.created_by_name : ""}
               />
             </div>
-
           )}
         </div>
-
-      )
+      ),
     },
     {
-      name: "Updated By", selector: (row) => (
+      name: "Updated By",
+      selector: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
           {row.updated_by_name && (
-
             <div>
               <input
-                type='text'
+                type="text"
                 defaultValue={row.updated_by_name}
                 readOnly
-
                 style={{ border: "none" }}
                 title={row && row.updated_by_name ? row.updated_by_name : ""}
               />
             </div>
-
           )}
         </div>
-
-      )
+      ),
     },
-  ]
-
+  ];
 
   const loadData = async () => {
     setShowLoaderModal(null);
@@ -216,10 +192,10 @@ export default function TaskHistoryModal(props) {
           let counter = 1;
           var temp = [];
           setData(null);
-          res.data.data.forEach(d => {
+          res.data.data.forEach((d) => {
             temp.push({
               Sr_No: counter++,
-              Task_Id:d.ticket_id,
+              Task_Id: d.ticket_id,
 
               task_name: d.task_name,
               basket_name: d.basket_name,
@@ -228,6 +204,7 @@ export default function TaskHistoryModal(props) {
               // id: d.id,
               priority: d.priority,
               status: d.status,
+              type_name: d.type_name,
 
               task_desc: d.task_desc,
               task_hours: d.task_hours,
@@ -238,23 +215,18 @@ export default function TaskHistoryModal(props) {
               updated_by_name: d.updated_by_name,
               // ticket_basket_id: d.ticket_basket_id,
               // total_worked_in_min: d.total_worked_in_min,
-
-
             });
             setExportData(temp);
-          })
+          });
           setData(temp);
-
         }
-
       }
-    })
-  }
-
+    });
+  };
 
   useEffect(() => {
     loadData();
-  }, [])
+  }, []);
   return (
     <>
       {notify && <Alert alertData={notify} />}
@@ -288,11 +260,11 @@ export default function TaskHistoryModal(props) {
           {showLoaderModal ? (
             <div
               style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                minHeight: 'calc(100% - 1rem)',
-                margin: '0',
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                minHeight: "calc(100% - 1rem)",
+                margin: "0",
               }}
             >
               <div className="text-center">
@@ -325,9 +297,7 @@ export default function TaskHistoryModal(props) {
         </Modal.Body>
       </Modal>
     </>
-
-
-  )
+  );
 }
 
-// created by Asmita Margaje 
+// created by Asmita Margaje

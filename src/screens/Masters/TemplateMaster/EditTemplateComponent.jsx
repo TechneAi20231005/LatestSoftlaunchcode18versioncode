@@ -29,10 +29,195 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleBasketModal, handleTaskModal } from "./TemplateComponetSlice";
 
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 
 const EditTemplateComponent = ({ match, props }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const [taskData, setTaskData] = useState([]);
+
+  function transformData(taskData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the taskData
+    taskData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the taskData
+  const transformedOptions = transformData(taskData);
 
   const taskTypeDropdown = useSelector(
     (TemplateComponetSlice) =>
@@ -82,8 +267,7 @@ const EditTemplateComponent = ({ match, props }) => {
   const [modal, setModal] = useState({ shown: false, modalData: null });
   const [error, setError] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
-  const [calculatedays,setCalculatedays]=useState()
-
+  const [calculatedays, setCalculatedays] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -134,9 +318,7 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const loadData = async () => {
     await new TemplateService().getTemplateById(templateId).then((res) => {
-
-      
-      setCalculatedays(res.data.data.AB)
+      setCalculatedays(res.data.data.AB);
       if (res.status === 200) {
         const newData = {
           template_name: res.data.data.template_name,
@@ -148,6 +330,12 @@ const EditTemplateComponent = ({ match, props }) => {
         setSatrtEndValue(res.data.data.AB);
         setNewData(null);
         setNewData((prevData) => ({ ...prevData, ...newData }));
+      }
+    });
+
+    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+      if (res?.status === 200) {
+        setTaskData(res?.data?.data);
       }
     });
     dispatch(getAllTypeData());
@@ -339,6 +527,7 @@ const EditTemplateComponent = ({ match, props }) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    formData.append("task_type_id", selectedOptionId);
 
     for (const entry of formData.entries(formData)) {
     }
@@ -349,8 +538,6 @@ const EditTemplateComponent = ({ match, props }) => {
         payload: formData,
       })
     ).then((res) => {
-
-      
       if (res.payload.data.status == 1) {
         loadData();
         setNotify({ type: "success", message: res.payload.data.message });
@@ -377,6 +564,19 @@ const EditTemplateComponent = ({ match, props }) => {
   };
   const handleCancel = () => {
     setShow(false);
+  };
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const handleSelect = (label, ID) => {
+    setSelectedOptions(selectedOptions === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    // closeAllDropdowns();
+  };
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const selectUserRef = useRef();
@@ -626,6 +826,48 @@ const EditTemplateComponent = ({ match, props }) => {
                     className="form-control form-control-sm"
                   />
                 </div>
+
+                <label>
+                  <b>
+                    Task Type Name:
+                    <Astrick color="red" size="13px" />
+                  </b>
+                </label>
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      cursor: "pointer",
+                      width: "100%",
+                    }}
+                    onClick={(e) => handleSelectOptionClick(e)}
+                  >
+                    {selectedOptions ? selectedOptions : "Select an option"}
+                  </div>
+                  {isMenuOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        width: "100%", // Set the width to 100% to match the parent's width
+                        top: "100%",
+                        zIndex: 999, // Adjust the z-index as needed
+                      }}
+                    >
+                      <CustomMenuList
+                        options={transformedOptions}
+                        onSelect={(label, ID) => handleSelect(label, ID)}
+                        // closeAllDropdowns={closeAllDropdowns}
+                      />
+                    </div>
+                  )}
+                </div>
                 {/* <label>
                   <b>Task Type :</b>
                 </label>
@@ -684,7 +926,6 @@ const EditTemplateComponent = ({ match, props }) => {
                       name="start_days"
                       max="100"
                       min="1"
-                      
                       required
                       className="form-control form-control-sm"
                     />
