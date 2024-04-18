@@ -21,11 +21,36 @@ export const getInterviewProcessDataThunk = createAsyncThunk(
     }
   },
 );
+
 export const updateInterviewProcessThunk = createAsyncThunk(
   'interviewProcess/updateInterview',
+  async ({ formData, onSuccessHandler, currentId }) => {
+    try {
+      const response = await customAxios.post(
+        `/remarkHistory/addHistoryData/${currentId}`,
+        formData,
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  },
+);
+
+export const scheduleRescheduleInterviewThunk = createAsyncThunk(
+  'interviewProcess/scheduleRescheduleInterview',
   async ({ formData, onSuccessHandler }) => {
     try {
-      const response = await customAxios.post(`/remarkHistory/addHistoryData`, formData);
+      const response = await customAxios.post(`/interviewProcess/create`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

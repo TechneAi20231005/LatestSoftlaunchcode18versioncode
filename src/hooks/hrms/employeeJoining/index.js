@@ -22,7 +22,6 @@ export const useCurrentInterviewStep = () => {
 };
 
 export const useJobOfferSalaryFiltered = (data, designationId, locationId, experienceLevel) => {
-  console.log(locationId);
   const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
@@ -38,7 +37,6 @@ export const useJobOfferSalaryFiltered = (data, designationId, locationId, exper
 
     filterData();
   }, [data, designationId, locationId, experienceLevel]);
-  console.log(filteredData);
 
   return filteredData;
 };

@@ -25,21 +25,23 @@ function InterviewProcess() {
   return (
     <>
       <Steeper />
-      <RenderIf
-        render={
-          currentInterviewStep?.application_status !== 2 ||
-          currentInterviewStep?.application_status !== 3
-        }
-      >
-        <InterviewProcessDetails />
-      </RenderIf>
-      <RenderIf
-        render={
-          currentInterviewStep?.application_status === 2 ||
-          currentInterviewStep?.application_status === 3
-        }
-      >
-        <JobOffer />
+      <RenderIf render={currentInterviewStep?.status !== 2}>
+        <RenderIf
+          render={
+            currentInterviewStep?.application_status_id === 1 ||
+            currentInterviewStep?.application_status_id === 2
+          }
+        >
+          <InterviewProcessDetails />
+        </RenderIf>
+        <RenderIf
+          render={
+            currentInterviewStep?.application_status_id !== 1 &&
+            currentInterviewStep?.application_status_id !== 2
+          }
+        >
+          <JobOffer />
+        </RenderIf>
       </RenderIf>
     </>
   );

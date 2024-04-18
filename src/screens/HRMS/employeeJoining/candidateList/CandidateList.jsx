@@ -71,18 +71,18 @@ function CandidateList() {
           type={
             row?.application_status_name === 'APPLIED'
               ? 'primary'
-              : row?.application_status_name === 'IN PROCESS'
+              : row?.application_status_name === 'INTERVIEW'
               ? 'warning'
-              : row?.application_status_name === 'OFFER SENT'
+              : row?.application_status_name === 'OFFER'
               ? 'success'
               : 'danger'
           }
           name={
             row?.application_status_name === 'APPLIED'
               ? 'Applied'
-              : row?.application_status_name === 'IN PROCESS'
+              : row?.application_status_name === 'INTERVIEW'
               ? 'In Process'
-              : row?.application_status_name === 'OFFER SENT'
+              : row?.application_status_name === 'OFFER'
               ? 'Offer Sent'
               : 'Rejected'
           }

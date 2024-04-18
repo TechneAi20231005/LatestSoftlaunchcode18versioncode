@@ -1,26 +1,58 @@
 import React from 'react';
+import { Col, Row, Spinner } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
-import { Col, Row } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // // static import
 import { CustomInput } from '../../../../../../../../../components/custom/inputs/CustomInputs';
 import CustomModal from '../../../../../../../../../components/custom/modal/CustomModal';
-import { selectInterViewSlotValidation } from './validation/interviewProcessValidation';
+import { interviewScheduleRescheduleValidation } from './validation/interviewProcessValidation';
 import { RenderIf } from '../../../../../../../../../utils';
+import {
+  getInterviewProcessDataThunk,
+  scheduleRescheduleInterviewThunk,
+} from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
+import { useCurrentInterviewStep } from '../../../../../../../../../hooks/hrms/employeeJoining';
 
 function InterviewScheduleRescheduleModal({ open, onClose }) {
+  // // initial state
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { currentCandidateId } = location.state;
+  const currentInterviewStepData = useCurrentInterviewStep();
+
   // // redux state
-  const { candidateDetailsData, isLoading } = useSelector(state => state?.candidatesMaster);
+  const { candidateDetailsData } = useSelector(state => state?.candidatesMaster);
   const { details } = candidateDetailsData;
+  const { isLoading } = useSelector(state => state?.interViewProcess);
+
+  const handelScheduleReschedule = interviewData => {
+    const apiData = {
+      ...interviewData,
+      interview_id: currentCandidateId,
+      step_details_id: currentInterviewStepData?.step_details_id,
+    };
+    dispatch(
+      scheduleRescheduleInterviewThunk({
+        formData: apiData,
+        onSuccessHandler: () => {
+          dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
+          onClose();
+        },
+      }),
+    );
+  };
 
   return (
     <CustomModal show={open} title="Select Interview Slot" width="sm" onClose={onClose}>
       <Formik
-        initialValues={{ interview_date: '', interview_time: '' }}
+        initialValues={{ date: '', time: '' }}
         enableReinitialize
-        validationSchema={selectInterViewSlotValidation}
-        onSubmit={values => {}}
+        validationSchema={interviewScheduleRescheduleValidation}
+        onSubmit={values => {
+          handelScheduleReschedule(values);
+        }}
       >
         {({ values, dirty }) => (
           <Form>
@@ -28,7 +60,7 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
               <Col sm={12}>
                 <Field
                   component={CustomInput}
-                  name="interview_date"
+                  name="date"
                   type="date"
                   label="Interview date"
                   requiredField
@@ -37,7 +69,7 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
               <Col sm={12}>
                 <Field
                   component={CustomInput}
-                  name="interview_time"
+                  name="time"
                   type="time"
                   label="Interview time"
                   requiredField
@@ -49,14 +81,22 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
                 <Col sm={12}>
                   <p>
                     Interview for {details?.full_name} candidates has been schedule on{' '}
-                    <b>{values?.interview_date}</b> at <b> {values?.interview_time}</b>
+                    <b>{values?.interview_date}</b> at <b> {values?.time}</b>
                   </p>
 
                   <p className="fw-bold text-center">Do you want to send an invitation?</p>
 
                   <div className="d-flex justify-content-center mt-3 gap-2">
-                    <button className="btn btn-dark px-4" type="submit">
-                      Yes
+                    <button
+                      className="btn btn-dark px-4"
+                      type="submit"
+                      disabled={isLoading?.scheduleRescheduleInterview}
+                    >
+                      {isLoading?.scheduleRescheduleInterview ? (
+                        <Spinner animation="border" size="sm" />
+                      ) : (
+                        'Yes'
+                      )}
                     </button>
                     <button onClick={onClose} className="btn btn-shadow-light px-3" type="button">
                       Cancel

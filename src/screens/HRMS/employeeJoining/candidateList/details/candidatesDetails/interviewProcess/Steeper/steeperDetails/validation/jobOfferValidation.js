@@ -8,9 +8,12 @@ export const jobOfferValidation = Yup.object().shape({
     .max(100, 'Please enter valid relevant experience')
     .required('Relevant experience is required'),
   experience_level: Yup.string().required('Experience level is required'),
-  // max_salary: Yup.number()
-  //   .positive('Max salary must be positive')
-  //   .required('Max salary is required'),
+  current_salary: Yup.number()
+    .test('requiredIfNotFresher', 'Current salary is required', function (value) {
+      const experienceLevel = this.parent.experience_level;
+      return experienceLevel !== 'fresher' ? value !== undefined && value !== null : true;
+    })
+    .positive('Current salary must be positive'),
   preferred_salary: Yup.number()
     .positive('Preferred salary must be positive')
     .required('Preferred salary is required'),

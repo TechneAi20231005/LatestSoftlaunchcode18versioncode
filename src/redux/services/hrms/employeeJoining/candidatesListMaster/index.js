@@ -43,7 +43,7 @@ export const getCandidatesDetailsThunk = createAsyncThunk(
 
 export const addCandidatesMasterThunk = createAsyncThunk(
   'candidatesMaster/addCandidates',
-  async ({ formData, onSuccessHandler, onErrorHandler }) => {
+  async ({ formData, onSuccessHandler }) => {
     try {
       const response = await customAxios.post(`/candidateMaster`, formData);
       if (response?.status === 200 || response?.status === 201) {
@@ -52,12 +52,10 @@ export const addCandidatesMasterThunk = createAsyncThunk(
           toast.success(response?.data?.message);
           return response?.data?.message;
         } else {
-          onErrorHandler();
           errorHandler(response);
         }
       }
     } catch (error) {
-      onErrorHandler();
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }

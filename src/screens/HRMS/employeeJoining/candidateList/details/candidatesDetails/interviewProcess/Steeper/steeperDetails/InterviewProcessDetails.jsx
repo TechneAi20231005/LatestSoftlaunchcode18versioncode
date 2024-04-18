@@ -61,6 +61,7 @@ function InterviewProcessDetails() {
     dispatch(
       updateInterviewProcessThunk({
         formData: apiData,
+        currentId: currentCandidateId,
         onSuccessHandler: () => {
           dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
         },
@@ -75,11 +76,9 @@ function InterviewProcessDetails() {
   }, [remarkMasterList]);
 
   useEffect(() => {
-    if (
-      currentInterviewStepData?.application_status_id !== 1 ||
-      currentInterviewStepData?.application_status_id !== 2 ||
-      currentInterviewStepData?.application_status_id !== 3
-    ) {
+    if (currentInterviewStepData?.application_status_id === 2) {
+      setShowScheduleBtn(true);
+    } else {
       setShowScheduleBtn(false);
     }
   }, [currentInterviewStepData]);
@@ -88,13 +87,26 @@ function InterviewProcessDetails() {
     <>
       <Container fluid>
         <RenderIf render={showScheduleBtn}>
-          <button
-            type="button"
-            className="btn btn-dark mb-4"
-            onClick={() => setOpenInterviewScheduleModal(true)}
-          >
-            Schedule Interview
-          </button>
+          <RenderIf render={currentInterviewStepData?.scheduled_datetime}>
+            <p className="mb-0">Interview schedule at</p>
+          </RenderIf>
+          <div className="d-flex align-items-center gap-2 mb-4">
+            <RenderIf render={currentInterviewStepData?.scheduled_datetime}>
+              <p className="mb-0">
+                {new Date(currentInterviewStepData?.scheduled_datetime)?.toLocaleString()}
+              </p>
+            </RenderIf>
+
+            <button
+              type="button"
+              className="btn btn-dark"
+              onClick={() => setOpenInterviewScheduleModal(true)}
+            >
+              {currentInterviewStepData?.scheduled_datetime
+                ? 'Reschedule Interview'
+                : 'Schedule Interview'}
+            </button>
+          </div>
         </RenderIf>
         <Formik
           initialValues={{ remark_id: '', other_remark: '' }}

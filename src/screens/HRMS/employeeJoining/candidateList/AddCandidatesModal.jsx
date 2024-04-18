@@ -100,7 +100,7 @@ function AddCandidatesModal({ show, close }) {
     candidatesData.append('relevant_experience', formData.relevant_experience);
     candidatesData.append('expected_ctc', formData.expected_ctc);
     candidatesData.append('current_ctc', formData.current_ctc);
-    candidatesData.append('notice_period', formData.notice_period);
+    candidatesData.append('notice_period', formData.notice_period || 0);
     candidatesData.append('resume_path', formData.resume_path);
 
     dispatch(
@@ -110,9 +110,6 @@ function AddCandidatesModal({ show, close }) {
           close();
           dispatch(getCandidatesMasterListThunk());
         },
-        // onErrorHandler: () => {
-        //   setOpenConfirmModal({ open: false });
-        // },
       }),
     );
   };
@@ -300,7 +297,7 @@ function AddCandidatesModal({ show, close }) {
                     'Add'
                   )}
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3">
+                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
                   Close
                 </button>
               </div>

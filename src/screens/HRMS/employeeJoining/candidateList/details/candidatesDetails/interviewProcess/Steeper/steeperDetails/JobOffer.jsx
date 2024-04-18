@@ -28,6 +28,7 @@ function JobOffer() {
     location_id: '',
     relevant_experience: '',
     experience_level: '',
+    current_salary: '',
     max_salary: '',
     preferred_salary: '',
     negotiable_salary: '',
@@ -92,8 +93,6 @@ function JobOffer() {
     formValue?.location_id,
     formValue?.experience_level,
   );
-  // console.log(salaryFiltered);
-  // console.log(formValue);
 
   return (
     <Formik
@@ -108,6 +107,8 @@ function JobOffer() {
         setFormValue(values);
         return (
           <Form>
+            <h5 className="mb-0 text-primary">Salary Offer</h5>
+            <hr className="primary_divider mt-1" />
             <Stack gap={3}>
               <Row className="row_gap_3 ">
                 <Col sm={6} md={6} lg={4}>
@@ -160,6 +161,19 @@ function JobOffer() {
                     requiredField
                   />
                 </Col>
+                <RenderIf render={values?.experience_level !== 'fresher'}>
+                  <Col sm={6} md={6} lg={4}>
+                    <Field
+                      component={CustomCurrencyInput}
+                      onKeyDown={NumbersOnly}
+                      name="current_salary"
+                      label="Current Salary"
+                      placeholder="Enter current salary"
+                      type="number"
+                      requiredField
+                    />
+                  </Col>
+                </RenderIf>
                 <Col sm={6} md={6} lg={4}>
                   <Field
                     component={CustomCurrencyInput}
@@ -198,39 +212,37 @@ function JobOffer() {
               <Row>
                 <h5 className="mb-0 text-primary">Add Remark</h5>
                 <hr className="primary_divider mt-1" />
-                <Row>
+                <Col sm={12}>
+                  <Field
+                    component={CustomDropdown}
+                    data={remarkType}
+                    name="remark_id"
+                    label="Remark Title"
+                    placeholder={
+                      remarkMasterListLoading?.getRemarkMasterList ? 'Loading...' : 'Select'
+                    }
+                    requiredField
+                  />
+                </Col>
+                <RenderIf render={parseInt(values?.remark_id) === 0}>
                   <Col sm={12}>
                     <Field
-                      component={CustomDropdown}
-                      data={remarkType}
-                      name="remark_id"
-                      label="Remark Title"
-                      placeholder={
-                        remarkMasterListLoading?.getRemarkMasterList ? 'Loading...' : 'Select'
-                      }
+                      component={CustomInput}
+                      name="other_remark"
+                      label="Specify Other"
+                      placeholder="Enter remark"
+                      styleData="mt-3"
                       requiredField
                     />
                   </Col>
-                  <RenderIf render={parseInt(values?.remark_id) === 0}>
-                    <Col sm={12}>
-                      <Field
-                        component={CustomInput}
-                        name="other_remark"
-                        label="Specify Other"
-                        placeholder="Enter remark"
-                        styleData="mt-3"
-                        requiredField
-                      />
-                    </Col>
-                  </RenderIf>
-                </Row>
+                </RenderIf>
               </Row>
             </Stack>
             <div className="d-flex justify-content-end mt-3 gap-2">
               <button className="btn btn-dark px-4" type="submit">
                 Send Joining Form
               </button>
-              <button className="btn btn-danger text-light px-3" type="button">
+              <button className="btn btn-danger text-light px-3" type="submit">
                 Reject
               </button>
             </div>
