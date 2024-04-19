@@ -319,7 +319,6 @@ export const validateTemplateName = (e, existingTemplates) => {
   // Check if existingTemplates is an array and not null or undefined
   if (!Array.isArray(existingTemplates) || existingTemplates.length === 0) {
     // Handle the case where existingTemplates is not valid
-    console.error("Invalid or empty existingTemplates");
     return;
   }
 
@@ -432,6 +431,18 @@ export const CharactersNumbersSpeicalOnly = (e) => {
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   if (e.target.value.length >= 50) {
+    e.preventDefault();
+    return false;
+  }
+};
+
+export const CharactersNumbersSpeicalOnlyforPassTicket = (e) => {
+  var regex = new RegExp("^[a-zA-Z0-9\\s]+$");
+  var regex1 = new RegExp("^[\\u0900-\\u097F\\s]+$");
+
+  var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+
+  if (e.target.value.length >= 1000) {
     e.preventDefault();
     return false;
   }
