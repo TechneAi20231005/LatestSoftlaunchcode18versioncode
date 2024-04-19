@@ -24,7 +24,7 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
 
   const { id } = useParams();
   const mappingId = id;
@@ -55,7 +55,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
+  );
 
   const [data, setData] = useState({
     approach: null,
@@ -125,8 +127,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }
       });
 
-      
-      dispatch(getRoles())
+    dispatch(getRoles());
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     // setShowLoaderModal(false);
@@ -185,7 +186,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
-          console.log("data",data)
           const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.template_name,
@@ -322,7 +322,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    var value = type == "Select2" ? e.value : e.target.value;
+    // var value = type == "Select2" ? e.value : e.target.value;
+    const value =
+      type === "Select2" && nameField === "customer_type_id"
+        ? e?.map((i) => i.value)
+        : e?.value
+        ? e?.value
+        : e?.target?.value;
     if (nameField == "approach" && value != data.approach) {
       setRatiowiseData([]);
       setDepartmentDropdown(null);
@@ -426,8 +432,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         flag = 0;
       }
     }
-  
- 
 
     if (flag == 1) {
       await new CustomerMappingService()
@@ -458,13 +462,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             );
           }
         })
-        .catch((error) => {
-
-        });
-    } 
-    
-
-    
+        .catch((error) => {});
+    }
   };
 
   useEffect(() => {
@@ -486,7 +485,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         <div className="col-sm-12">
           <div className="card mt-2">
             <div className="card-body">
-              {console.log("data",data)}
               {data && (
                 <form
                   onSubmit={handleForm}
@@ -495,17 +493,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 >
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
-                      <b>
-                        Select Customer Type :
-                        <Astrick color="red" size="13px" />
-                      </b>
+                      <b>Select Customer Type :</b>
                     </label>
                     <div className="col-sm-4">
                       {customerTypeDropdown && data && (
                         <Select
-                          id="customer_type_id"
-                          name="customer_type_id"
+                          id="customer_type_id[]"
+                          name="customer_type_id[]"
                           options={customerTypeDropdown}
+                          isMulti
                           defaultValue={
                             data &&
                             customerTypeDropdown.filter(
@@ -761,162 +757,157 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <option value="SP">Single Person</option>
                         <option value="RW">Ratio Wise</option>
                         <option value="SELF">Self</option>
-                      <option value="AU">Assign to user</option>
-                        
-
+                        <option value="AU">Assign to user</option>
                       </select>
                     </div>
                   </div>
-                  {data.approach !== "SELF" && data.approach !== "AU" &&(
-                       <div className="form-group row mt-3">
-                       <label className="col-sm-2 col-form-label">
-                         <b>
-                           Select Department :<Astrick color="red" size="13px" />
-                         </b>
-                       </label>
-                       <div className="col-sm-4">
-                         {departmentDropdown && (
-                           <Select
-                             id="department_id"
-                             name="department_id"
-                             defaultValue={departmentDropdown.filter(
-                               (d) => data.department_id == d.value
-                             )}
-                             options={departmentDropdown}
-                             onChange={(e) => {
-                               handleAutoChanges(e, "Select2", "department_id");
-                               handleGetDepartmentUsers(e);
-                             }}
-                           />
-                         )}
-                         {/* {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>} */}
-                       </div>
-                     </div>
-
-
+                  {data.approach !== "SELF" && data.approach !== "AU" && (
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Department :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        {departmentDropdown && (
+                          <Select
+                            id="department_id"
+                            name="department_id"
+                            defaultValue={departmentDropdown.filter(
+                              (d) => data.department_id == d.value
+                            )}
+                            options={departmentDropdown}
+                            onChange={(e) => {
+                              handleAutoChanges(e, "Select2", "department_id");
+                              handleGetDepartmentUsers(e);
+                            }}
+                          />
+                        )}
+                        {/* {data.approach && !departmentDropdown && <span className="mt-2" style={{marginTop:"10%",fontSize:"16px"}}>Loading.....</span>} */}
+                      </div>
+                    </div>
                   )}
-                    {data.approach !== "SELF" && data.approach !== "AU" &&(
-                         <div className="form-group row mt-3">
-                         <label className="col-sm-2 col-form-label">
-                           <b>
-                             Select User :<Astrick color="red" size="13px" />
-                           </b>
-                         </label>
-                         {data && userDropdown && data.approach != "RW" && (
-                           <div className="col-sm-4">
-                             <Select
-                               isMulti={data.approach != "SP"}
-                               isSearchable={true}
-                               name="user_id[]"
-                               className="basic-multi-select"
-                               classNamePrefix="select"
-                               defaultValue={
-                                 data && data.approach == "SP"
-                                   ? userDropdown.filter(
-                                       (d) => d.value === data.user_policy?.user_id
-                                     )
-                                   : data.user_policy?.map((d) => ({
-                                       value: d.user_id,
-                                       label: d.user_name,
-                                     }))
-                               }
-                               options={userDropdown}
-                               required
-                               style={{ zIndex: "100" }}
-                             />
-                           </div>
-                         )}
-                         {!userDropdown && (
-                           <span
-                             className="mt-2"
-                             style={{ marginTop: "10%", fontSize: "16px" }}
-                           >
-                             Loading.....
-                           </span>
-                         )}
-                         {console.log("userDropdown",userDropdown)}
-                         {console.log("data",data)}
-     
-                         {userDropdown &&
-                           data.approach == "RW" &&
-                           data.department_id && (
-                             <div className="col-sm-6">
-                               <Table bordered className="mt-2" id="table">
-                                 <thead>
-                                   <tr className="text-center">
-                                     <th>#</th>
-                                     <th>Selected User</th>
-                                     <th>Enter Ratio</th>
-                                   </tr>
-                                 </thead>
-                                 <tbody>
-                                   {userDropdown.map((ele, i) => {
-                                    // Find the corresponding user policy in user_policy array
-                                    const userPolicy = data.user_policy.find(policy => policy.startsWith(`${ele.value}:`));
-                                    // Extract the ratio value from the user policy
-                                    const defaultRatio = userPolicy ? parseInt(userPolicy.split(':')[1]) : 0;
-                                     return (
-                                       <tr>
-                                         <td>{i + 1}</td>
-                                         <td>
-                                           <input
-                                             type="hidden"
-                                             className="form-control form-control-sm"
-                                             id={`index_` + Math.random()}
-                                             name="user_id[]"
-                                             value={ele.value}
-                                             readOnly
-                                           />
-                                           <input
-                                             type="text"
-                                             className="form-control form-control-sm"
-                                             id={`index_` + Math.random()}
-                                             name="user_name[]"
-                                             value={ele.label}
-                                             readOnly
-                                           />
-                                         </td>
-                                         {console.log("ratiowiseData",ratiowiseData)}
-                                         <td>
-                                           <input
-                                             type="text"
-                                             className="form-control col-sm-2"
-                                             name="ratio[]"
-                                             defaultValue={defaultRatio}
-                                            //  defaultValue={
-                                            //    ratiowiseData ? ratiowiseData[i] : 0
-                                            //  }
-                                             onInput={handleRatioInput(i)}
-                                            //  max="100"
-                                           />
-                                         </td>
-                                       </tr>
-                                     );
-                                   })}
-                                   <tr>
-                                     <td colSpan={2} className="text-right">
-                                       <b>TOTAL</b>
-                                     </td>
-     
-                                     <td>
-                                       <input
-                                         type="text"
-                                         className="form-control col-sm-2"
-                                         id={`index_` + Math.random()}
-                                         value={ratioTotal}
-                                       />
-                                     </td>
-                                   </tr>
-                                 </tbody>
-                               </Table>
-                             </div>
-                           )}
-                       </div>
+                  {data.approach !== "SELF" && data.approach !== "AU" && (
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select User :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      {data && userDropdown && data.approach != "RW" && (
+                        <div className="col-sm-4">
+                          <Select
+                            isMulti={data.approach != "SP"}
+                            isSearchable={true}
+                            name="user_id[]"
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            defaultValue={
+                              data && data.approach == "SP"
+                                ? userDropdown.filter(
+                                    (d) => d.value === data.user_policy?.user_id
+                                  )
+                                : data.user_policy?.map((d) => ({
+                                    value: d.user_id,
+                                    label: d.user_name,
+                                  }))
+                            }
+                            options={userDropdown}
+                            required
+                            style={{ zIndex: "100" }}
+                          />
+                        </div>
+                      )}
+                      {!userDropdown && (
+                        <span
+                          className="mt-2"
+                          style={{ marginTop: "10%", fontSize: "16px" }}
+                        >
+                          Loading.....
+                        </span>
+                      )}
 
+                      {userDropdown &&
+                        data.approach == "RW" &&
+                        data.department_id && (
+                          <div className="col-sm-6">
+                            <Table bordered className="mt-2" id="table">
+                              <thead>
+                                <tr className="text-center">
+                                  <th>#</th>
+                                  <th>Selected User</th>
+                                  <th>Enter Ratio</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {userDropdown.map((ele, i) => {
+                                  // Find the corresponding user policy in user_policy array
+                                  const userPolicy = data.user_policy.find(
+                                    (policy) =>
+                                      policy.startsWith(`${ele.value}:`)
+                                  );
+                                  // Extract the ratio value from the user policy
+                                  const defaultRatio = userPolicy
+                                    ? parseInt(userPolicy.split(":")[1])
+                                    : 0;
+                                  return (
+                                    <tr>
+                                      <td>{i + 1}</td>
+                                      <td>
+                                        <input
+                                          type="hidden"
+                                          className="form-control form-control-sm"
+                                          id={`index_` + Math.random()}
+                                          name="user_id[]"
+                                          value={ele.value}
+                                          readOnly
+                                        />
+                                        <input
+                                          type="text"
+                                          className="form-control form-control-sm"
+                                          id={`index_` + Math.random()}
+                                          name="user_name[]"
+                                          value={ele.label}
+                                          readOnly
+                                        />
+                                      </td>
 
-                    )}
-               
-               
+                                      <td>
+                                        <input
+                                          type="text"
+                                          className="form-control col-sm-2"
+                                          name="ratio[]"
+                                          defaultValue={defaultRatio}
+                                          //  defaultValue={
+                                          //    ratiowiseData ? ratiowiseData[i] : 0
+                                          //  }
+                                          onInput={handleRatioInput(i)}
+                                          //  max="100"
+                                        />
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                                <tr>
+                                  <td colSpan={2} className="text-right">
+                                    <b>TOTAL</b>
+                                  </td>
+
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control col-sm-2"
+                                      id={`index_` + Math.random()}
+                                      value={ratioTotal}
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </Table>
+                          </div>
+                        )}
+                    </div>
+                  )}
 
                   <div className="mt-3" style={{ textAlign: "right" }}>
                     <button type="submit" className="btn btn-primary btn-sm">
