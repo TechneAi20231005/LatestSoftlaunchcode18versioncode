@@ -1524,7 +1524,7 @@ const RequestModal = (props) => {
                                     )
                                   }
                                   required
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -1546,7 +1546,7 @@ const RequestModal = (props) => {
                                       "to_date"
                                     )
                                   }
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -1563,7 +1563,7 @@ const RequestModal = (props) => {
                                   onChange={(e) =>
                                     handleFromTimeChange(index, e.target.value)
                                   }
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -1581,7 +1581,7 @@ const RequestModal = (props) => {
                                     handleToTimeChange(index, e.target.value)
                                   }
                                   required
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -1605,7 +1605,7 @@ const RequestModal = (props) => {
                                       : row.total_time || "00:00"
                                   }
                                   required
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -1622,7 +1622,7 @@ const RequestModal = (props) => {
                                   defaultValue={row.remark}
                                   onChange={(e) => handleAddClick(e)}
                                   required
-                                  disabled={
+                                  readOnly={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }

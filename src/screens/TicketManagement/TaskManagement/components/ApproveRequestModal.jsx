@@ -16,6 +16,9 @@ const ApproveRequestModal = (props) => {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const ticketId = props.ticketId;
+
+  const rquestData = props?.data;
+  console.log("ticketId11", rquestData && rquestData.map((i) => i.from_date));
   const loadData = () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
@@ -88,9 +91,23 @@ const ApproveRequestModal = (props) => {
       });
   };
 
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Function to handle Select All checkbox
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    // Logic to toggle all checkboxes in rows based on selectAll state
+    const checkboxes = document.getElementsByName("status[]");
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = !selectAll;
+    });
+  };
+
+  console.log("selectAll", selectAll);
+
   const handleInputChange = (e, i) => {
     setData(
-      data.map((d, index) =>
+      rquestData.map((d, index) =>
         index === i ? { ...d, is_checked: e.target.checked == true ? 1 : 0 } : d
       )
     );
@@ -99,7 +116,7 @@ const ApproveRequestModal = (props) => {
   const handleForm = (type) => {
     setNotify(null);
     const formData = { type: type, payload: data };
-
+    console.log("data==>", data);
     const check = formData.payload.filter((d) => {
       return d.is_checked == 1;
     });
@@ -352,6 +369,171 @@ const ApproveRequestModal = (props) => {
               <thead>
                 <tr>
                   <th className="text-center"> Sr. No. </th>
+                  {/* <th className="text-center"> Select </th>
+                   */}
+                  <th className="text-center">
+                    <input type="checkbox" onChange={handleSelectAll} /> Select
+                  </th>
+                  <th className="text-center"> Ticket Id </th>
+                  <th className="text-center"> Task Name </th>
+                  <th className="text-center"> Requested By </th>
+                  <th className="text-center"> From Date </th>
+                  <th className="text-center"> To Date </th>
+                  <th className="text-center"> Scheduled Time </th>
+                  <th className="text-center"> From Time </th>
+                  <th className="text-center"> To Time </th>
+                  <th className="text-center"> Actual Time </th>
+                  <th className="text-center"> Remark </th>
+                  <th className="text-center"> Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rquestData &&
+                  rquestData?.map((x, i) => {
+                    // Log each item x in the data array for debugging
+                    //   console.log("Item", x);
+                    {
+                      console.log("x==>", x.checked);
+                    }
+                    return (
+                      <tr id={`addr_${i}`} key={i}>
+                        <td>{i + 1}</td>
+
+                        <td>
+                          <input
+                            type="hidden"
+                            id={`status_${i}`}
+                            name="id[]"
+                            value={x.id}
+                          />
+                          <input
+                            type="checkbox"
+                            id={`status_${i}`}
+                            name="status[]"
+                            onChange={(e) => handleInputChange(e, i)}
+                            // checked={x.is_checked === 1}
+                            // defaultChecked={x.is_checked === 1}
+                            disabled={x.status !== "PENDING"}
+                          />
+                        </td>
+                        <td title={x.ticket_id_name}>{x.ticket_id_name}</td>
+                        <td title={x.task_name}>{x.task_name}</td>
+                        <td>{x.created_by_name}</td>
+                        <td>
+                          <input
+                            type="date"
+                            className="form-control form-control-sm"
+                            id={`from_date${i}`}
+                            name="from_date[]"
+                            value={x.from_date}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="date"
+                            className="form-control form-control-sm"
+                            id={`to_date${i}`}
+                            name="to_date[]"
+                            value={x.to_date}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`scheduled_time${i}`}
+                            name="scheduled_time[]"
+                            value={x.scheduled_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`from_time${i}`}
+                            name="from_time[]"
+                            value={x.from_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`to_time${i}`}
+                            name="to_time[]"
+                            value={x.to_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`actual_time${i}`}
+                            name="actual_time[]"
+                            value={x.actual_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id={`remark${i}`}
+                            name="remark[]"
+                            value={x.remark}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id={`status${i}`}
+                            name="status[]"
+                            value={x.status}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+
+                        {/* Render other table cells similarly */}
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </>
+        {/* )} */}
+      </Modal.Body>
+      <Modal.Footer></Modal.Footer>
+    </Modal>
+  );
+};
+
+export default ApproveRequestModal;
+
+{
+  /* <div className="table-responsive">
+            <table
+              className="table table-bordered mt-3 table-responsive"
+              id="tab_logic"
+            >
+              <thead>
+                <tr>
+                  <th className="text-center"> Sr. No. </th>
                   <th className="text-center"> Select </th>
                   <th className="text-center"> Ticket Id </th>
                   <th className="text-center"> Task Name </th>
@@ -367,135 +549,128 @@ const ApproveRequestModal = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {dataa?.map((x, i) => {
-                  // Log each item x in the data array for debugging
-                  //   console.log("Item", x);
-                  return (
-                    <tr id={`addr_${i}`} key={i}>
-                      <td>{i + 1}</td>
+                {rquestData &&
+                  rquestData?.map((x, i) => {
+                    // Log each item x in the data array for debugging
+                    //   console.log("Item", x);
+                    return (
+                      <tr id={`addr_${i}`} key={i}>
+                        <td>{i + 1}</td>
 
-                      <td>
-                        <input
-                          type="hidden"
-                          id={`status_${i}`}
-                          name="id[]"
-                          value={x.id}
-                        />
-                        <input
-                          type="checkbox"
-                          id={`status_${i}`}
-                          name="status[]"
-                          onChange={(e) => handleInputChange(e, i)}
-                          //   checked={x.is_checked === 1}
-                          defaultChecked
-                          disabled={x.status !== "PENDING"}
-                        />
-                      </td>
-                      <td title={x.ticket_id_name}>{x.ticket_id_name}</td>
-                      <td title={x.task_name}>{x.task_name}</td>
-                      <td>{x.created_by_name}</td>
-                      <td>
-                        <input
-                          type="date"
-                          className="form-control form-control-sm"
-                          id={`from_date${i}`}
-                          name="from_date[]"
-                          value={x.from_date}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          className="form-control form-control-sm"
-                          id={`to_date${i}`}
-                          name="to_date[]"
-                          value={x.to_date}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="time"
-                          className="form-control form-control-sm"
-                          id={`scheduled_time${i}`}
-                          name="scheduled_time[]"
-                          value={x.scheduled_time}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="time"
-                          className="form-control form-control-sm"
-                          id={`from_time${i}`}
-                          name="from_time[]"
-                          value={x.from_time}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="time"
-                          className="form-control form-control-sm"
-                          id={`to_time${i}`}
-                          name="to_time[]"
-                          value={x.to_time}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="time"
-                          className="form-control form-control-sm"
-                          id={`actual_time${i}`}
-                          name="actual_time[]"
-                          value={x.actual_time}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id={`remark${i}`}
-                          name="remark[]"
-                          value={x.remark}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id={`status${i}`}
-                          name="status[]"
-                          value={x.status}
-                          required
-                          readOnly={true}
-                        />
-                      </td>
+                        <td>
+                          <input
+                            type="hidden"
+                            id={`status_${i}`}
+                            name="id[]"
+                            value={x.id}
+                          />
+                          <input
+                            type="checkbox"
+                            id={`status_${i}`}
+                            name="status[]"
+                            onChange={(e) => handleInputChange(e, i)}
+                            //   checked={x.is_checked === 1}
+                            defaultChecked
+                            disabled={x.status !== "PENDING"}
+                          />
+                        </td>
+                        <td title={x.ticket_id_name}>{x.ticket_id_name}</td>
+                        <td title={x.task_name}>{x.task_name}</td>
+                        <td>{x.created_by_name}</td>
+                        <td>
+                          <input
+                            type="date"
+                            className="form-control form-control-sm"
+                            id={`from_date${i}`}
+                            name="from_date[]"
+                            value={x.from_date}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="date"
+                            className="form-control form-control-sm"
+                            id={`to_date${i}`}
+                            name="to_date[]"
+                            value={x.to_date}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`scheduled_time${i}`}
+                            name="scheduled_time[]"
+                            value={x.scheduled_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`from_time${i}`}
+                            name="from_time[]"
+                            value={x.from_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`to_time${i}`}
+                            name="to_time[]"
+                            value={x.to_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`actual_time${i}`}
+                            name="actual_time[]"
+                            value={x.actual_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id={`remark${i}`}
+                            name="remark[]"
+                            value={x.remark}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            id={`status${i}`}
+                            name="status[]"
+                            value={x.status}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
 
-                      {/* Render other table cells similarly */}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </>
-        {/* )} */}
-      </Modal.Body>
-      <Modal.Footer></Modal.Footer>
-    </Modal>
-  );
-};
-
-export default ApproveRequestModal;
+                        {/* Render other table cells similarly */
+}
+//             </tr>
+//           );
+//         })}
+//     </tbody>
+//   </table>
+// </div> */}

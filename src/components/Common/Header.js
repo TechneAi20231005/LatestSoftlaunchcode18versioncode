@@ -77,19 +77,40 @@ export default function Header() {
   });
 
   console.log("approveRequestModal", approveRequestModal);
-  const [regularizationRequest, setRegularizationRequest] = useState(0);
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
   const [ticketID, setTicketID] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
-    const parts = cuurentData.url.split("/"); // Split the string by '/'
-    const ID = parts[parts.length - 1]; // Get the last part of the array
-
     console.log("cuurentData", cuurentData);
-    setTicketID(ID);
-    new getRegularizationTime(ticketId).then((res) => {
-      setRegularizationRequest(res.data.data);
+    // const parts = cuurentData.url.split("/"); // Split the string by '/'
+    // const ID = parts[parts.length - 1]; // Get the last part of the array
+
+    setTicketID(cuurentData);
+    new getRegularizationTime(cuurentData).then((res) => {
+      console.log("res5", res);
+
+      const temp = res.data.data.map((d) => ({
+        id: d.id,
+        created_by_name: d.created_by_name,
+        from_date: d.from_date,
+        to_date: d.to_date,
+        from_time: d.from_time,
+        to_time: d.to_time,
+        remark: d.remark,
+        is_checked: 0,
+        regularization_time_status: d.regularization_time_status,
+        task_name: d.task_name,
+        ticket_id_name: d.ticket_id_name,
+        actual_time: d.actual_time,
+        task_hours: d.task_hours,
+        scheduled_time: d.scheduled_time,
+        status: d.status_remark,
+      }));
+      setRegularizationRequest(temp);
+      console.log("temp", temp);
     });
   };
+  console.log("111", regularizationRequest);
 
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
@@ -105,6 +126,7 @@ export default function Header() {
   const handleShowApproveRequestModal = () => {
     const data = null;
     setApproveRequestModal({ show: true, data: data });
+
     console.log();
   };
   const handleCloseApproveRequestModal = () => {
@@ -216,217 +238,217 @@ export default function Header() {
                 </Dropdown.Toggle>
               )}
 
-              {approveRequestModal?.show === false && (
-                <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
-                  <div className="card border-0" style={{ width: "40rem" }}>
-                    <div className="card-header border-0 p-3">
-                      <h5 className="mb-0 font-weight-light d-flex justify-content-between">
-                        <span>
-                          Notifications :{" "}
-                          {showApprovedOnly === true ? (
-                            <span>Approved Only By Me</span>
-                          ) : (
-                            <span>View All Notifications</span>
-                          )}
+              {/* {approveRequestModal?.show === false && ( */}
+              <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
+                <div className="card border-0" style={{ width: "40rem" }}>
+                  <div className="card-header border-0 p-3">
+                    <h5 className="mb-0 font-weight-light d-flex justify-content-between">
+                      <span>
+                        Notifications :{" "}
+                        {showApprovedOnly === true ? (
+                          <span>Approved Only By Me</span>
+                        ) : (
+                          <span>View All Notifications</span>
+                        )}
+                      </span>
+                      {notifications && (
+                        <span className="badge text-white">
+                          {notifications.length}
                         </span>
-                        {notifications && (
-                          <span className="badge text-white">
-                            {notifications.length}
-                          </span>
-                        )}
-                        {!notifications && (
-                          <span className="badge text-white">0</span>
-                        )}
-                      </h5>
-                    </div>
-                    <div className="tab-content card-body">
-                      {showApprovedOnly ? (
-                        <div className="tab-pane fade show active">
-                          <ul
-                            className="list-unstyled list mb-0"
-                            style={{ height: `${notificationHeight}px` }}
-                          >
-                            {approvedNotifications &&
-                              approvedNotifications.length > 0 &&
-                              approvedNotifications.map((ele, index) => {
-                                const date = ele.created_at.split(" ")[0];
-                                const time = ele.created_at.split(" ")[1];
-
-                                // const parts = ele.url.split("/"); // Split the string by '/'
-                                // const ticketID = parts[parts.length - 1]; // Get the last part of the array
-                                // console.log("id==>", ticketID); // Output: 8199
-
-                                return (
-                                  <li
-                                    className="py-2 mb-1 border-bottom"
-                                    key={index}
-                                  >
-                                    <div
-                                      className="flex-fill ms-2"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        handleShowApproveRequestModal();
-                                        handleRegularizationRequest(ele);
-                                      }}
-                                    >
-                                      {ele.url && (
-                                        <Link to={`/${_base}/${ele.url}`}>
-                                          <p
-                                            className="d-flex justify-content-between mb-0"
-                                            // onClick={(e) =>
-                                            //   handleReadNotification(e, ele.id)
-                                            // }
-                                            // onClick={(e) => {
-                                            //   handleShowApproveRequestModal();
-                                            //   handleRegularizationRequest();
-                                            // }}
-                                          >
-                                            <span className="font-weight-bold">
-                                              <span className="fw-bold badge bg-primary p-2">
-                                                {" "}
-                                                {`Date : ${date}`}
-                                              </span>
-                                              <span
-                                                className="fw-bold badge bg-danger p-2"
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                {" "}
-                                                {`Time : ${time}`}
-                                              </span>
-                                              <br />
-                                              <div>{ele.message}</div>
-                                            </span>
-                                          </p>
-                                        </Link>
-                                      )}
-
-                                      {!ele.url && (
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
-                                        >
-                                          <span className="font-weight-bold">
-                                            {ele.message}
-                                            {date}
-                                          </span>
-                                        </p>
-                                      )}
-                                    </div>
-                                  </li>
-                                );
-                              })}
-                          </ul>
-                        </div>
-                      ) : (
-                        <div className="tab-pane fade show active">
-                          <ul
-                            className="list-unstyled list mb-0"
-                            style={{ height: `${notificationHeight}px` }}
-                          >
-                            {notifications &&
-                              notifications.length > 0 &&
-                              notifications.map((ele, index) => {
-                                const date = ele.created_at.split(" ")[0];
-                                const time = ele.created_at.split(" ")[1];
-
-                                return (
-                                  <li
-                                    className="py-2 mb-1 border-bottom"
-                                    key={index}
-                                  >
-                                    <div
-                                      className="flex-fill ms-2"
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      {ele.url && (
-                                        <Link to={`/${_base}/${ele.url}`}>
-                                          <p
-                                            className="d-flex justify-content-between mb-0"
-                                            onClick={(e) =>
-                                              handleReadNotification(e, ele.id)
-                                            }
-                                          >
-                                            <span className="font-weight-bold">
-                                              <span className="fw-bold badge bg-primary p-2">
-                                                {" "}
-                                                {`Date : ${date}`}
-                                              </span>
-                                              <span
-                                                className="fw-bold badge bg-danger p-2"
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                {" "}
-                                                {`Time : ${time}`}
-                                              </span>
-                                              <br />
-                                              {ele.message}
-                                            </span>
-                                          </p>
-                                        </Link>
-                                      )}
-
-                                      {!ele.url && (
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
-                                        >
-                                          <span className="font-weight-bold">
-                                            {ele.message}
-                                            {date}
-                                          </span>
-                                        </p>
-                                      )}
-                                    </div>
-                                  </li>
-                                );
-                              })}
-                          </ul>
-                        </div>
                       )}
-                    </div>
-
-                    <div
-                      className="btn-group"
-                      style={{ border: "2px solid #ccc" }}
-                    >
-                      <Link
-                        to={`/${_base}/Notification`}
-                        className={`card-footer text-center border-top-0 ${
-                          !showApprovedOnly ? "bg-info" : ""
-                        }`}
-                        onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
-                      >
-                        View All Notifications
-                      </Link>
-
-                      <div style={{ borderRight: "1px solid #ccc" }}></div>
-
-                      <Link
-                        to={`/${_base}/ApprovedNotification`}
-                        className={`card-footer text-center border-top-0 ${
-                          showApprovedOnly ? "bg-info" : ""
-                        }`}
-                        onClick={() => setShowApprovedOnly(true)}
-                      >
-                        Approved Only By Me
-                      </Link>
-
-                      <button
-                        className="btn btn-light"
-                        onClick={(e) => {
-                          handleMarkAllNotification(e);
-                        }}
-                      >
-                        Mark All As Read
-                      </button>
-                    </div>
+                      {!notifications && (
+                        <span className="badge text-white">0</span>
+                      )}
+                    </h5>
                   </div>
-                </Dropdown.Menu>
-              )}
+                  <div className="tab-content card-body">
+                    {showApprovedOnly ? (
+                      <div className="tab-pane fade show active">
+                        <ul
+                          className="list-unstyled list mb-0"
+                          style={{ height: `${notificationHeight}px` }}
+                        >
+                          {approvedNotifications &&
+                            approvedNotifications.length > 0 &&
+                            approvedNotifications.map((ele, index) => {
+                              const date = ele.created_at.split(" ")[0];
+                              const time = ele.created_at.split(" ")[1];
+
+                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const ticketID = parts[parts.length - 1]; // Get the last part of the array
+                              console.log("id==>", ticketID); // Output: 8199
+
+                              return (
+                                <li
+                                  className="py-2 mb-1 border-bottom"
+                                  key={index}
+                                >
+                                  <div
+                                    className="flex-fill ms-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      handleShowApproveRequestModal();
+                                      handleRegularizationRequest(ticketID);
+                                    }}
+                                  >
+                                    {ele.url && (
+                                      <Link to={`/${_base}/${ele.url}`}>
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          // onClick={(e) =>
+                                          //   handleReadNotification(e, ele.id)
+                                          // }
+                                          // onClick={(e) => {
+                                          //   handleShowApproveRequestModal();
+                                          //   handleRegularizationRequest();
+                                          // }}
+                                        >
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {" "}
+                                              {`Date : ${date}`}
+                                            </span>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {" "}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            <div>{ele.message}</div>
+                                          </span>
+                                        </p>
+                                      </Link>
+                                    )}
+
+                                    {!ele.url && (
+                                      <p
+                                        className="d-flex justify-content-between mb-0"
+                                        onClick={(e) =>
+                                          handleReadNotification(e, ele.id)
+                                        }
+                                      >
+                                        <span className="font-weight-bold">
+                                          {ele.message}
+                                          {date}
+                                        </span>
+                                      </p>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="tab-pane fade show active">
+                        <ul
+                          className="list-unstyled list mb-0"
+                          style={{ height: `${notificationHeight}px` }}
+                        >
+                          {notifications &&
+                            notifications.length > 0 &&
+                            notifications.map((ele, index) => {
+                              const date = ele.created_at.split(" ")[0];
+                              const time = ele.created_at.split(" ")[1];
+
+                              return (
+                                <li
+                                  className="py-2 mb-1 border-bottom"
+                                  key={index}
+                                >
+                                  <div
+                                    className="flex-fill ms-2"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    {ele.url && (
+                                      <Link to={`/${_base}/${ele.url}`}>
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          onClick={(e) =>
+                                            handleReadNotification(e, ele.id)
+                                          }
+                                        >
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {" "}
+                                              {`Date : ${date}`}
+                                            </span>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {" "}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+                                        </p>
+                                      </Link>
+                                    )}
+
+                                    {!ele.url && (
+                                      <p
+                                        className="d-flex justify-content-between mb-0"
+                                        onClick={(e) =>
+                                          handleReadNotification(e, ele.id)
+                                        }
+                                      >
+                                        <span className="font-weight-bold">
+                                          {ele.message}
+                                          {date}
+                                        </span>
+                                      </p>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  <div
+                    className="btn-group"
+                    style={{ border: "2px solid #ccc" }}
+                  >
+                    <Link
+                      to={`/${_base}/Notification`}
+                      className={`card-footer text-center border-top-0 ${
+                        !showApprovedOnly ? "bg-info" : ""
+                      }`}
+                      onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
+                    >
+                      View All Notifications
+                    </Link>
+
+                    <div style={{ borderRight: "1px solid #ccc" }}></div>
+
+                    <Link
+                      to={`/${_base}/ApprovedNotification`}
+                      className={`card-footer text-center border-top-0 ${
+                        showApprovedOnly ? "bg-info" : ""
+                      }`}
+                      onClick={() => setShowApprovedOnly(true)}
+                    >
+                      Approved Only By Me
+                    </Link>
+
+                    <button
+                      className="btn btn-light"
+                      onClick={(e) => {
+                        handleMarkAllNotification(e);
+                      }}
+                    >
+                      Mark All As Read
+                    </button>
+                  </div>
+                </div>
+              </Dropdown.Menu>
+              {/* )} */}
               <>
                 {approveRequestModal && (
                   <ApproveRequestModal
@@ -437,6 +459,7 @@ export default function Header() {
                   />
                 )}
               </>
+              {console.log("ticketID3", ticketID)}
             </Dropdown>
 
             <Dropdown
