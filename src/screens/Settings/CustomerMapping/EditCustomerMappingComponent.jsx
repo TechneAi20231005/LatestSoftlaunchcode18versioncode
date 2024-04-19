@@ -504,8 +504,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           isMulti
                           defaultValue={
                             data &&
-                            customerTypeDropdown.filter(
-                              (d) => data.customer_type_id == d.value
+                            customerTypeDropdown.filter((d) =>
+                              data.customer_type_id.includes(d.value)
                             )
                           }
                           onChange={(e) =>
