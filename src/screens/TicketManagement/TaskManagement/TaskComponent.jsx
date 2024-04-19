@@ -37,6 +37,7 @@ export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
+  console.log("newTa", ticketId);
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
@@ -155,7 +156,9 @@ export default function TaskComponent({ match }) {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [basketStartDate, setBasketStartDate] = useState();
 
+  console.log("basket", basketStartDate);
   const getBasketData = async (sprint_id) => {
     const tempAllTaskList = [];
     const taskDataa = [];
@@ -182,8 +185,12 @@ export default function TaskComponent({ match }) {
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
+            console.log("res");
             res.data.data.map((tasks, index) => {
+              setBasketStartDate(tasks.start_date);
+              console.log("tasks", tasks.start_date);
               tasks.taskData.forEach((d, i) => {
+                console.log("d==>", d);
                 let taskOwnerNames = d.taskOwners
                   .map((owner) => owner.taskOwnerName)
                   .join(", ");
@@ -1411,6 +1418,7 @@ export default function TaskComponent({ match }) {
                                   <TaskData
                                     key={task.id.toString()}
                                     data={task}
+                                    date={basketStartDate}
                                     loadBasket={getBasketData}
                                     onShowTaskModal={handleShowTaskModal}
                                     isReviewer={isReviewer}

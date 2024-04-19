@@ -745,6 +745,9 @@ const RequestModal = (props) => {
     },
   ]);
 
+  const basketStartDate = props.date;
+  console.log("basketStartDate", basketStartDate);
+
   const [date, setDate] = useState("");
   const [time, setTime] = useState(null);
 
@@ -852,7 +855,7 @@ const RequestModal = (props) => {
     const data = new FormData(e.target);
     data.append("scheduled_time", props.data.task_hours);
     // data.append('actual_total_time',"00:30");
-
+    console.log("dtaa", data);
     dispatch(postTimeRegularizationData(data));
     handleClose();
 
@@ -984,10 +987,109 @@ const RequestModal = (props) => {
     return "";
   };
 
+  // const handleActualTimeChange = (index, fromTime, toTime) => {
+  //   const fromDate = rows[index].from_date;
+  //   const toDate = rows[index].to_date;
+  //   const actualTime = calculateTimeDifference(
+  //     fromDate,
+  //     toDate,
+  //     fromTime,
+  //     toTime
+  //   );
+
+  //   setRows((prev) => {
+  //     return prev.map((data, rowIndex) => {
+  //       if (rowIndex === index) {
+  //         const newData = { ...data };
+  //         newData.from_time = fromTime;
+  //         newData.to_time = toTime;
+  //         newData.actual_time = actualTime;
+  //         console.log("dataa", newData);
+  //         return newData;
+  //       } else {
+  //         return data;
+  //       }
+  //     });
+  //   });
+  // };
+
+  // const handleActualTimeChange = (index, fromTime, toTime) => {
+  //   const fromDate = rows[index].from_date;
+  //   const toDate = rows[index].to_date;
+  //   const actualTime = calculateTimeDifference(
+  //     fromDate,
+  //     toDate,
+  //     fromTime,
+  //     toTime
+  //   );
+  //   console.log("actu", actualTime);
+  //   console.log("actu", actualTime > "12:00" ? 1 : 0);
+
+  //   // Check if actual time is greater than 12:00 hours
+  //   if (actualTime < "12:00") {
+  //     // Show alert
+  //     alert("Actual time is greater than 12:00 hours.");
+  //     // return;
+  //   }
+
+  //   setRows((prev) => {
+  //     return prev.map((data, rowIndex) => {
+  //       if (rowIndex === index) {
+  //         const newData = { ...data };
+  //         newData.from_time = fromTime;
+  //         newData.to_time = toTime;
+  //         newData.actual_time = actualTime;
+  //         console.log("dataa", newData);
+  //         return newData;
+  //       } else {
+  //         return data;
+  //       }
+  //     });
+  //   });
+  // };
+
+  // const handleActualTimeChange = (index, fromTime, toTime) => {
+  //   const fromDate = rows[index].from_date;
+  //   const toDate = rows[index].to_date;
+  //   const actualTime = calculateTimeDifference(
+  //     fromDate,
+  //     toDate,
+  //     fromTime,
+  //     toTime
+  //   );
+
+  //   // Convert actual time to hours and minutes
+  //   const [hours, minutes] = actualTime.split(":").map(Number);
+
+  //   // Convert actual time to a numerical value for comparison
+  //   const actualTimeValue = hours * 60 + minutes;
+  //   console.log("actualTimeValue", actualTimeValue);
+  //   // Compare with the numerical value of "12:00"
+  //   if (actualTimeValue > 12 * 60) {
+  //     // Show alert
+  //     alert("Actual time is greater than 12:00 hours.");
+  //     return;
+  //   }
+
+  //   setRows((prev) => {
+  //     return prev.map((data, rowIndex) => {
+  //       if (rowIndex === index) {
+  //         const newData = { ...data };
+  //         newData.from_time = fromTime;
+  //         newData.to_time = toTime;
+  //         newData.actual_time = actualTime;
+  //         console.log("dataa", newData);
+  //         return newData;
+  //       } else {
+  //         return data;
+  //       }
+  //     });
+  //   });
+  // };
+
   const handleActualTimeChange = (index, fromTime, toTime) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
-    console.log("from", fromDate);
     const actualTime = calculateTimeDifference(
       fromDate,
       toDate,
@@ -995,6 +1097,21 @@ const RequestModal = (props) => {
       toTime
     );
 
+    // Convert actual time to hours and minutes
+    const [hours, minutes] = actualTime.split(":").map(Number);
+
+    // Convert actual time to a numerical value for comparison
+    const actualTimeValue = hours * 60 + minutes;
+
+    // Check if actual time is greater than 12:00 hours
+    if (actualTimeValue > 12 * 60) {
+      // Alert if actual time exceeds 12:00 hours
+      alert("Actual time is greater than 12:00 hours.");
+      // Return without updating the UI
+      return;
+    }
+
+    // Update actual time in the state
     setRows((prev) => {
       return prev.map((data, rowIndex) => {
         if (rowIndex === index) {
@@ -1002,6 +1119,7 @@ const RequestModal = (props) => {
           newData.from_time = fromTime;
           newData.to_time = toTime;
           newData.actual_time = actualTime;
+          console.log("dataa", newData);
           return newData;
         } else {
           return data;
@@ -1009,6 +1127,102 @@ const RequestModal = (props) => {
       });
     });
   };
+
+  // const handleActualTimeChange = (index, fromTime, toTime) => {
+  //   const fromDate = rows[index].from_date;
+  //   const toDate = rows[index].to_date;
+  //   const actualTime = calculateTimeDifference(
+  //     fromDate,
+  //     toDate,
+  //     fromTime,
+  //     toTime
+  //   );
+
+  //   const timeString = "12:0";
+  //   const [hours, minutes] = timeString
+  //     .split(":")
+  //     .map((timePart) => parseInt(timePart, 10));
+
+  //   const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  //   const time = `${hours}:${paddedMinutes}`;
+  //   console.log("hello", actualTime > time ? "hi" : "hello");
+  //   console.log("hello", actualTime);
+
+  //   console.log("hello", time);
+  //   const d = parseFloat("12:00");
+  //   // Check if actual time is greater than 12:00 hours
+  //   if (actualTime > time) {
+  //     // Convert 12 hours to minutes
+  //     // Show error message
+  //     alert("Actual time cannot exceed 12 hours.");
+  //     // return;
+  //   } else
+  //     setRows((prev) => {
+  //       return prev.map((data, rowIndex) => {
+  //         if (rowIndex === index) {
+  //           const newData = { ...data };
+  //           newData.from_time = fromTime;
+  //           newData.to_time = toTime;
+  //           newData.actual_time = actualTime;
+  //           console.log("dataa", newData);
+  //           return newData;
+  //         } else {
+  //           return data;
+  //         }
+  //       });
+  //     });
+  // };
+
+  // const handleActualTimeChange = (index, fromTime, toTime) => {
+  //   const fromDate = rows[index].from_date;
+  //   const toDate = rows[index].to_date;
+  //   const actualTime = calculateTimeDifference(
+  //     fromDate,
+  //     toDate,
+  //     fromTime,
+  //     toTime
+  //   );
+  //   console.log("hello", actualTime);
+
+  //   const timeString = "12:00";
+  //   const [timeHours, timeMinutes] = timeString
+  //     .split(":")
+  //     .map((timePart) => parseInt(timePart, 10));
+
+  //   // Convert actualTime to "hh:mm" format
+  //   const actualHours = Math.floor(actualTime / 60);
+  //   const actualMinutes = actualTime % 60;
+  //   const actualTimeString = `${actualHours}:${
+  //     actualMinutes < 10 ? "0" + actualMinutes : actualMinutes
+  //   }`;
+  //   console.log("timeString", timeString);
+  //   console.log("timeString", actualTime);
+
+  //   // Check if actual time is greater than "12:00"
+  //   if (actualTime > timeString) {
+  //     // Show error message
+  //     alert("Actual time cannot exceed 12 hours.");
+  //     // return;
+  //   } else {
+  //     setRows((prev) => {
+  //       return prev.map((data, rowIndex) => {
+  //         if (rowIndex === index) {
+  //           const newData = { ...data };
+  //           newData.from_time = fromTime;
+  //           newData.to_time = toTime;
+  //           newData.actual_time = actualTime;
+  //           console.log("dataa", newData);
+  //           return newData;
+  //         } else {
+  //           return data;
+  //         }
+  //       });
+  //     });
+  //   }
+  // };
+
+  console.log("from", rows);
 
   const [fromDate, setFromDate] = useState(""); // State for from_date
   const [toDate, setToDate] = useState("");
@@ -1299,7 +1513,7 @@ const RequestModal = (props) => {
                                   type="date"
                                   className="form-control form-control-sm"
                                   name={`from_date[${index}]`}
-                                  min={fromDate[index]}
+                                  min={basketStartDate}
                                   max={formattedDate}
                                   value={row.from_date}
                                   onChange={(e) =>
@@ -1440,6 +1654,9 @@ const RequestModal = (props) => {
                   ) : (
                     <>
                       {rows.map((row, index) => {
+                        console.log("formattedDate", formattedDate);
+                        console.log("row.from_date", row.from_date);
+
                         return (
                           <tr key={index}>
                             <td>{index + 1}</td>
@@ -1448,7 +1665,7 @@ const RequestModal = (props) => {
                                 type="date"
                                 className="form-control form-control-sm"
                                 name={`from_date[${index}]`}
-                                min={fromDate[index]}
+                                min={basketStartDate}
                                 max={formattedDate}
                                 value={row.from_date}
                                 onChange={(e) =>
@@ -1467,6 +1684,7 @@ const RequestModal = (props) => {
                                 type="date"
                                 className="form-control form-control-sm"
                                 name={`to_date[${index}]`}
+                                // min={basketStartDate}
                                 min={fromDate[index]}
                                 max={formattedDate}
                                 value={row.to_date}
