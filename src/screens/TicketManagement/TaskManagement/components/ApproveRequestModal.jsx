@@ -120,6 +120,7 @@ const ApproveRequestModal = (props) => {
     const check = formData.payload.filter((d) => {
       return d.is_checked == 1;
     });
+
     if (check.length > 0) {
       new changeStatusRegularizationTime(formData).then((res) => {
         if (res.status === 200) {
