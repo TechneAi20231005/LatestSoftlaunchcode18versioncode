@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
 import { _base, userSessionData } from "../../settings/constants";
 import UserService from "../../services/MastersService/UserService";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -15,6 +16,8 @@ import TenantService from "../../services/MastersService/TenantService";
 import Select from "react-select";
 import Alert from "./Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import { getRegularizationTime } from "../../services/TicketService/TaskService";
+import ApproveRequestModal from "../../screens/TicketManagement/TaskManagement/components/ApproveRequestModal";
 
 export default function Header() {
   const [tenantId, setTenantId] = useState();
@@ -22,6 +25,8 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState();
 
   const [notify, setNotify] = useState(null);
+  const { id } = useParams();
+  const ticketId = id;
 
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
@@ -43,6 +48,7 @@ export default function Header() {
             var height = 0;
             setNotifications(res.data.data.result);
             setApprovedNotifications(res.data.data.for_me);
+
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
             }
@@ -64,6 +70,38 @@ export default function Header() {
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 
+  const [approveRequestModal, setApproveRequestModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
+  const [ticketID, setTicketID] = useState();
+
+  const handleRegularizationRequest = (cuurentData) => {
+    setTicketID(cuurentData);
+    new getRegularizationTime(cuurentData).then((res) => {
+      const temp = res.data.data.map((d) => ({
+        id: d.id,
+        created_by_name: d.created_by_name,
+        from_date: d.from_date,
+        to_date: d.to_date,
+        from_time: d.from_time,
+        to_time: d.to_time,
+        remark: d.remark,
+        is_checked: 0,
+        regularization_time_status: d.regularization_time_status,
+        task_name: d.task_name,
+        ticket_id_name: d.ticket_id_name,
+        actual_time: d.actual_time,
+        task_hours: d.task_hours,
+        scheduled_time: d.scheduled_time,
+        status: d.status_remark,
+      }));
+      setRegularizationRequest(temp);
+    });
+  };
+
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
       loadNotifcation();
@@ -73,6 +111,15 @@ export default function Header() {
   const [showNotificationIcon, setShowNotificationIcon] = useState(true);
   const handleShowNotificationIcon = () => {
     setShowNotificationIcon((prev) => !prev);
+  };
+
+  const handleShowApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: true, data: data });
+  };
+  const handleCloseApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: false, data: data });
   };
 
   const [data, setData] = useState(null);
@@ -213,6 +260,9 @@ export default function Header() {
                               const date = ele.created_at.split(" ")[0];
                               const time = ele.created_at.split(" ")[1];
 
+                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const ticketID = parts[parts.length - 1]; // Get the last part of the array
+
                               return (
                                 <li
                                   className="py-2 mb-1 border-bottom"
@@ -221,15 +271,14 @@ export default function Header() {
                                   <div
                                     className="flex-fill ms-2"
                                     style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      handleShowApproveRequestModal();
+                                      handleRegularizationRequest(ticketID);
+                                    }}
                                   >
                                     {ele.url && (
                                       <Link to={`/${_base}/${ele.url}`}>
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
-                                        >
+                                        <p className="d-flex justify-content-between mb-0">
                                           <span className="font-weight-bold">
                                             <span className="fw-bold badge bg-primary p-2">
                                               {" "}
@@ -243,7 +292,7 @@ export default function Header() {
                                               {`Time : ${time}`}
                                             </span>
                                             <br />
-                                            {ele.message}
+                                            <div>{ele.message}</div>
                                           </span>
                                         </p>
                                       </Link>
@@ -375,6 +424,16 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
+              <>
+                {approveRequestModal && (
+                  <ApproveRequestModal
+                    show={approveRequestModal.show}
+                    hide={handleCloseApproveRequestModal}
+                    data={regularizationRequest && regularizationRequest}
+                    ticketId={ticketID}
+                  />
+                )}
+              </>
             </Dropdown>
 
             <Dropdown
