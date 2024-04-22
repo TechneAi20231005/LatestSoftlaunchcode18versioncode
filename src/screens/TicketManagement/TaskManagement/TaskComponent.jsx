@@ -37,7 +37,6 @@ export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
-  console.log("newTa", ticketId);
   const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
@@ -158,7 +157,6 @@ export default function TaskComponent({ match }) {
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  console.log("basket", basketStartDate);
   const getBasketData = async (sprint_id) => {
     const tempAllTaskList = [];
     const taskDataa = [];
@@ -185,12 +183,9 @@ export default function TaskComponent({ match }) {
             setData(null);
             res.data.data.sort(sortFunc);
             setData(res.data.data);
-            console.log("res");
             res.data.data.map((tasks, index) => {
               setBasketStartDate(tasks.start_date);
-              console.log("tasks", tasks.start_date);
               tasks.taskData.forEach((d, i) => {
-                console.log("d==>", d);
                 let taskOwnerNames = d.taskOwners
                   .map((owner) => owner.taskOwnerName)
                   .join(", ");
@@ -223,14 +218,6 @@ export default function TaskComponent({ match }) {
         }
       })
       .catch((error) => {
-        // const { response } = error;
-        // const { request, ...errorObject } = response;
-        // new ErrorLogService().sendErrorLog(
-        //   "Task",
-        //   "Get_Basket_Data",
-        //   "INSERT",
-        //   errorObject.data.message
-        // );
         setIsLoading(false);
       });
   };
@@ -255,12 +242,10 @@ export default function TaskComponent({ match }) {
     };
     if (id) {
       await getTaskData(id).then((res) => {
-        console.log("res==>", res);
         if (res.status === 200) {
           if (res.data.status === 1) {
             temp = res.data.data;
             setTaskModalData(temp);
-            console.log("temp", temp);
           }
         }
       });
@@ -482,7 +467,6 @@ export default function TaskComponent({ match }) {
         setNotify({ type: "danger", message: res?.data?.message });
       }
     } catch (error) {
-      console.error("Error:", error);
       setNotify({
         type: "danger",
         message: "An error occurred while processing your request.",
@@ -915,7 +899,7 @@ export default function TaskComponent({ match }) {
                         </Link>
                       </li>
 
-                      <li>
+                      {/* <li>
                         {ownership && ownership !== "TASK" && (
                           <button
                             // className="btn btn-sm btn-danger text-white"
@@ -936,7 +920,7 @@ export default function TaskComponent({ match }) {
                             )}
                           </button>
                         )}
-                      </li>
+                      </li> */}
                       <li>
                         <button
                           className="btn btn-sm btn-warning  text-white"
@@ -1192,7 +1176,6 @@ export default function TaskComponent({ match }) {
                     </defs>
                   </svg>
                 </button>
-                {console.log("sprint update", sprintCardData[0])}
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

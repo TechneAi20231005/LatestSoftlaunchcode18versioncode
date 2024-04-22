@@ -27,7 +27,6 @@ export default function Header() {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
-  console.log("newT", id);
 
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
@@ -76,19 +75,12 @@ export default function Header() {
     data: null,
   });
 
-  console.log("approveRequestModal", approveRequestModal);
   const [regularizationRequest, setRegularizationRequest] = useState([]);
   const [ticketID, setTicketID] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
-    console.log("cuurentData", cuurentData);
-    // const parts = cuurentData.url.split("/"); // Split the string by '/'
-    // const ID = parts[parts.length - 1]; // Get the last part of the array
-
     setTicketID(cuurentData);
     new getRegularizationTime(cuurentData).then((res) => {
-      console.log("res5", res);
-
       const temp = res.data.data.map((d) => ({
         id: d.id,
         created_by_name: d.created_by_name,
@@ -107,10 +99,8 @@ export default function Header() {
         status: d.status_remark,
       }));
       setRegularizationRequest(temp);
-      console.log("temp", temp);
     });
   };
-  console.log("111", regularizationRequest);
 
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
@@ -126,8 +116,6 @@ export default function Header() {
   const handleShowApproveRequestModal = () => {
     const data = null;
     setApproveRequestModal({ show: true, data: data });
-
-    console.log();
   };
   const handleCloseApproveRequestModal = () => {
     const data = null;
@@ -206,7 +194,6 @@ export default function Header() {
                 loadNotifcation();
               }}
             >
-              {console.log("nnn", showNotificationIcon)}
               {showNotificationIcon && (
                 <Dropdown.Toggle
                   as="a"
@@ -238,7 +225,6 @@ export default function Header() {
                 </Dropdown.Toggle>
               )}
 
-              {/* {approveRequestModal?.show === false && ( */}
               <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
                 <div className="card border-0" style={{ width: "40rem" }}>
                   <div className="card-header border-0 p-3">
@@ -276,7 +262,6 @@ export default function Header() {
 
                               const parts = ele.url.split("/"); // Split the string by '/'
                               const ticketID = parts[parts.length - 1]; // Get the last part of the array
-                              console.log("id==>", ticketID); // Output: 8199
 
                               return (
                                 <li
@@ -293,16 +278,7 @@ export default function Header() {
                                   >
                                     {ele.url && (
                                       <Link to={`/${_base}/${ele.url}`}>
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          // onClick={(e) =>
-                                          //   handleReadNotification(e, ele.id)
-                                          // }
-                                          // onClick={(e) => {
-                                          //   handleShowApproveRequestModal();
-                                          //   handleRegularizationRequest();
-                                          // }}
-                                        >
+                                        <p className="d-flex justify-content-between mb-0">
                                           <span className="font-weight-bold">
                                             <span className="fw-bold badge bg-primary p-2">
                                               {" "}
@@ -448,7 +424,6 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
-              {/* )} */}
               <>
                 {approveRequestModal && (
                   <ApproveRequestModal
@@ -459,7 +434,6 @@ export default function Header() {
                   />
                 )}
               </>
-              {console.log("ticketID3", ticketID)}
             </Dropdown>
 
             <Dropdown

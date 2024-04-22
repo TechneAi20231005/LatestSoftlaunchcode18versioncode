@@ -35,7 +35,6 @@ export default function TaskData(props) {
   const date = props.date;
   const isRegularisedData = props.data.regularized_data;
   const allData = props;
-  console.log("date", date);
   const [userTypeData, setUserTypeData] = useState(null);
   const [loading, setLoading] = useState(false);
 
