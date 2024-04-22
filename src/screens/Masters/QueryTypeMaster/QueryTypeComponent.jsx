@@ -18,7 +18,6 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 
 import Dropdown from "react-bootstrap/Dropdown";
 
-
 import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
@@ -971,23 +970,6 @@ function QueryTypeComponent() {
                         )
                       }
                       required={true}
-                    />
-                  </div>
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Select Customer :
-                    </label>
-
-                    <Select
-                      options={customerDropdown}
-                      id="customer_id"
-                      name="customer_id"
-                      defaultValue={
-                        modal.modalData &&
-                        customerDropdown?.filter(
-                          (d) => d.value == modal.modalData.customer_id
-                        )
-                      }
                     />
                   </div>
 

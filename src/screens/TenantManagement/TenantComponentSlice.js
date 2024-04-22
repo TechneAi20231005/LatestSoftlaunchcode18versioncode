@@ -57,7 +57,6 @@ export const tenantmasterSlice = createSlice({
         let sr = 1;
         let exportAllTenantData = [];
         for (const i in getAllTenant) {
-          console.log("getAll", getAllTenant);
           exportAllTenantData.push({
             Sr: sr++,
             TenantName: getAllTenant[i].company_name,
@@ -66,9 +65,9 @@ export const tenantmasterSlice = createSlice({
             Country: getAllTenant[i].country,
             State: getAllTenant[i].state,
             City: getAllTenant[i].city,
-            Role: getAllTenant[i].role,
+            // Role: getAllTenant[i].role,
             Status: getAllTenant[i].is_active ? "Active" : "Deactive",
-            Remark: getAllTenant[i].remark,
+            // Remark: getAllTenant[i].remark,
             created_at: getAllTenant[i].created_at,
             created_by: getAllTenant[i].created_by,
             updated_at: getAllTenant[i].updated_at,
