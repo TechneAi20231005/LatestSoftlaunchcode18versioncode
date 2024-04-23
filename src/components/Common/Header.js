@@ -248,11 +248,11 @@ export default function Header() {
                           }}
                         >
                           {notifications && (
-                            <span className="fw-bold badge bg-warning p-2">
+                            <button className="fw-bold badge bg-warning p-2">
                               <i class="icofont-history"></i>
                               History
                               {/* {notifications.length} */}
-                            </span>
+                            </button>
                           )}
                         </div>
                         {!notifications && (
@@ -260,7 +260,13 @@ export default function Header() {
                         )}
                       </h5>
                     </div>
-                    <div className="tab-content card-body">
+                    <div
+                      className="tab-content card-body"
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                      }}
+                    >
                       {showApprovedOnly ? (
                         <div className="tab-pane fade show active">
                           <ul

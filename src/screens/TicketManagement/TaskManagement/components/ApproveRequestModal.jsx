@@ -18,6 +18,7 @@ const ApproveRequestModal = (props) => {
   const ticketId = props.ticketId;
 
   const rquestData = props?.data;
+  const ticketIdName = rquestData[0]?.ticket_id_name;
   const loadData = () => {
     // Assuming getRegularizationTime is a function that returns a Promise
     new getRegularizationTime(ticketId)
@@ -55,12 +56,32 @@ const ApproveRequestModal = (props) => {
   const [selectAll, setSelectAll] = useState(false);
 
   // Function to handle Select All checkbox
+  // const handleSelectAll = () => {
+  //   setSelectAll(!selectAll);
+  //   // Logic to toggle all checkboxes in rows based on selectAll state
+  //   const checkboxes = document.getElementsByName("status[]");
+  //   checkboxes.forEach((checkbox) => {
+  //     checkbox.checked = !selectAll;
+  //   });
+  // };
+
   const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    // Logic to toggle all checkboxes in rows based on selectAll state
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+
+    // Update the state with the new array where is_checked is set based on newSelectAll value
+    const newData = rquestData.map((d) => ({
+      ...d,
+      is_checked: newSelectAll ? 1 : 0,
+    }));
+
+    // Update the state with the new array
+    setData(newData);
+
+    // Update checkboxes to reflect the new state
     const checkboxes = document.getElementsByName("status[]");
     checkboxes.forEach((checkbox) => {
-      checkbox.checked = !selectAll;
+      checkbox.checked = newSelectAll;
     });
   };
 
@@ -71,13 +92,16 @@ const ApproveRequestModal = (props) => {
   //     )
   //   );
 
-  //   console.log(
-  //     "data==>",
-  //     rquestData.map((d, index) =>
-  //       index === i ? { ...d, is_checked: e.target.checked == true ? 1 : 0 } : d
-  //     )
-  //   );
   // };
+
+  const handleInputChange = (e, i) => {
+    // Clone the rquestData array
+    const newData = [...rquestData];
+    // Update the is_checked property of the clicked row
+    newData[i].is_checked = e.target.checked ? 1 : 0;
+    // Update the state with the new array
+    setData(newData);
+  };
 
   // const handleInputChange = (e, i) => {
   //   const isChecked = e.target.checked ? 1 : 0;
@@ -97,26 +121,27 @@ const ApproveRequestModal = (props) => {
   //   console.log("req", newData);
   // };
 
-  const handleInputChange = (e, i) => {
-    const isChecked = e.target.checked ? 1 : 0;
+  // const handleInputChange = (e, i) => {
+  //   const isChecked = e.target.checked ? 1 : 0;
 
-    // Create a new array to hold the updated data
-    const newData = rquestData.map((d, index) => {
-      if (index === i) {
-        // Update the clicked checkbox
-        return { ...d, is_checked: isChecked };
-      } else if (d.is_checked === 1) {
-        // Preserve the checked state of previously checked checkboxes
-        return { ...d, is_checked: 1 };
-      } else {
-        // Keep other checkboxes unchanged
-        return d;
-      }
-    });
+  //   // Create a new array to hold the updated data
+  //   const newData = rquestData.map((d, index) => {
+  //     if (index === i) {
+  //       // Update the clicked checkbox
+  //       return { ...d, is_checked: isChecked };
+  //     } else if (d.is_checked === 1) {
+  //       // Preserve the checked state of previously checked checkboxes
+  //       return { ...d, is_checked: 1 };
+  //     } else {
+  //       // Keep other checkboxes unchanged
+  //       return d;
+  //     }
+  //   });
 
-    // Update the state with the new array
-    setData(newData);
-  };
+  //   // Update the state with the new array
+  //   setData(newData);
+  //   console.log("new==>", newData);
+  // };
 
   // const handleInputChange = (e, i) => {
   //   const newData = rquestData.map((d, index) => {
@@ -202,7 +227,9 @@ const ApproveRequestModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <>
-          <div className="text-right" style={{ "text-align": "right" }}>
+          {/* <div className="text-right" style={{ "text-align": "right" }}>
+            <div style={{}}>Ticket ID :</div>
+
             <button
               type="button"
               className="btn btn-primary btn-sm"
@@ -218,6 +245,32 @@ const ApproveRequestModal = (props) => {
             >
               Reject
             </button>
+          </div> */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ fontWeight: "bold" }}>Ticket ID : {ticketIdName}</div>
+            <div className="text-right">
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                style={{ backgroundColor: "#484C7F", marginRight: "5px" }}
+                onClick={(e) => handleForm("APPROVED")}
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger btn-sm text-white"
+                onClick={(e) => handleForm("REJECTED")}
+              >
+                Reject
+              </button>
+            </div>
           </div>
 
           <div className="table-responsive">
@@ -231,7 +284,7 @@ const ApproveRequestModal = (props) => {
                   <th className="text-center">
                     <input type="checkbox" onChange={handleSelectAll} /> Select
                   </th>
-                  <th className="text-center"> Ticket Id </th>
+                  {/* <th className="text-center"> Ticket Id </th> */}
                   <th className="text-center"> Task Name </th>
                   <th className="text-center"> Requested By </th>
                   <th className="text-center"> From Date </th>
@@ -263,10 +316,13 @@ const ApproveRequestModal = (props) => {
                             id={`status_${i}`}
                             name="status[]"
                             onChange={(e) => handleInputChange(e, i)}
+                            // onChange={(e) =>
+                            //   // handleInputChange(e.target.checked, i)
+                            // }
                             disabled={x.status !== "PENDING"}
                           />
                         </td>
-                        <td title={x.ticket_id_name}>{x.ticket_id_name}</td>
+                        {/* <td title={x.ticket_id_name}>{x.ticket_id_name}</td> */}
                         <td title={x.task_name}>{x.task_name}</td>
                         <td>{x.created_by_name}</td>
                         <td>
@@ -335,18 +391,19 @@ const ApproveRequestModal = (props) => {
                             readOnly={true}
                           />
                         </td>
-                        <td>
+                        <td title={x.remark}>
                           <input
                             type="text"
                             className="form-control form-control-sm"
                             id={`remark${i}`}
                             name="remark[]"
                             value={x.remark}
+                            style={{ width: "100px" }}
                             required
                             readOnly={true}
                           />
                         </td>
-                        <td>
+                        <td title={x.status}>
                           <input
                             type="text"
                             className="form-control form-control-sm"
@@ -354,6 +411,7 @@ const ApproveRequestModal = (props) => {
                             name="status[]"
                             value={x.status}
                             required
+                            style={{ width: "100px" }}
                             readOnly={true}
                           />
                         </td>

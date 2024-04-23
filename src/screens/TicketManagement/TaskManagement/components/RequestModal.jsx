@@ -35,10 +35,10 @@ const RequestModal = (props) => {
   const [timeDifference, setTimeDifference] = useState("");
   const dispatch = useDispatch();
 
-  const Notify = useSelector(
-    (TimeRegularizationSlice) =>
-      TimeRegularizationSlice.timeRegularization.notify
-  );
+  // const Notify = useSelector(
+  //   (TimeRegularizationSlice) =>
+  //     TimeRegularizationSlice.timeRegularization.notify
+  // );
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -133,7 +133,16 @@ const RequestModal = (props) => {
     const data = new FormData(e.target);
     data.append("scheduled_time", props.data.task_hours);
     // data.append('actual_total_time',"00:30");
-    dispatch(postTimeRegularizationData(data));
+    dispatch(postTimeRegularizationData(data)).then((res) => {
+      if (res?.payload?.data?.status === 1) {
+        setNotify({ type: "success", message: res.payload.data.message });
+        setTimeout(() => {
+          props.close();
+        }, 1000);
+      } else {
+        setNotify({ type: "danger", message: res.payload.data.message });
+      }
+    });
     // handleClose();
   };
 
@@ -173,7 +182,7 @@ const RequestModal = (props) => {
   }, [timeDifference]);
 
   useEffect(() => {
-    setNotify(null);
+    // setNotify(null);
   }, []);
 
   useEffect(() => {
@@ -260,6 +269,8 @@ const RequestModal = (props) => {
       });
     });
   };
+
+  console.log("props", props);
 
   const [fromDate, setFromDate] = useState(""); // State for from_date
   const [toDate, setToDate] = useState("");
@@ -369,13 +380,7 @@ const RequestModal = (props) => {
     updatedData[index].remark = value; // Update the remark field of the corresponding row
     setRegularizeTimeData(updatedData); // Update the state with the modified array
   };
-
-  const handleClose = () => {
-    const timer = setTimeout(() => {
-      props.close();
-      clearInterval(timer);
-    }, 5000);
-  };
+  console.log("basket", basketStartDate);
   return (
     <div>
       <Modal
@@ -385,7 +390,7 @@ const RequestModal = (props) => {
         size="xl"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        {Notify && <Alert alertData={Notify} />}
+        {notify && <Alert alertData={notify} />}
 
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
