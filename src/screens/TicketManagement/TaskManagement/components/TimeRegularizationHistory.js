@@ -7,13 +7,19 @@ import {
   changeStatusRegularizationTime,
 } from "../../../../services/TicketService/TaskService";
 
-const ApproveRequestModal = (props) => {
+const TimeRegularizationHistory = (props) => {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
   const [dataa, setDataa] = useState([]);
 
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchRef = useRef();
+
+  // Function to filter rquestData based on search terms
+
+  const handleClearSearchData = (e) => {
+    setSearchTerm(""); // Clear search term by updating state
+  };
 
   const ticketId = props.ticketId;
 
@@ -64,71 +70,13 @@ const ApproveRequestModal = (props) => {
     });
   };
 
-  // const handleInputChange = (e, i) => {
-  //   setData(
-  //     rquestData.map((d, index) =>
-  //       index === i ? { ...d, is_checked: e.target.checked == true ? 1 : 0 } : d
-  //     )
-  //   );
-
-  //   console.log(
-  //     "data==>",
-  //     rquestData.map((d, index) =>
-  //       index === i ? { ...d, is_checked: e.target.checked == true ? 1 : 0 } : d
-  //     )
-  //   );
-  // };
-
-  // const handleInputChange = (e, i) => {
-  //   const isChecked = e.target.checked ? 1 : 0;
-  //   console.log("eis", isChecked);
-  //   const newData = rquestData.map((d, index) => {
-  //     if (index === i) {
-  //       console.log("inde", index);
-  //       console.log("Data at index", i);
-  //       console.log("Data at index", d); // Log the data at index i
-  //       // Log the data at index i
-  //       return { ...d, is_checked: isChecked };
-  //     } else {
-  //       return d;
-  //     }
-  //   });
-  //   setData(newData);
-  //   console.log("req", newData);
-  // };
-
   const handleInputChange = (e, i) => {
-    const isChecked = e.target.checked ? 1 : 0;
-
-    // Create a new array to hold the updated data
-    const newData = rquestData.map((d, index) => {
-      if (index === i) {
-        // Update the clicked checkbox
-        return { ...d, is_checked: isChecked };
-      } else if (d.is_checked === 1) {
-        // Preserve the checked state of previously checked checkboxes
-        return { ...d, is_checked: 1 };
-      } else {
-        // Keep other checkboxes unchanged
-        return d;
-      }
-    });
-
-    // Update the state with the new array
-    setData(newData);
+    setData(
+      rquestData.map((d, index) =>
+        index === i ? { ...d, is_checked: e.target.checked == true ? 1 : 0 } : d
+      )
+    );
   };
-
-  // const handleInputChange = (e, i) => {
-  //   const newData = rquestData.map((d, index) => {
-  //     if (index === i) {
-  //       return { ...d, is_checked: e.target.checked ? 1 : 0 };
-  //     } else {
-  //       return d;
-  //     }
-  //   });
-  //   setData(newData);
-  //   console.log("new", newData);
-  // };
 
   const handleForm = (type) => {
     setNotify(null);
@@ -182,6 +130,12 @@ const ApproveRequestModal = (props) => {
     }
   };
 
+  const filteredData = rquestData.filter(
+    (x) =>
+      x.ticket_id_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      x.task_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     loadData();
   }, []);
@@ -197,27 +151,42 @@ const ApproveRequestModal = (props) => {
       {notify && <Alert alertData={notify} />}
       <Modal.Header closeButton>
         <Modal.Title id="example-custom-modal-styling-title">
-          Request Regularization
+          Time Regularization History
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <>
-          <div className="text-right" style={{ "text-align": "right" }}>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              style={{ backgroundColor: "#484C7F" }}
-              onClick={(e) => handleForm("APPROVED")}
-            >
-              Approve
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger btn-sm text-white"
-              onClick={(e) => handleForm("REJECTED")}
-            >
-              Reject
-            </button>
+          <div className="row">
+            <div className="col-md-4">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search by Ticket ID or Task Name...."
+                onChange={(e) => setSearchTerm(e.target.value)}
+                ref={searchRef}
+                value={searchTerm}
+              />
+            </div>
+            <div className="col-md-4">
+              <button
+                className="btn btn-sm btn-warning text-white mr-2"
+                type="button"
+                // value={searchTerm}
+                style={{ fontWeight: "600" }}
+              >
+                <i className="icofont-search-1 "></i> Search
+              </button>
+              <button
+                className="btn btn-sm btn-info text-white"
+                type="button"
+                onClick={(e) => {
+                  handleClearSearchData(e);
+                }}
+                style={{ fontWeight: "600" }}
+              >
+                <i className="icofont-refresh text-white"></i> Reset
+              </button>
+            </div>
           </div>
 
           <div className="table-responsive">
@@ -228,9 +197,7 @@ const ApproveRequestModal = (props) => {
               <thead>
                 <tr>
                   <th className="text-center"> Sr. No. </th>
-                  <th className="text-center">
-                    <input type="checkbox" onChange={handleSelectAll} /> Select
-                  </th>
+
                   <th className="text-center"> Ticket Id </th>
                   <th className="text-center"> Task Name </th>
                   <th className="text-center"> Requested By </th>
@@ -245,27 +212,12 @@ const ApproveRequestModal = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {rquestData &&
-                  rquestData?.map((x, i) => {
+                {filteredData &&
+                  filteredData?.map((x, i) => {
                     return (
                       <tr id={`addr_${i}`} key={i}>
                         <td>{i + 1}</td>
 
-                        <td>
-                          <input
-                            type="hidden"
-                            id={`status_${i}`}
-                            name="id[]"
-                            value={x.id}
-                          />
-                          <input
-                            type="checkbox"
-                            id={`status_${i}`}
-                            name="status[]"
-                            onChange={(e) => handleInputChange(e, i)}
-                            disabled={x.status !== "PENDING"}
-                          />
-                        </td>
                         <td title={x.ticket_id_name}>{x.ticket_id_name}</td>
                         <td title={x.task_name}>{x.task_name}</td>
                         <td>{x.created_by_name}</td>
@@ -326,8 +278,9 @@ const ApproveRequestModal = (props) => {
                         </td>
                         <td>
                           <input
-                            type="time"
+                            type="text"
                             className="form-control form-control-sm"
+                            style={{ width: "100px" }}
                             id={`actual_time${i}`}
                             name="actual_time[]"
                             value={x.actual_time}
@@ -335,9 +288,10 @@ const ApproveRequestModal = (props) => {
                             readOnly={true}
                           />
                         </td>
-                        <td>
+                        <td title={x.remark}>
                           <input
                             type="text"
+                            style={{ width: "100px" }}
                             className="form-control form-control-sm"
                             id={`remark${i}`}
                             name="remark[]"
@@ -352,13 +306,12 @@ const ApproveRequestModal = (props) => {
                             className="form-control form-control-sm"
                             id={`status${i}`}
                             name="status[]"
+                            style={{ width: "100px" }}
                             value={x.status}
                             required
                             readOnly={true}
                           />
                         </td>
-
-                        {/* Render other table cells similarly */}
                       </tr>
                     );
                   })}
@@ -372,4 +325,4 @@ const ApproveRequestModal = (props) => {
   );
 };
 
-export default ApproveRequestModal;
+export default TimeRegularizationHistory;
