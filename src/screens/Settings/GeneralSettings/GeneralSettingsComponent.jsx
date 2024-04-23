@@ -146,6 +146,12 @@ function GeneralSettings() {
 
     const settingName = useSetting?.current?.value;
     const remark = useRemark?.current?.value;
+    let array = [];
+
+    // Add the value 0 to the array
+    array.push(0);
+
+    // Assign the array to form.user_id
 
     let arrayOfId = [];
     for (let i = 0; i < userDet?.length; i++) {
@@ -153,9 +159,22 @@ function GeneralSettings() {
     }
 
     const form = {};
+    // if (settingName === "Time Regularization after task complete") {
+    //   form.user_id = array;
+    // } else if (
+    //   settingName === "Time Regularization after task complete" &&
+    //   arrayOfId?.length > 0
+    // ) {
+    //   form.user_id = arrayOfId;
+    // } else {
+    //   form.user_id = arrayOfId;
+    // }
 
-    if (settingName === "Time Regularization after task complete") {
-      form.user_id = 0;
+    if (
+      settingName === "Time Regularization after task complete" &&
+      arrayOfId?.length == 0
+    ) {
+      form.user_id = array;
     } else {
       form.user_id = arrayOfId;
     }
@@ -502,6 +521,7 @@ function GeneralSettings() {
                     // readOnly={modal.modalData ? true : false}
                   />
                 </div>
+
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
                     Select User :<Astrick color="red" size="13px" />
