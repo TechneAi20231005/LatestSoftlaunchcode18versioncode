@@ -134,7 +134,7 @@ const RequestModal = (props) => {
     data.append("scheduled_time", props.data.task_hours);
     // data.append('actual_total_time',"00:30");
     dispatch(postTimeRegularizationData(data));
-    handleClose();
+    // handleClose();
   };
 
   // handle click event of the Remove button
@@ -181,7 +181,13 @@ const RequestModal = (props) => {
   }, []);
 
   const [rows, setRows] = useState([
-    { from_date: "", to_date: "", from_time: "", to_time: "", actual_time: "" },
+    {
+      from_date: "",
+      to_date: "",
+      from_time: "",
+      to_time: "",
+      actual_time: "",
+    },
     // Add more rows as needed
   ]);
 
@@ -337,9 +343,11 @@ const RequestModal = (props) => {
 
   // Define a function to handle row removal
   const handleRemoveClickk = (index) => {
+    console.log("index==>", index);
     const updatedData = [...regularizeTimeData];
     updatedData.splice(index, 1); // Remove the row at the specified index
     setRegularizeTimeData(updatedData);
+    console.log("updatedData", updatedData);
   };
 
   // Define a function to add a new row
@@ -351,9 +359,17 @@ const RequestModal = (props) => {
       to_time: "",
       actual_time: "", // You may set a default value if needed
       isAddingNewRow: true,
+      remark: "",
     };
     const updatedData = [...regularizeTimeData, newRow];
     setRegularizeTimeData(updatedData);
+  };
+
+  const handleRemarkChange = (e, index) => {
+    const { value } = e.target;
+    const updatedData = [...regularizeTimeData]; // Make a copy of the array
+    updatedData[index].remark = value; // Update the remark field of the corresponding row
+    setRegularizeTimeData(updatedData); // Update the state with the modified array
   };
 
   const handleClose = () => {
@@ -623,8 +639,8 @@ const RequestModal = (props) => {
                                   type="text"
                                   className="form-control form-control-sm"
                                   name={`remark[${index}]`}
-                                  defaultValue={row.remark}
-                                  onChange={(e) => handleAddClick(e)}
+                                  value={row.remark}
+                                  onChange={(e) => handleRemarkChange(e, index)} // Assuming you have a function to handle remark changes
                                   required
                                   readOnly={
                                     row.status != "REJECTED" &&
@@ -632,6 +648,7 @@ const RequestModal = (props) => {
                                   }
                                 />
                               </td>
+
                               <td>
                                 {index + 1 === 1 && (
                                   <button
@@ -645,7 +662,7 @@ const RequestModal = (props) => {
                                 {index + 1 > 1 && (
                                   <button
                                     className="mr10 mr-1 btn btn-danger"
-                                    onClick={() => handleRemoveClickk(index)}
+                                    onClick={(row) => handleRemoveClickk(index)}
                                   >
                                     <i className="icofont-ui-delete"></i>
                                   </button>
