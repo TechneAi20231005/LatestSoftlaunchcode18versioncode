@@ -3043,10 +3043,15 @@ export default function MyTicketComponent() {
                                       status: "PASS",
                                     });
                                   }}
+                                  disabled={
+                                    !selectAllNames &&
+                                    selectedRowss?.length <= 0
+                                      ? true
+                                      : false
+                                  }
                                 >
                                   <i className="icofont-checked"></i> Pass
                                 </button>
-
                                 <button
                                   className="btn btn-danger btn-block text-white"
                                   onClick={(e) => {
@@ -3060,6 +3065,12 @@ export default function MyTicketComponent() {
                                       status: "REJECT",
                                     });
                                   }}
+                                  disabled={
+                                    !selectAllNames &&
+                                    selectedRowss?.length <= 0
+                                      ? true
+                                      : false
+                                  }
                                 >
                                   <i className="icofont-close-squared-alt"></i>{" "}
                                   Reject
