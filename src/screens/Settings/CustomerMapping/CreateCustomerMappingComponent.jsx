@@ -55,6 +55,8 @@ export default function CreateCustomerMappingComponent() {
   const [userDropdown, setUserDropdown] = useState();
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(0);
+
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
   const roleId = sessionStorage.getItem("role_id");
@@ -197,9 +199,11 @@ export default function CreateCustomerMappingComponent() {
       }
     });
   };
-
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
+    if (type === "Select2" && nameField === "customer_type_id") {
+      setSelectedCustomer(e?.length);
+    }
     // const customerData = e?.map((i) => i.value);
     const value =
       type === "Select2" && nameField === "customer_type_id"
@@ -562,7 +566,9 @@ export default function CreateCustomerMappingComponent() {
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
-                      <option value="SELF">Self</option>
+                      {selectedCustomer == 0 && (
+                        <option value="SELF">Self</option>
+                      )}
                       <option value="AU">Assign to user</option>
                     </select>
                   </div>
