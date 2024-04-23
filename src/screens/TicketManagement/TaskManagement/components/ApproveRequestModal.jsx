@@ -116,7 +116,6 @@ const ApproveRequestModal = (props) => {
 
     // Update the state with the new array
     setData(newData);
-    console.log("new", newData);
   };
 
   // const handleInputChange = (e, i) => {

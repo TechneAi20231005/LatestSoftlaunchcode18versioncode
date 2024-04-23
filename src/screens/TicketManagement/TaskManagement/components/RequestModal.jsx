@@ -343,11 +343,9 @@ const RequestModal = (props) => {
 
   // Define a function to handle row removal
   const handleRemoveClickk = (index) => {
-    console.log("index==>", index);
     const updatedData = [...regularizeTimeData];
     updatedData.splice(index, 1); // Remove the row at the specified index
     setRegularizeTimeData(updatedData);
-    console.log("updatedData", updatedData);
   };
 
   // Define a function to add a new row
