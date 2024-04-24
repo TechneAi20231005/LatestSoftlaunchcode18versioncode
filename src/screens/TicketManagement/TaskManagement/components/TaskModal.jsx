@@ -379,33 +379,54 @@ export default function TaskModal(props) {
     }
   };
 
-  function transformData(taskData, hasPrimaryLabel = false) {
-    const primaryLabel = "Primary";
-    const options = [];
+  // function transformData(taskData, hasPrimaryLabel = false) {
+  //   const primaryLabel = "Primary";
+  //   const options = [];
 
-    // Push the primary label if it hasn't been pushed before
-    if (!hasPrimaryLabel) {
-      options.push({
-        ID: null,
-        label: primaryLabel,
-        isStatic: true,
-        options: [],
-      });
-      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-    }
+  //   // Push the primary label if it hasn't been pushed before
+  //   if (!hasPrimaryLabel) {
+  //     options.push({
+  //       ID: null,
+  //       label: primaryLabel,
+  //       isStatic: true,
+  //       options: [],
+  //     });
+  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+  //   }
+
+  //   // Process the taskData
+  //   taskData?.forEach((item) => {
+  //     const label = item.type_name;
+
+  //     if (label !== primaryLabel) {
+  //       // Push API labels directly into options array
+  //       options.push({
+  //         ID: item.parent_id,
+  //         label: label,
+  //         options: item.children
+  //           ? transformData(item.children, hasPrimaryLabel)
+  //           : [],
+  //       });
+  //     }
+  //   });
+
+  //   return options;
+  // }
+
+  function transformData(taskData) {
+    const options = [];
 
     // Process the taskData
     taskData?.forEach((item) => {
       const label = item.type_name;
 
-      if (label !== primaryLabel) {
+      // Exclude primary label from options
+      if (label !== "Primary") {
         // Push API labels directly into options array
         options.push({
           ID: item.parent_id,
           label: label,
-          options: item.children
-            ? transformData(item.children, hasPrimaryLabel)
-            : [],
+          options: item.children ? transformData(item.children) : [],
         });
       }
     });
@@ -563,19 +584,24 @@ export default function TaskModal(props) {
               setParentTaskName("Please select a parent task type.");
             } else {
               setParentTaskName(""); // Clear the error message if present
-              if (selectedOptionId === "Primary") {
-                formData.append("parent_id", 0);
-              } else {
-                formData.append(
-                  "parent_id",
-                  // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-                  selectedOptionId
-                    ? selectedOptionId
-                    : props?.data?.parent_name !== null
-                    ? props?.data?.parent_name
-                    : "Primary"
-                );
-              }
+              // if (selectedOptionId === "Primary") {
+              //   formData.append("parent_id", 0);
+              // } else {
+              // formData.append(
+              //   "parent_id",
+              //   // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+              //   selectedOptionId
+              //     ? selectedOptionId
+              //     : props?.data?.parent_name !== null
+              //     ? props?.data?.parent_name
+              //     : "Primary"
+              // );
+              formData.append(
+                "parent_id",
+                selectedOptionId || props?.data?.parent_name || "Primary"
+              );
+
+              // }
               // formData.append("task_type_id", taskTypeId);
               await updateTask(formData.get("id"), formData)
                 .then((res) => {
