@@ -353,11 +353,9 @@ export default function CreateCustomerMappingComponent() {
     form.department_id = departmentId;
     if (data.approach === "RW") {
       form.user_id = RwuserID;
+      form.ratio = userRatioData;
     } else {
       form.user_id = userID;
-    }
-    if (data.approach === "RW") {
-      form.ratio = userRatioData;
     }
 
     form.status = statusID;
