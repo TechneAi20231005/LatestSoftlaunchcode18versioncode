@@ -60,7 +60,6 @@ export default function CreateCustomerMappingComponent() {
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
   const [template, setTemplate] = useState();
-  // const [templateDropdown, setTemplateDropdown] = useState();
 
   const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
@@ -74,7 +73,6 @@ export default function CreateCustomerMappingComponent() {
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null)
 
   const dispatch = useDispatch();
 
@@ -200,14 +198,12 @@ export default function CreateCustomerMappingComponent() {
         if (res.payload.data.status == 1) {
           const data = res.payload.data.data.filter((d) => d.is_active == 1);
           setUser(data);
-          // var defaultValue = [{ value: 0, label: "Select User" }];
           var dropwdown = res.payload.data.data
             .filter((d) => d.is_active == 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
-          // defaultValue = [...defaultValue, ...dropwdown];
           setUserDropdown(dropwdown);
         }
       }
@@ -218,13 +214,7 @@ export default function CreateCustomerMappingComponent() {
     if (type === "Select2" && nameField === "customer_type_id") {
       setSelectedCustomer(e?.length);
     }
-    // const customerData = e?.map((i) => i.value);
-    // const value =
-    //   type === "Select2" && nameField === "customer_type_id"
-    //     ? e?.map((i) => i.value)
-    //     : e?.value
-    //     ? e?.value
-    //     : e?.target?.value;
+
     const value =
       type === "Select2" && nameField === "customer_type_id"
         ? e?.map((i) => i.value)
@@ -250,8 +240,6 @@ export default function CreateCustomerMappingComponent() {
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          // var defaultValue = [{ value: "", label: "Select User" }];
-
           const dropdown = res.data.data
             .filter((d) => d.is_active == 1)
             .filter((d) => d.multiple_department_id.includes(e.value))
@@ -302,11 +290,39 @@ export default function CreateCustomerMappingComponent() {
   const priorityDetail = useRef();
   const confirmationRequiredDetail = useRef();
   const approachDetail = useRef();
-  const departmentDetail = useRef();
   const useridDetail = useRef();
-
+  const statusDtail = useRef();
+  const userRatioDetail = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
+
+    let userIDs;
+    if (Array.isArray(useridDetail?.current?.props?.value)) {
+      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+    } else {
+      const value = useridDetail?.current?.props?.value?.value;
+      userIDs = value ? [value] : [];
+    }
+
+    const getUserData = () => {
+      // Get an array of user IDs
+      const userIds = userDropdown?.map((ele) => ele?.value);
+
+      return userIds;
+    };
+
+    const getUserDataa = () => {
+      // Get an array of ratio values
+      const ratios = userDropdown?.map((ele, i) => {
+        const ratio = userRatioDetail?.current?.value; // Assuming userRatioDetail is an array of refs containing input fields for ratios
+        return parseInt(ratio, 10); // Convert the ratio to an integer
+      });
+
+      return ratios;
+    };
+    const RwuserID = getUserData();
+    const userRatioData = getUserDataa();
+
     const customerID = customerDetail?.current?.props?.value;
     const queryTypeid = queryTypeDetail?.current?.props?.value.value;
     const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
@@ -314,12 +330,16 @@ export default function CreateCustomerMappingComponent() {
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequiredDetail?.current?.value;
     const approachId = approachDetail?.current?.value;
-    const departmentId = departmentDropdownRef?.current?.props?.value.value;
-    const userID = useridDetail?.current?.props?.value.value;
+    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
+      ? departmentDropdownRef?.current?.props?.value[0]?.value
+      : departmentDropdownRef?.current?.props?.value?.value;
+    const userID = userIDs;
+
+    const statusID = statusDtail?.current?.value;
 
     let arrayOfId = [];
     for (let i = 0; i < customerID?.length; i++) {
-      arrayOfId.push(customerID[i].value);
+      arrayOfId.push(customerID[i]?.value);
     }
     const form = {};
 
@@ -331,7 +351,17 @@ export default function CreateCustomerMappingComponent() {
     form.confirmation_required = confirmationId;
     form.approach = approachId;
     form.department_id = departmentId;
-    form.user_id = userID;
+    if (data.approach === "RW") {
+      form.user_id = RwuserID;
+    } else {
+      form.user_id = userID;
+    }
+    if (data.approach === "RW") {
+      form.ratio = userRatioData;
+    }
+
+    form.status = statusID;
+
     form.tenant_id = sessionStorage.getItem("tenant_id");
     form.created_by = userSessionData.userId;
     form.created_at = getDateTime();
@@ -402,17 +432,10 @@ export default function CreateCustomerMappingComponent() {
     if (!checkRole?.length) {
       dispatch(getRoles());
     }
-    // if (!customerTypeDropdown?.length) {
-    // }
-
-    // if (!templateDropdown?.length) {
-    // }
   }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -461,7 +484,6 @@ export default function CreateCustomerMappingComponent() {
                       name="query_type_id"
                       ref={queryTypeDetail}
                       options={queryTypeDropdown}
-                      //onChange={handleQueryType}
                       onChange={(e) => {
                         handleAutoChanges(e, "Select2", "query_type_id");
                         handleQueryType(e);
@@ -747,6 +769,7 @@ export default function CreateCustomerMappingComponent() {
                                       defaultValue={
                                         ratiowiseData ? ratiowiseData[i] : 0
                                       }
+                                      ref={userRatioDetail}
                                       onInput={handleRatioInput(i)}
                                     />
                                   </td>
