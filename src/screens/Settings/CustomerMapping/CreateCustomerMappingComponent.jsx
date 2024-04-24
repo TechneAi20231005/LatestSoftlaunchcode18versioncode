@@ -205,6 +205,12 @@ export default function CreateCustomerMappingComponent() {
       setSelectedCustomer(e?.length);
     }
     // const customerData = e?.map((i) => i.value);
+    // const value =
+    //   type === "Select2" && nameField === "customer_type_id"
+    //     ? e?.map((i) => i.value)
+    //     : e?.value
+    //     ? e?.value
+    //     : e?.target?.value;
     const value =
       type === "Select2" && nameField === "customer_type_id"
         ? e?.map((i) => i.value)
@@ -220,10 +226,10 @@ export default function CreateCustomerMappingComponent() {
       const newPrev = { ...prev };
 
       newPrev[nameField] = value;
-
       return newPrev;
     });
   };
+
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -276,6 +282,7 @@ export default function CreateCustomerMappingComponent() {
 
   const handleForm = async (e) => {
     e.preventDefault();
+
     const form = new FormData(e?.target);
 
     var flag = 1;
