@@ -1,0 +1,25 @@
+.custom-col {
+  width: 14.3%;
+  max-width: 14.3%;
+}
+
+.daily_task_data {
+  transition: transform 0.3s ease;
+}
+
+.daily_task_data:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.custom-tooltip {
+  position: fixed;
+  background-color: white;
+  color: #484c7f;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  font-size: 14px;
+  z-index: 9999;
+}

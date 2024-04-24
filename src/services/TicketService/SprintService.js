@@ -1,5 +1,5 @@
 import axios from "axios";
-import { masterURL, ticketUrl } from "../../settings/constants";
+import { masterURL } from "../../settings/constants";
 
 const _URL = masterURL.sprintMaster;
 
@@ -77,4 +77,35 @@ export default class SprintService {
     };
     return axios.post(`${_URL}/createSprint/${sprint_id}`, payload, config);
   }
+
+  getSprintCalendar(ticket_id) {
+    const token = localStorage.getItem("jwt_token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    // http://3.108.206.34/2_Testing/TSNewBackend/public/api/sprintMaster/getGraphCalenderData/
+
+    return axios.get(`${_URL}/getGraphCalenderData/${ticket_id}`, config);
+  }
+
+  getSprintCalendarDataForWeek(ticket_id, from_date, to_date) {
+    const token = localStorage.getItem("jwt_token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+
+    return axios.get(
+      `${_URL}/getCalenderData/${ticket_id}?from_date=${from_date}&to_date=${to_date}`,
+      config
+    );
+  }
+  //http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/getCalenderData/9425?from_date=2023-06-03&to_date=2023-06-04
 }
