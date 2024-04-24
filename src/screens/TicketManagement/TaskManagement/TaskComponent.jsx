@@ -57,7 +57,7 @@ export default function TaskComponent({ match }) {
     modalData: "",
     modalHeader: "",
   });
-
+  const [selectedOption, setSelectedOption] = useState(null);
   const [sprintInput, setSprintInput] = useState({
     sprintName: "",
     sprintDescription: "",
@@ -474,15 +474,26 @@ export default function TaskComponent({ match }) {
     }
   };
 
-  const sprintDropDownHandler = async (e) => {
+  const sprintDropDownHandler = async (selectedOption) => {
     setDisableNextBtn(false);
     setDisablePrevBtn(false);
     setSprintCardData(sprintData);
-    setSprintCardData((prevState) => {
-      let filteredArray = prevState?.filter((sprint) => sprint.id === e.value);
-      return filteredArray;
+    setSelectedOption((prevStateOption) => {
+      if (selectedOption === prevStateOption) {
+        setSprintCardData([]);
+        getBasketData(0);
+        return null;
+      }
+      setSprintCardData((prevState) => {
+        let filteredArray = prevState?.filter(
+          (sprint) => sprint.id === selectedOption?.value
+        );
+        return filteredArray;
+      });
+
+      getBasketData(selectedOption?.value);
+      return selectedOption;
     });
-    await getBasketData(e.value);
   };
 
   const showNext = async () => {
@@ -831,7 +842,8 @@ export default function TaskComponent({ match }) {
                     name="sprint_data"
                     id="sprint_data"
                     options={sprintDropDown}
-                    onChange={(e) => sprintDropDownHandler(e)}
+                    onChange={sprintDropDownHandler}
+                    value={selectedOption}
                     ref={sprintDropDownRef}
                     // defaultValue={}
                   />
