@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
-import { _base } from "../../../settings/constants";
+import { _base, userSessionData } from "../../../settings/constants";
 
 import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -21,6 +21,20 @@ import UserService from "../../../services/MastersService/UserService";
 import Table from "react-bootstrap/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
+
+export function getDateTime() {
+  var now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  month = month >= 10 ? month : `0${month}`;
+  let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
+  let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
+  let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
+  let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
+  var datetime =
+    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+  return datetime;
+}
 
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
@@ -425,10 +439,55 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     setRatioTotal(sum);
   };
 
+  const customerDetail = useRef();
+  const queryTypeDetail = useRef();
+  const dynamicDetail = useRef();
+  const templateDetail = useRef();
+  const priorityDetail = useRef();
+  const confirmationRequiredDetail = useRef();
+  const approachDetail = useRef();
+  const statusDtail = useRef();
+
+  const departmentDropdownRef = useRef();
+
+  const useridDetail = useRef();
+
   const handleForm = async (e) => {
     e.preventDefault();
 
-    const form = new FormData(e.target);
+    const customerID = customerDetail?.current?.props?.value;
+    const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value;
+    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
+    const templateid = templateDetail?.current?.props?.value.value;
+    const priorityID = priorityDetail?.current?.value;
+    const confirmationId = confirmationRequiredDetail?.current?.value;
+    const approachId = approachDetail?.current?.value;
+    const departmentId = departmentDropdownRef?.current?.props?.value[0].value;
+    const userID = useridDetail?.current?.props?.value[0].value;
+    const statusID = statusDtail?.current?.value;
+
+    let arrayOfId = [];
+    for (let i = 0; i < customerID?.length; i++) {
+      arrayOfId.push(customerID[i].value);
+    }
+    const form = {};
+
+    form.customer_type_id = arrayOfId;
+    form.query_type_id = queryTypeid;
+    form.dynamic_form_id = dynamicFormid;
+    form.template_id = templateid;
+    form.priority = priorityID;
+    form.confirmation_required = confirmationId;
+    form.approach = approachId;
+    form.department_id = departmentId;
+    form.user_id = userID;
+    form.status = statusID;
+
+    form.tenant_id = sessionStorage.getItem("tenant_id");
+    form.updated_by = userSessionData.userId;
+    form.updated_at = getDateTime();
+
+    // const form = new FormData(e.target);
     var flag = 1;
     if (data.approach === "RW") {
       if (ratioTotal !== 100) {
@@ -504,6 +563,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="customer_type_id[]"
                           name="customer_type_id[]"
+                          ref={customerDetail}
                           options={customerTypeDropdown}
                           isMulti
                           defaultValue={
@@ -532,6 +592,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           id="query_type_id"
                           name="query_type_id"
                           options={queryTypeDropdown}
+                          ref={queryTypeDetail}
                           defaultValue={queryTypeDropdown.filter(
                             (d) => data.query_type_id == d.value
                           )}
@@ -553,6 +614,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          ref={dynamicDetail}
                           options={dynamicFormDropdown}
                           defaultValue={dynamicFormDropdown.filter(
                             (d) => data.dynamic_form_id == d.value
@@ -566,6 +628,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          ref={dynamicDetail}
                           defaultValue={selectedDynamicForm}
                           options={
                             dynamicFormDropdown ? dynamicFormDropdown : ""
@@ -588,6 +651,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           id="template_id"
                           name="template_id"
                           options={templateDropdown}
+                          ref={templateDetail}
                           defaultValue={templateDropdown.filter(
                             (d) => data.template_id == d.value
                           )}
@@ -610,6 +674,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         className="form-control form-control-sm"
                         id="priority"
                         name="priority"
+                        ref={priorityDetail}
                         required={true}
                         onChange={(e) =>
                           handleAutoChanges(e, "Select", "priority")
@@ -639,6 +704,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               name="is_active"
                               id="is_active_1"
                               value="1"
+                              ref={statusDtail}
                               defaultChecked={
                                 data.is_active == 1 ? true : false
                               }
@@ -661,6 +727,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               name="is_active"
                               id="is_active_0"
                               value="0"
+                              ref={statusDtail}
                               defaultChecked={
                                 data.is_active == 0 ? true : false
                               }
@@ -697,6 +764,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             type="radio"
                             name="confirmation_required"
                             id="confirmation_required_yes"
+                            ref={confirmationRequiredDetail}
                             value="1"
                             required
                             key={Math.random()}
@@ -721,6 +789,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             id="confirmation_required_no"
                             value="0"
                             required
+                            ref={confirmationRequiredDetail}
                             key={Math.random()}
                             defaultChecked={
                               data.confirmation_required == 0 ||
@@ -749,6 +818,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         className="form-control form-control-sm"
                         id="approach"
                         name="approach"
+                        ref={approachDetail}
                         required={true}
                         onChange={(e) => {
                           handleAutoChanges(e, "Select", "approach");
@@ -783,6 +853,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               (d) => data.department_id == d.value
                             )}
                             options={departmentDropdown}
+                            ref={departmentDropdownRef}
                             onChange={(e) => {
                               handleAutoChanges(e, "Select2", "department_id");
                               handleGetDepartmentUsers(e);
@@ -808,6 +879,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="user_id[]"
                             className="basic-multi-select"
                             classNamePrefix="select"
+                            ref={useridDetail}
                             defaultValue={
                               data && data.approach == "SP"
                                 ? userDropdown.filter(
