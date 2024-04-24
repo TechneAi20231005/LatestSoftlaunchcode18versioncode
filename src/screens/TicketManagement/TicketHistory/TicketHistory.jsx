@@ -9,7 +9,6 @@ const TicketHistory = ({ match }) => {
   const { id } = useParams();
 
   const [data, setData] = useState();
-
   const columns = [
     { name: "Sr", selector: (row) => row.counter, sortable: true },
     { name: "TicketId", selector: (row) => row.ticket_id, sortable: true },

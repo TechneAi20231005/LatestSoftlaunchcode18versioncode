@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
 import { _base, userSessionData } from "../../settings/constants";
 import UserService from "../../services/MastersService/UserService";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -15,6 +16,9 @@ import TenantService from "../../services/MastersService/TenantService";
 import Select from "react-select";
 import Alert from "./Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import { getRegularizationTime } from "../../services/TicketService/TaskService";
+import ApproveRequestModal from "../../screens/TicketManagement/TaskManagement/components/ApproveRequestModal";
+import TimeRegularizationHistory from "../../screens/TicketManagement/TaskManagement/components/TimeRegularizationHistory";
 
 export default function Header() {
   const [tenantId, setTenantId] = useState();
@@ -22,6 +26,8 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState();
 
   const [notify, setNotify] = useState(null);
+  const { id } = useParams();
+  const ticketId = id;
 
   const history = useNavigate();
   const [notifications, setNotifications] = useState([]);
@@ -43,6 +49,7 @@ export default function Header() {
             var height = 0;
             setNotifications(res.data.data.result);
             setApprovedNotifications(res.data.data.for_me);
+
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
             }
@@ -64,6 +71,43 @@ export default function Header() {
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 
+  const [approveRequestModal, setApproveRequestModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [historyModal, setHistoryModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
+  const [ticketID, setTicketID] = useState();
+
+  const handleRegularizationRequest = (cuurentData) => {
+    setTicketID(cuurentData);
+    new getRegularizationTime(cuurentData).then((res) => {
+      const temp = res.data.data.map((d) => ({
+        id: d.id,
+        created_by_name: d.created_by_name,
+        from_date: d.from_date,
+        to_date: d.to_date,
+        from_time: d.from_time,
+        to_time: d.to_time,
+        remark: d.remark,
+        is_checked: 0,
+        regularization_time_status: d.regularization_time_status,
+        task_name: d.task_name,
+        ticket_id_name: d.ticket_id_name,
+        actual_time: d.actual_time,
+        task_hours: d.task_hours,
+        scheduled_time: d.scheduled_time,
+        status: d.status_remark,
+      }));
+      setRegularizationRequest(temp);
+    });
+  };
+
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
       loadNotifcation();
@@ -73,6 +117,24 @@ export default function Header() {
   const [showNotificationIcon, setShowNotificationIcon] = useState(true);
   const handleShowNotificationIcon = () => {
     setShowNotificationIcon((prev) => !prev);
+  };
+
+  const handleShowApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: true, data: data });
+  };
+  const handleCloseApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: false, data: data });
+  };
+
+  const handleHistoryModal = () => {
+    const data = null;
+    setHistoryModal({ show: true, data: data });
+  };
+  const handleCloseHistoryModal = () => {
+    const data = null;
+    setHistoryModal({ show: false, data: data });
   };
 
   const [data, setData] = useState(null);
@@ -134,12 +196,258 @@ export default function Header() {
       return () => clearInterval(interval);
     }
   }, [refreshInterval]);
+
   return (
     <div className="header">
       <nav className="navbar py-4">
         <div className="container-xxl">
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
             {notify && <Alert alertData={notify} />}
+            {/* <div>
+              <span className="fw-bold badge bg-primary p-2"> {`Date : `}</span>
+            </div> */}
+
+            {!historyModal.show && (
+              <Dropdown
+                className="notifications"
+                style={{ zIndex: -200 }}
+                onClick={() => {
+                  loadNotifcation();
+                }}
+              >
+                <Dropdown.Toggle
+                  as="a"
+                  className="nav-link dropdown-toggle pulse"
+                  style={{ zIndex: -200 }}
+                >
+                  <div className=" me-3">
+                    <div>
+                      <button class="fw-bold badge bg-primary p-2">
+                        {" "}
+                        {`Request : ${approvedNotifications?.length}`}
+                      </button>
+                    </div>
+                  </div>
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
+                  <div className="card border-0" style={{ width: "30rem" }}>
+                    <div className="card-header border-0 p-3">
+                      <h5 className="mb-0 font-weight-light d-flex justify-content-between">
+                        <span>
+                          Notifications :{" "}
+                          {showApprovedOnly === true ? (
+                            <span>Approved Only By Me</span>
+                          ) : (
+                            <span>View All Request</span>
+                          )}
+                        </span>
+                        <div
+                          onClick={(e) => {
+                            handleHistoryModal();
+                            handleRegularizationRequest(ticketID);
+                          }}
+                        >
+                          {notifications && (
+                            <span className="fw-bold badge bg-warning p-2">
+                              <i class="icofont-history"></i>
+                              History
+                              {/* {notifications.length} */}
+                            </span>
+                          )}
+                        </div>
+                        {!notifications && (
+                          <span className="badge text-white">0</span>
+                        )}
+                      </h5>
+                    </div>
+                    <div className="tab-content card-body">
+                      {showApprovedOnly ? (
+                        <div className="tab-pane fade show active">
+                          <ul
+                            className="list-unstyled list mb-0"
+                            style={{ height: `${notificationHeight}px` }}
+                          >
+                            {approvedNotifications &&
+                              approvedNotifications.length > 0 &&
+                              approvedNotifications.map((ele, index) => {
+                                const date = ele.created_at.split(" ")[0];
+                                const time = ele.created_at.split(" ")[1];
+
+                                const parts = ele.url.split("/"); // Split the string by '/'
+                                const ticketID = parts[parts.length - 1]; // Get the last part of the array
+
+                                return (
+                                  <li
+                                    className="py-2 mb-1 border-bottom"
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex-fill ms-2"
+                                      style={{ cursor: "pointer" }}
+                                      onClick={(e) => {
+                                        handleShowApproveRequestModal();
+                                        handleRegularizationRequest(ticketID);
+                                      }}
+                                    >
+                                      {ele.url && (
+                                        <Link to={`/${_base}/${ele.url}`}>
+                                          <p className="d-flex justify-content-between mb-0">
+                                            <span className="font-weight-bold">
+                                              <span className="fw-bold badge bg-primary p-2">
+                                                {" "}
+                                                {`Date : ${date}`}
+                                              </span>
+                                              <span
+                                                className="fw-bold badge bg-danger p-2"
+                                                style={{ marginLeft: "10px" }}
+                                              >
+                                                {" "}
+                                                {`Time : ${time}`}
+                                              </span>
+                                              <br />
+                                              <div>{ele.message}</div>
+                                            </span>
+                                          </p>
+                                        </Link>
+                                      )}
+
+                                      {!ele.url && (
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          onClick={(e) =>
+                                            handleReadNotification(e, ele.id)
+                                          }
+                                        >
+                                          <span className="font-weight-bold">
+                                            {ele.message}
+                                            {date}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="tab-pane fade show active">
+                          <ul
+                            className="list-unstyled list mb-0"
+                            style={{ height: `${notificationHeight}px` }}
+                          >
+                            {notifications &&
+                              notifications.length > 0 &&
+                              notifications.map((ele, index) => {
+                                const date = ele.created_at.split(" ")[0];
+                                const time = ele.created_at.split(" ")[1];
+
+                                return (
+                                  <li
+                                    className="py-2 mb-1 border-bottom"
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex-fill ms-2"
+                                      style={{ cursor: "pointer" }}
+                                    >
+                                      {ele.url && (
+                                        <Link to={`/${_base}/${ele.url}`}>
+                                          <p
+                                            className="d-flex justify-content-between mb-0"
+                                            onClick={(e) =>
+                                              handleReadNotification(e, ele.id)
+                                            }
+                                          >
+                                            <span className="font-weight-bold">
+                                              <span className="fw-bold badge bg-primary p-2">
+                                                {" "}
+                                                {`Date : ${date}`}
+                                              </span>
+                                              <span
+                                                className="fw-bold badge bg-danger p-2"
+                                                style={{ marginLeft: "10px" }}
+                                              >
+                                                {" "}
+                                                {`Time : ${time}`}
+                                              </span>
+                                              <br />
+                                              {ele.message}
+                                            </span>
+                                          </p>
+                                        </Link>
+                                      )}
+
+                                      {!ele.url && (
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          onClick={(e) =>
+                                            handleReadNotification(e, ele.id)
+                                          }
+                                        >
+                                          <span className="font-weight-bold">
+                                            {ele.message}
+                                            {date}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="row m-0"
+                      style={{
+                        border: "2px solid #ccc",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <div
+                        className={`col-4 card-footer text-center border-top-0 ${
+                          !showApprovedOnly ? "bg-info" : "white"
+                        }`}
+                        style={{ width: "50%", height: "50px" }}
+                        onClick={() => setShowApprovedOnly(false)}
+                      >
+                        <div className="btn-group h-100">
+                          <Link
+                            to={`/${_base}/Notification`}
+                            style={{ width: "100%" }}
+                          >
+                            View All Request
+                          </Link>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`col-4 card-footer text-center border-top-0 ${
+                          showApprovedOnly ? "bg-info" : "white"
+                        }`}
+                        style={{ width: "50%", height: "50px" }}
+                        onClick={() => setShowApprovedOnly(true)}
+                      >
+                        <div className="btn-group h-100">
+                          <Link
+                            to={`/${_base}/ApprovedNotification`}
+                            style={{ width: "100%" }}
+                          >
+                            Approved Only By Me
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+
             <Dropdown
               className="notifications"
               style={{ zIndex: -100 }}
@@ -213,6 +521,9 @@ export default function Header() {
                               const date = ele.created_at.split(" ")[0];
                               const time = ele.created_at.split(" ")[1];
 
+                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const ticketID = parts[parts.length - 1]; // Get the last part of the array
+
                               return (
                                 <li
                                   className="py-2 mb-1 border-bottom"
@@ -221,15 +532,14 @@ export default function Header() {
                                   <div
                                     className="flex-fill ms-2"
                                     style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      handleShowApproveRequestModal();
+                                      handleRegularizationRequest(ticketID);
+                                    }}
                                   >
                                     {ele.url && (
                                       <Link to={`/${_base}/${ele.url}`}>
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
-                                        >
+                                        <p className="d-flex justify-content-between mb-0">
                                           <span className="font-weight-bold">
                                             <span className="fw-bold badge bg-primary p-2">
                                               {" "}
@@ -243,7 +553,7 @@ export default function Header() {
                                               {`Time : ${time}`}
                                             </span>
                                             <br />
-                                            {ele.message}
+                                            <div>{ele.message}</div>
                                           </span>
                                         </p>
                                       </Link>
@@ -375,6 +685,27 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
+              <>
+                {approveRequestModal && (
+                  <ApproveRequestModal
+                    show={approveRequestModal.show}
+                    hide={handleCloseApproveRequestModal}
+                    data={regularizationRequest && regularizationRequest}
+                    ticketId={ticketID}
+                  />
+                )}
+              </>
+
+              <>
+                {historyModal && regularizationRequest && (
+                  <TimeRegularizationHistory
+                    show={historyModal.show}
+                    hide={handleCloseHistoryModal}
+                    data={regularizationRequest && regularizationRequest}
+                    ticketId={ticketID}
+                  />
+                )}
+              </>
             </Dropdown>
 
             <Dropdown

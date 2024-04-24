@@ -40,7 +40,6 @@ export default function CreateCustomerMappingComponent() {
 
   const [customerType, setCustomerType] = useState();
 
-
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
 
@@ -56,6 +55,8 @@ export default function CreateCustomerMappingComponent() {
   const [userDropdown, setUserDropdown] = useState();
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(0);
+
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
   const roleId = sessionStorage.getItem("role_id");
@@ -71,6 +72,7 @@ export default function CreateCustomerMappingComponent() {
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerTypeData
   );
+
   const queryType = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.queryTypeData
   );
@@ -114,11 +116,7 @@ export default function CreateCustomerMappingComponent() {
   const priority = ["Low", "Medium", "High", "Very High"];
 
   const loadData = async () => {
-    
-
     await getDynamicForm();
-
-   
   };
 
   const getDynamicForm = async () => {
@@ -149,7 +147,7 @@ export default function CreateCustomerMappingComponent() {
       .filter((d) => d.id == queryTypeTemp[0].form_id)
       .map((d) => ({ value: d.id, label: d.template_name }));
 
-    if (dynamicFormDropdownTemp.length > 0) {
+    if (dynamicFormDropdownTemp?.length > 0) {
       setData((prev) => {
         const newPrev = { ...prev };
         newPrev["dynamic_form_id"] = queryTypeTemp[0].form_id;
@@ -201,10 +199,18 @@ export default function CreateCustomerMappingComponent() {
       }
     });
   };
-
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    var value = type == "Select2" ? e.value : e.target.value;
+    if (type === "Select2" && nameField === "customer_type_id") {
+      setSelectedCustomer(e?.length);
+    }
+    // const customerData = e?.map((i) => i.value);
+    const value =
+      type === "Select2" && nameField === "customer_type_id"
+        ? e?.map((i) => i.value)
+        : e?.value
+        ? e?.value
+        : e?.target?.value;
     if (nameField == "approach" && value != data.approach) {
       setDepartmentDropdown(null);
       setUserDropdown(null);
@@ -212,11 +218,12 @@ export default function CreateCustomerMappingComponent() {
     }
     setData((prev) => {
       const newPrev = { ...prev };
+
       newPrev[nameField] = value;
+
       return newPrev;
     });
   };
-
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -255,7 +262,7 @@ export default function CreateCustomerMappingComponent() {
       alert("Cannot Enter More than 100 !!!");
     } else {
       ratiowiseData[index] = parseInt(value);
-      if (ratiowiseData.length > 0) {
+      if (ratiowiseData?.length > 0) {
         sum = ratiowiseData.reduce((result, number) => result + number);
         if (sum > 100) {
           e.target.value = 0;
@@ -265,19 +272,18 @@ export default function CreateCustomerMappingComponent() {
       }
     }
     setRatioTotal(sum);
-
-  
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.target);
-
-  
+    const form = new FormData(e?.target);
 
     var flag = 1;
-    if (data.approach == "RW") {
-      if (ratioTotal > 100 || ratioTotal < 100) {
+    if (data?.approach == "RW") {
+      if (
+        (ratioTotal && ratioTotal > 100) ||
+        (ratioTotal && ratioTotal < 100)
+      ) {
         alert("Sum Must Be 100");
         flag = 0;
       }
@@ -308,7 +314,7 @@ export default function CreateCustomerMappingComponent() {
               "Customer",
               "Create_Customer",
               "INSERT",
-              res.message
+              res?.message
             );
           }
         })
@@ -319,7 +325,7 @@ export default function CreateCustomerMappingComponent() {
             "Status",
             "Create_Status",
             "INSERT",
-            errorObject.data.message
+            errorObject?.data?.message
           );
         });
     } else {
@@ -335,16 +341,14 @@ export default function CreateCustomerMappingComponent() {
     dispatch(getTemplateData());
     dispatch(getcustomerTypeData());
 
-    if (!checkRole.length) {
+    if (!checkRole?.length) {
       dispatch(getRoles());
     }
-    if (!customerTypeDropdown.length) {
+    // if (!customerTypeDropdown?.length) {
+    // }
 
-    }
-  
-    if (!templateDropdown.length) {
-     
-    }
+    // if (!templateDropdown?.length) {
+    // }
   }, []);
 
   useEffect(() => {
@@ -371,18 +375,17 @@ export default function CreateCustomerMappingComponent() {
               >
                 <div className="form-group row mt-3">
                   <label className="col-sm-2 col-form-label">
-                    <b>
-                      Select Customer Type :<Astrick color="red" size="13px" />
-                    </b>
+                    <b>Select Customer Type :</b>
                   </label>
                   <div className="col-sm-4">
                     <Select
-                      id="customer_type_id"
-                      name="customer_type_id"
+                      id="customer_type_id[]"
+                      name="customer_type_id[]"
                       options={customerTypeDropdown}
-                      onChange={(e) =>
-                        handleAutoChanges(e, "Select2", "customer_type_id")
-                      }
+                      isMulti
+                      onChange={(e) => {
+                        handleAutoChanges(e, "Select2", "customer_type_id");
+                      }}
                     />
                   </div>
                 </div>
@@ -480,8 +483,6 @@ export default function CreateCustomerMappingComponent() {
                   </div>
                 </div>
 
-               
-
                 <div className="row mt-2">
                   <div className="col-sm-2">
                     <label className="col-form-label">
@@ -565,7 +566,9 @@ export default function CreateCustomerMappingComponent() {
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
-                      <option value="SELF">Self</option>
+                      {selectedCustomer == 0 && (
+                        <option value="SELF">Self</option>
+                      )}
                       <option value="AU">Assign to user</option>
                     </select>
                   </div>
