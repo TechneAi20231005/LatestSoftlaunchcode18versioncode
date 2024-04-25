@@ -1,5 +1,6 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // // static import
 import PageHeader from '../../../../../components/Common/PageHeader';
@@ -13,6 +14,12 @@ import InterviewProcess from './candidatesDetails/interviewProcess/InterviewProc
 import './style.scss';
 
 function EmployeeJoining() {
+  // // initial state
+  const location = useLocation();
+  const navigate = useNavigate();
+  console.log(location.state);
+
+  // // local state
   const [currentTab, setCurrentTab] = useState('candidates_details');
   const tabsLabel = [
     {
@@ -24,6 +31,14 @@ function EmployeeJoining() {
     { label: 'Remark History', value: 'remark_history' },
     { label: 'Interview Schedule History', value: 'interviews_schedule_history' },
   ];
+
+  // // // life cycle
+  useEffect(() => {
+    if (!location.state) {
+      navigate(-1);
+    }
+  }, []);
+
   return (
     <Container fluid>
       <PageHeader headerTitle="Employee Joining" />

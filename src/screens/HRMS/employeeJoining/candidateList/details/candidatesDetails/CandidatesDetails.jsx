@@ -30,7 +30,7 @@ function CandidatesDetails() {
   // // initial state
   const dispatch = useDispatch();
   const location = useLocation();
-  const { currentCandidateId } = location.state;
+  // const { currentCandidateId } = location.state;
 
   // getCandidatesDetailsData
   // // redux state
@@ -95,7 +95,7 @@ function CandidatesDetails() {
     dispatch(
       editCandidatesMasterThunk({
         formData: candidatesData,
-        currentId: currentCandidateId,
+        currentId: location?.state?.currentCandidateId,
         onSuccessHandler: () => {
           setOpenConfirmModal({ open: false });
           dispatch(getCandidatesDetailsThunk());
@@ -109,7 +109,7 @@ function CandidatesDetails() {
 
   // // life cycle
   useEffect(() => {
-    dispatch(getCandidatesDetailsThunk({ currentId: currentCandidateId }));
+    dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
     if (!roleMasterList?.length) {
       dispatch(getRoleData());
     }
@@ -119,7 +119,7 @@ function CandidatesDetails() {
     if (!sourceMasterList?.length) {
       dispatch(getSourceMasterListThunk());
     }
-  }, [currentCandidateId]);
+  }, [location?.state?.currentCandidateId]);
 
   return (
     <Container fluid className="employee_joining_details_container">
