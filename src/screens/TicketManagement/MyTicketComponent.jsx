@@ -1753,9 +1753,18 @@ export default function MyTicketComponent() {
 
       const formData = new FormData(e.target);
 
-      selectedRowss.forEach((id, index) => {
-        formData.append(`id[${index}]`, id);
-      });
+      // selectedRowss.forEach((id, index) => {
+      //   formData.append(`id[${index}]`, id);
+      // });
+
+      if (remarkModal && Array.isArray(remarkModal.modalData)) {
+        selectedRowss.forEach((id, index) => {
+          formData.append(`id[${index}]`, id);
+        });
+      } else {
+        formData.append("id[]", remarkModal.modalData.id);
+      }
+
       const response = await new MyTicketService().passTicket(formData);
 
       if (response.status === 200) {
@@ -1766,6 +1775,7 @@ export default function MyTicketComponent() {
           loadData();
           setSelectedRows([]);
           setSelectedRowss([]);
+          setSelectAllNames(false);
           const forms = {
             limit: 10,
             typeOf: "UnPassed",
@@ -3033,10 +3043,15 @@ export default function MyTicketComponent() {
                                       status: "PASS",
                                     });
                                   }}
+                                  disabled={
+                                    !selectAllNames &&
+                                    selectedRowss?.length <= 0
+                                      ? true
+                                      : false
+                                  }
                                 >
                                   <i className="icofont-checked"></i> Pass
                                 </button>
-
                                 <button
                                   className="btn btn-danger btn-block text-white"
                                   onClick={(e) => {
@@ -3050,6 +3065,12 @@ export default function MyTicketComponent() {
                                       status: "REJECT",
                                     });
                                   }}
+                                  disabled={
+                                    !selectAllNames &&
+                                    selectedRowss?.length <= 0
+                                      ? true
+                                      : false
+                                  }
                                 >
                                   <i className="icofont-close-squared-alt"></i>{" "}
                                   Reject
@@ -3279,7 +3300,10 @@ export default function MyTicketComponent() {
                         ? remarkModal.modalData.map((i) => i.ticket_id)
                         : remarkModal.modalData.ticket_id
                     }
-                    readOnly={true}
+                    readOnly={
+                      remarkModal?.modalData?.length <= 0 ? false : true
+                    }
+                    required
                   />
                 </div>
                 <div className="col-sm-12">
@@ -3294,7 +3318,7 @@ export default function MyTicketComponent() {
                     required
                     maxLength={1000}
                     onKeyPress={(e) => {
-                      Validation.CharactersNumbersSpeicalOnly(e);
+                      Validation.CharactersNumbersSpeicalOnlyforPassTicket(e);
                     }}
                   />
                 </div>

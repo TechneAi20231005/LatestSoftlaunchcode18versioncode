@@ -155,6 +155,7 @@ export default function TaskComponent({ match }) {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [basketStartDate, setBasketStartDate] = useState();
 
   const getBasketData = async (sprint_id) => {
     const tempAllTaskList = [];
@@ -183,6 +184,7 @@ export default function TaskComponent({ match }) {
             res.data.data.sort(sortFunc);
             setData(res.data.data);
             res.data.data.map((tasks, index) => {
+              setBasketStartDate(tasks.start_date);
               tasks.taskData.forEach((d, i) => {
                 let taskOwnerNames = d.taskOwners
                   .map((owner) => owner.taskOwnerName)
@@ -216,14 +218,6 @@ export default function TaskComponent({ match }) {
         }
       })
       .catch((error) => {
-        // const { response } = error;
-        // const { request, ...errorObject } = response;
-        // new ErrorLogService().sendErrorLog(
-        //   "Task",
-        //   "Get_Basket_Data",
-        //   "INSERT",
-        //   errorObject.data.message
-        // );
         setIsLoading(false);
       });
   };
@@ -248,12 +242,10 @@ export default function TaskComponent({ match }) {
     };
     if (id) {
       await getTaskData(id).then((res) => {
-        console.log("res==>", res);
         if (res.status === 200) {
           if (res.data.status === 1) {
             temp = res.data.data;
             setTaskModalData(temp);
-            console.log("temp", temp);
           }
         }
       });
@@ -475,7 +467,6 @@ export default function TaskComponent({ match }) {
         setNotify({ type: "danger", message: res?.data?.message });
       }
     } catch (error) {
-      console.error("Error:", error);
       setNotify({
         type: "danger",
         message: "An error occurred while processing your request.",
@@ -908,7 +899,7 @@ export default function TaskComponent({ match }) {
                         </Link>
                       </li>
 
-                      <li>
+                      {/* <li>
                         {ownership && ownership !== "TASK" && (
                           <button
                             // className="btn btn-sm btn-danger text-white"
@@ -929,7 +920,7 @@ export default function TaskComponent({ match }) {
                             )}
                           </button>
                         )}
-                      </li>
+                      </li> */}
                       <li>
                         <button
                           className="btn btn-sm btn-warning  text-white"
@@ -1185,7 +1176,6 @@ export default function TaskComponent({ match }) {
                     </defs>
                   </svg>
                 </button>
-                {console.log("sprint update", sprintCardData[0])}
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1411,6 +1401,7 @@ export default function TaskComponent({ match }) {
                                   <TaskData
                                     key={task.id.toString()}
                                     data={task}
+                                    date={basketStartDate}
                                     loadBasket={getBasketData}
                                     onShowTaskModal={handleShowTaskModal}
                                     isReviewer={isReviewer}
