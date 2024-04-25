@@ -188,7 +188,11 @@ function GeneralSettings() {
     if (!id) {
       dispatch(postGeneralSettingData(form));
     } else {
-      dispatch(updateGeneralSettingData({ id, payload: form }));
+      dispatch(updateGeneralSettingData({ id, payload: form })).then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          dispatch(getGeneralSettingData());
+        }
+      });
     }
   };
 
