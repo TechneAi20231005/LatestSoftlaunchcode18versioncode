@@ -145,6 +145,7 @@ export const CustomReactSelect = ({
   field,
   options,
   isMulti = false,
+  disabled = false,
   form: { touched, errors },
   ...props
 }) => {
@@ -184,6 +185,7 @@ export const CustomReactSelect = ({
           options={props.addOtherOption ? optionsWithOther : options}
           isMulti={isMulti}
           className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+          isDisabled={disabled}
         />
         {error && touch && <div className="invalid-feedback">{error}</div>}
       </div>
