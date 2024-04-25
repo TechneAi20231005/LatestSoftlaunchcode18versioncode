@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
-import { _base } from "../../../settings/constants";
+import { _base, userSessionData } from "../../../settings/constants";
 
 import ErrorLogService from "../../../services/ErrorLogService";
 
@@ -22,6 +22,20 @@ import Table from "react-bootstrap/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
 
+export function getDateTime() {
+  var now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  month = month >= 10 ? month : `0${month}`;
+  let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
+  let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
+  let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
+  let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
+  var datetime =
+    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+  return datetime;
+}
+
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +53,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
+  const [selectedCustomer, setSelectedCustomer] = useState(0);
 
   const [template, setTemplate] = useState();
   const [templateDropdown, setTemplateDropdown] = useState();
@@ -54,7 +69,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratioTotal, setRatioTotal] = useState(0);
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
@@ -128,16 +142,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       });
 
     dispatch(getRoles());
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     // setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       // setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
 
     await new CustomerTypeService().getCustomerType().then((res) => {
       if (res.status == 200) {
@@ -206,7 +210,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           ratiowiseData[i] = parseInt(x[1]);
         }
       });
-      var sum = ratiowiseData.reduce((result, number) => result + number);
+      var sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       setRatioTotal(sum);
     }
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -236,8 +240,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }
       }
     });
-
-    //await getUser();
   };
 
   const getDynamicForm = async () => {
@@ -322,7 +324,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    // var value = type == "Select2" ? e.value : e.target.value;
+    if (type === "Select2" && nameField === "customer_type_id") {
+      setSelectedCustomer(e?.length);
+    }
     const value =
       type === "Select2" && nameField === "customer_type_id"
         ? e?.map((i) => i.value)
@@ -421,10 +425,93 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     setRatioTotal(sum);
   };
 
+  const customerDetail = useRef();
+  const queryTypeDetail = useRef();
+  const dynamicDetail = useRef();
+  const templateDetail = useRef();
+  const priorityDetail = useRef();
+  const confirmationRequiredDetail = useRef();
+  const approachDetail = useRef();
+  const statusDtail = useRef();
+  const userNameDetail = useRef();
+  const userRatioDetail = useRef();
+
+  const departmentDropdownRef = useRef();
+
+  const useridDetail = useRef();
+
   const handleForm = async (e) => {
     e.preventDefault();
+    let userIDs;
+    if (Array.isArray(useridDetail?.current?.props?.value)) {
+      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+    } else {
+      const value = useridDetail?.current?.props?.value?.value;
+      userIDs = value ? [value] : [];
+    }
 
-    const form = new FormData(e.target);
+    const getUserData = () => {
+      // Get an array of user IDs
+      const userIds = userDropdown?.map((ele) => ele?.value);
+
+      return userIds;
+    };
+
+    const getUserDataa = () => {
+      // Get an array of ratio values
+      const ratios = userDropdown.map((ele, i) => {
+        const ratio = userRatioDetail?.current?.value; // Assuming userRatioDetail is an array of refs containing input fields for ratios
+        return parseInt(ratio, 10); // Convert the ratio to an integer
+      });
+
+      return ratios;
+    };
+
+    const RwuserID = getUserData();
+    const userRatioData = getUserDataa();
+
+    const customerID = customerDetail?.current?.props?.value;
+    const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value;
+    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
+    const templateid = templateDetail?.current?.props?.value.value;
+    const priorityID = priorityDetail?.current?.value;
+    const confirmationId = confirmationRequiredDetail?.current?.value;
+    const approachId = approachDetail?.current?.value;
+    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
+      ? departmentDropdownRef?.current?.props?.value[0]?.value
+      : departmentDropdownRef?.current?.props?.value?.value;
+    const userID = userIDs;
+
+    const statusID = statusDtail?.current?.value;
+
+    let arrayOfId = [];
+    for (let i = 0; i < customerID?.length; i++) {
+      arrayOfId.push(customerID[i]?.value);
+    }
+    const form = {};
+
+    form.customer_type_id = arrayOfId;
+    form.query_type_id = queryTypeid;
+    form.dynamic_form_id = dynamicFormid;
+    form.template_id = templateid;
+    form.priority = priorityID;
+    form.confirmation_required = confirmationId;
+    form.approach = approachId;
+    form.department_id = departmentId;
+    if (data.approach === "RW") {
+      form.user_id = RwuserID;
+      form.ratio = userRatioData;
+    } else {
+      form.user_id = userID;
+    }
+
+    form.status = statusID;
+
+    form.tenant_id = sessionStorage.getItem("tenant_id");
+    form.updated_by = userSessionData.userId;
+    form.updated_at = getDateTime();
+
+    // const form = new FormData(e.target);
     var flag = 1;
     if (data.approach === "RW") {
       if (ratioTotal !== 100) {
@@ -471,8 +558,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -500,6 +585,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="customer_type_id[]"
                           name="customer_type_id[]"
+                          ref={customerDetail}
                           options={customerTypeDropdown}
                           isMulti
                           defaultValue={
@@ -528,6 +614,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           id="query_type_id"
                           name="query_type_id"
                           options={queryTypeDropdown}
+                          ref={queryTypeDetail}
                           defaultValue={queryTypeDropdown.filter(
                             (d) => data.query_type_id == d.value
                           )}
@@ -549,6 +636,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          ref={dynamicDetail}
                           options={dynamicFormDropdown}
                           defaultValue={dynamicFormDropdown.filter(
                             (d) => data.dynamic_form_id == d.value
@@ -562,6 +650,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          ref={dynamicDetail}
                           defaultValue={selectedDynamicForm}
                           options={
                             dynamicFormDropdown ? dynamicFormDropdown : ""
@@ -584,6 +673,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           id="template_id"
                           name="template_id"
                           options={templateDropdown}
+                          ref={templateDetail}
                           defaultValue={templateDropdown.filter(
                             (d) => data.template_id == d.value
                           )}
@@ -606,6 +696,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         className="form-control form-control-sm"
                         id="priority"
                         name="priority"
+                        ref={priorityDetail}
                         required={true}
                         onChange={(e) =>
                           handleAutoChanges(e, "Select", "priority")
@@ -635,6 +726,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               name="is_active"
                               id="is_active_1"
                               value="1"
+                              ref={statusDtail}
                               defaultChecked={
                                 data.is_active == 1 ? true : false
                               }
@@ -657,6 +749,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               name="is_active"
                               id="is_active_0"
                               value="0"
+                              ref={statusDtail}
                               defaultChecked={
                                 data.is_active == 0 ? true : false
                               }
@@ -693,6 +786,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             type="radio"
                             name="confirmation_required"
                             id="confirmation_required_yes"
+                            ref={confirmationRequiredDetail}
                             value="1"
                             required
                             key={Math.random()}
@@ -717,6 +811,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             id="confirmation_required_no"
                             value="0"
                             required
+                            ref={confirmationRequiredDetail}
                             key={Math.random()}
                             defaultChecked={
                               data.confirmation_required == 0 ||
@@ -745,6 +840,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         className="form-control form-control-sm"
                         id="approach"
                         name="approach"
+                        ref={approachDetail}
                         required={true}
                         onChange={(e) => {
                           handleAutoChanges(e, "Select", "approach");
@@ -756,7 +852,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <option value="HLT">User Having Less Ticket</option>
                         <option value="SP">Single Person</option>
                         <option value="RW">Ratio Wise</option>
-                        <option value="SELF">Self</option>
+                        {selectedCustomer == 0 && (
+                          <option value="SELF">Self</option>
+                        )}
                         <option value="AU">Assign to user</option>
                       </select>
                     </div>
@@ -777,6 +875,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               (d) => data.department_id == d.value
                             )}
                             options={departmentDropdown}
+                            ref={departmentDropdownRef}
                             onChange={(e) => {
                               handleAutoChanges(e, "Select2", "department_id");
                               handleGetDepartmentUsers(e);
@@ -802,6 +901,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="user_id[]"
                             className="basic-multi-select"
                             classNamePrefix="select"
+                            ref={useridDetail}
                             defaultValue={
                               data && data.approach == "SP"
                                 ? userDropdown.filter(
@@ -842,7 +942,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               <tbody>
                                 {userDropdown.map((ele, i) => {
                                   // Find the corresponding user policy in user_policy array
-                                  const userPolicy = data.user_policy.find(
+                                  const userPolicy = data.user_policy?.find(
                                     (policy) =>
                                       policy.startsWith(`${ele.value}:`)
                                   );
@@ -860,6 +960,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           id={`index_` + Math.random()}
                                           name="user_id[]"
                                           value={ele.value}
+                                          ref={useridDetail}
                                           readOnly
                                         />
                                         <input
@@ -868,6 +969,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           id={`index_` + Math.random()}
                                           name="user_name[]"
                                           value={ele.label}
+                                          ref={userNameDetail}
                                           readOnly
                                         />
                                       </td>
@@ -878,6 +980,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           className="form-control col-sm-2"
                                           name="ratio[]"
                                           defaultValue={defaultRatio}
+                                          ref={userRatioDetail}
                                           //  defaultValue={
                                           //    ratiowiseData ? ratiowiseData[i] : 0
                                           //  }

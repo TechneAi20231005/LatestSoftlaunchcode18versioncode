@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
-import { _base } from "../../../settings/constants";
+import { _base, userSessionData } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
@@ -29,6 +29,20 @@ import {
 } from "./Slices/CustomerMappingAction";
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
 
+export function getDateTime() {
+  var now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  month = month >= 10 ? month : `0${month}`;
+  let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
+  let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
+  let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
+  let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
+  var datetime =
+    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+  return datetime;
+}
+
 export default function CreateCustomerMappingComponent() {
   const location = useLocation();
 
@@ -46,7 +60,6 @@ export default function CreateCustomerMappingComponent() {
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
   const [template, setTemplate] = useState();
-  // const [templateDropdown, setTemplateDropdown] = useState();
 
   const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
@@ -55,10 +68,11 @@ export default function CreateCustomerMappingComponent() {
   const [userDropdown, setUserDropdown] = useState();
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(0);
+
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null)
 
   const dispatch = useDispatch();
 
@@ -184,29 +198,30 @@ export default function CreateCustomerMappingComponent() {
         if (res.payload.data.status == 1) {
           const data = res.payload.data.data.filter((d) => d.is_active == 1);
           setUser(data);
-          // var defaultValue = [{ value: 0, label: "Select User" }];
           var dropwdown = res.payload.data.data
             .filter((d) => d.is_active == 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
-          // defaultValue = [...defaultValue, ...dropwdown];
           setUserDropdown(dropwdown);
         }
       }
     });
   };
-
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    // const customerData = e?.map((i) => i.value);
+    if (type === "Select2" && nameField === "customer_type_id") {
+      setSelectedCustomer(e?.length);
+    }
+
     const value =
       type === "Select2" && nameField === "customer_type_id"
         ? e?.map((i) => i.value)
         : e?.value
         ? e?.value
         : e?.target?.value;
+
     if (nameField == "approach" && value != data.approach) {
       setDepartmentDropdown(null);
       setUserDropdown(null);
@@ -216,17 +231,15 @@ export default function CreateCustomerMappingComponent() {
       const newPrev = { ...prev };
 
       newPrev[nameField] = value;
-
       return newPrev;
     });
   };
+
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          // var defaultValue = [{ value: "", label: "Select User" }];
-
           const dropdown = res.data.data
             .filter((d) => d.is_active == 1)
             .filter((d) => d.multiple_department_id.includes(e.value))
@@ -270,9 +283,86 @@ export default function CreateCustomerMappingComponent() {
     setRatioTotal(sum);
   };
 
+  const customerDetail = useRef();
+  const queryTypeDetail = useRef();
+  const dynamicDetail = useRef();
+  const templateDetail = useRef();
+  const priorityDetail = useRef();
+  const confirmationRequiredDetail = useRef();
+  const approachDetail = useRef();
+  const useridDetail = useRef();
+  const statusDtail = useRef();
+  const userRatioDetail = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
-    const form = new FormData(e?.target);
+
+    let userIDs;
+    if (Array.isArray(useridDetail?.current?.props?.value)) {
+      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+    } else {
+      const value = useridDetail?.current?.props?.value?.value;
+      userIDs = value ? [value] : [];
+    }
+
+    const getUserData = () => {
+      // Get an array of user IDs
+      const userIds = userDropdown?.map((ele) => ele?.value);
+
+      return userIds;
+    };
+
+    const getUserDataa = () => {
+      // Get an array of ratio values
+      const ratios = userDropdown?.map((ele, i) => {
+        const ratio = userRatioDetail?.current?.value; // Assuming userRatioDetail is an array of refs containing input fields for ratios
+        return parseInt(ratio, 10); // Convert the ratio to an integer
+      });
+
+      return ratios;
+    };
+    const RwuserID = getUserData();
+    const userRatioData = getUserDataa();
+
+    const customerID = customerDetail?.current?.props?.value;
+    const queryTypeid = queryTypeDetail?.current?.props?.value.value;
+    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
+    const templateid = templateDetail?.current?.props?.value.value;
+    const priorityID = priorityDetail?.current?.value;
+    const confirmationId = confirmationRequiredDetail?.current?.value;
+    const approachId = approachDetail?.current?.value;
+    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
+      ? departmentDropdownRef?.current?.props?.value[0]?.value
+      : departmentDropdownRef?.current?.props?.value?.value;
+    const userID = userIDs;
+
+    const statusID = statusDtail?.current?.value;
+
+    let arrayOfId = [];
+    for (let i = 0; i < customerID?.length; i++) {
+      arrayOfId.push(customerID[i]?.value);
+    }
+    const form = {};
+
+    form.customer_type_id = arrayOfId;
+    form.query_type_id = queryTypeid;
+    form.dynamic_form_id = dynamicFormid;
+    form.template_id = templateid;
+    form.priority = priorityID;
+    form.confirmation_required = confirmationId;
+    form.approach = approachId;
+    form.department_id = departmentId;
+    if (data.approach === "RW") {
+      form.user_id = RwuserID;
+      form.ratio = userRatioData;
+    } else {
+      form.user_id = userID;
+    }
+
+    form.status = statusID;
+
+    form.tenant_id = sessionStorage.getItem("tenant_id");
+    form.created_by = userSessionData.userId;
+    form.created_at = getDateTime();
 
     var flag = 1;
     if (data?.approach == "RW") {
@@ -340,17 +430,10 @@ export default function CreateCustomerMappingComponent() {
     if (!checkRole?.length) {
       dispatch(getRoles());
     }
-    // if (!customerTypeDropdown?.length) {
-    // }
-
-    // if (!templateDropdown?.length) {
-    // }
   }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -379,6 +462,7 @@ export default function CreateCustomerMappingComponent() {
                       name="customer_type_id[]"
                       options={customerTypeDropdown}
                       isMulti
+                      ref={customerDetail}
                       onChange={(e) => {
                         handleAutoChanges(e, "Select2", "customer_type_id");
                       }}
@@ -396,8 +480,8 @@ export default function CreateCustomerMappingComponent() {
                     <Select
                       id="query_type_id"
                       name="query_type_id"
+                      ref={queryTypeDetail}
                       options={queryTypeDropdown}
-                      //onChange={handleQueryType}
                       onChange={(e) => {
                         handleAutoChanges(e, "Select2", "query_type_id");
                         handleQueryType(e);
@@ -416,6 +500,7 @@ export default function CreateCustomerMappingComponent() {
                         id="dynamic_form_id"
                         name="dynamic_form_id"
                         options={dynamicFormDropdown}
+                        ref={dynamicDetail}
                         onChange={(e) =>
                           handleAutoChanges(e, "Select2", "dynamic_form_id")
                         }
@@ -426,6 +511,7 @@ export default function CreateCustomerMappingComponent() {
                         id="dynamic_form_id"
                         name="dynamic_form_id"
                         defaultValue={selectedDynamicForm}
+                        ref={dynamicDetail}
                         options={dynamicFormDropdown ? dynamicFormDropdown : ""}
                         onChange={(e) =>
                           handleAutoChanges(e, "Select2", "dynamic_form_id")
@@ -443,6 +529,7 @@ export default function CreateCustomerMappingComponent() {
                     <Select
                       id="template_id"
                       name="template_id"
+                      ref={templateDetail}
                       options={[
                         { label: "Select Template", value: "" },
                         ...templateDropdown,
@@ -465,6 +552,7 @@ export default function CreateCustomerMappingComponent() {
                       className="form-control form-control-sm"
                       id="priority"
                       name="priority"
+                      ref={priorityDetail}
                       required={true}
                       onChange={(e) =>
                         handleAutoChanges(e, "Select", "priority")
@@ -500,6 +588,7 @@ export default function CreateCustomerMappingComponent() {
                           type="radio"
                           name="confirmation_required"
                           id="confirmation_required_yes"
+                          ref={confirmationRequiredDetail}
                           required
                           value="1"
                           defaultChecked={
@@ -523,6 +612,7 @@ export default function CreateCustomerMappingComponent() {
                           name="confirmation_required"
                           id="confirmation_required_no"
                           value="0"
+                          ref={confirmationRequiredDetail}
                           required
                           defaultChecked={
                             data &&
@@ -552,6 +642,7 @@ export default function CreateCustomerMappingComponent() {
                       className="form-control form-control-sm"
                       id="approach"
                       name="approach"
+                      ref={approachDetail}
                       required={true}
                       onChange={(e) =>
                         handleAutoChanges(e, "Select", "approach")
@@ -562,7 +653,9 @@ export default function CreateCustomerMappingComponent() {
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
-                      <option value="SELF">Self</option>
+                      {selectedCustomer == 0 && (
+                        <option value="SELF">Self</option>
+                      )}
                       <option value="AU">Assign to user</option>
                     </select>
                   </div>
@@ -613,6 +706,7 @@ export default function CreateCustomerMappingComponent() {
                         <Select
                           isMulti={data.approach != "SP"}
                           isSearchable={true}
+                          ref={useridDetail}
                           name="user_id[]"
                           className="basic-multi-select"
                           classNamePrefix="select"
@@ -673,6 +767,7 @@ export default function CreateCustomerMappingComponent() {
                                       defaultValue={
                                         ratiowiseData ? ratiowiseData[i] : 0
                                       }
+                                      ref={userRatioDetail}
                                       onInput={handleRatioInput(i)}
                                     />
                                   </td>
