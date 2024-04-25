@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 // // static import
 import { getFollowUpListThunk } from '../../../../../../redux/services/hrms/employeeJoining/followUp';
-import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../../../../../config/envConfig';
+import { REACT_APP_API_URL } from '../../../../../../config/envConfig';
 
 function FollowUpHistory() {
   // // initial state
@@ -49,10 +49,7 @@ function FollowUpHistory() {
               </div>
               <div>
                 <h5>Attachment</h5>
-                <a
-                  href={`${REACT_APP_3_SOFT_LUNCH_API_URL}${followUp?.attachment_file}`}
-                  target="_blank"
-                >
+                <a href={`${REACT_APP_API_URL}${followUp?.attachment_file}`} target="_blank">
                   Attachment.png
                 </a>
               </div>
