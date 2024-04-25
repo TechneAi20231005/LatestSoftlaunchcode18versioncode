@@ -41,11 +41,11 @@ function FollowUpHistory() {
       ) : followUpList?.length ? (
         followUpList?.map((followUp, index) => (
           <div key={index}>
-            <p>{followUp?.add_follow_up || 'N/A'}</p>
+            <p>{followUp?.title || 'N/A'}</p>
             <div className="remark_history d-flex justify-content-between">
               <div>
                 <h5>Next Follow-up Date & Time</h5>
-                <p>{followUp?.next_follow_up_date || 'N/A'}</p>
+                <p>{followUp?.next_date || 'N/A'}</p>
               </div>
               <div>
                 <h5>Attachment</h5>

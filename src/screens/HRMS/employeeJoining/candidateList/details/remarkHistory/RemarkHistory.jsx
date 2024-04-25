@@ -41,7 +41,7 @@ function RemarkHistory() {
           <div key={index}>
             <div className="remark_history d-flex justify-content-between">
               <div>
-                <p>Remark Title : {remark?.remark_title || 'N/A'}</p>
+                <p>Remark Title : {remark?.remark_description || 'N/A'}</p>
                 <RenderIf render={remark?.other_remark}>
                   <p>Supported Remark Title : {remark?.other_remark || 'N/A'}</p>
                 </RenderIf>
