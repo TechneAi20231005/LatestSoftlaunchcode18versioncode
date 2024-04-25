@@ -26,7 +26,7 @@ const followUpSlice = createSlice({
       })
       .addCase(getFollowUpListThunk.fulfilled, (state, action) => {
         state.isLoading.getFollowUpList = false;
-        state.followUpList = action.payload.data;
+        state.followUpList = action?.payload?.data;
         state.successMsg.getFollowUpList = action.payload.msg;
       })
       .addCase(getFollowUpListThunk.rejected, (state, action) => {

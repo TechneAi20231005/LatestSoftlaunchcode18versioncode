@@ -22,7 +22,7 @@ const interviewProcessSlice = createSlice({
       })
       .addCase(getInterviewScheduleHistoryThunk.fulfilled, (state, action) => {
         state.isLoading.getCandidateInterviewScheduleHistory = false;
-        state.candidateInterviewScheduleHistoryList = action.payload.data;
+        state.candidateInterviewScheduleHistoryList = action?.payload?.data;
         state.successMsg.getCandidateInterviewScheduleHistory = action.payload.msg;
       })
       .addCase(getInterviewScheduleHistoryThunk.rejected, (state, action) => {

@@ -28,7 +28,7 @@ const interviewMasterSlice = createSlice({
       })
       .addCase(getInterviewMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getInterviewMasterList = false;
-        state.interviewMasterList = action.payload.data;
+        state.interviewMasterList = action?.payload?.data;
         state.successMsg.getInterviewMasterList = action.payload.msg;
       })
       .addCase(getInterviewMasterListThunk.rejected, (state, action) => {

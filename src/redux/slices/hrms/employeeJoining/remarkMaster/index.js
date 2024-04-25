@@ -28,7 +28,7 @@ const remarkMasterSlice = createSlice({
       })
       .addCase(getRemarkMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getRemarkMasterList = false;
-        state.remarkMasterList = action.payload.data;
+        state.remarkMasterList = action?.payload?.data;
         state.successMsg.getRemarkMasterList = action.payload.msg;
       })
       .addCase(getRemarkMasterListThunk.rejected, (state, action) => {

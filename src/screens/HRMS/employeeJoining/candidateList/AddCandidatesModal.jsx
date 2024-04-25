@@ -22,6 +22,7 @@ import {
   addCandidatesMasterThunk,
   getCandidatesMasterListThunk,
 } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
+import { experienceLevel } from '../../../../settings/constants';
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
@@ -29,6 +30,7 @@ function AddCandidatesModal({ show, close }) {
 
   const candidatesInitialValue = {
     source_id: '',
+    referred_by_name: '',
     full_name: '',
     dob: '',
     designation_id: '',
@@ -70,14 +72,6 @@ function AddCandidatesModal({ show, close }) {
     label: item?.source_name,
     value: item?.id,
   }));
-
-  const experienceLevel = [
-    { label: 'Fresher', value: 'fresher' },
-    { label: '0-1 years of experience', value: '0-1' },
-    { label: '1-3 years of experience', value: '1-3' },
-    { label: '3-5 years of experience', value: '3-5' },
-    { label: '5+ years of experience', value: '5+' },
-  ];
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
@@ -138,10 +132,10 @@ function AddCandidatesModal({ show, close }) {
             // setOtpModal(true);
           }}
         >
-          {({ touched, errors, setFieldValue }) => (
+          {({ values, touched, errors, setFieldValue }) => (
             <Form>
               <Stack gap={3}>
-                <Row className="gap-3 gap-sm-0">
+                <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
                       data={sourceType}
@@ -154,6 +148,17 @@ function AddCandidatesModal({ show, close }) {
                       requiredField
                     />
                   </Col>
+                  <RenderIf render={Number(values?.source_id) === 1}>
+                    <Col sm={6} md={6}>
+                      <Field
+                        component={CustomInput}
+                        name="referred_by_name"
+                        label="Referred By"
+                        placeholder="Enter referred by name"
+                        requiredField
+                      />
+                    </Col>
+                  </RenderIf>
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
@@ -163,8 +168,6 @@ function AddCandidatesModal({ show, close }) {
                       requiredField
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
@@ -185,8 +188,6 @@ function AddCandidatesModal({ show, close }) {
                       isMulti
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       options={preferredLocation}
@@ -210,8 +211,6 @@ function AddCandidatesModal({ show, close }) {
                       type="number"
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
@@ -230,8 +229,6 @@ function AddCandidatesModal({ show, close }) {
                       requiredField
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
@@ -252,8 +249,6 @@ function AddCandidatesModal({ show, close }) {
                       type="number"
                     />
                   </Col>
-                </Row>
-                <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomInput}
@@ -283,24 +278,24 @@ function AddCandidatesModal({ show, close }) {
                     </RenderIf>
                   </Col>
                 </Row>
-              </Stack>
 
-              <div className="d-flex justify-content-end mt-3 gap-2">
-                <button
-                  className="btn btn-dark px-4"
-                  type="submit"
-                  disabled={isLoading?.addCandidatesMaster}
-                >
-                  {isLoading?.addCandidatesMaster ? (
-                    <Spinner animation="border" size="sm" />
-                  ) : (
-                    'Add'
-                  )}
-                </button>
-                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
-                  Close
-                </button>
-              </div>
+                <div className="d-flex justify-content-end gap-2">
+                  <button
+                    className="btn btn-dark px-4"
+                    type="submit"
+                    disabled={isLoading?.addCandidatesMaster}
+                  >
+                    {isLoading?.addCandidatesMaster ? (
+                      <Spinner animation="border" size="sm" />
+                    ) : (
+                      'Add'
+                    )}
+                  </button>
+                  <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                    Close
+                  </button>
+                </div>
+              </Stack>
             </Form>
           )}
         </Formik>

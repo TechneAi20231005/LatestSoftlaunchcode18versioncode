@@ -10,6 +10,7 @@ function Steeper() {
     <div className="stepper_wrapper">
       {interviewProcessData?.details?.map(stepData => (
         <div
+          key={Math.random()}
           className={`stepper_item ${
             interviewProcessData?.application_status === 2
               ? stepData?.status === 1

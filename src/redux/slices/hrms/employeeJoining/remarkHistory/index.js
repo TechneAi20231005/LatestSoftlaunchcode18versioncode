@@ -22,7 +22,7 @@ const remarkHistorySlice = createSlice({
       })
       .addCase(getRemarkHistoryListThunk.fulfilled, (state, action) => {
         state.isLoading.getRemarkHistoryList = false;
-        state.remarkHistoryList = action.payload.data;
+        state.remarkHistoryList = action?.payload?.data;
         state.successMsg.getRemarkHistoryList = action.payload.msg;
       })
       .addCase(getRemarkHistoryListThunk.rejected, (state, action) => {

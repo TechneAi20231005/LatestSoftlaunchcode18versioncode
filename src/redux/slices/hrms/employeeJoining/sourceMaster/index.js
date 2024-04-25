@@ -28,7 +28,7 @@ const sourceMasterSlice = createSlice({
       })
       .addCase(getSourceMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getSourceMasterList = false;
-        state.sourceMasterList = action.payload.data;
+        state.sourceMasterList = action?.payload?.data;
         state.successMsg.getSourceMasterList = action.payload.msg;
       })
       .addCase(getSourceMasterListThunk.rejected, (state, action) => {

@@ -24,6 +24,7 @@ import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction'
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
 import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../../../../../config/envConfig';
+import { experienceLevel } from '../../../../../../settings/constants';
 
 function CandidatesDetails() {
   // // initial state
@@ -81,14 +82,6 @@ function CandidatesDetails() {
     label: item?.source_name,
     value: item?.id,
   }));
-
-  const experienceLevel = [
-    { label: 'Fresher', value: 'fresher' },
-    { label: '0-1 years of experience', value: '0-1' },
-    { label: '1-3 years of experience', value: '1-3' },
-    { label: '3-5 years of experience', value: '3-5' },
-    { label: '5+ years of experience', value: '5+' },
-  ];
 
   // // handel add candidates
   const handelEditCandidates = () => {

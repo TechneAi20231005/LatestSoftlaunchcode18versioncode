@@ -9,10 +9,10 @@ import PageHeader from '../../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import AddCandidatesModal from './AddCandidatesModal';
 import { ApplicationStatusBadge } from '../../../../components/custom/Badges/StatusBadge';
-import { _base } from '../../../../settings/constants';
 import { customSearchHandler } from '../../../../utils/customFunction';
 import { getCandidatesMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import './style.scss';
 
 function CandidateList() {
   // // initial state
@@ -69,27 +69,27 @@ function CandidateList() {
       selector: row => (
         <ApplicationStatusBadge
           type={
-            row?.application_status_name === 'APPLIED'
-              ? 'primary'
-              : row?.application_status_name === 'INTERVIEW'
-              ? 'warning'
-              : row?.application_status_name === 'OFFER'
-              ? 'success'
-              : 'danger'
+            row?.application_status_name === 'REJECTED'
+              ? 'danger'
+              : (() => {
+                  switch (Number(row?.application_status_id)) {
+                    case 1:
+                      return 'primary';
+                    case 2:
+                      return 'warning';
+                    case 3:
+                    case 4:
+                      return 'success';
+                    default:
+                      return 'danger';
+                  }
+                })()
           }
-          name={
-            row?.application_status_name === 'APPLIED'
-              ? 'Applied'
-              : row?.application_status_name === 'INTERVIEW'
-              ? 'In Process'
-              : row?.application_status_name === 'OFFER'
-              ? 'Offer Sent'
-              : 'Rejected'
-          }
+          name={row?.application_status_name || '--'}
         />
       ),
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
     {
       name: 'Date of Application',
@@ -126,6 +126,7 @@ function CandidateList() {
   useEffect(() => {
     dispatch(getCandidatesMasterListThunk());
   }, []);
+  // console.log(srNoHandler(filteredCandidatesMasterList));
 
   // Update the useEffect to update the filtered list when candidatesMasterList changes
   useEffect(() => {
@@ -173,7 +174,7 @@ function CandidateList() {
               className="btn btn-danger"
               apiData={transformDataForExport(filteredCandidatesMasterList)}
               fileName="Candidates Lists Records"
-              disabled={!filteredCandidatesMasterList.length}
+              disabled={!filteredCandidatesMasterList?.length}
             />
           </Col>
         </Row>

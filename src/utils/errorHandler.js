@@ -18,6 +18,13 @@ export default function errorHandler(response = '') {
       // // logoutAction({ forceLogout: true })
       toast.error('user force logout');
     }
+    if (
+      response.data.message === undefined ||
+      response.data.message === '' ||
+      typeof response.data.message !== 'string'
+    ) {
+      toast.error('Server error! Please try again.');
+    }
   } else {
     toast.error('Something went wrong! Please try again.');
   }

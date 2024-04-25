@@ -26,7 +26,7 @@ export const useJobOfferSalaryFiltered = (data, designationId, locationId, exper
 
   useEffect(() => {
     const filterData = () => {
-      const filtered = data?.filter(
+      const filtered = data?.find(
         item =>
           parseInt(item.designation_id) === +designationId &&
           item.location_id.includes(+locationId) &&

@@ -20,6 +20,7 @@ import {
   editInterviewMasterThunk,
   getInterviewMasterListThunk,
 } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
+import { experienceLevel } from '../../../../settings/constants';
 
 function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }) {
   // // initial state
@@ -79,14 +80,6 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
     label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
     value: item?.id,
   }));
-
-  const experienceLevel = [
-    { label: 'Fresher', value: 'fresher' },
-    { label: '0-1 years of experience', value: '0-1' },
-    { label: '1-3 years of experience', value: '1-3' },
-    { label: '3-5 years of experience', value: '3-5' },
-    { label: '5+ years of experience', value: '5+' },
-  ];
 
   // // function
   const handelAddEditInterview = () => {

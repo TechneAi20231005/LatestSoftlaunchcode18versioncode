@@ -2,6 +2,17 @@ import * as Yup from 'yup';
 
 export const addCandidatesValidation = Yup.object().shape({
   source_id: Yup.string().required('Source is required'),
+  referred_by_name: Yup.string()
+    .test('referred_by', 'Referred by name is required', function (value) {
+      const source_id = this.parent.source_id;
+      if (source_id === '1' && (!value || value.trim() === '')) {
+        return false;
+      }
+      return true;
+    })
+    .min(2, 'Referred by name must be at least 2 characters')
+    .max(50, 'Referred by name must be at least 50 characters'),
+
   full_name: Yup.string()
     .min(2, 'Full name must be at least 2 characters')
     .max(50, 'Full name must be at most 50 characters')
@@ -13,8 +24,12 @@ export const addCandidatesValidation = Yup.object().shape({
     )
     .required('Date of Birth is required'),
 
-  designation_id: Yup.array().required('Preferred role is required'),
-  location_id: Yup.array().required('Preferred location is required'),
+  designation_id: Yup.array()
+    .required('Preferred role is required')
+    .min(1, 'Please select at least one Preferred role'),
+  location_id: Yup.array()
+    .required('Preferred location is required')
+    .min(1, 'Please select at least one location'),
   mobile_no: Yup.string()
     .required('Phone number is required')
     .matches(/^[6-9]\d{9}$/, 'Invalid phone number'),

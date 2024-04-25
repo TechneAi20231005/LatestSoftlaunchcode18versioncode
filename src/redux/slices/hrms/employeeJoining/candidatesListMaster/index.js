@@ -41,7 +41,7 @@ const candidatesMasterSlice = createSlice({
       })
       .addCase(getCandidatesMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getCandidatesMasterList = false;
-        state.candidatesMasterList = action.payload.data;
+        state.candidatesMasterList = action?.payload?.data;
         state.successMsg.getCandidatesMasterList = action.payload.msg;
       })
       .addCase(getCandidatesMasterListThunk.rejected, (state, action) => {

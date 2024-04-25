@@ -28,17 +28,23 @@ function InterviewScheduleHistory() {
       minWidth: '70px',
     },
     {
+      name: 'Step Title',
+      selector: row => row?.step_title || '--',
+      sortable: true,
+      minWidth: '150px',
+    },
+    {
       name: 'Status',
       selector: row =>
         row?.schedule_type ? (row?.schedule_type === 'SCHEDULE' ? 'Schedule' : 'Reschedule') : '--',
       sortable: true,
-      width: '150px',
+      width: '120px',
     },
     {
       name: 'Schedule Date & Time',
       selector: row => row?.schedule_datetime || '--',
       sortable: true,
-      minWidth: '200px',
+      minWidth: '175px',
     },
     {
       name: 'Created At',
@@ -70,6 +76,7 @@ function InterviewScheduleHistory() {
   const transformDataForExport = data => {
     return data?.map((row, index) => ({
       'Sr No.': index + 1,
+      'Step Title': row?.step_title || '',
       Status: row?.schedule_type
         ? row?.schedule_type === 'SCHEDULE'
           ? 'Schedule'

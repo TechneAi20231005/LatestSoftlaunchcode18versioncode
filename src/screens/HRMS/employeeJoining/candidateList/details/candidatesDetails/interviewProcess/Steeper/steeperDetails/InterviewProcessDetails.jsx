@@ -46,7 +46,7 @@ function InterviewProcessDetails() {
   ];
 
   // // function
-  const handelProceedReject = formData => {
+  const handelProceedReject = ({ formData, resetFunc }) => {
     const apiData = {
       ...formData,
       interview_id: currentCandidateId,
@@ -64,6 +64,7 @@ function InterviewProcessDetails() {
         currentId: currentCandidateId,
         onSuccessHandler: () => {
           dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
+          resetFunc();
         },
       }),
     );
@@ -112,8 +113,8 @@ function InterviewProcessDetails() {
           initialValues={{ remark_id: '', other_remark: '' }}
           enableReinitialize
           validationSchema={interViewProcessValidation}
-          onSubmit={values => {
-            handelProceedReject(values);
+          onSubmit={(values, { resetForm }) => {
+            handelProceedReject({ formData: values, resetFunc: resetForm });
           }}
         >
           {({ values }) => (
