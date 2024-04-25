@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // // static import
 import { getRemarkHistoryListThunk } from '../../../../../../redux/services/hrms/employeeJoining/remarkHistory';
+import { RenderIf } from '../../../../../../utils';
 
 function RemarkHistory() {
   // // initial state
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { currentCandidateId } = location.state;
 
   // // redux state
   const { remarkHistoryList, isLoading } = useSelector(state => state?.candidatesRemarkHistory);
@@ -15,7 +19,7 @@ function RemarkHistory() {
   // // life cycle
   useEffect(() => {
     if (!remarkHistoryList?.length) {
-      dispatch(getRemarkHistoryListThunk());
+      dispatch(getRemarkHistoryListThunk({ currentId: currentCandidateId }));
     }
   }, []);
   return (
@@ -36,8 +40,16 @@ function RemarkHistory() {
         remarkHistoryList?.map((remark, index) => (
           <div key={index}>
             <div className="remark_history d-flex justify-content-between">
-              <p>Remark Title : {remark?.remark_title || 'N/A'}</p>
-              <p className="mt-4 opacity-50">{remark?.remark_description || 'N/A'}</p>
+              <div>
+                <p>Remark Title : {remark?.remark_title || 'N/A'}</p>
+                <RenderIf render={remark?.other_remark}>
+                  <p>Supported Remark Title : {remark?.other_remark || 'N/A'}</p>
+                </RenderIf>
+              </div>
+              {/* <p className="mt-4 opacity-50">{remark?.remark_description || 'N/A'}</p> */}
+              <p className="mt-5 opacity-50">{`${remark?.created_by || 'N/A'}, ${
+                remark?.created_at || 'N/A'
+              }`}</p>
             </div>
             <hr className="mt-0" />
           </div>

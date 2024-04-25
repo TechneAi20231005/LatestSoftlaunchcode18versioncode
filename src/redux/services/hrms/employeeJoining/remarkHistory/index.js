@@ -4,9 +4,9 @@ import { errorHandler } from '../../../../../utils';
 
 export const getRemarkHistoryListThunk = createAsyncThunk(
   'followUp/getRemarkHistoryList',
-  async () => {
+  async ({ currentId }) => {
     try {
-      const response = await customAxios.get(`/remarkHistory`);
+      const response = await customAxios.get(`/remarkHistory/${currentId}`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };

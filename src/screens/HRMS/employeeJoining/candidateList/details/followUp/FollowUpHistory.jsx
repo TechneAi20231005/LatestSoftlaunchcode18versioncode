@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 // // static import
 import { getFollowUpListThunk } from '../../../../../../redux/services/hrms/employeeJoining/followUp';
@@ -8,6 +9,8 @@ import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../../../../../config/envConf
 function FollowUpHistory() {
   // // initial state
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { currentCandidateId } = location.state;
 
   // // redux state
   const { followUpList, isLoading } = useSelector(state => state?.candidatesFollowUp);
@@ -15,7 +18,7 @@ function FollowUpHistory() {
   // // life cycle
   useEffect(() => {
     if (!followUpList?.length) {
-      dispatch(getFollowUpListThunk());
+      dispatch(getFollowUpListThunk({ currentId: currentCandidateId }));
     }
   }, []);
 

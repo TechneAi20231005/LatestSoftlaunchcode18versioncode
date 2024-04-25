@@ -41,8 +41,9 @@ function FollowUp() {
     dispatch(
       addFollowUpThunk({
         formData: followUpData,
+        currentId: currentCandidateId,
         onSuccessHandler: () => {
-          dispatch(getFollowUpListThunk());
+          dispatch(getFollowUpListThunk({ currentId: currentCandidateId }));
         },
       }),
     );
