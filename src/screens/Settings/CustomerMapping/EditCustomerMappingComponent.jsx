@@ -473,7 +473,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const customerID = customerDetail?.current?.props?.value;
     const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value;
     const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
-    const templateid = templateDetail?.current?.props?.value.value;
+    const templateid = templateDetail?.current?.props?.value?.value;
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequiredDetail?.current?.value;
     const approachId = approachDetail?.current?.value;
@@ -493,7 +493,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.customer_type_id = arrayOfId;
     form.query_type_id = queryTypeid;
     form.dynamic_form_id = dynamicFormid;
-    form.template_id = templateid;
+    form.template_id = templateid ? templateid : null;
     form.priority = priorityID;
     form.confirmation_required = confirmationId;
     form.approach = approachId;
