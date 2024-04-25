@@ -69,7 +69,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratioTotal, setRatioTotal] = useState(0);
 
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
@@ -143,16 +142,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       });
 
     dispatch(getRoles());
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     // setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       // setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
 
     await new CustomerTypeService().getCustomerType().then((res) => {
       if (res.status == 200) {
@@ -221,7 +210,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           ratiowiseData[i] = parseInt(x[1]);
         }
       });
-      var sum = ratiowiseData.reduce((result, number) => result + number);
+      var sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       setRatioTotal(sum);
     }
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -251,8 +240,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }
       }
     });
-
-    //await getUser();
   };
 
   const getDynamicForm = async () => {
@@ -337,7 +324,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    // var value = type == "Select2" ? e.value : e.target.value;
     if (type === "Select2" && nameField === "customer_type_id") {
       setSelectedCustomer(e?.length);
     }
@@ -447,6 +433,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const confirmationRequiredDetail = useRef();
   const approachDetail = useRef();
   const statusDtail = useRef();
+  const userNameDetail = useRef();
+  const userRatioDetail = useRef();
 
   const departmentDropdownRef = useRef();
 
@@ -454,6 +442,33 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
+    let userIDs;
+    if (Array.isArray(useridDetail?.current?.props?.value)) {
+      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+    } else {
+      const value = useridDetail?.current?.props?.value?.value;
+      userIDs = value ? [value] : [];
+    }
+
+    const getUserData = () => {
+      // Get an array of user IDs
+      const userIds = userDropdown?.map((ele) => ele?.value);
+
+      return userIds;
+    };
+
+    const getUserDataa = () => {
+      // Get an array of ratio values
+      const ratios = userDropdown.map((ele, i) => {
+        const ratio = userRatioDetail?.current?.value; // Assuming userRatioDetail is an array of refs containing input fields for ratios
+        return parseInt(ratio, 10); // Convert the ratio to an integer
+      });
+
+      return ratios;
+    };
+
+    const RwuserID = getUserData();
+    const userRatioData = getUserDataa();
 
     const customerID = customerDetail?.current?.props?.value;
     const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value;
@@ -462,13 +477,16 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequiredDetail?.current?.value;
     const approachId = approachDetail?.current?.value;
-    const departmentId = departmentDropdownRef?.current?.props?.value[0].value;
-    const userID = useridDetail?.current?.props?.value[0].value;
+    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
+      ? departmentDropdownRef?.current?.props?.value[0]?.value
+      : departmentDropdownRef?.current?.props?.value?.value;
+    const userID = userIDs;
+
     const statusID = statusDtail?.current?.value;
 
     let arrayOfId = [];
     for (let i = 0; i < customerID?.length; i++) {
-      arrayOfId.push(customerID[i].value);
+      arrayOfId.push(customerID[i]?.value);
     }
     const form = {};
 
@@ -480,7 +498,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.confirmation_required = confirmationId;
     form.approach = approachId;
     form.department_id = departmentId;
-    form.user_id = userID;
+    if (data.approach === "RW") {
+      form.user_id = RwuserID;
+      form.ratio = userRatioData;
+    } else {
+      form.user_id = userID;
+    }
+
     form.status = statusID;
 
     form.tenant_id = sessionStorage.getItem("tenant_id");
@@ -534,8 +558,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -920,7 +942,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               <tbody>
                                 {userDropdown.map((ele, i) => {
                                   // Find the corresponding user policy in user_policy array
-                                  const userPolicy = data.user_policy.find(
+                                  const userPolicy = data.user_policy?.find(
                                     (policy) =>
                                       policy.startsWith(`${ele.value}:`)
                                   );
@@ -938,6 +960,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           id={`index_` + Math.random()}
                                           name="user_id[]"
                                           value={ele.value}
+                                          ref={useridDetail}
                                           readOnly
                                         />
                                         <input
@@ -946,6 +969,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           id={`index_` + Math.random()}
                                           name="user_name[]"
                                           value={ele.label}
+                                          ref={userNameDetail}
                                           readOnly
                                         />
                                       </td>
@@ -956,6 +980,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           className="form-control col-sm-2"
                                           name="ratio[]"
                                           defaultValue={defaultRatio}
+                                          ref={userRatioDetail}
                                           //  defaultValue={
                                           //    ratiowiseData ? ratiowiseData[i] : 0
                                           //  }
