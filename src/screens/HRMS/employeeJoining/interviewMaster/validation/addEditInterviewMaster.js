@@ -1,31 +1,23 @@
 import * as Yup from 'yup';
 
-const stepValidation = stepCount => {
-  const stepSchema = {};
-
-  for (let i = 0; i < stepCount; i++) {
-    const stepIndex = i + 1;
-    stepSchema[`stepTitle_${stepIndex}`] = Yup.string().required(
-      `Step ${stepIndex} Title is required`,
-    );
-    stepSchema[`designation_${stepIndex}`] = Yup.string().required(
-      `Step ${stepIndex} Designation is required`,
-    );
-    stepSchema[`name_${stepIndex}`] = Yup.string().required(`Step ${stepIndex} Name is required`);
-    stepSchema[`email_${stepIndex}`] = Yup.string()
-      .email(`Step ${stepIndex} Email is invalid`)
-      .required(`Step ${stepIndex} Email is required`);
-  }
-
-  return Yup.object().shape(stepSchema);
-};
-
 const addEditInterviewMaster = Yup.object().shape({
-  department: Yup.string().required('Department is required'),
-  designation: Yup.string().required('Designation is required'),
-  experienceLevel: Yup.string().required('Experience Level is required'),
-  stepCount: Yup.string().required('Step Count is required'),
-  stepDetails: Yup.lazy((values = {}) => stepValidation(parseInt(values.stepCount) || 0)),
+  department_id: Yup.string().required('Department is required'),
+  designation_id: Yup.string().required('Designation is required'),
+  experience_level: Yup.string().required('Experience level is required'),
+  step_details: Yup.array().of(
+    Yup.object().shape({
+      step_title: Yup.string()
+        .min(2, 'Step title must be at least 2 characters')
+        .max(50, 'Step title must be at most 50 characters')
+        .required('Step title is required'),
+      designation_id: Yup.string().required('Designation is required'),
+      employee_id: Yup.string().required('Name is required'),
+      // employee_email: Yup.string().email('Invalid email').required('Email is required'),
+    }),
+  ),
+  remark: Yup.string()
+    .min(2, 'Remark must be at least 2 characters')
+    .max(1000, 'Remark must be at most 1000 characters'),
 });
 
 export default addEditInterviewMaster;

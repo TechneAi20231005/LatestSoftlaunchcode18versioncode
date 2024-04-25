@@ -24,6 +24,7 @@ import {
 import { departmentData } from '../../../Masters/DepartmentMaster/DepartmentMasterAction';
 import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
+import { experienceLevel } from '../../../../settings/constants';
 
 function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   // // initial state
@@ -68,14 +69,6 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
     label: item?.location_name,
     value: item?.id,
   }));
-
-  const experienceLevel = [
-    { label: 'Fresher', value: 'fresher' },
-    { label: '0-1 years of experience', value: '0-1' },
-    { label: '1-3 years of experience', value: '1-3' },
-    { label: '3-5 years of experience', value: '3-5' },
-    { label: '5+ years of experience', value: '5+' },
-  ];
 
   // // function
   const handelAddEditSalary = () => {
