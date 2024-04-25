@@ -87,6 +87,7 @@ export default function Header() {
   const handleRegularizationRequest = (cuurentData) => {
     setTicketID(cuurentData);
     new getRegularizationTime(cuurentData).then((res) => {
+      console.log("res==>", res.data.data);
       const temp = res.data.data.map((d) => ({
         id: d.id,
         created_by_name: d.created_by_name,
