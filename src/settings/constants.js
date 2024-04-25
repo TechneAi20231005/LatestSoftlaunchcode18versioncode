@@ -17,9 +17,11 @@ export const _pincodeUrl = 'https://api.postalpincode.in/pincode/';
 // export const _apiUrl = "http://15.207.120.175/TechTicketDummyDevelopment/public/api/";
 // export const _attachmentUrl="http://15.207.120.175/TechTicketDummyDevelopment/";
 
-export const _base = '3_SoftLaunch/TechTicket';
-export const _apiUrl = 'http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/';
-export const _attachmentUrl = 'http://3.108.206.34/3_SoftLaunch/TSNewBackend/';
+
+export const _base = "2_Testing/TechTicket";
+export const _apiUrl = "http://3.108.206.34/2_Testing/TSNewBackend/public/api/";
+export const _attachmentUrl = "http://3.108.206.34/2_Testing/TSNewBackend/";
+
 
 export const loginURL = _apiUrl + 'login';
 export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';
