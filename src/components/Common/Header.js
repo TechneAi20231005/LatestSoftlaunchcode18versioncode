@@ -87,23 +87,25 @@ export default function Header() {
   const handleRegularizationRequest = (cuurentData) => {
     setTicketID(cuurentData);
     new getRegularizationTime(cuurentData).then((res) => {
-      const temp = res.data.data.map((d) => ({
-        id: d.id,
-        created_by_name: d.created_by_name,
-        from_date: d.from_date,
-        to_date: d.to_date,
-        from_time: d.from_time,
-        to_time: d.to_time,
-        remark: d.remark,
-        is_checked: 0,
-        regularization_time_status: d.regularization_time_status,
-        task_name: d.task_name,
-        ticket_id_name: d.ticket_id_name,
-        actual_time: d.actual_time,
-        task_hours: d.task_hours,
-        scheduled_time: d.scheduled_time,
-        status: d.status_remark,
-      }));
+      const temp = res?.data?.data
+        ?.filter((d) => d.status_remark === "PENDING")
+        .map((d) => ({
+          id: d.id,
+          created_by_name: d.created_by_name,
+          from_date: d.from_date,
+          to_date: d.to_date,
+          from_time: d.from_time,
+          to_time: d.to_time,
+          remark: d.remark,
+          is_checked: 0,
+          regularization_time_status: d.regularization_time_status,
+          task_name: d.task_name,
+          ticket_id_name: d.ticket_id_name,
+          actual_time: d.actual_time,
+          task_hours: d.task_hours,
+          scheduled_time: d.scheduled_time,
+          status: d.status_remark,
+        }));
       setRegularizationRequest(temp);
     });
   };
@@ -203,9 +205,6 @@ export default function Header() {
         <div className="container-xxl">
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
             {notify && <Alert alertData={notify} />}
-            {/* <div>
-              <span className="fw-bold badge bg-primary p-2"> {`Date : `}</span>
-            </div> */}
 
             {!historyModal.show && (
               <Dropdown
@@ -222,9 +221,22 @@ export default function Header() {
                 >
                   <div className=" me-3">
                     <div>
-                      <button class="fw-bold badge bg-primary p-2">
+                      <button
+                        class=" badge bg-primary p-2"
+                        style={{
+                          width: "auto",
+                          padding: "0.5rem 2rem",
+                          lineHeight: "revert-layer",
+                        }}
+                      >
                         {" "}
-                        {`Request : ${approvedNotifications?.length}`}
+                        {`Regularization`}
+                        <br />
+                        {`Request : ${
+                          approvedNotifications?.length
+                            ? approvedNotifications?.length
+                            : 0
+                        }`}
                       </button>
                     </div>
                   </div>
@@ -248,11 +260,10 @@ export default function Header() {
                           }}
                         >
                           {notifications && (
-                            <span className="fw-bold badge bg-warning p-2">
+                            <button className="fw-bold badge bg-warning p-2">
                               <i class="icofont-history"></i>
                               History
-                              {/* {notifications.length} */}
-                            </span>
+                            </button>
                           )}
                         </div>
                         {!notifications && (
@@ -260,7 +271,13 @@ export default function Header() {
                         )}
                       </h5>
                     </div>
-                    <div className="tab-content card-body">
+                    <div
+                      className="tab-content card-body"
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                      }}
+                    >
                       {showApprovedOnly ? (
                         <div className="tab-pane fade show active">
                           <ul

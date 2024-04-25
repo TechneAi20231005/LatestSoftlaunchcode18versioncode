@@ -35,10 +35,6 @@ const RequestModal = (props) => {
   const [timeDifference, setTimeDifference] = useState("");
   const dispatch = useDispatch();
 
-  const Notify = useSelector(
-    (TimeRegularizationSlice) =>
-      TimeRegularizationSlice.timeRegularization.notify
-  );
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -131,9 +127,18 @@ const RequestModal = (props) => {
     setNotify(null);
 
     const data = new FormData(e.target);
-    data.append("scheduled_time", props.data.task_hours);
+    data?.append("scheduled_time", props.data.task_hours);
     // data.append('actual_total_time',"00:30");
-    dispatch(postTimeRegularizationData(data));
+    dispatch(postTimeRegularizationData(data)).then((res) => {
+      if (res?.payload?.data?.status === 1) {
+        setNotify({ type: "success", message: res?.payload?.data?.message });
+        setTimeout(() => {
+          props.close();
+        }, 1000);
+      } else {
+        setNotify({ type: "danger", message: res?.payload?.data?.message });
+      }
+    });
     // handleClose();
   };
 
@@ -173,7 +178,7 @@ const RequestModal = (props) => {
   }, [timeDifference]);
 
   useEffect(() => {
-    setNotify(null);
+    // setNotify(null);
   }, []);
 
   useEffect(() => {
@@ -369,13 +374,6 @@ const RequestModal = (props) => {
     updatedData[index].remark = value; // Update the remark field of the corresponding row
     setRegularizeTimeData(updatedData); // Update the state with the modified array
   };
-
-  const handleClose = () => {
-    const timer = setTimeout(() => {
-      props.close();
-      clearInterval(timer);
-    }, 5000);
-  };
   return (
     <div>
       <Modal
@@ -385,7 +383,7 @@ const RequestModal = (props) => {
         size="xl"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        {Notify && <Alert alertData={Notify} />}
+        {notify && <Alert alertData={notify} />}
 
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
@@ -450,6 +448,7 @@ const RequestModal = (props) => {
                     <th className="text-center"> Actual Time </th>
 
                     <th className="text-center"> Remark </th>
+                    <th className="text-center"> Status</th>
                     <th className="text-center"> Action</th>
                   </tr>
                 </thead>
@@ -477,57 +476,105 @@ const RequestModal = (props) => {
 
                             const updatedData = [...regularizeTimeData];
                             updatedData[index].from_date = value;
-                            updatedData[index].actual_time =
-                              calculateActualTime(
-                                updatedData[index].from_date,
-                                updatedData[index].to_date,
-                                updatedData[index].from_time,
-                                updatedData[index].to_time
-                              );
-                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                            // Calculate actual time
+                            const actualTime = calculateActualTime(
+                              updatedData[index].from_date,
+                              updatedData[index].to_date,
+                              updatedData[index].from_time,
+                              updatedData[index].to_time
+                            );
+
+                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
+                            // if (actualTime > 12 * 60) {
+                            //   alert("Actual time is greater than 12:00 hours.");
+                            //   // Optionally, you might want to revert the changes made
+                            //   // or handle this situation according to your app's logic
+                            //   return;
+                            // }
+
+                            updatedData[index].actual_time = actualTime;
+                            setRegularizeTimeData(updatedData);
                           };
 
                           const handleToDateChange = (index, value) => {
                             const updatedData = [...regularizeTimeData];
                             updatedData[index].to_date = value;
-                            // Calculate or set the 'actual_time' based on your logic here
-                            updatedData[index].actual_time =
-                              calculateActualTime(
-                                updatedData[index].from_date,
-                                updatedData[index].to_date,
-                                updatedData[index].from_time,
-                                updatedData[index].to_time
-                              );
-                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                            // Calculate actual time
+                            const actualTime = calculateActualTime(
+                              updatedData[index].from_date,
+                              updatedData[index].to_date,
+                              updatedData[index].from_time,
+                              updatedData[index].to_time
+                            );
+                            const [hours, minutes] = actualTime
+                              .split(":")
+                              .map(Number);
+                            const actualTimeValue = hours * 60 + minutes;
+                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
+                            // if (actualTimeValue > 12 * 60) {
+                            //   alert("Actual time is greater than 12:00 hours.");
+                            //   // Optionally, you might want to revert the changes made
+                            //   // or handle this situation according to your app's logic
+                            //   return;
+                            // }
+
+                            updatedData[index].actual_time = actualTime;
+                            setRegularizeTimeData(updatedData);
                           };
 
                           const handleFromTimeChange = (index, value) => {
                             const updatedData = [...regularizeTimeData];
                             updatedData[index].from_time = value;
-                            // Calculate or set the 'actual_time' based on your logic here
-                            updatedData[index].actual_time =
-                              calculateActualTime(
-                                updatedData[index].from_date,
-                                updatedData[index].to_date,
-                                updatedData[index].from_time,
-                                updatedData[index].to_time
-                              );
-                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                            // Calculate actual time
+                            const actualTime = calculateActualTime(
+                              updatedData[index].from_date,
+                              updatedData[index].to_date,
+                              updatedData[index].from_time,
+                              updatedData[index].to_time
+                            );
+                            const [hours, minutes] = actualTime
+                              .split(":")
+                              .map(Number);
+                            const actualTimeValue = hours * 60 + minutes;
+                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
+                            if (actualTimeValue > 12 * 60) {
+                              alert("Actual time is greater than 12:00 hours.");
+                              // Optionally, you might want to revert the changes made
+                              // or handle this situation according to your app's logic
+                              return;
+                            }
+
+                            updatedData[index].actual_time = actualTime;
+                            setRegularizeTimeData(updatedData);
                           };
 
                           const handleToTimeChange = (index, value) => {
                             const updatedData = [...regularizeTimeData];
                             updatedData[index].to_time = value;
-                            // Calculate or set the 'actual_time' based on your logic here
-                            updatedData[index].actual_time =
-                              calculateActualTime(
-                                updatedData[index].from_date,
-                                updatedData[index].to_date,
-                                updatedData[index].from_time,
-                                updatedData[index].to_time
-                              );
-                            setRegularizeTimeData(updatedData); // Assuming you are using state to manage the data
+                            // Calculate actual time
+                            const actualTime = calculateActualTime(
+                              updatedData[index].from_date,
+                              updatedData[index].to_date,
+                              updatedData[index].from_time,
+                              updatedData[index].to_time
+                            );
+                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
+                            const [hours, minutes] = actualTime
+                              .split(":")
+                              .map(Number);
+                            const actualTimeValue = hours * 60 + minutes;
+                            if (actualTimeValue > 12 * 60) {
+                              alert("Actual time is greater than 12:00 hours.");
+                              // Optionally, you might want to revert the changes made
+                              // or handle this situation according to your app's logic
+                              return;
+                            }
+
+                            updatedData[index].actual_time = actualTime;
+                            setRegularizeTimeData(updatedData);
                           };
+
+                          // Return JSX for rendering here
 
                           return (
                             <tr key={index}>
@@ -548,7 +595,7 @@ const RequestModal = (props) => {
                                     )
                                   }
                                   required
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -570,7 +617,7 @@ const RequestModal = (props) => {
                                       "to_date"
                                     )
                                   }
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -587,7 +634,7 @@ const RequestModal = (props) => {
                                   onChange={(e) =>
                                     handleFromTimeChange(index, e.target.value)
                                   }
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -605,7 +652,7 @@ const RequestModal = (props) => {
                                     handleToTimeChange(index, e.target.value)
                                   }
                                   required
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -624,7 +671,7 @@ const RequestModal = (props) => {
                                       : row.total_time || "00:00"
                                   }
                                   required
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
@@ -640,11 +687,22 @@ const RequestModal = (props) => {
                                   value={row.remark}
                                   onChange={(e) => handleRemarkChange(e, index)} // Assuming you have a function to handle remark changes
                                   required
-                                  readOnly={
+                                  disabled={
                                     row.status != "REJECTED" &&
                                     !row.isAddingNewRow
                                   }
                                 />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  className="form-control form-control-sm"
+                                  name="status"
+                                  defaultValue={row.status}
+                                  disabled
+                                  required
+                                />
+                                <i className="icofont-clock"></i>
                               </td>
 
                               <td>
