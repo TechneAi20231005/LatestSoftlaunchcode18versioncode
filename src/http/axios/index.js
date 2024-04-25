@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../config/envConfig';
+import { REACT_APP_API_URL } from '../../config/envConfig';
 
 // Create a new Axios instance
 const customAxios = axios.create({
-  baseURL: REACT_APP_3_SOFT_LUNCH_API_URL,
+  baseURL: REACT_APP_API_URL,
   // timeout: 10000, // Set timeout for requests (in milliseconds)
 });
 

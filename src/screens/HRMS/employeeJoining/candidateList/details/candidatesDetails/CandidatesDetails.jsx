@@ -23,7 +23,7 @@ import {
 import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction';
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { REACT_APP_3_SOFT_LUNCH_API_URL } from '../../../../../../config/envConfig';
+import { REACT_APP_API_URL } from '../../../../../../config/envConfig';
 import { experienceLevel } from '../../../../../../settings/constants';
 
 function CandidatesDetails() {
@@ -64,7 +64,7 @@ function CandidatesDetails() {
     expected_ctc: details?.expected_monthly_salary,
     current_ctc: details?.current_monthly_salary,
     notice_period: details?.notice_period,
-    resume_path: `${REACT_APP_3_SOFT_LUNCH_API_URL}${details?.resume}`,
+    resume_path: `${REACT_APP_API_URL}${details?.resume}`,
   };
 
   // // dropdown data
@@ -271,10 +271,7 @@ function CandidatesDetails() {
                   </label>
                   {currentMode === 'VIEW' ? (
                     <div>
-                      <a
-                        href={`${REACT_APP_3_SOFT_LUNCH_API_URL}${details?.resume}`}
-                        target="_blank"
-                      >
+                      <a href={`${REACT_APP_API_URL}${details?.resume}`} target="_blank">
                         Resume.file
                       </a>
                     </div>
