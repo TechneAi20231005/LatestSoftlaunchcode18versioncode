@@ -298,7 +298,7 @@ export default function CreateCustomerMappingComponent() {
 
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
-      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+      userIDs = useridDetail?.current?.props?.value?.map((item) => item.value);
     } else {
       const value = useridDetail?.current?.props?.value?.value;
       userIDs = value ? [value] : [];
@@ -326,7 +326,7 @@ export default function CreateCustomerMappingComponent() {
     const customerID = customerDetail?.current?.props?.value;
     const queryTypeid = queryTypeDetail?.current?.props?.value.value;
     const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
-    const templateid = templateDetail?.current?.props?.value.value;
+    const templateid = templateDetail?.current?.props?.value?.value;
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequiredDetail?.current?.value;
     const approachId = approachDetail?.current?.value;
@@ -346,7 +346,7 @@ export default function CreateCustomerMappingComponent() {
     form.customer_type_id = arrayOfId;
     form.query_type_id = queryTypeid;
     form.dynamic_form_id = dynamicFormid;
-    form.template_id = templateid;
+    form.template_id = templateid ? templateid : null;
     form.priority = priorityID;
     form.confirmation_required = confirmationId;
     form.approach = approachId;
