@@ -710,7 +710,10 @@ const ViewVendorDetails = ({ match }) => {
                         </label>
                       </div>
                     </div>
-                    <div className="col-md-2 mt-4">
+                    <div
+                      className="col-md-3 mt-4"
+                      style={{ marginLeft: "20px" }}
+                    >
                       <div className="form-check">
                         <input
                           className="form-check-input"

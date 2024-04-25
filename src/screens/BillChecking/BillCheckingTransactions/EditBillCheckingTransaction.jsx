@@ -1503,13 +1503,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultChecked={
                           data.is_tds_applicable == 1 ? true : false
                         }
+                        // disabled={
+                        //   data.is_rejected == 1 ||
+                        //   data.created_by == localStorage.getItem("id") ||
+                        //   (data.current_user_is_approver == 1 &&
+                        //     authorities &&
+                        //     authorities.All_Update_Bill == true &&
+                        //     data.current_user_is_approver == 0)
+                        //     ? false
+                        //     : true
+                        // }
                         disabled={
-                          data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
-                          (data.current_user_is_approver == 1 &&
-                            authorities &&
-                            authorities.All_Update_Bill == true &&
-                            data.current_user_is_approver == 0)
+                          authorities && authorities.All_Update_Bill == true
                             ? false
                             : true
                         }
@@ -1561,13 +1566,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                             placeholder="select..."
                             options={sectionDropdown}
                             ref={sectionRef}
+                            // isDisabled={
+                            //   data.is_rejected == 1 ||
+                            //   data.created_by == localStorage.getItem("id") ||
+                            //   (data.current_user_is_approver == 1 &&
+                            //     authorities &&
+                            //     authorities.All_Update_Bill == true &&
+                            //     data.current_user_is_approver == 0)
+                            //     ? false
+                            //     : true
+                            // }
                             isDisabled={
-                              data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem("id") ||
-                              (data.current_user_is_approver == 1 &&
-                                authorities &&
-                                authorities.All_Update_Bill == true &&
-                                data.current_user_is_approver == 0)
+                              authorities && authorities.All_Update_Bill == true
                                 ? false
                                 : true
                             }
@@ -1605,13 +1615,19 @@ export default function CreateBillCheckingTransaction({ match }) {
                               name="tds_constitution"
                               options={constitutionDropdown}
                               onChange={(e) => handleTdsPercentage(e)}
+                              // isDisabled={
+                              //   data.is_rejected == 1 ||
+                              //   data.created_by == localStorage.getItem("id") ||
+                              //   (data.current_user_is_approver == 1 &&
+                              //     authorities &&
+                              //     authorities.All_Update_Bill == true &&
+                              //     data.current_user_is_approver == 0)
+                              //     ? false
+                              //     : true
+                              // }
                               isDisabled={
-                                data.is_rejected == 1 ||
-                                data.created_by == localStorage.getItem("id") ||
-                                (data.current_user_is_approver == 1 &&
-                                  authorities &&
-                                  authorities.All_Update_Bill == true &&
-                                  data.current_user_is_approver == 0)
+                                authorities &&
+                                authorities.All_Update_Bill == true
                                   ? false
                                   : true
                               }
