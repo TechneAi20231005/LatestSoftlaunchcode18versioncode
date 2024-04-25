@@ -953,10 +953,10 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_1"
                           value="1"
-                          disabled={
-                            modal.modalHeader === "Details" ||
-                            modal.modalHeader === "Assign Authority"
-                          }
+                          // disabled={
+                          //   modal.modalHeader === "Details" ||
+                          //   modal.modalHeader === "Assign Authority"
+                          // }
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 1
                               ? true
@@ -981,10 +981,10 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_0"
                           value="0"
-                          disabled={
-                            modal.modalHeader === "Details" ||
-                            modal.modalHeader === "Assign Authority"
-                          }
+                          // disabled={
+                          //   modal.modalHeader === "Details" ||
+                          //   modal.modalHeader === "Assign Authority"
+                          // }
                           readOnly={modal.modalData ? false : true}
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 0
