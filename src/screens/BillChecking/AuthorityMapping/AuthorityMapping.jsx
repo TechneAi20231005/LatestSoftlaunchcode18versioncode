@@ -45,8 +45,11 @@ const AuthorityMapping = () => {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
-  console.log("checkRole",checkRole)  
-  const authorities = useSelector((BillCheckingTransactionSlice) =>BillCheckingTransactionSlice.billChecking.getModuleSettingData);
+  console.log("checkRole", checkRole);
+  const authorities = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getModuleSettingData
+  );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
       MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
@@ -63,7 +66,7 @@ const AuthorityMapping = () => {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.modal
   );
-  
+
   const [error, setError] = useState("");
 
   const [user, setUser] = useState();
@@ -313,7 +316,6 @@ const AuthorityMapping = () => {
   const handleRemoveSpecificRow = (index) => async () => {
     const id = assign[index].id;
 
-
     // Delete the item
     await new BillCheckingTransactionService()
       .deleteModuleSettingUser(id)
@@ -357,17 +359,16 @@ const AuthorityMapping = () => {
     updatedUserErrors[index] = "";
     setUserErrors(updatedUserErrors);
   };
-  console.log("data",modal.modalData)
+  console.log("data", modal.modalData);
   const handleData = async (e, row) => {
-    console.log("row",row);
+    console.log("row", row);
     if (row.id) {
-
       await new BillCheckingTransactionService()
 
         .getModuleAuthorityUserSetting(row.id)
 
         .then((res) => {
-          console.log("res",res)
+          console.log("res", res);
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
@@ -389,7 +390,6 @@ const AuthorityMapping = () => {
         });
     }
     dispatch(getSubmoduleData(parseInt(row.submodule_name)));
-
   };
 
   const loadData = async () => {
@@ -408,7 +408,6 @@ const AuthorityMapping = () => {
     dispatch(getUserForMyTicketsData(inputRequired));
 
     dispatch(updateAuthority());
-
   };
 
   function getCurrentDateString() {
@@ -540,7 +539,7 @@ const AuthorityMapping = () => {
           </div>
         </div>
       </div>
-      {console.log("authorities",authorities)}
+      {console.log("authorities", authorities)}
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -649,7 +648,6 @@ const AuthorityMapping = () => {
                       />
                     </div>
                   )}
-                  
 
                   {modal.modalData && submodulename && (
                     <>
@@ -693,9 +691,8 @@ const AuthorityMapping = () => {
                     )}
                   </tr>
                 </thead>
-                {console.log("userData",userData)}
+                {console.log("userData", userData)}
                 {console.log(assign)}
-
 
                 <tbody>
                   {assign && assign.length > 0 ? (
@@ -956,10 +953,10 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_1"
                           value="1"
-                          disabled={
-                            modal.modalHeader === "Details" ||
-                            modal.modalHeader === "Assign Authority"
-                          }
+                          // disabled={
+                          //   modal.modalHeader === "Details" ||
+                          //   modal.modalHeader === "Assign Authority"
+                          // }
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 1
                               ? true
@@ -984,10 +981,10 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_0"
                           value="0"
-                          disabled={
-                            modal.modalHeader === "Details" ||
-                            modal.modalHeader === "Assign Authority"
-                          }
+                          // disabled={
+                          //   modal.modalHeader === "Details" ||
+                          //   modal.modalHeader === "Assign Authority"
+                          // }
                           readOnly={modal.modalData ? false : true}
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 0
