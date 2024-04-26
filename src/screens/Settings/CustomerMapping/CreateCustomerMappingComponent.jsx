@@ -76,6 +76,12 @@ export default function CreateCustomerMappingComponent() {
 
   const dispatch = useDispatch();
 
+  const [confirmationRequired, setConfirmationRequired] = useState("");
+
+  const handleConfirmationChange = (e) => {
+    setConfirmationRequired(e?.target?.value);
+  };
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
@@ -259,28 +265,59 @@ export default function CreateCustomerMappingComponent() {
     });
   };
 
-  const handleRatioInput = (index) => async (e) => {
-    e.preventDefault();
-    const a = ratiowiseData;
-    var sum = 0;
-    var value = e.target.value ? e.target.value : 0;
+  // const handleRatioInput = (index) => async (e) => {
+  //   e.preventDefault();
+  //   const a = ratiowiseData;
+  //   var sum = 0;
+  //   var value = e.target.value ? e.target.value : 0;
 
-    if (parseInt(value) > 100) {
+  //   if (parseInt(value) > 100) {
+  //     e.target.value = 0;
+  //     ratiowiseData[index] = 0;
+  //     alert("Cannot Enter More than 100 !!!");
+  //   } else {
+  //     ratiowiseData[index] = parseInt(value);
+  //     if (ratiowiseData?.length > 0) {
+  //       sum = ratiowiseData.reduce((result, number) => result + number);
+  //       if (sum > 100) {
+  //         e.target.value = 0;
+  //         ratiowiseData[index] = 0;
+  //         alert("Ratio Total Must Be 100 !!!");
+  //       }
+  //     }
+  //   }
+  //   setRatioTotal(sum);
+  // };
+
+  const handleRatioInput = (index) => (e) => {
+    e.preventDefault();
+    const newValue = parseInt(e.target.value) || 0;
+
+    if (newValue > 100) {
       e.target.value = 0;
-      ratiowiseData[index] = 0;
+      setRatiowiseData([
+        ...ratiowiseData.slice(0, index),
+        0,
+        ...ratiowiseData.slice(index + 1),
+      ]);
       alert("Cannot Enter More than 100 !!!");
     } else {
-      ratiowiseData[index] = parseInt(value);
-      if (ratiowiseData?.length > 0) {
-        sum = ratiowiseData.reduce((result, number) => result + number);
-        if (sum > 100) {
-          e.target.value = 0;
-          ratiowiseData[index] = 0;
-          alert("Ratio Total Must Be 100 !!!");
-        }
+      const newData = [...ratiowiseData];
+      newData[index] = newValue;
+      const sum = newData.reduce((result, number) => result + number);
+      if (sum > 100) {
+        e.target.value = 0;
+        setRatiowiseData([
+          ...ratiowiseData.slice(0, index),
+          0,
+          ...ratiowiseData.slice(index + 1),
+        ]);
+        alert("Ratio Total Must Be 100 !!!");
+      } else {
+        setRatiowiseData(newData);
+        setRatioTotal(sum);
       }
     }
-    setRatioTotal(sum);
   };
 
   const customerDetail = useRef();
@@ -311,24 +348,15 @@ export default function CreateCustomerMappingComponent() {
       return userIds;
     };
 
-    const getUserDataa = () => {
-      // Get an array of ratio values
-      const ratios = userDropdown?.map((ele, i) => {
-        const ratio = userRatioDetail?.current?.value; // Assuming userRatioDetail is an array of refs containing input fields for ratios
-        return parseInt(ratio, 10); // Convert the ratio to an integer
-      });
-
-      return ratios;
-    };
     const RwuserID = getUserData();
-    const userRatioData = getUserDataa();
+    const ratiosToSend = ratiowiseData?.filter((ratio) => ratio !== 0);
 
     const customerID = customerDetail?.current?.props?.value;
-    const queryTypeid = queryTypeDetail?.current?.props?.value.value;
+    const queryTypeid = queryTypeDetail?.current?.props?.value?.value;
     const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
     const templateid = templateDetail?.current?.props?.value?.value;
     const priorityID = priorityDetail?.current?.value;
-    const confirmationId = confirmationRequiredDetail?.current?.value;
+    const confirmationId = confirmationRequired;
     const approachId = approachDetail?.current?.value;
     const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
       ? departmentDropdownRef?.current?.props?.value[0]?.value
@@ -353,7 +381,7 @@ export default function CreateCustomerMappingComponent() {
     form.department_id = departmentId;
     if (data.approach === "RW") {
       form.user_id = RwuserID;
-      form.ratio = userRatioData;
+      form.ratio = ratiosToSend;
     } else {
       form.user_id = userID;
     }
@@ -589,6 +617,7 @@ export default function CreateCustomerMappingComponent() {
                           name="confirmation_required"
                           id="confirmation_required_yes"
                           ref={confirmationRequiredDetail}
+                          onChange={handleConfirmationChange}
                           required
                           value="1"
                           defaultChecked={
@@ -619,6 +648,7 @@ export default function CreateCustomerMappingComponent() {
                             (data.confirmation_required == 1 ||
                               data.confirmation_required == "0")
                           }
+                          onChange={handleConfirmationChange}
                         />
                         <label
                           className="form-check-label"
