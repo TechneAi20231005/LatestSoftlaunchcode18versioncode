@@ -1,1 +1,8 @@
-export const { REACT_APP_3_SOFT_LUNCH_API_URL } = process.env;
+export const {
+  REACT_APP_ENV,
+  REACT_APP_API_URL,
+  REACT_APP_PIN_CODE_API_URL,
+  REACT_APP_ROOT_URL,
+  REACT_APP_ATTACHMENT_URL,
+  REACT_APP_HOME_URL,
+} = process.env;

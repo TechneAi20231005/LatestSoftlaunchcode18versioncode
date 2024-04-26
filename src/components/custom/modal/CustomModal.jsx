@@ -5,9 +5,16 @@ import './style.scss';
 
 function CustomModal({ children, width, title, show, onClose }) {
   return (
-    <Modal size={width || 'md'} backdrop="static" show={show} centered className="custom_modal">
+    <Modal
+      size={width || 'md'}
+      backdrop="static"
+      show={show}
+      centered
+      className="custom_modal"
+      onHide={onClose}
+    >
       <RenderIf render={title}>
-        <ModalHeader>
+        <ModalHeader closeButton={onClose}>
           <h5 className="text_primary">{title}</h5>
         </ModalHeader>
       </RenderIf>

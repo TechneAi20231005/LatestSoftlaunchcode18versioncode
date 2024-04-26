@@ -5,7 +5,7 @@ import { errorHandler } from '../../../../../utils';
 
 export const getBranchMasterListThunk = createAsyncThunk('branchMaster/getBranchList', async () => {
   try {
-    const response = await customAxios.get(`/locationMaster`);
+    const response = await customAxios.get(`locationMaster`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
@@ -22,7 +22,7 @@ export const addBranchMasterThunk = createAsyncThunk(
   'branchMaster/addBranch',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`/locationMaster`, formData);
+      const response = await customAxios.post(`locationMaster`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -45,7 +45,7 @@ export const editBranchMasterThunk = createAsyncThunk(
   'branchMaster/editBranch',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/locationMaster/${currentId}`, formData);
+      const response = await customAxios.post(`locationMaster/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

@@ -16,7 +16,6 @@ export const transformDataForExportHandler = (data, headers, keys) => {
 
 export const customSearchHandler = (list, searchValue) => {
   if (!searchValue) return list;
-
   const filteredList = list.filter(branch => {
     const branchValues = Object.values(branch);
     return branchValues.some(value => {
@@ -27,4 +26,38 @@ export const customSearchHandler = (list, searchValue) => {
   });
 
   return filteredList;
+};
+
+// export const customSearchHandler = (function () {
+//   let timeoutId;
+//   let filteredList;
+
+//   return function (list, searchValue, delay = 1000) {
+//     clearTimeout(timeoutId);
+
+//     if (!searchValue) return list;
+
+//     timeoutId = setTimeout(() => {
+//       filteredList = list.filter(branch => {
+//         const branchValues = Object.values(branch);
+//         return branchValues.some(value => {
+//           return (
+//             typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
+//           );
+//         });
+//       });
+//     }, delay);
+//     console.log(filteredList);
+
+//     return filteredList || list;
+//   };
+// })();
+
+export const formatNumberWithCurrency = (number, locale = 'en-IN', currency = 'INR') => {
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+    currencyDisplay: 'narrowSymbol',
+  });
+  return formatter.format(number);
 };

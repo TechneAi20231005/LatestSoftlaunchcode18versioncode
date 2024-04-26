@@ -28,7 +28,7 @@ const salaryMasterSlice = createSlice({
       })
       .addCase(getSalaryMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getSalaryMasterList = false;
-        state.salaryMasterList = action.payload.data;
+        state.salaryMasterList = action?.payload?.data;
         state.successMsg.getSalaryMasterList = action.payload.msg;
       })
       .addCase(getSalaryMasterListThunk.rejected, (state, action) => {

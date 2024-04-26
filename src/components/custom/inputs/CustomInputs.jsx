@@ -1,6 +1,5 @@
 import React from 'react';
 import { useFormikContext, getIn } from 'formik';
-import { IoEye, IoEyeOff } from 'react-icons/io5';
 import Select from 'react-select';
 
 import './style.scss';
@@ -44,9 +43,9 @@ export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) =
         />
         <div className={error && touch && 'input_invalid'}>
           {props.show ? (
-            <IoEye onClick={() => props.setShow(false)} className="cp" />
+            <i onClick={() => props.setShow(false)} className="icofont-eye cp" />
           ) : (
-            <IoEyeOff onClick={() => props.setShow(true)} className="cp" />
+            <i onClick={() => props.setShow(true)} className="icofont-eye-blocked cp" />
           )}
         </div>
       </div>
@@ -145,6 +144,7 @@ export const CustomReactSelect = ({
   field,
   options,
   isMulti = false,
+  disabled = false,
   form: { touched, errors },
   ...props
 }) => {
@@ -184,6 +184,7 @@ export const CustomReactSelect = ({
           options={props.addOtherOption ? optionsWithOther : options}
           isMulti={isMulti}
           className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+          isDisabled={disabled}
         />
         {error && touch && <div className="invalid-feedback">{error}</div>}
       </div>
