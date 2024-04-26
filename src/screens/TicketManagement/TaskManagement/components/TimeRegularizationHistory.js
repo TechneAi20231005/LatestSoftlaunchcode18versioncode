@@ -203,10 +203,11 @@ const TimeRegularizationHistory = (props) => {
                   <th className="text-center"> Requested By </th>
                   <th className="text-center"> From Date </th>
                   <th className="text-center"> To Date </th>
-                  <th className="text-center"> Scheduled Time </th>
                   <th className="text-center"> From Time </th>
                   <th className="text-center"> To Time </th>
                   <th className="text-center"> Actual Time </th>
+                  <th className="text-center"> Scheduled Time </th>
+
                   <th className="text-center"> Remark </th>
                   <th className="text-center"> Status</th>
                 </tr>
@@ -243,17 +244,7 @@ const TimeRegularizationHistory = (props) => {
                             readOnly={true}
                           />
                         </td>
-                        <td>
-                          <input
-                            type="time"
-                            className="form-control form-control-sm"
-                            id={`scheduled_time${i}`}
-                            name="scheduled_time[]"
-                            value={x.scheduled_time}
-                            required
-                            readOnly={true}
-                          />
-                        </td>
+
                         <td>
                           <input
                             type="time"
@@ -284,6 +275,17 @@ const TimeRegularizationHistory = (props) => {
                             id={`actual_time${i}`}
                             name="actual_time[]"
                             value={x.actual_time}
+                            required
+                            readOnly={true}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="time"
+                            className="form-control form-control-sm"
+                            id={`scheduled_time${i}`}
+                            name="scheduled_time[]"
+                            value={x.scheduled_time}
                             required
                             readOnly={true}
                           />

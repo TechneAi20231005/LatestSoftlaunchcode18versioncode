@@ -57,14 +57,13 @@ export default function TaskComponent({ match }) {
     modalData: "",
     modalHeader: "",
   });
-
+  const [selectedOption, setSelectedOption] = useState(null);
   const [sprintInput, setSprintInput] = useState({
     sprintName: "",
     sprintDescription: "",
     startDate: "",
     endDate: "",
   });
-  const [selectedOption, setSelectedOption] = useState(null);
   const sprintDropDownRef = useRef();
   const [sprintData, setSprintdata] = useState([]);
   const [sprintCardData, setSprintCardData] = useState([]);
@@ -489,7 +488,6 @@ export default function TaskComponent({ match }) {
         let filteredArray = prevState?.filter(
           (sprint) => sprint.id === selectedOption?.value
         );
-
         return filteredArray;
       });
 

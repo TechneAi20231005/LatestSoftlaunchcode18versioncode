@@ -12,3 +12,24 @@ function StatusBadge({ status }) {
 }
 
 export default StatusBadge;
+
+export const ApplicationStatusBadge = ({ type, name }) => {
+  return (
+    <>
+      <Badge
+        bg={
+          type === 'primary'
+            ? 'primary'
+            : type === 'success'
+            ? 'success'
+            : type === 'warning'
+            ? 'warning'
+            : 'danger'
+        }
+        className="px-3 py-1"
+      >
+        {name}
+      </Badge>
+    </>
+  );
+};

@@ -155,6 +155,10 @@ import ViewTicketComponent from "./TicketManagement/ViewTicketComponent";
 import ResetPassword from "../components/Auth/ResetPassword";
 import StepAuthentication from "../components/Auth/StepAuthentication";
 
+// Sprint Planning
+import SprintCalendar from "./TicketManagement/TaskManagement/Calendar-Graph/SprintCalendar";
+import GraphWeekWise from "./TicketManagement/TaskManagement/Calendar-Graph/Custom-Day-Month-Year/GraphWeekWise";
+
 // // // employeeJoining
 import InterviewMaster from "./HRMS/employeeJoining/interviewMaster/InterviewMaster";
 import CandidateList from "./HRMS/employeeJoining/candidateList/CandidateList";
@@ -162,8 +166,6 @@ import BranchMaster from "./HRMS/employeeJoining/branchMaster/BranchMaster";
 import SourceMaster from "./HRMS/employeeJoining/sourceMaster/SourceMaster";
 import RemarkMaster from "./HRMS/employeeJoining/remarkMaster/RemarkMaster";
 import SalaryMaster from "./HRMS/employeeJoining/salaryMaster/SalaryMaster";
-import SprintCalendar from "./TicketManagement/TaskManagement/Calendar-Graph/SprintCalendar";
-import GraphWeekWise from "./TicketManagement/TaskManagement/Calendar-Graph/Custom-Day-Month-Year/GraphWeekWise";
 
 class MainIndex extends React.Component {
   constructor(props) {
@@ -760,7 +762,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CalendarMaster`}
               element={<CalenderMaster />}
             />
-            {/* Employee Joining routes */}
+            {/* HRMS>> Employee Joining routes */}
             <Route
               exact
               path={`/${_base}/InterviewMaster`}
@@ -770,6 +772,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/CandidateList`}
               element={<CandidateList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CandidateList/:id`}
+              element={<EmployeeJoining />}
             />
             <Route
               exact

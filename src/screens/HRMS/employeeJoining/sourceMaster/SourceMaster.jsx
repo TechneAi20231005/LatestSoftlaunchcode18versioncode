@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -31,68 +31,74 @@ function SourceMaster() {
   // // static data
   const columns = [
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-    },
-
-    {
       name: 'Action',
       selector: row => (
         <i
-          className="icofont-edit cp"
+          className="icofont-edit text-primary cp text-center"
           onClick={() => setAddEditSourceModal({ type: 'EDIT', data: row, open: true })}
         />
       ),
       sortable: false,
+      width: '70px',
     },
-
+    {
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px',
+    },
     {
       name: 'Source Name',
       sortable: true,
       selector: row => row?.source_name || '--',
+      width: '200px',
+    },
+    {
+      name: 'Remark',
+      sortable: true,
+      selector: row =>
+        row?.remark ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+          >
+            <span>{row?.remark || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      width: '300px',
     },
     {
       name: 'Status',
       selector: row => <StatusBadge status={row?.is_active} />,
       sortable: true,
-    },
-    {
-      name: 'Remark',
-      sortable: true,
-      selector: row => row?.remark || '--',
-      // selector: row =>
-      //   row?.remark ? (
-      //     <OverlayTrigger
-      //       placement="top"
-      //       overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
-      //     >
-      //       <span>{row?.remark || '--'}</span>
-      //     </OverlayTrigger>
-      //   ) : (
-      //     '--'
-      //   ),
+      width: '120px',
     },
     {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
+      width: '175px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
+      width: '175px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
+      width: '175px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
+      width: '175px',
     },
   ];
 
