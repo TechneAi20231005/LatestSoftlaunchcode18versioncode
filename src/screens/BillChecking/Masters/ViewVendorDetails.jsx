@@ -570,7 +570,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
                 <div className="col-sm-3 mt-4 ">
                   <label className="form-label font-weight-bold">
                     Consider In Payment :

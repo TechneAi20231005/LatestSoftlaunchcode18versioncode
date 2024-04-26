@@ -1046,8 +1046,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         min={
                           authorities &&
                           authorities.Past_Financial_Year_Bill_Date === true
-                            ? formattedStartPastDate
-                            : formattedStartDate
+                            ? formattedStartDate
+                            : formattedStartPastDate
                         }
                         max={formattedDate}
                         readOnly={
