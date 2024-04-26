@@ -596,7 +596,8 @@ const RequestModal = (props) => {
                                   }
                                   required
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                 />
@@ -618,7 +619,8 @@ const RequestModal = (props) => {
                                     )
                                   }
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                   required
@@ -635,7 +637,8 @@ const RequestModal = (props) => {
                                     handleFromTimeChange(index, e.target.value)
                                   }
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                   required
@@ -653,7 +656,8 @@ const RequestModal = (props) => {
                                   }
                                   required
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                 />
@@ -672,7 +676,8 @@ const RequestModal = (props) => {
                                   }
                                   required
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                 />
@@ -688,7 +693,8 @@ const RequestModal = (props) => {
                                   onChange={(e) => handleRemarkChange(e, index)} // Assuming you have a function to handle remark changes
                                   required
                                   disabled={
-                                    row.status != "REJECTED" &&
+                                    (row.status === "REJECTED" ||
+                                      row.status === "APPROVED") &&
                                     !row.isAddingNewRow
                                   }
                                 />
@@ -719,6 +725,10 @@ const RequestModal = (props) => {
                                   <button
                                     className="mr10 mr-1 btn btn-danger"
                                     onClick={(row) => handleRemoveClickk(index)}
+                                    disabled={
+                                      row.status === "REJECTED" ||
+                                      row.status === "APPROVED"
+                                    }
                                   >
                                     <i className="icofont-ui-delete"></i>
                                   </button>
