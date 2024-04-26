@@ -448,7 +448,9 @@ const RequestModal = (props) => {
                     <th className="text-center"> Actual Time </th>
 
                     <th className="text-center"> Remark </th>
-                    <th className="text-center"> Status</th>
+                    {regularizeTimeData && regularizeTimeData.length > 0 && (
+                      <th className="text-center"> Status</th>
+                    )}
                     <th className="text-center"> Action</th>
                   </tr>
                 </thead>
