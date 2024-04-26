@@ -4,11 +4,11 @@ import SprintService from "../../../../services/TicketService/SprintService";
 import { useParams } from "react-router-dom";
 import DayWiseCalendar from "./Custom-Day-Month-Year/DayWiseCalendar";
 import WeekwiseCalendar from "./Custom-Day-Month-Year/WeekwiseCalendar";
+import { CalendarYearWise } from "./Custom-Day-Month-Year/CalendarYearWise";
 
 const SprintCalendar = () => {
   const params = useParams();
   const { id: ticketId } = params;
-
   const [selectedOption, setSelectedOption] = useState("week");
   const [calendarData, setCalendarData] = useState([]);
   const [notify, setNotify] = useState({});
@@ -20,6 +20,7 @@ const SprintCalendar = () => {
   const [withinRangeDates, setWithinRangeDates] = useState([]);
   const [, setDateArray] = useState([]);
   const [currentDaywiseDate, setCurrentDaywiseDate] = useState({});
+  const [weekData, setWeekData] = useState([]);
   const [taskStatus, setTaskStatus] = useState([
     { id: 1, statusName: "TO_DO", color: "#C3F5FF" },
     { id: 2, statusName: "IN_PROGRESS", color: "#FFECB3" },
@@ -39,7 +40,6 @@ const SprintCalendar = () => {
       days.push({ id: count++, date: new Date(currentDate) });
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    console.log("genrtae days", days);
     setDateArray(days);
     return days;
   };
@@ -48,122 +48,72 @@ const SprintCalendar = () => {
     setSelectedOption(event.target.value);
     if (event.target.value === "day") {
       const days = generateDateArray();
-      console.log("days in radio", days);
       setCurrentDateRange(days);
     }
   };
-  // const WeeklyRanges = (startingDate, endingDate) => {
-  //   const startDate = new Date(startingDate);
-  //   const endDate = new Date(endingDate);
-  //   const weeklyRanges = [];
-  //   let currentDate = new Date(startDate);
-  //   let nextSunday = new Date(startDate);
-  //   nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
 
-  //   while (nextSunday <= endDate) {
-  //     const nextMonday = new Date(nextSunday);
-  //     nextMonday.setDate(nextMonday.getDate() + 6);
+  function getWeekRange(startDate, endDate) {
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-  //     weeklyRanges.push({
-  //       start: new Date(nextSunday),
-  //       end: new Date(nextMonday),
-  //     });
-  //     nextSunday.setDate(nextSunday.getDate() + 7);
-  //   }
-  //   return weeklyRanges;
-  // };
+    const prevMonday = new Date(start);
+    prevMonday.setDate(
+      prevMonday.getDate() -
+        prevMonday.getDay() +
+        (prevMonday.getDay() === 0 ? -6 : 1)
+    );
 
-  // const WeeklyRanges = (startingDate, endingDate) => {
-  //   const startDate = new Date(startingDate);
-  //   const endDate = new Date(endingDate);
-  //   const weeklyRanges = [];
-  //   let currentDate = new Date(startDate);
-  //   let nextSunday = new Date(startDate);
-  //   nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+    const prevSunday = new Date(prevMonday);
+    prevSunday.setDate(prevSunday.getDate() + 6);
 
-  //   while (nextSunday <= endDate) {
-  //     const nextMonday = new Date(nextSunday);
-  //     nextMonday.setDate(nextMonday.getDate() + 6);
+    const startOfWeek = new Date(start);
+    startOfWeek.setDate(
+      startOfWeek.getDate() -
+        startOfWeek.getDay() +
+        (startOfWeek.getDay() === 0 ? -6 : 1)
+    );
 
-  //     const startFormatted = nextSunday.toLocaleDateString("en-US", {
-  //       day: "2-digit",
-  //       month: "short",
-  //       year: "numeric",
-  //     });
+    const endOfWeek = new Date(end);
+    endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
 
-  //     const endFormatted = nextMonday.toLocaleDateString("en-US", {
-  //       day: "2-digit",
-  //       month: "short",
-  //       year: "numeric",
-  //     });
+    const weekRange = [];
+    let currentMonday = new Date(startOfWeek);
 
-  //     weeklyRanges.push({
-  //       start: startFormatted,
-  //       end: endFormatted,
-  //     });
-
-  //     nextSunday.setDate(nextSunday.getDate() + 7);
-  //   }
-  //   return weeklyRanges;
-  // };
-
-  const WeeklyRanges = (startingDate, endingDate) => {
-    const startDate = new Date(startingDate);
-    const endDate = new Date(endingDate);
-    const weeklyRanges = [];
-
-    const prevSunday = new Date(startDate);
-    prevSunday.setDate(prevSunday.getDate() - prevSunday.getDay());
-    const prevMonday = new Date(prevSunday);
-    prevMonday.setDate(prevMonday.getDate() - 6);
-
-    const prevStartFormatted = prevMonday.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-
-    const prevEndFormatted = prevSunday.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-
-    weeklyRanges.push({
-      start: prevStartFormatted,
-      end: prevEndFormatted,
-    });
-    let nextSunday = new Date(startDate);
-    nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
-
-    while (nextSunday <= endDate) {
-      const nextMonday = new Date(nextSunday);
-      nextMonday.setDate(nextMonday.getDate() + 6);
-
-      const startFormatted = nextSunday.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
+    if (prevMonday.getTime() !== startOfWeek.getTime()) {
+      weekRange.push({
+        Monday: prevMonday.toLocaleDateString(),
+        Sunday: prevSunday.toLocaleDateString(),
       });
-
-      const endFormatted = nextMonday.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
-
-      weeklyRanges.push({
-        start: startFormatted,
-        end: endFormatted,
-      });
-
-      nextSunday.setDate(nextSunday.getDate() + 7);
     }
-    console.log("weeklyRanges 1", weeklyRanges);
-    return weeklyRanges;
-  };
 
-  const getFormattedDate = (date) => {
+    // Loop through the weeks from startOfWeek to endOfWeek
+    while (currentMonday <= endOfWeek) {
+      const currentSunday = new Date(currentMonday);
+      currentSunday.setDate(currentSunday.getDate() + 6);
+
+      weekRange.push({
+        Monday: currentMonday.toLocaleDateString(),
+        Sunday: currentSunday.toLocaleDateString(),
+      });
+
+      currentMonday.setDate(currentMonday.getDate() + 7);
+    }
+
+    return weekRange;
+  }
+
+  // code end
+  const getFormattedDate = (dates) => {
+    const date = new Date(dates);
     return {
       day: date.toLocaleDateString("en-US", { weekday: "long" }),
       month: date.toLocaleDateString("en-US", { month: "long" }),
@@ -171,8 +121,9 @@ const SprintCalendar = () => {
     };
   };
 
-  const formatDateString = (date) => {
-    console.log("date...", date);
+  const formatDateString = (dates) => {
+    const date = new Date(dates);
+
     const day = date.getDate();
     const month = date.toLocaleString("en", { month: "short" });
     const year = date.getFullYear();
@@ -181,36 +132,32 @@ const SprintCalendar = () => {
 
   const fetchCalendarData = async () => {
     try {
-      const res = await new SprintService().getSprintCalendar(ticketId);
-      console.log("res.data.data", res.data.data);
-      if (res?.data?.status && res?.data?.data) {
-        setCalendarData(res?.data?.data);
-        setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
-        setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
-        if (selectedOption === "week") {
-          const weeklyRange = WeeklyRanges(
-            res?.data?.data[0]?.first_sprint_date,
-            res?.data?.data[0]?.last_sprint_date
-          );
-          if (weeklyRange) {
-            setCurrentDateRange(weeklyRange);
-            let filterData = weeklyRange[currentIndex];
-            const startDate = new Date(filterData.start);
-            const endDate = new Date(filterData.end);
-            const days = [];
-
-            let currentDate = new Date(startDate);
-            while (currentDate <= endDate) {
-              days.push(getFormattedDate(new Date(currentDate)));
-              currentDate.setDate(currentDate.getDate() + 1);
+      await new SprintService()
+        .getSprintCalendar(ticketId)
+        .then(async (res) => {
+          if (res?.data?.status && res?.data?.data) {
+            console.log("res.data.data", res?.data?.data);
+            setCalendarData(res?.data?.data);
+            setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
+            setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
+            if (selectedOption === "week") {
+              const weeklyRange = getWeekRange(
+                res?.data?.data[0]?.first_sprint_date,
+                res?.data?.data[0]?.last_sprint_date
+              );
+              if (weeklyRange) {
+                setCurrentDateRange(weeklyRange);
+                await getCalendarDataForWeek(
+                  weeklyRange[currentIndex]?.Monday,
+                  weeklyRange[currentIndex]?.Sunday
+                );
+              }
             }
-            setWithinRangeDates(days);
+          } else {
+            setNotify({ type: "danger", message: res?.data?.message });
+            console.error("Unexpected response format:", res);
           }
-        }
-      } else {
-        setNotify({ type: "danger", message: res?.data?.message });
-        console.error("Unexpected response format:", res);
-      }
+        });
     } catch (error) {
       setCalendarData(null);
       setNotify({ type: "danger", message: "Error fetching calendar data!!!" });
@@ -247,7 +194,26 @@ const SprintCalendar = () => {
       return previousIndex;
     });
   };
-  console.log("currentdaywisedate", currentDaywiseDate);
+  const getCalendarDataForWeek = async (firstDate, secondDate) => {
+    const formatDate = (dates) => {
+      const date = new Date(dates);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    await new SprintService()
+      .getSprintCalendarDataForWeek(
+        ticketId,
+        formatDate(firstDate),
+        formatDate(secondDate)
+      )
+      .then((res) => {
+        setWeekData(res?.data?.data);
+      });
+  };
+
   useEffect(() => {
     fetchCalendarData();
   }, []);
@@ -263,7 +229,7 @@ const SprintCalendar = () => {
     } else if (selectedOption === "week") {
       setComponentToRender(
         <WeekwiseCalendar
-          data={calendarData}
+          data={weekData}
           bgColor={taskStatus}
           daysOfWeek={withinRangeDates}
           firstDate={firstStartDate}
@@ -271,9 +237,9 @@ const SprintCalendar = () => {
         />
       );
     } else if (selectedOption === "month") {
-      // setComponentToRender(<MonthComponent />);
+      setComponentToRender(<CalendarYearWise />);
     }
-  }, [selectedOption, calendarData, taskStatus, currentDaywiseDate]);
+  }, [selectedOption, calendarData, taskStatus, currentDaywiseDate, weekData]);
 
   return (
     <div className="container-xxl">
@@ -316,15 +282,14 @@ const SprintCalendar = () => {
           ))}
         </div>
       </div>
-      {console.log("current date range", currentDateRange)}
       {
         <div className="card mt-3">
           <div className="card-body d-flex align-items-center justify-content-between">
             <div className="text-primary col-5 d-flex align-items-center">
               <strong>Day wise</strong>
-              {/* {currentDateRange[currentIndex] && ( */}
+
               {
-                <div className="col-6 d-flex ms-2 align-items-center  justify-content-around">
+                <div className="col-8 d-flex ms-2 align-items-center  justify-content-evenly">
                   <button
                     className="btn col-2 p-0 text-end"
                     onClick={handlePrev}
@@ -354,7 +319,11 @@ const SprintCalendar = () => {
                     </div>
                   )}
                   {selectedOption === "week" && (
-                    <div className="col-8 text-center">{`${currentDateRange[currentIndex]?.start} - ${currentDateRange[currentIndex]?.start}  `}</div>
+                    <div className="col-8 text-center">{`${formatDateString(
+                      currentDateRange[currentIndex]?.Monday
+                    )} - ${formatDateString(
+                      currentDateRange[currentIndex]?.Sunday
+                    )}  `}</div>
                   )}
 
                   <button

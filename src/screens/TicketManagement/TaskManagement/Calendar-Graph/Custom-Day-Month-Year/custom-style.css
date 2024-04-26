@@ -23,3 +23,10 @@
   font-size: 14px;
   z-index: 9999;
 }
+
+.calendar-card {
+  height: 82px;
+}
+.myCustomHeight {
+  height: 80vh;
+}

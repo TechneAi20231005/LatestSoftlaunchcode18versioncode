@@ -7,6 +7,8 @@ const DayWiseCalendar = (props) => {
   const [tooltipContent, setTooltipContent] = useState("");
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+  console.log("dayWiseData", dayWiseData);
+
   const handleMouseEnter = (event, data) => {
     const {
       taskName,

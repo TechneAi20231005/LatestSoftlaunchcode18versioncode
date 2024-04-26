@@ -478,6 +478,7 @@ export default function TaskComponent({ match }) {
   const sprintDropDownHandler = async (selectedOption) => {
     setDisableNextBtn(false);
     setDisablePrevBtn(false);
+    setSprintCardData(sprintData);
     setSelectedOption((prevStateOption) => {
       if (selectedOption === prevStateOption) {
         setSprintCardData([]);
@@ -488,6 +489,7 @@ export default function TaskComponent({ match }) {
         let filteredArray = prevState?.filter(
           (sprint) => sprint.id === selectedOption?.value
         );
+
         return filteredArray;
       });
 
