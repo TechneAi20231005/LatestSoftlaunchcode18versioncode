@@ -7,7 +7,7 @@ export const getFollowUpListThunk = createAsyncThunk(
   'followUp/getFollowUpList',
   async ({ currentId }) => {
     try {
-      const response = await customAxios.get(`/followUp/${currentId}`);
+      const response = await customAxios.get(`followUp/${currentId}`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -25,7 +25,7 @@ export const addFollowUpThunk = createAsyncThunk(
   'followUp/addFollowUp',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/followUp/addFollowUp/${currentId}`, formData);
+      const response = await customAxios.post(`followUp/addFollowUp/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
