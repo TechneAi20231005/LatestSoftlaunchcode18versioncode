@@ -858,6 +858,7 @@ function TaskAndTicketTypeMaster(props) {
     }
     setNotify(null);
     const form = new FormData(e.target);
+    const Form = new FormData(e.target);
     if (!selectedOption && !id) {
       setParentTaskName("Please select a parent task type.");
       setParentTicketName("Please select a parent ticket type.");
@@ -879,8 +880,6 @@ function TaskAndTicketTypeMaster(props) {
         );
       }
 
-      form.append("type", selectedType);
-
       if (!id) {
         setNotify(null);
         await new TaskTicketTypeService().postType(form).then((res) => {
@@ -896,7 +895,25 @@ function TaskAndTicketTypeMaster(props) {
           }
         });
       } else {
-        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+        if (
+          selectedOptionId === "Primary" ||
+          modal?.modalData?.parent_name === "Primary"
+        ) {
+          Form.append("parent_id", 0);
+        } else {
+          Form.append(
+            "parent_id",
+            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+            selectedOptionId
+              ? selectedOptionId
+              : modal?.modalData?.parent_name !== null
+              ? modal?.modalData?.parent_name
+              : "Primary"
+          );
+        }
+        form.append("type", modal?.modalData?.parent_name);
+
+        await new TaskTicketTypeService()._updateType(id, Form).then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
               setNotify({ type: "success", message: res.data.message });
@@ -918,6 +935,8 @@ function TaskAndTicketTypeMaster(props) {
   useEffect(() => {
     loadData();
   }, []);
+
+  console.log("modal", modal?.modalData?.parent_name);
 
   useEffect(() => {
     // Check if the modal is closed
