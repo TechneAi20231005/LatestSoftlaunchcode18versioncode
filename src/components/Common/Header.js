@@ -260,7 +260,10 @@ export default function Header() {
                           }}
                         >
                           {notifications && (
-                            <button className="fw-bold badge bg-warning p-2">
+                            <button
+                              disabled
+                              className="fw-bold badge bg-warning p-2"
+                            >
                               <i class="icofont-history"></i>
                               History
                             </button>

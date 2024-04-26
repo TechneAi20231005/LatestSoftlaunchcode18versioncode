@@ -18,7 +18,7 @@ const ApproveRequestModal = (props) => {
   const ticketId = props.ticketId;
 
   const rquestData = props?.data;
-  const ticketIdName = rquestData[0]?.ticket_id_name;
+  const ticketIdName = props?.data[0]?.ticket_id_name;
   const loadData = () => {
     // Assuming getRegularizationTime is a function that returns a Promise
     new getRegularizationTime(ticketId)
@@ -163,7 +163,7 @@ const ApproveRequestModal = (props) => {
               alignItems: "center",
             }}
           >
-            <div style={{ fontWeight: "bold" }}>Ticket ID : {ticketIdName}</div>
+            <div style={{ fontWeight: "bold" }}>Ticket ID :{ticketIdName}</div>
             <div className="text-right">
               <button
                 type="button"
