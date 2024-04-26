@@ -5,7 +5,7 @@ import { errorHandler } from '../../../../../utils';
 
 export const getSalaryMasterListThunk = createAsyncThunk('salaryMaster/getSalaryList', async () => {
   try {
-    const response = await customAxios.get(`/salaryMaster`);
+    const response = await customAxios.get(`salaryMaster`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
@@ -23,7 +23,7 @@ export const addSalaryMasterThunk = createAsyncThunk(
   'salaryMaster/addSalary',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`/salaryMaster`, formData);
+      const response = await customAxios.post(`salaryMaster`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -46,7 +46,7 @@ export const editSalaryMasterThunk = createAsyncThunk(
   'salaryMaster/editSalary',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/salaryMaster/${currentId}`, formData);
+      const response = await customAxios.post(`salaryMaster/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

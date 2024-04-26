@@ -27,7 +27,7 @@ export const updateInterviewProcessThunk = createAsyncThunk(
   async ({ formData, onSuccessHandler, currentId }) => {
     try {
       const response = await customAxios.post(
-        `/remarkHistory/addHistoryData/${currentId}`,
+        `remarkHistory/addHistoryData/${currentId}`,
         formData,
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -50,7 +50,7 @@ export const scheduleRescheduleInterviewThunk = createAsyncThunk(
   'interviewProcess/scheduleRescheduleInterview',
   async ({ formData, onSuccessHandler }) => {
     try {
-      const response = await customAxios.post(`/interviewProcess/create`, formData);
+      const response = await customAxios.post(`interviewProcess/create`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -71,7 +71,7 @@ export const createInterviewJobOfferProcessThunk = createAsyncThunk(
   'interviewProcess/createJobOffer',
   async ({ formData, onSuccessHandler, currentId }) => {
     try {
-      const response = await customAxios.post(`/jobOffer/createJobOfferNew/${currentId}`, formData);
+      const response = await customAxios.post(`jobOffer/createJobOfferNew/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -131,7 +131,7 @@ export const manageOnBoardingProcessThunk = createAsyncThunk(
   async ({ formData, onSuccessHandler, currentId, reviseAndBackQuery }) => {
     try {
       const response = await customAxios.post(
-        `/onBoardingProcess/onBoardingToJobOffer/${currentId}${
+        `onBoardingProcess/onBoardingToJobOffer/${currentId}${
           reviseAndBackQuery ? `/${reviseAndBackQuery}` : ''
         }`,
         formData,
