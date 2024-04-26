@@ -1,4 +1,10 @@
 import { getDateTime } from '../components/Utilities/Functions';
+import {
+  REACT_APP_API_URL,
+  REACT_APP_PIN_CODE_API_URL,
+  REACT_APP_ATTACHMENT_URL,
+  REACT_APP_ROOT_URL,
+} from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
 
@@ -7,7 +13,7 @@ export var dataFormat = { status: 0, message: null, data: null };
 //Development :TechTicketDummy TSDDummy
 //Production : TechTicket TSNewBackend
 
-export const _pincodeUrl = 'https://api.postalpincode.in/pincode/';
+// export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
 
 // export const _base ='TechTicket';
 // export const _apiUrl = "http://15.207.120.175/TSNewBackend/public/api/";
@@ -17,11 +23,15 @@ export const _pincodeUrl = 'https://api.postalpincode.in/pincode/';
 // export const _apiUrl = "http://15.207.120.175/TechTicketDummyDevelopment/public/api/";
 // export const _attachmentUrl="http://15.207.120.175/TechTicketDummyDevelopment/";
 
+// export const _base = "3_SoftLaunch/TechTicket";
+// export const _apiUrl =
+//   "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
+// export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
 
-export const _base = "2_Testing/TechTicket";
-export const _apiUrl = "http://3.108.206.34/2_Testing/TSNewBackend/public/api/";
-export const _attachmentUrl = "http://3.108.206.34/2_Testing/TSNewBackend/";
-
+export const _base = REACT_APP_ROOT_URL;
+export const _apiUrl = REACT_APP_API_URL;
+export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
+export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
 export const loginURL = _apiUrl + 'login';
 export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';

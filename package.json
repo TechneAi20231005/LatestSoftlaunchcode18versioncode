@@ -1,6 +1,6 @@
 {
   "name": "connectus3.0",
-  "homepage": "http://3.108.206.34/2_Testing/TechTicket/",
+  "homepage": "http://3.108.206.34/3_SoftLaunch/TechTicket/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,6 +16,7 @@
     "dateformat": "^5.0.3",
     "draft-convert": "^2.1.13",
     "draft-js": "^0.11.7",
+    "env-cmd": "^10.1.0",
     "final-form": "^4.20.10",
     "formik": "^2.4.5",
     "history": "^5.3.0",
@@ -36,7 +37,6 @@
     "react-date-picker": "^10.6.0",
     "react-datepicker": "^4.25.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^5.0.1",
     "react-mentions": "^4.4.10",
     "react-otp-input": "^3.1.1",
     "react-redux": "^9.1.0",
@@ -54,8 +54,12 @@
     "yup": "^1.4.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "env-cmd -f .env.dev react-scripts start",
+    "start:UAT": "env-cmd -f .env.uat react-scripts start",
+    "start:PROD": "env-cmd -f .env.production react-scripts start",
+    "build": "env-cmd -f .env.dev react-scripts build",
+    "build:UAT": "env-cmd -f .env.uat react-scripts build",
+    "build:PROD": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
