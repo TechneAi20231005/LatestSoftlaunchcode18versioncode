@@ -448,7 +448,9 @@ const RequestModal = (props) => {
                     <th className="text-center"> Actual Time </th>
 
                     <th className="text-center"> Remark </th>
-                    <th className="text-center"> Status</th>
+                    {regularizeTimeData && regularizeTimeData.length > 0 && (
+                      <th className="text-center"> Status</th>
+                    )}
                     <th className="text-center"> Action</th>
                   </tr>
                 </thead>
@@ -537,12 +539,12 @@ const RequestModal = (props) => {
                               .map(Number);
                             const actualTimeValue = hours * 60 + minutes;
                             // Check if actual time exceeds a certain limit (e.g., 12 hours)
-                            if (actualTimeValue > 12 * 60) {
-                              alert("Actual time is greater than 12:00 hours.");
-                              // Optionally, you might want to revert the changes made
-                              // or handle this situation according to your app's logic
-                              return;
-                            }
+                            // if (actualTimeValue > 12 * 60) {
+                            //   alert("Actual time is greater than 12:00 hours.");
+                            //   // Optionally, you might want to revert the changes made
+                            //   // or handle this situation according to your app's logic
+                            //   return;
+                            // }
 
                             updatedData[index].actual_time = actualTime;
                             setRegularizeTimeData(updatedData);

@@ -370,6 +370,10 @@ export default function Header() {
                                     <div
                                       className="flex-fill ms-2"
                                       style={{ cursor: "pointer" }}
+                                      onClick={(e) => {
+                                        handleShowApproveRequestModal();
+                                        handleRegularizationRequest(ticketID);
+                                      }}
                                     >
                                       {ele.url && (
                                         <Link to={`/${_base}/${ele.url}`}>
