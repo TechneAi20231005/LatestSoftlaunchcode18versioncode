@@ -10,6 +10,25 @@ import { Astrick } from "../../../components/Utilities/Style";
 import { useDispatch, useSelector } from "react-redux";
 import { templateData } from "./TemplateComponetAction";
 export default function TaskComponent(props) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const handleSelect = (label, ID) => {
+    setSelectedOptions(selectedOptions === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    const { name, value } = label;
+
+    const updatedData = { ...data, [name]: value, task_type_id: label }; // Include label object directly
+
+    // updatedData.task_type_id = label ? label : props.taskData.parent_name;
+    setData(updatedData);
+
+    // closeAllDropdowns();
+  };
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
   const [data, setData] = useState({
     task: props.taskData.task_name,
     days: props.taskData.days,
@@ -17,8 +36,8 @@ export default function TaskComponent(props) {
     start_days: props.taskData.start_days,
     days: props.taskData.task_days,
     basket_id: props.taskData.basket_id,
+    task_type_id: selectedOptionId,
   });
-
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -39,6 +58,188 @@ export default function TaskComponent(props) {
     }
   };
 
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const [taskData, setTaskData] = useState([]);
+
+  function transformData(taskData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the taskData
+    taskData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+  const transformedOptions = transformData(taskData);
+
   var oo = props.taskData.AB;
 
   const handleTaskDelete = (e, idx) => {
@@ -52,6 +253,14 @@ export default function TaskComponent(props) {
 
   const handleShow = () => {
     setShow((prev) => !prev);
+  };
+
+  const loadData = async () => {
+    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+      if (res?.status === 200) {
+        setTaskData(res?.data?.data);
+      }
+    });
   };
 
   const handleChange = (e, type) => {
@@ -72,6 +281,9 @@ export default function TaskComponent(props) {
       const { name, value } = e.target;
 
       const updatedData = { ...data, [name]: value };
+      // updatedData.task_type_id = selectedOptionId
+      //   ? selectedOptionId
+      //   : props.taskData.parent_name;
       setData(updatedData);
     }
   };
@@ -80,6 +292,7 @@ export default function TaskComponent(props) {
   const [parent, setParent] = useState();
 
   useEffect(() => {
+    loadData();
     new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -135,7 +348,6 @@ export default function TaskComponent(props) {
     }
     setNotify(null);
     e.preventDefault();
-
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
       .then((res) => {
@@ -221,7 +433,7 @@ export default function TaskComponent(props) {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title  fw-bold" id="createprojectlLabel">
-                    Update task gggggggggggggggggggggggggggg ;lkjhdfgt
+                    Update task
                   </h5>
                   <button
                     className="btn btn-sm btn-primary"
@@ -244,6 +456,52 @@ export default function TaskComponent(props) {
                           onInput={(e) => handleChange(e, "standard")}
                         />
                         <br />
+
+                        <label>
+                          <b>
+                            Task Type Name:
+                            <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <div
+                          style={{
+                            position: "relative",
+                            display: "inline-block",
+                            width: "100%",
+                          }}
+                        >
+                          <div
+                            style={{
+                              padding: "8px",
+                              border: "1px solid #ccc",
+                              cursor: "pointer",
+                              width: "100%",
+                            }}
+                            onClick={(e) => handleSelectOptionClick(e)}
+                          >
+                            {selectedOptions
+                              ? selectedOptions
+                              : props.taskData.parent_name}
+                          </div>
+                          {isMenuOpen && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                width: "100%", // Set the width to 100% to match the parent's width
+                                top: "100%",
+                                zIndex: 999, // Adjust the z-index as needed
+                              }}
+                            >
+                              <CustomMenuList
+                                options={transformedOptions}
+                                onSelect={(label, ID) =>
+                                  handleSelect(label, ID)
+                                }
+                                // closeAllDropdowns={closeAllDropdowns}
+                              />
+                            </div>
+                          )}
+                        </div>
 
                         <label>Days Required</label>
                         <Astrick color="red" size="13px" />

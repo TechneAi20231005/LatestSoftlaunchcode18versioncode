@@ -1,36 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Link,useLocation } from 'react-router-dom';
-import CustomerMappingService from '../../../services/SettingService/CustomerMappingService'
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
+import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
 import DataTable from "react-data-table-component";
 import ErrorLogService from "../../../services/ErrorLogService";
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
-import Select from 'react-select';
-import { _base } from '../../../settings/constants'
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel'
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService'
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import Select from "react-select";
+import { _base } from "../../../settings/constants";
+import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
-import { UseDispatch,useDispatch,useSelector } from 'react-redux';
-import CustomerMappingSlice from './Slices/CustomerMappingSlice';
-import { exportCustomerMappingData, getCustomerMappingData } from './Slices/CustomerMappingAction';
-import { getRoles } from '../../Dashboard/DashboardAction';
-import DashbordSlice from '../../Dashboard/DashbordSlice';
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+import CustomerMappingSlice from "./Slices/CustomerMappingSlice";
+import {
+  exportCustomerMappingData,
+  getCustomerMappingData,
+} from "./Slices/CustomerMappingAction";
+import { getRoles } from "../../Dashboard/DashboardAction";
+import DashbordSlice from "../../Dashboard/DashbordSlice";
 export default function CustomerMappingComponent() {
+  const dispatch = useDispatch();
+  const data = useSelector(
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.customerMappingData
+  );
 
-  const dispatch=useDispatch()
-  const data = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.customerMappingData)
+  const exportData = useSelector(
+    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.exportData
+  );
 
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
+  );
 
-  const exportData = useSelector(CustomerMappingSlice=>CustomerMappingSlice.customerMaster.
-    exportData
-    )
-
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32));
-
-
-
-  const location = useLocation()
+  const location = useLocation();
 
   const [notify, setNotify] = useState(null);
   // const [data, setData] = useState(null);
@@ -39,11 +43,10 @@ export default function CustomerMappingComponent() {
   // const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem("role_id")
+  const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null)
 
-
-  const searchRef = useRef()
+  const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -60,10 +63,6 @@ export default function CustomerMappingComponent() {
     });
   }
 
-
-
-
-
   // const handleSearch = () => {
   //   const SearchValue = searchRef.current.value;
   //   const result = SearchInputData(data, SearchValue);
@@ -76,32 +75,38 @@ export default function CustomerMappingComponent() {
   // };
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {
-
-  };
-
-
-
+  const handleSearch = (value) => {};
 
   const columns = [
     {
-      name: "Action", selector: (row) => { }, sortable: false,width: "80px",
-      cell: (row) =>
-        <div className="btn-group" role="group" >
-          <Link to={`/${_base}/CustomerMapping/Edit/` + row.id}
-            className="btn btn-outline-secondary">
+      name: "Action",
+      selector: (row) => {},
+      sortable: false,
+      width: "80px",
+      cell: (row) => (
+        <div className="btn-group" role="group">
+          <Link
+            to={`/${_base}/CustomerMapping/Edit/` + row.id}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
+      ),
     },
-    { name: 'Sr.No', selector: row => row.Sro, sortable: true,width: "60px", },
+    {
+      name: "Sr.No",
+      selector: (row) => row.Sro,
+      sortable: true,
+      width: "60px",
+    },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
     {
       name: "Query",
       selector: (row) => row["Query"],
       sortable: true,
-      with:"200px",
+      with: "200px",
       cell: (row) => (
         <div
           className="btn-group"
@@ -124,48 +129,91 @@ export default function CustomerMappingComponent() {
       ),
     },
 
-    
-    { name: 'Template', selector: row => row.template_name, sortable: true,width: "175px" },
-    { name: 'Form', selector: row => row.dynamic_form_name, sortable: true, width: "175px"},
-
-    { name: 'Department', selector: row => row.department_name, sortable: true,width: "175px" },
-    { name: 'Priority', selector: row => row.priority, sortable: true, },
-    { name: 'Approach', selector: row => row.approach, sortable: true,width: "175px" },
     {
-      name: 'Status',
+      name: "Template",
+      selector: (row) => row.template_name,
+      sortable: true,
+      width: "175px",
+    },
+    {
+      name: "Form",
+      selector: (row) => row.dynamic_form_name,
+      sortable: true,
+      width: "175px",
+    },
+
+    {
+      name: "Department",
+      selector: (row) => row.department_name,
+      sortable: true,
+      width: "175px",
+    },
+    { name: "Priority", selector: (row) => row.priority, sortable: true },
+    {
+      name: "Approach",
+      selector: (row) => row.approach,
+      sortable: true,
+      width: "175px",
+    },
+    {
+      name: "Status",
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
         <div>
           {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{width:"4rem"}}>Active</span>
+            <span className="badge bg-primary" style={{ width: "4rem" }}>
+              Active
+            </span>
           )}
           {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{width:"4rem"}}>Deactive</span>
+            <span className="badge bg-danger" style={{ width: "4rem" }}>
+              Deactive
+            </span>
           )}
         </div>
       ),
     },
-    { name: 'Created At', selector: (row) => row.created_at, sortable: true, width: "175px" },
-    { name: 'Created By', selector: (row) => row.created_by, sortable: true, width: "175px" },
-    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true, width: "175px" },
-    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true, width: "175px" },
+    {
+      name: "Created At",
+      selector: (row) => row.created_at,
+      sortable: true,
+      width: "175px",
+    },
+    {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+      width: "175px",
+    },
+    {
+      name: "Updated At",
+      selector: (row) => row.updated_at,
+      sortable: true,
+      width: "175px",
+    },
+    {
+      name: "Updated By",
+      selector: (row) => row.updated_by,
+      sortable: true,
+      width: "175px",
+    },
   ];
-  const makeActive = id => {
+  const makeActive = (id) => {
     // e.preventDefault();
     const data = new FormData();
-    data.append('is_default', 1);
+    data.append("is_default", 1);
     // for (var pair of data.entries()) {
-    //   console.log(pair[0]+ ', ' + pair[1]); 
+    //   console.log(pair[0]+ ', ' + pair[1]);
     // }
-    new CustomerMappingService().updateCustomerMapping(id, data).then(res => {
+    new CustomerMappingService().updateCustomerMapping(id, data).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           loadData();
         }
       }
     });
-  }
+  };
   const loadData = async () => {
     setShowLoaderModal(null);
     // setShowLoaderModal(true);
@@ -225,48 +273,58 @@ export default function CustomerMappingComponent() {
     //     }
     //   }
     // })
-  }
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch()
-    }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   useEffect(() => {
     loadData();
 
-    dispatch(getCustomerMappingData())
-    dispatch(exportCustomerMappingData())
-   
-    if(!checkRole.length){
-      dispatch(getRoles())
+    dispatch(getCustomerMappingData());
+    dispatch(exportCustomerMappingData());
+
+    if (!checkRole.length) {
+      dispatch(getRoles());
     }
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-  }, [])
+  }, []);
 
-
-  useEffect(()=>{
-    if(checkRole && checkRole[0]?.can_read === 0){
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+  useEffect(() => {
+    if (checkRole && checkRole[0]?.can_read === 0) {
+      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  },[checkRole])
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
 
-      <PageHeader headerTitle="Customer Mapping" renderRight={() => {
-        return <div className="col-auto d-flex w-sm-100">
-          {checkRole && checkRole[0]?.can_create === 1 ?
-            <Link to={`/${_base}/CustomerMapping/Create`} className="btn btn-dark btn-set-task w-sm-100">
-              <i className="icofont-plus-circle me-2 fs-6"></i>Create Mapping Setting
-            </Link> : ""}
-        </div>
-      }} />
+      <PageHeader
+        headerTitle="Customer Mapping"
+        renderRight={() => {
+          return (
+            <div className="col-auto d-flex w-sm-100">
+              {checkRole && checkRole[0]?.can_create === 1 ? (
+                <Link
+                  to={`/${_base}/CustomerMapping/Create`}
+                  className="btn btn-dark btn-set-task w-sm-100"
+                >
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Create
+                  Mapping Setting
+                </Link>
+              ) : (
+                ""
+              )}
+            </div>
+          );
+        }}
+      />
 
       <div className="card card-body">
         <div className="row">
@@ -286,7 +344,7 @@ export default function CustomerMappingComponent() {
               type="button"
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
+              style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -294,7 +352,7 @@ export default function CustomerMappingComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
+              style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -308,36 +366,33 @@ export default function CustomerMappingComponent() {
       </div>
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && <DataTable
-            columns={columns}
-            data={data.filter((customer) => {
-              if (typeof searchTerm === "string") {
-                if (typeof customer === "string") {
-                  return customer
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
-                } else if (typeof customer === "object") {
-                  return Object.values(customer).some(
-                    (value) =>
-                      typeof value === "string" &&
-                      value
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())
-                  );
+          {data && (
+            <DataTable
+              columns={columns}
+              data={data.filter((customer) => {
+                if (typeof searchTerm === "string") {
+                  if (typeof customer === "string") {
+                    return customer
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase());
+                  } else if (typeof customer === "object") {
+                    return Object.values(customer).some(
+                      (value) =>
+                        typeof value === "string" &&
+                        value.toLowerCase().includes(searchTerm.toLowerCase())
+                    );
+                  }
                 }
-              }
-              return false;
-            })}
-            
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-          />
-          }
+                return false;
+              })}
+              defaultSortField="title"
+              pagination
+              selectableRows={false}
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
         </div>
-
       </div>
 
       {/* <Modal show={showLoaderModal} centered>
@@ -352,5 +407,5 @@ export default function CustomerMappingComponent() {
                 </Modal.Body>
             </Modal> */}
     </div>
-  )
+  );
 }

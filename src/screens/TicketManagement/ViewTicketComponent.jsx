@@ -29,7 +29,7 @@ export default function ViewTicketComponent({ match }) {
   const [dateValue, setDateValue] = useState(new Date());
   const [data, setData] = useState(null);
   const [attachment, setAttachment] = useState(null);
-  // const [checkRole, setCheckRole] = useState(null);
+
   const roleId = sessionStorage.getItem("role_id");
   const [isSolved, setIsSolved] = useState(false);
   const [chart, setChart] = useState(null);
@@ -43,10 +43,6 @@ export default function ViewTicketComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
   );
-
-  //   const onAddMention = (e) => {
-  //     setIdCount((idCount) => [...idCount, e.id]);
-  //   };
 
   const loadData = async () => {
     await new MyTicketService().getGanttChart(ticketId).then((res) => {
@@ -91,15 +87,6 @@ export default function ViewTicketComponent({ match }) {
     });
 
     dispatch(getRoles());
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
   };
 
   const loadComments = async () => {
@@ -213,7 +200,7 @@ export default function ViewTicketComponent({ match }) {
                 title="Created By"
               />
             </div>
-            {console.log("dd", data)}
+
             <div className="col-md-4">
               <StatusCard
                 progress={data ? data.created_at : ""}
@@ -249,6 +236,16 @@ export default function ViewTicketComponent({ match }) {
                 title="Passing Status"
               />
             </div>
+
+            <div className="col-md-4">
+              <StatusCard
+                progress={data ? data.parent_name : ""}
+                progressBg="bg-success"
+                iconClass="icofont-user fs-4"
+                iconbg="bg-lightblue"
+                title="Ticket Type"
+              />
+            </div>
           </div>
 
           {rows && (
@@ -278,6 +275,7 @@ export default function ViewTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
+
                         {data.inputType === "textarea" && (
                           <textarea
                             id={
@@ -318,7 +316,7 @@ export default function ViewTicketComponent({ match }) {
                               }
                               // onChange={dynamicChangeHandle}
                               // value={dateValue}
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               // format={data.inputFormat}
                               style={{ width: "100%" }}
                             />
@@ -336,7 +334,7 @@ export default function ViewTicketComponent({ match }) {
                                   ? true
                                   : false
                               }
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -353,18 +351,13 @@ export default function ViewTicketComponent({ match }) {
                             }
                             readOnly
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             className="form-control form-control-sm"
                           />
                         )}
 
-                        {console.log("dataV", data)}
-
                         {data.inputType == "radio" && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
-                              console.log("radio==", d.value);
-                              console.log("radio=== ", data.inputDefaultValue);
-
                               return (
                                 <div>
                                   <input
@@ -436,7 +429,7 @@ export default function ViewTicketComponent({ match }) {
 
                             // }
 
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             required={
                               data.inputMandatory == true ? true : false
                             }
@@ -459,7 +452,7 @@ export default function ViewTicketComponent({ match }) {
                             required={
                               data.inputMandatory == true ? true : false
                             }
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
                             maxLength={parseInt(data.inputAddOn.inputRangeMax)}
@@ -484,8 +477,6 @@ export default function ViewTicketComponent({ match }) {
                           />
                         )} */}
 
-                        {console.log("data", data)}
-
                         {data.inputType === "select" && (
                           <select
                             id={
@@ -496,7 +487,7 @@ export default function ViewTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -529,7 +520,7 @@ export default function ViewTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -585,41 +576,40 @@ export default function ViewTicketComponent({ match }) {
               <div className="card mb-3">
                 <div className="card-body">
                   <h6 className="fw-bold mb-3 text-danger">Attachments</h6>
-                  {/* <Attachment refId={data ? data.id : ""}/> */}
-                  {attachment && (
+                  {data?.attachment && data?.attachment.length > 0 ? (
                     <div className="flex-grow-1">
-                      {attachment.map((data, i) => {
-                        return (
-                          <div
-                            key={"cuhdus" + i}
-                            className=" d-flex align-items-center border-bottom"
-                          >
-                            <div className="d-flex ms-3 align-items-center flex-fill">
-                              <span
-                                className={`avatar lg fw-bold  rounded-circle text-center d-flex align-items-center justify-content-center`}
-                              >
-                                {i + 1}
-                              </span>
-                              <div className="d-flex flex-column ">
-                                <h6 className="fw-bold mb-0 small-14">
-                                  {data.name}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="mr-1">
-                              <a
-                                href={`${_attachmentUrl}${data.path}`}
-                                target="_blank"
-                                download
-                                className="btn btn-primary btn-sm"
-                              >
-                                <i class="icofont-download"></i> Download
-                              </a>
+                      {data?.attachment.map((attachment, index) => (
+                        <div
+                          key={`attachment_${attachment?.id}`}
+                          className="d-flex align-items-center border-bottom"
+                        >
+                          <div className="d-flex ms-3 align-items-center flex-fill">
+                            <span
+                              className={`avatar lg fw-bold rounded-circle text-center d-flex align-items-center justify-content-center`}
+                            >
+                              {index + 1}
+                            </span>
+                            <div className="d-flex flex-column">
+                              <h6 className="fw-bold mb-0 small-14">
+                                {attachment?.name}
+                              </h6>
                             </div>
                           </div>
-                        );
-                      })}
+                          <div className="mr-1">
+                            <a
+                              href={`${_attachmentUrl}${attachment?.path}`}
+                              target="_blank"
+                              download
+                              className="btn btn-primary btn-sm"
+                            >
+                              <i className="icofont-download"></i> Download
+                            </a>
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                  ) : (
+                    <p>No attachments found.</p>
                   )}
                 </div>
               </div>

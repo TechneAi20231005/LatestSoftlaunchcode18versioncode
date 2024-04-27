@@ -33,6 +33,9 @@ export default function TaskModal(props) {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const [taskData, setTaskData] = useState([]);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -40,38 +43,224 @@ export default function TaskModal(props) {
   const [todateformat, setTodateformat] = useState("");
   const [fromdateformat, setFromdateformat] = useState("");
   // const [taskDropdown, setTaskDropdown] = useState();
-  console.log("fromdate", fromdate)
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
-    // const gettodatevalue = e.target.value;
-    // const setdateformat = gettodatevalue.split('-');
-    // const settoyear = setdateformat[0];
-    // const settomonth = setdateformat[1];
-    // const settodate = setdateformat[2];
-    // const settodateformat = settoyear + "" + settomonth + "" + settodate;
-    // setTodate(gettodatevalue);
-    // setTodateformat(settodateformat);
   };
 
-  const handleToDate = (e) => {
-    // const getfromdatevalue = e.target.value;
-    // const setfromformat = getfromdatevalue.split("-");
-    // const setfromyear = setfromformat[0];
-    // const setfrommonth = setfromformat[1];
-    // const setfromdate = setfromformat[2];
-    // const setfromformatdate = setfromyear + "" + setfrommonth + "" + setfromdate;
-    // setFromdate(getfromdatevalue);
-    // setFromdateformat(setfromformatdate);
+  const handleSelect = (label, ID) => {
+    setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    setParentTaskName("");
+
+    // closeAllDropdowns();
+  };
+  const handleToDate = (e) => {};
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // for Task Type Name Field created custome menuOption
+
+  const CustomOption = ({ label, options, onClick, closeDropdown }) => {
+    const [expanded, setExpanded] = useState(false);
+    const [openOptions, setOpenOptions] = useState([]);
+
+    const handleClick = (e) => {
+      setExpanded(!expanded);
+      onClick(label);
+      closeDropdown(); // Close the dropdown after clicking the option
+    };
+
+    const handleSelect = () => {
+      setOpenOptions([]);
+    };
+
+    return (
+      <div
+        style={{
+          padding: "8px",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        {label}
+        {expanded && options && (
+          <div style={{ marginLeft: "20px" }}>
+            {options.map((option) => (
+              <CustomOption
+                key={option.label}
+                label={option.label}
+                options={option.options}
+                onClick={handleSelect}
+                ID={option.ID}
+                openOptions={openOptions}
+                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // for Task Type Name Field created custome menuList
+
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
   };
 
   const handleClose = () => {
-
     props.close();
     props.loadBasket();
-
   };
   const [filteredOptions, setFilteredOptions] = useState();
   const [tasktypeDropdown, setTasktypeDropdown] = useState();
+  const [parentTaskName, setParentTaskName] = useState(null);
 
   const loadData = async () => {
     setSelectedFile([]);
@@ -90,14 +279,16 @@ export default function TaskModal(props) {
     // });
 
     setFilteredOptions(
-      props.taskDropdown.filter((d) => d.value != props.data.id)
+      props?.taskDropdown?.filter((d) => d.value != props.data.id)
     );
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         const data1 = res.data.data;
-        const data = data1.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = data1.filter(
+          (d) => d.is_active === 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -162,9 +353,14 @@ export default function TaskModal(props) {
             setParent(mappedData);
             // parentName(mappedData);
           } else {
-
           }
         }
+      }
+    });
+
+    await new TaskTicketTypeService()?.getTaskType("Task")?.then((res) => {
+      if (res?.status === 200) {
+        setTaskData(res?.data?.data);
       }
     });
   };
@@ -183,11 +379,46 @@ export default function TaskModal(props) {
     }
   };
 
+  function transformData(taskData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the taskData
+    taskData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the taskData
+  const transformedOptions = transformData(taskData);
+
   const uploadAttachmentHandler = (e, type, id = null) => {
-
-
     if (type === "UPLOAD") {
-      const selectedFilesCount = selectedFile.length;
+      const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
 
       // Calculate the total size of video files in the existing selected files
@@ -203,7 +434,7 @@ export default function TaskModal(props) {
           show_to_project_owner: 0,
         }));
 
-      if (newFiles.length === 0) {
+      if (newFiles?.length === 0) {
         // All available slots already used
         alert("You can only upload a maximum of 5 files.");
       } else {
@@ -227,12 +458,9 @@ export default function TaskModal(props) {
           ]);
         }
 
-
-
         // Clear the input field
         fileInputRef.current.value = "";
       }
-
     } else if (type === "DELETE") {
       let filteredFileArray = selectedFile.filter(
         (item, index) => id !== index
@@ -262,73 +490,145 @@ export default function TaskModal(props) {
 
     e.preventDefault();
     const formData = new FormData(e.target);
-    setNotify(null);
-    //Appeding File in selected State
-    formData.delete("attachment[]");
-    formData.delete("show_to_customer[]");
-    formData.delete("show_to_project_owner[]");
-    if (selectedFile) {
-      for (var i = 0; i < selectedFile.length; i++) {
-        formData.append("attachment[]", selectedFile[i].file);
-
-        formData.append("show_to_customer[]", selectedFile[i].show_to_customer);
+    if (!selectedOption && !formData.get("id")) {
+      setParentTaskName("Please select a parent task type.");
+    } else {
+      setParentTaskName(""); // Clear the error message if present
+      if (selectedOptionId === "Primary") {
+        formData.append("parent_id", 0);
+      } else {
         formData.append(
-          "show_to_project_owner[]",
-          selectedFile[i].show_to_project_owner
+          "parent_id",
+          // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+          selectedOptionId
+            ? selectedOptionId
+            : props?.data?.parent_name !== null
+            ? props?.data?.parent_name
+            : "Primary"
         );
       }
-    }
+      setNotify(null);
+      //Appeding File in selected State
+      formData.delete("attachment[]");
+      formData.delete("show_to_customer[]");
+      formData.delete("show_to_project_owner[]");
+      if (selectedFile) {
+        for (var i = 0; i < selectedFile?.length; i++) {
+          formData.append("attachment[]", selectedFile[i].file);
 
-    var flag = 1;
-
-
-    if (todateformat > fromdateformat) {
-      alert("Please select End Date Greater than Start date");
-      flag = 0;
-      e.preventDefault();
-    }
-
-    var totalCount = 0;
-    for (const pair of formData.entries()) {
-      if (pair[0] == "assign_to_user[]") {
-        totalCount++;
+          formData.append(
+            "show_to_customer[]",
+            selectedFile[i].show_to_customer
+          );
+          formData.append(
+            "show_to_project_owner[]",
+            selectedFile[i].show_to_project_owner
+          );
+        }
       }
-    }
 
-    if (formData.get("type") == "GROUP_ACTIVITY") {
-      if (totalCount <= 1) {
-        alert("Please select minimum 2 user for group activity !!!");
+      var flag = 1;
+
+      if (todateformat > fromdateformat) {
+        alert("Please select End Date Greater than Start date");
         flag = 0;
         e.preventDefault();
       }
-    }
 
-    if (flag == 1) {
-      if (todateformat > fromdateformat) {
-        alert("Please select End Date Greater than Start date");
-      } else {
-        if (formData.get("id")) {
+      var totalCount = 0;
+      for (const pair of formData.entries()) {
+        if (pair[0] == "assign_to_user[]") {
+          totalCount++;
+        }
+      }
 
-          const taskTypeId = typeRef?.current?.props?.value.map((d) => {
-            return d.value;
-          });
-          formData.append("task_type_id", taskTypeId);
-          await updateTask(formData.get("id"), formData)
-            .then((res) => {
+      if (formData.get("type") == "GROUP_ACTIVITY") {
+        if (totalCount <= 1) {
+          alert("Please select minimum 2 user for group activity !!!");
+          flag = 0;
+          e.preventDefault();
+        }
+      }
+
+      if (flag == 1) {
+        if (todateformat > fromdateformat) {
+          alert("Please select End Date Greater than Start date");
+        } else {
+          if (formData.get("id")) {
+            const taskTypeId = typeRef?.current?.props?.value.map((d) => {
+              return d.value;
+            });
+
+            if (!selectedOption && formData.get("id")) {
+              setParentTaskName("Please select a parent task type.");
+            } else {
+              setParentTaskName(""); // Clear the error message if present
+              if (selectedOptionId === "Primary") {
+                formData.append("parent_id", 0);
+              } else {
+                formData.append(
+                  "parent_id",
+                  // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+                  selectedOptionId
+                    ? selectedOptionId
+                    : props?.data?.parent_name !== null
+                    ? props?.data?.parent_name
+                    : "Primary"
+                );
+              }
+              // formData.append("task_type_id", taskTypeId);
+              await updateTask(formData.get("id"), formData)
+                .then((res) => {
+                  if (res.status === 200) {
+                    if (res.data.status === 1) {
+                      // props.loadBasket();
+                      setNotify({ type: "success", message: res.data.message });
+                      setLoading(false);
+
+                      handleClose();
+                    } else {
+                      setLoading(false);
+                      setNotify({ type: "danger", message: res.data.message });
+                    }
+                  } else {
+                    setLoading(false);
+                    setNotify({ type: "danger", message: res.message });
+                    new ErrorLogService().sendErrorLog(
+                      "Ticket",
+                      "Edit_Task",
+                      "INSERT",
+                      res.message
+                    );
+                  }
+                })
+                .catch((error) => {
+                  setLoading(false);
+                  const { response } = error;
+                  const { request, ...errorObject } = response;
+                  new ErrorLogService().sendErrorLog(
+                    "Task",
+                    "Edit_Task",
+                    "INSERT",
+                    errorObject.data.message
+                  );
+                });
+            }
+          } else {
+            await postTask(formData).then((res) => {
               if (res.status === 200) {
                 if (res.data.status === 1) {
-                  // props.loadBasket();
                   setNotify({ type: "success", message: res.data.message });
                   setLoading(false);
 
                   handleClose();
+                  // props.loadBasket();
                 } else {
                   setLoading(false);
                   setNotify({ type: "danger", message: res.data.message });
                 }
               } else {
                 setLoading(false);
-                setNotify({ type: "danger", message: res.message });
+                setNotify({ type: "danger", message: res.data.message });
                 new ErrorLogService().sendErrorLog(
                   "Ticket",
                   "Edit_Task",
@@ -336,43 +636,8 @@ export default function TaskModal(props) {
                   res.message
                 );
               }
-            })
-            .catch((error) => {
-              setLoading(false)
-              const { response } = error;
-              const { request, ...errorObject } = response;
-              new ErrorLogService().sendErrorLog(
-                "Task",
-                "Edit_Task",
-                "INSERT",
-                errorObject.data.message
-              );
             });
-        } else {
-          await postTask(formData).then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setLoading(false);
-
-                handleClose();
-                // props.loadBasket();
-              } else {
-                setLoading(false);
-                setNotify({ type: "danger", message: res.data.message });
-              }
-            } else {
-              setLoading(false);
-              setNotify({ type: "danger", message: res.data.message });
-              new ErrorLogService().sendErrorLog(
-                "Ticket",
-                "Edit_Task",
-                "INSERT",
-                res.message
-              );
-            }
-          });
-
+          }
         }
       }
     }
@@ -395,8 +660,6 @@ export default function TaskModal(props) {
       }
     });
   };
-
-
 
   useEffect(() => {
     loadData();
@@ -507,15 +770,15 @@ export default function TaskModal(props) {
             <div className="row mt-2">
               <div className="col-md-12">
                 <label className="form-label">
-                  <b>Task Name :<Astrick color="red" size="13px" /></b>
-
+                  <b>
+                    Task Name :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.task_name === null ? (
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     name="task_name"
-
                     required
                   />
                 ) : (
@@ -524,66 +787,74 @@ export default function TaskModal(props) {
                     className="form-control form-control-sm"
                     name="task_name"
                     defaultValue={props.data.task_name}
-
-
                     required
                   />
                 )}
-
-
               </div>
             </div>
 
-            <div className="col-md-12">
-              <label className="form-label">
-                <b>Parent Task Type : </b>
+            <div>
+              <label className="form-label font-weight-bold" readOnly={true}>
+                Task Type Name: <Astrick color="red" size="13px" />
               </label>
-              {parent && (
-                <Select
-                  name="parent_id"
-                  id="parent_id"
-                  options={parent}
-                  onChange={(e) => handleParentchange(e)}
-                  isDisabled={props.data.parent_id}
-                  defaultValue={
-                    props.data &&
-                    tasktypeDropdown &&
-                    tasktypeDropdown.filter(
-                      (d) => d.value == props.data.parent_id
-                    )
-                  }
-                />
-              )}
-            </div>
-            {tasktypeDropdown && (
-              <div className="col-md-12">
-                <label className="form-label">
-                  <b>Task Type Name : </b>
-                </label>
-                {tasktypeDropdown && (
-                  <Select
-                    name="task_type_id"
-                    id="task_type_id"
-                    ref={typeRef}
-                    options={tasktypeDropdown}
-                    isDisabled={props.data.task_type_id}
-                    defaultValue={
-                      props.data &&
-                      tasktypeDropdown &&
-                      tasktypeDropdown.filter(
-                        (d) => d.value == props.data.task_type_id
-                      )
-                    }
-                  />
+
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-block",
+                  width: "100%",
+                }}
+              >
+                <div
+                  className="form-control form-control-sm"
+                  onClick={(e) => handleSelectOptionClick(e)}
+                >
+                  {selectedOption ? selectedOption : props?.data?.parent_name}
+                </div>
+                {isMenuOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      width: "100%", // Set the width to 100% to match the parent's width
+                      top: "100%",
+
+                      maxHeight: "150px", // Adjust the maxHeight here as needed
+                      // overflowY: "auto", // Enable vertical scrolling
+                      scrollbarWidth: "none", // Hide scrollbar in Firefox
+                      msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                      "&::-webkit-scrollbar": {
+                        display: "none", // Hide scrollbar in Webkit browsers
+                      },
+                    }}
+                  >
+                    <CustomMenuList
+                      options={transformedOptions}
+                      onSelect={(label, ID) => handleSelect(label, ID)}
+                      // closeAllDropdowns={closeAllDropdowns}
+                      isMenuOpen={isMenuOpen}
+                      onClick={(e) => handleSelectOptionClick(e)}
+                    />
+                  </div>
                 )}
               </div>
-            )}
+              {parentTaskName && (
+                <small
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {parentTaskName}
+                </small>
+              )}
+            </div>
 
             {/* *****************START DATE, END DATE , TASK HOURS**************** */}
             <div className="row mt-3">
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Start Date :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Start Date :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.start_date == null ? (
                   <input
@@ -594,11 +865,9 @@ export default function TaskModal(props) {
                     onChange={handleFromDate}
                     // max={props.expectedSolveDate}
                     min={props.ticketStartDate}
-
-
                     required
 
-                  // min={new Date().toISOString().slice(0, 10)}
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                 ) : (
                   <input
@@ -614,16 +883,16 @@ export default function TaskModal(props) {
 
                     required
 
-                  // min={new Date().toISOString().slice(0, 10)}
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                 )}
               </div>
 
-              {console.log("pp", props)}
-              {console.log("pp1", fromdate?.length > 0 ? 1 : 0)}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>End Date :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    End Date :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.end_date == null ? (
                   <input
@@ -632,12 +901,13 @@ export default function TaskModal(props) {
                     name="end_date"
                     // defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
+                    min={
+                      fromdate?.length > 0 ? fromdate : props.data.start_date
+                    }
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-
                     required
-                  // onChange={e=>handleMinDate(e)}
+                    // onChange={e=>handleMinDate(e)}
                   />
                 ) : (
                   <input
@@ -646,12 +916,13 @@ export default function TaskModal(props) {
                     name="end_date"
                     defaultValue={props.data.end_date}
                     // onChange={handleToDate}
-                    min={fromdate?.length > 0 ? fromdate : props.data.start_date}
+                    min={
+                      fromdate?.length > 0 ? fromdate : props.data.start_date
+                    }
                     // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
 
-
                     required
-                  // onChange={e=>handleMinDate(e)}
+                    // onChange={e=>handleMinDate(e)}
                   />
                 )}
               </div>
@@ -660,7 +931,9 @@ export default function TaskModal(props) {
                 props.moduleSetting["RequiredHour"] == 1 && ( */}
               <div className="col-md-4">
                 <label className="form-label">
-                  <b>Task Hours :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Task Hours :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 {props.data.task_hours == null ? (
                   <input
@@ -671,7 +944,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 ) : (
                   <input
@@ -682,7 +955,7 @@ export default function TaskModal(props) {
                       props.data.task_hours ? props.data.task_hours : "00:00"
                     }
                     required
-                  // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // readOnly={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -693,7 +966,9 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Task Priority :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Task Priority :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
 
                 <select
@@ -819,7 +1094,9 @@ export default function TaskModal(props) {
             <div className="row mt-3">
               <div className="col-md-6">
                 <label className="form-label">
-                  <b>Assign to user :<Astrick color="red" size="13px" /></b>
+                  <b>
+                    Assign to user :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
 
                 {defaultUserData?.length > 0 && userData && (
@@ -859,7 +1136,7 @@ export default function TaskModal(props) {
                         .filter((d) => d.value == localStorage.getItem("id"))
                     }
                     isClearable
-                  // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+                    // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
                   />
                 )}
               </div>
@@ -1025,8 +1302,6 @@ export default function TaskModal(props) {
                   );
                 })}
             </div>
-            {/* {props && JSON.stringify(props.expectedSolveDate)} */}
-            {/* { document.getElementById("task_type_group_activity").checked} */}
           </Modal.Body>
           <Modal.Footer>
             <button
@@ -1036,14 +1311,6 @@ export default function TaskModal(props) {
               disabled={props.data.status === "COMPLETED" ? true : false}
             >
               Submit
-              {/* {loading ? (
-                <span>
-                  <i className="fa fa-spinner fa-spin" /> Loading...
-                </span>
-              ) : (
-                "Submit"
-              )} */}
-              {/* Submit */}
             </button>
             <button
               type="button"
@@ -1059,6 +1326,3 @@ export default function TaskModal(props) {
     </>
   );
 }
-
-
-

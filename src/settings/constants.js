@@ -1,4 +1,10 @@
 import { getDateTime } from "../components/Utilities/Functions";
+import {
+  REACT_APP_API_URL,
+  REACT_APP_PIN_CODE_API_URL,
+  REACT_APP_ATTACHMENT_URL,
+  REACT_APP_ROOT_URL,
+} from "../config/envConfig";
 
 export const _ErrorMsg = "Try After Some Time !!!";
 
@@ -7,7 +13,7 @@ export var dataFormat = { status: 0, message: null, data: null };
 //Development :3_SoftLaunchDummy TSDDummy
 //Production : 3_SoftLaunch TSNewBackend
 
-export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
+// export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
 
 // export const _base ='3_SoftLaunch';
 // export const _apiUrl = "http://15.207.120.175/TSNewBackend/public/api/";
@@ -17,15 +23,22 @@ export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
 // export const _apiUrl = "http://15.207.120.175/3_SoftLaunchDummyDevelopment/public/api/";
 // export const _attachmentUrl="http://15.207.120.175/3_SoftLaunchDummyDevelopment/";
 
-export const _base = "3_SoftLaunch/TechTicket";
-export const _apiUrl =
-  "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
-export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
+// export const _base = "3_SoftLaunch/TechTicket";
+// export const _apiUrl =
+//   "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
+// export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
+
+export const _base = REACT_APP_ROOT_URL;
+export const _apiUrl = REACT_APP_API_URL;
+export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
+export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
 export const loginURL = _apiUrl + "login";
 export const fpURL = _apiUrl + "reset/forgetPasswordOtp";
 export const otpURL = _apiUrl + "reset/sendOtp";
 export const rpURL = _apiUrl + "reset/resetPassword";
+
+export const attachmentUrl = _apiUrl + "attachment";
 
 export const userSessionData = {
   tenantId: sessionStorage.getItem("tenant_id"),
@@ -92,6 +105,7 @@ export const masterURL = {
   dynamicFormDropdownMaster: _apiUrl + "dynamicFormDropdownMaster",
   testingTypeMaster: _apiUrl + "testingTypeMaster",
   taskTicketTypeMaster: _apiUrl + "taskticketTypeMaster",
+  sprintMaster: _apiUrl + "sprintMaster",
 };
 
 export const dynamicURL = {
@@ -159,8 +173,6 @@ export const dashboardUrl = _apiUrl + "dashboard";
 
 export const notificationUrl = _apiUrl + "notification";
 
-export const attachmentUrl = _apiUrl + "attachment";
-
 export const settingMasterUrl = {
   customerMapping: _apiUrl + "customerMapping",
   moduleSetting: _apiUrl + "moduleSetting",
@@ -178,3 +190,11 @@ export const connectorUrl = {
 export const billCheckingMasterUrl = {
   billChecking: _apiUrl + "billCheckingMaster",
 };
+
+export const experienceLevel = [
+  { label: "Fresher", value: "fresher" },
+  { label: "0-1 years of experience", value: "0-1" },
+  { label: "1-3 years of experience", value: "1-3" },
+  { label: "3-5 years of experience", value: "3-5" },
+  { label: "5+ years of experience", value: "5+" },
+];

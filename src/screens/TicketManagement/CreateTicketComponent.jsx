@@ -27,6 +27,7 @@ import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeS
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
 import { getRoles } from "../Dashboard/DashboardAction";
+
 export default function CreateTicketComponent() {
   const history = useNavigate();
   const navigate = useNavigate();
@@ -35,17 +36,18 @@ export default function CreateTicketComponent() {
   const departmentRef = useRef();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
-);
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
+  );
 
   const departmentDropdownRef = useRef();
   const current = new Date();
-  const [isMultipleDepartment, setisMultipleDepartment] = useState([])
+  const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
-  const todayDate = `${current.getFullYear()}-${current.getMonth() + 1 < 10
-    ? "0" + current.getMonth() + 1
-    : current.getMonth() + 1
-    }-${current.getDate()}`;
+  const todayDate = `${current.getFullYear()}-${
+    current.getMonth() + 1 < 10
+      ? "0" + current.getMonth() + 1
+      : current.getMonth() + 1
+  }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
@@ -67,6 +69,13 @@ export default function CreateTicketComponent() {
     submodule_id: null,
   };
 
+  const handleSelect = (label, ID) => {
+    setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+
+    // closeAllDropdowns();
+  };
   var today = new Date().toISOString().split("T")[0];
   const [data, setData] = useState(ticketData);
 
@@ -102,46 +111,176 @@ export default function CreateTicketComponent() {
   const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-  console.log("selectedFiles",selectedFiles)
+  const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
   const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
-  // const uploadAttachmentHandler = (e, type, id = null) => {
-  //   if (type === "UPLOAD") {
-  //     var tempSelectedFile = [];
-  //     console.log("tempSelectedFile",tempSelectedFile)
-  //     for (var i = 0; i < e.target?.files?.length; i++) {
-  //       var file = e.target.files[i];
-  //       console.log("file",file )
-  //       var reader = new FileReader();
-  //       reader.onload = function (event) {
-  //         tempSelectedFile.push({
-  //           file: file,
-  //           fileName: file.name,
-  //           tempUrl: event.target.result,
-  //         });
-  //         setSelectedFiles(tempSelectedFile);
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   } else if (type === "DELETE") {
-  //     fileInputRef.current.value = "";
-  //     let filteredFileArray = selectedFiles.filter(
-  //       (item, index) => id !== index
-  //     );
-  //     setSelectedFiles(filteredFileArray);
-  //   }
-  // };
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+
+  const CustomMenuListTicket = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === "UPLOAD") {
       const files = e.target.files;
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+          alert(
+            "File size exceeds 5MB. Please upload a file smaller than 5MB."
+          );
+          continue; // Skip this file and move to the next one
+        }
         const reader = new FileReader();
-        
+
         reader.onload = ((file) => {
           return function (event) {
             uploadedFiles.push({
@@ -154,7 +293,7 @@ export default function CreateTicketComponent() {
             }
           };
         })(file);
-        
+
         reader.readAsDataURL(file);
       }
     } else if (type === "DELETE") {
@@ -163,7 +302,6 @@ export default function CreateTicketComponent() {
       setSelectedFiles(filteredFiles);
     }
   };
-  
 
   const roleId = sessionStorage.getItem("role_id");
   const ticketTypeRefs = useRef();
@@ -175,7 +313,7 @@ export default function CreateTicketComponent() {
     e.preventDefault();
     if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
       // Here you can proceed with form submission
-      alert('At least one checkbox must be selected');
+      alert("At least one checkbox must be selected");
       return false;
     }
 
@@ -187,14 +325,14 @@ export default function CreateTicketComponent() {
     const formData = new FormData(e.target);
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
-        formData.append("bulk_images[" + i + "]", selectedFiles[i].file);
+        formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
       }
     }
-    console.log("formData",formData)
-    console.log("selectedFiles",selectedFiles)
+
+    formData.append("parent_id", selectedOptionId);
 
     var flag = 1;
-    console.log("selectQueryGroup", selectQueryGroup)
+
     if (selectQueryGroup && selectQueryGroup.length > 0) {
       formData.append("dynamicForm", JSON.stringify(rows));
       var selectCountry = formData.getAll("customer_id");
@@ -218,28 +356,12 @@ export default function CreateTicketComponent() {
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-
-              setNotify({ type: "success",  message: res.data.message });
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              setNotify({ type: "success", message: res.data.message });
               setTimeout(() => {
                 navigate(`/${_base}/Ticket`);
-              }, 3000);
-
-
-              // setNotify({ type: "success", message: res.data.message });
-
-              // history(
-              //   {
-              //     pathname: `/${_base}/Ticket`,
-              //   },
-              //   {
-              //     state: {
-              //       type: "success",
-              //       message: res.data.message,
-              //     },
-              //   }
-              // );
+              }, 2000);
 
               setIsSubmitted(false);
             } else {
@@ -247,11 +369,15 @@ export default function CreateTicketComponent() {
                 setNotify({ type: "danger", message: res.data.message });
                 setIsSubmitted(false);
               } else {
-                var URL = `${_attachmentUrl}` + res.data.data;
-                window.open(URL, "_blank").focus();
-                setIsSubmitted(false);
-
+                if (!res?.data?.data) {
+                  setNotify({ type: "danger", message: res.data.message });
+                  setIsSubmitted(false);
+                  return;
+                }
                 setNotify({ type: "danger", message: res.data.message });
+                let url = `${_attachmentUrl}` + res.data.data;
+                window.open(url, "_blank").focus();
+                setIsSubmitted(false);
               }
             }
           } else {
@@ -353,7 +479,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => { });
+          .catch((err) => {});
         setRows(dynamicForm);
       }
     }
@@ -371,7 +497,10 @@ export default function CreateTicketComponent() {
       formdata.append("key", key);
       formdata.append("value", e.value);
       formdata.append("dropdownName", dependanceDropdownName);
-      formdata.append("dropdownId", currentData[0]?.inputAddOn?.inputDataSource);
+      formdata.append(
+        "dropdownId",
+        currentData[0]?.inputAddOn?.inputDataSource
+      );
 
       var dropdown = [];
       await new DynamicFormDropdownMasterService()
@@ -391,7 +520,7 @@ export default function CreateTicketComponent() {
         (d) =>
           d.inputName === dependanceDropdownName &&
           d.inputAddOn.inputDataSource ==
-          currentData[0].inputAddOn.inputDataSource
+            currentData[0].inputAddOn.inputDataSource
       );
       setRows((prev) => {
         const newPrev = [...prev];
@@ -401,6 +530,11 @@ export default function CreateTicketComponent() {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
   const dynamicChangeHandle = (e) => {
     const { name, value } = e.target;
     setSelectedDropdown({ ...selectedDropdown, [name]: value });
@@ -489,6 +623,12 @@ export default function CreateTicketComponent() {
       }
     });
 
+    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
+      if (res?.status === 200) {
+        setTicketsData(res?.data?.data);
+      }
+    });
+
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -506,8 +646,7 @@ export default function CreateTicketComponent() {
       .getDepartmentMappingByEmployeeId(userSessionData.userId)
       .then((resp) => {
         if (resp.data.status === 1) {
-
-          setisMultipleDepartment(resp.data.data)
+          setisMultipleDepartment(resp.data.data);
           setUserDepartments(
             resp.data.data.map((d) => ({
               value: d.department_id,
@@ -524,16 +663,7 @@ export default function CreateTicketComponent() {
         }
       });
 
-      dispatch(getRoles())
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.menu_id === 18));
-    //     }
-    //   }
-    // });
+    dispatch(getRoles());
   };
 
   const handleDownloadFormat = async (e) => {
@@ -542,8 +672,8 @@ export default function CreateTicketComponent() {
     await new MyTicketService().getBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          URL = `${_attachmentUrl}` + res.data.data;
-          window.open(URL, "_blank").focus();
+          let url = `${_attachmentUrl}` + res.data.data;
+          window.open(url, "_blank")?.focus();
           setIsFileGenerated(res.data.data);
         } else {
           setNotify({ type: "danger", message: res.data.message });
@@ -613,6 +743,43 @@ export default function CreateTicketComponent() {
     });
   };
 
+  function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the ticketData
+    ticketsData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformDataTicket(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the ticketData
+  const transformedOptionsTicket = transformDataTicket(ticketsData);
+
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
       var value = type == "Select2" ? e && e.value : e.target.value;
@@ -636,8 +803,8 @@ export default function CreateTicketComponent() {
     });
   };
 
-  const [selectedValue, setSelectedValue] = useState('');
-  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -728,11 +895,16 @@ export default function CreateTicketComponent() {
                   {userDepartments && (
                     <Select
                       defaultValue={
-                        userDepartments?.length == 1 ? userDepartments[0] : isMultipleDepartment?.map(department => {
-                          if (department?.is_default) {
-                            return { value: department?.department_id, label: department?.department }
-                          }
-                        })
+                        userDepartments?.length == 1
+                          ? userDepartments[0]
+                          : isMultipleDepartment?.map((department) => {
+                              if (department?.is_default) {
+                                return {
+                                  value: department?.department_id,
+                                  label: department?.department,
+                                };
+                              }
+                            })
                       }
                       options={userDepartments}
                       name="from_department_id"
@@ -840,7 +1012,163 @@ export default function CreateTicketComponent() {
                   </>
                 )}
 
-                <div className="col-sm-3">
+                {/* <div className="col-sm-3">
+                  <label
+                    // className="form-label font-weight-bold"
+                    className="col-form-label"
+                    readOnly={true}
+                  >
+                    Parent ticket Type: <Astrick color="red" size="13px" />
+                  </label>
+
+                  <div>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: "8px",
+                          border: "1px solid #ccc",
+                          cursor: "pointer",
+                          width: "100%",
+                        }}
+                        onClick={(e) => handleSelectOptionClick(e)}
+                      >
+                        {selectedOption ? selectedOption : "Select an option"}
+                      </div>
+                      {isMenuOpen && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            width: "100%", // Set the width to 100% to match the parent's width
+                            top: "100%",
+                          }}
+                        >
+                          <CustomMenuListTicket
+                            options={transformedOptionsTicket}
+                            onSelect={(label, ID) => handleSelect(label, ID)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div> */}
+
+                {/* <div className="col-sm-3">
+                  <label className="col-form-label" readOnly={true}>
+                    Ticket Type Name: <Astrick color="red" size="13px" />
+                  </label>
+                  <div
+                    style={{
+                      position: "relative",
+                      display: "inline-block",
+                      width: "100%",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "8px",
+                        border: "1px solid #ccc",
+                        cursor: "pointer",
+                        width: "100%",
+                      }}
+                      onClick={(e) => handleSelectOptionClick(e)}
+                    >
+                      {selectedOption ? selectedOption : "Select an option"}
+                    </div>
+                    {isMenuOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: "100%", // Set the width to 100% to match the parent's width
+                          top: "100%",
+                          zIndex: 999, // Adjust the z-index as needed
+                        }}
+                      >
+                        <CustomMenuListTicket
+                          options={transformedOptionsTicket}
+                          onSelect={(label, ID) => handleSelect(label, ID)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div> */}
+                <div className="col-sm-3 mt-2">
+                  <label
+                    className="form-label font-weight-bold"
+                    readOnly={true}
+                  >
+                    Ticket Type Name:
+                  </label>
+
+                  <div>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        width: "100%",
+                      }}
+                    >
+                      <div
+                        // style={{
+                        //   padding: "8px",
+                        //   border: "1px solid #ccc",
+                        //   cursor: "pointer",
+                        //   width: "100%",
+                        //   borderRadius: "1px",
+                        // }}
+                        className="form-control form-control-sm"
+                        onClick={(e) => handleSelectOptionClick(e)}
+                      >
+                        {/* {selectedOption
+                              ? selectedOption
+                              : modal?.modalData?.parent_name} */}
+                        {selectedOption}
+                      </div>
+                      {isMenuOpen && (
+                        <div
+                          // style={{
+                          //   position: "absolute",
+                          //   width: "100%", // Set the width to 100% to match the parent's width
+                          //   top: "100%",
+
+                          //   maxHeight: "150px", // Adjust the maxHeight here as needed
+                          //   overflowY: "auto", // Enable vertical scrolling
+                          //   scrollbarWidth: "none", // Hide scrollbar in Firefox
+                          //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                          //   "&::-webkit-scrollbar": {
+                          //     display: "none", // Hide scrollbar in Webkit browsers
+                          //   },
+                          // }}
+                          style={{
+                            position: "absolute",
+                            width: "100%", // Set the width to 100% to match the parent's width
+                            top: "100%", // Position the menu at the top of the parent element
+                            zIndex: "1", // Ensure the menu is on top of other elements
+                            maxHeight: "150px", // Adjust the maxHeight here as needed
+                            // overflowY: "auto", // Enable vertical scrolling
+                            // scrollbarWidth: "none", // Hide scrollbar in Firefox
+                            msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                            "&::-webkit-scrollbar": {
+                              display: "none", // Hide scrollbar in Webkit browsers
+                            },
+                          }}
+                        >
+                          <CustomMenuListTicket
+                            options={transformedOptionsTicket}
+                            onSelect={(label, ID) => handleSelect(label, ID)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* <div className="col-sm-3">
                   <label className="col-form-label">
                     <b>Parent Ticket Type</b>
                   </label>
@@ -873,7 +1201,7 @@ export default function CreateTicketComponent() {
                       />
                     )}
                   </div>
-                )}
+                )} */}
               </div>
 
               {data.ticket_uploading == "REGULAR" && (
@@ -1100,59 +1428,61 @@ export default function CreateTicketComponent() {
 
                       {data.inputType == "radio" && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                          return (
-                            <div>
-                              <input
-                                // id={
-                                //   data.inputName
-                                //     ? data.inputName
-                                //         .replace(/ /g, "_")
-                                //         .toLowerCase()
-                                //     : ""
-                                // }
-                                value={d.value}
-                                onChange={handleRadioChange}
-                                defaultChecked={selectedValue === d.value}
-                                name={data.inputName}
-                                className="mx-2"
-                                type="radio"
-                              />
-                              <label for={d.value}>{d.label}</label>
-                            </div>
-                          );
-                        })
+                            return (
+                              <div>
+                                <input
+                                  // id={
+                                  //   data.inputName
+                                  //     ? data.inputName
+                                  //         .replace(/ /g, "_")
+                                  //         .toLowerCase()
+                                  //     : ""
+                                  // }
+                                  value={d.value}
+                                  onChange={handleRadioChange}
+                                  defaultChecked={selectedValue === d.value}
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="radio"
+                                />
+                                <label for={d.value}>{d.label}</label>
+                              </div>
+                            );
+                          })
                         : ""}
-
 
                       {data.inputType == "checkbox" &&
-                        data.inputAddOn.inputRadio
+                      data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
-                          return (
-                            <div>
-                              <input
-                                // id={
-                                //   data.inputName
-                                //     ? data.inputName
-                                //         .replace(/ /g, "_")
-                                //         .toLowerCase()
-                                //     : ""
-                                // }
+                            return (
+                              <div>
+                                <input
+                                  // id={
+                                  //   data.inputName
+                                  //     ? data.inputName
+                                  //         .replace(/ /g, "_")
+                                  //         .toLowerCase()
+                                  //     : ""
+                                  // }
 
-                                value={d.value}
-                                onChange={handleCheckBoxChange}
-                                defaultChecked={selectedCheckBoxValue === d.value}
-
-                                required={data.inputMandatory && selectedCheckBoxValue === d.value}
-                                name={data.inputName}
-                                className="mx-2"
-                                type="checkbox"
-                              />
-                              <label for={d.value}> {d.label}</label>
-                            </div>
-                          );
-                        })
+                                  value={d.value}
+                                  onChange={handleCheckBoxChange}
+                                  defaultChecked={
+                                    selectedCheckBoxValue === d.value
+                                  }
+                                  required={
+                                    data.inputMandatory &&
+                                    selectedCheckBoxValue === d.value
+                                  }
+                                  name={data.inputName}
+                                  className="mx-2"
+                                  type="checkbox"
+                                />
+                                <label for={d.value}> {d.label}</label>
+                              </div>
+                            );
+                          })
                         : ""}
-                        {console.log("data",data)}
 
                       {data.inputType === "number" && (
                         <input
@@ -1167,9 +1497,7 @@ export default function CreateTicketComponent() {
                           required={data.inputMandatory == true ? true : false}
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
-                         
                           max={data.inputAddOn.inputRangeMax}
-
                           // min={data.inputAddOn.inputRange ? range[0] : ""}
                           // max={data.inputAddOn.inputRange ? range[1] : ""}
                           className="form-control form-control-sm"
@@ -1222,9 +1550,7 @@ export default function CreateTicketComponent() {
                         <select
                           id={
                             data.inputName
-                              ? data.inputName
-                                .replace(/ /g, "_")
-                                .toLowerCase()
+                              ? data.inputName.replace(/ /g, "_").toLowerCase()
                               : ""
                           }
                           name={data.inputName}
@@ -1237,8 +1563,7 @@ export default function CreateTicketComponent() {
                                 <option
                                   selected={
                                     parseInt(
-                                      data &&
-                                      data?.inputAddOn?.inputDataSource
+                                      data && data?.inputAddOn?.inputDataSource
                                     ) === option.value
                                   }
                                   value={option.value}
@@ -1270,7 +1595,7 @@ export default function CreateTicketComponent() {
                                     selected={
                                       parseInt(
                                         data &&
-                                        data?.inputAddOn?.inputDataSourceData
+                                          data?.inputAddOn?.inputDataSourceData
                                       ) === option.value
                                     }
                                     value={option.value}
@@ -1364,15 +1689,16 @@ export default function CreateTicketComponent() {
                   className="form-control form-control-sm"
                   id="bulk_upload_file"
                   name="bulk_upload_file"
+                  onChange={(e) => {
+                    uploadAttachmentHandler(e, "UPLOAD", "");
+                  }}
                   required
                 />
               </div>
 
               <div className="row">
                 <label className="col-form-label">
-                  <b>
-                    Upload Attachment <Astrick color="red" /> :
-                  </b>
+                  <b>Upload Attachment :{/* <Astrick color="red" /> : */}</b>
                 </label>
                 <input
                   type="file"
@@ -1380,7 +1706,7 @@ export default function CreateTicketComponent() {
                   id="bulk_images[]"
                   name="bulk_images[]"
                   multiple
-                  required
+                  // required
                   onChange={(e) => {
                     uploadAttachmentHandler(e, "UPLOAD", "");
                   }}

@@ -15,7 +15,9 @@ import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { exportTempateData, templateData } from "./TemplateComponetAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import TemplateComponetSlice, { hideNotification } from "./TemplateComponetSlice";
+import TemplateComponetSlice, {
+  hideNotification,
+} from "./TemplateComponetSlice";
 
 function TemplateComponent() {
   const location = useLocation();
@@ -23,12 +25,10 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
- 
-  const exportData=useSelector((TemplateComponetSlice)=>TemplateComponetSlice.tempateMaster.exportData)
-  console.log("exportData",exportData)
 
-
-
+  const exportData = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
+  );
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
@@ -45,7 +45,6 @@ function TemplateComponent() {
     modalHeader: "",
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -71,14 +70,11 @@ function TemplateComponent() {
     });
   }
 
- 
-
   const [searchTerm, setSearchTerm] = useState("");
- 
+
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {
-  };
+  const handleSearch = (value) => {};
 
   const columns = [
     {
@@ -103,7 +99,6 @@ function TemplateComponent() {
       sortable: true,
       width: "80px",
     },
-    
 
     {
       name: "Template Name",
@@ -131,6 +126,7 @@ function TemplateComponent() {
         </div>
       ),
     },
+
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -173,11 +169,7 @@ function TemplateComponent() {
     },
   ];
 
-  const loadData = async () => {
-   
-  };
-
- 
+  const loadData = async () => {};
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -187,21 +179,18 @@ function TemplateComponent() {
 
   useEffect(() => {
     loadData();
-    dispatch(exportTempateData())
+    dispatch(exportTempateData());
 
     if (!templatedata.length) {
       dispatch(templateData());
       dispatch(getRoles());
     }
     if (location && location.state) {
-     
     }
   }, []);
 
-  
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -351,7 +340,6 @@ function TemplateDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          
           {props.defaultValue !== 0 && (
             <option value={0}>Select Template</option>
           )}

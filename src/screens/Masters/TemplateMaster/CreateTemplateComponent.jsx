@@ -28,6 +28,7 @@ import {
 } from "./TemplateComponetSlice";
 
 import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
+import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
@@ -82,10 +83,20 @@ const CreateTemplateComponent = () => {
   const [data, setData] = useState([]);
 
   const [error, setError] = useState("");
+  const [ticketsData, setTicketsData] = useState([]);
+  const [taskData, setTaskData] = useState([]);
+
+  // const loadData = async () => {
+  //   await new TemplateService().getTemplate().then((res) => {
+  //     setData(res.data.data);
+  //   });
+  // };
 
   const loadData = async () => {
-    await new TemplateService().getTemplate().then((res) => {
-      setData(res.data.data);
+    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+      if (res?.status === 200) {
+        setTaskData(res?.data?.data);
+      }
     });
   };
 
@@ -141,6 +152,242 @@ const CreateTemplateComponent = () => {
   const [show, setShow] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const handleSelect = (label, ID) => {
+    setSelectedOptions(selectedOptions === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    // closeAllDropdowns();
+  };
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const CustomOption = ({
+    label,
+    options,
+    onClick,
+    closeDropdown,
+    openOptions,
+  }) => {
+    const [expanded, setExpanded] = useState(false);
+    const handleClick = (e) => {
+      setExpanded(!expanded);
+      onClick(label);
+      closeDropdown(); // Close the dropdown after clicking the option
+    };
+
+    return (
+      <div
+        style={{
+          padding: "8px",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        {label}
+        {expanded && options && (
+          <div style={{ marginLeft: "20px" }}>
+            {options.map((option) => (
+              <CustomOption
+                key={option.label}
+                label={option.label}
+                options={option.options}
+                onClick={onClick}
+                ID={option.ID}
+                openOptions={options}
+                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const CustomMenuList = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+  function transformData(taskData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the taskData
+    taskData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the taskData
+  const transformedOptions = transformData(taskData);
+
   const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState("");
   const typeRef = useRef();
   const shouldShowButton =
@@ -186,6 +433,7 @@ const CreateTemplateComponent = () => {
     });
     if (a > 0) {
     } else {
+      // rows.append("parent_id", selectedOptionId);
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
           setNotify({ type: "success", message: res?.payload?.data?.message });
@@ -224,13 +472,16 @@ const CreateTemplateComponent = () => {
     var form = new FormData(e.target);
     var temp = {
       task_name: form.get("taskName"),
-      task_type_id: form.get("task_type_id"),
-      parent_id: form.get("parent_id"),
+      // task_type_id: form.get("task_type_id"),
+      // parent_id: form.get("parent_id"),
       total_time: form.get("hours"),
       days: form.get("days"),
       start_days: form.get("start_days"),
+      task_type_id: selectedOptionId,
     };
+
     var basket_id = form.get("basket_id");
+
     var tempData = rows;
     tempData.template_data[basket_id].basket_task.push(temp);
     var a = tempData;
@@ -298,6 +549,7 @@ const CreateTemplateComponent = () => {
   };
 
   useEffect(() => {
+    loadData();
     if (!parent.length) {
       dispatch(getParentData());
     }
@@ -530,14 +782,13 @@ const CreateTemplateComponent = () => {
                           {task.task_name}
                         </p>
 
-                        <p className="p-0 m-0">
+                        {/* <p className="p-0 m-0">
                           <b>Parent Task Name : </b>
                           {
                             parent.find((item) => item.value == task.parent_id)
                               ?.label
                           }
-                        </p>
-
+                        </p> */}
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
                           {
@@ -683,6 +934,101 @@ const CreateTemplateComponent = () => {
                                         )
                                       }
                                     />
+                                  </div> */}
+
+                                  <label>
+                                    <b>
+                                      Task Type Name:
+                                      <Astrick color="red" size="13px" />
+                                    </b>
+                                  </label>
+                                  <div
+                                    style={{
+                                      position: "relative",
+                                      display: "inline-block",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        padding: "8px",
+                                        border: "1px solid #ccc",
+                                        cursor: "pointer",
+                                        width: "100%",
+                                      }}
+                                      onClick={(e) =>
+                                        handleSelectOptionClick(e)
+                                      }
+                                    >
+                                      {selectedOptions
+                                        ? selectedOptions
+                                        : "Select an option"}
+                                    </div>
+                                    {isMenuOpen && (
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          width: "100%", // Set the width to 100% to match the parent's width
+                                          top: "100%",
+                                          zIndex: 999, // Adjust the z-index as needed
+                                        }}
+                                      >
+                                        <CustomMenuList
+                                          options={transformedOptions}
+                                          onSelect={(label, ID) =>
+                                            handleSelect(label, ID)
+                                          }
+                                          // closeAllDropdowns={closeAllDropdowns}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                  {/* <label>
+                                    <b>
+                                      Task Type Name:
+                                      <Astrick color="red" size="13px" />
+                                    </b>
+                                  </label>
+                                  <div
+                                    style={{
+                                      position: "relative",
+                                      display: "inline-block",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        padding: "8px",
+                                        border: "1px solid #ccc",
+                                        cursor: "pointer",
+                                        width: "100%",
+                                      }}
+                                      onClick={(e) =>
+                                        handleSelectOptionClick(e)
+                                      }
+                                    >
+                                      {selectedOptions
+                                        ? selectedOptions
+                                        : "Select an option"}
+                                    </div>
+                                    {isMenuOpen && (
+                                      <div
+                                        style={{
+                                          position: "absolute",
+                                          width: "100%", // Set the width to 100% to match the parent's width
+                                          top: "100%",
+                                          zIndex: 999, // Adjust the z-index as needed
+                                        }}
+                                      >
+                                        <CustomMenuList
+                                          options={transformedOptions}
+                                          onSelect={(label, ID) =>
+                                            handleSelect(label, ID)
+                                          }
+                                          // closeAllDropdowns={closeAllDropdowns}
+                                        />
+                                      </div>
+                                    )}
                                   </div> */}
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
@@ -962,6 +1308,60 @@ const CreateTemplateComponent = () => {
                                 placeholder="Add New Task"
                                 required
                               />
+
+                              {/* <div className="col-sm-3"> */}
+                              {/* <label className="col-form-label" readOnly={true}>
+                                Ticket Type Name:{" "}
+                                <Astrick color="red" size="13px" />
+                              </label> */}
+
+                              <label>
+                                <b>
+                                  Task Type Name:
+                                  <Astrick color="red" size="13px" />
+                                </b>
+                              </label>
+                              <div
+                                style={{
+                                  position: "relative",
+                                  display: "inline-block",
+                                  width: "100%",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    padding: "8px",
+                                    border: "1px solid #ccc",
+                                    cursor: "pointer",
+                                    width: "100%",
+                                  }}
+                                  onClick={(e) => handleSelectOptionClick(e)}
+                                >
+                                  {selectedOptions
+                                    ? selectedOptions
+                                    : "Select an option"}
+                                </div>
+                                {isMenuOpen && (
+                                  <div
+                                    style={{
+                                      position: "absolute",
+                                      width: "100%", // Set the width to 100% to match the parent's width
+                                      top: "100%",
+                                      zIndex: 999, // Adjust the z-index as needed
+                                    }}
+                                  >
+                                    <CustomMenuList
+                                      options={transformedOptions}
+                                      onSelect={(label, ID) =>
+                                        handleSelect(label, ID)
+                                      }
+                                      // closeAllDropdowns={closeAllDropdowns}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                              {/* </div> */}
+
                               {/* <label>
                                 <b>Parent Task Type</b>
                               </label>

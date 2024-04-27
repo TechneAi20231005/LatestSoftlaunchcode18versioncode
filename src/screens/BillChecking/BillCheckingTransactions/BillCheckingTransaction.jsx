@@ -71,7 +71,8 @@ function BillCheckingTransaction() {
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
   const vendorDropdown = useSelector(
-    (VendorMasterSlice) => VendorMasterSlice.vendorMaster.vendorMasterDropDown
+    (VendorMasterSlice) =>
+      VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
   );
 
   const statusDropdown = useSelector(
@@ -950,36 +951,32 @@ function BillCheckingTransaction() {
             "Actual Payment Date": temp[key].actual_payment_date,
             "Bill Amount": temp[key].bill_amount,
             "Net Payment": temp[key].net_payment,
-            "Rejected By": temp[key].rejectedBy,
-            "Is TCS applicable":
-              temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
-
-            bill_type_name: temp[key].bill_type_name,
-
-            "Taxable Amount": temp[key].taxable_amount,
-            "Debit Advance": temp[key].debit_advance,
-            "Bill date": temp[key].bill_date,
-
             "Bill Status": temp[key].payment_status,
-
-            "Received Date": temp[key].received_date,
-
+            bill_type_name: temp[key].bill_type_name,
+            "Assign From": temp[key].created_by,
+            "Assign To": temp[key].assign_to_name,
             levels_of_approval: temp[key].level + 1,
-
             "Approve By": temp[key].approvedBy,
             "Pending From": temp[key].level_approver,
 
-            "Assign From": temp[key].created_by,
-            "Assign To": temp[key].assign_to_name,
+            "Rejected By": temp[key].rejectedBy,
+            "Taxable Amount": temp[key].taxable_amount,
+            "Debit Advance": temp[key].debit_advance,
 
             "Is Original Bill":
               temp[key].is_original_bill_needed === 1 ? "Yes" : "No",
-
             "Internal Audit": temp[key].audit_remark,
             "External Audit": temp[key].external_audit_remark,
+
+            "Bill date": temp[key].bill_date,
+            "Received Date": temp[key].received_date,
+
             "Hold Amount": temp[key].hold_amount,
             "Paid Amount": temp[key].actual_paid,
             "Is cancelled": temp[key].is_active === 0 ? "Yes" : "No",
+
+            "Is TCS applicable":
+              temp[key].is_tcs_applicable === 1 ? "Yes" : "No",
 
             "Created at": temp[key].created_at,
             "Created by": temp[key].created_by,
@@ -1380,7 +1377,6 @@ function BillCheckingTransaction() {
                       />
                     )}
                   </div>
-
                   <div className="col-sm-2">
                     <label>
                       <b>Bill Status:</b>
@@ -1453,7 +1449,7 @@ function BillCheckingTransaction() {
                       className="form-control"
                       name="to_bill_date"
                       id="to_bill_date"
-                      min={billDatedatee}
+                      min={fromBillDate}
                       required={isToBillDateRequired}
                       max={formattedDate}
                       ref={selectToBillRef}

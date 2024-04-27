@@ -122,7 +122,7 @@ export const CustomerMappingSlice = createSlice({
 
         let exportData = [];
         let count = 1;
-        for (let i = 0; i < exportTempateData.length; i++) {
+        for (let i = 0; i < exportTempateData?.length; i++) {
           exportTempateData[i].counter = count++;
         }
 
@@ -208,7 +208,6 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(getTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const activeTemplate = payload.data.data.filter(

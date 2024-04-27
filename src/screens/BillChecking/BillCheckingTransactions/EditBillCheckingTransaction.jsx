@@ -1046,8 +1046,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         min={
                           authorities &&
                           authorities.Past_Financial_Year_Bill_Date === true
-                            ? formattedStartPastDate
-                            : formattedStartDate
+                            ? formattedStartDate
+                            : formattedStartPastDate
                         }
                         max={formattedDate}
                         readOnly={
@@ -1503,8 +1503,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultChecked={
                           data.is_tds_applicable == 1 ? true : false
                         }
+                        // disabled={
+                        //   data.is_rejected == 1 ||
+                        //   data.created_by == localStorage.getItem("id") ||
+                        //   (data.current_user_is_approver == 1 &&
+                        //     authorities &&
+                        //     authorities.All_Update_Bill == true &&
+                        //     data.current_user_is_approver == 0)
+                        //     ? false
+                        //     : true
+                        // }
                         disabled={
-                          authorities && authorities.All_Update_Bill === true
+                          authorities && authorities.All_Update_Bill == true
                             ? false
                             : true
                         }
@@ -1576,8 +1586,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             //     : true
                             // }
                             isDisabled={
-                              authorities &&
-                              authorities.All_Update_Bill === true
+                              authorities && authorities.All_Update_Bill == true
                                 ? false
                                 : true
                             }
@@ -1627,7 +1636,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                               // }
                               isDisabled={
                                 authorities &&
-                                authorities.All_Update_Bill === true
+                                authorities.All_Update_Bill == true
                                   ? false
                                   : true
                               }

@@ -32,10 +32,9 @@ import TaskComponentSlice from "../TaskComponentSlice";
 export default function TaskData(props) {
   var priorityColor = "bg-default";
   const data = props?.data;
+  const date = props.date;
   const isRegularisedData = props.data.regularized_data;
   const allData = props;
-
-
   const [userTypeData, setUserTypeData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +50,6 @@ export default function TaskData(props) {
   if (data.priority === "Very High") {
     priorityColor = "bg-danger";
   }
-
 
   // if((taskOwners.filter((d)=>d.is_started === "YES")) && userSessionData.id == taskOwners.filter((d)=>d.id))
 
@@ -151,9 +149,7 @@ export default function TaskData(props) {
   //Group Activity
   const [showGroupActivityModal, setShowGroupActivityModal] = useState(false);
   const showGroupActivity = (e, taskOwners, taskId, dataa) => {
-   
     setShowGroupActivityModal(true);
-    
   };
 
   const hideGroupActivity = (e, taskOwners, taskId, dataa) => {
@@ -277,7 +273,7 @@ export default function TaskData(props) {
           {data.status !== "COMPLETED" && (
             <h6 className="mb-0 fw-bold fs-6 mb-2" style={{ fontSize: "10px" }}>
               {" "}
-              {data.task_name.length < 50
+              {data?.task_name?.length < 50
                 ? data.task_name
                 : data.task_name.substring(0, 40) + "...."}
             </h6>
@@ -285,7 +281,7 @@ export default function TaskData(props) {
           {data.status === "COMPLETED" && (
             <strike>
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {data.task_name.length < 50
+                {data?.task_name?.length < 50
                   ? data.task_name
                   : data.task_name.substring(0, 40) + "...."}
               </h6>
@@ -294,7 +290,7 @@ export default function TaskData(props) {
         </div>
       </div>
       <div className="d-flex justify-content-start">
-        {data.taskOwners &&
+        {data?.taskOwners &&
           data.taskOwners.length > 7 &&
           data.taskOwners
             .filter((d, i) => i < 7)
@@ -329,7 +325,6 @@ export default function TaskData(props) {
             );
           })}
       </div>
-
 
       <div className="d-flex justify-content-between mt-1">
         {props.data.taskOwnersId &&
@@ -408,7 +403,7 @@ export default function TaskData(props) {
         {props.data.type == "GROUP_ACTIVITY" &&
           props.data.status !== "COMPLETED" && (
             <div>
-              {(timerState === "START" || timerState == null)   && (
+              {(timerState === "START" || timerState == null) && (
                 <button
                   type="button"
                   style={{
@@ -510,6 +505,30 @@ export default function TaskData(props) {
                     <i className="icofont-listing-number"></i> Subtask
                   </button>
                 </li>
+                {props.data.time_status !== "STOP" &&
+                  props.data.RegularizationAuthority === "Yes" && (
+                    <li
+                      onClick={(e) => {
+                        handleRequestModal();
+                        RegularizaLoadData();
+                      }}
+                    >
+                      {data &&
+                        data.taskOwners.map((d) => {
+                          if (d.id == localStorage.getItem("id")) {
+                            return (
+                              <button
+                                className="btn btn-sm text-white w-100"
+                                style={{ backgroundColor: "#d63384" }}
+                              >
+                                <i className="icofont-listing-number"></i> Time
+                                Regularization
+                              </button>
+                            );
+                          }
+                        })}
+                    </li>
+                  )}
               </Dropdown.Menu>
             </Dropdown>
           </>
@@ -578,30 +597,29 @@ export default function TaskData(props) {
                 </button>
               </li>
 
-              {props.data.status != "COMPLETED" &&
-                props.data.time_status !== "STOP" && (
-                  <li
-                    onClick={(e) => {
-                      handleRequestModal();
-                      RegularizaLoadData();
-                    }}
-                  >
-                    {data &&
-                      data.taskOwners.map((d) => {
-                        if (d.id == localStorage.getItem("id")) {
-                          return (
-                            <button
-                              className="btn btn-sm text-white w-100"
-                              style={{ backgroundColor: "#d63384" }}
-                            >
-                              <i className="icofont-listing-number"></i> Time
-                              Regularization
-                            </button>
-                          );
-                        }
-                      })}
-                  </li>
-                )}
+              {props.data.time_status !== "STOP" && (
+                <li
+                  onClick={(e) => {
+                    handleRequestModal();
+                    RegularizaLoadData();
+                  }}
+                >
+                  {data &&
+                    data.taskOwners.map((d) => {
+                      if (d.id == localStorage.getItem("id")) {
+                        return (
+                          <button
+                            className="btn btn-sm text-white w-100"
+                            style={{ backgroundColor: "#d63384" }}
+                          >
+                            <i className="icofont-listing-number"></i> Time
+                            Regularization
+                          </button>
+                        );
+                      }
+                    })}
+                </li>
+              )}
 
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
@@ -638,6 +656,7 @@ export default function TaskData(props) {
       {requestModal && (
         <RequestModal
           taskId={data.id}
+          date={date}
           ticketId={data.ticket_id}
           data={data}
           isRegularisedData={isRegularisedData}

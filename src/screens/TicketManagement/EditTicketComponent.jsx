@@ -62,6 +62,7 @@ import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
 import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
 import { getUserForMyTicketsData } from "./MyTicketComponentAction";
 import { getRoles } from "../Dashboard/DashboardAction";
+import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -129,6 +130,7 @@ export default function EditTicketComponent({ match }) {
   const [confirmationModalDetails, setConfirmationModalDetails] =
     useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [ticketsData, setTicketsData] = useState([]);
 
   const [updateStatus, setUpdateStatus] = useState({});
   const [dateErr, setDateErr] = useState(null);
@@ -232,6 +234,8 @@ export default function EditTicketComponent({ match }) {
       }
     }
 
+    formData.append("parent_id", selectedOptionId);
+
     if (
       data.status_id == 3 &&
       proceed == false &&
@@ -286,6 +290,198 @@ export default function EditTicketComponent({ match }) {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const handleSelect = (label, ID) => {
+    setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOptionId(label);
+    setIsMenuOpen(!isMenuOpen);
+    // closeAllDropdowns();
+  };
+  const handleSelectOptionClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
+    const [expanded, setExpanded] = useState(false);
+    const handleClick = (e) => {
+      setExpanded(!expanded);
+      onClick(label);
+      closeDropdown(); // Close the dropdown after clicking the option
+    };
+
+    return (
+      <div
+        style={{
+          padding: "8px",
+          cursor: "pointer",
+        }}
+        onClick={handleClick}
+      >
+        {label}
+        {expanded && options && (
+          <div style={{ marginLeft: "20px" }}>
+            {options.map((option) => (
+              <CustomOptionTicket
+                key={option.label}
+                label={option.label}
+                options={option.options}
+                onClick={onClick}
+                ID={option.ID}
+                closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const CustomMenuListTicket = ({ options, onSelect }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openOptions, setOpenOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        setOpenOptions(true);
+      }
+    };
+
+    const toggleOptions = (label) => {
+      if (openOptions.includes(label)) {
+        setOpenOptions(openOptions.filter((item) => item !== label));
+      } else {
+        setOpenOptions([...openOptions, label]);
+      }
+    };
+
+    const handleSelect = (label, ID) => {
+      setSelectedOption(label);
+      onSelect(label, ID);
+      setOpenOptions([]);
+      setIsMenuOpen(!isMenuOpen);
+    };
+
+    const filterOptions = (options, term) => {
+      return options.filter((option) => {
+        const lowerCaseTerm = term.toLowerCase();
+        const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+        const matchChildOptions =
+          option.options && option.options.length > 0
+            ? filterOptions(option.options, term).length > 0
+            : false;
+
+        return matchLabel || matchChildOptions;
+      });
+    };
+
+    const handleMouseEnter = (label) => {
+      setHoveredIndex(label);
+    };
+
+    const handleMouseLeave = () => {
+      setHoveredIndex(null);
+    };
+
+    const renderOptions = (options) => {
+      return options.map((option, index) => (
+        <React.Fragment key={option.label}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.4rem",
+              backgroundColor:
+                hoveredIndex === option.label
+                  ? "rgba(79, 184, 201, 0.5)"
+                  : "white",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <i
+              className={
+                openOptions.includes(option.label) && option.options.length > 0
+                  ? "icofont-rounded-down"
+                  : "icofont-rounded-right"
+              }
+              style={{
+                marginRight: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => toggleOptions(option.label)}
+            ></i>
+
+            <div
+              onClick={() => handleSelect(option.label, option.ID)}
+              style={{
+                cursor: "pointer",
+                transition: "color 0.3s",
+              }}
+            >
+              {option.label}
+            </div>
+          </div>
+
+          {openOptions &&
+            openOptions.length > 0 &&
+            openOptions.includes(option.label) &&
+            option.options && (
+              <div style={{ marginLeft: "1rem" }}>
+                <div style={{ marginLeft: "1rem" }}>
+                  {renderOptions(option.options)}
+                </div>
+              </div>
+            )}
+        </React.Fragment>
+      ));
+    };
+    const filteredOptions = filterOptions(options, searchTerm);
+
+    return (
+      <>
+        {isMenuOpen === false && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              zIndex: 1000,
+              maxHeight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderWidth: "2px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "white",
+              borderBottomRightRadius: "4px",
+              borderBottomLeftRadius: "4px",
+            }}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              style={{
+                padding: "8px",
+                border: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ overflowY: "auto" }}>
+              {renderOptions(filteredOptions)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
   const [selectedDropdown, setSelectedDropdown] = useState([]);
   const dynamicDependancyHandle = async (key, e, dependanceDropdownName) => {
     setSelectedDropdown({ ...selectedDropdown, [key]: e });
@@ -387,7 +583,7 @@ export default function EditTicketComponent({ match }) {
         }
         setData(null);
         setData(data);
-        handleAttachment("GetAttachment", ticketId);
+        // handleAttachment("GetAttachment", ticketId);
         if (rows) {
           var dynamicForm = res.data.data.dynamic_form;
           const returnedData = [];
@@ -554,9 +750,52 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
+    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
+      if (res?.status === 200) {
+        setTicketsData(res?.data?.data);
+      }
+    });
+
     loadComments();
     setShowLoaderModal(false);
   };
+
+  function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
+    const primaryLabel = "Primary";
+    const options = [];
+
+    // Push the primary label if it hasn't been pushed before
+    if (!hasPrimaryLabel) {
+      options.push({
+        ID: null,
+        label: primaryLabel,
+        isStatic: true,
+        options: [],
+      });
+      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+    }
+
+    // Process the ticketData
+    ticketsData?.forEach((item) => {
+      const label = item.type_name;
+
+      if (label !== primaryLabel) {
+        // Push API labels directly into options array
+        options.push({
+          ID: item.parent_id,
+          label: label,
+          options: item.children
+            ? transformDataTicket(item.children, hasPrimaryLabel)
+            : [],
+        });
+      }
+    });
+
+    return options;
+  }
+
+  // Transform the ticketData
+  const transformedOptionsTicket = transformDataTicket(ticketsData);
 
   const loadComments = async () => {
     setIsLoading(true);
@@ -568,26 +807,26 @@ export default function EditTicketComponent({ match }) {
     });
   };
 
-  const handleAttachment = (type, ticket_id, attachmentId = null) => {
-    if (type === "GetAttachment") {
-      getAttachment(ticket_id, "TICKET").then((res) => {
-        if (res.status === 200) {
-          setAttachment(res.data.data);
-        }
-      });
-    }
-    if (type === "DeleteAttachment") {
-      deleteAttachment(attachmentId).then((res) => {
-        if (res.status === 200) {
-          getAttachment(ticket_id, "TICKET").then((resp) => {
-            if (resp.status === 200) {
-              setAttachment(resp.data.data);
-            }
-          });
-        }
-      });
-    }
-  };
+  // const handleAttachment = (type, ticket_id, attachmentId = null) => {
+  //   if (type === "GetAttachment") {
+  //     getAttachment(ticket_id, "TICKET").then((res) => {
+  //       if (res.status === 200) {
+  //         setAttachment(res.data.data);
+  //       }
+  //     });
+  //   }
+  //   if (type === "DeleteAttachment") {
+  //     deleteAttachment(attachmentId).then((res) => {
+  //       if (res.status === 200) {
+  //         getAttachment(ticket_id, "TICKET").then((resp) => {
+  //           if (resp.status === 200) {
+  //             setAttachment(resp.data.data);
+  //           }
+  //         });
+  //       }
+  //     });
+  //   }
+  // };
 
   const handleDateChange = (e) => {
     if (e.target.value === "") {
@@ -674,16 +913,16 @@ export default function EditTicketComponent({ match }) {
 
   const loadAttachment = async () => {
     setNotify(null);
-    if (ticketId) {
-      await getAttachment(ticketId, "TICKET").then((res) => {
-        if (res.status === 200) {
-          setAttachment(null);
-          setAttachment(res.data.data);
-        }
-      });
-    } else {
-      setAttachment(null);
-    }
+    // if (ticketId) {
+    //   await getAttachment(ticketId, "TICKET").then((res) => {
+    //     if (res.status === 200) {
+    //       setAttachment(null);
+    //       setAttachment(res.data.data);
+    //     }
+    //   });
+    // } else {
+    //   setAttachment(null);
+    // }
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
@@ -809,6 +1048,7 @@ export default function EditTicketComponent({ match }) {
                 value={data.object_id}
                 readOnly={true}
               />
+
               <div className="card mt-2">
                 <div className="card-body">
                   <div className="form-group row d-flex justify-content-between">
@@ -976,7 +1216,7 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
-                    <div className="col-sm-4">
+                    {/* <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Parent : </b>
                       </label>
@@ -988,6 +1228,82 @@ export default function EditTicketComponent({ match }) {
                         readOnly
                         name="parent_id"
                       />
+                    </div> */}
+                    <div className="col-sm-3 mt-2">
+                      <label
+                        className="form-label font-weight-bold"
+                        readOnly={true}
+                      >
+                        Ticket Type Name:
+                      </label>
+
+                      <div>
+                        <div
+                          style={{
+                            position: "relative",
+                            display: "inline-block",
+                            width: "100%",
+                          }}
+                        >
+                          <div
+                            // style={{
+                            //   padding: "8px",
+                            //   border: "1px solid #ccc",
+                            //   cursor: "pointer",
+                            //   width: "100%",
+                            //   borderRadius: "1px",
+                            // }}
+                            className="form-control form-control-sm"
+                            onClick={(e) => handleSelectOptionClick(e)}
+                          >
+                            {/* {selectedOption
+                              ? selectedOption
+                              : modal?.modalData?.parent_name} */}
+                            {selectedOption
+                              ? selectedOption
+                              : data?.parent_name !== null
+                              ? data?.parent_name
+                              : "Primary"}
+                          </div>
+                          {isMenuOpen && (
+                            <div
+                              // style={{
+                              //   position: "absolute",
+                              //   width: "100%", // Set the width to 100% to match the parent's width
+                              //   top: "100%",
+
+                              //   maxHeight: "150px", // Adjust the maxHeight here as needed
+                              //   overflowY: "auto", // Enable vertical scrolling
+                              //   scrollbarWidth: "none", // Hide scrollbar in Firefox
+                              //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                              //   "&::-webkit-scrollbar": {
+                              //     display: "none", // Hide scrollbar in Webkit browsers
+                              //   },
+                              // }}
+                              style={{
+                                position: "absolute",
+                                width: "100%", // Set the width to 100% to match the parent's width
+                                top: "100%", // Position the menu at the top of the parent element
+                                zIndex: "1", // Ensure the menu is on top of other elements
+                                maxHeight: "150px", // Adjust the maxHeight here as needed
+                                // overflowY: "auto", // Enable vertical scrolling
+                                // scrollbarWidth: "none", // Hide scrollbar in Firefox
+                                msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+                                "&::-webkit-scrollbar": {
+                                  display: "none", // Hide scrollbar in Webkit browsers
+                                },
+                              }}
+                            >
+                              <CustomMenuListTicket
+                                options={transformedOptionsTicket}
+                                onSelect={(label, ID) =>
+                                  handleSelect(label, ID)
+                                }
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="col-sm-4">
@@ -1199,6 +1515,7 @@ export default function EditTicketComponent({ match }) {
                 <div className="row">
                   {rows.map((data, index) => {
                     var range = "";
+
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
                         <label>
@@ -1269,7 +1586,7 @@ export default function EditTicketComponent({ match }) {
                                   : false
                               }
                               readOnly
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1287,7 +1604,7 @@ export default function EditTicketComponent({ match }) {
                               }
                               readOnly
                               onChange={dynamicChangeHandle}
-                              defaultValue={data.inputDefaultValue}
+                              defaultValue={data.value}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -1306,7 +1623,7 @@ export default function EditTicketComponent({ match }) {
                             readOnly
                             name={data.inputName}
                             defaultValue={
-                              data.inputDefaultValue
+                              data.value
                               // selectedDropdown
                               //   ? selectedDropdown[data.inputName]
                               //   : ""
@@ -1333,9 +1650,7 @@ export default function EditTicketComponent({ match }) {
                                     // }
                                     value={d.value}
                                     onChange={handleRadioChange}
-                                    defaultChecked={
-                                      d.value == data.inputDefaultValue
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -1365,9 +1680,7 @@ export default function EditTicketComponent({ match }) {
                                     }
                                     value={d.value}
                                     onChange={handleCheckBoxChange}
-                                    defaultChecked={
-                                      d.value == data.inputDefaultValue
-                                    }
+                                    defaultChecked={d.value == data.value}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
@@ -1390,7 +1703,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             name={data.inputName}
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             required={
                               data.inputMandatory == true ? true : false
                             }
@@ -1415,7 +1728,7 @@ export default function EditTicketComponent({ match }) {
                               data.inputMandatory == true ? true : false
                             }
                             readOnly
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             onChange={dynamicChangeHandle}
                             minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -1461,7 +1774,7 @@ export default function EditTicketComponent({ match }) {
                                 : ""
                             }
                             disabled
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             className="form-control form-control-sm"
                           >
@@ -1529,7 +1842,7 @@ export default function EditTicketComponent({ match }) {
                                     .toLowerCase()
                                 : ""
                             }
-                            defaultValue={data.inputDefaultValue}
+                            defaultValue={data.value}
                             name={data.inputName}
                             disabled
                             className="form-control form-control-sm"
@@ -1639,58 +1952,58 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               )}
+
               <div
                 className="d-flex justify-content-start mt-2"
                 style={{ overflowX: "auto" }}
               >
-                {attachment &&
-                  attachment.map((attach, index) => {
-                    return (
+                {data.attachment &&
+                  data.attachment.map((attach, index) => (
+                    <div
+                      className="justify-content-start"
+                      key={index}
+                      style={{
+                        marginRight: "20px",
+                        padding: "0px",
+                        width: "200px",
+                      }}
+                    >
                       <div
-                        className="justify-content-start"
-                        style={{
-                          marginRight: "20px",
-                          padding: "0px",
-                          width: "200px",
-                        }}
+                        className="card"
+                        style={{ backgroundColor: "#EBF5FB" }}
                       >
-                        <div
-                          className="card"
-                          style={{ backgroundColor: "#EBF5FB" }}
-                        >
-                          <div className="card-header">
-                            <p style={{ fontSize: "12px" }}>
-                              <b>{attach.name}</b>
-                            </p>
-                            <div className="d-flex justify-content-end p-0">
-                              <a
-                                href={`${_attachmentUrl + "/" + attach.path}`}
-                                target="_blank"
-                                className="btn btn-warning btn-sm p-0 px-1"
-                              >
-                                <i
-                                  className="icofont-download"
-                                  style={{ fontSize: "12px", height: "15px" }}
-                                ></i>
-                              </a>
-                              <button
-                                className="btn btn-danger text-white btn-sm p-0 px-1"
-                                type="button"
-                                onClick={(e) => {
-                                  handleDeleteAttachment(e, attach.id);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "12px" }}
-                                ></i>
-                              </button>
-                            </div>
+                        <div className="card-header">
+                          <p style={{ fontSize: "12px" }}>
+                            <b>{attach.name}</b>
+                          </p>
+                          <div className="d-flex justify-content-end p-0">
+                            <a
+                              href={`${_attachmentUrl + "/" + attach.path}`}
+                              target="_blank"
+                              className="btn btn-warning btn-sm p-0 px-1"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: "12px", height: "15px" }}
+                              ></i>
+                            </a>
+                            <button
+                              className="btn btn-danger text-white btn-sm p-0 px-1"
+                              type="button"
+                              onClick={(e) =>
+                                handleDeleteAttachment(e, attach.id)
+                              }
+                            >
+                              <i
+                                className="icofont-ui-delete"
+                                style={{ fontSize: "12px" }}
+                              ></i>
+                            </button>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
               </div>
 
               <div className="mt-3" style={{ textAlign: "right" }}>
