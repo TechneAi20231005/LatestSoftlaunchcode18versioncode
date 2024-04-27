@@ -1565,8 +1565,11 @@ export default function EditTicketComponent({ match }) {
                             {data.inputDefaultValue}
                           </textarea>
                         )}
-
-                        {data.inputType === "date" && (
+                        {console.log("data11", data)}
+                        {/* {data.inputType === "date" && (
+                          const inputDate = "27-04-2024";
+                          const parts = inputDate.split("-");
+                          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
                           <div className="form-control">
                             <input
                               type="date"
@@ -1581,21 +1584,32 @@ export default function EditTicketComponent({ match }) {
                               style={{ width: "100%" }}
                             />
                           </div>
+                        )} */}
+                        {data.inputType === "date" && (
+                          <div className="form-control">
+                            <input
+                              type="text"
+                              name={data.inputName}
+                              required={data && data.inputMandatory === true}
+                              disabled
+                              defaultValue={data?.inputDefaultValue}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
                         )}
-
                         {data.inputType === "datetime-local" && (
                           <div className="form-control">
                             <input
-                              type="datetime-local"
+                              type="text"
                               name={data.inputName}
                               required={
                                 data && data.inputMandatory == true
                                   ? true
                                   : false
                               }
-                              readOnly
+                              disabled
                               onChange={dynamicChangeHandle}
-                              defaultValue={data.value}
+                              defaultValue={data.inputDefaultValue}
                               style={{ width: "100%" }}
                             />
                           </div>

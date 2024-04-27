@@ -12,7 +12,7 @@ const TicketHistory = ({ match }) => {
   const columns = [
     { name: "Sr", selector: (row) => row.counter, sortable: true },
     { name: "TicketId", selector: (row) => row.ticket_id, sortable: true },
-    { name: "Ticket Type", selector: (row) => row.type_name, sortable: true },
+    { name: "Ticket Type", selector: (row) => row.parent_name, sortable: true },
 
     {
       name: "Ticket Created By User",
