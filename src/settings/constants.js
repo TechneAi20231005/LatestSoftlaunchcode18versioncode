@@ -4,23 +4,23 @@ export const _ErrorMsg = "Try After Some Time !!!";
 
 export var dataFormat = { status: 0, message: null, data: null };
 
-//Development :TechTicketDummy TSDDummy
-//Production : TechTicket TSNewBackend
+//Development :3_SoftLaunchDummy TSDDummy
+//Production : 3_SoftLaunch TSNewBackend
 
 export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
 
-// export const _base ='TechTicket';
+// export const _base ='3_SoftLaunch';
 // export const _apiUrl = "http://15.207.120.175/TSNewBackend/public/api/";
 // export const _attachmentUrl='http://15.207.120.175/TSNewBackend/';
 
-// export const _base ='TechTicketDummy';
-// export const _apiUrl = "http://15.207.120.175/TechTicketDummyDevelopment/public/api/";
-// export const _attachmentUrl="http://15.207.120.175/TechTicketDummyDevelopment/";
+// export const _base ='3_SoftLaunchDummy';
+// export const _apiUrl = "http://15.207.120.175/3_SoftLaunchDummyDevelopment/public/api/";
+// export const _attachmentUrl="http://15.207.120.175/3_SoftLaunchDummyDevelopment/";
 
-export const _base = "TechTicket";
+export const _base = "3_SoftLaunch/TechTicket";
 export const _apiUrl =
-  "http://3.108.206.34/TSNewBackend/public/api/";
-export const _attachmentUrl = "http://3.108.206.34/TSNewBackend/";
+  "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
+export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
 
 export const loginURL = _apiUrl + "login";
 export const fpURL = _apiUrl + "reset/forgetPasswordOtp";
