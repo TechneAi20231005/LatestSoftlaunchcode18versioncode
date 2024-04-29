@@ -18,9 +18,10 @@ const SprintCalendar = () => {
   const [firstStartDate, setFirstStarDate] = useState("");
   const [lastEndDate, setLasteEndDate] = useState("");
   const [withinRangeDates, setWithinRangeDates] = useState([]);
-  const [, setDateArray] = useState([]);
+  const [dateArray, setDateArray] = useState([]);
   const [currentDaywiseDate, setCurrentDaywiseDate] = useState({});
   const [weekData, setWeekData] = useState([]);
+  const [yearData, setYearData] = useState([]);
   const [taskStatus, setTaskStatus] = useState([
     { id: 1, statusName: "TO_DO", color: "#C3F5FF" },
     { id: 2, statusName: "IN_PROGRESS", color: "#FFECB3" },
@@ -44,11 +45,16 @@ const SprintCalendar = () => {
     return days;
   };
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = async (event) => {
     setSelectedOption(event.target.value);
+    setCurrentIndex(0);
     if (event.target.value === "day") {
       const days = generateDateArray();
       setCurrentDateRange(days);
+    }
+    if (event.target.value === "week") {
+      console.log("current date range", withinRangeDates);
+      setCurrentDateRange(withinRangeDates);
     }
   };
 
@@ -107,7 +113,8 @@ const SprintCalendar = () => {
 
       currentMonday.setDate(currentMonday.getDate() + 7);
     }
-
+    console.log("week ranges", weekRange);
+    setWithinRangeDates(weekRange);
     return weekRange;
   }
 
@@ -123,7 +130,6 @@ const SprintCalendar = () => {
 
   const formatDateString = (dates) => {
     const date = new Date(dates);
-
     const day = date.getDate();
     const month = date.toLocaleString("en", { month: "short" });
     const year = date.getFullYear();
@@ -136,7 +142,6 @@ const SprintCalendar = () => {
         .getSprintCalendar(ticketId)
         .then(async (res) => {
           if (res?.data?.status && res?.data?.data) {
-            console.log("res.data.data", res?.data?.data);
             setCalendarData(res?.data?.data);
             setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
             setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
@@ -170,18 +175,8 @@ const SprintCalendar = () => {
       const nextIndex =
         prevIndex === currentDateRange.length - 1 ? 0 : prevIndex + 1;
       setCurrentDaywiseDate(currentDateRange[nextIndex]);
-      const filterData = currentDateRange[nextIndex];
-      const startDate = new Date(filterData.start);
-      const endDate = new Date(filterData.end);
-      const days = [];
-
-      let currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        days.push(getFormattedDate(new Date(currentDate)));
-        currentDate.setDate(currentDate.getDate() + 1);
+      if (selectedOption === "week") {
       }
-      setWithinRangeDates(days);
-
       return nextIndex;
     });
   };
@@ -194,7 +189,7 @@ const SprintCalendar = () => {
       return previousIndex;
     });
   };
-  const getCalendarDataForWeek = async (firstDate, secondDate) => {
+  const getCalendarDataForWeek = async (firstStartDate, lastEndDate) => {
     const formatDate = (dates) => {
       const date = new Date(dates);
       const year = date.getFullYear();
@@ -203,15 +198,24 @@ const SprintCalendar = () => {
       return `${year}-${month}-${day}`;
     };
 
-    await new SprintService()
-      .getSprintCalendarDataForWeek(
+    try {
+      const response = await new SprintService().getSprintCalendarDataForWeek(
         ticketId,
-        formatDate(firstDate),
-        formatDate(secondDate)
-      )
-      .then((res) => {
-        setWeekData(res?.data?.data);
-      });
+        formatDate(firstStartDate),
+        formatDate(lastEndDate)
+      );
+      if (response?.data?.data) {
+        setYearData(response?.data?.data);
+        setWeekData(response?.data?.data);
+      } else {
+        throw new Error("Something went wrong");
+      }
+    } catch (error) {
+      console.error("Error fetching calendar data:", error);
+      setNotify({ type: "danger", message: "Error while fetching data" });
+      setWeekData([]);
+      setYearData([]);
+    }
   };
 
   useEffect(() => {
@@ -237,7 +241,13 @@ const SprintCalendar = () => {
         />
       );
     } else if (selectedOption === "month") {
-      setComponentToRender(<CalendarYearWise />);
+      setComponentToRender(
+        <CalendarYearWise
+          firstDate={firstStartDate}
+          lastDate={lastEndDate}
+          yearData={yearData}
+        />
+      );
     }
   }, [selectedOption, calendarData, taskStatus, currentDaywiseDate, weekData]);
 

@@ -3,7 +3,6 @@ import "./custom-style.css";
 import SprintService from "../../../../../services/TicketService/SprintService";
 const WeekwiseCalendar = (props) => {
   const { daysOfWeek, data, bgColor, firstDate, lastDate } = props;
-  console.log("data week", data);
 
   const [calendarDate, setCalendarData] = useState([]);
 

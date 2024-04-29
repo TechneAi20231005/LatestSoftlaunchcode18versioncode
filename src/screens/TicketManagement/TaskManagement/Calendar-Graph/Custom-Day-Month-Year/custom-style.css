@@ -28,5 +28,23 @@
   height: 82px;
 }
 .myCustomHeight {
-  height: 80vh;
+  height: 90vh;
+}
+.rbc-btn-group > button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Styling for the left arrow icon */
+.rbc-btn-group > button.rbc-btn-back {
+  margin-right: 10px; /* Adjust spacing as needed */
+}
+
+/* Styling for the right arrow icon */
+.rbc-btn-group > button.rbc-btn-next {
+  margin-left: 10px; /* Adjust spacing as needed */
 }
