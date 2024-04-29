@@ -74,7 +74,7 @@ function InterviewProcessDetails() {
     if (!remarkMasterList?.length) {
       dispatch(getRemarkMasterListThunk());
     }
-  }, [remarkMasterList]);
+  }, []);
 
   useEffect(() => {
     if (currentInterviewStepData?.application_status_id === 2) {

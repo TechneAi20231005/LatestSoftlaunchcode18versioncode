@@ -237,7 +237,7 @@ function CandidatesDetails() {
                 <Col sm={6} md={6}>
                   <Field
                     component={CustomCurrencyInput}
-                    onKeyDown={NumbersOnly}
+                    // onKeyDown={NumbersOnly}
                     name="expected_ctc"
                     label="Expected Monthly Salary (Net)"
                     placeholder="Enter expected monthly salary"
@@ -248,7 +248,7 @@ function CandidatesDetails() {
                 <Col sm={6} md={6}>
                   <Field
                     component={CustomCurrencyInput}
-                    onKeyDown={NumbersOnly}
+                    // onKeyDown={NumbersOnly}
                     name="current_ctc"
                     label="Current Monthly Salary"
                     placeholder="Enter current monthly salary"

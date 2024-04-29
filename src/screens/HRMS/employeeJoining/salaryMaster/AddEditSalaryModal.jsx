@@ -181,7 +181,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   <Col sm={6} md={6} lg={3}>
                     <Field
                       component={CustomCurrencyInput}
-                      onKeyDown={NumbersOnly}
+                      // onKeyDown={NumbersOnly}
                       name="max_salary"
                       label="Max salary(In Hand)"
                       placeholder="Enter max salary"

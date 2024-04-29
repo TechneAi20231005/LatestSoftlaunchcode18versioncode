@@ -123,7 +123,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       if (!designationMasterList?.length) {
         dispatch(getDesignationData());
       }
-      if (!designationMasterList?.length) {
+      if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
     }
