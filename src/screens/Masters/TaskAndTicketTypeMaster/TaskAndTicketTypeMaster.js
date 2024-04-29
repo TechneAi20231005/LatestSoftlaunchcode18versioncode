@@ -865,23 +865,22 @@ function TaskAndTicketTypeMaster(props) {
       setParentTaskName(""); // Clear the error message if present
       setParentTicketName("");
 
-      if (selectedOptionId === "Primary") {
-        form.append("parent_id", 0);
-      } else {
-        form.append(
-          "parent_id",
-          // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-          selectedOptionId
-            ? selectedOptionId
-            : modal?.modalData?.parent_name !== null
-            ? modal?.modalData?.parent_name
-            : "Primary"
-        );
-      }
-
-      form.append("type", selectedType);
-
       if (!id) {
+        if (selectedOptionId === "Primary") {
+          form.append("parent_id", 0);
+        } else {
+          form.append(
+            "parent_id",
+            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+            selectedOptionId
+              ? selectedOptionId
+              : modal?.modalData?.parent_name !== null
+              ? modal?.modalData?.parent_name
+              : "Primary"
+          );
+        }
+
+        form.append("type", selectedType);
         setNotify(null);
         await new TaskTicketTypeService().postType(form).then((res) => {
           if (res.status === 200) {
@@ -896,6 +895,25 @@ function TaskAndTicketTypeMaster(props) {
           }
         });
       } else {
+        if (
+          selectedOptionId === "Primary" ||
+          modal.modalData.parent_name === "Primary"
+        ) {
+          form.append("parent_id", 0);
+        } else {
+          form.append(
+            "parent_id",
+            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
+            selectedOptionId
+              ? selectedOptionId
+              : modal?.modalData?.parent_name !== null
+              ? modal?.modalData?.parent_name
+              : "Primary"
+          );
+        }
+
+        form.append("type", selectedType);
+
         await new TaskTicketTypeService()._updateType(id, form).then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
