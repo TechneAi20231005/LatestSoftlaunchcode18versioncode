@@ -93,18 +93,24 @@ function JobOfferOnBoarding() {
   };
 
   // // dropdown data
-  const preferredRole = designationMasterList?.map(item => ({
-    label: item?.designation,
-    value: item?.id,
-  }));
+  const preferredRole = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const locationType = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const locationType = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
   const remarkType = [
-    ...remarkMasterList?.map(item => ({ label: item?.remark, value: item?.id })),
+    ...remarkMasterList
+      ?.filter(item => item?.is_active === 1)
+      ?.map(item => ({ label: item?.remark, value: item?.id })),
     { label: 'Other', value: 0 },
   ];
 

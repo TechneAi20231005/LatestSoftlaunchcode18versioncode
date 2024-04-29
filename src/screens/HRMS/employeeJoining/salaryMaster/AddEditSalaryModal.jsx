@@ -55,20 +55,26 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
   // // dropdown data
-  const departmentType = departmentDataList?.map(item => ({
-    label: item?.department,
-    value: item?.id,
-  }));
+  const departmentType = departmentDataList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.department,
+      value: item?.id,
+    }));
 
-  const designationType = designationMasterList?.map(item => ({
-    label: item?.designation,
-    value: item?.id,
-  }));
+  const designationType = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const location = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const location = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
   // // function
   const handelAddEditSalary = () => {

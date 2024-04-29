@@ -58,20 +58,26 @@ function AddCandidatesModal({ show, close }) {
   );
 
   // // dropdown data
-  const preferredRole = roleMasterList?.map(item => ({
-    label: item?.role,
-    value: item?.id,
-  }));
+  const preferredRole = roleMasterList
+    ?.filter(item => item?.is_active === 1)
+    .map(item => ({
+      label: item?.role,
+      value: item?.id,
+    }));
 
-  const preferredLocation = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const preferredLocation = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    .map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
-  const sourceType = sourceMasterList?.map(item => ({
-    label: item?.source_name,
-    value: item?.id,
-  }));
+  const sourceType = sourceMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.source_name,
+      value: item?.id,
+    }));
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);

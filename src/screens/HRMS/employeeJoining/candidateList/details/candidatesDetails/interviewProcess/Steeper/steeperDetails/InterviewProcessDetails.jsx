@@ -41,7 +41,9 @@ function InterviewProcessDetails() {
 
   // // dropdown data
   const remarkType = [
-    ...remarkMasterList?.map(item => ({ label: item?.remark, value: item?.id })),
+    ...remarkMasterList
+      ?.filter(item => item?.is_active === 1)
+      ?.map(item => ({ label: item?.remark, value: item?.id })),
     { label: 'Other', value: 0 },
   ];
 
