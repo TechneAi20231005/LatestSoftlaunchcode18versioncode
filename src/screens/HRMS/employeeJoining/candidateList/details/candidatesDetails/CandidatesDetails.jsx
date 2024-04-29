@@ -23,7 +23,7 @@ import {
 import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction';
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { REACT_APP_API_URL } from '../../../../../../config/envConfig';
+import { REACT_APP_ATTACHMENT_URL } from '../../../../../../config/envConfig';
 import { experienceLevel } from '../../../../../../settings/constants';
 
 function CandidatesDetails() {
@@ -64,7 +64,7 @@ function CandidatesDetails() {
     expected_ctc: details?.expected_monthly_salary,
     current_ctc: details?.current_monthly_salary,
     notice_period: details?.notice_period,
-    resume_path: `${REACT_APP_API_URL}${details?.resume}`,
+    resume_path: `${REACT_APP_ATTACHMENT_URL}${details?.resume}`,
   };
 
   // // dropdown data
@@ -90,7 +90,10 @@ function CandidatesDetails() {
     candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
     candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
     candidatesData.append('notice_period', openConfirmModal?.formData?.notice_period);
-    candidatesData.append('resume_path', openConfirmModal?.formData?.resume_path);
+    // candidatesData.append('resume_path[]', openConfirmModal?.formData?.resume_path);
+    // openConfirmModal?.formData.forEach(file => {
+    //   candidatesData.append('resume_path[]', file);
+    // });
 
     dispatch(
       editCandidatesMasterThunk({
@@ -267,19 +270,31 @@ function CandidatesDetails() {
                 </Col>
                 <Col sm={6} md={6}>
                   <label>
-                    Resume <span className="mendatory_sign">*</span>
+                    Resume
+                    {/* <span className="mendatory_sign">*</span> */}
                   </label>
                   {currentMode === 'VIEW' ? (
                     <div>
-                      <a href={`${REACT_APP_API_URL}${details?.resume}`} target="_blank">
-                        Resume.file
-                      </a>
+                      {details?.attachments.length ? (
+                        details?.attachments?.map((fileData, index) => (
+                          <a
+                            href={`${REACT_APP_ATTACHMENT_URL}/${fileData}`}
+                            target="_blank"
+                            key={index}
+                          >
+                            File-{index + 1}, &nbsp;
+                          </a>
+                        ))
+                      ) : (
+                        <small className="opacity-75">N/A</small>
+                      )}
                     </div>
                   ) : (
                     <>
                       <input
                         type="file"
                         name="resume_path"
+                        disabled
                         className={`form-control ${
                           errors.resume_path && touched.resume_path ? 'is-invalid' : ''
                         }`}

@@ -200,6 +200,8 @@ export default function TaskComponent({ match }) {
                   Total_Worked: d.total_worked,
                   Basket_Name: tasks.basket_name,
                   taskOwnerNames: taskOwnerNames,
+
+                  task_type: d.parent_name,
                 });
               });
             });
@@ -986,7 +988,7 @@ export default function TaskComponent({ match }) {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href={`${_attachmentUrl}/public/api/${attachment.path}`}
+                                    href={`${_attachmentUrl}//${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
                                   >

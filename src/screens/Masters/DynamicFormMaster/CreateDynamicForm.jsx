@@ -50,6 +50,8 @@ function CreateDynamicForm() {
     inputAddOn: {
       inputRange: null,
       inputRangeMin: null,
+      inputDateRange1: null,
+      inputDateRange2: null,
       inputRangeMax: null,
       inputDataSource: null,
       inputDataSourceData: null,
@@ -131,6 +133,8 @@ function CreateDynamicForm() {
 
   const [selectedValue, setSelectedValue] = useState();
   const [inputLabelValue, setInputLabelValue] = useState();
+  const [minDate, setMinDate] = useState();
+
   const [selectedValueErr, setSelectedValueErr] = useState("");
   const [min, setMin] = useState();
   const [max, setMax] = useState();
@@ -138,6 +142,12 @@ function CreateDynamicForm() {
   const [selectMasterValue, setSelectMasterValue] = useState();
 
   const handleChange = (idx, type) => async (e) => {
+    console.log("e==>", e.target.value);
+    console.log("e==>", e.target.name);
+
+    if (e.target.name === "inputDateRange1") {
+      setMinDate(e.target.value);
+    }
     if (e.target.name === "inputLabel") {
       setInputLabelValue(e.target.value);
     }
@@ -232,12 +242,16 @@ function CreateDynamicForm() {
         rows[idx].inputAddOn.inputRangeMin = e.target.value;
       } else if (e.target.name == "inputRangeMax") {
         rows[idx].inputAddOn.inputRangeMax = e.target.value;
+      } else if (e.target.name == "inputDateRange1") {
+        rows[idx].inputAddOn.inputDateRange1 = e.target.value;
+      } else if (e.target.name == "inputDateRange2") {
+        rows[idx].inputAddOn.inputDateRange2 = e.target.value;
       } else if (e.target.name == "datetime-local") {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name == "inputFormat") {
         rows[idx].inputFormat = e.target.value;
       }
-
+      console.log("ro22", rows[idx].inputAddOn);
       if (e.target.name === "inputDataSource" && e.target.value === "user") {
         const tempUserData = [];
         const test1 = e.target.value;
@@ -1028,27 +1042,81 @@ function CreateDynamicForm() {
                                   )}
 
                                   {rows[idx].inputType === "date" && (
-                                    <span>
+                                    // <span
+                                    //   style={{
+                                    //     display: "flex",
+                                    //     alignItems: "center",
+                                    //   }}
+                                    // >
+                                    //   <input
+                                    //     type="date"
+                                    //     onChange={handleChange(idx)}
+                                    //     id="inputDateRange"
+                                    //     name="inputDateRange"
+                                    //     placeholder="Eg. 2022-01-01|2022-02-01"
+                                    //     className="form-control form-control-sm"
+                                    //     min={
+                                    //       rows[idx].inputAddOn.inputDateRange
+                                    //     }
+                                    //     max={
+                                    //       rows[idx].inputAddOn.inputDateRange
+                                    //     }
+                                    //   />
+                                    //    <small style={{ color: "red" }}>
+                                    //     <b>Min date</b>
+                                    //   </small>
+                                    //   <input
+                                    //     type="date"
+                                    //     onChange={handleChange(idx)}
+                                    //     id="inputDateRange"
+                                    //     name="inputDateRange"
+                                    //     placeholder="Eg. 2022-01-01|2022-02-01"
+                                    //     className="form-control form-control-sm"
+                                    //     min={
+                                    //       rows[idx].inputAddOn.inputDateRange
+                                    //     }
+                                    //     max={
+                                    //       rows[idx].inputAddOn.inputDateRange
+                                    //     }
+                                    //   />
+
+                                    //   <small style={{ color: "red" }}>
+                                    //     <b>max date</b>
+                                    //   </small>
+                                    // </span>
+                                    <span
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
                                       <input
-                                        type="text"
+                                        type="date"
                                         onChange={handleChange(idx)}
-                                        id="inputDateRange"
-                                        name="inputDateRange"
-                                        placeholder="Eg. 2022-01-01|2022-02-01"
+                                        id="inputDateRange1"
+                                        name="inputDateRange1"
                                         className="form-control form-control-sm"
-                                        min={
-                                          rows[idx].inputAddOn.inputDateRange
-                                        }
+                                      />
+                                      <small style={{ color: "red" }}>
+                                        <b>Min date</b>
+                                      </small>
+                                      <input
+                                        type="date"
+                                        onChange={handleChange(idx)}
+                                        id="inputDateRange2"
+                                        name="inputDateRange2"
+                                        className="form-control form-control-sm"
+                                        min={minDate}
                                         max={
                                           rows[idx].inputAddOn.inputDateRange
                                         }
                                       />
                                       <small style={{ color: "red" }}>
-                                        <b>Min|Max (YYYY-MM-DD)</b>
+                                        <b>Max date</b>
                                       </small>
                                     </span>
                                   )}
-
+                                  {console.log("minDate", minDate)}
                                   {rows[idx].inputType === "time" && (
                                     <div
                                       className="d-flex justify-content-between"
@@ -1234,12 +1302,12 @@ function CreateDynamicForm() {
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                            min={data.inputAddOn.inputDateRange1}
+                            max={data.inputAddOn.inputDateRange2}
                             className="form-control form-control-sm"
                           />
                         )}
-
+                        {console.log("dddd", data)}
                         {data.inputType === "datetime-local" && (
                           <input
                             type={data.inputType}

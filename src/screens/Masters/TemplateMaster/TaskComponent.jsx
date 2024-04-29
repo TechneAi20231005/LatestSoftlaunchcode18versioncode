@@ -36,8 +36,10 @@ export default function TaskComponent(props) {
     start_days: props.taskData.start_days,
     days: props.taskData.task_days,
     basket_id: props.taskData.basket_id,
-    task_type_id: selectedOptionId,
+    task_type_id: props?.taskData?.parent_name,
   });
+
+  console.log("props", props.taskData);
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -288,6 +290,7 @@ export default function TaskComponent(props) {
     }
   };
 
+  console.log("dataT", data);
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
   const [parent, setParent] = useState();
 

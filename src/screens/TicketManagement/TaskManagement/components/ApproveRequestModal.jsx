@@ -18,7 +18,7 @@ const ApproveRequestModal = (props) => {
   const ticketId = props.ticketId;
 
   const rquestData = props?.data;
-  const ticketIdName = props?.data[0]?.ticket_id_name;
+  const ticketIdName = props?.data && props.data[0]?.ticket_id_name;
   const loadData = () => {
     // Assuming getRegularizationTime is a function that returns a Promise
     new getRegularizationTime(ticketId)
