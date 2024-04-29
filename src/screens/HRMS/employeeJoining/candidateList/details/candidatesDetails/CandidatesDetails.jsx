@@ -90,7 +90,10 @@ function CandidatesDetails() {
     candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
     candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
     candidatesData.append('notice_period', openConfirmModal?.formData?.notice_period);
-    candidatesData.append('resume_path', openConfirmModal?.formData?.resume_path);
+    // candidatesData.append('resume_path[]', openConfirmModal?.formData?.resume_path);
+    // openConfirmModal?.formData.forEach(file => {
+    //   candidatesData.append('resume_path[]', file);
+    // });
 
     dispatch(
       editCandidatesMasterThunk({
@@ -267,7 +270,8 @@ function CandidatesDetails() {
                 </Col>
                 <Col sm={6} md={6}>
                   <label>
-                    Resume <span className="mendatory_sign">*</span>
+                    Resume
+                    {/* <span className="mendatory_sign">*</span> */}
                   </label>
                   {currentMode === 'VIEW' ? (
                     <div>
@@ -290,6 +294,7 @@ function CandidatesDetails() {
                       <input
                         type="file"
                         name="resume_path"
+                        disabled
                         className={`form-control ${
                           errors.resume_path && touched.resume_path ? 'is-invalid' : ''
                         }`}

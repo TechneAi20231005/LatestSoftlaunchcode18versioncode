@@ -95,7 +95,7 @@ function AddCandidatesModal({ show, close }) {
     candidatesData.append('expected_ctc', formData.expected_ctc);
     candidatesData.append('current_ctc', formData.current_ctc);
     candidatesData.append('notice_period', formData.notice_period || 0);
-    candidatesData.append('resume_path', formData.resume_path);
+    candidatesData.append('resume_path[]', formData.resume_path);
 
     dispatch(
       addCandidatesMasterThunk({
