@@ -998,14 +998,15 @@ const EditTemplateComponent = ({ match, props }) => {
                       <button
                         type="button"
                         className="btn btn-danger fw-bold text-white btn-sm"
-                        onClick={(e) =>
+                        onClick={(e) => {
                           dispatch(
                             handleTaskModal({
                               showModal: true,
                               modalData: data,
                             })
-                          )
-                        }
+                          );
+                          setSelectedOptions(null);
+                        }}
                       >
                         <i
                           className="icofont-ui-edit"

@@ -22,7 +22,7 @@ export default function TaskHistoryModal(props) {
   const columns = [
     { name: "Sr", selector: (row) => row.Sr_No, sortable: true },
     { name: "Task Id", selector: (row) => row.Task_Id, sortable: true },
-    { name: "Task Type", selector: (row) => row.type_name, sortable: true },
+    { name: "Task Type", selector: (row) => row.parent_name, sortable: true },
 
     {
       name: "Task Name",

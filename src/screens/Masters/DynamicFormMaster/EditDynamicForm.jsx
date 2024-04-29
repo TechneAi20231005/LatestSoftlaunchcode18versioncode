@@ -70,6 +70,8 @@ function EditDynamicForm({ match }) {
       inputDataSource: null,
       inputDataSourceData: null,
       inputDateRange: null,
+      inputDateRange1: null,
+      inputDateRange2: null,
     },
   };
 
@@ -146,12 +148,15 @@ function EditDynamicForm({ match }) {
     { value: "status", label: "Status Master" },
     { value: "query", label: "Query Type Master" },
   ];
+  const [minDate, setMinDate] = useState();
 
   const handleChange = (idx, type) => async (e) => {
     if (e.target.name === "inputLabel") {
       setInputLabelValue(e.target.value);
     }
-
+    if (e.target.name === "inputDateRange1") {
+      setMinDate(e.target.value);
+    }
     if (selectedValue) {
       setSelectedValueErr("");
     } else {
@@ -1101,25 +1106,42 @@ function EditDynamicForm({ match }) {
                                       </div>
                                     </div>
                                   )}
-
                                   {rows[idx].inputType === "date" && (
-                                    <span>
+                                    <span
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
                                       <input
-                                        type="text"
+                                        type="date"
                                         onChange={handleChange(idx)}
-                                        id="inputDateRange"
-                                        name="inputDateRange"
-                                        placeholder="Eg. 2022-01-01|2022-02-01"
+                                        id="inputDateRange1"
+                                        name="inputDateRange1"
                                         className="form-control form-control-sm"
-                                        min={
-                                          rows[idx].inputAddOn.inputDateRange
+                                        defaultValue={
+                                          rows[idx].inputAddOn.inputDateRange1
+                                        }
+                                      />
+                                      <small style={{ color: "red" }}>
+                                        <b>Min date</b>
+                                      </small>
+                                      <input
+                                        type="date"
+                                        onChange={handleChange(idx)}
+                                        id="inputDateRange2"
+                                        name="inputDateRange2"
+                                        className="form-control form-control-sm"
+                                        // min={minDate}
+                                        defaultValue={
+                                          rows[idx].inputAddOn.inputDateRange2
                                         }
                                         max={
                                           rows[idx].inputAddOn.inputDateRange
                                         }
                                       />
                                       <small style={{ color: "red" }}>
-                                        <b>Min|Max (YYYY-MM-DD)</b>
+                                        <b>Max date</b>
                                       </small>
                                     </span>
                                   )}
@@ -1163,7 +1185,6 @@ function EditDynamicForm({ match }) {
                                       </div>
                                     </div>
                                   )}
-{console.log("rows",rows)}
                                   {rows[idx].inputType === "datetime-local" && (
                                     <div className="d-flex justify-content-between">
                                       <div class="form-group">
@@ -1250,8 +1271,6 @@ function EditDynamicForm({ match }) {
               {/* Card */}
             </div>
 
-
-
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
@@ -1263,7 +1282,14 @@ function EditDynamicForm({ match }) {
                     }
 
                     return (
-                      <div key={index} className={`${data.inputWidth} mt-2`}>
+                      <div
+                        key={index}
+                        className={`${
+                          data.inputWidth === "Select Width"
+                            ? `col-sm-6`
+                            : data.inputWidth
+                        } mt-2`}
+                      >
                         <label>
                           <b>
                             {data.inputLabel} :
@@ -1274,7 +1300,6 @@ function EditDynamicForm({ match }) {
                             )}
                           </b>
                         </label>
-
                         {data.inputType === "text" && (
                           <input
                             type={data.inputType}
@@ -1319,12 +1344,11 @@ function EditDynamicForm({ match }) {
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                            min={data.inputAddOn.inputDateRange1}
+                            max={data.inputAddOn.inputDateRange2}
                             className="form-control form-control-sm"
                           />
                         )}
-
 
                         {data.inputType === "datetime-local" && (
                           <input
