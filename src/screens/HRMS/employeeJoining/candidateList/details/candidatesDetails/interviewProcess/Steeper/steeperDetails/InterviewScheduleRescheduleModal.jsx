@@ -27,6 +27,7 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
   const { details } = candidateDetailsData;
   const { isLoading } = useSelector(state => state?.interViewProcess);
 
+  // // function
   const handelScheduleReschedule = interviewData => {
     const apiData = {
       ...interviewData,

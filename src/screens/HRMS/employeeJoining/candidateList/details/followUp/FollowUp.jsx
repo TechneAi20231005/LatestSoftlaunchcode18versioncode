@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Stack, Col, Row, Container, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ function FollowUp() {
   const dispatch = useDispatch();
   const location = useLocation();
   const { currentCandidateId } = location.state;
+  const attachmentFileRef = useRef();
 
   const followUpInitialValue = {
     add_follow_up: '',
@@ -32,7 +33,7 @@ function FollowUp() {
   const { isLoading } = useSelector(state => state?.candidatesFollowUp);
 
   // // function
-  const handelAddFollowUp = formData => {
+  const handelAddFollowUp = ({ formData, resetFunc }) => {
     const followUpData = new FormData();
     followUpData.append('add_follow_up', formData.add_follow_up);
     followUpData.append('next_follow_up_date', formData.next_follow_up_date);
@@ -44,6 +45,8 @@ function FollowUp() {
         currentId: currentCandidateId,
         onSuccessHandler: () => {
           dispatch(getFollowUpListThunk({ currentId: currentCandidateId }));
+          resetFunc();
+          attachmentFileRef.current.value = '';
         },
       }),
     );
@@ -57,8 +60,8 @@ function FollowUp() {
         initialValues={followUpInitialValue}
         enableReinitialize
         validationSchema={addFollowValidation}
-        onSubmit={values => {
-          handelAddFollowUp(values);
+        onSubmit={(values, { resetForm }) => {
+          handelAddFollowUp({ formData: values, resetFunc: resetForm });
         }}
       >
         {({ errors, touched, setFieldValue, resetForm, dirty }) => (
@@ -89,6 +92,7 @@ function FollowUp() {
                 <Col sm={6} md={6}>
                   <label>Attachment</label>
                   <input
+                    ref={attachmentFileRef}
                     type="file"
                     name="attachment_file"
                     className={`form-control ${
@@ -97,7 +101,7 @@ function FollowUp() {
                     onChange={event => {
                       setFieldValue('attachment_file', event.target.files[0]);
                     }}
-                    accept=".jpg, .jpeg, .pdf, .doc, .csv"
+                    accept=".jpg, .jpeg, .png, .pdf, .docx,"
                   />
                   <RenderIf render={errors.attachment_file && touched.attachment_file}>
                     <div className="invalid-feedback">{errors.attachment_file}</div>

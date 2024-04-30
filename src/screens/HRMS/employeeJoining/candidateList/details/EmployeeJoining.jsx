@@ -17,7 +17,6 @@ function EmployeeJoining() {
   // // initial state
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(location.state);
 
   // // local state
   const [currentTab, setCurrentTab] = useState('candidates_details');
