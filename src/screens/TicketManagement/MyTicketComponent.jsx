@@ -1590,6 +1590,13 @@ export default function MyTicketComponent() {
               label: d.first_name + " " + d.last_name,
             }));
 
+          const select1 = res.data.data
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({
+              value: d.id,
+              label: d.first_name + " " + d.last_name,
+            }));
+
           const select2 = res.data.data
             .filter((d) => d.is_active == 1 && d.account_for === "CUSTOMER")
             .map((d) => ({
@@ -1603,7 +1610,7 @@ export default function MyTicketComponent() {
           });
           setUserData(aa);
           setAssignUserDropdown(select);
-          setUserDropdown(select);
+          setUserDropdown(select1);
           setCustomerUserDropdown(select2);
         }
       })
