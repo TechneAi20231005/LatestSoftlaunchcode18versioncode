@@ -25,13 +25,13 @@ function InterviewScheduleHistory() {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      minWidth: '70px',
+      width: '70px',
     },
     {
       name: 'Step Title',
       selector: row => row?.step_title || '--',
       sortable: true,
-      minWidth: '150px',
+      width: '150px',
     },
     {
       name: 'Status',
@@ -44,32 +44,19 @@ function InterviewScheduleHistory() {
       name: 'Schedule Date & Time',
       selector: row => row?.schedule_datetime || '--',
       sortable: true,
-      minWidth: '175px',
+      width: '175px',
     },
     {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
-      minWidth: '175px',
+      width: '175px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
-      minWidth: '175px',
-    },
-
-    {
-      name: 'Updated At',
-      selector: row => row?.updated_at || '--',
-      sortable: true,
-      minWidth: '175px',
-    },
-    {
-      name: 'Updated By',
-      selector: row => row?.updated_by || '--',
-      sortable: true,
-      minWidth: '175px',
+      width: '175px',
     },
   ];
 
@@ -85,8 +72,6 @@ function InterviewScheduleHistory() {
       'Schedule Date & Time': row?.schedule_datetime || '',
       'Created At': row?.created_at || '--',
       'Created By': row?.created_by || '--',
-      'Updated At': row?.updated_at || '--',
-      'Updated By': row?.updated_by || '--',
     }));
   };
 
