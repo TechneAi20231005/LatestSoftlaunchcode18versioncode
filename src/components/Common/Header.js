@@ -52,7 +52,7 @@ export default function Header() {
             setNotifications(res.data.data.result);
             // setApprovedNotifications(res.data.data.for_me);
             setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status == 1)
+              res?.data?.data?.result?.filter((d) => d?.status == 0)
             );
             setAllRequest(
               res?.data?.data?.result?.filter((d) => d?.status == 2)
