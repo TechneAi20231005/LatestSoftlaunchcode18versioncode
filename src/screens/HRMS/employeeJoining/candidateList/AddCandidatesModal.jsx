@@ -16,7 +16,7 @@ import OtpVerificationModal from './OtpVerificationModal';
 import { RenderIf } from '../../../../utils';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { getRoleData } from '../../../Masters/RoleMaster/RoleMasterAction';
+import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import { NumbersOnly } from '../../../../components/Utilities/Validation';
 import {
   addCandidatesMasterThunk,
@@ -50,24 +50,24 @@ function AddCandidatesModal({ show, close }) {
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
     state => state?.branchMaster,
   );
-  const { getRoleData: roleMasterList, status } = useSelector(
-    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  const { getDesignationData: designationMasterList, status } = useSelector(
+    DesignationSlice => DesignationSlice.designationMaster,
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
     state => state?.sourceMaster,
   );
 
   // // dropdown data
-  const preferredRole = roleMasterList
+  const preferredRole = designationMasterList
     ?.filter(item => item?.is_active === 1)
-    .map(item => ({
-      label: item?.role,
+    ?.map(item => ({
+      label: item?.designation,
       value: item?.id,
     }));
 
   const preferredLocation = branchMasterList
     ?.filter(item => item?.is_active === 1)
-    .map(item => ({
+    ?.map(item => ({
       label: item?.location_name,
       value: item?.id,
     }));
@@ -116,8 +116,8 @@ function AddCandidatesModal({ show, close }) {
 
   useEffect(() => {
     if (show) {
-      if (!branchMasterList?.length) {
-        dispatch(getRoleData());
+      if (!designationMasterList?.length) {
+        dispatch(getDesignationData());
       }
       if (!branchMasterList?.length) {
         dispatch(getBranchMasterListThunk());

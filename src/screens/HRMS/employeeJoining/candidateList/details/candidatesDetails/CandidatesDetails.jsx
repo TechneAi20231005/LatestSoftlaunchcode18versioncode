@@ -20,7 +20,7 @@ import {
   editCandidatesMasterThunk,
   getCandidatesDetailsThunk,
 } from '../../../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
-import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction';
+import { getDesignationData } from '../../../../../Dashboard/DashboardAction';
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
 import { REACT_APP_ATTACHMENT_URL } from '../../../../../../config/envConfig';
@@ -40,8 +40,8 @@ function CandidatesDetails() {
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
     state => state?.branchMaster,
   );
-  const { getRoleData: roleMasterList, status } = useSelector(
-    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  const { getDesignationData: designationMasterList, status } = useSelector(
+    DesignationSlice => DesignationSlice.designationMaster,
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
     state => state?.sourceMaster,
@@ -68,10 +68,10 @@ function CandidatesDetails() {
   };
 
   // // dropdown data
-  const preferredRole = roleMasterList
+  const preferredRole = designationMasterList
     ?.filter(item => item?.is_active === 1)
     ?.map(item => ({
-      label: item?.role,
+      label: item?.designation,
       value: item?.id,
     }));
 
@@ -119,8 +119,8 @@ function CandidatesDetails() {
   // // life cycle
   useEffect(() => {
     dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
-    if (!roleMasterList?.length) {
-      dispatch(getRoleData());
+    if (!designationMasterList?.length) {
+      dispatch(getDesignationData());
     }
     if (!branchMasterList?.length) {
       dispatch(getBranchMasterListThunk());
