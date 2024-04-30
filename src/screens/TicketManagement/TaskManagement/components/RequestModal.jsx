@@ -719,6 +719,7 @@ const RequestModal = (props) => {
                                     onClick={addRoww}
                                     className="btn btn-primary"
                                     style={{ backgroundColor: "#484C7F" }}
+                                    disabled={row.status === "PENDING"}
                                   >
                                     <i className="icofont-plus-circle"></i>
                                   </button>
@@ -871,6 +872,7 @@ const RequestModal = (props) => {
               </table>
             </div>
           </Modal.Body>
+
           <Modal.Footer>
             <button
               type="submit"

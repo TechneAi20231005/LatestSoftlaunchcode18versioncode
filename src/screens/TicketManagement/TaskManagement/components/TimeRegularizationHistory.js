@@ -73,7 +73,6 @@ const TimeRegularizationHistory = (props) => {
   useEffect(() => {
     loadData();
   }, []);
-
   return (
     <Modal
       show={props.show}

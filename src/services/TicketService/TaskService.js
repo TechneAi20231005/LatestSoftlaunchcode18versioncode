@@ -252,7 +252,6 @@ export function getRegularizationTimeHistory() {
     config
   );
 }
-
 export function getRegularizationTimeData(ticketId, taskId) {
   const token = localStorage.getItem("jwt_token");
 
