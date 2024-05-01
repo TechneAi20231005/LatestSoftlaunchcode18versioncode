@@ -110,7 +110,7 @@ function JobOfferOnBoarding() {
   const remarkType = [
     ...remarkMasterList
       ?.filter(item => item?.is_active === 1)
-      ?.map(item => ({ label: item?.remark, value: item?.id })),
+      ?.map(item => ({ label: item?.remark_description, value: item?.id })),
     { label: 'Other', value: 0 },
   ];
 

@@ -5,7 +5,7 @@ import { errorHandler } from '../../../../../utils';
 
 export const getRemarkMasterListThunk = createAsyncThunk('remarkMaster/getRemarkList', async () => {
   try {
-    const response = await customAxios.get(`remarkMaster`);
+    const response = await customAxios.get(`remarkMaster/0`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
