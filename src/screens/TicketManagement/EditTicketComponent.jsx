@@ -764,7 +764,7 @@ export default function EditTicketComponent({ match }) {
     loadComments();
     setShowLoaderModal(false);
   };
-  const filteredData = emilData.filter((d) => d.id === data.created_by);
+  const filteredData = emilData?.filter((d) => d.id === data.created_by);
 
   function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
