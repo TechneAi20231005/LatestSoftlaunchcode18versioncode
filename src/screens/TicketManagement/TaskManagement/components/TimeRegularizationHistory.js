@@ -73,7 +73,6 @@ const TimeRegularizationHistory = (props) => {
   useEffect(() => {
     loadData();
   }, []);
-
   return (
     <Modal
       show={props.show}
@@ -236,7 +235,7 @@ const TimeRegularizationHistory = (props) => {
                           </td>
                           <td>
                             <input
-                              type="time"
+                              type="text"
                               className="form-control form-control-sm"
                               id={`scheduled_time${i}`}
                               name="scheduled_time[]"
