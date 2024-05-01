@@ -67,12 +67,12 @@ function RemarkMaster() {
       name: 'Supporting Remark',
       sortable: true,
       selector: row =>
-        row?.supporting_remark ? (
+        row?.remark ? (
           <OverlayTrigger
             placement="top"
-            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.supporting_remark}</Tooltip>}
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
           >
-            <span>{row?.supporting_remark || '--'}</span>
+            <span>{row?.remark || '--'}</span>
           </OverlayTrigger>
         ) : (
           '--'
@@ -128,7 +128,7 @@ function RemarkMaster() {
     return data?.map((row, index) => ({
       'Sr No.': index + 1,
       'Remark Description': row?.remark_description || '--',
-      'Supporting Remark': row?.supporting_remark || '--',
+      'Supporting Remark': row?.remark || '--',
       Status: row?.is_active ? 'Active' : 'Deactive',
       'Created At': row?.created_at || '--',
       'Created By': row?.created_by || '--',

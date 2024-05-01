@@ -93,18 +93,24 @@ function JobOfferOnBoarding() {
   };
 
   // // dropdown data
-  const preferredRole = designationMasterList?.map(item => ({
-    label: item?.designation,
-    value: item?.id,
-  }));
+  const preferredRole = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const locationType = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const locationType = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
   const remarkType = [
-    ...remarkMasterList?.map(item => ({ label: item?.remark, value: item?.id })),
+    ...remarkMasterList
+      ?.filter(item => item?.is_active === 1)
+      ?.map(item => ({ label: item?.remark_description, value: item?.id })),
     { label: 'Other', value: 0 },
   ];
 
@@ -326,7 +332,7 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          onKeyDown={NumbersOnly}
+                          // onKeyDown={NumbersOnly}
                           name="current_salary"
                           label="Current Salary"
                           placeholder="Enter current salary"
@@ -339,7 +345,7 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        onKeyDown={NumbersOnly}
+                        // onKeyDown={NumbersOnly}
                         name="max_salary"
                         label="Max Salary(In Hand)"
                         value={salaryFiltered?.max_salary || ''}
@@ -352,7 +358,7 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        onKeyDown={NumbersOnly}
+                        // onKeyDown={NumbersOnly}
                         name="preferred_salary"
                         label="Preferred Salary"
                         placeholder="Enter preferred salary"
@@ -364,7 +370,7 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        onKeyDown={NumbersOnly}
+                        // onKeyDown={NumbersOnly}
                         name="hr_negotiable_salary"
                         label="Negotiable Salary"
                         placeholder="Enter negotiable salary"
@@ -383,7 +389,7 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          onKeyDown={NumbersOnly}
+                          // onKeyDown={NumbersOnly}
                           name="sr_hr_negotiable_salary"
                           label="Negotiable Salary From Supper Admin"
                           placeholder="Enter negotiable salary"

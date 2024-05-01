@@ -50,7 +50,7 @@ function FollowUpHistory() {
               <div>
                 <h5>Attachment</h5>
                 <a href={`${REACT_APP_ATTACHMENT_URL}${followUp?.attachment_file}`} target="_blank">
-                  Attachment.png
+                  Attachment
                 </a>
               </div>
               <p className="mt-5 opacity-50">{`${followUp?.created_by || 'N/A'}, ${

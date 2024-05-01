@@ -23,7 +23,7 @@ export const getFollowUpListThunk = createAsyncThunk(
 );
 export const addFollowUpThunk = createAsyncThunk(
   'followUp/addFollowUp',
-  async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
+  async ({ formData, onSuccessHandler, currentId }) => {
     try {
       const response = await customAxios.post(`followUp/addFollowUp/${currentId}`, formData);
       if (response?.status === 200 || response?.status === 201) {
@@ -32,12 +32,10 @@ export const addFollowUpThunk = createAsyncThunk(
           toast.success(response?.data?.message);
           return response?.data?.message;
         } else {
-          onErrorHandler();
           errorHandler(response);
         }
       }
     } catch (error) {
-      onErrorHandler();
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
