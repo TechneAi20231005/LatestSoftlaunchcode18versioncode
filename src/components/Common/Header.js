@@ -16,7 +16,10 @@ import TenantService from "../../services/MastersService/TenantService";
 import Select from "react-select";
 import Alert from "./Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { getRegularizationTime } from "../../services/TicketService/TaskService";
+import {
+  getRegularizationTime,
+  getRegularizationTimeHistory,
+} from "../../services/TicketService/TaskService";
 import ApproveRequestModal from "../../screens/TicketManagement/TaskManagement/components/ApproveRequestModal";
 import TimeRegularizationHistory from "../../screens/TicketManagement/TaskManagement/components/TimeRegularizationHistory";
 
@@ -52,8 +55,9 @@ export default function Header() {
             setNotifications(res.data.data.result);
             // setApprovedNotifications(res.data.data.for_me);
             setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status == 0)
+              res?.data?.data?.result?.filter((d) => d?.status == 1)
             );
+
             setAllRequest(
               res?.data?.data?.result?.filter((d) => d?.status == 2)
             );
@@ -196,6 +200,50 @@ export default function Header() {
     });
   };
 
+  const historyData = async () => {
+    console.log("his==>");
+
+    // Assuming getRegularizationTime is a function that returns a Promise
+    await new getRegularizationTimeHistory()
+      .then((res) => {
+        console.log("his==>", res);
+        // Process the data
+        if (res.status === 200) {
+          if (res.data.data) {
+            const temp = res.data.data
+              ?.filter((d) => d?.status_remark !== "PENDING")
+              ?.map((d) => ({
+                id: d.id,
+                created_by_name: d.created_by_name,
+                from_date: d.from_date,
+                to_date: d.to_date,
+                from_time: d.from_time,
+                to_time: d.to_time,
+                remark: d.remark,
+                is_checked: 0,
+                regularization_time_status: d.regularization_time_status,
+                task_name: d.task_name,
+                ticket_id_name: d.ticket_id_name,
+                actual_time: d.actual_time,
+                task_hours: d.task_hours,
+                scheduled_time: d.scheduled_time,
+                status: d.status_remark,
+              }));
+
+            // Assuming setDataa is a function to set the state
+            setData(temp);
+          }
+        } else {
+        }
+      })
+      .catch((error) => {
+        // Handle errors, e.g., show an error message to the user
+      });
+  };
+
+  useEffect(() => {
+    historyData();
+  }, []);
   useEffect(() => {
     loadData();
   }, [showApprovedOnly]);
@@ -255,7 +303,7 @@ export default function Header() {
                     <div className="card-header border-0 p-3">
                       <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                         <span>
-                          Notifications :{" "}
+                          Regularization Request :{" "}
                           {showApprovedOnly === true ? (
                             <span>Approved Only By Me</span>
                           ) : (
@@ -361,9 +409,9 @@ export default function Header() {
                             className="list-unstyled list mb-0"
                             style={{ height: `${notificationHeight}px` }}
                           >
-                            {notifications &&
-                              notifications.length > 0 &&
-                              notifications.map((ele, index) => {
+                            {allRequest &&
+                              allRequest.length > 0 &&
+                              allRequest.map((ele, index) => {
                                 const date = ele.created_at.split(" ")[0];
                                 const time = ele.created_at.split(" ")[1];
 
@@ -381,30 +429,30 @@ export default function Header() {
                                       }}
                                     >
                                       {ele.url && (
-                                        <Link to={`/${_base}/${ele.url}`}>
-                                          <p
-                                            className="d-flex justify-content-between mb-0"
-                                            onClick={(e) =>
-                                              handleReadNotification(e, ele.id)
-                                            }
-                                          >
-                                            <span className="font-weight-bold">
-                                              <span className="fw-bold badge bg-primary p-2">
-                                                {" "}
-                                                {`Date : ${date}`}
-                                              </span>
-                                              <span
-                                                className="fw-bold badge bg-danger p-2"
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                {" "}
-                                                {`Time : ${time}`}
-                                              </span>
-                                              <br />
-                                              {ele.message}
+                                        // <Link to={`/${_base}/${ele.url}`}>
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          // onClick={(e) =>
+                                          //   handleReadNotification(e, ele.id)
+                                          // }
+                                        >
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {" "}
+                                              {`Date : ${date}`}
                                             </span>
-                                          </p>
-                                        </Link>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {" "}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+                                        </p>
+                                        // </Link>
                                       )}
 
                                       {!ele.url && (
