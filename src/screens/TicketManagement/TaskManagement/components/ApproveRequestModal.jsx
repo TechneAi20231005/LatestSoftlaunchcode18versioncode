@@ -365,12 +365,6 @@ const ApproveRequestModal = (props) => {
             </div>
           </>
         )}
-
-        {!showLoaderModal && (!rquestData || rquestData.length === 0) && (
-          <div className="text-center" style={{ fontWeight: "bold" }}>
-            No Records Found
-          </div>
-        )}
       </Modal.Body>
       <Modal.Footer></Modal.Footer>
     </Modal>
