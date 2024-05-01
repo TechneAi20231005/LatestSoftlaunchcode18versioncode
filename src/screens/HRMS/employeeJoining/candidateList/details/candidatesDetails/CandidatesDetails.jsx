@@ -88,7 +88,7 @@ function CandidatesDetails() {
       label: item?.source_name,
       value: item?.id,
     }));
-  console.log(openConfirmModal);
+
   // // handel add candidates
   const handelEditCandidates = () => {
     const candidatesData = new FormData();
