@@ -303,7 +303,7 @@ export default function Header() {
                     <div className="card-header border-0 p-3">
                       <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                         <span>
-                          Notifications :{" "}
+                          Regularization Request :{" "}
                           {showApprovedOnly === true ? (
                             <span>Approved Only By Me</span>
                           ) : (
@@ -432,9 +432,9 @@ export default function Header() {
                                         // <Link to={`/${_base}/${ele.url}`}>
                                         <p
                                           className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
+                                          // onClick={(e) =>
+                                          //   handleReadNotification(e, ele.id)
+                                          // }
                                         >
                                           <span className="font-weight-bold">
                                             <span className="fw-bold badge bg-primary p-2">
