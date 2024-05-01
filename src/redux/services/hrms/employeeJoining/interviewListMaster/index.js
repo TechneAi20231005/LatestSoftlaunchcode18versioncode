@@ -7,7 +7,7 @@ export const getInterviewMasterListThunk = createAsyncThunk(
   'interviewMaster/getInterviewList',
   async () => {
     try {
-      const response = await customAxios.get(`interviewMaster`);
+      const response = await customAxios.get(`interviewMaster/0`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };

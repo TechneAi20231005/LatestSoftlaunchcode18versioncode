@@ -86,7 +86,6 @@ export const templateSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let templateData = payload.data.data;
-        console.log("tt", payload.data.data);
 
         state.status = "succeded";
         state.showLoaderModal = false;

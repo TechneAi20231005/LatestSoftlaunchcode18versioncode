@@ -973,8 +973,7 @@ function TaskAndTicketTypeMaster(props) {
         });
       }
     }
-
-    taskData.forEach((item) => {
+    taskData?.forEach((item) => {
       extractLabelsAndParentIDsRecursive(item);
     });
 

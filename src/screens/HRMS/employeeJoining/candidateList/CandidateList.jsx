@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -49,14 +49,31 @@ function CandidateList() {
     {
       name: 'Candidate Name',
       sortable: true,
-      selector: row => row?.full_name || '--',
-      width: '200px',
+      selector: row =>
+        row?.full_name ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.full_name}</Tooltip>}
+          >
+            <span>{row?.full_name || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      width: '220px',
     },
     {
       name: 'Applied Position',
       selector: row => row?.designation || '--',
       sortable: true,
-      width: '220px',
+      width: '150px',
+    },
+    {
+      name: 'Phone Number',
+      selector: row =>
+        row?.mobile_no ? <a href={`tel:${row?.mobile_no}`}>{row?.mobile_no}</a> : '--',
+      sortable: true,
+      width: '130px',
     },
     {
       name: 'Source',
@@ -89,7 +106,7 @@ function CandidateList() {
         />
       ),
       sortable: true,
-      width: '200px',
+      minWidth: '100px',
     },
     {
       name: 'Date of Application',
@@ -116,6 +133,7 @@ function CandidateList() {
       'Sr No.': index + 1,
       'Candidates Name': row?.full_name || '--',
       'Applied Position': row?.designation || '--',
+      'Phone Number': row?.mobile_no || '--',
       'Date of Application': row?.application_date || '--',
       Status: row?.status || '--',
       Source: row?.source_name || '--',

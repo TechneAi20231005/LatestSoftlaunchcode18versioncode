@@ -20,7 +20,7 @@ import {
   editCandidatesMasterThunk,
   getCandidatesDetailsThunk,
 } from '../../../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
-import { getRoleData } from '../../../../../Masters/RoleMaster/RoleMasterAction';
+import { getDesignationData } from '../../../../../Dashboard/DashboardAction';
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/sourceMaster';
 import { REACT_APP_ATTACHMENT_URL } from '../../../../../../config/envConfig';
@@ -40,8 +40,8 @@ function CandidatesDetails() {
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
     state => state?.branchMaster,
   );
-  const { getRoleData: roleMasterList, status } = useSelector(
-    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  const { getDesignationData: designationMasterList, status } = useSelector(
+    DesignationSlice => DesignationSlice.designationMaster,
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
     state => state?.sourceMaster,
@@ -61,31 +61,44 @@ function CandidatesDetails() {
     mobile_no: details?.mobile_no,
     email: details?.email,
     relevant_experience: details?.relevant_experience,
-    expected_ctc: details?.expected_monthly_salary,
-    current_ctc: details?.current_monthly_salary,
-    notice_period: details?.notice_period,
+    expected_ctc: details?.expected_monthly_salary || '',
+    current_ctc: details?.current_monthly_salary || '',
+    notice_period: details?.notice_period || '',
     resume_path: `${REACT_APP_ATTACHMENT_URL}${details?.resume}`,
   };
 
   // // dropdown data
-  const preferredRole = roleMasterList?.map(item => ({
-    label: item?.role,
-    value: item?.id,
-  }));
+  const preferredRole = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const preferredLocation = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const preferredLocation = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
-  const sourceType = sourceMasterList?.map(item => ({
-    label: item?.source_name,
-    value: item?.id,
-  }));
+  const sourceType = sourceMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.source_name,
+      value: item?.id,
+    }));
 
   // // handel add candidates
   const handelEditCandidates = () => {
     const candidatesData = new FormData();
+    candidatesData.append('source_id', openConfirmModal?.formData?.source_id);
+    candidatesData.append('full_name', openConfirmModal?.formData?.full_name);
+    candidatesData.append('dob', openConfirmModal?.formData?.dob);
+    candidatesData.append('designation_id', openConfirmModal?.formData?.designation_id);
+    candidatesData.append('location_id', openConfirmModal?.formData?.location_id);
+    candidatesData.append('mobile_no', openConfirmModal?.formData?.mobile_no);
+    candidatesData.append('email', openConfirmModal?.formData?.email);
     candidatesData.append('relevant_experience', openConfirmModal?.formData?.relevant_experience);
     candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
     candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
@@ -101,7 +114,7 @@ function CandidatesDetails() {
         currentId: location?.state?.currentCandidateId,
         onSuccessHandler: () => {
           setOpenConfirmModal({ open: false });
-          dispatch(getCandidatesDetailsThunk());
+          dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
         },
         onErrorHandler: () => {
           setOpenConfirmModal({ open: false });
@@ -113,8 +126,8 @@ function CandidatesDetails() {
   // // life cycle
   useEffect(() => {
     dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
-    if (!roleMasterList?.length) {
-      dispatch(getRoleData());
+    if (!designationMasterList?.length) {
+      dispatch(getDesignationData());
     }
     if (!branchMasterList?.length) {
       dispatch(getBranchMasterListThunk());
@@ -237,7 +250,7 @@ function CandidatesDetails() {
                 <Col sm={6} md={6}>
                   <Field
                     component={CustomCurrencyInput}
-                    onKeyDown={NumbersOnly}
+                    // onKeyDown={NumbersOnly}
                     name="expected_ctc"
                     label="Expected Monthly Salary (Net)"
                     placeholder="Enter expected monthly salary"
@@ -248,7 +261,7 @@ function CandidatesDetails() {
                 <Col sm={6} md={6}>
                   <Field
                     component={CustomCurrencyInput}
-                    onKeyDown={NumbersOnly}
+                    // onKeyDown={NumbersOnly}
                     name="current_ctc"
                     label="Current Monthly Salary"
                     placeholder="Enter current monthly salary"
