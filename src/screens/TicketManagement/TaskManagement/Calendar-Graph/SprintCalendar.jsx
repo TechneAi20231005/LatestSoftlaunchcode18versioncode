@@ -170,22 +170,33 @@ const SprintCalendar = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setCurrentIndex((prevIndex) => {
       const nextIndex =
         prevIndex === currentDateRange.length - 1 ? 0 : prevIndex + 1;
-      setCurrentDaywiseDate(currentDateRange[nextIndex]);
-      if (selectedOption === "week") {
+      if (selectedOption === "day") {
+        setCurrentDaywiseDate(currentDateRange[nextIndex]);
+      } else if (selectedOption === "week") {
+        getCalendarDataForWeek(
+          currentDateRange[nextIndex]?.Monday,
+          currentDateRange[nextIndex]?.Sunday
+        );
       }
       return nextIndex;
     });
   };
 
-  const handlePrev = () => {
+  const handlePrev = async () => {
     setCurrentIndex((prevIndex) => {
       const previousIndex =
         prevIndex === 0 ? currentDateRange.length - 1 : prevIndex - 1;
       setCurrentDaywiseDate(currentDateRange[previousIndex]);
+      if (selectedOption === "week") {
+        getCalendarDataForWeek(
+          currentDateRange[previousIndex]?.Monday,
+          currentDateRange[previousIndex]?.Sunday
+        );
+      }
       return previousIndex;
     });
   };
@@ -296,9 +307,15 @@ const SprintCalendar = () => {
         <div className="card mt-3">
           <div className="card-body d-flex align-items-center justify-content-between">
             <div className="text-primary col-5 d-flex align-items-center">
-              <strong>Day wise</strong>
+              <strong>
+                {selectedOption === "day"
+                  ? "Day wise"
+                  : selectedOption === "week"
+                  ? "Week wise"
+                  : "Month wise"}
+              </strong>
 
-              {
+              {selectedOption !== "month" && (
                 <div className="col-8 d-flex ms-2 align-items-center  justify-content-evenly">
                   <button
                     className="btn col-2 p-0 text-end"
@@ -360,7 +377,7 @@ const SprintCalendar = () => {
                     </svg>
                   </button>
                 </div>
-              }
+              )}
             </div>
 
             <div className="col-7 d-md-flex align-items-center justify-content-end d-none">

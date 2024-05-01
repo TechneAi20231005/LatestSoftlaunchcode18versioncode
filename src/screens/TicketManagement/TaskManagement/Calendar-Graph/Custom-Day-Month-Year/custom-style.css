@@ -48,3 +48,13 @@
 .rbc-btn-group > button.rbc-btn-next {
   margin-left: 10px; /* Adjust spacing as needed */
 }
+
+.calendar-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calendar-card:hover {
+  transform: scale(1.02); /* Scale up by 5% on hover */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Subtle shadow effect */
+}

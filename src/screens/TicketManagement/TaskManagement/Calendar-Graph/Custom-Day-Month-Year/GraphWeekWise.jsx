@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Chart from "react-apexcharts";
+import ReactApexChart from "react-apexcharts";
 import Avatar from "react-avatar";
 const GraphWeekWise = () => {
   const [chartData, setChartData] = useState({
@@ -10,50 +10,46 @@ const GraphWeekWise = () => {
           {
             x: "BASKET 1",
             y: [
-              new Date("2019-03-05").getTime(),
-              new Date("2019-03-08").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 2",
-            y: [
-              new Date("2019-03-02").getTime(),
-              new Date("2019-03-05").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 2",
-            y: [
-              new Date("2019-03-05").getTime(),
-              new Date("2019-03-07").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 3",
-            y: [
-              new Date("2019-03-03").getTime(),
-              new Date("2019-03-09").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 3",
-            y: [
-              new Date("2019-03-08").getTime(),
-              new Date("2019-03-11").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 4",
-            y: [
-              new Date("2019-03-11").getTime(),
-              new Date("2019-03-16").getTime(),
+              {
+                x: new Date("2019-03-05").getTime(),
+                y: new Date("2019-03-08").getTime(),
+              },
             ],
           },
           {
             x: "BASKET 1",
             y: [
-              new Date("2019-03-01").getTime(),
-              new Date("2019-03-03").getTime(),
+              {
+                x: new Date("2019-03-08").getTime(),
+                y: new Date("2019-03-10").getTime(),
+              },
+            ],
+          },
+          {
+            x: "BASKET 1",
+            y: [
+              {
+                x: new Date("2019-03-08").getTime(),
+                y: new Date("2019-03-10").getTime(),
+              },
+            ],
+          },
+          {
+            x: "BASKET 3",
+            y: [
+              {
+                x: new Date("2019-03-08").getTime(),
+                y: new Date("2019-03-11").getTime(),
+              },
+            ],
+          },
+          {
+            x: "BASKET 4",
+            y: [
+              {
+                x: new Date("2019-03-11").getTime(),
+                y: new Date("2019-03-16").getTime(),
+              },
             ],
           },
         ],
@@ -62,17 +58,17 @@ const GraphWeekWise = () => {
         name: "PLAYED",
         data: [
           {
-            x: "BASKET 1",
+            x: "BASKET 2",
             y: [
               new Date("2019-03-02").getTime(),
               new Date("2019-03-05").getTime(),
             ],
           },
           {
-            x: "BASKET 3",
+            x: "BASKET 2",
             y: [
-              new Date("2019-03-06").getTime(),
-              new Date("2019-03-16").getTime(),
+              new Date("2019-03-04").getTime(),
+              new Date("2019-03-09").getTime(),
             ],
             goals: [
               {
@@ -83,7 +79,7 @@ const GraphWeekWise = () => {
             ],
           },
           {
-            x: "BASKET 2",
+            x: "BASKET 3",
             y: [
               new Date("2019-03-03").getTime(),
               new Date("2019-03-07").getTime(),
@@ -188,6 +184,7 @@ const GraphWeekWise = () => {
       chart: {
         height: 450,
         type: "rangeBar",
+        // stacked: true,
       },
       plotOptions: {
         bar: {
@@ -202,18 +199,42 @@ const GraphWeekWise = () => {
         width: 1,
       },
       fill: {
-        type: "solid",
-        opacity: 0.6,
+        type: "pattern",
+        opacity: 1,
+        pattern: {
+          style: [
+            "circles",
+            "slantedLines",
+            "verticalLines",
+            "horizontalLines",
+          ], // string or array of strings
+        },
+      },
+      stroke: {
+        show: true,
+        curve: "straight",
+        lineCap: "butt",
+        colors: undefined,
+        width: 2,
+        dashArray: 0,
       },
       legend: {
         position: "top",
         horizontalAlign: "left",
+      },
+      grid: {
+        show: true,
+        borderColor: "#90A4AE",
+        strokeDashArray: 25,
       },
       annotations: {
         xaxis: [
           {
             x: new Date("2019-03-10").getTime(),
             borderColor: "#C3F5FF",
+            strokeDashArray: 1,
+            borderColor: "#c2c2c2",
+            fillColor: "#c2c2c2",
             label: {
               style: {
                 color: "#C3F5FF",
@@ -238,11 +259,11 @@ const GraphWeekWise = () => {
   return (
     <div>
       <div className="col-9">{<Avatar name="Amit Solanki" round />}</div>
-      <Chart
+      <ReactApexChart
         options={chartData.options}
         series={chartData.series}
         type="rangeBar"
-        height={700}
+        height={600}
       />
     </div>
   );
