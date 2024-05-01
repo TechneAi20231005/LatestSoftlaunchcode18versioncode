@@ -20,7 +20,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
   const dispatch = useDispatch();
   const addEditRemarkInitialValue = {
     remark_description: type === 'EDIT' ? currentRemarkData?.remark_description : '',
-    supporting_remark: type === 'EDIT' ? currentRemarkData?.supporting_remark || '' : '',
+    supporting_remark: type === 'EDIT' ? currentRemarkData?.remark || '' : '',
     is_active: type === 'EDIT' ? currentRemarkData?.is_active?.toString() : 1,
   };
 

@@ -5,7 +5,7 @@ import { errorHandler } from '../../../../../utils';
 
 export const getSourceMasterListThunk = createAsyncThunk('sourceMaster/getSourceList', async () => {
   try {
-    const response = await customAxios.get(`sourceMaster`);
+    const response = await customAxios.get(`sourceMaster/0`);
     if (response?.status === 200 || response?.status === 201) {
       if (response?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };

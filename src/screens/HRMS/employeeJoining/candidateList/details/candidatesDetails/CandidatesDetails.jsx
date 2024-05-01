@@ -61,9 +61,9 @@ function CandidatesDetails() {
     mobile_no: details?.mobile_no,
     email: details?.email,
     relevant_experience: details?.relevant_experience,
-    expected_ctc: details?.expected_monthly_salary,
-    current_ctc: details?.current_monthly_salary,
-    notice_period: details?.notice_period,
+    expected_ctc: details?.expected_monthly_salary || '',
+    current_ctc: details?.current_monthly_salary || '',
+    notice_period: details?.notice_period || '',
     resume_path: `${REACT_APP_ATTACHMENT_URL}${details?.resume}`,
   };
 
@@ -88,10 +88,17 @@ function CandidatesDetails() {
       label: item?.source_name,
       value: item?.id,
     }));
-
+  console.log(openConfirmModal);
   // // handel add candidates
   const handelEditCandidates = () => {
     const candidatesData = new FormData();
+    candidatesData.append('source_id', openConfirmModal?.formData?.source_id);
+    candidatesData.append('full_name', openConfirmModal?.formData?.full_name);
+    candidatesData.append('dob', openConfirmModal?.formData?.dob);
+    candidatesData.append('designation_id', openConfirmModal?.formData?.designation_id);
+    candidatesData.append('location_id', openConfirmModal?.formData?.location_id);
+    candidatesData.append('mobile_no', openConfirmModal?.formData?.mobile_no);
+    candidatesData.append('email', openConfirmModal?.formData?.email);
     candidatesData.append('relevant_experience', openConfirmModal?.formData?.relevant_experience);
     candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
     candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
@@ -107,7 +114,7 @@ function CandidatesDetails() {
         currentId: location?.state?.currentCandidateId,
         onSuccessHandler: () => {
           setOpenConfirmModal({ open: false });
-          dispatch(getCandidatesDetailsThunk());
+          dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
         },
         onErrorHandler: () => {
           setOpenConfirmModal({ open: false });
