@@ -568,7 +568,7 @@ export default function EditTicketComponent({ match }) {
               (d) => d.is_active == 1 && d.account_for === "SELF"
             )
           );
-          emilData.filter((d) => d.id == data.created_by);
+          emilData?.filter((d) => d.id == data?.created_by);
 
           setUserDropdown(select);
           setUserdrp(select);
@@ -764,7 +764,7 @@ export default function EditTicketComponent({ match }) {
     loadComments();
     setShowLoaderModal(false);
   };
-  const filteredData = emilData?.filter((d) => d.id === data.created_by);
+  const filteredData = emilData?.filter((d) => d.id === data?.created_by);
 
   function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
@@ -1216,7 +1216,7 @@ export default function EditTicketComponent({ match }) {
                         <Select
                           options={userDropdown}
                           defaultValue={userDrp.filter(
-                            (d) => d.value == data.created_by
+                            (d) => d.value == data?.created_by
                           )}
                           isDisabled={true}
                         />
