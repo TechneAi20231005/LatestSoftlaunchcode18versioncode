@@ -537,13 +537,15 @@ export default function EditTicketComponent({ match }) {
   const [projectId, setProjectId] = useState();
   const [reviewerData, setReviewerData] = useState();
   const [statusData, setStatusData] = useState();
+  const [emilData, setEmailData] = useState();
+
   const loadData = async () => {
     setSelectedFile([]);
     setShowLoaderModal(null);
     setShowLoaderModal(true);
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active,department_id";
+      "id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id";
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
@@ -557,6 +559,17 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
+          const ffff = res.payload.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === "SELF"
+          );
+
+          setEmailData(
+            res.payload.data.data.filter(
+              (d) => d.is_active == 1 && d.account_for === "SELF"
+            )
+          );
+          emilData?.filter((d) => d.id == data?.created_by);
+
           setUserDropdown(select);
           setUserdrp(select);
         }
@@ -751,6 +764,7 @@ export default function EditTicketComponent({ match }) {
     loadComments();
     setShowLoaderModal(false);
   };
+  const filteredData = emilData?.filter((d) => d.id === data?.created_by);
 
   function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
@@ -896,7 +910,7 @@ export default function EditTicketComponent({ match }) {
     if (e) {
       setSubModuleDropdown(null);
       const data = subModuleData
-        .filter((d) => d.module_id == e.value)
+        ?.filter((d) => d.module_id == e.value)
         .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
       setSubModuleDropdown(data);
@@ -1192,6 +1206,7 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
+
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Entry User : </b>
@@ -1201,12 +1216,31 @@ export default function EditTicketComponent({ match }) {
                         <Select
                           options={userDropdown}
                           defaultValue={userDrp.filter(
-                            (d) => d.value == data.created_by
+                            (d) => d.value == data?.created_by
                           )}
                           isDisabled={true}
                         />
                       )}
                     </div>
+
+                    <div className="col-sm-4">
+                      <label className="col-form-label">
+                        <b>Entry user email : </b>
+                      </label>
+
+                      <input
+                        className="form-control form-control-sm"
+                        type="text"
+                        defaultValue={
+                          filteredData?.length > 0
+                            ? filteredData[0]?.email_id
+                            : ""
+                        }
+                        readOnly
+                        name="email"
+                      />
+                    </div>
+
                     {/* <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Parent : </b>
@@ -1565,7 +1599,7 @@ export default function EditTicketComponent({ match }) {
                             {data.inputDefaultValue}
                           </textarea>
                         )}
-                        {console.log("data11", data)}
+
                         {/* {data.inputType === "date" && (
                           const inputDate = "27-04-2024";
                           const parts = inputDate.split("-");
