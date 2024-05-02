@@ -420,7 +420,7 @@ export default function TaskComponent({ match }) {
     if (new Date(startDate) > new Date(endDate)) {
       setNotify({
         type: "danger",
-        message: "Start Date should be greater than end date",
+        message: "End Date should be greater than start date",
       });
       return;
     }
@@ -505,6 +505,8 @@ export default function TaskComponent({ match }) {
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
+
+    setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       setSprintCardData([sprintData[currentIndex + 1]]);
       await getBasketData(sprintData[currentIndex + 1]?.id);
@@ -520,6 +522,8 @@ export default function TaskComponent({ match }) {
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
+    setCurrentSprintIndex(currentIndex);
+
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
       setSprintCardData([sprintData[currentIndex - 1]]);
       await getBasketData(sprintData[currentIndex - 1]?.id);
@@ -543,12 +547,13 @@ export default function TaskComponent({ match }) {
             temp[i].counter = count;
             exportSprintReport.push({
               "Sr no": count,
+              "sprint Name": temp[i]?.sprint_name,
               "Sprint Start date": temp[i]?.sprint_start_date,
               "Sprint End Date": temp[i]?.sprint_end_date,
               "Task Name": temp[i]?.task_name,
               "Task Users": temp[i]?.task_owner,
               "Task Start Date": temp[i]?.task_creation_Date,
-              "Task End Date": temp[i]?.task_end_date,
+              "Task End Date": temp[i]?.task_delivery_scheduled,
               "Task actual completed date": temp[i]?.task_completed_at,
               "Task scheduled hours": temp[i]?.task_scheduled_Hours,
               "Task actual hours played": temp[i]?.task_actual_worked,
@@ -562,6 +567,7 @@ export default function TaskComponent({ match }) {
   };
 
   const viewSprint = (sprintCard) => {
+    setShowSprintReport(false);
     setSprintModal({
       showModal: true,
       modalData: sprintCard,
@@ -570,6 +576,7 @@ export default function TaskComponent({ match }) {
   };
 
   const updateSprint = async (sprintCard) => {
+    setShowSprintReport(false);
     const tenantId = localStorage.getItem("tenant_id");
     const ticket_id = data[0]?.ticket_id;
     let sprint_id = sprintModal?.modalData?.id;
@@ -764,7 +771,15 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    getBasketData();
+    console.log(
+      "sprintCardData[currentSprintIndex]?.id",
+      sprintCardData[currentSprintIndex]?.id
+    );
+    getBasketData(
+      sprintData[currentSprintIndex]?.id
+        ? sprintData[currentSprintIndex]?.id
+        : 0
+    );
     loadData();
     getTicketData();
   }, []);
@@ -988,7 +1003,7 @@ export default function TaskComponent({ match }) {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href={`${_attachmentUrl}//${attachment.path}`}
+                                    // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
                                   >
@@ -1109,7 +1124,10 @@ export default function TaskComponent({ match }) {
                 </span>
               </div>
               <div className="fs-5">
-                <span className="ms-1">
+                <Link
+                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`}
+                  className="ms-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
@@ -1123,24 +1141,28 @@ export default function TaskComponent({ match }) {
                       fill="white"
                     />
                   </svg>
-                </span>
-
-                <span className="ms-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="34"
-                    height="34"
-                    viewBox="0 0 34 34"
-                    fill="none"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M4.90734 4.90701C2.83334 6.98384 2.83334 10.3215 2.83334 16.9997C2.83334 23.6778 2.83334 27.0169 4.90734 29.0909C6.98417 31.1663 10.3218 31.1663 17 31.1663C23.6782 31.1663 27.0173 31.1663 29.0913 29.0909C31.1667 27.0183 31.1667 23.6778 31.1667 16.9997C31.1667 10.3215 31.1667 6.98242 29.0913 4.90701C27.0187 2.83301 23.6782 2.83301 17 2.83301C10.3218 2.83301 6.98275 2.83301 4.90734 4.90701ZM24.8993 14.8463C25.0717 14.6291 25.1523 14.353 25.1239 14.077C25.0955 13.8011 24.9603 13.5473 24.7472 13.3697C24.5341 13.1921 24.26 13.1049 23.9835 13.1267C23.707 13.1485 23.45 13.2776 23.2673 13.4863L20.7216 16.5407C20.1974 17.1711 19.873 17.555 19.6081 17.7944C19.5392 17.8621 19.4615 17.9202 19.3772 17.9673L19.3616 17.9743L19.3503 17.9687L19.346 17.9673C19.2612 17.9203 19.1831 17.8621 19.1137 17.7944C18.8488 17.5536 18.5258 17.1711 18.0002 16.5407L17.5865 16.0448C17.1218 15.4853 16.7011 14.9823 16.3101 14.6282C15.8837 14.2428 15.3468 13.9 14.6384 13.9C13.9301 13.9 13.3946 14.2428 12.9668 14.6282C12.5758 14.9823 12.1564 15.4853 11.6918 16.0448L9.09925 19.153C9.00995 19.2603 8.94265 19.3841 8.9012 19.5173C8.85974 19.6506 8.84493 19.7907 8.85763 19.9297C8.88327 20.2104 9.01936 20.4694 9.23596 20.6497C9.45257 20.8301 9.73194 20.917 10.0126 20.8913C10.2933 20.8657 10.5523 20.7296 10.7327 20.513L13.2784 17.4587C13.8026 16.8283 14.127 16.4443 14.3919 16.2049C14.4608 16.1373 14.5385 16.0791 14.6228 16.0321L14.6328 16.0278L14.6384 16.025L14.654 16.0321C14.7388 16.0791 14.817 16.1372 14.8863 16.2049C15.1513 16.4458 15.4743 16.8283 15.9998 17.4587L16.4135 17.9545C16.8796 18.5141 17.2989 19.017 17.6899 19.3712C18.1163 19.7565 18.6533 20.0993 19.3616 20.0993C20.0699 20.0993 20.6054 19.7565 21.0333 19.3712C21.4243 19.017 21.8436 18.5141 22.3083 17.9545L24.8993 14.8463Z"
-                      fill="#484C7F"
-                    />
-                  </svg>
-                </span>
+                </Link>
+                <Link
+                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph`}
+                  className="ms-1"
+                >
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="34"
+                      height="34"
+                      viewBox="0 0 34 34"
+                      fill="none"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M4.90734 4.90701C2.83334 6.98384 2.83334 10.3215 2.83334 16.9997C2.83334 23.6778 2.83334 27.0169 4.90734 29.0909C6.98417 31.1663 10.3218 31.1663 17 31.1663C23.6782 31.1663 27.0173 31.1663 29.0913 29.0909C31.1667 27.0183 31.1667 23.6778 31.1667 16.9997C31.1667 10.3215 31.1667 6.98242 29.0913 4.90701C27.0187 2.83301 23.6782 2.83301 17 2.83301C10.3218 2.83301 6.98275 2.83301 4.90734 4.90701ZM24.8993 14.8463C25.0717 14.6291 25.1523 14.353 25.1239 14.077C25.0955 13.8011 24.9603 13.5473 24.7472 13.3697C24.5341 13.1921 24.26 13.1049 23.9835 13.1267C23.707 13.1485 23.45 13.2776 23.2673 13.4863L20.7216 16.5407C20.1974 17.1711 19.873 17.555 19.6081 17.7944C19.5392 17.8621 19.4615 17.9202 19.3772 17.9673L19.3616 17.9743L19.3503 17.9687L19.346 17.9673C19.2612 17.9203 19.1831 17.8621 19.1137 17.7944C18.8488 17.5536 18.5258 17.1711 18.0002 16.5407L17.5865 16.0448C17.1218 15.4853 16.7011 14.9823 16.3101 14.6282C15.8837 14.2428 15.3468 13.9 14.6384 13.9C13.9301 13.9 13.3946 14.2428 12.9668 14.6282C12.5758 14.9823 12.1564 15.4853 11.6918 16.0448L9.09925 19.153C9.00995 19.2603 8.94265 19.3841 8.9012 19.5173C8.85974 19.6506 8.84493 19.7907 8.85763 19.9297C8.88327 20.2104 9.01936 20.4694 9.23596 20.6497C9.45257 20.8301 9.73194 20.917 10.0126 20.8913C10.2933 20.8657 10.5523 20.7296 10.7327 20.513L13.2784 17.4587C13.8026 16.8283 14.127 16.4443 14.3919 16.2049C14.4608 16.1373 14.5385 16.0791 14.6228 16.0321L14.6328 16.0278L14.6384 16.025L14.654 16.0321C14.7388 16.0791 14.817 16.1372 14.8863 16.2049C15.1513 16.4458 15.4743 16.8283 15.9998 17.4587L16.4135 17.9545C16.8796 18.5141 17.2989 19.017 17.6899 19.3712C18.1163 19.7565 18.6533 20.0993 19.3616 20.0993C20.0699 20.0993 20.6054 19.7565 21.0333 19.3712C21.4243 19.017 21.8436 18.5141 22.3083 17.9545L24.8993 14.8463Z"
+                        fill="#484C7F"
+                      />
+                    </svg>
+                  </span>
+                </Link>
                 <button
                   className="border-0 p-0 ms-1"
                   disabled={ownership !== "PROJECT"}
@@ -1433,10 +1455,13 @@ export default function TaskComponent({ match }) {
                     data={taskModalData}
                     show={showTaskModal}
                     ownership={ownership}
-                    loadBasket={getBasketData}
+                    loadBasket={() =>
+                      getBasketData(sprintCardData[currentSprintIndex]?.id || 0)
+                    }
                     allTaskList={allTaskList}
                     taskDropdown={taskDropdown}
                     close={handleCloseTaskModal}
+                    sprintId={sprintCardData[currentSprintIndex]?.id || 0}
                     moduleSetting={moduleSetting}
                     expectedSolveDate={expectedSolveDate}
                     ticketStartDate={ticketStartDate}
