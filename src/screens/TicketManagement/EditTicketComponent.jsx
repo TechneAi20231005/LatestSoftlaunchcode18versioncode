@@ -907,7 +907,7 @@ export default function EditTicketComponent({ match }) {
     if (e) {
       setSubModuleDropdown(null);
       const data = subModuleData
-        .filter((d) => d.module_id == e.value)
+        ?.filter((d) => d.module_id == e.value)
         .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
       setSubModuleDropdown(data);
