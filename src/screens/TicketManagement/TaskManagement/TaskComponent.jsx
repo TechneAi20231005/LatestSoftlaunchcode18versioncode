@@ -420,7 +420,7 @@ export default function TaskComponent({ match }) {
     if (new Date(startDate) > new Date(endDate)) {
       setNotify({
         type: "danger",
-        message: "Start Date should be greater than end date",
+        message: "End Date should be greater than start date",
       });
       return;
     }
@@ -505,6 +505,8 @@ export default function TaskComponent({ match }) {
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
+
+    setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       setSprintCardData([sprintData[currentIndex + 1]]);
       await getBasketData(sprintData[currentIndex + 1]?.id);
@@ -520,6 +522,8 @@ export default function TaskComponent({ match }) {
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
+    setCurrentSprintIndex(currentIndex);
+
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
       setSprintCardData([sprintData[currentIndex - 1]]);
       await getBasketData(sprintData[currentIndex - 1]?.id);
@@ -543,12 +547,13 @@ export default function TaskComponent({ match }) {
             temp[i].counter = count;
             exportSprintReport.push({
               "Sr no": count,
+              "sprint Name": temp[i]?.sprint_name,
               "Sprint Start date": temp[i]?.sprint_start_date,
               "Sprint End Date": temp[i]?.sprint_end_date,
               "Task Name": temp[i]?.task_name,
               "Task Users": temp[i]?.task_owner,
               "Task Start Date": temp[i]?.task_creation_Date,
-              "Task End Date": temp[i]?.task_end_date,
+              "Task End Date": temp[i]?.task_delivery_scheduled,
               "Task actual completed date": temp[i]?.task_completed_at,
               "Task scheduled hours": temp[i]?.task_scheduled_Hours,
               "Task actual hours played": temp[i]?.task_actual_worked,
@@ -562,6 +567,7 @@ export default function TaskComponent({ match }) {
   };
 
   const viewSprint = (sprintCard) => {
+    setShowSprintReport(false);
     setSprintModal({
       showModal: true,
       modalData: sprintCard,
@@ -570,6 +576,7 @@ export default function TaskComponent({ match }) {
   };
 
   const updateSprint = async (sprintCard) => {
+    setShowSprintReport(false);
     const tenantId = localStorage.getItem("tenant_id");
     const ticket_id = data[0]?.ticket_id;
     let sprint_id = sprintModal?.modalData?.id;
@@ -764,7 +771,15 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    getBasketData();
+    console.log(
+      "sprintCardData[currentSprintIndex]?.id",
+      sprintCardData[currentSprintIndex]?.id
+    );
+    getBasketData(
+      sprintData[currentSprintIndex]?.id
+        ? sprintData[currentSprintIndex]?.id
+        : 0
+    );
     loadData();
     getTicketData();
   }, []);
@@ -988,7 +1003,7 @@ export default function TaskComponent({ match }) {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href={`${_attachmentUrl}//${attachment.path}`}
+                                    // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
                                   >
@@ -1440,10 +1455,13 @@ export default function TaskComponent({ match }) {
                     data={taskModalData}
                     show={showTaskModal}
                     ownership={ownership}
-                    loadBasket={getBasketData}
+                    loadBasket={() =>
+                      getBasketData(sprintCardData[currentSprintIndex]?.id || 0)
+                    }
                     allTaskList={allTaskList}
                     taskDropdown={taskDropdown}
                     close={handleCloseTaskModal}
+                    sprintId={sprintCardData[currentSprintIndex]?.id || 0}
                     moduleSetting={moduleSetting}
                     expectedSolveDate={expectedSolveDate}
                     ticketStartDate={ticketStartDate}

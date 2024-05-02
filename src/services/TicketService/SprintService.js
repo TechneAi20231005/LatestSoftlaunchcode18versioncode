@@ -107,6 +107,22 @@ export default class SprintService {
       config
     );
   }
+
+  getGraphDataForSprint(ticket_id, from_date, to_date) {
+    const token = localStorage.getItem("jwt_token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+
+    return axios.get(`${_URL}/getGraphData/${ticket_id}`, config);
+  }
+  // ?from_date=${from_date}&to_date=${to_date}
+
+  //http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/getGraphData/17816
   //http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/sprintMaster/getCalenderData/9425?from_date=2023-06-03&to_date=2023-06-04
 }
 

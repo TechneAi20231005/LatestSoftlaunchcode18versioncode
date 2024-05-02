@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import Avatar from "react-avatar";
+import SprintService from "../../../../../services/TicketService/SprintService";
 const GraphWeekWise = () => {
   const [chartData, setChartData] = useState({
     series: [
@@ -22,158 +23,6 @@ const GraphWeekWise = () => {
               {
                 x: new Date("2019-03-08").getTime(),
                 y: new Date("2019-03-10").getTime(),
-              },
-            ],
-          },
-          {
-            x: "BASKET 1",
-            y: [
-              {
-                x: new Date("2019-03-08").getTime(),
-                y: new Date("2019-03-10").getTime(),
-              },
-            ],
-          },
-          {
-            x: "BASKET 3",
-            y: [
-              {
-                x: new Date("2019-03-08").getTime(),
-                y: new Date("2019-03-11").getTime(),
-              },
-            ],
-          },
-          {
-            x: "BASKET 4",
-            y: [
-              {
-                x: new Date("2019-03-11").getTime(),
-                y: new Date("2019-03-16").getTime(),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "PLAYED",
-        data: [
-          {
-            x: "BASKET 2",
-            y: [
-              new Date("2019-03-02").getTime(),
-              new Date("2019-03-05").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 2",
-            y: [
-              new Date("2019-03-04").getTime(),
-              new Date("2019-03-09").getTime(),
-            ],
-            goals: [
-              {
-                name: "Break",
-                value: new Date("2019-03-10").getTime(),
-                strokeColor: "#CD2F2A",
-              },
-            ],
-          },
-          {
-            x: "BASKET 3",
-            y: [
-              new Date("2019-03-03").getTime(),
-              new Date("2019-03-07").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 5",
-            y: [
-              new Date("2019-03-20").getTime(),
-              new Date("2019-03-22").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 1",
-            y: [
-              new Date("2019-03-10").getTime(),
-              new Date("2019-03-16").getTime(),
-            ],
-          },
-        ],
-      },
-      {
-        name: "COMPLETED",
-        data: [
-          {
-            x: "BASKET 2",
-            y: [
-              new Date("2019-03-10").getTime(),
-              new Date("2019-03-17").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 4",
-            y: [
-              new Date("2019-03-05").getTime(),
-              new Date("2019-03-09").getTime(),
-            ],
-            goals: [
-              {
-                name: "Break",
-                value: new Date("2019-03-07").getTime(),
-                strokeColor: "#282c34",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "MIN DELAY",
-        data: [
-          {
-            x: "Basket 4",
-            y: [
-              new Date("2019-03-10").getTime(),
-              new Date("2019-03-17").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 4",
-            y: [
-              new Date("2019-03-05").getTime(),
-              new Date("2019-03-09").getTime(),
-            ],
-            goals: [
-              {
-                name: "Break",
-                value: new Date("2019-03-07").getTime(),
-                strokeColor: "#CD2F2A",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: "MAX DELAY",
-        data: [
-          {
-            x: "BASKET 4",
-            y: [
-              new Date("2019-03-10").getTime(),
-              new Date("2019-03-17").getTime(),
-            ],
-          },
-          {
-            x: "BASKET 4",
-            y: [
-              new Date("2019-03-05").getTime(),
-              new Date("2019-03-09").getTime(),
-            ],
-            goals: [
-              {
-                name: "Break",
-                value: new Date("2019-03-07").getTime(),
-                strokeColor: "#CD2F2A",
               },
             ],
           },
@@ -254,8 +103,123 @@ const GraphWeekWise = () => {
       },
     },
   });
-  {
-  }
+
+  const [graphData, setGraphData] = useState({
+    data: {
+      DELAY: [
+        {
+          id: 37505,
+          ticket_id: "TT19753",
+          basket_id: 6943,
+          basket_name: "Priyanka",
+          task_name: "TT19753 - KT for Department wise AOP Approval Plan",
+          task_priority: "High",
+          task_creation_Date: "2024-03-01 17:28:43",
+          task_start_Date: "2024-03-18",
+          task_end_date: "2024-03-18",
+          task_scheduled_Hours: "03:00",
+          task_actual_worked: null,
+          task_completed_at: "2024-03-19 07:34:19",
+          task_status: "COMPLETED",
+          task_actual_status: "DELAY",
+          updated_at: "2024-03-08 09:24:46",
+          sprint_name: "First Sprint",
+          time_history: [],
+          taskOwners: [
+            "Priyanka Gole",
+            "Prathamesh Kulkarni",
+            "Preeti123 Bokade",
+            "Punam Shinde",
+            "Amreen Shaikh",
+            "Krushna Patare",
+          ],
+        },
+        {
+          id: 38752,
+          ticket_id: "TT19753",
+          basket_id: 7211,
+          basket_name: "sprint amreen",
+          task_name: "Sprint Task2",
+          task_priority: "Low",
+          task_creation_Date: "2024-03-28 17:01:03",
+          task_start_Date: "2024-03-19",
+          task_end_date: "2024-03-20",
+          task_scheduled_Hours: "02:00",
+          task_actual_worked: "00:00:03",
+          task_completed_at: "2024-03-28 17:04:02",
+          task_status: "COMPLETED",
+          task_actual_status: "DELAY",
+          updated_at: "2024-03-28 17:04:02",
+          sprint_name: "First Sprint",
+          time_history: [
+            {
+              id: 70109,
+              start_time: "2024-03-28 17:03:32",
+              stop_time: "2024-03-28 17:03:35",
+            },
+          ],
+          taskOwners: ["Amreen Shaikh"],
+        },
+        {
+          id: 38755,
+          ticket_id: "TT19753",
+          basket_id: 7211,
+          basket_name: "sprint amreen",
+          task_name: "Sprint Testing",
+          task_priority: "Low",
+          task_creation_Date: "2024-04-08 13:10:52",
+          task_start_Date: "2024-04-08",
+          task_end_date: "2024-04-09",
+          task_scheduled_Hours: "01:00",
+          task_actual_worked: null,
+          task_completed_at: null,
+          task_status: "TO_DO",
+          task_actual_status: "DELAY",
+          updated_at: null,
+          sprint_name: "8 April 2024",
+          time_history: [],
+          taskOwners: [],
+        },
+        {
+          id: 38756,
+          ticket_id: "TT19753",
+          basket_id: 7211,
+          basket_name: "sprint amreen",
+          task_name: "Sprint Testingg",
+          task_priority: "Low",
+          task_creation_Date: "2024-04-08 13:12:15",
+          task_start_Date: "2024-04-08",
+          task_end_date: "2024-04-09",
+          task_scheduled_Hours: "01:00",
+          task_actual_worked: null,
+          task_completed_at: null,
+          task_status: "TO_DO",
+          task_actual_status: "DELAY",
+          updated_at: null,
+          sprint_name: "8 April 2024",
+          time_history: [],
+          taskOwners: ["Amreen Shaikh"],
+        },
+      ],
+      COMPLETED: [],
+      IN_PROGRESS: [],
+      TO_DO: [],
+    },
+  });
+
+  const getGraphData = async () => {
+    try {
+      await new SprintService()
+        .getGraphDataForSprint("17664", "2024-04-20", "2024-05-29")
+        .then((res) => {
+          console.log("graphData", res.data.data);
+        });
+    } catch (error) {}
+  };
+  useEffect(() => {
+    getGraphData();
+  }, []);
+
   return (
     <div>
       <div className="col-9">{<Avatar name="Amit Solanki" round />}</div>

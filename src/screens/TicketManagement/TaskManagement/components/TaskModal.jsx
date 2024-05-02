@@ -326,7 +326,7 @@ export default function TaskModal(props) {
       (task) => task.value != props.data.id
     );
     setAllTask(allTask);
-    loadAttachment();
+    // loadAttachment();
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
     //   if (res.status === 200) {
@@ -365,19 +365,19 @@ export default function TaskModal(props) {
     });
   };
 
-  const loadAttachment = async () => {
-    setNotify(null);
-    if (props.data.id) {
-      await getAttachment(props.data.id, "TASK").then((res) => {
-        if (res.status === 200) {
-          setAttachment(null);
-          setAttachment(res.data.data);
-        }
-      });
-    } else {
-      setAttachment(null);
-    }
-  };
+  // const loadAttachment = async () => {
+  //   setNotify(null);
+  //   if (props.data.id) {
+  //     await getAttachment(props.data.id, "TASK").then((res) => {
+  //       if (res.status === 200) {
+  //         setAttachment(null);
+  //         setAttachment(res.data.data);
+  //       }
+  //     });
+  //   } else {
+  //     setAttachment(null);
+  //   }
+  // };
 
   // function transformData(taskData, hasPrimaryLabel = false) {
   //   // const primaryLabel = "Primary";
@@ -496,11 +496,11 @@ export default function TaskModal(props) {
       alert("Invalid Option");
     }
   };
-  const handleDeleteAttachment = (e, id) => {
-    deleteAttachment(id).then((res) => {
-      loadAttachment();
-    });
-  };
+  // const handleDeleteAttachment = (e, id) => {
+  //   deleteAttachment(id).then((res) => {
+  //     loadAttachment();
+  //   });
+  // };
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
@@ -1318,7 +1318,7 @@ export default function TaskModal(props) {
                               className="btn btn-danger text-white btn-sm p-0 px-1"
                               type="button"
                               onClick={(e) => {
-                                handleDeleteAttachment(e, attach.id);
+                                // handleDeleteAttachment(e, attach.id);
                               }}
                             >
                               <i
