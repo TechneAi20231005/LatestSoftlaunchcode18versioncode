@@ -598,7 +598,7 @@ export default function MyTicketComponent() {
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
               </li>
-
+              {console.log("data=>", data)}
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0 &&
                 localStorage.getItem("account_for") === "SELF" && (
@@ -2143,6 +2143,10 @@ export default function MyTicketComponent() {
           setCreatedByMe(
             res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           );
+          console.log(
+            "crateddd",
+            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
+          );
         }
       });
     } else if (k == "departmenyourTaskt") {
@@ -2172,7 +2176,10 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setYourTaskData(res.data.data);
-            setYourTask();
+            console.log("res1", res.data.data.data);
+            console.log("yourTask", yourTask);
+
+            setYourTask(res.data.data.data);
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
@@ -2260,6 +2267,10 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setCreatedByMe(
+            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
+          );
+          console.log(
+            "crated",
             res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
           );
           if (type == "PLUS" && res.data.data.data.length > 0) {

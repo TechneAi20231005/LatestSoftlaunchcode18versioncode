@@ -142,9 +142,6 @@ function CreateDynamicForm() {
   const [selectMasterValue, setSelectMasterValue] = useState();
 
   const handleChange = (idx, type) => async (e) => {
-    console.log("e==>", e.target.value);
-    console.log("e==>", e.target.name);
-
     if (e.target.name === "inputDateRange1") {
       setMinDate(e.target.value);
     }
