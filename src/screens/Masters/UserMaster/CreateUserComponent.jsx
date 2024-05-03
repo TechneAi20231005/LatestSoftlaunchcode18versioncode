@@ -45,18 +45,15 @@ function CreateUserComponent({ match }) {
 
   const [filteredRoles, setFilteredRoles] = useState([]);
 
-
   const [state, setState] = useState(null);
 
   const [city, setCity] = useState(null);
 
   const [accountFor, setAccountFor] = useState("SELF");
 
- 
   const [CustomerDrp, setCustomerDrp] = useState(null);
   const [loading, setLoading] = useState(false);
   const roleId = sessionStorage.getItem("role_id");
-
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -76,7 +73,6 @@ function CreateUserComponent({ match }) {
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.FilterCity
   );
-
 
   const designationDropdown = useSelector(
     (DesignationSlice) =>
@@ -358,10 +354,7 @@ function CreateUserComponent({ match }) {
     }
   };
 
-
-  
-  
-  const [selectRole,setSelctRole]=useState(null)
+  const [selectRole, setSelctRole] = useState(null);
   const handleSelectRole = (e) => {
     const newValue = e;
     setSelctRole(newValue);
@@ -420,21 +413,16 @@ function CreateUserComponent({ match }) {
               navigate(`/${_base}/User`);
             }, 3000);
           }
-          setLoading(false); 
+          setLoading(false);
         });
       }
     }
   };
 
   const loadData = async () => {
-
     dispatch(getCountryDataSort());
     dispatch(getStateDataSort());
 
-   
-
-
-  
     await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -449,25 +437,18 @@ function CreateUserComponent({ match }) {
         }
       }
     });
-
- 
-    
   };
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
-    
-      
       setStateDropdownData(
         stateDropdown &&
           stateDropdown
             ?.filter((filterState) => filterState.country_id === e.value)
             ?.map((d) => ({ value: d.id, label: d.state }))
       );
-    
     }
     if (type == "STATE") {
-
       setCityDropdownData(
         AllcityDropDownData &&
           AllcityDropDownData?.filter(
@@ -475,7 +456,6 @@ function CreateUserComponent({ match }) {
           )?.map((d) => ({ value: d.id, label: d.city }))
       );
 
-    
       setStateName(e);
       setCityName(null);
     }
@@ -488,16 +468,13 @@ function CreateUserComponent({ match }) {
   const handleAddRow = async () => {
     setNotify(null);
     let flag = 1;
-   
+
     if (flag === 1) {
       setRows([...rows, mappingData]);
     } else {
       setNotify({ type: "danger", message: "Complete Previous Record" });
     }
   };
-
-  
-  
 
   const handleUserSelect = (selectedOptions, index) => {
     const selectedDepartmentId = selectedOptions.value;
@@ -528,13 +505,10 @@ function CreateUserComponent({ match }) {
   const handleTicketTypeShow = (selectedTicketOption, index) => {
     const selectedTicketID = selectedTicketOption.value;
 
-    
     const isDepartmentAlreadySelected = rows.some(
       (row) => row.ticket_show_type === selectedTicketID
     );
 
-  
-    
     const updatedAssign = [...rows];
     updatedAssign[index] = {
       ...updatedAssign[index],
@@ -544,23 +518,11 @@ function CreateUserComponent({ match }) {
   };
 
   const handleRemoveSpecificRow = (index) => async () => {
-
-    
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
 
- 
-    
     setRows(updatedAssign);
-  
-    
   };
-
-  
-
-
-
-  
 
   const sortSlefRole =
     roleDropdown &&
@@ -592,11 +554,8 @@ function CreateUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-
-  
-
   const accountForChange = async (account_for) => {
-    setSelctRole(null)
+    setSelctRole(null);
     setAccountFor(account_for);
     const accountFor = account_for;
     const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
@@ -617,13 +576,7 @@ function CreateUserComponent({ match }) {
       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
     });
     setFilteredRoles(aa);
-
- 
-    
   };
-
- 
-
 
   const [departmentValue, setDepartmentValue] = useState(false);
   const departmentRef = useRef(null);
@@ -668,7 +621,6 @@ function CreateUserComponent({ match }) {
           e.target.checked == true ? 1 : 0;
       } else if (type == "IS_DEFAULT") {
         temp_element.is_default = e.target.checked == true ? 1 : 0;
-       
       }
       temp_state[actualIndex] = temp_element;
       setRows(temp_state);
@@ -688,19 +640,14 @@ function CreateUserComponent({ match }) {
       ? document.getElementById("contact_no").value
       : "";
     setCopyData(text1);
-   
   }
 
   useEffect(() => {
     whatsappRef.current.value = copyData;
   }, [copyData]);
 
- 
-
-
   const passwordHandle = (e, s) => {
     setPassword(e.target.value);
-
   };
 
   function language() {
@@ -803,7 +750,7 @@ function CreateUserComponent({ match }) {
                             <Astrick color="red" />
                           </b>
                         </label>
-                        <div className="col-sm-4">
+                        <div className="col-sm-3">
                           <Select
                             id="customer_id"
                             name="customer_id"
@@ -1212,7 +1159,7 @@ function CreateUserComponent({ match }) {
                         </span>
                       )}
                     </div>
-                    {console.log("filterRole",filteredRoles)}
+                    {console.log("filterRole", filteredRoles)}
                     <div
                       className="form-group row mt-4"
                       style={{ position: "relative", display: "flex" }}
@@ -1228,7 +1175,6 @@ function CreateUserComponent({ match }) {
                           name="role_id"
                           // defaultValue={filteredRoles}
                           value={selectRole}
-
                           // options={filteredRoles}
                           options={
                             accountFor === "SELF"
@@ -1236,7 +1182,7 @@ function CreateUserComponent({ match }) {
                               : orderedCustomerRoleData
                           }
                           onChange={(e) => {
-                            handleSelectRole(e)
+                            handleSelectRole(e);
                             if (e.value === "") {
                               setInputState({
                                 ...state,
@@ -1408,13 +1354,11 @@ function CreateUserComponent({ match }) {
 
                       <div className="col-sm-4">
                         <Select
-                          
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ""}
-                          
                         />
                       </div>
                     </div>
@@ -1458,14 +1402,12 @@ function CreateUserComponent({ match }) {
                       </th>
                     </tr>
                   </thead>
-                  
 
                   <tbody>
                     {rows.map((item, idx) => (
                       <tr id={`addr_${idx}`} key={idx}>
                         <td className="text-center">{idx + 1}</td>
                         <td>
-                       
                           <Select
                             isSearchable={true}
                             name="department_id[]"
@@ -1474,7 +1416,6 @@ function CreateUserComponent({ match }) {
                             className="basic-multi-select"
                             classNamePrefix="select"
                             options={departmentDropdown}
-                          
                             value={departmentDropdown.filter((d) =>
                               Array.isArray(item.department_id)
                                 ? item.department_id.includes(d.value)
@@ -1500,7 +1441,6 @@ function CreateUserComponent({ match }) {
                                 ? item.ticket_show_type.includes(d.value)
                                 : item.ticket_show_type === d.value
                             )}
-                            
                             required
                           />
                         </td>

@@ -1495,7 +1495,7 @@ function EditDynamicForm({ match }) {
                                 id="inputRangeMin"
                                 name="inputRangeMin"
                                 className="form-control form-control-sm"
-                                defaultValue={data.inputAddOn.inputRangeMin}
+                                // defaultValue={data.inputAddOn.inputRangeMin}
                                 min={data.inputAddOn.inputRangeMin}
                               />
                             </div>
@@ -1506,7 +1506,7 @@ function EditDynamicForm({ match }) {
                                 id="inputRangeMax"
                                 name="inputRangeMax"
                                 className="form-control form-control-sm"
-                                defaultValue={data.inputAddOn.inputRangeMax}
+                                // defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
                               />
                             </div>

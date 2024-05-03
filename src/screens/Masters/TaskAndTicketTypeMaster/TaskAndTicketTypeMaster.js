@@ -1253,6 +1253,8 @@ function TaskAndTicketTypeMaster(props) {
                           ? modal?.modalData?.parent_name
                           : "Primary"}
                       </div>
+                    
+                    
                       {isMenuOpen && (
                         <div
                           style={{

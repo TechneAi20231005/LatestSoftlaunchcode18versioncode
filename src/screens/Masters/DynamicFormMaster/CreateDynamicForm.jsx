@@ -1446,22 +1446,37 @@ function CreateDynamicForm() {
                           </div>
                         )}
 
+                        {console.log("min", data.inputAddOn.inputRangeMin)}
+                        {console.log("max", data.inputAddOn.inputRangeMax)}
+
                         {data.inputType === "decimal" && (
                           <div className="d-flex justify-content-between">
                             <div class="form-group">
-                              <label>Min Number:</label>
+                              <label>Number:</label>
                               <input
                                 type="number"
-                                // onChange={handleChange(idx)}
-
                                 id="inputRangeMin"
                                 name="inputRangeMin"
                                 className="form-control form-control-sm"
-                                defaultValue={data.inputAddOn.inputRangeMin}
                                 min={data.inputAddOn.inputRangeMin}
                               />
+                              {console.log(
+                                "Min:",
+                                parseFloat(data.inputAddOn.inputRangeMin)
+                              )}
+                              {console.log(
+                                "Max:",
+                                parseFloat(data.inputAddOn.inputRangeMax)
+                              )}
+                              {parseFloat(data.inputAddOn.inputRangeMin) >
+                                parseFloat(data.inputAddOn.inputRangeMax) && (
+                                <div className="text-danger">
+                                  Max number should be greater than Min number
+                                </div>
+                              )}
                             </div>
-                            <div className="form-group">
+
+                            {/* <div className="form-group">
                               <label>Max Number:</label>
                               <input
                                 type="number"
@@ -1473,7 +1488,7 @@ function CreateDynamicForm() {
                                 defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
                               />
-                            </div>
+                            </div> */}
                           </div>
                         )}
 

@@ -978,6 +978,8 @@ function QueryTypeComponent() {
                       <label className="form-label font-weight-bold mt-1">
                         Query Group : <Astrick color="red" size="13px" />
                       </label>
+                    
+                    
 
                       {queryGroupDropdown && (
                         <Select
