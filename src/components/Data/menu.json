@@ -1,0 +1,362 @@
+{
+    "menu": [
+        {
+            "name": "Dashboard",
+            "routerLink": ["Dashboard"],
+            "identifier": "dashboard",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "isToggled":false,
+            "children": [   
+            ]
+        },
+        {
+            "name": "Master",
+            "routerLink": [""],
+            "identifier": "Master",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "Tenant Master",
+                    "routerLink": ["Tenant"],
+                    "identifier": "Tenant",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "User Master",
+                    "routerLink": ["User"],
+                    "identifier": "User",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Customer Master",
+                    "routerLink": ["Customer"],
+                    "identifier": "Customer",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Country Master",
+                    "routerLink": ["Country"],
+                    "identifier": "Country",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "State Master",
+                    "routerLink": ["State"],
+                    "identifier": "State",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "City Master",
+                    "routerLink": ["City"],
+                    "identifier": "City",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Designation Master",
+                    "routerLink": ["Designation"],
+                    "identifier": "Designation",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Department Master",
+                    "routerLink": ["Department"],
+                    "identifier": "Department",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Role Master",
+                    "routerLink": ["Role"],
+                    "identifier": "Role",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Status Master",
+                    "routerLink": ["Status"],
+                    "identifier": "Status",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }, 
+                {
+                    "name": "Customer Type Master",
+                    "routerLink": ["CustomerType"],
+                    "identifier": "CustomerType",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Dynamic Form",
+                    "routerLink": ["DynamicForm"],
+                    "identifier": "DynamicForm",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Query Type Master",
+                    "routerLink": ["QueryType"],
+                    "identifier": "QueryType",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Template Master",
+                    "routerLink": ["Template"],
+                    "identifier": "Template",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Customer Mapping",
+                    "routerLink": ["CustomerMapping"],
+                    "identifier": "CustomerMapping",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Tickets",
+            "routerLink": ["Ticket"],
+            "identifier": "",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "My Tickets",
+                    "routerLink": ["Ticket"],
+                    "identifier": "Ticket",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Unpassed Tickets",
+                    "routerLink": ["UnpassedTicket"],
+                    "identifier": "Unpassed Ticket",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Create Ticket",
+                    "routerLink": ["Ticket/Create"],
+                    "identifier": "Create Ticket",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Projects",
+            "routerLink": [""],
+            "identifier": "Master",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "Project Master",
+                    "routerLink": ["Project"],
+                    "identifier": "Project",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Module Master",
+                    "routerLink": ["Module"],
+                    "identifier": "Module",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Sub-Module Master",
+                    "routerLink": ["SubModule"],
+                    "identifier": "SubModule",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Reports",
+            "routerLink": [""],
+            "identifier": "Report",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "User Task",
+                    "routerLink": ["UserTaskReport"],
+                    "identifier": "User Task",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Timeline Report",
+                    "routerLink": ["TimelineReport"],
+                    "identifier": "TimelineReport",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Resource Planning",
+                    "routerLink": ["ResourcePlanningReport"],
+                    "identifier": "ResourcePlanning",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Connectors",
+            "routerLink": [""],
+            "identifier": "Master",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "Whatsapp",
+                    "routerLink": ["Connector/Whatsapp"],
+                    "identifier": "Whatsapp",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Sms",
+                    "routerLink": ["Connector/Sms"],
+                    "identifier": "Sms",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                },
+                {
+                    "name": "Email",
+                    "routerLink": ["Connector/Email"],
+                    "identifier": "Email",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Menu Management",
+            "routerLink": [""],
+            "identifier": "Master",
+            "iconClass": "icofont-home fs-5",
+            "breadcrumbMessage": "Welcome to Analytics Dashboard.",
+            "isCategory": false,
+            "isApp": false,
+            "children": [
+                {
+                    "name": "Manage Menu",
+                    "routerLink": ["MenuManage"],
+                    "identifier": "",
+                    "iconClass": "",
+                    "breadcrumbMessage": "",
+                    "isCategory": false,
+                    "isApp": false,
+                    "children": []
+                }
+            ]
+        }       
+    ]
+}

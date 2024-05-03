@@ -1,0 +1,60 @@
+.custom-col {
+  width: 14.3%;
+  max-width: 14.3%;
+}
+
+.daily_task_data {
+  transition: transform 0.3s ease;
+}
+
+.daily_task_data:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.custom-tooltip {
+  position: fixed;
+  background-color: white;
+  color: #484c7f;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  font-size: 14px;
+  z-index: 9999;
+}
+
+.calendar-card {
+  height: 82px;
+}
+.myCustomHeight {
+  height: 90vh;
+}
+.rbc-btn-group > button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Styling for the left arrow icon */
+.rbc-btn-group > button.rbc-btn-back {
+  margin-right: 10px; /* Adjust spacing as needed */
+}
+
+/* Styling for the right arrow icon */
+.rbc-btn-group > button.rbc-btn-next {
+  margin-left: 10px; /* Adjust spacing as needed */
+}
+
+.calendar-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calendar-card:hover {
+  transform: scale(1.02); /* Scale up by 5% on hover */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Subtle shadow effect */
+}
