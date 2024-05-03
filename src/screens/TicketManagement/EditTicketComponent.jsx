@@ -537,7 +537,7 @@ export default function EditTicketComponent({ match }) {
   const [projectId, setProjectId] = useState();
   const [reviewerData, setReviewerData] = useState();
   const [statusData, setStatusData] = useState();
-  const [emilData, setEmailData] = useState();
+  const [entryuserEmail, setEntryUserEmail] = useState();
 
   const loadData = async () => {
     setSelectedFile([]);
@@ -560,12 +560,12 @@ export default function EditTicketComponent({ match }) {
             }));
           setUser(data);
 
-          setEmailData(
+          setEntryUserEmail(
             res.payload.data.data.filter(
               (d) => d.is_active == 1 && d.account_for === "SELF"
             )
           );
-          emilData?.filter((d) => d.id === data?.created_by);
+          entryuserEmail?.filter((d) => d.id === data?.created_by);
 
           setUserDropdown(select);
           setUserdrp(select);
@@ -761,7 +761,7 @@ export default function EditTicketComponent({ match }) {
     loadComments();
     setShowLoaderModal(false);
   };
-  const filteredData = emilData?.filter((d) => d.id === data?.created_by);
+  const filteredData = entryuserEmail?.filter((d) => d.id === data?.created_by);
 
   function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
     const primaryLabel = "Primary";
