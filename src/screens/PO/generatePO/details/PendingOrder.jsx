@@ -1,60 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Stack } from 'react-bootstrap';
 import ReactSelect from 'react-select';
 import DataTable from 'react-data-table-component';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 // // static import
 import { RenderIf } from '../../../../utils';
+import { getItemCategoryListThunk } from '../../../../redux/services/po/common';
 import './style.scss';
+import { Formik } from 'formik';
 
 function PendingOrder() {
   // // initial state
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  console.log(location);
 
   // // local state
   const [toggleFilter, setToggleFilter] = useState(false);
   const [orderQuantityInputs, setOrderQuantityInputs] = useState({});
 
-  // // item dropdown
-  const categoryData = [
-    {
-      label: (
-        <>
-          <div className="d-flex">
-            <p className="mb-0">Item</p>
-            <i className="icofont-caret-right text-warning fs-5" />
-            <p className="mb-0"> Category :</p>
-          </div>
-        </>
-      ),
-      value: 'category_1',
-    },
-    {
-      label: (
-        <>
-          <div className="d-flex">
-            <p className="mb-0">Item1</p>
-            <i className="icofont-caret-right text-warning fs-5" />
-            <p className="mb-0"> Category :</p>
-          </div>
-        </>
-      ),
-      value: 'category_2',
-    },
-    {
-      label: (
-        <>
-          <div className="d-flex">
-            <p className="mb-0">Item2</p>
-            <i className="icofont-caret-right text-warning fs-5" />
-            <p className="mb-0"> Category :</p>
-          </div>
-        </>
-      ),
-      value: 'category_3',
-    },
-  ];
+  // // redux state
+  const {
+    itemCategoryList,
+    isLoading: { getItemCategoryList },
+  } = useSelector(state => state?.poCommon);
 
   //  table column data
   const columns = [
@@ -119,6 +91,20 @@ function PendingOrder() {
     },
   ];
 
+  // // dropdown data
+  const categoryData = itemCategoryList?.map(items => ({
+    label: (
+      <>
+        <div className="d-flex">
+          <p className="mb-0">{items?.item}</p>
+          <i className="icofont-caret-right text-warning fs-5" />
+          <p className="mb-0"> {items?.category}</p>
+        </div>
+      </>
+    ),
+    value: items?.category,
+  }));
+
   // Function to handle input change for order quantity
   const handleOrderQuantityChange = (id, value) => {
     setOrderQuantityInputs(prevState => ({
@@ -131,6 +117,11 @@ function PendingOrder() {
     navigate('preview');
   };
 
+  // // life cycle
+  useEffect(() => {
+    dispatch(getItemCategoryListThunk());
+  }, []);
+
   return (
     <Container fluid className="pending_order_container">
       <h3 className="fw-bold text_primary"> PO</h3>
@@ -139,46 +130,54 @@ function PendingOrder() {
         <i className="icofont-caret-right text-warning fs-5" />
         <p className="mb-0"> Category :</p>
       </div>
-      <Stack gap={3}>
-        <div className="d-flex w-100">
-          <ReactSelect
-            className="w-100"
-            options={categoryData}
-            placeholder="Select..."
-            isSearchable
-          />
-          <button
-            className="btn btn-warning text-white"
-            onClick={() => setToggleFilter(!toggleFilter)}
-          >
-            <i className="icofont-filter" />
-          </button>
-        </div>
+      <Formik initialValues={{ vender_name: '', delivery_date: '' }}>
+        {() => (
+          <Stack gap={3}>
+            <div className="d-flex w-100">
+              <ReactSelect
+                className="w-100"
+                options={categoryData}
+                placeholder={getItemCategoryList ? 'Loading...' : 'Select...'}
+                isSearchable
+              />
+              <button
+                className="btn btn-warning text-white"
+                onClick={() => setToggleFilter(!toggleFilter)}
+              >
+                <i className="icofont-filter" />
+              </button>
+            </div>
 
-        <RenderIf render={toggleFilter}>
-          <Row>
-            <Col>
-              <label>Weight:</label>
-              <ReactSelect className="w-100" options={[]} placeholder="Select.." />
-            </Col>
-            <Col>
-              <label>Size:</label>
-              <ReactSelect className="w-100" options={[]} placeholder="Select.." />
-            </Col>
-          </Row>
-        </RenderIf>
+            <RenderIf render={toggleFilter}>
+              <Row>
+                <Col>
+                  <label>Weight:</label>
+                  <ReactSelect className="w-100" options={[]} placeholder="Select.." />
+                </Col>
+                <Col>
+                  <label>Size:</label>
+                  <ReactSelect className="w-100" options={[]} placeholder="Select.." />
+                </Col>
+              </Row>
+            </RenderIf>
 
-        <DataTable columns={columns} data={demoTableData} />
+            <DataTable columns={columns} data={demoTableData} />
 
-        <div className="d-flex justify-content-end mt-3 gap-2">
-          <button className="btn btn-dark" type="button">
-            Save & Add More
-          </button>
-          <button className="btn btn-warning text-white px-5" type="button" onClick={handelSave}>
-            Save
-          </button>
-        </div>
-      </Stack>
+            <div className="d-flex justify-content-end mt-3 gap-2">
+              <button className="btn btn-dark" type="button">
+                Save & Add More
+              </button>
+              <button
+                className="btn btn-warning text-white px-5"
+                type="button"
+                onClick={handelSave}
+              >
+                Save
+              </button>
+            </div>
+          </Stack>
+        )}
+      </Formik>
     </Container>
   );
 }

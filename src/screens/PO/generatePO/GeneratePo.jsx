@@ -1,25 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import { CustomInput, CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
 import { generatePoFilterValidation } from '../validation/generatePoFilter';
+import { getVenderListThunk } from '../../../redux/services/po/common';
 import './style.scss';
 
 function GeneratePo() {
   // // initial state
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  //  demo data
-  const venderData = [
-    { label: 'Select', value: '' },
-    { label: 'vender 1', value: 'vender_1' },
-    { label: 'vender 2', value: 'vender_2' },
-    { label: 'vender 3', value: 'vender_3' },
-    { label: 'vender_3_vender_1_vender_2', value: 'vender_4' },
-  ];
+  // // redux state
+  const {
+    venderList,
+    isLoading: { getVenderList },
+  } = useSelector(state => state?.poCommon);
+
+  // // dropdown data
+  const venderData = venderList?.map(item => ({
+    label: item?.vendor,
+    value: item?.vendor,
+  }));
+
+  // // life cycle
+  useEffect(() => {
+    dispatch(getVenderListThunk());
+  }, []);
 
   return (
     <Container fluid className="generate_po_container">
@@ -46,7 +57,7 @@ function GeneratePo() {
                     options={venderData}
                     name="vender_name"
                     label="Vender Name :"
-                    placeholder="Select"
+                    placeholder={getVenderList ? 'Loading...' : 'Select'}
                     requiredField
                     isSearchable
                   />
