@@ -1489,7 +1489,7 @@ function EditDynamicForm({ match }) {
                         {data.inputType === "decimal" && (
                           <div className="d-flex justify-content-between">
                             <div class="form-group">
-                              <label>Min Number:</label>
+                              {/* <label>Min Number:</label> */}
                               <input
                                 type="number"
                                 id="inputRangeMin"
@@ -1499,7 +1499,7 @@ function EditDynamicForm({ match }) {
                                 min={data.inputAddOn.inputRangeMin}
                               />
                             </div>
-                            <div className="form-group">
+                            {/* <div className="form-group">
                               <label>Max Number:</label>
                               <input
                                 type="number"
@@ -1509,7 +1509,7 @@ function EditDynamicForm({ match }) {
                                 // defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
                               />
-                            </div>
+                            </div> */}
                           </div>
                         )}
 

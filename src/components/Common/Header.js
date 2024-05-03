@@ -201,12 +201,14 @@ export default function Header() {
   };
 
   const historyData = async () => {
-    console.log("his==>");
+
+    
 
     // Assuming getRegularizationTime is a function that returns a Promise
     await new getRegularizationTimeHistory()
       .then((res) => {
-        console.log("his==>", res);
+    
+        
         // Process the data
         if (res.status === 200) {
           if (res.data.data) {

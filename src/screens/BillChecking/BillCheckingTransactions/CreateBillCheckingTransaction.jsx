@@ -757,7 +757,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   }, [checkRole]);
 
-  console.log(checkRole);
+
+  
 
   const [roundOffError, setRoundOffError] = useState("");
 
