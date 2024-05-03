@@ -310,9 +310,9 @@ export default function TaskComponent({ match }) {
   const [taskRegularizationRequest, setTaskRegularizationRequest] = useState(0);
 
   const handleRegularizationRequest = () => {
-    new getRegularizationTime(ticketId).then((res) => {
-      setRegularizationRequest(res.data.data);
-    });
+    // new getRegularizationTime(ticketId).then((res) => {
+    //   setRegularizationRequest(res.data.data);
+    // });
   };
 
   const handleTaskRegularizationRequest = () => {

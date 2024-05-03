@@ -98,28 +98,28 @@ export default function Header() {
 
   const handleRegularizationRequest = (cuurentData) => {
     setTicketID(cuurentData);
-    new getRegularizationTime(cuurentData).then((res) => {
-      const temp = res?.data?.data
-        ?.filter((d) => d.status_remark === "PENDING")
-        .map((d) => ({
-          id: d.id,
-          created_by_name: d.created_by_name,
-          from_date: d.from_date,
-          to_date: d.to_date,
-          from_time: d.from_time,
-          to_time: d.to_time,
-          remark: d.remark,
-          is_checked: 0,
-          regularization_time_status: d.regularization_time_status,
-          task_name: d.task_name,
-          ticket_id_name: d.ticket_id_name,
-          actual_time: d.actual_time,
-          task_hours: d.task_hours,
-          scheduled_time: d.scheduled_time,
-          status: d.status_remark,
-        }));
-      setRegularizationRequest(temp);
-    });
+    // new getRegularizationTime(cuurentData).then((res) => {
+    //   const temp = res?.data?.data
+    //     ?.filter((d) => d.status_remark === "PENDING")
+    //     .map((d) => ({
+    //       id: d.id,
+    //       created_by_name: d.created_by_name,
+    //       from_date: d.from_date,
+    //       to_date: d.to_date,
+    //       from_time: d.from_time,
+    //       to_time: d.to_time,
+    //       remark: d.remark,
+    //       is_checked: 0,
+    //       regularization_time_status: d.regularization_time_status,
+    //       task_name: d.task_name,
+    //       ticket_id_name: d.ticket_id_name,
+    //       actual_time: d.actual_time,
+    //       task_hours: d.task_hours,
+    //       scheduled_time: d.scheduled_time,
+    //       status: d.status_remark,
+    //     }));
+    //   setRegularizationRequest(temp);
+    // });
   };
 
   const handleMarkAllNotification = (e) => {
