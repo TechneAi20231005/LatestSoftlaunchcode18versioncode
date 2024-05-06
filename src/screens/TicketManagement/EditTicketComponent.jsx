@@ -559,16 +559,13 @@ export default function EditTicketComponent({ match }) {
               label: d.first_name + " " + d.last_name,
             }));
           setUser(data);
-          const ffff = res.payload.data.data.filter(
-            (d) => d.is_active == 1 && d.account_for === "SELF"
-          );
 
           setEmailData(
             res.payload.data.data.filter(
               (d) => d.is_active == 1 && d.account_for === "SELF"
             )
           );
-          emilData?.filter((d) => d.id == data?.created_by);
+          emilData?.filter((d) => d.id === data?.created_by);
 
           setUserDropdown(select);
           setUserdrp(select);
@@ -1216,7 +1213,7 @@ export default function EditTicketComponent({ match }) {
                         <Select
                           options={userDropdown}
                           defaultValue={userDrp.filter(
-                            (d) => d.value == data?.created_by
+                            (d) => d.value === data?.created_by
                           )}
                           isDisabled={true}
                         />
@@ -1600,25 +1597,6 @@ export default function EditTicketComponent({ match }) {
                           </textarea>
                         )}
 
-                        {/* {data.inputType === "date" && (
-                          const inputDate = "27-04-2024";
-                          const parts = inputDate.split("-");
-                          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                          <div className="form-control">
-                            <input
-                              type="date"
-                              name={data.inputName}
-                              required={
-                                data && data.inputMandatory == true
-                                  ? true
-                                  : false
-                              }
-                              readOnly
-                              defaultValue={data.value}
-                              style={{ width: "100%" }}
-                            />
-                          </div>
-                        )} */}
                         {data.inputType === "date" && (
                           <div className="form-control">
                             <input
