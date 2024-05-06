@@ -53,7 +53,6 @@ const SprintCalendar = () => {
       setCurrentDateRange(days);
     }
     if (event.target.value === "week") {
-      console.log("current date range", withinRangeDates);
       setCurrentDateRange(withinRangeDates);
     }
   };
@@ -113,7 +112,6 @@ const SprintCalendar = () => {
 
       currentMonday.setDate(currentMonday.getDate() + 7);
     }
-    console.log("week ranges", weekRange);
     setWithinRangeDates(weekRange);
     return weekRange;
   }

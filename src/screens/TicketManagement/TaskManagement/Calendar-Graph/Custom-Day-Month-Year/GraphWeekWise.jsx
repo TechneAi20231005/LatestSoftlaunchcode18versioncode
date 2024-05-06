@@ -1,234 +1,484 @@
-import React, { useEffect, useState } from "react";
+//"../../../../../services/TicketService/SprintService"
+import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
-import Avatar from "react-avatar";
 import SprintService from "../../../../../services/TicketService/SprintService";
+import "./custom-style.css";
+import Select from "react-select";
+import PageHeader from "../../../../../components/Common/PageHeader";
+import { useLocation, useParams } from "react-router-dom";
+
 const GraphWeekWise = () => {
+  const params = useParams();
+  const location = useLocation();
+
+  const { id: ticketId, date: sprintRange } = params;
+
+  const [selectedOption, setSelectedOption] = useState("week");
+  const [sprintFirstDate, setSprintFirstDate] = useState("");
+  const [sprintLastDate, setSprintLastDate] = useState("");
+  const [dropDownData, setDropDownData] = useState([]);
+  const [weekRange, setWeekRange] = useState([]);
+  // const [selectedDropDown, setSelectedDropdown] = useEffect("");
+
   const [chartData, setChartData] = useState({
     series: [
       {
-        name: "TODO",
-        data: [
-          {
-            x: "BASKET 1",
-            y: [
-              {
-                x: new Date("2019-03-05").getTime(),
-                y: new Date("2019-03-08").getTime(),
-              },
-            ],
-          },
-          {
-            x: "BASKET 1",
-            y: [
-              {
-                x: new Date("2019-03-08").getTime(),
-                y: new Date("2019-03-10").getTime(),
-              },
-            ],
-          },
-        ],
+        name: "",
+        data: [],
       },
     ],
     options: {
       chart: {
         height: 450,
         type: "rangeBar",
-        // stacked: true,
+        group: "timestamp",
       },
       plotOptions: {
         bar: {
+          opacity: 0.7,
           horizontal: true,
-          barHeight: "80%",
+          barHeight: "100%",
+          distributed: false,
+          barWidth: "50%",
+          rangeBarOverlap: false,
+          // rangeBarGroupRows: true,
         },
+      },
+      stroke: {
+        show: true,
+        width: 6,
+        colors: ["transparent"],
       },
       xaxis: {
         type: "datetime",
-      },
-      stroke: {
-        width: 1,
-      },
-      fill: {
-        type: "pattern",
-        opacity: 1,
-        pattern: {
-          style: [
-            "circles",
-            "slantedLines",
-            "verticalLines",
-            "horizontalLines",
-          ], // string or array of strings
-        },
-      },
-      stroke: {
-        show: true,
-        curve: "straight",
-        lineCap: "butt",
-        colors: undefined,
-        width: 2,
-        dashArray: 0,
+        min: new Date("2024-04-11").getTime(),
+        max: new Date("2024-04-29").getTime(),
       },
       legend: {
+        show: true,
         position: "top",
         horizontalAlign: "left",
       },
-      grid: {
-        show: true,
-        borderColor: "#90A4AE",
-        strokeDashArray: 25,
+      // grid: {
+      //   show: true,
+      //   borderColor: "#90A4AE",
+      //   strokeDashArray: 25,
+      // },
+      fill: {
+        type: "solid",
+        opacity: 0.8,
       },
+      colors: ["#C3F5FF", "#FF8888", "#FFC075", "#DB0101", "#9EFFB9"],
       annotations: {
         xaxis: [
           {
-            x: new Date("2019-03-10").getTime(),
-            borderColor: "#C3F5FF",
+            // x: new Date("").getTime(),
+            // x: new Date("2024-04-24").getTime(),
+            // borderColor: "#C3F5FF",
             strokeDashArray: 1,
-            borderColor: "#c2c2c2",
-            fillColor: "#c2c2c2",
+            fillColor: "#FFFFFF",
+            offsetX: 0,
+            offsetY: 0,
             label: {
               style: {
-                color: "#C3F5FF",
+                color: "#FFFFFF",
                 height: 450,
+                background: "#484C7F",
+                fontSize: "12px",
+                fontWeight: 400,
+                opacity: 0.6,
+              },
+              cssClass: "apexcharts-point-annotation-label",
+              padding: {
+                left: 5,
+                right: 5,
+                top: 0,
+                bottom: 2,
+              },
+              text: "Sprint Start Date",
+            },
+          },
+          {
+            x: new Date("").getTime(),
+            // x: new Date("2024-04-24").getTime(),
+            // borderColor: "#C3F5FF",
+            strokeDashArray: 1,
+            fillColor: "#FFFFFF",
+            offsetX: 0,
+            offsetY: 0,
+            label: {
+              style: {
+                color: "#FFFFFF",
+                height: 450,
+                background: "#484C7F",
+                fontSize: "12px",
+                fontWeight: 400,
+                opacity: 0.6,
+              },
+              cssClass: "apexcharts-point-annotation-label",
+              padding: {
+                left: 5,
+                right: 5,
+                top: 0,
+                bottom: 0,
+              },
+              margin: {
+                top: 0,
+                bottom: 0,
               },
               text: "Sprint End Date",
             },
           },
         ],
       },
-      tooltip: {
-        custom: function ({ series, seriesIndex }) {
-          console.log("seriesIndex", seriesIndex);
-          console.log("series", series);
-          return '<div class="p-4">' + "<span>" + "Amit" + "</span>" + "</div>";
-        },
+      yaxis: {
+        show: true,
+        // showAlways: false,
+        showForNullSeries: false,
+        // seriesName: undefined,
+        // opposite: false,
+        // reversed: false,
+        // logarithmic: false,
       },
     },
   });
 
-  const [graphData, setGraphData] = useState({
-    data: {
-      DELAY: [
-        {
-          id: 37505,
-          ticket_id: "TT19753",
-          basket_id: 6943,
-          basket_name: "Priyanka",
-          task_name: "TT19753 - KT for Department wise AOP Approval Plan",
-          task_priority: "High",
-          task_creation_Date: "2024-03-01 17:28:43",
-          task_start_Date: "2024-03-18",
-          task_end_date: "2024-03-18",
-          task_scheduled_Hours: "03:00",
-          task_actual_worked: null,
-          task_completed_at: "2024-03-19 07:34:19",
-          task_status: "COMPLETED",
-          task_actual_status: "DELAY",
-          updated_at: "2024-03-08 09:24:46",
-          sprint_name: "First Sprint",
-          time_history: [],
-          taskOwners: [
-            "Priyanka Gole",
-            "Prathamesh Kulkarni",
-            "Preeti123 Bokade",
-            "Punam Shinde",
-            "Amreen Shaikh",
-            "Krushna Patare",
-          ],
-        },
-        {
-          id: 38752,
-          ticket_id: "TT19753",
-          basket_id: 7211,
-          basket_name: "sprint amreen",
-          task_name: "Sprint Task2",
-          task_priority: "Low",
-          task_creation_Date: "2024-03-28 17:01:03",
-          task_start_Date: "2024-03-19",
-          task_end_date: "2024-03-20",
-          task_scheduled_Hours: "02:00",
-          task_actual_worked: "00:00:03",
-          task_completed_at: "2024-03-28 17:04:02",
-          task_status: "COMPLETED",
-          task_actual_status: "DELAY",
-          updated_at: "2024-03-28 17:04:02",
-          sprint_name: "First Sprint",
-          time_history: [
+  function convertToDate(dateString) {
+    return new Date(dateString).getTime();
+  }
+  function getWeekRange(startDate, endDate) {
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const prevMonday = new Date(start);
+    prevMonday.setDate(
+      prevMonday.getDate() -
+        prevMonday.getDay() +
+        (prevMonday.getDay() === 0 ? -6 : 1)
+    );
+
+    const prevSunday = new Date(prevMonday);
+    prevSunday.setDate(prevSunday.getDate() + 6);
+
+    const startOfWeek = new Date(start);
+    startOfWeek.setDate(
+      startOfWeek.getDate() -
+        startOfWeek.getDay() +
+        (startOfWeek.getDay() === 0 ? -6 : 1)
+    );
+
+    const endOfWeek = new Date(end);
+    endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
+
+    const weekRange = [];
+    let currentMonday = new Date(startOfWeek);
+
+    if (prevMonday.getTime() !== startOfWeek.getTime()) {
+      weekRange.push({
+        Monday: prevMonday.toLocaleDateString(),
+        Sunday: prevSunday.toLocaleDateString(),
+      });
+    }
+    while (currentMonday <= endOfWeek) {
+      const currentSunday = new Date(currentMonday);
+      currentSunday.setDate(currentSunday.getDate() + 6);
+
+      weekRange.push({
+        Monday: currentMonday.toLocaleDateString(),
+        Sunday: currentSunday.toLocaleDateString(),
+      });
+
+      currentMonday.setDate(currentMonday.getDate() + 7);
+    }
+    return weekRange;
+  }
+
+  const formatDate = (dates) => {
+    const date = new Date(dates);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const getGraphData = async (
+    shouldCallWeekRange = true,
+    endDate,
+    firstDate
+  ) => {
+    try {
+      const splitedSprintRange = sprintRange.split("to");
+      let weeksplitDate = [];
+      if (shouldCallWeekRange) {
+        let weekRange = getWeekRange(
+          splitedSprintRange[0],
+          splitedSprintRange[1]
+        )?.map((weekRange, index) => {
+          return {
+            value: index,
+            label: `${weekRange?.Sunday}-${weekRange?.Monday}`,
+          };
+        });
+        setDropDownData(weekRange);
+        weeksplitDate = weekRange[0]?.label?.split("-");
+      }
+
+      const res = await new SprintService().getGraphDataForSprint(
+        ticketId,
+        formatDate(firstDate || weeksplitDate?.[1]),
+        formatDate(endDate || weeksplitDate?.[0])
+      );
+
+      if (res?.data?.status === 1) {
+        const { first_sprint_date, last_sprint_date } = res?.data?.data;
+
+        const transformedData = {
+          series: [
             {
-              id: 70109,
-              start_time: "2024-03-28 17:03:32",
-              stop_time: "2024-03-28 17:03:35",
+              name: "TODO",
+              data: res?.data?.data?.TO_DO
+                ? res?.data?.data?.TO_DO?.map((task) => ({
+                    x: task.basket_name,
+                    y: [
+                      convertToDate(task.task_start_Date),
+                      convertToDate(task.task_end_date),
+                    ],
+                  }))
+                : [null],
+            },
+            {
+              name: "Delay",
+              data: res?.data?.data?.DELAY
+                ? res?.data?.data?.DELAY?.map((task) => ({
+                    x: task.basket_name,
+                    y: [
+                      convertToDate(task.task_start_Date),
+                      convertToDate(task.task_end_date),
+                    ],
+                  }))
+                : [null],
+            },
+            {
+              name: "Highly Delay",
+              data: res?.data?.data?.HIGHLY_DELAY
+                ? res?.data?.data?.HIGHLY_DELAY?.map((task) => ({
+                    x: task.basket_name,
+                    y: [
+                      convertToDate(task.task_start_Date),
+                      convertToDate(task.task_end_date),
+                    ],
+                  }))
+                : [null],
+            },
+            {
+              name: "Completed",
+              data: res?.data?.data?.COMPLETED
+                ? res?.data?.data?.COMPLETED?.map((task) => ({
+                    x: task.basket_name,
+                    y: [
+                      convertToDate(task.task_start_Date),
+                      convertToDate(task.task_end_date),
+                    ],
+                  }))
+                : [null],
+            },
+            {
+              name: "In Progress",
+              data: res?.data?.data?.IN_PROGRESS
+                ? res?.data?.data?.IN_PROGRESS?.map((task) => ({
+                    x: task.basket_name,
+                    y: [
+                      convertToDate(task.task_start_Date),
+                      convertToDate(task.task_end_date),
+                    ],
+                  }))
+                : [null],
             },
           ],
-          taskOwners: ["Amreen Shaikh"],
-        },
+        };
+
+        setChartData((prevChartData) => ({
+          ...prevChartData,
+          series: transformedData.series,
+          options: {
+            ...prevChartData.options,
+            xaxis: {
+              ...prevChartData.options.xaxis,
+              min: new Date(firstDate || weeksplitDate[1]).getTime(),
+              max: new Date(endDate || weeksplitDate[0]).getTime(),
+            },
+            annotations: {
+              ...prevChartData.options.annotations,
+              xaxis: [
+                ...prevChartData.options.annotations.xaxis,
+                {
+                  ...prevChartData.options.annotations.xaxis[0],
+                  x: new Date(first_sprint_date).getTime(),
+                  label: {
+                    ...prevChartData.options.annotations.xaxis[0].label,
+                    text: "Sprint Start Date",
+                  },
+                },
+                {
+                  ...prevChartData.options.annotations.xaxis[1],
+                  x: new Date(last_sprint_date).getTime(),
+                  label: {
+                    ...prevChartData.options.annotations.xaxis[1].label,
+                    text: "Sprint End Date",
+                  },
+                },
+              ],
+            },
+          },
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching graph data:", error);
+    }
+  };
+  const handleRadioChange = async (event) => {
+    setSelectedOption(event.target.value);
+    setChartData((prevData) => ({
+      ...prevData,
+      series: [
         {
-          id: 38755,
-          ticket_id: "TT19753",
-          basket_id: 7211,
-          basket_name: "sprint amreen",
-          task_name: "Sprint Testing",
-          task_priority: "Low",
-          task_creation_Date: "2024-04-08 13:10:52",
-          task_start_Date: "2024-04-08",
-          task_end_date: "2024-04-09",
-          task_scheduled_Hours: "01:00",
-          task_actual_worked: null,
-          task_completed_at: null,
-          task_status: "TO_DO",
-          task_actual_status: "DELAY",
-          updated_at: null,
-          sprint_name: "8 April 2024",
-          time_history: [],
-          taskOwners: [],
-        },
-        {
-          id: 38756,
-          ticket_id: "TT19753",
-          basket_id: 7211,
-          basket_name: "sprint amreen",
-          task_name: "Sprint Testingg",
-          task_priority: "Low",
-          task_creation_Date: "2024-04-08 13:12:15",
-          task_start_Date: "2024-04-08",
-          task_end_date: "2024-04-09",
-          task_scheduled_Hours: "01:00",
-          task_actual_worked: null,
-          task_completed_at: null,
-          task_status: "TO_DO",
-          task_actual_status: "DELAY",
-          updated_at: null,
-          sprint_name: "8 April 2024",
-          time_history: [],
-          taskOwners: ["Amreen Shaikh"],
+          name: "",
+          data: [],
         },
       ],
-      COMPLETED: [],
-      IN_PROGRESS: [],
-      TO_DO: [],
-    },
-  });
+    }));
+    setDropDownData([]);
+    const { value } = event.target;
+    const splitRange = sprintRange.split("to");
+    if (value === "month") {
+      const monthsOfYear = Array.from({ length: 12 }, (_, index) => {
+        const date = new Date(2024, index, 1);
+        return date.toLocaleString("en-US", { month: "long" });
+      }).map((month, index) => {
+        return { value: index, label: month };
+      });
+      setDropDownData(monthsOfYear);
 
-  const getGraphData = async () => {
-    try {
-      await new SprintService()
-        .getGraphDataForSprint("17664", "2024-04-20", "2024-05-29")
-        .then((res) => {
-          console.log("graphData", res.data.data);
-        });
-    } catch (error) {}
+      const month = new Date(splitRange[0]).getMonth();
+      const firstDayOfMonth = new Date(new Date().getFullYear(), month, 1);
+      const lastDayOfMonth = new Date(new Date().getFullYear(), month + 1, 0);
+      await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
+    } else if (value === "year") {
+      const year = new Date(splitRange[0]).getFullYear();
+      // setDropDownData([...{ value: 1, label: year }]);
+      const firstDayOfYear = new Date(year, 0, 1);
+      const lastDayOfYear = new Date(year, 11, 31);
+      await getGraphData(false, lastDayOfYear, firstDayOfYear);
+    } else if (value === "week") {
+      getGraphData(true);
+    }
+  };
+  const dropDownHandler = async (event) => {
+    const { label } = event;
+    if (selectedOption === "week") {
+      const currentWeek = event.label.split("-");
+      getGraphData(false, currentWeek[0], currentWeek[1]);
+    } else if (selectedOption === "month") {
+      const firstDayOfMonth = new Date(new Date().getFullYear(), label, 1);
+      const lastDayOfMonth = new Date(new Date().getFullYear(), label + 1, 0);
+      await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
+    }
   };
   useEffect(() => {
     getGraphData();
   }, []);
 
   return (
-    <div>
-      <div className="col-9">{<Avatar name="Amit Solanki" round />}</div>
-      <ReactApexChart
-        options={chartData.options}
-        series={chartData.series}
-        type="rangeBar"
-        height={600}
-      />
+    <div className="container-xxl ">
+      <PageHeader headerTitle="Manage Task" paddingStart="3" />
+      <div className="card mt-3">
+        <div className="card-body">
+          <div>
+            <div className="d-flex ">
+              <h4 className="col-md-3">
+                <strong className="text-primary">Ticket - TT3711 </strong>
+                <i
+                  className="icofont-eye"
+                  style={{ fontSize: "27px" }}
+                ></i>{" "}
+              </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="range-bar-chart-container card mt-3">
+        <div className="col-12 text-end p-2 d-md-flex align-items-center my-3 justify-content-end d-none">
+          <div className="form-check ms-5">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              id="flexRadioDefault1"
+              value="week"
+              checked={selectedOption === "week"}
+              onChange={handleRadioChange}
+            />
+            <label className="form-check-label" htmlFor="flexRadioDefault1">
+              Week
+            </label>
+          </div>
+          <div className="form-check ms-5">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              id="flexRadioDefault2"
+              value="month"
+              checked={selectedOption === "month"}
+              onChange={handleRadioChange}
+            />
+            <label className="form-check-label" htmlFor="flexRadioDefault2">
+              Month
+            </label>
+          </div>
+          <div className="form-check ms-5">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              id="flexRadioDefault3"
+              value="year"
+              checked={selectedOption === "year"}
+              onChange={handleRadioChange}
+            />
+            <label className="form-check-label" htmlFor="flexRadioDefault3">
+              Year
+            </label>
+          </div>
+          <div className="col-2 ms-3 text-start">
+            <Select
+              // className=""
+              // name="sprint_data"
+              // id="sprint_data"
+              options={dropDownData}
+              onChange={dropDownHandler}
+              defaultValue={dropDownData[0]?.label}
+              // ref={sprintDropDownRef}
+              // defaultValue={}
+            />
+          </div>
+        </div>
+        <ReactApexChart
+          options={chartData.options}
+          series={chartData.series}
+          type="rangeBar"
+          height={500}
+        />
+      </div>
     </div>
   );
 };
