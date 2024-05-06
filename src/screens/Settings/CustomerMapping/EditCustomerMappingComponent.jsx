@@ -100,10 +100,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     user_policy_label: [],
   });
 
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState([]);
   const priority = ["Low", "Medium", "High", "Very High"];
   const [confirmationRequired, setConfirmationRequired] = useState("");
   const [statusData, setstatusData] = useState("");
+  const [ratioData, setRatioData] = useState([]);
 
   const handleConfirmationChange = (e) => {
     setConfirmationRequired(e?.target?.value);
@@ -121,6 +122,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         if (res.status === 200) {
           if (res.data.status == 1) {
             tempData = res.data.data;
+            setRatioData(
+              tempData?.user_policy2?.map((d) => ({
+                user_id: d.user_id,
+                ratio: d.ratio,
+              }))
+            );
             setData({
               approach: tempData.approach,
               confirmation_required: tempData.confirmation_required,
@@ -145,6 +152,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
               updated_at: tempData.updated_at,
               updated_by: tempData.updated_by,
               user_policy: tempData.user_policy,
+              user_policy2: tempData.user_policy2,
+
               user_policy_label: tempData.user_policy_label,
             });
             setConfirmationRequired(
@@ -382,7 +391,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status == 200) {
         if (res.data.status == 1) {
           var defaultValue = [{ value: "", label: "Select User" }];
-
           const dropdown = res.data.data
             .filter((d) => d.is_active == 1)
             .filter((d) =>
@@ -410,70 +418,30 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  // const handleRatioInput = (index) => async (e) => {
-  //   e.preventDefault();
-  //   const a = ratiowiseData;
-  //   var sum = 0;
-  //   var value = e.target.value ? e.target.value : 0;
-
-  //   if (parseInt(value) > 100) {
-  //     e.target.value = 0;
-  //     ratiowiseData[index] = 0;
-  //     alert("Cannot Enter More than 100 !!!");
-  //   } else {
-  //     ratiowiseData[index] = parseInt(value);
-  //     if (ratiowiseData.length > 0) {
-  //       sum = ratiowiseData.reduce((result, number) => result + number);
-  //       if (sum > 100) {
-  //         e.target.value = 0;
-  //         ratiowiseData[index] = 0;
-  //         alert("Ratio Total Must Be 100 !!!");
-  //       }
-  //     }
-  //   }
-  //   sum = ratiowiseData.reduce((result, number) => result + number);
-  //   if (sum > 100) {
-  //     ratiowiseData[index] = 0;
-  //     sum = ratiowiseData.reduce((result, number) => result + number);
-  //   }
-  //   setRatioTotal(sum);
-
-  //   const ratiosToSend = ratiowiseData.filter((_, idx) => idx !== index);
-  //   // Now you can pass ratiosToSend to your API
-  //   console.log("Ratios to send:", ratiosToSend);
-  // };
-
   const handleRatioInput = (index) => (e) => {
     e.preventDefault();
     const newValue = parseInt(e.target.value) || 0;
 
     if (newValue > 100) {
       e.target.value = 0;
-      setRatiowiseData([
-        ...ratiowiseData.slice(0, index),
-        0,
-        ...ratiowiseData.slice(index + 1),
-      ]);
       alert("Cannot Enter More than 100 !!!");
     } else {
-      const newData = [...ratiowiseData];
-      newData[index] = newValue;
-      const sum = newData.reduce((result, number) => result + number);
+      const newData = [...userData];
+      newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
+      const sum = newData.reduce(
+        (result, item) => result + (item ? item.ratio : 0),
+        0
+      );
+
       if (sum > 100) {
         e.target.value = 0;
-        setRatiowiseData([
-          ...ratiowiseData.slice(0, index),
-          0,
-          ...ratiowiseData.slice(index + 1),
-        ]);
         alert("Ratio Total Must Be 100 !!!");
       } else {
-        setRatiowiseData(newData);
+        setUserData(newData);
         setRatioTotal(sum);
       }
     }
   };
-
   const customerDetail = useRef();
   const queryTypeDetail = useRef();
   const dynamicDetail = useRef();
@@ -491,6 +459,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
+
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
       userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
@@ -500,7 +469,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
 
     const ratiosToSend = ratiowiseData?.filter((ratio) => ratio !== 0);
-
     const getUserData = () => {
       // Get an array of user IDs
       const userIds = userDropdown?.map((ele) => ele?.value);
@@ -540,7 +508,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.department_id = departmentId;
     if (data.approach === "RW") {
       form.user_id = RwuserID;
-      form.ratio = ratiosToSend;
+      // form.ratio = ratiosToSend;
+      form.userData = userData?.length > 0 ? userData : ratioData;
     } else {
       form.user_id = userID;
     }
@@ -818,54 +787,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         className="form-group mt-2 text-left d-flex justify-content-between"
                         style={{ textAlign: "left" }}
                       >
-                        {/* <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="confirmation_required"
-                            id="confirmation_required_yes"
-                            ref={confirmationRequiredDetail}
-                            value="1"
-                            required
-                            onChange={handleConfirmationChange}
-                            key={Math.random()}
-                            defaultChecked={
-                              data.confirmation_required == 1 ||
-                              data.confirmation_required === "1"
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="confirmation_required_yes"
-                          >
-                            Yes
-                          </label>
-                        </div>
-
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="confirmation_required"
-                            id="confirmation_required_no"
-                            value="0"
-                            required
-                            onChange={handleConfirmationChange}
-                            ref={confirmationRequiredDetail}
-                            key={Math.random()}
-                            defaultChecked={
-                              data.confirmation_required == 0 ||
-                              data.confirmation_required === "0"
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="confirmation_required_no"
-                          >
-                            No
-                          </label>
-                        </div> */}
-
                         <div className="form-check">
                           <input
                             className="form-check-input"
