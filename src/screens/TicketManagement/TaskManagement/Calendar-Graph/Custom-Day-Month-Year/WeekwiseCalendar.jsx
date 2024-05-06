@@ -3,7 +3,6 @@ import "./custom-style.css";
 import SprintService from "../../../../../services/TicketService/SprintService";
 const WeekwiseCalendar = (props) => {
   const { daysOfWeek, data, bgColor, firstDate, lastDate } = props;
-
   const [tooltipContent, setTooltipContent] = useState("");
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
@@ -17,7 +16,6 @@ const WeekwiseCalendar = (props) => {
   };
 
   const handleMouseEnter = (event, data) => {
-    console.log("mouse enter", data);
     const {
       task_name,
       task_scheduled_Hours,
@@ -32,8 +30,6 @@ const WeekwiseCalendar = (props) => {
       task_actual_worked ? task_actual_worked : "00:00:00"
     }\nStatus:${task_actual_status}`;
     setTooltipContent(tooltipText);
-
-    const tooltip = document.getElementById("custom-tooltip");
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
     setTooltipPosition({ x: xPos, y: yPos });
