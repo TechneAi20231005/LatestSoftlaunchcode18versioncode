@@ -67,11 +67,16 @@ import {
   getmoduleSetting,
 } from "../TicketManagement/TaskManagement/TaskComponentAction";
 import { useDispatch } from "react-redux";
+import { getNotification } from "../../services/NotificationService/NotificationService";
 
 export default function HrDashboard(props) {
   const history = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const [approvedNotifications, setApprovedNotifications] = useState();
+  const [notifications, setNotifications] = useState([]);
+
+  const [allRequest, setAllRequest] = useState();
   const data = props.data;
   var v1 = 50;
   var v2 = 50;
@@ -163,10 +168,39 @@ export default function HrDashboard(props) {
     });
   };
 
+  const loadNotifcation = () => {
+    getNotification().then((res) => {
+      if (res.status === 200) {
+        setNotifications(null);
+        setApprovedNotifications(null);
+        if (res.data.data !== null) {
+          if (res?.data?.data?.result) {
+            var length = res.data.data.result.length;
+            var height = 0;
+            setNotifications(res.data.data.result);
+            // setApprovedNotifications(res.data.data.for_me);
+            setApprovedNotifications(
+              res?.data?.data?.result?.filter((d) => d?.status == 1)
+            );
+
+            setAllRequest(
+              res?.data?.data?.result?.filter((d) => d?.status == 2)
+            );
+
+            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              height = 100;
+            }
+          }
+        }
+      }
+    });
+  };
+
   const loadData = () => {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getCityData());
+    loadNotifcation();
     dispatch(getCountryData());
     dispatch(getStateData());
     dispatch(getEmployeeData());
@@ -237,7 +271,55 @@ export default function HrDashboard(props) {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="Dashboard" />
+      {/* <PageHeader headerTitle="Dashboard" />
+      <button>time </button> */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <PageHeader headerTitle="Dashboard" />
+
+        <div style={{ position: "relative", marginTop: "-40px" }}>
+          <button
+            className="badge bg-primary p-2"
+            style={{
+              width: "auto",
+              padding: "0.5rem 2rem",
+              lineHeight: "13px",
+            }}
+          >
+            Regularization
+            <br className="mt-2" />
+            Request
+          </button>
+          {approvedNotifications?.length > 0 && (
+            <div
+              className="notification-circle"
+              style={{
+                position: "absolute",
+                top: "-14px",
+                right: "-18px",
+                padding: "3px",
+                backgroundColor: "rgb(255, 24, 67)",
+                borderRadius: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontSize: "0.8rem",
+                fontWeight: "bold",
+                minWidth: "20px", // Minimum width to prevent squishing
+                height: "auto", // Let the height adjust automatically}}
+              }}
+            >
+              {approvedNotifications.length}
+            </div>
+          )}
+        </div>
+      </div>
       <div className="row">
         <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
           <div className="card bg-danger text-white">
