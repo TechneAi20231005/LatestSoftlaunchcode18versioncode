@@ -552,12 +552,14 @@ function EditCustomer({ match }) {
                         placeholder="Enter maximum 250 character"
                         rows="3"
                         maxLength={250}
-                        onKeyPress={(e) => {
-                          Validation.addressField(e);
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter") {
+                            Validation.addressField(e);
+                          }
                         }}
                         required
                         defaultValue={data.address}
-                      />
+                      ></textarea>
                     </div>
                   </div>
 
