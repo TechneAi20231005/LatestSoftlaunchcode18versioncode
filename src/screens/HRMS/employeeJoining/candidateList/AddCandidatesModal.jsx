@@ -16,7 +16,7 @@ import OtpVerificationModal from './OtpVerificationModal';
 import { RenderIf } from '../../../../utils';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { getRoleData } from '../../../Masters/RoleMaster/RoleMasterAction';
+import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import { NumbersOnly } from '../../../../components/Utilities/Validation';
 import {
   addCandidatesMasterThunk,
@@ -50,28 +50,34 @@ function AddCandidatesModal({ show, close }) {
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
     state => state?.branchMaster,
   );
-  const { getRoleData: roleMasterList, status } = useSelector(
-    RoleMasterSlice => RoleMasterSlice?.rolemaster,
+  const { getDesignationData: designationMasterList, status } = useSelector(
+    DesignationSlice => DesignationSlice.designationMaster,
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
     state => state?.sourceMaster,
   );
 
   // // dropdown data
-  const preferredRole = roleMasterList?.map(item => ({
-    label: item?.role,
-    value: item?.id,
-  }));
+  const preferredRole = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const preferredLocation = branchMasterList?.map(item => ({
-    label: item?.location_name,
-    value: item?.id,
-  }));
+  const preferredLocation = branchMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.location_name,
+      value: item?.id,
+    }));
 
-  const sourceType = sourceMasterList?.map(item => ({
-    label: item?.source_name,
-    value: item?.id,
-  }));
+  const sourceType = sourceMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.source_name,
+      value: item?.id,
+    }));
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
@@ -95,7 +101,7 @@ function AddCandidatesModal({ show, close }) {
     candidatesData.append('expected_ctc', formData.expected_ctc);
     candidatesData.append('current_ctc', formData.current_ctc);
     candidatesData.append('notice_period', formData.notice_period || 0);
-    candidatesData.append('resume_path', formData.resume_path);
+    candidatesData.append('resume_path[]', formData.resume_path);
 
     dispatch(
       addCandidatesMasterThunk({
@@ -110,8 +116,8 @@ function AddCandidatesModal({ show, close }) {
 
   useEffect(() => {
     if (show) {
-      if (!branchMasterList?.length) {
-        dispatch(getRoleData());
+      if (!designationMasterList?.length) {
+        dispatch(getDesignationData());
       }
       if (!branchMasterList?.length) {
         dispatch(getBranchMasterListThunk());
@@ -232,7 +238,7 @@ function AddCandidatesModal({ show, close }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      onKeyDown={NumbersOnly}
+                      // onKeyDown={NumbersOnly}
                       name="expected_ctc"
                       label="Expected Monthly Salary (Net)"
                       placeholder="Enter expected monthly salary"
@@ -242,7 +248,7 @@ function AddCandidatesModal({ show, close }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      onKeyDown={NumbersOnly}
+                      // onKeyDown={NumbersOnly}
                       name="current_ctc"
                       label="Current Monthly Salary"
                       placeholder="Enter current monthly salary"

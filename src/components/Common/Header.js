@@ -16,7 +16,10 @@ import TenantService from "../../services/MastersService/TenantService";
 import Select from "react-select";
 import Alert from "./Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { getRegularizationTime } from "../../services/TicketService/TaskService";
+import {
+  getRegularizationTime,
+  getRegularizationTimeHistory,
+} from "../../services/TicketService/TaskService";
 import ApproveRequestModal from "../../screens/TicketManagement/TaskManagement/components/ApproveRequestModal";
 import TimeRegularizationHistory from "../../screens/TicketManagement/TaskManagement/components/TimeRegularizationHistory";
 
@@ -35,6 +38,8 @@ export default function Header() {
   const [refreshInterval, setRefreshInterval] = useState(5000 || 0);
   const [show, setShow] = useState(false);
   const [approvedNotifications, setApprovedNotifications] = useState();
+  const [allRequest, setAllRequest] = useState();
+
   const userId = userSessionData.userId;
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
@@ -48,7 +53,14 @@ export default function Header() {
             var length = res.data.data.result.length;
             var height = 0;
             setNotifications(res.data.data.result);
-            setApprovedNotifications(res.data.data.for_me);
+            // setApprovedNotifications(res.data.data.for_me);
+            setApprovedNotifications(
+              res?.data?.data?.result?.filter((d) => d?.status == 1)
+            );
+
+            setAllRequest(
+              res?.data?.data?.result?.filter((d) => d?.status == 2)
+            );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
@@ -188,6 +200,50 @@ export default function Header() {
     });
   };
 
+  const historyData = async () => {
+    console.log("his==>");
+
+    // Assuming getRegularizationTime is a function that returns a Promise
+    await new getRegularizationTimeHistory()
+      .then((res) => {
+        console.log("his==>", res);
+        // Process the data
+        if (res.status === 200) {
+          if (res.data.data) {
+            const temp = res.data.data
+              ?.filter((d) => d?.status_remark !== "PENDING")
+              ?.map((d) => ({
+                id: d.id,
+                created_by_name: d.created_by_name,
+                from_date: d.from_date,
+                to_date: d.to_date,
+                from_time: d.from_time,
+                to_time: d.to_time,
+                remark: d.remark,
+                is_checked: 0,
+                regularization_time_status: d.regularization_time_status,
+                task_name: d.task_name,
+                ticket_id_name: d.ticket_id_name,
+                actual_time: d.actual_time,
+                task_hours: d.task_hours,
+                scheduled_time: d.scheduled_time,
+                status: d.status_remark,
+              }));
+
+            // Assuming setDataa is a function to set the state
+            setData(temp);
+          }
+        } else {
+        }
+      })
+      .catch((error) => {
+        // Handle errors, e.g., show an error message to the user
+      });
+  };
+
+  useEffect(() => {
+    historyData();
+  }, []);
   useEffect(() => {
     loadData();
   }, [showApprovedOnly]);
@@ -206,7 +262,7 @@ export default function Header() {
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
             {notify && <Alert alertData={notify} />}
 
-            {!historyModal.show && (
+            {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
                 className="notifications"
                 style={{ zIndex: -200 }}
@@ -241,12 +297,13 @@ export default function Header() {
                     </div>
                   </div>
                 </Dropdown.Toggle>
+
                 <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
                   <div className="card border-0" style={{ width: "30rem" }}>
                     <div className="card-header border-0 p-3">
                       <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                         <span>
-                          Notifications :{" "}
+                          Regularization Request :{" "}
                           {showApprovedOnly === true ? (
                             <span>Approved Only By Me</span>
                           ) : (
@@ -256,14 +313,10 @@ export default function Header() {
                         <div
                           onClick={(e) => {
                             handleHistoryModal();
-                            handleRegularizationRequest(ticketID);
                           }}
                         >
                           {notifications && (
-                            <button
-                              disabled
-                              className="fw-bold badge bg-warning p-2"
-                            >
+                            <button className="fw-bold badge bg-warning p-2">
                               <i class="icofont-history"></i>
                               History
                             </button>
@@ -310,25 +363,25 @@ export default function Header() {
                                       }}
                                     >
                                       {ele.url && (
-                                        <Link to={`/${_base}/${ele.url}`}>
-                                          <p className="d-flex justify-content-between mb-0">
-                                            <span className="font-weight-bold">
-                                              <span className="fw-bold badge bg-primary p-2">
-                                                {" "}
-                                                {`Date : ${date}`}
-                                              </span>
-                                              <span
-                                                className="fw-bold badge bg-danger p-2"
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                {" "}
-                                                {`Time : ${time}`}
-                                              </span>
-                                              <br />
-                                              <div>{ele.message}</div>
+                                        // <Link to={`/${_base}/${ele.url}`}>
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {" "}
+                                              {`Date : ${date}`}
                                             </span>
-                                          </p>
-                                        </Link>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {" "}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            <div>{ele.message}</div>
+                                          </span>
+                                        </p>
+                                        // </Link>
                                       )}
 
                                       {!ele.url && (
@@ -356,9 +409,9 @@ export default function Header() {
                             className="list-unstyled list mb-0"
                             style={{ height: `${notificationHeight}px` }}
                           >
-                            {notifications &&
-                              notifications.length > 0 &&
-                              notifications.map((ele, index) => {
+                            {allRequest &&
+                              allRequest.length > 0 &&
+                              allRequest.map((ele, index) => {
                                 const date = ele.created_at.split(" ")[0];
                                 const time = ele.created_at.split(" ")[1];
 
@@ -376,30 +429,30 @@ export default function Header() {
                                       }}
                                     >
                                       {ele.url && (
-                                        <Link to={`/${_base}/${ele.url}`}>
-                                          <p
-                                            className="d-flex justify-content-between mb-0"
-                                            onClick={(e) =>
-                                              handleReadNotification(e, ele.id)
-                                            }
-                                          >
-                                            <span className="font-weight-bold">
-                                              <span className="fw-bold badge bg-primary p-2">
-                                                {" "}
-                                                {`Date : ${date}`}
-                                              </span>
-                                              <span
-                                                className="fw-bold badge bg-danger p-2"
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                {" "}
-                                                {`Time : ${time}`}
-                                              </span>
-                                              <br />
-                                              {ele.message}
+                                        // <Link to={`/${_base}/${ele.url}`}>
+                                        <p
+                                          className="d-flex justify-content-between mb-0"
+                                          // onClick={(e) =>
+                                          //   handleReadNotification(e, ele.id)
+                                          // }
+                                        >
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {" "}
+                                              {`Date : ${date}`}
                                             </span>
-                                          </p>
-                                        </Link>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {" "}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+                                        </p>
+                                        // </Link>
                                       )}
 
                                       {!ele.url && (
@@ -442,7 +495,7 @@ export default function Header() {
                       >
                         <div className="btn-group h-100">
                           <Link
-                            to={`/${_base}/Notification`}
+                            to={`/${_base}/Dashboard`}
                             style={{ width: "100%" }}
                           >
                             View All Request
@@ -459,7 +512,7 @@ export default function Header() {
                       >
                         <div className="btn-group h-100">
                           <Link
-                            to={`/${_base}/ApprovedNotification`}
+                            to={`/${_base}/Dashboard`}
                             style={{ width: "100%" }}
                           >
                             Approved Only By Me
@@ -673,39 +726,49 @@ export default function Header() {
                   </div>
 
                   <div
-                    className="btn-group"
-                    style={{ border: "2px solid #ccc" }}
+                    className="row m-0"
+                    style={{
+                      border: "2px solid #ccc",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      height: "100%",
+                    }}
                   >
-                    <Link
-                      to={`/${_base}/Notification`}
-                      className={`card-footer text-center border-top-0 ${
-                        !showApprovedOnly ? "bg-info" : ""
+                    <div
+                      className={`col-4 card-footer text-center border-top-0 ${
+                        !showApprovedOnly ? "bg-info" : "white"
                       }`}
-                      onClick={() => setShowApprovedOnly(false)} // Set to false to show all notifications
+                      style={{ width: "50%", height: "50px" }}
                     >
-                      View All Notifications
-                    </Link>
+                      <div className="btn-group h-100">
+                        <Link
+                          to={`/${_base}/Notification`}
+                          className={`card-footer text-center border-top-0 ${
+                            !showApprovedOnly ? "bg-info" : ""
+                          }`}
+                        >
+                          View All Notifications
+                        </Link>
+                      </div>
+                    </div>
 
-                    <div style={{ borderRight: "1px solid #ccc" }}></div>
-
-                    <Link
-                      to={`/${_base}/ApprovedNotification`}
-                      className={`card-footer text-center border-top-0 ${
-                        showApprovedOnly ? "bg-info" : ""
+                    <div
+                      className={`col-4 card-footer text-center border-top-0 ${
+                        showApprovedOnly ? "bg-info" : "white"
                       }`}
-                      onClick={() => setShowApprovedOnly(true)}
+                      style={{ width: "50%", height: "50px" }}
                     >
-                      Approved Only By Me
-                    </Link>
-
-                    <button
-                      className="btn btn-light"
-                      onClick={(e) => {
-                        handleMarkAllNotification(e);
-                      }}
-                    >
-                      Mark All As Read
-                    </button>
+                      <div className="btn-group h-100">
+                        <button
+                          className="btn btn-light"
+                          onClick={(e) => {
+                            handleMarkAllNotification(e);
+                          }}
+                        >
+                          Mark All As Read
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Dropdown.Menu>
@@ -725,8 +788,6 @@ export default function Header() {
                   <TimeRegularizationHistory
                     show={historyModal.show}
                     hide={handleCloseHistoryModal}
-                    data={regularizationRequest && regularizationRequest}
-                    ticketId={ticketID}
                   />
                 )}
               </>

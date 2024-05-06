@@ -479,9 +479,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const RwuserID = getUserData();
 
     const customerID = customerDetail?.current?.props?.value;
-    const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value;
-    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value;
-    const templateid = templateDetail?.current?.props?.value?.value;
+    const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value
+      ? queryTypeDetail?.current?.props?.value[0]?.value
+      : queryTypeDetail?.current?.props?.value?.value;
+    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value
+      ? dynamicDetail?.current?.props?.value[0]?.value
+      : dynamicDetail?.current?.props?.value?.value;
+    const templateid = templateDetail?.current?.props?.value[0]?.value
+      ? templateDetail?.current?.props?.value[0]?.value
+      : templateDetail?.current?.props?.value?.value;
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequired;
     const approachId = approachDetail?.current?.value;
@@ -497,7 +503,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       arrayOfId.push(customerID[i]?.value);
     }
     const form = {};
-
     form.customer_type_id = arrayOfId;
     form.query_type_id = queryTypeid;
     form.dynamic_form_id = dynamicFormid;

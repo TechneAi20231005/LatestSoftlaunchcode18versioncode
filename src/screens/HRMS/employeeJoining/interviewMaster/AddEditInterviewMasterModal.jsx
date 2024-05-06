@@ -66,20 +66,26 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
 
   // // dropdown data
-  const departmentType = departmentDataList?.map(item => ({
-    label: item?.department,
-    value: item?.id,
-  }));
+  const departmentType = departmentDataList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.department,
+      value: item?.id,
+    }));
 
-  const designationType = designationMasterList?.map(item => ({
-    label: item?.designation,
-    value: item?.id,
-  }));
+  const designationType = designationMasterList
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: item?.designation,
+      value: item?.id,
+    }));
 
-  const employeeName = employeeData?.map(item => ({
-    label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
-    value: item?.id,
-  }));
+  const employeeName = employeeData
+    ?.filter(item => item?.is_active === 1)
+    ?.map(item => ({
+      label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
+      value: item?.id,
+    }));
 
   // // function
   const handelAddEditInterview = () => {
@@ -123,7 +129,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       if (!designationMasterList?.length) {
         dispatch(getDesignationData());
       }
-      if (!designationMasterList?.length) {
+      if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
     }
