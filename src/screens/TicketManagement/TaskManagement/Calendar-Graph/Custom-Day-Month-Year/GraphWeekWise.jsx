@@ -6,13 +6,13 @@ import "./custom-style.css";
 import Select from "react-select";
 import PageHeader from "../../../../../components/Common/PageHeader";
 import { useLocation, useParams } from "react-router-dom";
-
+import Alert from "../../../../../components/Common/Alert";
 const GraphWeekWise = () => {
   const params = useParams();
   const location = useLocation();
 
   const { id: ticketId, date: sprintRange } = params;
-
+  const [notify, setNotify] = useState({});
   const [selectedOption, setSelectedOption] = useState("week");
   const [sprintFirstDate, setSprintFirstDate] = useState("");
   const [sprintLastDate, setSprintLastDate] = useState("");
@@ -100,8 +100,6 @@ const GraphWeekWise = () => {
           },
           {
             x: new Date("").getTime(),
-            // x: new Date("2024-04-24").getTime(),
-            // borderColor: "#C3F5FF",
             strokeDashArray: 1,
             fillColor: "#FFFFFF",
             offsetX: 0,
@@ -133,12 +131,7 @@ const GraphWeekWise = () => {
       },
       yaxis: {
         show: true,
-        // showAlways: false,
         showForNullSeries: false,
-        // seriesName: undefined,
-        // opposite: false,
-        // reversed: false,
-        // logarithmic: false,
       },
     },
   });
@@ -220,8 +213,8 @@ const GraphWeekWise = () => {
       let weeksplitDate = [];
       if (shouldCallWeekRange) {
         let weekRange = getWeekRange(
-          splitedSprintRange[0],
-          splitedSprintRange[1]
+          splitedSprintRange[1],
+          splitedSprintRange[0]
         )?.map((weekRange, index) => {
           return {
             value: index,
@@ -234,9 +227,10 @@ const GraphWeekWise = () => {
 
       const res = await new SprintService().getGraphDataForSprint(
         ticketId,
-        formatDate(firstDate || weeksplitDate?.[1]),
-        formatDate(endDate || weeksplitDate?.[0])
+        formatDate(firstDate || weeksplitDate[1]),
+        formatDate(endDate || weeksplitDate[0])
       );
+
 
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
 
@@ -325,6 +319,7 @@ const GraphWeekWise = () => {
                 label: {
                   ...prevChartData.options.annotations.xaxis[0].label,
                   text: "Sprint Start Date",
+
                 },
               },
               {
@@ -340,7 +335,14 @@ const GraphWeekWise = () => {
         },
       }));
     } catch (error) {
-      console.error("Error fetching graph data:", error);
+      const { status } = error?.response;
+      setNotify({
+        type: "danger",
+        message: `Status:${
+          status ? status : ""
+        }'\n'Message:Error while fetching data`,
+      });
+      console.error("Error fetching graph data:", error.message);
     }
   };
   const handleRadioChange = async (event) => {
@@ -397,6 +399,7 @@ const GraphWeekWise = () => {
 
   return (
     <div className="container-xxl ">
+      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
       <div className="card mt-3">
         <div className="card-body">
@@ -470,11 +473,13 @@ const GraphWeekWise = () => {
             />
           </div>
         </div>
+
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
           type="rangeBar"
           height={500}
+          width={100}
         />
       </div>
     </div>
