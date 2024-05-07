@@ -417,10 +417,10 @@ export default function CreateCustomerMappingComponent() {
       // alert("Error No 25");
     }
   };
-  dispatch(getTemplateData());
 
   useEffect(() => {
     setNotify(null);
+    dispatch(getTemplateData());
     loadData();
     getUser();
     dispatch(getQueryTypeData());

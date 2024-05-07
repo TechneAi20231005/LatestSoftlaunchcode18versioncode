@@ -6,13 +6,13 @@ import "./custom-style.css";
 import Select from "react-select";
 import PageHeader from "../../../../../components/Common/PageHeader";
 import { useLocation, useParams } from "react-router-dom";
-
+import Alert from "../../../../../components/Common/Alert";
 const GraphWeekWise = () => {
   const params = useParams();
   const location = useLocation();
 
   const { id: ticketId, date: sprintRange } = params;
-
+  const [notify, setNotify] = useState({});
   const [selectedOption, setSelectedOption] = useState("week");
   const [sprintFirstDate, setSprintFirstDate] = useState("");
   const [sprintLastDate, setSprintLastDate] = useState("");
@@ -100,8 +100,6 @@ const GraphWeekWise = () => {
           },
           {
             x: new Date("").getTime(),
-            // x: new Date("2024-04-24").getTime(),
-            // borderColor: "#C3F5FF",
             strokeDashArray: 1,
             fillColor: "#FFFFFF",
             offsetX: 0,
@@ -133,12 +131,7 @@ const GraphWeekWise = () => {
       },
       yaxis: {
         show: true,
-        // showAlways: false,
         showForNullSeries: false,
-        // seriesName: undefined,
-        // opposite: false,
-        // reversed: false,
-        // logarithmic: false,
       },
     },
   });
@@ -220,8 +213,8 @@ const GraphWeekWise = () => {
       let weeksplitDate = [];
       if (shouldCallWeekRange) {
         let weekRange = getWeekRange(
-          splitedSprintRange[0],
-          splitedSprintRange[1]
+          splitedSprintRange[1],
+          splitedSprintRange[0]
         )?.map((weekRange, index) => {
           return {
             value: index,
@@ -234,74 +227,78 @@ const GraphWeekWise = () => {
 
       const res = await new SprintService().getGraphDataForSprint(
         ticketId,
-        formatDate(firstDate || weeksplitDate?.[1]),
-        formatDate(endDate || weeksplitDate?.[0])
+        formatDate(firstDate || weeksplitDate[1]),
+        formatDate(endDate || weeksplitDate[0])
       );
 
       if (res?.data?.status === 1) {
         const { first_sprint_date, last_sprint_date } = res?.data?.data;
-
         const transformedData = {
           series: [
             {
               name: "TODO",
-              data: res?.data?.data?.TO_DO
-                ? res?.data?.data?.TO_DO?.map((task) => ({
-                    x: task.basket_name,
-                    y: [
-                      convertToDate(task.task_start_Date),
-                      convertToDate(task.task_end_date),
-                    ],
-                  }))
-                : [null],
+              data:
+                res?.data?.data?.TO_DO?.length > 0
+                  ? res?.data?.data?.TO_DO?.map((task) => ({
+                      x: task.basket_name,
+                      y: [
+                        convertToDate(task.task_start_Date),
+                        convertToDate(task.task_end_date),
+                      ],
+                    }))
+                  : [null],
             },
             {
               name: "Delay",
-              data: res?.data?.data?.DELAY
-                ? res?.data?.data?.DELAY?.map((task) => ({
-                    x: task.basket_name,
-                    y: [
-                      convertToDate(task.task_start_Date),
-                      convertToDate(task.task_end_date),
-                    ],
-                  }))
-                : [null],
+              data:
+                res?.data?.data?.DELAY?.length > 0
+                  ? res?.data?.data?.DELAY?.map((task) => ({
+                      x: task.basket_name,
+                      y: [
+                        convertToDate(task.task_start_Date),
+                        convertToDate(task.task_end_date),
+                      ],
+                    }))
+                  : [null],
             },
             {
               name: "Highly Delay",
-              data: res?.data?.data?.HIGHLY_DELAY
-                ? res?.data?.data?.HIGHLY_DELAY?.map((task) => ({
-                    x: task.basket_name,
-                    y: [
-                      convertToDate(task.task_start_Date),
-                      convertToDate(task.task_end_date),
-                    ],
-                  }))
-                : [null],
+              data:
+                res?.data?.data?.HIGHLY_DELAY?.length > 0
+                  ? res?.data?.data?.HIGHLY_DELAY?.map((task) => ({
+                      x: task.basket_name,
+                      y: [
+                        convertToDate(task.task_start_Date),
+                        convertToDate(task.task_end_date),
+                      ],
+                    }))
+                  : [null],
             },
             {
               name: "Completed",
-              data: res?.data?.data?.COMPLETED
-                ? res?.data?.data?.COMPLETED?.map((task) => ({
-                    x: task.basket_name,
-                    y: [
-                      convertToDate(task.task_start_Date),
-                      convertToDate(task.task_end_date),
-                    ],
-                  }))
-                : [null],
+              data:
+                res?.data?.data?.COMPLETED?.length > 0
+                  ? res?.data?.data?.COMPLETED?.map((task) => ({
+                      x: task.basket_name,
+                      y: [
+                        convertToDate(task.task_start_Date),
+                        convertToDate(task.task_end_date),
+                      ],
+                    }))
+                  : [null],
             },
             {
               name: "In Progress",
-              data: res?.data?.data?.IN_PROGRESS
-                ? res?.data?.data?.IN_PROGRESS?.map((task) => ({
-                    x: task.basket_name,
-                    y: [
-                      convertToDate(task.task_start_Date),
-                      convertToDate(task.task_end_date),
-                    ],
-                  }))
-                : [null],
+              data:
+                res?.data?.data?.IN_PROGRESS?.length > 0
+                  ? res?.data?.data?.IN_PROGRESS?.map((task) => ({
+                      x: task.basket_name,
+                      y: [
+                        convertToDate(task.task_start_Date),
+                        convertToDate(task.task_end_date),
+                      ],
+                    }))
+                  : [null],
             },
           ],
         };
@@ -313,18 +310,18 @@ const GraphWeekWise = () => {
             ...prevChartData.options,
             xaxis: {
               ...prevChartData.options.xaxis,
-              min: new Date(firstDate || weeksplitDate[1]).getTime(),
-              max: new Date(endDate || weeksplitDate[0]).getTime(),
+              min: new Date(firstDate || weeksplitDate?.[1] || "").getTime(),
+              max: new Date(endDate || weeksplitDate?.[0] || "").getTime(),
             },
             annotations: {
               ...prevChartData.options.annotations,
               xaxis: [
                 ...prevChartData.options.annotations.xaxis,
                 {
-                  ...prevChartData.options.annotations.xaxis[0],
+                  // ...prevChartData.options.annotations.xaxis[0],
                   x: new Date(first_sprint_date).getTime(),
                   label: {
-                    ...prevChartData.options.annotations.xaxis[0].label,
+                    // ...prevChartData.options.annotations.xaxis[0].label,
                     text: "Sprint Start Date",
                   },
                 },
@@ -342,7 +339,14 @@ const GraphWeekWise = () => {
         }));
       }
     } catch (error) {
-      console.error("Error fetching graph data:", error);
+      const { status } = error?.response;
+      setNotify({
+        type: "danger",
+        message: `Status:${
+          status ? status : ""
+        }'\n'Message:Error while fetching data`,
+      });
+      console.error("Error fetching graph data:", error.message);
     }
   };
   const handleRadioChange = async (event) => {
@@ -399,6 +403,7 @@ const GraphWeekWise = () => {
 
   return (
     <div className="container-xxl ">
+      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
       <div className="card mt-3">
         <div className="card-body">
@@ -472,11 +477,13 @@ const GraphWeekWise = () => {
             />
           </div>
         </div>
+
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
           type="rangeBar"
           height={500}
+          width={100}
         />
       </div>
     </div>
