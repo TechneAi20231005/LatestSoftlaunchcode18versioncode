@@ -62,9 +62,7 @@ function DynamicFormComponent() {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {
-
-  };
+  const handleSearch = (value) => {};
 
   const columns = [
     {
@@ -164,18 +162,11 @@ function DynamicFormComponent() {
 
   const loadData = async () => {
     setShowLoaderModal(null);
-
-    
-   
-    
   };
 
-  
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter") {
-   
-        
         handleSearch();
       }
     };
@@ -203,17 +194,12 @@ function DynamicFormComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-  
-        
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   return (
     <div className="container-xxl">
-
-
       <PageHeader
         headerTitle="Dynamic Form Master"
         renderRight={() => {
@@ -249,8 +235,6 @@ function DynamicFormComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-  
-              
               style={{ marginTop: "0px", fontWeight: "600" }}
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
@@ -281,8 +265,6 @@ function DynamicFormComponent() {
               {data && (
                 <DataTable
                   columns={columns}
-        
-                  
                   data={data.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
