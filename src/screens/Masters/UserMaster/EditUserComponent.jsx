@@ -896,7 +896,7 @@ function EditUserComponent({ match }) {
                               <Astrick color="red" />
                             </b>
                           </label>
-                          <div className="col-sm-4">
+                          <div className="col-sm-3">
                             <CustomerDropdown
                               id="customer_id"
                               name="customer_id"
