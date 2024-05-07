@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import DayWiseCalendar from "./Custom-Day-Month-Year/DayWiseCalendar";
 import WeekwiseCalendar from "./Custom-Day-Month-Year/WeekwiseCalendar";
 import { CalendarYearWise } from "./Custom-Day-Month-Year/CalendarYearWise";
+import Alert from "../../../../components/Common/Alert";
 
 const SprintCalendar = () => {
   const params = useParams();
@@ -53,7 +54,6 @@ const SprintCalendar = () => {
       setCurrentDateRange(days);
     }
     if (event.target.value === "week") {
-      console.log("current date range", withinRangeDates);
       setCurrentDateRange(withinRangeDates);
     }
   };
@@ -113,7 +113,6 @@ const SprintCalendar = () => {
 
       currentMonday.setDate(currentMonday.getDate() + 7);
     }
-    console.log("week ranges", weekRange);
     setWithinRangeDates(weekRange);
     return weekRange;
   }
@@ -222,8 +221,12 @@ const SprintCalendar = () => {
         throw new Error("Something went wrong");
       }
     } catch (error) {
-      console.error("Error fetching calendar data:", error);
-      setNotify({ type: "danger", message: "Error while fetching data" });
+      setNotify({
+        type: "danger",
+        message: `Status:${error.response.status}\nMessage:Error while fetching data`,
+      });
+      console.error("Error fetching calendar data:", error.message);
+
       setWeekData([]);
       setYearData([]);
     }
@@ -264,6 +267,7 @@ const SprintCalendar = () => {
 
   return (
     <div className="container-xxl">
+      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
       <div className="card mt-3">
         <div className="card-body">

@@ -69,11 +69,11 @@ export default function TaskComponent({ match }) {
   const [sprintCardData, setSprintCardData] = useState([]);
   const [sprintDropDown, setSprintDropDown] = useState([]);
   const [currentSprintIndex, setCurrentSprintIndex] = useState(0);
-  const [disableNextBtn, setDisableNextBtn] = useState(false);
-  const [disablePrevtBtn, setDisablePrevBtn] = useState(false);
   const [sprintReport, setSprintReport] = useState([]);
   const [showSprintReport, setShowSprintReport] = useState(false);
   const [exportSprintData, setExportSprintData] = useState([]);
+  const [sprintFirstDate, setSprintFirstDate] = useState("");
+  const [sprintLastDate, setSprintLastDate] = useState("");
 
   const getTicketData = async () => {
     await new MyTicketService()
@@ -374,12 +374,15 @@ export default function TaskComponent({ match }) {
 
     await new SprintService().getSprintByTicketId(ticketId).then((res) => {
       if (res?.data?.status === 1) {
-        setSprintdata(res?.data?.data);
+        const { data } = res?.data;
+        setSprintdata(data);
         let temp = res?.data?.data?.map((data) => ({
           label: data.name,
           value: data.id,
         }));
         setSprintDropDown(temp);
+        setSprintFirstDate(data[data.length - 1]?.start_date);
+        setSprintLastDate(data[0]?.end_date);
       }
     });
   };
@@ -477,8 +480,8 @@ export default function TaskComponent({ match }) {
   };
 
   const sprintDropDownHandler = async (selectedOption) => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     setSprintCardData(sprintData);
     setSelectedOption((prevStateOption) => {
       if (selectedOption === prevStateOption) {
@@ -499,8 +502,8 @@ export default function TaskComponent({ match }) {
   };
 
   const showNext = async () => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
@@ -511,13 +514,13 @@ export default function TaskComponent({ match }) {
       setSprintCardData([sprintData[currentIndex + 1]]);
       await getBasketData(sprintData[currentIndex + 1]?.id);
     } else {
-      setDisableNextBtn(true);
+      // setDisableNextBtn(true);
     }
   };
 
   const showPrevious = async () => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
     let currentIndex = sprintData.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
@@ -528,7 +531,7 @@ export default function TaskComponent({ match }) {
       setSprintCardData([sprintData[currentIndex - 1]]);
       await getBasketData(sprintData[currentIndex - 1]?.id);
     } else {
-      setDisablePrevBtn(true);
+      // setDisablePrevBtn(true);
     }
   };
 
@@ -552,7 +555,7 @@ export default function TaskComponent({ match }) {
               "Sprint End Date": temp[i]?.sprint_end_date,
               "Task Name": temp[i]?.task_name,
               "Task Users": temp[i]?.task_owner,
-              "Task Start Date": temp[i]?.task_creation_Date,
+              "Task Start Date": temp[i]?.task_start_Date,
               "Task End Date": temp[i]?.task_delivery_scheduled,
               "Task actual completed date": temp[i]?.task_completed_at,
               "Task scheduled hours": temp[i]?.task_scheduled_Hours,
@@ -626,7 +629,7 @@ export default function TaskComponent({ match }) {
             .then((res) => {
               if (res?.data?.status) {
                 setSprintdata(res?.data?.data);
-                let temp = res.data.data.map((data) => ({
+                let temp = res?.data?.data?.map((data) => ({
                   label: data.name,
                   value: data.id,
                 }));
@@ -771,10 +774,6 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    console.log(
-      "sprintCardData[currentSprintIndex]?.id",
-      sprintCardData[currentSprintIndex]?.id
-    );
     getBasketData(
       sprintData[currentSprintIndex]?.id
         ? sprintData[currentSprintIndex]?.id
@@ -1143,7 +1142,7 @@ export default function TaskComponent({ match }) {
                   </svg>
                 </Link>
                 <Link
-                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph`}
+                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph/${sprintFirstDate}to${sprintLastDate}`}
                   className="ms-1"
                 >
                   <span>

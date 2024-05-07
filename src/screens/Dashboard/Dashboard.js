@@ -166,59 +166,12 @@ export default function HrDashboard(props) {
   const loadData = () => {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-    dispatch(getCityData());
-    dispatch(getCountryData());
-    dispatch(getStateData());
+
     dispatch(getEmployeeData());
     dispatch(getNotifications());
     dispatch(getAllDashboardData());
-    dispatch(getRoles());
-    dispatch(getDesignationData());
-    dispatch(getCountryData());
-    dispatch(getStateDataSort());
-    dispatch(getCountryDataSort());
-    dispatch(getCustomerData());
-    dispatch(getCustomerType());
+
     dispatch(getAllUserById(localStorage.getItem("id")));
-    dispatch(getUserTicketsTest());
-    dispatch(getUserForMyTicketsData(inputRequired));
-    dispatch(getStatusData());
-    dispatch(departmentData());
-    dispatch(getprojectData());
-    dispatch(moduleMaster());
-    dispatch(subModuleMaster());
-    dispatch(queryType());
-    dispatch(getCustomerMappingData());
-    dispatch(getcustomerTypeData());
-    dispatch(getQueryTypeData());
-    dispatch(getTemplateData());
-    dispatch(dynamicFormDropDownData());
-    dispatch(dynamicFormData());
-    dispatch(getAllDropDownData());
-    dispatch(getDynamiucFormData());
-    dispatch(getCustomerData());
-    dispatch(queryType());
-
-    dispatch(
-      getmoduleSetting({ module_name: "Ticket", submodule_name: "Task" })
-    );
-    dispatch(departmentData());
-    dispatch(getRoleData());
-    dispatch(getStatusData());
-    dispatch(getCustomerTypeData());
-    dispatch(templateData());
-    dispatch(testingData());
-    dispatch(taskAndTicketMaster());
-    dispatch(getParentDropdown());
-
-    dispatch(departmentData());
-    dispatch(getRoleData());
-    dispatch(getStatusData());
-    dispatch(getCustomerTypeData());
-    dispatch(templateData());
-    dispatch(testingData());
-    dispatch(taskAndTicketMaster());
-    dispatch(getParentDropdown());
   };
 
   useEffect(() => {

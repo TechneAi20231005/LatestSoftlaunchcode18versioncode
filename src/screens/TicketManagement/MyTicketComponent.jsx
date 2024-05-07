@@ -1616,7 +1616,7 @@ export default function MyTicketComponent() {
       })
       .catch((error) => {
         const { response } = error;
-        const { request, ...errorObject } = response;
+        const { ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
           "Status",
           "Get_Status",
