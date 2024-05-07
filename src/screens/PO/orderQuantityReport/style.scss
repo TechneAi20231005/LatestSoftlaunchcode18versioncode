@@ -1,3 +1,18 @@
+.po_order_quantity_report_container {
+  .rdt_TableRow {
+    &:last-child {
+      .rdt_TableCell {
+        &:first-child,
+        &:last-child {
+          div {
+            font-weight: 700;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 426px) {
   .po_order_quantity_report_container {
     h3 {
@@ -5,12 +20,12 @@
     }
   }
 }
-@media only screen and (max-width: 320px) {
-  .po_order_quantity_report_container {
-    .button_container {
-      button {
-        font-size: 10px;
-      }
-    }
-  }
-}
+// @media only screen and (max-width: 320px) {
+//   .po_order_quantity_report_container {
+//     .button_container {
+//       button {
+//         font-size: 10px;
+//       }
+//     }
+//   }
+// }

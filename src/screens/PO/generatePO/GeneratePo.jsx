@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CustomInput, CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
 import { generatePoFilterValidation } from '../validation/generatePoFilter';
 import { getVenderListThunk } from '../../../redux/services/po/common';
+import { resetUserAddedOrderList } from '../../../redux/slices/po/generatePo';
 import './style.scss';
 
 function GeneratePo() {
@@ -46,6 +47,7 @@ function GeneratePo() {
           validationSchema={generatePoFilterValidation}
           onSubmit={values => {
             navigate(`${values?.vender_name}`, { state: { generatePoFilter: values } });
+            dispatch(resetUserAddedOrderList());
           }}
         >
           {({ resetForm }) => (

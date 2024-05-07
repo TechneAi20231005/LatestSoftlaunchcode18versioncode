@@ -50,6 +50,9 @@ import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoini
 
 // // PO
 import poCommonSlice from '../slices/po/common';
+import generateRequisitionSlice from '../slices/po/generateRequisition';
+import generatePoSlice from '../slices/po/generatePo';
+import requisitionHistoryPoSlice from '../slices/po/history';
 
 export const store = configureStore({
   reducer: {
@@ -99,6 +102,9 @@ export const store = configureStore({
 
     // // PO
     poCommon: poCommonSlice,
+    generateRequisition: generateRequisitionSlice,
+    generatePo: generatePoSlice,
+    requisitionHistory: requisitionHistoryPoSlice,
   },
 
   middleware: getDefaultMiddleware =>

@@ -171,27 +171,25 @@ export const CustomReactSelect = ({
     optionsWithOther = [...options, { label: 'Other', value: 'other' }];
   }
   return (
-    <>
-      <div className={props.styleData + ' max_250'} style={props.style}>
-        {!props.withOutLabel && (
-          <label>
-            {props.label}
-            {props.requiredField && <span className="mendatory_sign">*</span>}
-          </label>
-        )}
-        <Select
-          name={field.name}
-          value={getValue()}
-          onChange={onChange}
-          placeholder={props.placeholder}
-          options={props.addOtherOption ? optionsWithOther : options}
-          isMulti={isMulti}
-          className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
-          isDisabled={disabled}
-        />
-        {error && touch && <div className="invalid-feedback">{error}</div>}
-      </div>
-    </>
+    <div className={props.styleData} style={props.style}>
+      {!props.withOutLabel && (
+        <label className="sss">
+          {props.label}
+          {props.requiredField && <span className="mendatory_sign">*</span>}
+        </label>
+      )}
+      <Select
+        name={field.name}
+        value={getValue()}
+        onChange={onChange}
+        placeholder={props.placeholder}
+        options={props.addOtherOption ? optionsWithOther : options}
+        isMulti={isMulti}
+        className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+        isDisabled={disabled}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </div>
   );
 };
 

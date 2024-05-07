@@ -31,7 +31,7 @@ const initialState = {
   },
 };
 const poCommonSlice = createSlice({
-  name: 'Branch master',
+  name: 'PO Common Filter',
   initialState,
   reducers: {
     // ==> normal reducer functions go here

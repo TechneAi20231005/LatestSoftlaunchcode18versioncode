@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
+import { Col, Container, Row, Stack } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,11 +11,11 @@ import {
 } from '../../../components/custom/inputs/CustomInputs';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { getVenderListThunk } from '../../../redux/services/po/common';
-import { getRequisitionHistoryThunk } from '../../../redux/services/po/history';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { getRequisitionHistoryThunk } from '../../../redux/services/po/history';
 import './style.scss';
 
-function PoHistory() {
+function VendorExportReport() {
   // // initial state
   const dispatch = useDispatch();
 
@@ -32,12 +32,6 @@ function PoHistory() {
   //  table column data
   const columns = [
     {
-      name: 'Sr No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px',
-    },
-    {
       name: 'Order Date',
       selector: row => row?.order_date || '---',
       sortable: false,
@@ -48,12 +42,6 @@ function PoHistory() {
       selector: row => row?.delivery_date || '---',
       sortable: false,
       width: '120px',
-    },
-    {
-      name: 'Karagir',
-      selector: row => row?.karagir || '---',
-      sortable: false,
-      width: '200px',
     },
     {
       name: 'Item',
@@ -68,40 +56,34 @@ function PoHistory() {
       width: '200px',
     },
     {
-      name: 'Knock Off Wt Range',
-      selector: row => row?.knockoff_wt_range || '---',
-      sortable: true,
-      width: '175px',
+      name: 'Purity',
+      selector: row => row?.purity_range || '---',
+      sortable: false,
+      width: '120px',
     },
     {
-      name: 'Karagir Size Range',
+      name: 'karagir Wt Range',
+      selector: row => row?.karagir_wt_range || '---',
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'karagir Size Range',
       selector: row => row?.karagir_size_range || '---',
       sortable: true,
-      width: '175px',
+      width: '150px',
     },
     {
-      name: 'Purity Range',
-      selector: row => row?.purity_range || '---',
+      name: 'Exact Weight',
+      selector: row => row?.exact_wt || '---',
       sortable: true,
-      width: '140px',
+      width: '120px',
     },
     {
       name: 'Order Quantity',
       selector: row => row?.new_qty || '---',
       sortable: true,
       width: '140px',
-    },
-    {
-      name: 'Created At',
-      selector: row => row?.created_at || '---',
-      sortable: true,
-      width: '175px',
-    },
-    {
-      name: 'Created By',
-      selector: row => row?.created_by || '---',
-      sortable: true,
-      width: '175px',
     },
   ];
 
@@ -114,18 +96,16 @@ function PoHistory() {
   // // function
   const transformDataForExport = data => {
     return data?.map((row, index) => ({
-      'Sr No.': index + 1,
       'Order Date': row?.order_date || '--',
       'Delivery Date': row?.delivery_date || '--',
-      Karagir: row?.karagir || '--',
       Item: row?.item || '--',
       Category: row?.category || '--',
-      'Knock Off Wt Range': row?.knockoff_wt_range || '--',
+      Karagir: row?.karagir || '--',
+      Purity: row?.purity_range || '--',
+      'Karagir Wt Range': row?.karagir_wt_range || '--',
       'Karagir Size Range': row?.karagir_size_range || '--',
-      'Purity Range': row?.purity_range || '--',
+      'Exact Weight': row?.exact_wt || '--',
       'Order Quantity': row?.new_qty || '--',
-      'Created At': row?.created_at || '--',
-      'Created By': row?.created_by || '--',
     }));
   };
 
@@ -154,8 +134,8 @@ function PoHistory() {
   }, []);
 
   return (
-    <Container fluid className="po_history_container">
-      <h3 className="fw-bold text_primary "> History</h3>
+    <Container fluid className="po_vender_export_container">
+      <h3 className="fw-bold text_primary "> Vendor Export Report</h3>
       <Stack gap={3}>
         <Formik
           initialValues={{ vender_name: [], order_date: [], delivery_date: [] }}
@@ -167,7 +147,7 @@ function PoHistory() {
           {({ resetForm, dirty }) => (
             <Form>
               <Row className="row_gap_3">
-                <Col sm={4} lg={3}>
+                <Col sm={6} lg={3}>
                   <Field
                     component={CustomReactSelect}
                     options={venderData}
@@ -193,8 +173,8 @@ function PoHistory() {
                     component={CustomReactDatePicker}
                     type="date"
                     name="delivery_date"
-                    placeholderText="mm/dd/yyyy"
                     label="Delivery Date :"
+                    placeholderText="mm/dd/yyyy"
                     range
                   />
                 </Col>
@@ -206,22 +186,21 @@ function PoHistory() {
                 <button
                   className="btn btn-info text-white"
                   type="reset"
-                  onClick={() => handelResetFilter({ restFunc: resetForm })}
                   disabled={!dirty}
+                  onClick={() => handelResetFilter({ restFunc: resetForm })}
                 >
                   <i className="icofont-refresh text-white" /> Reset
                 </button>
                 <ExportToExcel
                   className="btn btn-danger"
                   apiData={transformDataForExport(requisitionHistoryList)}
-                  fileName="Order History"
+                  fileName="Vendor export report"
                   disabled={!requisitionHistoryList?.length}
                 />
               </div>
             </Form>
           )}
         </Formik>
-
         <DataTable
           columns={columns}
           data={requisitionHistoryList}
@@ -233,4 +212,4 @@ function PoHistory() {
   );
 }
 
-export default PoHistory;
+export default VendorExportReport;

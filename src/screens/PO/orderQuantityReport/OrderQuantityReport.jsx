@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Container, Row, Stack } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
+import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import {
@@ -10,124 +11,163 @@ import {
 } from '../../../components/custom/inputs/CustomInputs';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import PoOrderQanFilterModal from './PoOrderQanFilterModal';
+import { getVenderListThunk } from '../../../redux/services/po/common';
+import { getRequisitionHistoryThunk } from '../../../redux/services/po/history';
 import './style.scss';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function OrderQuantityReport() {
+  // // initial state
+  const dispatch = useDispatch();
+
   // // local state
   const [openPoOrderQanFilterModal, setOpenPoOrderQanFilterModal] = useState(false);
+  const [modifiedRequisitionHistoryList, setModifiedRequisitionHistoryList] = useState([]);
+
+  // // redux state
+  const {
+    venderList,
+    isLoading: { getVenderList },
+  } = useSelector(state => state?.poCommon);
+  const {
+    requisitionHistoryList,
+    isLoading: { getRequisitionHistoryList },
+  } = useSelector(state => state?.requisitionHistory);
 
   //  table column data
   const columns = [
     {
       name: 'Order Date',
-      selector: row => row?.order_date,
+      selector: row => row?.order_date || '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Delivery Date',
-      selector: row => row?.delivery_date,
+      selector: row => row?.delivery_date || '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Item',
-      selector: row => row?.item,
+      selector: row => row?.item || '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Category',
-      selector: row => row?.category,
+      selector: row => row?.category || '---',
       sortable: false,
-      width: '120px',
+      width: '200px',
     },
     {
       name: 'Purity',
-      selector: row => row?.purity,
+      selector: row => row?.purity_range || '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'karagir Wt Range',
-      selector: row => row?.karagirWtRange,
+      selector: row => row?.karagir_wt_range || '---',
       sortable: true,
       width: '150px',
     },
     {
       name: 'karagir Size Range',
-      selector: row => row?.karagirSizeRange,
+      selector: row => row?.karagir_size_range || '---',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Exact Weight',
-      selector: row => row?.exactWeight,
+      selector: row => row?.exact_wt || '---',
       sortable: true,
       width: '120px',
     },
     {
       name: 'Order Quantity',
-      selector: row => row?.orderQuantity,
+      selector: row => row?.new_qty || '---',
       sortable: true,
       width: '140px',
     },
   ];
 
-  const demoTableData = [
-    {
-      order_date: '2024-05-01',
-      delivery_date: '2024-05-10',
-      item: 'Item 1',
-      category: 'Category A',
-      purity: 'High',
-      karagirWtRange: '10-20 g',
-      karagirSizeRange: '5-10 cm',
-      exactWeight: 15,
-      orderQuantity: 100,
-    },
-    {
-      order_date: '2024-05-02',
-      delivery_date: '2024-05-12',
-      item: 'Item 2',
-      category: 'Category B',
-      purity: 'Medium',
-      karagirWtRange: '20-30 g',
-      karagirSizeRange: '10-15 cm',
-      exactWeight: 25,
-      orderQuantity: 150,
-    },
-    {
-      order_date: '2024-05-03',
-      delivery_date: '2024-05-15',
-      item: 'Item 3',
-      category: 'Category C',
-      purity: 'Low',
-      karagirWtRange: '30-40 g',
-      karagirSizeRange: '15-20 cm',
-      exactWeight: 35,
-      orderQuantity: 200,
-    },
-  ];
+  // // dropdown data
+  const venderData = venderList?.map(item => ({
+    label: item?.vendor,
+    value: item?.vendor,
+  }));
 
-  //  dropdown data
-  const venderData = [
-    { label: 'Select', value: '' },
-    { label: 'vender 1', value: 'vender_1' },
-    { label: 'vender 2', value: 'vender_2' },
-    { label: 'vender 3', value: 'vender_3' },
-    { label: 'vender_3_vender_1_vender_2', value: 'vender_4' },
-  ];
+  // // function
+  const transformDataForExport = data => {
+    return data?.map((row, index) => ({
+      'Order Date': row?.order_date || '--',
+      'Delivery Date': row?.delivery_date || '--',
+      Item: row?.item || '--',
+      Category: row?.category || '--',
+      Karagir: row?.karagir || '--',
+      Purity: row?.purity_range || '--',
+      'Karagir Wt Range': row?.karagir_wt_range || '--',
+      'Karagir Size Range': row?.karagir_size_range || '--',
+      'Exact Weight': row?.exact_wt || '--',
+      'Order Quantity': row?.new_qty || '--',
+    }));
+  };
+  console.log(transformDataForExport(modifiedRequisitionHistoryList));
+  const handelApplyFilter = ({ formData }) => {
+    const apiData = {
+      vender_name: formData?.vender_name?.length ? formData?.vender_name : '',
+      from_order_date: formData?.order_date?.length ? formData?.order_date?.[0] : '',
+      to_order_date: formData?.order_date?.length ? formData?.order_date?.[1] : '',
+      from_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+      to_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+    };
+    dispatch(getRequisitionHistoryThunk({ filterData: apiData }));
+  };
+
+  const handelResetFilter = ({ restFunc }) => {
+    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+    restFunc();
+  };
+
+  // //modifying data and  calculating total order qty
+  useEffect(() => {
+    if (requisitionHistoryList.length > 0) {
+      let total = 0;
+      requisitionHistoryList.forEach(item => {
+        total += parseInt(item.new_qty);
+      });
+
+      setModifiedRequisitionHistoryList([
+        ...requisitionHistoryList,
+        {
+          order_date: 'Total',
+          new_qty: total,
+        },
+      ]);
+    } else {
+      setModifiedRequisitionHistoryList([]);
+    }
+  }, [requisitionHistoryList]);
+
+  // // life cycle
+  useEffect(() => {
+    if (!venderList?.length) {
+      dispatch(getVenderListThunk());
+    }
+    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+  }, []);
+
   return (
     <>
       <Container fluid className="po_order_quantity_report_container">
         <h3 className="fw-bold text_primary ">Order Quantity Report</h3>
         <Stack gap={3}>
           <Formik
-            initialValues={{ vender_name: [], order_date: [] }}
+            initialValues={{ vender_name: [], order_date: [], delivery_date: [] }}
             enableReinitialize
             onSubmit={values => {
-              console.log(values);
+              handelApplyFilter({ formData: values });
             }}
           >
             {({ resetForm, dirty }) => (
@@ -139,12 +179,12 @@ function OrderQuantityReport() {
                       options={venderData}
                       name="vender_name"
                       label="Vender Name :"
-                      placeholder="Select"
+                      placeholder={getVenderList ? 'Loading...' : 'Select'}
                       isSearchable
                       isMulti
                     />
                   </Col>
-                  <Col sm={6} md={3} lg={2}>
+                  <Col sm={6} md={4} lg={3}>
                     <Field
                       component={CustomReactDatePicker}
                       type="date"
@@ -154,8 +194,18 @@ function OrderQuantityReport() {
                       range
                     />
                   </Col>
+                  <Col sm={6} md={4} lg={3}>
+                    <Field
+                      component={CustomReactDatePicker}
+                      type="date"
+                      name="delivery_date"
+                      label="Delivery Date :"
+                      placeholderText="mm/dd/yyyy"
+                      range
+                    />
+                  </Col>
                 </Row>
-                <div className="d-flex justify-content-end mt-3 button_container">
+                <div className="d-flex justify-content-end mt-3 gap-2 button_container">
                   <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
                     <i className="icofont-search-1 " /> Search
                   </button>
@@ -163,29 +213,34 @@ function OrderQuantityReport() {
                     className="btn btn-info text-white"
                     type="reset"
                     disabled={!dirty}
-                    onClick={resetForm}
+                    onClick={() => handelResetFilter({ restFunc: resetForm })}
                   >
                     <i className="icofont-refresh text-white" /> Reset
                   </button>
                   <ExportToExcel
                     className="btn btn-danger"
-                    apiData={[]}
-                    fileName="Vendor export report"
+                    apiData={transformDataForExport(modifiedRequisitionHistoryList)}
+                    fileName="Order Qty report"
+                    disabled={!requisitionHistoryList?.length}
                   />
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-primary text-white px-3"
                     type="button"
                     onClick={() => setOpenPoOrderQanFilterModal(true)}
                   >
                     <i className="icofont-filter me-1" />
                     Filter
-                  </button>
+                  </button> */}
                 </div>
               </Form>
             )}
           </Formik>
-
-          <DataTable columns={columns} data={demoTableData} />
+          <DataTable
+            columns={columns}
+            data={modifiedRequisitionHistoryList}
+            progressPending={getRequisitionHistoryList}
+            progressComponent={<TableLoadingSkelton />}
+          />
         </Stack>
       </Container>
 

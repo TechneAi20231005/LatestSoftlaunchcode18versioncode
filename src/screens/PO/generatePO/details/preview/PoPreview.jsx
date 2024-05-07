@@ -1,39 +1,75 @@
-import React from 'react';
-import { Container } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Container } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
+// // static import
+import CustomAlertModal from '../../../../../components/custom/modal/CustomAlertModal';
+import {
+  deleteUserPendingOrderRequest,
+  editUserPendingOrderRequest,
+  resetPendingOrderListData,
+} from '../../../../../redux/slices/po/generatePo';
 import './style.scss';
 
 function PoPreview() {
   // // initial state
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // // redux state
+  const { userAddedPoDataList } = useSelector(state => state?.generatePo);
+  console.log(userAddedPoDataList);
+  // // local state
+  const [orderQty, setOrderQty] = useState({
+    isEditable: false,
+    currentId: '',
+    currentValue: '',
+  });
+  const [orderQtyInputValue, setOrderQtyInputValue] = useState('');
+  const [openDeleteOrderConfirmationModal, setOpenDeleteOrderConfirmationModal] = useState({
+    open: false,
+    currentId: '',
+  });
 
   //  table column data
   const columns = [
     {
       name: 'Item',
-      selector: row => row?.item_name,
+      selector: row => row?.item || '---',
       sortable: false,
     },
     {
       name: 'Category',
-      selector: row => row?.category,
+      selector: row => row?.category || '---',
       sortable: false,
     },
     {
       name: 'Knockoff Wt Range',
-      selector: row => row?.KnockoffWtRange,
+      selector: row => row?.knockoff_wt_range || '---',
       sortable: true,
     },
     {
-      name: 'Knockoff Size Range',
-      selector: row => row?.KnockoffSizeRange,
+      name: 'Karagir Size Range',
+      selector: row => row?.karagir_size_range || '---',
       sortable: true,
     },
     {
       name: 'Order Quantity',
-      selector: row => row?.orderQuantity,
+      cell: row =>
+        row?.id === orderQty?.currentId && orderQty?.isEditable ? (
+          <Col>
+            <input
+              type="number"
+              value={orderQtyInputValue}
+              onChange={e => setOrderQtyInputValue(e.target.value)}
+              className="form-control w-100"
+            />
+          </Col>
+        ) : (
+          row?.order_qty || '---'
+        ),
       sortable: true,
     },
     {
@@ -41,10 +77,28 @@ function PoPreview() {
       cell: row => (
         <div className="action_container">
           <button className="btn btn-info text-white rounded-circle">
-            <i className="icofont-edit" />
+            {row?.id === orderQty?.currentId && orderQty?.isEditable ? (
+              <i className="icofont-check-alt" onClick={() => handelEditOrder(row?.id)} />
+            ) : (
+              <i
+                className="icofont-edit"
+                onClick={() =>
+                  setOrderQty({
+                    isEditable: true,
+                    currentId: row?.id,
+                    currentValue: row?.order_qty,
+                  })
+                }
+              />
+            )}
           </button>
           <button className="btn btn-danger text-white rounded-circle">
-            <i className="icofont-ui-delete" />
+            <i
+              className="icofont-ui-delete"
+              onClick={() =>
+                setOpenDeleteOrderConfirmationModal({ open: true, currentId: row?.id })
+              }
+            />
           </button>
         </div>
       ),
@@ -54,48 +108,54 @@ function PoPreview() {
     },
   ];
 
-  const demoTableData = [
-    {
-      item_name: 'Item 1',
-      category: 'Category A',
-      KnockoffWtRange: '10-20',
-      KnockoffSizeRange: 'Small',
-      orderQuantity: 5,
-    },
-    {
-      item_name: 'Item 2',
-      category: 'Category B',
-      KnockoffWtRange: '20-30',
-      KnockoffSizeRange: 'Medium',
-      orderQuantity: 10,
-    },
-    {
-      item_name: 'Item 3',
-      category: 'Category C',
-      KnockoffWtRange: '30-40',
-      KnockoffSizeRange: 'Large',
-      orderQuantity: 15,
-    },
-  ];
-
   // // function
   const handelAddMore = () => {
     navigate(-1);
+    dispatch(resetPendingOrderListData());
   };
 
+  const handelEditOrder = id => {
+    dispatch(editUserPendingOrderRequest({ current_id: id, order_qty: orderQtyInputValue }));
+    setOrderQty({
+      isEditable: false,
+      currentId: id,
+    });
+  };
+
+  const handelDeleteOrder = () => {
+    dispatch(
+      deleteUserPendingOrderRequest({ current_id: openDeleteOrderConfirmationModal?.currentId }),
+    );
+    setOpenDeleteOrderConfirmationModal({ open: false });
+  };
+
+  useEffect(() => {
+    setOrderQtyInputValue(orderQty?.currentValue);
+  }, [orderQty?.currentValue]);
   return (
-    <Container fluid className="pending_order_preview_container">
-      <h3 className="fw-bold text_primary">PO</h3>
-      <DataTable columns={columns} data={demoTableData} />
-      <div className="d-flex justify-content-end mt-3 gap-2">
-        <button className="btn btn-dark" type="button" onClick={handelAddMore}>
-          Add More
-        </button>
-        <button className="btn btn-warning text-white px-4" type="button">
-          Submit
-        </button>
-      </div>
-    </Container>
+    <>
+      <Container fluid className="pending_order_preview_container">
+        <h3 className="fw-bold text_primary">PO</h3>
+        <DataTable columns={columns} data={userAddedPoDataList} />
+        <div className="d-flex justify-content-end mt-3 gap-2">
+          <button className="btn btn-dark" type="button" onClick={handelAddMore}>
+            Add More
+          </button>
+          <button className="btn btn-warning text-white px-4" type="button">
+            Submit
+          </button>
+        </div>
+      </Container>
+
+      {/* Delete order confirmation modal */}
+      <CustomAlertModal
+        show={openDeleteOrderConfirmationModal?.open}
+        type="info"
+        message={`Are you sure you want to delete this order?`}
+        onSuccess={handelDeleteOrder}
+        onClose={() => setOpenDeleteOrderConfirmationModal({ open: false })}
+      />
+    </>
   );
 }
 

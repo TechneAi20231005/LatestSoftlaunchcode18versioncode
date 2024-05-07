@@ -168,7 +168,7 @@ import GeneratePo from './PO/generatePO/GeneratePo';
 import PendingOrder from './PO/generatePO/details/PendingOrder';
 import PoPreview from './PO/generatePO/details/preview/PoPreview';
 import PoHistory from './PO/history/PoHistory';
-import VendorExport from './PO/vendorExport/VendorExport';
+import VendorExportReport from './PO/vendorExportReport/VendorExportReport';
 import OrderQuantityReport from './PO/orderQuantityReport/OrderQuantityReport';
 
 class MainIndex extends React.Component {
@@ -492,7 +492,7 @@ class MainIndex extends React.Component {
             <Route exact path={`/${_base}/GeneratePO/:id`} element={<PendingOrder />} />
             <Route exact path={`/${_base}/GeneratePO/:id/preview`} element={<PoPreview />} />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
-            <Route exact path={`/${_base}/POVendorExportReport`} element={<VendorExport />} />
+            <Route exact path={`/${_base}/POVendorExportReport`} element={<VendorExportReport />} />
             <Route
               exact
               path={`/${_base}/POOrderQuanitityReport`}

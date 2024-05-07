@@ -1,19 +1,19 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
 
-export const getPendingOrderListThunk = createAsyncThunk(
-  'po/getPendingOrderList',
-  async ({ categoryName, itemName, weightRange, sizeRange }) => {
+export const uploadFileGenerateRequisitionThunk = createAsyncThunk(
+  'po/uploadFileGenerateRequisition',
+  async ({ formData, onSuccessHandler }) => {
+    console.log(formData);
     try {
-      const response = await customAxios.get(
-        `poRequisition/getPoReqOpenQtyData/${categoryName}/${itemName}${
-          weightRange ? `/${weightRange}` : ''
-        }${sizeRange ? `/${sizeRange}` : ''}`,
-      );
+      const response = await customAxios.post(`poRequisition/uploadRequisition`, formData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
         } else {
           errorHandler(response);
         }
