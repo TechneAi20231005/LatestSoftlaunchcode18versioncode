@@ -555,7 +555,7 @@ export default function TaskComponent({ match }) {
               "Sprint End Date": temp[i]?.sprint_end_date,
               "Task Name": temp[i]?.task_name,
               "Task Users": temp[i]?.task_owner,
-              "Task Start Date": temp[i]?.task_creation_Date,
+              "Task Start Date": temp[i]?.task_start_Date,
               "Task End Date": temp[i]?.task_delivery_scheduled,
               "Task actual completed date": temp[i]?.task_completed_at,
               "Task scheduled hours": temp[i]?.task_scheduled_Hours,
