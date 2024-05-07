@@ -45,8 +45,7 @@ const AuthorityMapping = () => {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
- 
-  
+
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.getModuleSettingData
@@ -92,6 +91,10 @@ const AuthorityMapping = () => {
 
   const handleModal = (data) => {};
   const searchRef = useRef();
+  const handleIsActiveChange = (isActiveValue) => {
+    // Update state or perform any action based on the selected value
+    mainJson.is_active = isActiveValue;
+  };
 
   const columns = [
     {
@@ -336,6 +339,7 @@ const AuthorityMapping = () => {
     updated_by: sessionStorage.getItem("id"),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
+    is_active: modal?.modalData?.is_active,
     setting_value: "Y",
     user_details: assign.map((item) => ({
       user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
@@ -361,18 +365,13 @@ const AuthorityMapping = () => {
     setUserErrors(updatedUserErrors);
   };
 
-  
   const handleData = async (e, row) => {
-
-    
     if (row.id) {
       await new BillCheckingTransactionService()
 
         .getModuleAuthorityUserSetting(row.id)
 
         .then((res) => {
-    
-          
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
@@ -543,8 +542,6 @@ const AuthorityMapping = () => {
           </div>
         </div>
       </div>
-  
-  
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -641,19 +638,6 @@ const AuthorityMapping = () => {
                     Submodule Name :<Astrick color="red" size="13px" />
                   </label>
 
-                  {modal.modalData && modal.modalHeader == "Edit Authority"}
-
-                  {!modal.modalData && (
-                    <div>
-                      <Select
-                        options={submodulename}
-                        id="submodule_name"
-                        name="submodule_name"
-                        required={true}
-                      />
-                    </div>
-                  )}
-
                   {modal.modalData && submodulename && (
                     <>
                       <Select
@@ -696,8 +680,6 @@ const AuthorityMapping = () => {
                     )}
                   </tr>
                 </thead>
-             
-             
 
                 <tbody>
                   {assign && assign.length > 0 ? (
@@ -920,25 +902,8 @@ const AuthorityMapping = () => {
                   )}
                 </tbody>
               </table>
-
-              {modal.modalHeader == "Add Authority" ? (
-                <div className="col-md-10 mt-4">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <textarea
-                    className="form-control form-control-sm"
-                    type="text"
-                    id="remark"
-                    rows="4"
-                    defaultValue={modal.modalData.remark}
-                    readOnly={modal.modalHeader == "Details"}
-                    name="remark"
-                    maxLength={100}
-                  />
-                </div>
-              ) : null}
             </div>
+            {console.log("modal", modal.modalData)}
 
             {modal.modalData &&
               (modal.modalHeader === "Edit Authority" ||
@@ -958,16 +923,9 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_1"
                           value="1"
-                          // disabled={
-                          //   modal.modalHeader === "Details" ||
-                          //   modal.modalHeader === "Assign Authority"
-                          // }
+                          onChange={() => handleIsActiveChange(1)}
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 1
-                              ? true
-                              : !modal.modalData
-                              ? true
-                              : false
                           }
                         />
                         <label
@@ -986,15 +944,10 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_0"
                           value="0"
-                          // disabled={
-                          //   modal.modalHeader === "Details" ||
-                          //   modal.modalHeader === "Assign Authority"
-                          // }
+                          onChange={() => handleIsActiveChange(0)}
                           readOnly={modal.modalData ? false : true}
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 0
-                              ? true
-                              : false
                           }
                         />
                         <label

@@ -173,8 +173,13 @@ const BillPayments = () => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setData(res.data.data);
+           
+            
+
             setBillTypeDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
+              res.data.data
+                .filter((i) => i.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.bill_type }))
             );
           }
         }

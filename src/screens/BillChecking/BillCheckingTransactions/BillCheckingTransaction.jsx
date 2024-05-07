@@ -1817,7 +1817,8 @@ function BillCheckingTransaction() {
               <button
                 className="btn btn-sm btn-info text-white"
                 type="button"
-                onClick={handleClearSearchData}
+                // onClick={handleClearSearchData}
+                onClick={() => window.location.reload(false)}
                 style={{ marginTop: "0px", fontWeight: "600" }}
               >
                 <i className="icofont-refresh text-white"></i> Reset

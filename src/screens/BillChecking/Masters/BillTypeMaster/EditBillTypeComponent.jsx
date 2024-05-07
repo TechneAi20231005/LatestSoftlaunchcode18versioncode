@@ -619,12 +619,12 @@ const EditBillTypeComponent = ({ match }) => {
     const { bill_type, assigned_users, is_active, remark, ...approverData } =
       billTypeData;
 
-    const transformedData = Object.keys(approverData).map((key) => {
+    const transformedData = Object.keys(approverData)?.map((key) => {
       const item = approverData[key];
       const amount = item.amount || "00.00";
       const slab = item.slab || 1;
 
-      const level = item.level.map((levelItem, index) => ({
+      const level = item.level?.map((levelItem, index) => ({
         bill_approval_level: levelItem.bil_approval_level,
         employee_id: levelItem.employee_ids,
         required_users: levelItem.is_required_users,
@@ -638,8 +638,8 @@ const EditBillTypeComponent = ({ match }) => {
   };
 
   useEffect(() => {
-    const initialSelectedOptions = approverData.data.map((section) =>
-      section.level.map(() => [])
+    const initialSelectedOptions = approverData?.data?.map((section) =>
+      section?.level?.map(() => [])
     );
     setSelectedUsersArray(initialSelectedOptions);
   }, [approverData.data]);
