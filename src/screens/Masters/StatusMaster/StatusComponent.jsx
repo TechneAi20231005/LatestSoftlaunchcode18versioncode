@@ -12,23 +12,39 @@ import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel
 
 import { Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { getStatusData, postStatusData, updateStatusData } from "./StatusComponentAction";
+import {
+  getStatusData,
+  postStatusData,
+  updateStatusData,
+} from "./StatusComponentAction";
 import { statusMasterSlice } from "./StatusComponentSlice";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalClose ,handleModalOpen} from "./StatusComponentSlice";
+import { handleModalClose, handleModalOpen } from "./StatusComponentSlice";
 import { DashbordSlice } from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function StatusComponent() {
-    const dispatch =useDispatch()
-    const statusData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.filterStatusData)
-    const exportData=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.exportStatusData)
-    const checkRole=useSelector(DashbordSlice=>DashbordSlice.dashboard.getRoles.filter((d)=>d.menu_id==11))
-    const modal=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.modal)
-    const notify=useSelector(statusMasterSlice=>statusMasterSlice.statusMaster.notify)
+  const dispatch = useDispatch();
+  const statusData = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.filterStatusData
+  );
+  const isLoading = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
+  );
 
- 
-    
- 
+  
+  const exportData = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
+  );
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 11)
+  );
+  const modal = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.modal
+  );
+  const notify = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
+  );
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
@@ -171,9 +187,9 @@ function StatusComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(getStatusData());
 
     if (!statusData.length) {
-      dispatch(getStatusData());
       dispatch(getRoles());
     }
   }, []);
@@ -279,6 +295,8 @@ function StatusComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
@@ -286,17 +304,7 @@ function StatusComponent() {
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+
 
       <Modal
         centered

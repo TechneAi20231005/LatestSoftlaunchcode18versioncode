@@ -18,6 +18,7 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 import TemplateComponetSlice, {
   hideNotification,
 } from "./TemplateComponetSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function TemplateComponent() {
   const location = useLocation();
@@ -25,6 +26,12 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
+  const isLoading = useSelector(
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.isLoading.templateDataList
+  );
+
+  
 
   const exportData = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
@@ -180,9 +187,9 @@ function TemplateComponent() {
   useEffect(() => {
     loadData();
     dispatch(exportTempateData());
+    dispatch(templateData());
 
     if (!templatedata.length) {
-      dispatch(templateData());
       dispatch(getRoles());
     }
     if (location && location.state) {
@@ -284,6 +291,8 @@ function TemplateComponent() {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -293,17 +302,8 @@ function TemplateComponent() {
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+     
+     
     </div>
   );
 }

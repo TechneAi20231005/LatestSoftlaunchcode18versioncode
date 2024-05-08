@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { getEmployeeData, getRoles } from "../../Dashboard/DashboardAction";
 import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function UserComponent() {
   const location = useLocation();
@@ -37,6 +38,9 @@ function UserComponent() {
 
   const employeeData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.employeeData
+  );
+  const isLoding = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.employeeDataList
   );
 
   const handleModal = (data) => {
@@ -196,7 +200,10 @@ function UserComponent() {
             State: temp[i].state,
             City: temp[i].city,
             Department: temp[i].department,
-            Ticket_Show_Type: temp[i].ticket_show_type === "MY_TICKETS" ? "My Tickets" :"Department Tickets",
+            Ticket_Show_Type:
+              temp[i].ticket_show_type === "MY_TICKETS"
+                ? "My Tickets"
+                : "Department Tickets",
             // all_department: temp[i].all_department,
             Ticket_Passing_Authority: temp[i].ticket_passing_authority
               ? "Yes"
@@ -357,6 +364,8 @@ function UserComponent() {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoding}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
