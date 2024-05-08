@@ -208,35 +208,19 @@ export default function TaskComponent(props) {
 
   const [taskData, setTaskData] = useState([]);
 
-  function transformData(taskData, hasPrimaryLabel = false) {
-    const primaryLabel = "Primary";
+  function transformData(taskData) {
     const options = [];
-
-    // Push the primary label if it hasn't been pushed before
-    if (!hasPrimaryLabel) {
-      options.push({
-        ID: null,
-        label: primaryLabel,
-        isStatic: true,
-        options: [],
-      });
-      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-    }
 
     // Process the taskData
     taskData?.forEach((item) => {
       const label = item.type_name;
 
-      if (label !== primaryLabel) {
-        // Push API labels directly into options array
-        options.push({
-          ID: item.parent_id,
-          label: label,
-          options: item.children
-            ? transformData(item.children, hasPrimaryLabel)
-            : [],
-        });
-      }
+      // Push API labels directly into options array
+      options.push({
+        ID: item.parent_id,
+        label: label,
+        options: item.children ? transformData(item.children) : [],
+      });
     });
 
     return options;
