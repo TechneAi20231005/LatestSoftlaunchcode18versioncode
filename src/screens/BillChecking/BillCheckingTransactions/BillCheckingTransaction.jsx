@@ -367,7 +367,7 @@ function BillCheckingTransaction() {
                     row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
                     row.is_approver == 1)) &&
-                row.is_active == 1 && (
+                row.is_active == 1 || row["Is cancelled"]==0 && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -392,6 +392,8 @@ function BillCheckingTransaction() {
                 </li>
               )}
 
+            
+            
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>
@@ -1817,7 +1819,8 @@ function BillCheckingTransaction() {
               <button
                 className="btn btn-sm btn-info text-white"
                 type="button"
-                onClick={handleClearSearchData}
+                // onClick={handleClearSearchData}
+                onClick={() => window.location.reload(false)}
                 style={{ marginTop: "0px", fontWeight: "600" }}
               >
                 <i className="icofont-refresh text-white"></i> Reset
