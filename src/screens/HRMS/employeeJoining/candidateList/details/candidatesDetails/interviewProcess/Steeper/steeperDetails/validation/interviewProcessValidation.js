@@ -1,17 +1,19 @@
 import * as Yup from 'yup';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../../../../../../settings/constants';
 
 export const interViewProcessValidation = Yup.object().shape({
   remark_id: Yup.string().required('Remark is required'),
   other_remark: Yup.string()
-    .test('otherRemarkRequired', 'Specify Other remarks are required', function (value) {
+    .test('otherRemarkRequired', 'Specify other remarks are required', function (value) {
       const remarkId = this.parent.remark_id;
       if (remarkId === '0' && (!value || value.trim() === '')) {
         return false;
       }
       return true;
     })
-    .min(2, 'Specify Other remarks must be at least 2 characters')
-    .max(1000, 'Specify Other remarks must be at most 1000 characters'),
+    .matches(ALPHA_NUMERIC_REGEX, 'Supporting remark name must be alphanumeric')
+    .min(2, 'Specify other remarks must be at least 2 characters')
+    .max(1000, 'Specify other remarks must be at most 1000 characters'),
 });
 
 export const interviewScheduleRescheduleValidation = Yup.object().shape({
