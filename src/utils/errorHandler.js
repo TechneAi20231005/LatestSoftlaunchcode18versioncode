@@ -18,11 +18,10 @@ export default function errorHandler(response = '') {
       // // logoutAction({ forceLogout: true })
       toast.error('user force logout');
     }
-    if (
-      response.data.message === undefined ||
-      response.data.message === '' ||
-      typeof response.data.message !== 'string'
-    ) {
+    if (typeof response.data.message === 'object') {
+      toast.error(response.data.message.join('\n'));
+    }
+    if (response.data.message === undefined || response.data.message === '') {
       toast.error('Server error! Please try again.');
     }
   } else {
