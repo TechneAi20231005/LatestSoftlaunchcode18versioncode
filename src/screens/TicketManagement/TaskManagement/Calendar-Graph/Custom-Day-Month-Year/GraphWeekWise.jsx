@@ -231,70 +231,59 @@ const GraphWeekWise = () => {
         formatDate(endDate || weeksplitDate[0])
       );
 
-
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
-
+      const { data } = res?.data;
       const transformedData = {
         series: [
           {
             name: "TODO",
-            data: res?.data?.data?.TO_DO
-              ? res?.data?.data?.TO_DO?.map((task) => ({
-                  x: task.basket_name,
-                  y: [
-                    convertToDate(task.task_start_Date),
-                    convertToDate(task.task_end_date),
-                  ],
-                }))
-              : [null],
+            data: data?.TO_DO?.map((task) => ({
+              x: task.basket_name,
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date),
+              ],
+            })),
           },
           {
             name: "Delay",
-            data: res?.data?.data?.DELAY
-              ? res?.data?.data?.DELAY?.map((task) => ({
-                  x: task.basket_name,
-                  y: [
-                    convertToDate(task.task_start_Date),
-                    convertToDate(task.task_end_date),
-                  ],
-                }))
-              : [null],
+            data: data?.DELAY?.map((task) => ({
+              x: task.basket_name,
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date),
+              ],
+            })),
           },
           {
             name: "Highly Delay",
-            data: res?.data?.data?.HIGHLY_DELAY
-              ? res?.data?.data?.HIGHLY_DELAY?.map((task) => ({
-                  x: task.basket_name,
-                  y: [
-                    convertToDate(task.task_start_Date),
-                    convertToDate(task.task_end_date),
-                  ],
-                }))
-              : [null],
+            data: data?.HIGHLY_DELAY?.map((task) => ({
+              x: task.basket_name,
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date),
+              ],
+            })),
           },
           {
             name: "Completed",
-            data: res?.data?.data?.COMPLETED
-              ? res?.data?.data?.COMPLETED?.map((task) => ({
-                  x: task.basket_name,
-                  y: [
-                    convertToDate(task.task_start_Date),
-                    convertToDate(task.task_end_date),
-                  ],
-                }))
-              : [null],
+            data: data?.COMPLETED?.map((task) => ({
+              x: task.basket_name,
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date),
+              ],
+            })),
           },
           {
             name: "In Progress",
-            data: res?.data?.data?.IN_PROGRESS
-              ? res?.data?.data?.IN_PROGRESS?.map((task) => ({
-                  x: task.basket_name,
-                  y: [
-                    convertToDate(task.task_start_Date),
-                    convertToDate(task.task_end_date),
-                  ],
-                }))
-              : [null],
+            data: data?.IN_PROGRESS?.map((task) => ({
+              x: task.basket_name,
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date),
+              ],
+            })),
           },
         ],
       };
@@ -319,7 +308,6 @@ const GraphWeekWise = () => {
                 label: {
                   ...prevChartData.options.annotations.xaxis[0].label,
                   text: "Sprint Start Date",
-
                 },
               },
               {
@@ -479,7 +467,6 @@ const GraphWeekWise = () => {
           series={chartData.series}
           type="rangeBar"
           height={500}
-          width={100}
         />
       </div>
     </div>
