@@ -19,11 +19,17 @@ import {
 } from "./Slices/CustomerMappingAction";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const data = useSelector(
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerMappingData
+  );
+
+  const isLoading = useSelector(
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.isLoading.customerMappingList
   );
 
   const exportData = useSelector(
@@ -203,9 +209,7 @@ export default function CustomerMappingComponent() {
     // e.preventDefault();
     const data = new FormData();
     data.append("is_default", 1);
-    // for (var pair of data.entries()) {
-    //   console.log(pair[0]+ ', ' + pair[1]);
-    // }
+
     new CustomerMappingService().updateCustomerMapping(id, data).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -390,22 +394,12 @@ export default function CustomerMappingComponent() {
               selectableRows={false}
               className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
               highlightOnHover={true}
+              progressPending={isLoading}
+              progressComponent={<TableLoadingSkelton />}
             />
           )}
         </div>
       </div>
-
-      {/* <Modal show={showLoaderModal} centered>
-                <Modal.Body className="text-center">
-                    <Spinner animation="grow" variant="primary" />
-                    <Spinner animation="grow" variant="secondary" />
-                    <Spinner animation="grow" variant="success" />
-                    <Spinner animation="grow" variant="danger" />
-                    <Spinner animation="grow" variant="warning" />
-                    <Spinner animation="grow" variant="info" />
-                    <Spinner animation="grow" variant="dark" />
-                </Modal.Body>
-            </Modal> */}
     </div>
   );
 }

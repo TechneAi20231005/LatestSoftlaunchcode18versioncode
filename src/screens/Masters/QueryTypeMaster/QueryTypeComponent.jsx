@@ -22,10 +22,12 @@ import { Spinner } from "react-bootstrap";
 import CustomerService from "../../../services/MastersService/CustomerService";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
@@ -602,6 +604,7 @@ function QueryTypeComponent() {
   }
 
   const loadData = async () => {
+    setIsLoading(true);
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     const data = [];
@@ -637,6 +640,7 @@ function QueryTypeComponent() {
           setData(null);
           setData(data);
           setDataa(data);
+          setIsLoading(false);
 
           for (const i in data) {
             exportTempData.push({
@@ -879,17 +883,21 @@ function QueryTypeComponent() {
             </div>
           </div>
         </div>
+        {isLoading && <TableLoadingSkelton />}
 
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {data && (
+                {console.log("data", data)}
+                {!isLoading && data && (
                   <DataTable
                     columns={columns}
                     data={data}
                     defaultSortField="title"
                     pagination
+                    progressPending={isLoading}
+                    progressComponent={<TableLoadingSkelton />}
                     selectableRows={false}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
@@ -900,7 +908,7 @@ function QueryTypeComponent() {
           </div>
         </div>
 
-        <Modal show={showLoaderModal} centered>
+        {/* <Modal show={showLoaderModal} centered>
           <Modal.Body className="text-center">
             <Spinner animation="grow" variant="primary" />
             <Spinner animation="grow" variant="secondary" />
@@ -910,7 +918,7 @@ function QueryTypeComponent() {
             <Spinner animation="grow" variant="info" />
             <Spinner animation="grow" variant="dark" />
           </Modal.Body>
-        </Modal>
+        </Modal> */}
 
         <Modal
           centered
@@ -978,8 +986,6 @@ function QueryTypeComponent() {
                       <label className="form-label font-weight-bold mt-1">
                         Query Group : <Astrick color="red" size="13px" />
                       </label>
-                    
-                    
 
                       {queryGroupDropdown && (
                         <Select
@@ -1423,6 +1429,7 @@ function QueryTypeComponent() {
               <div className="card-body">
                 <div className="row clearfix g-3">
                   <div className="col-sm-12">
+                    {console.log("queryGroupData", queryGroupData)}
                     {data && (
                       <DataTable
                         columns={columnsEditPopup}
@@ -1449,6 +1456,7 @@ function QueryTypeComponent() {
 
 function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const tempData = [];
     new QueryTypeService().getQueryType().then((res) => {
@@ -1465,6 +1473,7 @@ function QueryTypeDropdown(props) {
           }
         }
         setData(tempData);
+        setIsLoading(false);
       }
     });
   }, []);

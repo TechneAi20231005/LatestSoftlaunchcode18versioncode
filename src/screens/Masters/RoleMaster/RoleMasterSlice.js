@@ -19,6 +19,9 @@ const initialState = {
   },
   exportRoleData: [],
   filterRoleData: [],
+  isLoading: {
+    RoleList: false,
+  },
 
   getRoleData: [],
   roleDropDown: [],
@@ -31,7 +34,6 @@ export const rolemasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -39,18 +41,20 @@ export const rolemasterSlice = createSlice({
     handleModalClose: (state, action) => {
       state.modal = action.payload;
     },
-   
-      clearRoleDropdown: (state) => {
-        state.filterRoleData = []; // Clear the filterRoleData array
-      },
+
+    clearRoleDropdown: (state) => {
+      state.filterRoleData = []; // Clear the filterRoleData array
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getRoleData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.RoleList = true;
       // state.notify = null;
     });
     builder.addCase(getRoleData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getRoleData = payload?.data?.data;
@@ -84,16 +88,19 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(getRoleData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.RoleList = false;
       state.notify = null;
     });
 
     //__________________________PostRole________________________________
     builder.addCase(postRole.pending, (state) => {
       state.status = "loading";
+      state.isLoading.RoleList = true;
       state.notify = null;
     });
     builder.addCase(postRole.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postRole = payload.data.data;
@@ -114,16 +121,20 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(postRole.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.RoleList = false;
     });
 
     //___________________________________________UpdateRole_________________________________
 
     builder.addCase(updatedRole.pending, (state) => {
       state.status = "loading";
+      state.isLoading.RoleList = true;
+
       state.notify = null;
     });
     builder.addCase(updatedRole.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updatedRole = payload.data.data;
@@ -141,16 +152,20 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(updatedRole.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.RoleList = false;
     });
 
     //_____________________getAllMenu________________________
 
     builder.addCase(getAllMenu.pending, (state) => {
       state.status = "loading";
+      state.isLoading.RoleList = true;
+
       state.notify = null;
     });
     builder.addCase(getAllMenu.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.RoleList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.menuData = payload.data.data.map((d) => ({
           id: d.id,
@@ -164,6 +179,7 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(getAllMenu.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.RoleList = false;
     });
 
     //______________________postMenuMange_______________________________
@@ -171,16 +187,18 @@ export const rolemasterSlice = createSlice({
     builder.addCase(postMenuData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.RoleList = true;
     });
     builder.addCase(postMenuData.fulfilled, (state, action) => {
       const { payload } = action;
-    
+      state.isLoading.RoleList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let postMenuData = payload.data.data;
-    
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postMenuData = postMenuData;
@@ -190,10 +208,12 @@ export const rolemasterSlice = createSlice({
     });
     builder.addCase(postMenuData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.RoleList = false;
     });
     //_________________________
   },
 });
 
-export const { handleModalOpen, handleModalClose,clearRoleDropdown } = rolemasterSlice.actions;
+export const { handleModalOpen, handleModalClose, clearRoleDropdown } =
+  rolemasterSlice.actions;
 export default rolemasterSlice.reducer;

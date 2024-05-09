@@ -1,19 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getCustomerTypeData, postCustomerData, updateCustomerData } from "./CustomerTypeComponentAction";
-
+import {
+  getCustomerTypeData,
+  postCustomerData,
+  updateCustomerData,
+} from "./CustomerTypeComponentAction";
 
 const initialState = {
   status: "",
   err: "",
-  getCustomerTypeData:[],
-  exportCustomerData:[],
+  getCustomerTypeData: [],
+  exportCustomerData: [],
   modal: {
     showModal: false,
     modalData: "",
     modalHeader: "",
   },
   notify: "",
-
+  isLoading: {
+    customerTypeList: false,
+  },
 };
 
 export const customerMasterSlice = createSlice({
@@ -22,7 +27,6 @@ export const customerMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-    
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -34,10 +38,12 @@ export const customerMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getCustomerTypeData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.customerTypeList = true;
     });
     builder.addCase(getCustomerTypeData.fulfilled, (state, action) => {
       const { payload } = action;
-   
+      state.isLoading.customerTypeList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getCustomerTypeData = payload.data.data;
         state.status = "succeded";
@@ -60,27 +66,22 @@ export const customerMasterSlice = createSlice({
             // updated_at: getCustomerTypeData[i].updated_at,
             // updated_by: getCustomerTypeData[i].updated_by,
 
-
-
             Sr: getCustomerTypeData[i].counter,
-                      customer_type_name: getCustomerTypeData[i].type_name,
-                       Status: getCustomerTypeData[i].is_active ? "Active" : "Deactive",
-                       Remark: getCustomerTypeData[i].remark,
-                       created_at: getCustomerTypeData[i].created_at,
-                       created_by: getCustomerTypeData[i].created_by,
-                       updated_at: getCustomerTypeData[i].updated_at,
-                       updated_by: getCustomerTypeData[i].updated_by,
+            customer_type_name: getCustomerTypeData[i].type_name,
+            Status: getCustomerTypeData[i].is_active ? "Active" : "Deactive",
+            Remark: getCustomerTypeData[i].remark,
+            created_at: getCustomerTypeData[i].created_at,
+            created_by: getCustomerTypeData[i].created_by,
+            updated_at: getCustomerTypeData[i].updated_at,
+            updated_by: getCustomerTypeData[i].updated_by,
           });
         }
-        state.exportCustomerData=exportCustomerData
-
-
-
-
+        state.exportCustomerData = exportCustomerData;
       }
     });
     builder.addCase(getCustomerTypeData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerTypeList = false;
     });
 
     //__________________________post____________________________
@@ -88,10 +89,12 @@ export const customerMasterSlice = createSlice({
     builder.addCase(postCustomerData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.customerTypeList = true;
     });
     builder.addCase(postCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
-    
+      state.isLoading.customerTypeList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
@@ -107,22 +110,25 @@ export const customerMasterSlice = createSlice({
     });
     builder.addCase(postCustomerData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerTypeList = false;
     });
 
     //_____________________________updateData______________________________
     builder.addCase(updateCustomerData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.customerTypeList = true;
     });
     builder.addCase(updateCustomerData.fulfilled, (state, action) => {
       const { payload } = action;
-   
+      state.isLoading.customerTypeList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
 
         let updateCustomerData = payload.data.data;
-    
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.updateCustomerData = updateCustomerData;
@@ -132,11 +138,12 @@ export const customerMasterSlice = createSlice({
     });
     builder.addCase(updateCustomerData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerTypeList = false;
     });
   },
 });
 
 export const { handleModalOpen, handleModalClose } =
-customerMasterSlice.actions;
+  customerMasterSlice.actions;
 
 export default customerMasterSlice.reducer;

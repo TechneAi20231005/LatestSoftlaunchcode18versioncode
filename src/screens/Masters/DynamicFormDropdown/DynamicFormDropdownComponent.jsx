@@ -4,24 +4,20 @@ import DataTable from "react-data-table-component";
 import { _base } from "../../../settings/constants";
 import ErrorLogService from "../../../services/ErrorLogService";
 
-
 import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
 import PageHeader from "../../../components/Common/PageHeader";
 
-
 import Alert from "../../../components/Common/Alert";
-
 
 import "react-data-table-component-extensions/dist/index.css";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
-
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
 
-
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 export default function DynamicFormDropdownComponent() {
   const location = useLocation();
@@ -29,7 +25,8 @@ export default function DynamicFormDropdownComponent() {
   const [data, setData] = useState(null);
   const [dataa, setDataa] = useState(null);
   const [notify, setNotify] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -37,24 +34,18 @@ export default function DynamicFormDropdownComponent() {
     modalHeader: "",
   });
 
-  const [exportData, setExportData] = useState(null)
+  const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-
-
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
   );
 
-
-
   const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {
-  };
-
+  const handleSearch = (value) => {};
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
@@ -73,9 +64,6 @@ export default function DynamicFormDropdownComponent() {
     });
   }
 
-
-
-
   const handleModal = (data) => {
     setModal(data);
   };
@@ -83,7 +71,7 @@ export default function DynamicFormDropdownComponent() {
   const columns = [
     {
       name: "Action",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       cell: (row) => (
         <div className="btn-group" role="group">
@@ -97,9 +85,6 @@ export default function DynamicFormDropdownComponent() {
       ),
     },
     { name: "Sr", selector: (row) => row.counter, sortable: true },
-
-
-
 
     {
       name: "Dropdown Name",
@@ -127,8 +112,6 @@ export default function DynamicFormDropdownComponent() {
       ),
     },
 
-
-
     {
       name: "Status",
       selector: (row) => row.is_active,
@@ -145,7 +128,6 @@ export default function DynamicFormDropdownComponent() {
       ),
     },
 
-
     { name: "Created At", selector: (row) => row.created_at, sortable: true },
     { name: "Created By", selector: (row) => row.created_by, sortable: true },
 
@@ -154,16 +136,17 @@ export default function DynamicFormDropdownComponent() {
   ];
 
   const loadData = async () => {
+    setIsLoading(true); // Set loading state to true when starting data fetching
 
+    try {
+      const res =
+        await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
 
-    const data = [];
-    const exportTempData = [];
-    await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown().then(res => {
       if (res.status === 200) {
-        setShowLoaderModal(false);
-
         let counter = 1;
-        const temp = res.data.data
+        const temp = res.data.data;
+        const data = [];
+        const exportTempData = [];
 
         for (const key in temp) {
           data.push({
@@ -174,12 +157,10 @@ export default function DynamicFormDropdownComponent() {
             updated_at: temp[key].updated_at,
             created_at: temp[key].created_at,
             created_by: temp[key].created_by,
-
             updated_by: temp[key].updated_by,
-          })
-
+          });
         }
-        setData(null);
+
         setData(data);
         setDataa(data);
 
@@ -187,40 +168,37 @@ export default function DynamicFormDropdownComponent() {
           exportTempData.push({
             Sr: data[key].counter,
             Dropdown: data[key].dropdown_name,
-            Status: data[key].is_active ? 'Active' : 'Deactive',
-
+            Status: data[key].is_active ? "Active" : "Deactive",
             created_at: temp[key].created_at,
             created_by: temp[key].created_by,
             updated_at: data[key].updated_at,
             updated_by: data[key].updated_by,
-          })
+          });
         }
 
-        setExportData(null)
-        setExportData(exportTempData)
+        setExportData(exportTempData);
       }
-    }).catch(error => {
+    } catch (error) {
+      console.error("Error occurred while fetching data:", error);
       const { response } = error;
-      const { request, ...errorObject } = response;
-      new ErrorLogService().sendErrorLog("Status", "Get_Status", "INSERT", errorObject.data.message);
-    })
 
-
-
+      if (response) {
+        const { request, ...errorObject } = response;
+        new ErrorLogService().sendErrorLog(
+          "Status",
+          "Get_Status",
+          "INSERT",
+          errorObject.data.message
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const tableData = {
-    columns,
-    data,
-  };
-
-
 
   useEffect(() => {
     const listener = (event) => {
       if (event.code === "Enter") {
-
-
         handleSearch();
       }
     };
@@ -238,14 +216,9 @@ export default function DynamicFormDropdownComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-
-
   }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-
-
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -283,9 +256,6 @@ export default function DynamicFormDropdownComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-
-
-
               style={{ marginTop: "0px", fontWeight: "600" }}
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
@@ -313,9 +283,8 @@ export default function DynamicFormDropdownComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
-
-
+              {isLoading && <TableLoadingSkelton />}
+              {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={data.filter((customer) => {
@@ -342,16 +311,11 @@ export default function DynamicFormDropdownComponent() {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
-
-
               )}
             </div>
           </div>
         </div>
       </div>
-
-
-
     </div>
   );
 }
