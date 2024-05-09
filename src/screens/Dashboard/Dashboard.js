@@ -9,6 +9,7 @@ import * as time from "../../components/Utilities/Functions";
 import {
   postTimerData,
   deleteTask,
+  getRegularizationTime,
 } from "../../services/TicketService/TaskService";
 import { _base } from "../../settings/constants";
 import {
@@ -67,11 +68,19 @@ import {
   getmoduleSetting,
 } from "../TicketManagement/TaskManagement/TaskComponentAction";
 import { useDispatch } from "react-redux";
+import { getNotification } from "../../services/NotificationService/NotificationService";
+import Dropdown from "react-bootstrap/Dropdown";
+import ApproveRequestModal from "../TicketManagement/TaskManagement/components/ApproveRequestModal";
+import TimeRegularizationHistory from "../TicketManagement/TaskManagement/components/TimeRegularizationHistory";
 
 export default function HrDashboard(props) {
   const history = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const [approvedNotifications, setApprovedNotifications] = useState();
+  const [notifications, setNotifications] = useState([]);
+
+  const [allRequest, setAllRequest] = useState();
   const data = props.data;
   var v1 = 50;
   var v2 = 50;
@@ -79,6 +88,7 @@ export default function HrDashboard(props) {
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
+  const [notificationHeight, setNotificationHeight] = useState(200);
 
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
@@ -122,10 +132,7 @@ export default function HrDashboard(props) {
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
         setUpcomingTask(res.data.data.upcomingTask);
-        console.log(
-          "res.data.data.count.pendingTask",
-          res.data.data.count.pendingTask
-        );
+
         const updatedChartData = {
           ...chartData,
           series: [
@@ -163,10 +170,39 @@ export default function HrDashboard(props) {
     });
   };
 
+  const loadNotifcation = () => {
+    getNotification().then((res) => {
+      if (res.status === 200) {
+        setNotifications(null);
+        setApprovedNotifications(null);
+        if (res.data.data !== null) {
+          if (res?.data?.data?.result) {
+            var length = res.data.data.result.length;
+            var height = 0;
+            setNotifications(res.data.data.result);
+
+            // setApprovedNotifications(res.data.data.for_me);
+            setApprovedNotifications(
+              res?.data?.data?.result?.filter((d) => d?.status == 1)
+            );
+
+            setAllRequest(
+              res?.data?.data?.result?.filter((d) => d?.status != 0)
+            );
+
+            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              height = 100;
+            }
+          }
+        }
+      }
+    });
+  };
+  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+
   const loadData = () => {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-
     dispatch(getEmployeeData());
     dispatch(getNotifications());
     dispatch(getAllDashboardData());
@@ -176,6 +212,7 @@ export default function HrDashboard(props) {
 
   useEffect(() => {
     get();
+    loadNotifcation();
   }, []);
 
   useEffect(() => {
@@ -188,9 +225,410 @@ export default function HrDashboard(props) {
     loadData();
   }, []);
 
+  const handleShowApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: true, data: data });
+  };
+  const handleCloseApproveRequestModal = () => {
+    const data = null;
+    setApproveRequestModal({ show: false, data: data });
+  };
+
+  const handleHistoryModal = () => {
+    const data = null;
+    setHistoryModal({ show: true, data: data });
+  };
+  const handleCloseHistoryModal = () => {
+    const data = null;
+    setHistoryModal({ show: false, data: data });
+  };
+  const [approveRequestModal, setApproveRequestModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [historyModal, setHistoryModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
+  const [ticketID, setTicketID] = useState();
+
+  const handleRegularizationRequest = (cuurentData) => {
+    setTicketID(cuurentData);
+    new getRegularizationTime(cuurentData).then((res) => {
+      const temp = res?.data?.data
+        ?.filter((d) => d.status_remark === "PENDING")
+        .map((d) => ({
+          id: d.id,
+          created_by_name: d.created_by_name,
+          from_date: d.from_date,
+          to_date: d.to_date,
+          from_time: d.from_time,
+          to_time: d.to_time,
+          remark: d.remark,
+          is_checked: 0,
+          regularization_time_status: d.regularization_time_status,
+          task_name: d.task_name,
+          ticket_id_name: d.ticket_id_name,
+          actual_time: d.actual_time,
+          task_hours: d.task_hours,
+          scheduled_time: d.scheduled_time,
+          status: d.status_remark,
+        }));
+      setRegularizationRequest(temp);
+    });
+  };
+
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="Dashboard" />
+      {/* <PageHeader headerTitle="Dashboard" />
+      <button>time </button> */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <PageHeader headerTitle="Dashboard" />
+
+        <div style={{ position: "relative", marginTop: "-40px" }}>
+          {/* <button
+            className="badge bg-primary p-2"
+            style={{
+              width: "auto",
+              padding: "0.5rem 2rem",
+              lineHeight: "13px",
+            }}
+          >
+            Regularization
+            <br className="mt-2" />
+            Request
+          </button> */}
+          {(historyModal.show || approveRequestModal.show) === false && (
+            <Dropdown
+              className="notifications"
+              style={{ zIndex: -200 }}
+              onClick={() => {
+                loadNotifcation();
+              }}
+            >
+              <Dropdown.Toggle
+                as="a"
+                className="nav-link dropdown-toggle pulse"
+                style={{ zIndex: -200 }}
+              >
+                <div className=" me-3">
+                  <div>
+                    <button
+                      class=" badge bg-primary p-2"
+                      style={{
+                        width: "auto",
+                        padding: "0.5rem 2rem",
+                        lineHeight: "revert-layer",
+                      }}
+                    >
+                      {" "}
+                      {`Regularization`}
+                      <br />
+                      {`Request : ${
+                        approvedNotifications?.length
+                          ? approvedNotifications?.length
+                          : 0
+                      }`}
+                    </button>
+                    {approvedNotifications?.length > 0 && (
+                      <div
+                        className="notification-circle"
+                        style={{
+                          position: "absolute",
+                          top: "1px",
+                          right: "20px",
+                          padding: "3px",
+                          zIndex: "auto",
+                          backgroundColor: "rgb(255, 24, 67)",
+                          borderRadius: "50%",
+                          // display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          color: "white",
+                          fontSize: "0.8rem",
+                          fontWeight: "bold",
+                          minWidth: "20px", // Minimum width to prevent squishing
+                          height: "auto", // Let the height adjust automatically}}
+                        }}
+                      >
+                        {approvedNotifications.length}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
+                <div className="card border-0" style={{ width: "30rem" }}>
+                  <div className="card-header border-0 p-3">
+                    <h5 className="mb-0 font-weight-light d-flex justify-content-between">
+                      <span>
+                        Regularization Request :{" "}
+                        {showApprovedOnly === true ? (
+                          <span>Approved Only By Me</span>
+                        ) : (
+                          <span>View All Request</span>
+                        )}
+                      </span>
+                      <div
+                        onClick={(e) => {
+                          handleHistoryModal();
+                        }}
+                      >
+                        {notifications && (
+                          <button className="fw-bold badge bg-warning p-2">
+                            <i class="icofont-history"></i>
+                            History
+                          </button>
+                        )}
+                      </div>
+                      {!notifications && (
+                        <span className="badge text-white">0</span>
+                      )}
+                    </h5>
+                  </div>
+                  <div
+                    className="tab-content card-body"
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    {showApprovedOnly ? (
+                      <div className="tab-pane fade show active">
+                        <ul
+                          className="list-unstyled list mb-0"
+                          style={{ height: `${notificationHeight}px` }}
+                        >
+                          {approvedNotifications &&
+                            approvedNotifications.length > 0 &&
+                            approvedNotifications.map((ele, index) => {
+                              const date = ele.created_at.split(" ")[0];
+                              const time = ele.created_at.split(" ")[1];
+
+                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const ticketID = parts[parts.length - 1]; // Get the last part of the array
+
+                              return (
+                                <li
+                                  className="py-2 mb-1 border-bottom"
+                                  key={index}
+                                >
+                                  <div
+                                    className="flex-fill ms-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      handleShowApproveRequestModal();
+                                      handleRegularizationRequest(ticketID);
+                                    }}
+                                  >
+                                    {ele.url && (
+                                      // <Link to={`/${_base}/${ele.url}`}>
+                                      <p className="d-flex justify-content-between mb-0">
+                                        <span className="font-weight-bold">
+                                          <span className="fw-bold badge bg-primary p-2">
+                                            {" "}
+                                            {`Date : ${date}`}
+                                          </span>
+                                          <span
+                                            className="fw-bold badge bg-danger p-2"
+                                            style={{ marginLeft: "10px" }}
+                                          >
+                                            {" "}
+                                            {`Time : ${time}`}
+                                          </span>
+                                          <br />
+                                          <div>{ele.message}</div>
+                                        </span>
+                                      </p>
+                                      // </Link>
+                                    )}
+
+                                    {!ele.url && (
+                                      <p className="d-flex justify-content-between mb-0">
+                                        <span className="font-weight-bold">
+                                          {ele.message}
+                                          {date}
+                                        </span>
+                                      </p>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="tab-pane fade show active">
+                        <ul
+                          className="list-unstyled list mb-0"
+                          style={{ height: `${notificationHeight}px` }}
+                        >
+                          {allRequest &&
+                            allRequest.length > 0 &&
+                            allRequest.map((ele, index) => {
+                              const date = ele.created_at.split(" ")[0];
+                              const time = ele.created_at.split(" ")[1];
+
+                              return (
+                                <li
+                                  className="py-2 mb-1 border-bottom"
+                                  key={index}
+                                >
+                                  <div
+                                    className="flex-fill ms-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      handleShowApproveRequestModal();
+                                      handleRegularizationRequest(ticketID);
+                                    }}
+                                  >
+                                    {ele.url && (
+                                      // <Link to={`/${_base}/${ele.url}`}>
+                                      <p
+                                        className="d-flex justify-content-between mb-0"
+                                        // onClick={(e) =>
+                                        //   handleReadNotification(e, ele.id)
+                                        // }
+                                      >
+                                        <span className="font-weight-bold">
+                                          <span className="fw-bold badge bg-primary p-2">
+                                            {" "}
+                                            {`Date : ${date}`}
+                                          </span>
+                                          <span
+                                            className="fw-bold badge bg-danger p-2"
+                                            style={{ marginLeft: "10px" }}
+                                          >
+                                            {" "}
+                                            {`Time : ${time}`}
+                                          </span>
+                                          <br />
+                                          {ele.message}
+                                        </span>
+                                      </p>
+                                      // </Link>
+                                    )}
+
+                                    {!ele.url && (
+                                      <p className="d-flex justify-content-between mb-0">
+                                        <span className="font-weight-bold">
+                                          {ele.message}
+                                          {date}
+                                        </span>
+                                      </p>
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  <div
+                    className="row m-0"
+                    style={{
+                      border: "2px solid #ccc",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <div
+                      className={`col-4 card-footer text-center border-top-0 ${
+                        !showApprovedOnly ? "bg-info" : "white"
+                      }`}
+                      style={{ width: "50%", height: "50px" }}
+                      onClick={() => setShowApprovedOnly(false)}
+                    >
+                      <div className="btn-group h-100">
+                        <Link
+                          to={`/${_base}/Dashboard`}
+                          style={{ width: "100%" }}
+                        >
+                          View All Request
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`col-4 card-footer text-center border-top-0 ${
+                        showApprovedOnly ? "bg-info" : "white"
+                      }`}
+                      style={{ width: "50%", height: "50px" }}
+                      onClick={() => setShowApprovedOnly(true)}
+                    >
+                      <div className="btn-group h-100">
+                        <Link
+                          to={`/${_base}/Dashboard`}
+                          style={{ width: "100%" }}
+                        >
+                          Approved Only By Me
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+
+          <>
+            {approveRequestModal && (
+              <ApproveRequestModal
+                show={approveRequestModal.show}
+                hide={handleCloseApproveRequestModal}
+                data={regularizationRequest && regularizationRequest}
+                ticketId={ticketID}
+              />
+            )}
+          </>
+
+          <>
+            {historyModal && regularizationRequest && (
+              <TimeRegularizationHistory
+                show={historyModal.show}
+                hide={handleCloseHistoryModal}
+              />
+            )}
+          </>
+          {/* {approvedNotifications?.length > 0 && (
+            <div
+              className="notification-circle"
+              style={{
+                position: "absolute",
+                top: "-14px",
+                right: "18px",
+                padding: "3px",
+                zIndex: "auto",
+                backgroundColor: "rgb(255, 24, 67)",
+                borderRadius: "50%",
+                // display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontSize: "0.8rem",
+                fontWeight: "bold",
+                minWidth: "20px", // Minimum width to prevent squishing
+                height: "auto", // Let the height adjust automatically}}
+              }}
+            >
+              {approvedNotifications.length}
+            </div>
+          )} */}
+        </div>
+      </div>
       <div className="row">
         <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
           <div className="card bg-danger text-white">

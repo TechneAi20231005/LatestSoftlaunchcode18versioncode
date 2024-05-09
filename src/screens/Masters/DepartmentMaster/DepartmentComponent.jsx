@@ -19,12 +19,18 @@ import {
 
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { handleModalClose, handleModalOpen } from "./DepartmentMasterSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function DepartmentComponent() {
   const dispatch = useDispatch();
   const department = useSelector(
     (DepartmentMasterSlice) => DepartmentMasterSlice.department.departmentData
   );
+  const isLoading = useSelector(
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.isLoading.departmentDataList
+  );
+
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 9)
   );
@@ -38,16 +44,10 @@ function DepartmentComponent() {
     (DepartmentMasterSlice) =>
       DepartmentMasterSlice.department.exportDepartmentData
   );
- 
 
   const [notify, setNotify] = useState();
 
-  
-
-
   const roleId = sessionStorage.getItem("role_id");
-
-
 
   const searchRef = useRef();
 
@@ -69,11 +69,7 @@ function DepartmentComponent() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-
-
-  const handleSearch = (value) => {
-   
-  };
+  const handleSearch = (value) => {};
   const columns = [
     {
       name: "Action",
@@ -160,9 +156,7 @@ function DepartmentComponent() {
     },
   ];
 
-  const loadData = async () => {
- 
-  };
+  const loadData = async () => {};
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -171,104 +165,19 @@ function DepartmentComponent() {
     if (!id) {
       dispatch(postdepartment(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
-       
           dispatch(departmentData());
-
         } else {
         }
       });
-    
-
-      //   .postDepartment(form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.data.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Department",
-      //         "Create_Department",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Department",
-      //       "Create_Department",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
       dispatch(updateDepartment({ id: id, payload: form })).then((res) => {
         if (res?.payload?.data?.status === 1) {
-       
-      dispatch(departmentData());
-
+          dispatch(departmentData());
         } else {
         }
       });
-
-  
-      //   .updateDepartment(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status == 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Department",
-      //         "Edit_Department",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Department",
-      //       "Edit_Department",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     }
   };
-
-
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -279,9 +188,8 @@ function DepartmentComponent() {
   useEffect(() => {
     loadData();
 
+    dispatch(departmentData());
     if (!department.length) {
-      dispatch(departmentData());
-
       dispatch(getRoles());
     }
   }, []);
@@ -327,7 +235,6 @@ function DepartmentComponent() {
               className="form-control"
               placeholder="Search by Department Name...."
               ref={searchRef}
-         
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -365,7 +272,6 @@ function DepartmentComponent() {
               {department && (
                 <DataTable
                   columns={columns}
-               
                   data={department.filter((customer) => {
                     if (typeof searchTerm === "string") {
                       if (typeof customer === "string") {
@@ -389,6 +295,8 @@ function DepartmentComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
@@ -396,11 +304,7 @@ function DepartmentComponent() {
         </div>
       </div>
 
-      <Modal
-        centered
-        show={modal.showModal}
-        
-      >
+      <Modal centered show={modal.showModal}>
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
@@ -570,9 +474,9 @@ function DepartmentComponent() {
 
 function DepartmentDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect( () => {
+  useEffect(() => {
     const tempData = [];
-     new DepartmentService().getDepartment().then((res) => {
+    new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;

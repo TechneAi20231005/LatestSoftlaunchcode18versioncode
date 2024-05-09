@@ -19,6 +19,7 @@ import {
   getInterviewProcessDataThunk,
   updateInterviewProcessThunk,
 } from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
+import './style.scss';
 
 function InterviewProcessDetails() {
   // // initial state
@@ -95,7 +96,7 @@ function InterviewProcessDetails() {
           </RenderIf>
           <div className="d-flex align-items-center gap-2 mb-4">
             <RenderIf render={currentInterviewStepData?.scheduled_datetime}>
-              <p className="mb-0">
+              <p className="mb-0 interview_schedule_rescheduled">
                 {new Date(currentInterviewStepData?.scheduled_datetime)?.toLocaleString()}
               </p>
             </RenderIf>

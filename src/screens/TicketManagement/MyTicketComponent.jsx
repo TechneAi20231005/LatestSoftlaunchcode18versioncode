@@ -27,6 +27,7 @@ import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/Export
 import { useSelector, useDispatch } from "react-redux";
 import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
 import { getRoles } from "../Dashboard/DashboardAction";
+import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
@@ -34,7 +35,8 @@ export default function MyTicketComponent() {
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
 
-  // const [checkRole, setCheckRole] = useState(null);
+
+  
   const roleId = sessionStorage.getItem("role_id");
 
   const [userName, setUserName] = useState("");
@@ -48,6 +50,8 @@ export default function MyTicketComponent() {
   const [searchResultExport, setSearchResultExport] = useState();
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
+
+  
   const [unpassedTicketsExport, setUnpassedTicketsExport] = useState(null);
 
   const [assignedToMe, setAssignedToMe] = useState(null);
@@ -120,7 +124,7 @@ export default function MyTicketComponent() {
   const [startDate, setStartDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [ticket, setTicket] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [assignedDepartmentValue, setAssignedDepartment] = useState("");
   const [entryDepartment, setEntryDepartment] = useState();
   const [key, setKey] = useState("Assigned_To_Me");
@@ -598,7 +602,6 @@ export default function MyTicketComponent() {
                   <i className="icofont-external-link "></i> View
                 </Link>{" "}
               </li>
-              {console.log("data=>", data)}
               {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured > 0 &&
                 localStorage.getItem("account_for") === "SELF" && (
@@ -1742,6 +1745,7 @@ export default function MyTicketComponent() {
           }
 
           setAssignedToMeExport(tempAssignToMeExport);
+          setIsLoading(false);
         }
       }
     });
@@ -1797,6 +1801,7 @@ export default function MyTicketComponent() {
               if (res.data.status == 1) {
                 setUnpassedData(res.data.data);
                 setUnpassedTickets(res.data.data.data);
+                setIsLoading(false);
               }
             }
           });
@@ -1851,7 +1856,9 @@ export default function MyTicketComponent() {
             if (res.status === 200) {
               if (res.data.status == 1) {
                 setSearchResult(null);
+
                 setSearchResult(res.data.data);
+                setIsLoading(false);
 
                 const temp = res.data.data;
 
@@ -2011,6 +2018,7 @@ export default function MyTicketComponent() {
             if (res.data.status == 1) {
               setSearchResult(null);
               setSearchResult(res.data.data);
+              setIsLoading(false);
               const temp = res.data.data;
               var counter = 1;
               var searchResultExport = [];
@@ -2033,6 +2041,7 @@ export default function MyTicketComponent() {
               }
               setKey("Search_Result");
               setSearchResultExport(searchResultExport);
+              setIsLoading(false);
 
               for (const key in temp) {
                 filterExport.push({
@@ -2113,6 +2122,7 @@ export default function MyTicketComponent() {
   };
 
   const handleAssignedToMeTab = async (k, e) => {
+    setIsLoading(true);
     e.preventDefault();
     var form;
     if (k == "Assigned_To_Me") {
@@ -2124,6 +2134,7 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
+          setIsLoading(false);
           if (res.data.status == 1) {
             setAssignedToMe(
               res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
@@ -2139,13 +2150,11 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
+          setIsLoading(false);
           setCreatedByMeData(res.data.data);
+
           setCreatedByMe(
             res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
-          );
-          console.log(
-            "crateddd",
-            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
           );
         }
       });
@@ -2157,8 +2166,10 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
+          setIsLoading(false);
           if (res.data.status == 1) {
             setDepartmentWiseData(res.data.data);
+
             setDepartmentwiseTicket(
               res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
             );
@@ -2176,8 +2187,10 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setYourTaskData(res.data.data);
-            console.log("res1", res.data.data.data);
-            console.log("yourTask", yourTask);
+
+            setYourTask();
+            setIsLoading(false);
+   
 
             setYourTask(res.data.data.data);
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
@@ -2193,8 +2206,10 @@ export default function MyTicketComponent() {
 
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
+          setIsLoading(false);
           if (res.data.status == 1) {
             setUnpassedData(res.data.data);
+
             setUnpassedTickets(res.data.data.data);
           }
         }
@@ -2230,6 +2245,7 @@ export default function MyTicketComponent() {
           setAssignedToMe(
             res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setIsLoading(false);
           if (type == "PLUS" && res.data.data.data.length > 0) {
             setAssignedToMeData({
               ...assignedToMeData,
@@ -2269,10 +2285,13 @@ export default function MyTicketComponent() {
           setCreatedByMe(
             res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
           );
+
+          setIsLoading(false);
           console.log(
             "crated",
             res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
           );
+
           if (type == "PLUS" && res.data.data.data.length > 0) {
             setCreatedByMeData({
               ...createdByMeData,
@@ -2312,12 +2331,15 @@ export default function MyTicketComponent() {
           setDepartmentwiseTicket(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setIsLoading(false);
+
           if (type == "PLUS" && res.data.data.data.length > 0) {
             setDepartmentWiseData({
               ...departmentWiseData,
               current_page: departmentWiseData.current_page + 1,
             });
           }
+          setIsLoading(false);
         }
       }
     });
@@ -2351,6 +2373,7 @@ export default function MyTicketComponent() {
           setYourTask(
             res.data.data.data.filter((d) => d.passed_status !== "REJECT")
           );
+          setIsLoading(false);
           if (type == "PLUS" && res.data.data.data.length > 0) {
             setYourTaskData({
               ...yourTaskData,
@@ -2390,6 +2413,7 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setUnpassedTickets(res.data.data.data);
+          setIsLoading(false);
           setUnpassedData({
             ...unpassedData,
             current_page: res.data.data.current_page,
@@ -2776,7 +2800,9 @@ export default function MyTicketComponent() {
                             fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
                           />
                         )}
-                        {searchResult && (
+                        {isLoading && <TableLoadingSkelton />}
+
+                        {!isLoading && searchResult && (
                           <DataTable
                             columns={searchResultColumns}
                             data={searchResult}
@@ -2804,8 +2830,9 @@ export default function MyTicketComponent() {
                             typeOf="AssignToMe"
                           />
                         )}
+                        {isLoading && <TableLoadingSkelton />}
 
-                        {assignedToMe && (
+                        {!isLoading && assignedToMe && (
                           <DataTable
                             columns={assignedToMeColumns}
                             data={assignedToMe}
@@ -2867,7 +2894,8 @@ export default function MyTicketComponent() {
                           typeOf="CreatedByMe"
                         />
                       )}
-                      {createdByMe && (
+                      {isLoading && <TableLoadingSkelton />}
+                      {!isLoading && createdByMe && (
                         <DataTable
                           customStyles={customStyles}
                           columns={createdByMeColumns}
@@ -2932,7 +2960,9 @@ export default function MyTicketComponent() {
                             typeOf="DepartmentWise"
                           />
                         )}
-                        {departmentwiseTicket && (
+                        {isLoading && <TableLoadingSkelton />}
+
+                        {!isLoading && departmentwiseTicket && (
                           <DataTable
                             columns={departmentwisetTicketColumns}
                             data={departmentwiseTicket}
@@ -2995,7 +3025,8 @@ export default function MyTicketComponent() {
                             typeOf="YouTask"
                           />
                         )}
-                        {yourTask && (
+                        {isLoading && <TableLoadingSkelton />}
+                        {!isLoading && yourTask && (
                           <DataTable
                             columns={yourTaskColumns}
                             data={yourTask}
@@ -3061,7 +3092,7 @@ export default function MyTicketComponent() {
                               />
                             )}
 
-                            {unpassedTickets && (
+                            {!isLoading && unpassedTickets && (
                               <>
                                 <button
                                   className="btn btn-success btn-block text-white"
@@ -3115,7 +3146,9 @@ export default function MyTicketComponent() {
                         </div>
                       </div>
 
-                      {unpassedTickets && (
+                      {isLoading && <TableLoadingSkelton />}
+
+                      {!isLoading && unpassedTickets && (
                         <DataTable
                           columns={unpassedColumns}
                           data={unpassedTickets}

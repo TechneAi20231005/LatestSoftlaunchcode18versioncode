@@ -26,6 +26,9 @@ const initialState = {
       },
     ],
   },
+  isLoading: {
+    templateDataList: false,
+  },
   templateData: [],
   getParentData: [],
   getAllTypeData: [],
@@ -79,10 +82,12 @@ export const templateSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(templateData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = true;
     });
 
     builder.addCase(templateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let templateData = payload.data.data;
@@ -98,12 +103,14 @@ export const templateSlice = createSlice({
     });
     builder.addCase(templateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //______________________exportTempateData__________
 
     builder.addCase(exportTempateData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = true;
     });
 
     builder.addCase(exportTempateData.fulfilled, (state, action) => {
@@ -111,6 +118,7 @@ export const templateSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
+        state.isLoading.templateDataList = false;
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -149,16 +157,19 @@ export const templateSlice = createSlice({
     });
     builder.addCase(exportTempateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //__________________________getParentData_________________
 
     builder.addCase(getParentData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = true;
     });
 
     builder.addCase(getParentData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getParentData = payload.data.data.map((d) => ({
@@ -177,16 +188,19 @@ export const templateSlice = createSlice({
     });
     builder.addCase(getParentData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
     //__________________________getAllType________________________
 
     builder.addCase(getAllTypeData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = true;
       state.notify = null;
     });
 
     builder.addCase(getAllTypeData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllTypeData = payload.data.data
@@ -204,16 +218,19 @@ export const templateSlice = createSlice({
     });
     builder.addCase(getAllTypeData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //____________________postTemplateComponent______________
 
     builder.addCase(postTemplateData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = false;
       state.notify = null;
     });
     builder.addCase(postTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postTemplateData = payload.data.data;
         state.status = "succeded";
@@ -228,15 +245,18 @@ export const templateSlice = createSlice({
     });
     builder.addCase(postTemplateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
     //__________________________updateBasketModalData______________
 
     builder.addCase(updateBasketModalData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.templateDataList = true;
     });
     builder.addCase(updateBasketModalData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
@@ -251,16 +271,19 @@ export const templateSlice = createSlice({
     });
     builder.addCase(updateBasketModalData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //_______________________BasketEdit______________________
 
     builder.addCase(basketinEditData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.templateDataList = true;
       state.notify = null;
     });
     builder.addCase(basketinEditData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.addBasketModal = {
@@ -279,6 +302,7 @@ export const templateSlice = createSlice({
     });
     builder.addCase(basketinEditData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //________________________addTaskInBasket______________________________
@@ -286,9 +310,11 @@ export const templateSlice = createSlice({
     builder.addCase(addTaskinBasketData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.templateDataList = true;
     });
     builder.addCase(addTaskinBasketData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
         state.addTaskModal = {
@@ -307,6 +333,7 @@ export const templateSlice = createSlice({
     });
     builder.addCase(addTaskinBasketData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
 
     //____________________________getTemplateById____________________
@@ -314,12 +341,15 @@ export const templateSlice = createSlice({
     builder.addCase(getTemplateByIdData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.templateDataList = true;
     });
     builder.addCase(getTemplateByIdData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.templateDataList = false;
     });
     builder.addCase(getTemplateByIdData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.templateDataList = false;
     });
   },
 });

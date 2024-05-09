@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -15,28 +12,51 @@ import Alert from "../../../components/Common/Alert";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 
 import { Spinner } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 
-import { getCountryData, getRoles, postCountryData, updateCountryData } from "../../Dashboard/DashboardAction";
-import { handleModalInStore, handleModalClose,  } from "../../Dashboard/DashbordSlice";
+import {
+  getCountryData,
+  getRoles,
+  postCountryData,
+  updateCountryData,
+} from "../../Dashboard/DashboardAction";
+import {
+  handleModalInStore,
+  handleModalClose,
+} from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function CountryComponent() {
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
 
-
-
   const roleId = sessionStorage.getItem("role_id");
 
   const searchRef = useRef();
   const dispatch = useDispatch();
-  const countryData = useSelector(dashboardSlice => dashboardSlice.dashboard.countryData)
-  const Notify = useSelector((dashboardSlice) => dashboardSlice.dashboard.notify);
+  const countryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.countryData
+  );
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
   const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
-  const showLoadermodal = useSelector((dashboardSlice) => dashboardSlice.dashboard.showLoaderModal);
-  const ExportData = useSelector((dashboardSlice) => dashboardSlice.dashboard.exportCountryData)
-  const checkRole = useSelector((DashboardSlice) => DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5));
+
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.CountyDataList
+  );
+
+  const showLoadermodal = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.showLoaderModal
+  );
+  const ExportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportCountryData
+  );
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5)
+  );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -54,23 +74,15 @@ function CountryComponent() {
     });
   }
 
-
-
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {
- 
-  };
-
-
-
-
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: "Action",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       width: "100px",
       cell: (row) => (
@@ -85,7 +97,6 @@ function CountryComponent() {
             data-bs-toggle="modal"
             data-bs-target="#depedit"
             onClick={(e) => {
-             
               dispatch(
                 handleModalInStore({
                   showModal: true,
@@ -159,104 +170,26 @@ function CountryComponent() {
     },
   ];
 
-  const loadData = async () => {
-
- 
-  };
+  const loadData = async () => {};
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     setNotify(null);
     if (!id) {
-      dispatch(postCountryData(form))
-      .then((res) => {
+      dispatch(postCountryData(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
-          dispatch(getCountryData())
-
+          dispatch(getCountryData());
         } else {
         }
       });
-    
-   
-      //   .postCountry(form)
-      //   .then((res) => {
-      //     setShowLoaderModal(false);
-
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.data.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Country",
-      //         "Create_Country",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Country",
-      //       "Create_Country",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
-      dispatch(updateCountryData({id:id,payload:form}))
-      .then((res) => {
+      dispatch(updateCountryData({ id: id, payload: form })).then((res) => {
         if (res?.payload?.data?.status === 1) {
-          dispatch(getCountryData())
-
+          dispatch(getCountryData());
         } else {
         }
       });
-
-
-
-      //   .updateCountry(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       // setShowLoaderModal(false);
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.data.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Country",
-      //         "Create_Country",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Country",
-      //       "Create_Country",
-
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     }
   };
 
@@ -275,21 +208,16 @@ function CountryComponent() {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-
-  }, [checkRole])
-
+  }, [checkRole]);
 
   useEffect(() => {
-    loadData()
+    loadData();
+    dispatch(getCountryData());
 
     if (!countryData.length || !checkRole.length) {
-      dispatch(getCountryData())
-      dispatch(getRoles())
-
+      dispatch(getRoles());
     }
-  }, [])
-
-  
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -303,7 +231,6 @@ function CountryComponent() {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
-                    
                     dispatch(
                       handleModalInStore({
                         showModal: true,
@@ -332,20 +259,15 @@ function CountryComponent() {
               placeholder="Search by Country Name...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
-
               onChange={(e) => setSearchTerm(e.target.value)}
-
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-             
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-
-
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
               <i className="icofont-search-1 "></i> Search
@@ -355,7 +277,6 @@ function CountryComponent() {
               type="button"
               onClick={() => window.location.reload(false)}
               style={{ marginTop: "0px", fontWeight: "600" }}
-
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -374,14 +295,19 @@ function CountryComponent() {
               {countryData && (
                 <DataTable
                   columns={columns}
-                  // data={countryData}
-                  data={countryData.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(value =>
-                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                  data={countryData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -392,43 +318,32 @@ function CountryComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
-            <Modal
-
-              centered>
-              <Modal.Body className="text-center">
-                <Spinner animation="grow" variant="primary" />
-                <Spinner animation="grow" variant="secondary" />
-                <Spinner animation="grow" variant="success" />
-                <Spinner animation="grow" variant="danger" />
-                <Spinner animation="grow" variant="warning" />
-                <Spinner animation="grow" variant="info" />
-                <Spinner animation="grow" variant="dark" />
-              </Modal.Body>
-            </Modal>
           </div>
         </div>
       </div>
 
-      <Modal
-        centered
-        show={modal.showModal}
-    
-      >
+      <Modal centered show={modal.showModal}>
         <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
         >
-          <Modal.Header closeButton onClick={() => {
-            dispatch(
-              handleModalClose({
-                showModal: false,
-                modalData: null,
-                modalHeader: "Add Country",
-              }))
-          }}>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: null,
+                  modalHeader: "Add Country",
+                })
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -494,8 +409,8 @@ function CountryComponent() {
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                  ? true
-                                  : false
+                                ? true
+                                : false
                             }
                           />
                           <label
@@ -540,15 +455,17 @@ function CountryComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F", width: '80px', padding: "8px" }}
+                style={{
+                  backgroundColor: "#484C7F",
+                  width: "80px",
+                  padding: "8px",
+                }}
               >
                 Add
               </button>
             )}
 
-
             {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
-
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -562,14 +479,14 @@ function CountryComponent() {
             <button
               type="button"
               className="btn btn-danger text-white"
-             
               onClick={() => {
                 dispatch(
                   handleModalClose({
                     showModal: false,
                     modalData: "",
                     modalHeader: "",
-                  }))
+                  })
+                );
               }}
             >
               Cancel
@@ -587,7 +504,6 @@ function CountryDropdown(props) {
     const tempData = [];
     new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
-
         const data = res.data.data;
         for (const key in data) {
           if (data[key].is_active == 1) {
@@ -617,7 +533,9 @@ function CountryDropdown(props) {
               Select Country
             </option>
           )}
-          {props?.defaultValue != 0 && <option value={0}>Select Country</option>}
+          {props?.defaultValue != 0 && (
+            <option value={0}>Select Country</option>
+          )}
           {data.map(function (item, i) {
             if (props?.defaultValue && props?.defaultValue == item.id) {
               return (
@@ -642,4 +560,3 @@ function CountryDropdown(props) {
 }
 
 export { CountryComponent, CountryDropdown };
-
