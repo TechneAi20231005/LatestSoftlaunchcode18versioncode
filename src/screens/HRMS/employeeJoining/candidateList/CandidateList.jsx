@@ -95,6 +95,7 @@ function CandidateList() {
                     case 2:
                       return 'warning';
                     case 3:
+                      return 'warning';
                     case 4:
                       return 'success';
                     default:
@@ -135,7 +136,7 @@ function CandidateList() {
       'Applied Position': row?.designation || '--',
       'Phone Number': row?.mobile_no || '--',
       'Date of Application': row?.application_date || '--',
-      Status: row?.status || '--',
+      Status: row?.application_status_name || '--',
       Source: row?.source_name || '--',
     }));
   };
@@ -144,7 +145,6 @@ function CandidateList() {
   useEffect(() => {
     dispatch(getCandidatesMasterListThunk());
   }, []);
-  // console.log(srNoHandler(filteredCandidatesMasterList));
 
   // Update the useEffect to update the filtered list when candidatesMasterList changes
   useEffect(() => {
