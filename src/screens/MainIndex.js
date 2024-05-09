@@ -430,6 +430,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/Ticket/Task/:id`}
               element={<TaskComponent />}
             />
+            {/* Sprint */}
             <Route
               exact
               path={`/${_base}/Ticket/Task/:id/sprint-calendar`}
@@ -437,7 +438,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/Ticket/Task/:id/sprint-graph`}
+              path={`/${_base}/Ticket/Task/:id/sprint-graph/:date`}
               element={<GraphWeekWise />}
             />
             <Route

@@ -59,7 +59,7 @@ export default function Header() {
             );
 
             setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status == 2)
+              res?.data?.data?.result?.filter((d) => d?.status != 1)
             );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
@@ -136,6 +136,7 @@ export default function Header() {
   const handleShowApproveRequestModal = () => {
     const data = null;
     setApproveRequestModal({ show: true, data: data });
+    setNotify(null);
   };
   const handleCloseApproveRequestModal = () => {
     const data = null;
@@ -201,12 +202,11 @@ export default function Header() {
   };
 
   const historyData = async () => {
-    console.log("his==>");
 
     // Assuming getRegularizationTime is a function that returns a Promise
     await new getRegularizationTimeHistory()
       .then((res) => {
-        console.log("his==>", res);
+
         // Process the data
         if (res.status === 200) {
           if (res.data.data) {

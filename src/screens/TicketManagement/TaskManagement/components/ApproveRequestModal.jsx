@@ -102,11 +102,15 @@ const ApproveRequestModal = (props) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setNotify({ type: "success", message: res.data.message });
+            props.hide();
 
             new getRegularizationTime(props.ticketId).then((res) => {
+              setNotify(null);
               if (res.data.data && res.data.data.length > 0) {
+                setNotify(null);
+
                 var temp = [];
-                setData(null);
+                // setData(null);
                 res.data.data.forEach((d) => {
                   temp.push({
                     id: d.id,
@@ -183,7 +187,7 @@ const ApproveRequestModal = (props) => {
           </div>
         )}
 
-        {!showLoaderModal && rquestData && rquestData.length > 0 && (
+        {rquestData && rquestData.length > 0 ? (
           <>
             <div
               style={{
@@ -363,6 +367,15 @@ const ApproveRequestModal = (props) => {
                 </tbody>
               </table>
             </div>
+          </>
+        ) : (
+          <>
+            <p
+              className="text-center opacity-50"
+              style={{ fontWeight: "bold", fontSize: 20 }}
+            >
+              No record found
+            </p>
           </>
         )}
       </Modal.Body>

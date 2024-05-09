@@ -60,6 +60,7 @@ export default function CreateCustomerMappingComponent() {
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
   const [template, setTemplate] = useState();
+  const [userData, setUserData] = useState([]);
 
   const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
@@ -265,56 +266,26 @@ export default function CreateCustomerMappingComponent() {
     });
   };
 
-  // const handleRatioInput = (index) => async (e) => {
-  //   e.preventDefault();
-  //   const a = ratiowiseData;
-  //   var sum = 0;
-  //   var value = e.target.value ? e.target.value : 0;
-
-  //   if (parseInt(value) > 100) {
-  //     e.target.value = 0;
-  //     ratiowiseData[index] = 0;
-  //     alert("Cannot Enter More than 100 !!!");
-  //   } else {
-  //     ratiowiseData[index] = parseInt(value);
-  //     if (ratiowiseData?.length > 0) {
-  //       sum = ratiowiseData.reduce((result, number) => result + number);
-  //       if (sum > 100) {
-  //         e.target.value = 0;
-  //         ratiowiseData[index] = 0;
-  //         alert("Ratio Total Must Be 100 !!!");
-  //       }
-  //     }
-  //   }
-  //   setRatioTotal(sum);
-  // };
-
   const handleRatioInput = (index) => (e) => {
     e.preventDefault();
     const newValue = parseInt(e.target.value) || 0;
 
     if (newValue > 100) {
       e.target.value = 0;
-      setRatiowiseData([
-        ...ratiowiseData.slice(0, index),
-        0,
-        ...ratiowiseData.slice(index + 1),
-      ]);
       alert("Cannot Enter More than 100 !!!");
     } else {
-      const newData = [...ratiowiseData];
-      newData[index] = newValue;
-      const sum = newData.reduce((result, number) => result + number);
+      const newData = [...userData];
+      newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
+      const sum = newData.reduce(
+        (result, item) => result + (item ? item.ratio : 0),
+        0
+      );
+
       if (sum > 100) {
         e.target.value = 0;
-        setRatiowiseData([
-          ...ratiowiseData.slice(0, index),
-          0,
-          ...ratiowiseData.slice(index + 1),
-        ]);
         alert("Ratio Total Must Be 100 !!!");
       } else {
-        setRatiowiseData(newData);
+        setUserData(newData);
         setRatioTotal(sum);
       }
     }
@@ -381,7 +352,7 @@ export default function CreateCustomerMappingComponent() {
     form.department_id = departmentId;
     if (data.approach === "RW") {
       form.user_id = RwuserID;
-      form.ratio = ratiosToSend;
+      form.userData = userData;
     } else {
       form.user_id = userID;
     }
@@ -449,10 +420,11 @@ export default function CreateCustomerMappingComponent() {
 
   useEffect(() => {
     setNotify(null);
+    dispatch(getTemplateData());
     loadData();
     getUser();
     dispatch(getQueryTypeData());
-    dispatch(getTemplateData());
+
     dispatch(getcustomerTypeData());
 
     if (!checkRole?.length) {
