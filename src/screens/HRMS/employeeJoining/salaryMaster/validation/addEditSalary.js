@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../settings/constants';
 
 export const addEditSalaryValidation = Yup.object().shape({
   department_id: Yup.string().required('Department is required'),
@@ -12,5 +13,6 @@ export const addEditSalaryValidation = Yup.object().shape({
     .required('Max salary is required'),
   remark: Yup.string()
     .min(2, 'Remark must be at least 2 characters')
-    .max(1000, 'Remark must be at most 1000 characters'),
+    .max(1000, 'Remark must be at most 1000 characters')
+    .matches(ALPHA_NUMERIC_REGEX, 'Remark must be alphanumeric'),
 });
