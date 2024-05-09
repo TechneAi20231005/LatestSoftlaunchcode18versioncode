@@ -59,7 +59,7 @@ export default function Header() {
             );
 
             setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status == 2)
+              res?.data?.data?.result?.filter((d) => d?.status != 1)
             );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
@@ -96,31 +96,31 @@ export default function Header() {
   const [regularizationRequest, setRegularizationRequest] = useState([]);
   const [ticketID, setTicketID] = useState();
 
-  const handleRegularizationRequest = (cuurentData) => {
-    setTicketID(cuurentData);
-    new getRegularizationTime(cuurentData).then((res) => {
-      const temp = res?.data?.data
-        ?.filter((d) => d.status_remark === "PENDING")
-        .map((d) => ({
-          id: d.id,
-          created_by_name: d.created_by_name,
-          from_date: d.from_date,
-          to_date: d.to_date,
-          from_time: d.from_time,
-          to_time: d.to_time,
-          remark: d.remark,
-          is_checked: 0,
-          regularization_time_status: d.regularization_time_status,
-          task_name: d.task_name,
-          ticket_id_name: d.ticket_id_name,
-          actual_time: d.actual_time,
-          task_hours: d.task_hours,
-          scheduled_time: d.scheduled_time,
-          status: d.status_remark,
-        }));
-      setRegularizationRequest(temp);
-    });
-  };
+  // const handleRegularizationRequest = (cuurentData) => {
+  //   setTicketID(cuurentData);
+  //   new getRegularizationTime(cuurentData).then((res) => {
+  //     const temp = res?.data?.data
+  //       ?.filter((d) => d.status_remark === "PENDING")
+  //       .map((d) => ({
+  //         id: d.id,
+  //         created_by_name: d.created_by_name,
+  //         from_date: d.from_date,
+  //         to_date: d.to_date,
+  //         from_time: d.from_time,
+  //         to_time: d.to_time,
+  //         remark: d.remark,
+  //         is_checked: 0,
+  //         regularization_time_status: d.regularization_time_status,
+  //         task_name: d.task_name,
+  //         ticket_id_name: d.ticket_id_name,
+  //         actual_time: d.actual_time,
+  //         task_hours: d.task_hours,
+  //         scheduled_time: d.scheduled_time,
+  //         status: d.status_remark,
+  //       }));
+  //     setRegularizationRequest(temp);
+  //   });
+  // };
 
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
@@ -136,6 +136,7 @@ export default function Header() {
   const handleShowApproveRequestModal = () => {
     const data = null;
     setApproveRequestModal({ show: true, data: data });
+    setNotify(null);
   };
   const handleCloseApproveRequestModal = () => {
     const data = null;
@@ -200,49 +201,46 @@ export default function Header() {
     });
   };
 
-  const historyData = async () => {
-    console.log("his==>");
+  // const historyData = async () => {
+  //   // Assuming getRegularizationTime is a function that returns a Promise
+  //   await new getRegularizationTimeHistory()
+  //     .then((res) => {
+  //       // Process the data
+  //       if (res.status === 200) {
+  //         if (res.data.data) {
+  //           const temp = res.data.data
+  //             ?.filter((d) => d?.status_remark !== "PENDING")
+  //             ?.map((d) => ({
+  //               id: d.id,
+  //               created_by_name: d.created_by_name,
+  //               from_date: d.from_date,
+  //               to_date: d.to_date,
+  //               from_time: d.from_time,
+  //               to_time: d.to_time,
+  //               remark: d.remark,
+  //               is_checked: 0,
+  //               regularization_time_status: d.regularization_time_status,
+  //               task_name: d.task_name,
+  //               ticket_id_name: d.ticket_id_name,
+  //               actual_time: d.actual_time,
+  //               task_hours: d.task_hours,
+  //               scheduled_time: d.scheduled_time,
+  //               status: d.status_remark,
+  //             }));
 
-    // Assuming getRegularizationTime is a function that returns a Promise
-    await new getRegularizationTimeHistory()
-      .then((res) => {
-        console.log("his==>", res);
-        // Process the data
-        if (res.status === 200) {
-          if (res.data.data) {
-            const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== "PENDING")
-              ?.map((d) => ({
-                id: d.id,
-                created_by_name: d.created_by_name,
-                from_date: d.from_date,
-                to_date: d.to_date,
-                from_time: d.from_time,
-                to_time: d.to_time,
-                remark: d.remark,
-                is_checked: 0,
-                regularization_time_status: d.regularization_time_status,
-                task_name: d.task_name,
-                ticket_id_name: d.ticket_id_name,
-                actual_time: d.actual_time,
-                task_hours: d.task_hours,
-                scheduled_time: d.scheduled_time,
-                status: d.status_remark,
-              }));
-
-            // Assuming setDataa is a function to set the state
-            setData(temp);
-          }
-        } else {
-        }
-      })
-      .catch((error) => {
-        // Handle errors, e.g., show an error message to the user
-      });
-  };
+  //           // Assuming setDataa is a function to set the state
+  //           setData(temp);
+  //         }
+  //       } else {
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // Handle errors, e.g., show an error message to the user
+  //     });
+  // };
 
   useEffect(() => {
-    historyData();
+    // historyData();
   }, []);
   useEffect(() => {
     loadData();
@@ -262,7 +260,7 @@ export default function Header() {
           <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
             {notify && <Alert alertData={notify} />}
 
-            {(historyModal.show || approveRequestModal.show) === false && (
+            {/* {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
                 className="notifications"
                 style={{ zIndex: -200 }}
@@ -523,7 +521,7 @@ export default function Header() {
                   </div>
                 </Dropdown.Menu>
               </Dropdown>
-            )}
+            )} */}
 
             <Dropdown
               className="notifications"
@@ -586,7 +584,7 @@ export default function Header() {
                     </h5>
                   </div>
                   <div className="tab-content card-body">
-                    {showApprovedOnly ? (
+                    {/* {showApprovedOnly ? (
                       <div className="tab-pane fade show active">
                         <ul
                           className="list-unstyled list mb-0"
@@ -655,55 +653,29 @@ export default function Header() {
                             })}
                         </ul>
                       </div>
-                    ) : (
-                      <div className="tab-pane fade show active">
-                        <ul
-                          className="list-unstyled list mb-0"
-                          style={{ height: `${notificationHeight}px` }}
-                        >
-                          {notifications &&
-                            notifications.length > 0 &&
-                            notifications.map((ele, index) => {
-                              const date = ele.created_at.split(" ")[0];
-                              const time = ele.created_at.split(" ")[1];
+                    ) : ( */}
+                    <div className="tab-pane fade show active">
+                      <ul
+                        className="list-unstyled list mb-0"
+                        style={{ height: `${notificationHeight}px` }}
+                      >
+                        {notifications &&
+                          notifications.length > 0 &&
+                          notifications.map((ele, index) => {
+                            const date = ele.created_at.split(" ")[0];
+                            const time = ele.created_at.split(" ")[1];
 
-                              return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
+                            return (
+                              <li
+                                className="py-2 mb-1 border-bottom"
+                                key={index}
+                              >
+                                <div
+                                  className="flex-fill ms-2"
+                                  style={{ cursor: "pointer" }}
                                 >
-                                  <div
-                                    className="flex-fill ms-2"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    {ele.url && (
-                                      <Link to={`/${_base}/${ele.url}`}>
-                                        <p
-                                          className="d-flex justify-content-between mb-0"
-                                          onClick={(e) =>
-                                            handleReadNotification(e, ele.id)
-                                          }
-                                        >
-                                          <span className="font-weight-bold">
-                                            <span className="fw-bold badge bg-primary p-2">
-                                              {" "}
-                                              {`Date : ${date}`}
-                                            </span>
-                                            <span
-                                              className="fw-bold badge bg-danger p-2"
-                                              style={{ marginLeft: "10px" }}
-                                            >
-                                              {" "}
-                                              {`Time : ${time}`}
-                                            </span>
-                                            <br />
-                                            {ele.message}
-                                          </span>
-                                        </p>
-                                      </Link>
-                                    )}
-
-                                    {!ele.url && (
+                                  {ele.url && (
+                                    <Link to={`/${_base}/${ele.url}`}>
                                       <p
                                         className="d-flex justify-content-between mb-0"
                                         onClick={(e) =>
@@ -711,18 +683,44 @@ export default function Header() {
                                         }
                                       >
                                         <span className="font-weight-bold">
+                                          <span className="fw-bold badge bg-primary p-2">
+                                            {" "}
+                                            {`Date : ${date}`}
+                                          </span>
+                                          <span
+                                            className="fw-bold badge bg-danger p-2"
+                                            style={{ marginLeft: "10px" }}
+                                          >
+                                            {" "}
+                                            {`Time : ${time}`}
+                                          </span>
+                                          <br />
                                           {ele.message}
-                                          {date}
                                         </span>
                                       </p>
-                                    )}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
-                    )}
+                                    </Link>
+                                  )}
+
+                                  {!ele.url && (
+                                    <p
+                                      className="d-flex justify-content-between mb-0"
+                                      onClick={(e) =>
+                                        handleReadNotification(e, ele.id)
+                                      }
+                                    >
+                                      <span className="font-weight-bold">
+                                        {ele.message}
+                                        {date}
+                                      </span>
+                                    </p>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
+                      </ul>
+                    </div>
+                    {/* )} */}
                   </div>
 
                   <div
@@ -772,7 +770,7 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
-              <>
+              {/* <>
                 {approveRequestModal && (
                   <ApproveRequestModal
                     show={approveRequestModal.show}
@@ -790,7 +788,7 @@ export default function Header() {
                     hide={handleCloseHistoryModal}
                   />
                 )}
-              </>
+              </> */}
             </Dropdown>
 
             <Dropdown

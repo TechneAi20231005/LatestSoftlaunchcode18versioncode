@@ -80,7 +80,8 @@ function CreateDynamicForm() {
       DepartmentMasterSlice.department.sortDepartmentData
   );
 
-  console.log("departmentDropdown", departmentDropdown);
+
+  
 
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
@@ -142,9 +143,6 @@ function CreateDynamicForm() {
   const [selectMasterValue, setSelectMasterValue] = useState();
 
   const handleChange = (idx, type) => async (e) => {
-    console.log("e==>", e.target.value);
-    console.log("e==>", e.target.name);
-
     if (e.target.name === "inputDateRange1") {
       setMinDate(e.target.value);
     }
@@ -251,7 +249,8 @@ function CreateDynamicForm() {
       } else if (e.target.name == "inputFormat") {
         rows[idx].inputFormat = e.target.value;
       }
-      console.log("ro22", rows[idx].inputAddOn);
+
+      
       if (e.target.name === "inputDataSource" && e.target.value === "user") {
         const tempUserData = [];
         const test1 = e.target.value;
@@ -873,9 +872,8 @@ function CreateDynamicForm() {
                                         name="inputOnChangeSource"
                                         // defaultValue={selectedValue}
                                       >
-                                        {console.log("selected", selectedValue)}
-                                        {console.log("selected", selectedValue)}
-
+                                        
+                                        
                                         <option>Select Data Source</option>
 
                                         {dropdown &&
@@ -1116,7 +1114,8 @@ function CreateDynamicForm() {
                                       </small>
                                     </span>
                                   )}
-                                  {console.log("minDate", minDate)}
+                               
+                               
                                   {rows[idx].inputType === "time" && (
                                     <div
                                       className="d-flex justify-content-between"
@@ -1307,7 +1306,8 @@ function CreateDynamicForm() {
                             className="form-control form-control-sm"
                           />
                         )}
-                        {console.log("dddd", data)}
+                     
+                     
                         {data.inputType === "datetime-local" && (
                           <input
                             type={data.inputType}
@@ -1449,19 +1449,17 @@ function CreateDynamicForm() {
                         {data.inputType === "decimal" && (
                           <div className="d-flex justify-content-between">
                             <div class="form-group">
-                              <label>Min Number:</label>
+                              {/* <label>Number:</label> */}
                               <input
                                 type="number"
-                                // onChange={handleChange(idx)}
-
                                 id="inputRangeMin"
                                 name="inputRangeMin"
                                 className="form-control form-control-sm"
-                                defaultValue={data.inputAddOn.inputRangeMin}
                                 min={data.inputAddOn.inputRangeMin}
                               />
                             </div>
-                            <div className="form-group">
+
+                            {/* <div className="form-group">
                               <label>Max Number:</label>
                               <input
                                 type="number"
@@ -1473,7 +1471,7 @@ function CreateDynamicForm() {
                                 defaultValue={data.inputAddOn.inputRangeMax}
                                 max={data.inputAddOn.inputRangeMax}
                               />
-                            </div>
+                            </div> */}
                           </div>
                         )}
 

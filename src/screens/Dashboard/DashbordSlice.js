@@ -33,7 +33,8 @@ import { all } from "axios";
 const initialState = {
   status: "",
   err: "",
-  isLoading: false,
+ 
+  
   cityUserDetail: {},
   cityData: [],
   FilterCity: [],
@@ -74,6 +75,13 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
+  isLoading: {
+    getCityDataList: false,
+    getCustomerList: false,
+    CountyDataList: false,
+    employeeDataList: false,
+    stateDataList: false,
+  },
   customerTypeData: [],
   getUserById: [],
 };
@@ -99,12 +107,13 @@ export const DashbordSlice = createSlice({
     // Fetch city data
 
     builder.addCase(getCityData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.getCityDataList = true;
       state.showLoaderModal = true;
       state.notify = null;
     });
     builder.addCase(getCityData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.getCityDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let cityData = payload.data.data;
         let FilterCity = payload.data.data.filter((d) => d.is_active === 1);
@@ -146,6 +155,7 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getCityData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.getCityDataList = false;
       state.notify = null;
     });
 
@@ -210,10 +220,11 @@ export const DashbordSlice = createSlice({
 
     // fetch country data
     builder.addCase(getCountryData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.CountyDataList = true;
     });
     builder.addCase(getCountryData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.CountyDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let countryData = payload.data.data;
         state.status = "succeded";
@@ -243,14 +254,17 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getCountryData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.CountyDataList = false;
     });
 
     // fetch country sorted data
     builder.addCase(getCountryDataSort.pending, (state) => {
       state.status = "loading";
+      state.isLoading.CountyDataList = true;
     });
     builder.addCase(getCountryDataSort.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.CountyDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -266,15 +280,17 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getCountryDataSort.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.CountyDataList = false;
     });
 
     // Post Country Data
     builder.addCase(postCountryData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.CountyDataList = true;
       state.notify = null;
     });
 
     builder.addCase(postCountryData.fulfilled, (state, action) => {
+      state.isLoading.CountyDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postCountry = payload.data.data;
@@ -294,17 +310,21 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(postCountryData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.CountyDataList = false;
     });
 
     // update country data
 
     builder.addCase(updateCountryData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.CountyDataList = true;
+
       state.notify = null;
     });
 
     builder.addCase(updateCountryData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.CountyDataList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCountry = payload.data.data;
         state.status = "succeeded";
@@ -321,16 +341,18 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(updateCountryData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.CountyDataList = false;
     });
 
     //fetch state data
 
     builder.addCase(getStateData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.stateDataList = true;
     });
 
     builder.addCase(getStateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.stateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let stateData = payload.data.data;
@@ -366,16 +388,18 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getStateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.stateDataList = false;
     });
 
     //fetch state sorted data
 
     builder.addCase(getStateDataSort.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.stateDataList = true;
     });
 
     builder.addCase(getStateDataSort.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.stateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let filteredStateData = payload.data.data
           .filter((d) => d.is_active == 1)
@@ -399,17 +423,19 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getStateDataSort.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.stateDataList = false;
     });
 
     //post state data
 
     builder.addCase(postStateData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.stateDataList = true;
       state.notify = null;
     });
 
     builder.addCase(postStateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.stateDataList = false;
       if (payload?.data?.status === 1) {
         let postState = payload.data.data;
         state.status = "succeded";
@@ -425,17 +451,19 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(postStateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.stateDataList = false;
     });
 
     // Update State
 
     builder.addCase(updateStateData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.stateDataList = true;
       state.notify = null;
     });
 
     builder.addCase(updateStateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.stateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateState = payload.data.data;
         state.status = "succeeded";
@@ -453,16 +481,18 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(updateStateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.stateDataList = false;
     });
 
     //fetch User data
 
     builder.addCase(getEmployeeData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.employeeDataList = true;
       // state.status = null
     });
 
     builder.addCase(getEmployeeData.fulfilled, (state, action) => {
+      state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let employeeData = payload.data.data;
@@ -525,16 +555,18 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getEmployeeData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.employeeDataList = false;
     });
 
     // post user data
 
     builder.addCase(postUserData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.employeeDataList = true;
       // state.isLoading = true;
     });
 
     builder.addCase(postUserData.fulfilled, (state, action) => {
+      state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (state.isLoading) {
         return;
@@ -557,17 +589,18 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(postUserData.rejected, (state) => {
       state.status = "rejected";
-      state.isLoading = false;
+      state.isLoading.employeeDataList = false;
     });
 
     // update user data
 
     builder.addCase(updateUserData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.employeeDataList = true;
       state.notify = null;
     });
 
     builder.addCase(updateUserData.fulfilled, (state, action) => {
+      state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateUser = payload.data.data;
@@ -586,6 +619,7 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(updateUserData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.employeeDataList = false;
     });
 
     //fetch Notification data
@@ -689,10 +723,11 @@ export const DashbordSlice = createSlice({
     //____________________getCustomer______________________
 
     builder.addCase(getCustomerData.pending, (state) => {
-      state.status = "loading";
+      state.isLoading.getCustomerList = true;
       // state.notify=null
     });
     builder.addCase(getCustomerData.fulfilled, (state, action) => {
+      state.isLoading.getCustomerList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllCustomerData = payload.data.data;
@@ -733,6 +768,7 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getCustomerData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.getCustomerList = false;
     });
 
     builder.addCase(getCustomerType.pending, (state) => {

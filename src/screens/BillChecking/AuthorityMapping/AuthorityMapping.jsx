@@ -45,7 +45,8 @@ const AuthorityMapping = () => {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
-  console.log("checkRole", checkRole);
+ 
+  
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.getModuleSettingData
@@ -359,16 +360,19 @@ const AuthorityMapping = () => {
     updatedUserErrors[index] = "";
     setUserErrors(updatedUserErrors);
   };
-  console.log("data", modal.modalData);
+
+  
   const handleData = async (e, row) => {
-    console.log("row", row);
+
+    
     if (row.id) {
       await new BillCheckingTransactionService()
 
         .getModuleAuthorityUserSetting(row.id)
 
         .then((res) => {
-          console.log("res", res);
+    
+          
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
@@ -539,7 +543,8 @@ const AuthorityMapping = () => {
           </div>
         </div>
       </div>
-      {console.log("authorities", authorities)}
+  
+  
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -691,8 +696,8 @@ const AuthorityMapping = () => {
                     )}
                   </tr>
                 </thead>
-                {console.log("userData", userData)}
-                {console.log(assign)}
+             
+             
 
                 <tbody>
                   {assign && assign.length > 0 ? (

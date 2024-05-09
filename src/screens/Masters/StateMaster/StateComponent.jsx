@@ -26,33 +26,37 @@ import {
   updateStateData,
 } from "../../Dashboard/DashboardAction";
 import { handleModalInStore } from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 function StateComponent() {
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
 
+  
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [exportData, setExportData] = useState(null);
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
+
+  
   const [state, setState] = useState(null);
 
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
+  
+  
 
   const searchRef = useRef();
 
   const dispatch = useDispatch();
-  const stateData = useSelector( (dashboardSlice) => dashboardSlice.dashboard.stateData);
-  console.log("stateData",stateData);
+
+  const stateData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.stateData
+  );
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.stateDataList
+  );
+
+  
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
   );
@@ -61,7 +65,6 @@ function StateComponent() {
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
-
 
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
@@ -86,20 +89,16 @@ function StateComponent() {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
-
+ 
+  
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+ 
+  
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
-    console.log("fff", filteredData);
+
+    
   };
 
   const columns = [
@@ -122,11 +121,8 @@ function StateComponent() {
                   modalHeader: "Edit State",
                 })
               );
-              // handleModal({
-              //   showModal: true,
-              //   modalData: row,
-              //   modalHeader: "Edit State",
-              // });
+           
+              
             }}
           >
             <i className="icofont-edit text-success"></i>
@@ -287,8 +283,8 @@ function StateComponent() {
     setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
-    // var a = JSON.stringify(Object.fromEntries(form))
-    // console.log(a)
+ 
+    
 
     var selectCountry = form.getAll("country_id");
     if (selectCountry == "0") {
@@ -347,7 +343,6 @@ function StateComponent() {
           } else {
           }
         });
-      
 
         // await new StateService()
         //   .updateState(id, form)
@@ -400,17 +395,14 @@ function StateComponent() {
 
   useEffect(() => {
     loadData();
-    
+
     dispatch(getCountryDataSort());
     dispatch(getStateData());
     // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
     if (!stateData.length || !checkRole.length) {
-     
-     
       dispatch(getRoles());
     }
-    if(!CountryData.length){
-
+    if (!CountryData.length) {
     }
   }, []);
 
@@ -422,7 +414,6 @@ function StateComponent() {
   //     return () => clearTimeout(timer);
   //   }
   // }, [Notify, dispatch]);
-
 
   return (
     <div className="container-xxl">
@@ -527,22 +518,15 @@ function StateComponent() {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
               )}
             </div>
-            <Modal show={showLoaderModal} centered>
-              <Modal.Body className="text-center">
-                <Spinner animation="grow" variant="primary" />
-                <Spinner animation="grow" variant="secondary" />
-                <Spinner animation="grow" variant="success" />
-                <Spinner animation="grow" variant="danger" />
-                <Spinner animation="grow" variant="warning" />
-                <Spinner animation="grow" variant="info" />
-                <Spinner animation="grow" variant="dark" />
-              </Modal.Body>
-            </Modal>
+          
+          
           </div>
         </div>
       </div>
@@ -550,13 +534,8 @@ function StateComponent() {
       <Modal
         centered
         show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
+     
+        
       >
         <form
           method="post"
@@ -710,12 +689,7 @@ function StateComponent() {
                 Add
               </button>
             )}
-         
-         
 
-
-          
-          
             {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
               <button
                 type="submit"
@@ -824,4 +798,3 @@ function StateDropdown(props) {
 }
 
 export { StateComponent, StateDropdown };
-

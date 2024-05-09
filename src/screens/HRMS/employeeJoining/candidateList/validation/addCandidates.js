@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { ONLY_CHARACTER_REGEX } from '../../../../../settings/constants';
 
 export const addCandidatesValidation = Yup.object().shape({
   source_id: Yup.string().required('Source is required'),
@@ -10,10 +11,12 @@ export const addCandidatesValidation = Yup.object().shape({
       }
       return true;
     })
+    .matches(ONLY_CHARACTER_REGEX, 'Referred by name must be valid name')
     .min(2, 'Referred by name must be at least 2 characters')
     .max(50, 'Referred by name must be at least 50 characters'),
 
   full_name: Yup.string()
+    .matches(ONLY_CHARACTER_REGEX, 'Full name must be valid name')
     .min(2, 'Full name must be at least 2 characters')
     .max(50, 'Full name must be at most 50 characters')
     .required('Full name is required'),

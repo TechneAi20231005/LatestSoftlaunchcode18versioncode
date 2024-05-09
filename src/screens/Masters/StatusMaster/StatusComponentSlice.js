@@ -14,6 +14,9 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
+  isLoading: {
+    statusData: false,
+  },
   exportStatusData: [],
 
   getStatusData: [],
@@ -29,8 +32,6 @@ export const statusMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-   
-      
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -42,10 +43,12 @@ export const statusMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getStatusData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.statusData = true;
       state.notify = null;
     });
     builder.addCase(getStatusData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.statusData = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getStatusData = payload.data.data;
@@ -79,7 +82,7 @@ export const statusMasterSlice = createSlice({
         state.sortStatusData = sortStatusData;
         let exportStatusData = [];
         for (const i in getStatusData) {
-            exportStatusData.push({
+          exportStatusData.push({
             // Sr: getStatusData[i].counter,
             // Role: getStatusData[i].role,
             // Status: getStatusData[i].is_active ? "Active" : "Deactive",
@@ -89,15 +92,14 @@ export const statusMasterSlice = createSlice({
             // updated_at: getStatusData[i].updated_at,
             // updated_by: getStatusData[i].updated_by,
 
-
-                             Sr: getStatusData[i].counter,
-                        status_Name: getStatusData[i].status,
-                        Status: getStatusData[i].is_active ? 'Active' : 'Deactive',
-                        // Remark:getStatusData[i].remark,
-                        created_at: getStatusData[i].created_at,
-                        created_by: getStatusData[i].created_by,
-                        updated_at: getStatusData[i].updated_at,
-                        updated_by: getStatusData[i].updated_by,
+            Sr: getStatusData[i].counter,
+            status_Name: getStatusData[i].status,
+            Status: getStatusData[i].is_active ? "Active" : "Deactive",
+            // Remark:getStatusData[i].remark,
+            created_at: getStatusData[i].created_at,
+            created_by: getStatusData[i].created_by,
+            updated_at: getStatusData[i].updated_at,
+            updated_by: getStatusData[i].updated_by,
           });
         }
         state.exportStatusData = exportStatusData;
@@ -105,6 +107,7 @@ export const statusMasterSlice = createSlice({
     });
     builder.addCase(getStatusData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.statusData = false;
       state.notify = null;
     });
 
@@ -112,11 +115,12 @@ export const statusMasterSlice = createSlice({
     builder.addCase(postStatusData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.statusData = true;
     });
     builder.addCase(postStatusData.fulfilled, (state, action) => {
       const { payload } = action;
- 
-      
+      state.isLoading.statusData = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postStatusData = payload.data.data;
 
@@ -135,6 +139,7 @@ export const statusMasterSlice = createSlice({
     });
     builder.addCase(postStatusData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.statusData = false;
     });
 
     //___________________________________________UpdateRole_________________________________
@@ -142,6 +147,7 @@ export const statusMasterSlice = createSlice({
     builder.addCase(updateStatusData.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.statusData = true;
     });
     builder.addCase(updateStatusData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -149,6 +155,7 @@ export const statusMasterSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateStatusData = payload.data.data;
         state.notify = null;
+        state.isLoading.statusData = false;
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -162,6 +169,7 @@ export const statusMasterSlice = createSlice({
     });
     builder.addCase(updateStatusData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.statusData = false;
     });
   },
 });

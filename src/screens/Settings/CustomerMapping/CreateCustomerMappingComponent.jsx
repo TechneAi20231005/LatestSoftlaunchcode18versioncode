@@ -420,10 +420,11 @@ export default function CreateCustomerMappingComponent() {
 
   useEffect(() => {
     setNotify(null);
+    dispatch(getTemplateData());
     loadData();
     getUser();
     dispatch(getQueryTypeData());
-    dispatch(getTemplateData());
+
     dispatch(getcustomerTypeData());
 
     if (!checkRole?.length) {

@@ -16,6 +16,9 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
+  isLoading: {
+    departmentDataList: false,
+  },
 };
 
 export const departmentMasterSlice = createSlice({
@@ -24,7 +27,6 @@ export const departmentMasterSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-      
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -36,11 +38,13 @@ export const departmentMasterSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(departmentData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.departmentDataList = true;
       state.notify = null;
     });
     builder.addCase(departmentData.fulfilled, (state, action) => {
       const { payload } = action;
-  
+      state.isLoading.departmentDataList = false;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let departmentData = payload.data.data;
         state.status = "succeded";
@@ -82,20 +86,23 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(departmentData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.departmentDataList = false;
     });
 
     //__________________________post____________________________
 
     builder.addCase(postdepartment.pending, (state) => {
       state.status = "loading";
+      state.isLoading.departmentDataList = true;
       state.notify = null;
     });
     builder.addCase(postdepartment.fulfilled, (state, action) => {
       const { payload } = action;
-   
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postdepartment = payload.data.data;
-   
+        state.isLoading.departmentDataList = false;
+
         state.status = "succeded";
         state.showLoaderModal = false;
         state.postdepartment = postdepartment;
@@ -111,19 +118,22 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(postdepartment.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.departmentDataList = false;
     });
 
     //_____________________________updateData______________________________
     builder.addCase(updateDepartment.pending, (state) => {
       state.status = "loading";
       state.notify = null;
+      state.isLoading.departmentDataList = true;
     });
     builder.addCase(updateDepartment.fulfilled, (state, action) => {
       const { payload } = action;
-     
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateDepartment = payload.data.data;
-  
+        state.isLoading.departmentDataList = false;
+
         state.status = "succeded";
         state.notify = null;
         state.notify = { type: "success", message: payload.data.message };
@@ -138,6 +148,7 @@ export const departmentMasterSlice = createSlice({
     });
     builder.addCase(updateDepartment.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.departmentDataList = false;
     });
   },
 });

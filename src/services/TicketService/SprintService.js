@@ -118,7 +118,10 @@ export default class SprintService {
       },
     };
 
-    return axios.get(`${_URL}/getGraphData/${ticket_id}`, config);
+    return axios.get(
+      `${_URL}/getGraphData/${ticket_id}?from_date=${from_date}&to_date=${to_date}`,
+      config
+    );
   }
   // ?from_date=${from_date}&to_date=${to_date}
 
