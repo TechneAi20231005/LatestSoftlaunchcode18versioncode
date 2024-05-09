@@ -418,30 +418,63 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  const handleRatioInput = (index) => (e) => {
+  const handleRatioInput = (index) => async (e) => {
     e.preventDefault();
-    const newValue = parseInt(e.target.value) || 0;
+    const a = ratiowiseData;
+    var sum = 0;
+    var value = e.target.value ? e.target.value : 0;
 
-    if (newValue > 100) {
+    if (parseInt(value) > 100) {
       e.target.value = 0;
+      ratiowiseData[index] = 0;
       alert("Cannot Enter More than 100 !!!");
     } else {
-      const newData = [...userData];
-      newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
-      const sum = newData.reduce(
-        (result, item) => result + (item ? item.ratio : 0),
-        0
-      );
-
-      if (sum > 100) {
-        e.target.value = 0;
-        alert("Ratio Total Must Be 100 !!!");
-      } else {
-        setUserData(newData);
-        setRatioTotal(sum);
+      ratiowiseData[index] = parseInt(value);
+      if (ratiowiseData.length > 0) {
+        sum = ratiowiseData.reduce((result, number) => result + number);
+        if (sum > 100) {
+          e.target.value = 0;
+          ratiowiseData[index] = 0;
+          alert("Ratio Total Must Be 100 !!!");
+        }
       }
     }
+    sum = ratiowiseData.reduce((result, number) => result + number);
+    if (sum > 100) {
+      ratiowiseData[index] = 0;
+      sum = ratiowiseData.reduce((result, number) => result + number);
+    }
+    setRatioTotal(sum);
+
+    const ratiosToSend = ratiowiseData.filter((_, idx) => idx !== index);
+    // Now you can pass ratiosToSend to your API
+    console.log("Ratios to send:", ratiosToSend);
   };
+
+  // const handleRatioInput = (index) => (e) => {
+  //   e.preventDefault();
+  //   const newValue = parseInt(e.target.value) || 0;
+
+  //   if (newValue > 100) {
+  //     e.target.value = 0;
+  //     alert("Cannot Enter More than 100 !!!");
+  //   } else {
+  //     const newData = [...userData];
+  //     newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
+  //     const sum = newData.reduce(
+  //       (result, item) => result + (item ? item.ratio : 0),
+  //       0
+  //     );
+
+  //     if (sum > 100) {
+  //       e.target.value = 0;
+  //       alert("Ratio Total Must Be 100 !!!");
+  //     } else {
+  //       setUserData(newData);
+  //       setRatioTotal(sum);
+  //     }
+  //   }
+  // };
   const customerDetail = useRef();
   const queryTypeDetail = useRef();
   const dynamicDetail = useRef();
