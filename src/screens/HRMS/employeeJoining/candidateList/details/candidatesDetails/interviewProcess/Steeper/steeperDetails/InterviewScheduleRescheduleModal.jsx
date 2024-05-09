@@ -20,6 +20,8 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const { currentCandidateId } = location.state;
+
+  // // custom hooks call
   const currentInterviewStepData = useCurrentInterviewStep();
 
   // // redux state
@@ -45,6 +47,7 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
     );
   };
 
+  console.log(currentInterviewStepData?.scheduled_datetime);
   return (
     <CustomModal show={open} title="Select Interview Slot" width="sm" onClose={onClose}>
       <Formik
