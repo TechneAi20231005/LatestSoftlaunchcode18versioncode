@@ -16,6 +16,9 @@ const initialState = {
     modalData: "",
     modalHeader: "",
   },
+  isLoading: {
+    customerMappingList: false,
+  },
   customerMappingData: [],
   exportTempData: [],
   exportData: [],
@@ -42,9 +45,11 @@ export const CustomerMappingSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getCustomerMappingData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getCustomerMappingData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.customerMappingList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
@@ -103,12 +108,14 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(getCustomerMappingData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerMappingList = false;
     });
 
     //ExportCustomerMapping
 
     builder.addCase(exportCustomerMappingData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.customerMappingList = true;
     });
 
     builder.addCase(exportCustomerMappingData.fulfilled, (state, action) => {
@@ -116,6 +123,7 @@ export const CustomerMappingSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
+        state.isLoading.customerMappingList = false;
 
         state.status = "succeded";
         state.showLoaderModal = false;
@@ -154,13 +162,16 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(exportCustomerMappingData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerMappingList = false;
     });
 
     builder.addCase(getcustomerTypeData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getcustomerTypeData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const select = payload.data.data
@@ -201,13 +212,16 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(getQueryTypeData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerMappingList = false;
     });
 
     builder.addCase(getTemplateData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const activeTemplate = payload.data.data.filter(
@@ -228,6 +242,7 @@ export const CustomerMappingSlice = createSlice({
     });
     builder.addCase(getTemplateData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.customerMappingList = false;
     });
   },
 });

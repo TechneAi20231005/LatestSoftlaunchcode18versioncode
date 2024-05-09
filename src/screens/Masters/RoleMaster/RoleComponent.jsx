@@ -21,17 +21,21 @@ import { getRoles } from "../../Dashboard/DashboardAction";
 import { postRole } from "./RoleMasterAction";
 import { handleModalOpen, handleModalClose } from "./RoleMasterSlice";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function RoleComponent({ location }) {
   const dispatch = useDispatch();
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  const isLoading = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.isLoading.RoleList
   );
 
   
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  );
 
   const Notify = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify
@@ -43,23 +47,15 @@ function RoleComponent({ location }) {
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
   );
 
-  console.log("moadal", exportData);
 
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
+  
+
+ 
+  
   const [notify, setNotify] = useState();
 
-  // const [modal, setModal] = useState({
-  //   showModal: false,
-  //   modalData: "",
-  //   modalHeader: "",
-  // });
 
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
-
-  // const [exportData, setExportData] = useState(null);
+  
 
   const roleId = sessionStorage.getItem("role_id");
 
@@ -81,22 +77,18 @@ function RoleComponent({ location }) {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
+ 
+  
 
-  const [searchTerm, setSearchTerm] = useState('');
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+  const [searchTerm, setSearchTerm] = useState("");
+ 
+  
   const [filteredData, setFilteredData] = useState([]);
-  
+
   const handleSearch = (value) => {
-    console.log("fff",filteredData);
+
+    
   };
-  
 
   const columns = [
     {
@@ -325,7 +317,7 @@ function RoleComponent({ location }) {
         } else {
         }
       });
-   
+
       // await new RoleService().updateRole(id, form)
       //   .then((res) => {
       //     if (res.status === 200) {
@@ -382,11 +374,8 @@ function RoleComponent({ location }) {
   };
 
   useEffect(() => {
-    // if(checkRole && checkRole[9].can_read === 0){
-    //   // alert("Rushi")
-
-    //   window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    // }
+   
+    
     loadData();
 
     const storedAlert = localStorage.getItem("alert");
@@ -402,9 +391,9 @@ function RoleComponent({ location }) {
 
   useEffect(() => {
     loadData();
+    dispatch(getRoleData());
 
     if (!RoleMasterData.length) {
-      dispatch(getRoleData());
       dispatch(getRoles());
     }
   }, []);
@@ -456,7 +445,7 @@ function RoleComponent({ location }) {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              value={searchTerm} 
+              value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
               style={{ marginTop: "0px", fontWeight: "600" }}
             >
@@ -485,13 +474,19 @@ function RoleComponent({ location }) {
               {RoleMasterData && (
                 <DataTable
                   columns={columns}
-                  data={RoleMasterData.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(value =>
-                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                  data={RoleMasterData.filter((customer) => {
+                    if (typeof searchTerm === "string") {
+                      if (typeof customer === "string") {
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === "object") {
+                        return Object.values(customer).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -500,6 +495,8 @@ function RoleComponent({ location }) {
                   defaultSortField="role_id"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -687,9 +684,9 @@ function RoleComponent({ location }) {
 
 function RoleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect( () => {
+  useEffect(() => {
     const tempData = [];
-     new RoleService().getRole().then((res) => {
+    new RoleService().getRole().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;

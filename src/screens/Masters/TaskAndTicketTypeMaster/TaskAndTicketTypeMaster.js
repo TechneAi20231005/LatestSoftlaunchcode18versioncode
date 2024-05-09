@@ -13,6 +13,7 @@ import DataTable from "react-data-table-component";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 // for task type created customoption function
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
@@ -396,6 +397,7 @@ function TaskAndTicketTypeMaster(props) {
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -435,6 +437,7 @@ function TaskAndTicketTypeMaster(props) {
   ];
   const loadData = async () => {
     const exportTempData = [];
+    setIsLoading(true);
 
     await new TaskTicketTypeService()
       .getAllTaskTicketType(selectedType)
@@ -466,6 +469,7 @@ function TaskAndTicketTypeMaster(props) {
             }
             setData(null);
             setData(tempData);
+            setIsLoading(false);
             for (const i in temp) {
               exportTempData.push({
                 SrNo: exportTempData.length + 1,
@@ -489,6 +493,7 @@ function TaskAndTicketTypeMaster(props) {
             }
 
             setExportData(null);
+            setIsLoading(false);
 
             setExportData(exportTempData);
           }
@@ -1253,8 +1258,7 @@ function TaskAndTicketTypeMaster(props) {
                           ? modal?.modalData?.parent_name
                           : "Primary"}
                       </div>
-                    
-                    
+
                       {isMenuOpen && (
                         <div
                           style={{
@@ -1433,6 +1437,8 @@ function TaskAndTicketTypeMaster(props) {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />

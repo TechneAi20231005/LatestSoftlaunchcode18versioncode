@@ -20,6 +20,7 @@ import {
   handleModalOpen,
   handleModalClose,
 } from "./TestingTypeComponentSlices";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function TestingTypeComponent() {
   const dispatch = useDispatch();
@@ -27,6 +28,12 @@ function TestingTypeComponent() {
     (TestingTypeComponentSlices) =>
       TestingTypeComponentSlices.testingData.testingData
   );
+  const isLoading = useSelector(
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.isLoading.testingDataList
+  );
+
+  
   const exportData = useSelector(
     (TestingTypeComponentSlices) =>
       TestingTypeComponentSlices.testingData.exportTestingData
@@ -243,9 +250,9 @@ function TestingTypeComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(testingData());
 
     if (!testingtypeData.length) {
-      dispatch(testingData());
       dispatch(getRoles());
     }
   }, []);
@@ -337,6 +344,8 @@ function TestingTypeComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
