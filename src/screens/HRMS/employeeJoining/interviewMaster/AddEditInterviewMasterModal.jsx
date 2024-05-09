@@ -149,10 +149,12 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           enableReinitialize
           validationSchema={addEditInterviewMaster}
           onSubmit={(values, errors) => {
-            setOpenConfirmModal({
-              open: true,
-              formData: { ...values, steps_count: values?.step_details?.length },
-            });
+            if (type === 'ADD' || type === 'EDIT') {
+              setOpenConfirmModal({
+                open: true,
+                formData: { ...values, steps_count: values?.step_details?.length },
+              });
+            }
           }}
         >
           {({ values, setFieldValue }) => (

@@ -113,6 +113,7 @@ function CandidatesDetails() {
         formData: candidatesData,
         currentId: location?.state?.currentCandidateId,
         onSuccessHandler: () => {
+          setCurrentMode('VIEW');
           setOpenConfirmModal({ open: false });
           dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
         },

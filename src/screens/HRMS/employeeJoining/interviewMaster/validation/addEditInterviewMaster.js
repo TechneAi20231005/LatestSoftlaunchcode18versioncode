@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../settings/constants';
 
 const addEditInterviewMaster = Yup.object().shape({
   department_id: Yup.string().required('Department is required'),
@@ -8,6 +9,7 @@ const addEditInterviewMaster = Yup.object().shape({
     Yup.object().shape({
       step_title: Yup.string()
         .min(2, 'Step title must be at least 2 characters')
+        .matches(ALPHA_NUMERIC_REGEX, 'Step title must be alphanumeric')
         .max(50, 'Step title must be at most 50 characters')
         .required('Step title is required'),
       designation_id: Yup.string().required('Designation is required'),
@@ -17,6 +19,7 @@ const addEditInterviewMaster = Yup.object().shape({
   ),
   remark: Yup.string()
     .min(2, 'Remark must be at least 2 characters')
+    .matches(ALPHA_NUMERIC_REGEX, 'Remark must be alphanumeric')
     .max(1000, 'Remark must be at most 1000 characters'),
 });
 
