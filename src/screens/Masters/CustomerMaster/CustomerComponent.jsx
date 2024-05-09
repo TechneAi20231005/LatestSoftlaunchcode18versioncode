@@ -13,17 +13,20 @@ import "react-data-table-component-extensions/dist/index.css";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCustomerData, getRoles } from "../../Dashboard/DashboardAction";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function CustomerComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
-  const [customer, setCustomer] = useState();
-  // const [exportData, setExportData] = useState(null);
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
+
+  
+ 
+  
   const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
-  const [historyState, setHistoryState] = useState();
+
+  
+
+  
   const searchRef = useRef();
   const location = useLocation();
 
@@ -32,6 +35,11 @@ function CustomerComponent() {
     (dashboardSlice) => dashboardSlice.dashboard.getAllCustomerData
   );
 
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCustomerList
+  );
+
+  
   const exportData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.exportCustomerData
   );
@@ -55,16 +63,11 @@ function CustomerComponent() {
     });
   }
 
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   setData(result);
-  // };
+  
 
   const [searchTerm, setSearchTerm] = useState("");
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
+ 
+  
   const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {};
@@ -277,6 +280,8 @@ function CustomerComponent() {
                   })}
                   defaultSortField="title"
                   pagination
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}

@@ -22,6 +22,7 @@ import {
   handleModalClose,
   handleModalOpen,
 } from "./CustomerTypeComponentSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -30,6 +31,13 @@ function CustomerTypeComponent() {
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
   );
+
+  const isLoading = useSelector(
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
+  );
+
+  
   const exportData = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
@@ -202,8 +210,6 @@ function CustomerTypeComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -258,7 +264,6 @@ function CustomerTypeComponent() {
               placeholder="Search by Customer Name...."
               ref={searchRef}
               onChange={(e) => setSearchTerm(e.target.value)}
-     
             />
           </div>
           <div className="col-md-3">
@@ -295,7 +300,8 @@ function CustomerTypeComponent() {
               {customerData && (
                 <DataTable
                   columns={columns}
-                  // data={customerData}
+                 
+                  
 
                   data={customerData.filter((customer) => {
                     if (typeof searchTerm === "string") {
@@ -320,6 +326,8 @@ function CustomerTypeComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
@@ -327,28 +335,13 @@ function CustomerTypeComponent() {
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
-
+      
+      
       <Modal
         centered
         show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
+     
+        
       >
         <form
           method="post"

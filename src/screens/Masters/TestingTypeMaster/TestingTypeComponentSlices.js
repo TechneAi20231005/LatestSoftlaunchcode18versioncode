@@ -10,6 +10,9 @@ const initialState = {
   err: "",
   testingData: [],
   notify: "",
+  isLoading: {
+    testingDataList: false,
+  },
   exportTestingData: [],
   modal: {
     showModal: false,
@@ -35,11 +38,13 @@ export const testingtypeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(testingData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.testingDataList = true;
       state.notify = null;
     });
 
     builder.addCase(testingData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.testingDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let testingData = payload.data.data;
@@ -70,15 +75,18 @@ export const testingtypeSlice = createSlice({
     });
     builder.addCase(testingData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.testingDataList = false;
     });
     //_________________________________PostTesing___________
 
     builder.addCase(postTesting.pending, (state) => {
       state.status = "loading";
+      state.isLoading.testingDataList = true;
       state.notify = null;
     });
     builder.addCase(postTesting.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.testingDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
@@ -95,16 +103,19 @@ export const testingtypeSlice = createSlice({
     });
     builder.addCase(postTesting.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.testingDataList = false;
     });
 
     //_____________________________updateTesing_____________________
 
     builder.addCase(updateTesting.pending, (state) => {
       state.status = "loading";
+      state.isLoading.testingDataList = true;
       state.notify = null;
     });
     builder.addCase(updateTesting.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.testingDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = { type: "success", message: payload.data.message };
@@ -121,6 +132,7 @@ export const testingtypeSlice = createSlice({
     });
     builder.addCase(updateTesting.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.testingDataList = false;
     });
   },
 });

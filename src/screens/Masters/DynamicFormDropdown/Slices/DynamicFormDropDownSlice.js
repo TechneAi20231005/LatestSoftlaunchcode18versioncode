@@ -9,11 +9,14 @@ const initialState = {
   status: "",
   err: "",
   notify: "",
-  sortDropDown:[],
+  sortDropDown: [],
   modal: {
     showModal: false,
     modalData: "",
     modalHeader: "",
+  },
+  isLoading: {
+    dyanamicFormList: false,
   },
   getDynamicFormDropDownData: [],
   exportDynamicFormDropDownData: [],
@@ -28,7 +31,6 @@ export const DynamicFormDropDownSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-    
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -40,10 +42,11 @@ export const DynamicFormDropDownSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(dynamicFormDropDownData.pending, (state) => {
       state.status = "loading";
-      
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(dynamicFormDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
@@ -83,20 +86,23 @@ export const DynamicFormDropDownSlice = createSlice({
     });
     builder.addCase(dynamicFormDropDownData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.dyanamicFormList = false;
     });
 
     builder.addCase(dynamicFormData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(dynamicFormData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
         let counter = 1;
         let getDynamicFormDropDownData = [];
         const temp = payload.data.data;
-     
+
         for (const key in temp) {
           getDynamicFormDropDownData.push({
             counter: counter++,
@@ -128,13 +134,16 @@ export const DynamicFormDropDownSlice = createSlice({
     });
     builder.addCase(dynamicFormData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.dyanamicFormList = false;
     });
 
     builder.addCase(getAllDropDownData.pending, (state) => {
       state.status = "loading";
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(getAllDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = "succeded";
@@ -143,12 +152,13 @@ export const DynamicFormDropDownSlice = createSlice({
           value: d.id,
         }));
         state.dropDownData = dropDownData;
-        let sortDropDown = payload.data.data
-        state.sortDropDown = sortDropDown 
+        let sortDropDown = payload.data.data;
+        state.sortDropDown = sortDropDown;
       }
     });
     builder.addCase(getAllDropDownData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.dyanamicFormList = false;
     });
   },
 });

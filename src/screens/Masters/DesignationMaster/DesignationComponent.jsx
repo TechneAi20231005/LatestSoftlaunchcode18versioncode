@@ -20,6 +20,7 @@ import {
 } from "./DesignationAction";
 import { handleModalClose, handleModalOpen } from "./DesignationSlice";
 import DashbordSlice from "../../Dashboard/DashbordSlice";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function DesignationComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -31,6 +32,11 @@ function DesignationComponent() {
   const designationData = useSelector(
     (DesignationSlice) => DesignationSlice.designationMaster.getDesignationData
   );
+  const isLoading = useSelector(
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.isLoading.DesignationList
+  );
+
   const exportData = useSelector(
     (DesignationSlice) => DesignationSlice.designationMaster.exportDesignation
   );
@@ -63,12 +69,12 @@ function DesignationComponent() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = (value) => { };
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: "Action",
-      selector: (row) => { },
+      selector: (row) => {},
       sortable: false,
       width: "80px",
       cell: (row) => (
@@ -151,7 +157,7 @@ function DesignationComponent() {
     },
   ];
 
-  const loadData = async () => { };
+  const loadData = async () => {};
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -190,10 +196,9 @@ function DesignationComponent() {
 
   useEffect(() => {
     loadData();
+    dispatch(getDesignationData());
 
     if (!designationData.length) {
-      dispatch(getDesignationData());
-
       dispatch(getRoles());
     }
   }, []);
@@ -296,6 +301,8 @@ function DesignationComponent() {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -305,17 +312,8 @@ function DesignationComponent() {
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+      
+      
 
       <Modal centered show={modal.showModal}>
         <form
@@ -397,8 +395,8 @@ function DesignationComponent() {
                               modal.modalData && modal.modalData.is_active === 1
                                 ? true
                                 : !modal.modalData
-                                  ? true
-                                  : false
+                                ? true
+                                : false
                             }
                           />
                           <label
