@@ -132,10 +132,7 @@ export default function HrDashboard(props) {
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
         setUpcomingTask(res.data.data.upcomingTask);
-        console.log(
-          "res.data.data.count.pendingTask",
-          res.data.data.count.pendingTask
-        );
+
         const updatedChartData = {
           ...chartData,
           series: [
@@ -183,13 +180,14 @@ export default function HrDashboard(props) {
             var length = res.data.data.result.length;
             var height = 0;
             setNotifications(res.data.data.result);
+
             // setApprovedNotifications(res.data.data.for_me);
             setApprovedNotifications(
               res?.data?.data?.result?.filter((d) => d?.status == 1)
             );
 
             setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status == 2)
+              res?.data?.data?.result?.filter((d) => d?.status != 0)
             );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
@@ -214,6 +212,7 @@ export default function HrDashboard(props) {
 
   useEffect(() => {
     get();
+    loadNotifcation();
   }, []);
 
   useEffect(() => {
@@ -340,6 +339,30 @@ export default function HrDashboard(props) {
                           : 0
                       }`}
                     </button>
+                    {approvedNotifications?.length > 0 && (
+                      <div
+                        className="notification-circle"
+                        style={{
+                          position: "absolute",
+                          top: "1px",
+                          right: "20px",
+                          padding: "3px",
+                          zIndex: "auto",
+                          backgroundColor: "rgb(255, 24, 67)",
+                          borderRadius: "50%",
+                          // display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          color: "white",
+                          fontSize: "0.8rem",
+                          fontWeight: "bold",
+                          minWidth: "20px", // Minimum width to prevent squishing
+                          height: "auto", // Let the height adjust automatically}}
+                        }}
+                      >
+                        {approvedNotifications.length}
+                      </div>
+                    )}
                   </div>
                 </div>
               </Dropdown.Toggle>
@@ -580,17 +603,18 @@ export default function HrDashboard(props) {
               />
             )}
           </>
-          {approvedNotifications?.length > 0 && (
+          {/* {approvedNotifications?.length > 0 && (
             <div
               className="notification-circle"
               style={{
                 position: "absolute",
                 top: "-14px",
-                right: "-18px",
+                right: "18px",
                 padding: "3px",
+                zIndex: "auto",
                 backgroundColor: "rgb(255, 24, 67)",
                 borderRadius: "50%",
-                display: "flex",
+                // display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 color: "white",
@@ -602,7 +626,7 @@ export default function HrDashboard(props) {
             >
               {approvedNotifications.length}
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div className="row">
