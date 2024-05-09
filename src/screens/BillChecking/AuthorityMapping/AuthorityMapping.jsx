@@ -228,7 +228,8 @@ const AuthorityMapping = () => {
     },
   ];
   const [statusData, setstatusData] = useState();
-  console.log("statusData", statusData);
+ 
+  
 
   const handleStatusChange = (e) => {
     setstatusData(e?.target?.value);
