@@ -28,7 +28,6 @@ function InterviewMaster() {
   });
   const [filteredInterviewMasterList, setFilteredInterviewMasterList] = useState([]);
 
-  // // All commented code will remove after BA confirmation
   // // static data
   const columns = [
     {
@@ -46,166 +45,20 @@ function InterviewMaster() {
         </>
       ),
       sortable: false,
-      width: '80px',
+      width: '90px',
     },
     {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      width: '70px',
+      width: '80px',
     },
-    // {
-    //   name: 'Department',
-    //   // selector: row =>
-    //   //   row?.details?.length ? (
-    //   //     <OverlayTrigger
-    //   //       placement="top"
-    //   //       overlay={
-    //   //         <Tooltip id={`tooltip-${row.id}`}>
-    //   //           {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
-    //   //         </Tooltip>
-    //   //       }
-    //   //     >
-    //   //       <span>
-    //   //         {row?.details?.map(detail => (detail?.department ? `${detail?.department}, ` : ''))}
-    //   //       </span>
-    //   //     </OverlayTrigger>
-    //   //   ) : (
-    //   //     '--'
-    //   //   ),
-    //   selector: row => row?.department || '--',
-    //   sortable: true,
-    //   width: '200px',
-    // },
-    // {
-    //   name: 'Designation',
-    //   // selector: row =>
-    //   //   row?.details?.length ? (
-    //   //     <OverlayTrigger
-    //   //       placement="top"
-    //   //       overlay={
-    //   //         <Tooltip id={`tooltip-${row.id}`}>
-    //   //           {row?.details?.map(detail =>
-    //   //             detail?.designation ? `${detail?.designation}, ` : '',
-    //   //           )}
-    //   //         </Tooltip>
-    //   //       }
-    //   //     >
-    //   //       <span>
-    //   //         {row?.details?.map(detail => (detail?.designation ? `${detail?.designation}, ` : ''))}
-    //   //       </span>
-    //   //     </OverlayTrigger>
-    //   //   ) : (
-    //   //     '--'
-    //   //   ),
-    //   selector: row => row?.designation || '--',
-    //   sortable: true,
-    //   width: '200px',
-    // },
-    // {
-    //   name: 'Experience Level',
-    //   selector: row => row?.experience_level || '--',
-    //   sortable: true,
-    //   width: '150px',
-    // },
     {
       name: 'Step Count',
       selector: row => row?.steps_count || '--',
       sortable: true,
-      width: '120px',
+      width: '110px',
     },
-    // {
-    //   name: 'Step Title',
-    //   selector: row =>
-    //     row?.details?.length ? (
-    //       <OverlayTrigger
-    //         placement="top"
-    //         overlay={
-    //           <Tooltip id={`tooltip-${row.id}`}>
-    //             {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
-    //           </Tooltip>
-    //         }
-    //       >
-    //         <span>
-    //           {row?.details?.map(detail => (detail?.step_title ? `${detail?.step_title}, ` : ''))}
-    //         </span>
-    //       </OverlayTrigger>
-    //     ) : (
-    //       '--'
-    //     ),
-
-    //   sortable: true,
-    //   width: '300px',
-    // },
-    // {
-    //   name: 'Name',
-    //   selector: row =>
-    //     row?.details?.length ? (
-    //       <OverlayTrigger
-    //         placement="top"
-    //         overlay={
-    //           <Tooltip id={`tooltip-${row.id}`}>
-    //             {row?.details?.map(detail =>
-    //               detail?.employee_name ? `${detail?.employee_name}, ` : '',
-    //             )}
-    //           </Tooltip>
-    //         }
-    //       >
-    //         <span>
-    //           {row?.details?.map(detail =>
-    //             detail?.employee_name ? `${detail?.employee_name}, ` : '',
-    //           )}
-    //         </span>
-    //       </OverlayTrigger>
-    //     ) : (
-    //       '--'
-    //     ),
-    //   sortable: true,
-    //   width: '300px',
-    // },
-    // {
-    //   name: 'Email',
-    //   selector: row =>
-    //     row?.details?.length ? (
-    //       <OverlayTrigger
-    //         placement="top"
-    //         overlay={
-    //           <Tooltip id={`tooltip-${row.id}`}>
-    //             {row?.details?.map(detail =>
-    //               detail?.employee_email ? `${detail?.employee_email}, ` : '',
-    //             )}
-    //           </Tooltip>
-    //         }
-    //       >
-    //         <span>
-    //           {row?.details?.map(detail =>
-    //             detail?.employee_email ? `${detail?.employee_email}, ` : '',
-    //           )}
-    //         </span>
-    //       </OverlayTrigger>
-    //     ) : (
-    //       '--'
-    //     ),
-
-    //   sortable: true,
-    //   width: '300px',
-    // },
-    // {
-    //   name: 'Remark',
-    //   selector: row =>
-    //     row?.remark ? (
-    //       <OverlayTrigger
-    //         placement="top"
-    //         overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
-    //       >
-    //         <span>{row?.remark || '--'}</span>
-    //       </OverlayTrigger>
-    //     ) : (
-    //       '--'
-    //     ),
-    //   sortable: true,
-    //   width: '300px',
-    // },
     {
       name: 'Status',
       sortable: true,
@@ -216,26 +69,26 @@ function InterviewMaster() {
       name: 'Created At',
       selector: row => row?.created_at || '--',
       sortable: true,
-      width: '175px',
+      width: '190px',
     },
     {
       name: 'Created By',
       selector: row => row?.created_by || '--',
       sortable: true,
-      width: '175px',
+      width: '190px',
     },
 
     {
       name: 'Updated At',
       selector: row => row?.updated_at || '--',
       sortable: true,
-      width: '175px',
+      width: '190px',
     },
     {
       name: 'Updated By',
       selector: row => row?.updated_by || '--',
       sortable: true,
-      width: '175px',
+      width: '190px',
     },
   ];
 
