@@ -35,6 +35,7 @@ import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponen
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
+  const [statusData, setstatusData] = useState();
 
   const roleId = sessionStorage.getItem('role_id');
   const dispatch = useDispatch();
@@ -214,6 +215,10 @@ const AuthorityMapping = () => {
     },
   ];
 
+  const handleStatusChange = (e) => {
+    setstatusData(e?.target?.value);
+  };
+
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
@@ -314,8 +319,12 @@ const AuthorityMapping = () => {
     updated_by: sessionStorage.getItem('id'),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
-    setting_value: 'Y',
-    user_details: assign.map(item => ({
+
+    setting_value: "Y",
+    is_active: statusData,
+
+    user_details: assign.map((item) => ({
+
       user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
       from_date: item.from_date,
       to_date: item.to_date,
@@ -345,7 +354,8 @@ const AuthorityMapping = () => {
 
         .getModuleAuthorityUserSetting(row.id)
 
-        .then(res => {
+
+        .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map(item => {
@@ -850,6 +860,7 @@ const AuthorityMapping = () => {
                 </tbody>
               </table>
 
+
               {modal.modalHeader == 'Add Authority' ? (
                 <div className="col-md-10 mt-4">
                   <label className="form-label font-weight-bold">Remark :</label>
@@ -865,6 +876,7 @@ const AuthorityMapping = () => {
                   />
                 </div>
               ) : null}
+
             </div>
 
             {modal.modalData &&
@@ -884,17 +896,10 @@ const AuthorityMapping = () => {
                           type="radio"
                           name="is_active"
                           id="is_active_1"
+                          onChange={handleStatusChange}
                           value="1"
-                          // disabled={
-                          //   modal.modalHeader === "Details" ||
-                          //   modal.modalHeader === "Assign Authority"
-                          // }
                           defaultChecked={
                             modal.modalData && modal.modalData.is_active === 1
-                              ? true
-                              : !modal.modalData
-                              ? true
-                              : false
                           }
                         />
                         <label className="form-check-label" htmlFor="is_active_1">
@@ -910,13 +915,11 @@ const AuthorityMapping = () => {
                           name="is_active"
                           id="is_active_0"
                           value="0"
-                          // disabled={
-                          //   modal.modalHeader === "Details" ||
-                          //   modal.modalHeader === "Assign Authority"
-                          // }
-                          readOnly={modal.modalData ? false : true}
+                          onChange={handleStatusChange}
                           defaultChecked={
-                            modal.modalData && modal.modalData.is_active === 0 ? true : false
+
+                            modal.modalData && modal.modalData.is_active === 0
+
                           }
                         />
                         <label className="form-check-label" htmlFor="is_active_0">
