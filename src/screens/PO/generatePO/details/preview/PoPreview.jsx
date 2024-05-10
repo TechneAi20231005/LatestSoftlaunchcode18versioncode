@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container } from 'react-bootstrap';
+import { Col, Container, Spinner } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,8 @@ import {
   editUserPendingOrderRequest,
   resetPendingOrderListData,
 } from '../../../../../redux/slices/po/generatePo';
+import { createPendingOrderThunk } from '../../../../../redux/services/po/generatePo';
+import { _base } from '../../../../../settings/constants';
 import './style.scss';
 
 function PoPreview() {
@@ -19,8 +21,8 @@ function PoPreview() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { userAddedPoDataList } = useSelector(state => state?.generatePo);
-  console.log(userAddedPoDataList);
+  const { userAddedPoDataList, isLoading } = useSelector(state => state?.generatePo);
+
   // // local state
   const [orderQty, setOrderQty] = useState({
     isEditable: false,
@@ -114,6 +116,17 @@ function PoPreview() {
     dispatch(resetPendingOrderListData());
   };
 
+  const handelCreatePo = () => {
+    dispatch(
+      createPendingOrderThunk({
+        formData: { payload: userAddedPoDataList },
+        onSuccessHandler: () => {
+          navigate(`/${_base}/GeneratePO`);
+        },
+      }),
+    );
+  };
+
   const handelEditOrder = id => {
     dispatch(editUserPendingOrderRequest({ current_id: id, order_qty: orderQtyInputValue }));
     setOrderQty({
@@ -141,8 +154,12 @@ function PoPreview() {
           <button className="btn btn-dark" type="button" onClick={handelAddMore}>
             Add More
           </button>
-          <button className="btn btn-warning text-white px-4" type="button">
-            Submit
+          <button
+            className="btn btn-warning text-white px-4"
+            type="button"
+            onClick={handelCreatePo}
+          >
+            {isLoading?.createPendingOrder ? <Spinner animation="border" size="sm" /> : 'Submit'}
           </button>
         </div>
       </Container>

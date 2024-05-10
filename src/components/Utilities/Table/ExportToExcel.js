@@ -9,6 +9,7 @@ export const ExportToExcel = ({
   buttonTitle,
   disabled,
   btnType = 'button',
+  onClickHandler,
 }) => {
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -20,6 +21,7 @@ export const ExportToExcel = ({
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: fileType });
     FileSaver.saveAs(data, fileName + fileExtension);
+    onClickHandler && onClickHandler();
   };
 
   return (

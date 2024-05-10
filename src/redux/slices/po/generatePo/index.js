@@ -1,17 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getPendingOrderListThunk } from '../../../services/po/generatePo';
+import { createPendingOrderThunk, getPendingOrderListThunk } from '../../../services/po/generatePo';
 
 const initialState = {
   pendingOrderList: [],
-  userAddedPoDataList: [],
+  userAddedPoDataList: JSON.parse(sessionStorage.getItem('poDataList')) || [],
   isLoading: {
     getPendingOrderList: false,
+    createPendingOrder: false,
   },
   errorMsg: {
     getPendingOrderList: '',
+    createPendingOrder: '',
   },
   successMsg: {
     getPendingOrderList: '',
+    createPendingOrder: '',
   },
 };
 const generatePoSlice = createSlice({
@@ -37,6 +40,9 @@ const generatePoSlice = createSlice({
           state.userAddedPoDataList.push(newItem);
         }
       });
+
+      // Update local storage
+      sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
     },
 
     editUserPendingOrderRequest(state, action) {
@@ -44,16 +50,23 @@ const generatePoSlice = createSlice({
       const index = state.userAddedPoDataList.findIndex(item => item.id === current_id);
       if (index !== -1) {
         state.userAddedPoDataList[index].order_qty = order_qty;
+
+        // Update local storage
+        sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
       }
     },
 
     deleteUserPendingOrderRequest(state, action) {
       const { current_id } = action.payload;
       state.userAddedPoDataList = state.userAddedPoDataList.filter(item => item.id !== current_id);
+
+      // Update local storage
+      sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
     },
 
     resetUserAddedOrderList(state, action) {
       state.userAddedPoDataList = [];
+      sessionStorage.removeItem('poDataList');
     },
 
     resetPendingOrderListData(state, action) {
@@ -75,6 +88,22 @@ const generatePoSlice = createSlice({
         state.isLoading.getPendingOrderList = false;
         state.pendingOrderList = [];
         state.errorMsg.getPendingOrderList = action.error.message;
+      })
+
+      // // create pending order slices
+      .addCase(createPendingOrderThunk.pending, (state, action) => {
+        state.isLoading.createPendingOrder = true;
+      })
+      .addCase(createPendingOrderThunk.fulfilled, (state, action) => {
+        state.isLoading.createPendingOrder = false;
+        state.successMsg.createPendingOrder = action.payload.msg;
+
+        // Clear local storage
+        sessionStorage.removeItem('poDataList');
+      })
+      .addCase(createPendingOrderThunk.rejected, (state, action) => {
+        state.isLoading.createPendingOrder = false;
+        state.errorMsg.createPendingOrder = action.error.message;
       });
   },
 });
