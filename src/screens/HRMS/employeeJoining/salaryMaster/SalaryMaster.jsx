@@ -61,10 +61,6 @@ function SalaryMaster() {
     {
       name: 'Location',
       selector: row =>
-        row?.locations?.map(location =>
-          location?.location_name ? `${location?.location_name}, ` : '--',
-        ),
-      selector: row =>
         row?.locations?.length ? (
           <OverlayTrigger
             placement="top"
