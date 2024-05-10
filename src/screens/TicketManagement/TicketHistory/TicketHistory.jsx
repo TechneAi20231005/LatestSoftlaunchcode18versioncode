@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from "react";
-import MyTicketService from "../../../services/TicketService/MyTicketService";
-import PageHeader from "../../../components/Common/PageHeader";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import MyTicketService from '../../../services/TicketService/MyTicketService';
+import PageHeader from '../../../components/Common/PageHeader';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
+import { useParams } from 'react-router-dom';
 
 const TicketHistory = ({ match }) => {
   const { id } = useParams();
 
   const [data, setData] = useState();
   const columns = [
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', selector: row => row.counter, sortable: true },
     // { name: "TicketId", selector: (row) => row.ticket_id, sortable: true },
     {
-      name: "TicketId",
-      selector: (row) => row.ticket_id,
+      name: 'TicketId',
+      selector: row => row.ticket_id,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("ticket_id"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('ticket_id'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -34,20 +31,17 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Ticket Type",
-      selector: (row) => row.parent_name,
+      name: 'Ticket Type',
+      selector: row => row.parent_name,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("parent_name"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('parent_name'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -55,20 +49,17 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Ticket Created By User",
-      selector: (row) => row.created_by,
+      name: 'Ticket Created By User',
+      selector: row => row.created_by,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("created_by"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('created_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -76,20 +67,18 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Ticket Created By Department",
-      selector: (row) => row.from_department,
+      name: 'Ticket Created By Department',
+      selector: row => row.from_department,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("from_department"),
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('from_department'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -97,20 +86,38 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Expected Date",
-      selector: (row) => row.expected_solve_date,
+      name: 'Expected Date',
+      selector: row => row.expected_solve_date,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('expected_solve_date'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'Passing Date',
+      selector: row => row.passed_status_changed_at,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: row =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("expected_solve_date"),
+            row.changes.includes('passed_status_changed_at'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -118,20 +125,18 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Passing Date",
-      selector: (row) => row.passed_status_changed_at,
+      name: 'Passed Status',
+      selector: row => row.passed_status,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("passed_status_changed_at"),
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('passed_status'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -139,20 +144,20 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Passed Status",
-      selector: (row) => row.passed_status,
+      name: 'Passed By',
+      selector: row => row.passed_status_changed_by,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
+          when: row =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("passed_status"),
+            row.changes.includes('passed_status_changed_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -160,20 +165,90 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Passed By",
-      selector: (row) => row.passed_status_changed_by,
+      name: 'Query Type',
+      selector: row => row.query_type_name,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("passed_status_changed_by"),
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('query_type_name'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'Project Name',
+      selector: row => row.project_name,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('project_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'Module Name',
+      selector: row => row.module_name,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('module_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: 'Submodule Name',
+      selector: row => row.sub_module_name,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('sub_module_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+          },
+        },
+      ],
+    },
+    { name: 'Ref Id', selector: row => row.cuid, sortable: true },
+
+    {
+      name: 'Ticket Type',
+      selector: row => row.type_name,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('type_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -181,183 +256,110 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Query Type",
-      selector: (row) => row.query_type_name,
+      name: 'Priority',
+      selector: row => row.priority,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("query_type_name"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('priority'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Project Name",
-      selector: (row) => row.project_name,
+      name: 'Assign To User',
+      selector: row => row.assign_to_user,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("project_name"),
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('assign_to_user'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Module Name",
-      selector: (row) => row.module_name,
+      name: 'Assign Department',
+      selector: row => row.department,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("module_name"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('department'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Submodule Name",
-      selector: (row) => row.sub_module_name,
+      name: 'Status',
+      selector: row => row.status,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("sub_module_name"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('status'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
-    },
-    { name: "Ref Id", selector: (row) => row.cuid, sortable: true },
-
-    {
-      name: "Ticket Type",
-      selector: (row) => row.type_name,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("type_name"),
-          style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
-    },
-
-    {
-      name: "Priority",
-      selector: (row) => row.priority,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("priority"),
-          style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Assign To User",
-      selector: (row) => row.assign_to_user,
+      name: 'Confirmation',
+      selector: row => (row.confirmation_required == 1 ? 'YES' : 'NO'),
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("assign_to_user"),
+          when: row =>
+            row.changes && row.changes.length > 1 && row.changes.includes('confirmation_required'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Assign Department",
-      selector: (row) => row.department,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("department"),
-          style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+      width: '6%',
     },
     {
-      name: "Status",
-      selector: (row) => row.status,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("status"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('created_at'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -365,46 +367,17 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Confirmation",
-      selector: (row) => (row.confirmation_required == 1 ? "YES" : "NO"),
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("confirmation_required"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('created_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
-    },
-    {
-      name: "Created At",
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: "6%",
-    },
-    {
-      name: "Created At",
-      selector: (row) => row.created_at,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("created_at"),
-          style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -412,20 +385,17 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("created_by"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('updated_at'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -433,61 +403,34 @@ const TicketHistory = ({ match }) => {
     },
 
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("updated_at"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('updated_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
-    },
-
-    {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("updated_by"),
-          style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
       ],
     },
     {
-      name: "Operation",
-      selector: (row) => row.operation,
+      name: 'Operation',
+      selector: row => row.operation,
       sortable: true,
       conditionalCellStyles: [
         {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes("operation"),
+          when: row => row.changes && row.changes.length > 1 && row.changes.includes('operation'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer',
             },
           },
         },
@@ -505,7 +448,7 @@ const TicketHistory = ({ match }) => {
   // ];
 
   const loadData = async () => {
-    await new MyTicketService().getHistory(id).then((res) => {
+    await new MyTicketService().getHistory(id).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           let counter = 1;

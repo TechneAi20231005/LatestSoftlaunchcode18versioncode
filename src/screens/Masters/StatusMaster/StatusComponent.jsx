@@ -1,66 +1,54 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
 
-import StatusService from "../../../services/MastersService/StatusService";
-import PageHeader from "../../../components/Common/PageHeader";
+import StatusService from '../../../services/MastersService/StatusService';
+import PageHeader from '../../../components/Common/PageHeader';
 
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getStatusData,
-  postStatusData,
-  updateStatusData,
-} from "./StatusComponentAction";
-import { statusMasterSlice } from "./StatusComponentSlice";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalClose, handleModalOpen } from "./StatusComponentSlice";
-import { DashbordSlice } from "../../Dashboard/DashbordSlice";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { getStatusData, postStatusData, updateStatusData } from './StatusComponentAction';
+import { statusMasterSlice } from './StatusComponentSlice';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
+import { DashbordSlice } from '../../Dashboard/DashbordSlice';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function StatusComponent() {
   const dispatch = useDispatch();
   const statusData = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.filterStatusData
+    statusMasterSlice => statusMasterSlice.statusMaster.filterStatusData,
   );
   const isLoading = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
+    statusMasterSlice => statusMasterSlice.statusMaster.isLoading.statusData,
   );
 
-  
   const exportData = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
+    statusMasterSlice => statusMasterSlice.statusMaster.exportStatusData,
   );
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 11)
+  const checkRole = useSelector(DashbordSlice =>
+    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 11),
   );
-  const modal = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.modal
-  );
-  const notify = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
-  );
+  const modal = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.modal);
+  const notify = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.notify);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const searchRef = useRef();
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -68,30 +56,30 @@ function StatusComponent() {
     });
   }
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = (value) => {};
+  const handleSearch = value => {};
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "80px",
-      cell: (row) => (
+      width: '80px',
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={(e) => {
+            onClick={e => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Status",
-                })
+                  modalHeader: 'Edit Status',
+                }),
               );
             }}
           >
@@ -101,31 +89,31 @@ function StatusComponent() {
       ),
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "Status Name",
-      selector: (row) => row.status,
+      name: 'Status Name',
+      selector: row => row.status,
       sortable: true,
-      width: "150px",
+      width: '150px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      width: "150px",
-      cell: (row) => (
+      width: '150px',
+      cell: row => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -133,34 +121,34 @@ function StatusComponent() {
       ),
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
 
   const loadData = async () => {};
 
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
     // setNotify(null);
     const form = new FormData(e.target);
@@ -173,8 +161,8 @@ function StatusComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
@@ -210,15 +198,15 @@ function StatusComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add Status",
-                      })
+                        modalHeader: 'Add Status',
+                      }),
                     );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Status
                 </button>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -233,7 +221,7 @@ function StatusComponent() {
               className="form-control"
               placeholder="Search By Status Name...."
               ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -242,7 +230,7 @@ function StatusComponent() {
               type="button"
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -250,7 +238,7 @@ function StatusComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -272,19 +260,15 @@ function StatusComponent() {
                   columns={columns}
                   // data={statusData}
 
-                  data={statusData.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
+                  data={statusData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
+                          value =>
+                            typeof value === 'string' &&
+                            value.toLowerCase().includes(searchTerm.toLowerCase()),
                         );
                       }
                     }
@@ -304,25 +288,20 @@ function StatusComponent() {
         </div>
       </div>
 
-
-
       <Modal
         centered
         show={modal.showModal}
-        onHide={(e) => {
+        onHide={e => {
           dispatch(
             handleModalClose({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
-            })
+              modalData: '',
+              modalHeader: '',
+            }),
           );
         }}
       >
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-        >
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
@@ -340,31 +319,29 @@ function StatusComponent() {
                     name="status"
                     required
                     maxLength={30}
-                    defaultValue={modal.modalData ? modal.modalData.status : ""}
-                    onKeyPress={(e) => {
+                    defaultValue={modal.modalData ? modal.modalData.status : ''}
+                    onKeyPress={e => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={(e) => {
+                    onPaste={e => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={(e) => {
+                    onCopy={e => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
                     maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
                 {modal.modalData && (
@@ -389,10 +366,7 @@ function StatusComponent() {
                                 : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_1">
                             Active
                           </label>
                         </div>
@@ -407,15 +381,10 @@ function StatusComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
+                              modal.modalData && modal.modalData.is_active === 0 ? true : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_0">
                             Deactive
                           </label>
                         </div>
@@ -432,9 +401,9 @@ function StatusComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -444,12 +413,12 @@ function StatusComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
             ) : (
-              ""
+              ''
             )}
             <button
               type="button"
@@ -458,9 +427,9 @@ function StatusComponent() {
                 dispatch(
                   handleModalClose({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  })
+                    modalData: '',
+                    modalHeader: '',
+                  }),
                 );
               }}
             >
@@ -477,7 +446,7 @@ function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StatusService().getStatus().then((res) => {
+    new StatusService().getStatus().then(res => {
       if (res.status == 200) {
         const data = res.data.data;
         let counter = 1;

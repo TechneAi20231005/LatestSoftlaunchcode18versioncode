@@ -48,6 +48,12 @@ import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkH
 import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
 import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoining/interviewScheduleHistory';
 
+// // PO
+import poCommonSlice from '../slices/po/common';
+import generateRequisitionSlice from '../slices/po/generateRequisition';
+import generatePoSlice from '../slices/po/generatePo';
+import requisitionHistoryPoSlice from '../slices/po/history';
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -93,6 +99,12 @@ export const store = configureStore({
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
     interViewProcess: interViewProcessDataSlice,
     candidateInterviewScheduleHistory: candidateInterviewScheduleHistorySlice,
+
+    // // PO
+    poCommon: poCommonSlice,
+    generateRequisition: generateRequisitionSlice,
+    generatePo: generatePoSlice,
+    requisitionHistory: requisitionHistoryPoSlice,
   },
 
   middleware: getDefaultMiddleware =>
