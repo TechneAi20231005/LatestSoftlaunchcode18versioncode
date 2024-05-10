@@ -604,6 +604,8 @@ const CreateBillTypeComponent = () => {
                         ? "Above Amount:"
                         : "Upto Amount:"}
                     </strong>
+                    <Astrick color="red" size="13px" />
+
                     <input
                       className="form-control-sm"
                       style={

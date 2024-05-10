@@ -1,18 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   getDesignationData,
   postDesignationData,
   updatedDesignationData,
-} from "./DesignationAction";
+} from './DesignationAction';
 
 const initialState = {
-  status: "",
-  err: "",
-  notify: "",
+  status: '',
+  err: '',
+  notify: '',
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   },
   isLoading: {
     DesignationList: false,
@@ -24,7 +24,7 @@ const initialState = {
 };
 
 export const desegnationSlice = createSlice({
-  name: "desegnationSlice",
+  name: 'desegnationSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -37,8 +37,8 @@ export const desegnationSlice = createSlice({
       state.modal = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(getDesignationData.pending, (state) => {
+  extraReducers: builder => {
+    builder.addCase(getDesignationData.pending, state => {
       state.isLoading.DesignationList = true;
     });
     builder.addCase(getDesignationData.fulfilled, (state, action) => {
@@ -48,7 +48,7 @@ export const desegnationSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getDesignationData = payload.data.data;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < getDesignationData.length; i++) {
@@ -60,7 +60,7 @@ export const desegnationSlice = createSlice({
           exportDesignation.push({
             Sr: getDesignationData[i].counter,
             Designation: getDesignationData[i].designation,
-            Status: getDesignationData[i].is_active ? "Active" : "Deactive",
+            Status: getDesignationData[i].is_active ? 'Active' : 'Deactive',
             Remark: getDesignationData[i].remark,
             created_at: getDesignationData[i].created_at,
             created_by: getDesignationData[i].created_by,
@@ -70,8 +70,8 @@ export const desegnationSlice = createSlice({
         }
 
         const sortedDesignationData = payload.data?.data
-          ?.filter((d) => d.is_active === 1)
-          .map((d) => ({
+          ?.filter(d => d.is_active === 1)
+          .map(d => ({
             value: d.id,
             label: d.designation,
           }));
@@ -81,13 +81,13 @@ export const desegnationSlice = createSlice({
         state.exportDesignation = exportDesignation;
       }
     });
-    builder.addCase(getDesignationData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getDesignationData.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.DesignationList = false;
     });
 
     //__________________________PostRole________________________________
-    builder.addCase(postDesignationData.pending, (state) => {
+    builder.addCase(postDesignationData.pending, state => {
       state.isLoading.DesignationList = true;
       state.notify = null;
     });
@@ -97,26 +97,26 @@ export const desegnationSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let postDesignationData = payload.data.data;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         state.postDesignationData = postDesignationData;
         state.notify = null;
-        state.notify = { type: "success", message: payload.data.message };
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+        state.notify = { type: 'success', message: payload.data.message };
+        state.modal = { showModal: false, modalData: null, modalHeader: '' };
       } else {
-        let notify = { type: "danger", message: payload.data.message };
+        let notify = { type: 'danger', message: payload.data.message };
         state.notify = null;
         state.notify = notify;
       }
     });
-    builder.addCase(postDesignationData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(postDesignationData.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.DesignationList = false;
     });
 
     //___________________________________________UpdateDesignation_________________________________
 
-    builder.addCase(updatedDesignationData.pending, (state) => {
+    builder.addCase(updatedDesignationData.pending, state => {
       state.isLoading.DesignationList = true;
       state.notify = null;
     });
@@ -127,21 +127,21 @@ export const desegnationSlice = createSlice({
         let updatedDesignationData = payload.data.data;
         state.isLoading.DesignationList = false;
 
-        state.status = "succeeded";
+        state.status = 'succeeded';
         state.notify = null;
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
         state.showLoaderModal = false;
 
         state.updatedDesignationData = updatedDesignationData;
 
-        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(updatedDesignationData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(updatedDesignationData.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.DesignationList = false;
     });
   },

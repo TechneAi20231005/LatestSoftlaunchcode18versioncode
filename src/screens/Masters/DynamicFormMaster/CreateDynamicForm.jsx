@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import DynamicFormService from "../../../services/MastersService/DynamicFormService";
-import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
+import DynamicFormService from '../../../services/MastersService/DynamicFormService';
+import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
 
-import * as Validation from "../../../components/Utilities/Validation";
+import * as Validation from '../../../components/Utilities/Validation';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllRoles,
   getCityData,
@@ -20,26 +20,26 @@ import {
   getCustomerData,
   getRoles,
   getStateDataSort,
-} from "../../Dashboard/DashboardAction";
+} from '../../Dashboard/DashboardAction';
 
 import {
   dynamicFormData,
   getAllDropDownData,
-} from "../DynamicFormDropdown/Slices/DynamicFormDropDownAction";
-import { masterURL } from "../../../settings/constants";
-import DynamicComponent from "./DynamicComponent";
-import UserService from "../../../services/MastersService/UserService";
-import { departmentData } from "../DepartmentMaster/DepartmentMasterAction";
-import { getDesignationData } from "../DesignationMaster/DesignationAction";
-import { statusMasterSlice } from "../StatusMaster/StatusComponentSlice";
-import { getStatusData } from "../StatusMaster/StatusComponentAction";
-import QueryTypeService from "../../../services/MastersService/QueryTypeService";
+} from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
+import { masterURL } from '../../../settings/constants';
+import DynamicComponent from './DynamicComponent';
+import UserService from '../../../services/MastersService/UserService';
+import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
+import { getDesignationData } from '../DesignationMaster/DesignationAction';
+import { statusMasterSlice } from '../StatusMaster/StatusComponentSlice';
+import { getStatusData } from '../StatusMaster/StatusComponentAction';
+import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
 
   const mainJson = {
-    inputWidth: "col-sm-6",
+    inputWidth: 'col-sm-6',
     inputType: [],
     inputName: null,
     inputLabel: null,
@@ -66,56 +66,44 @@ function CreateDynamicForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const roleDropdown = useSelector((DashbordSlice) =>
+  const roleDropdown = useSelector(DashbordSlice =>
     DashbordSlice.dashboard.getAllRoles
-      ?.filter((d) => d.is_active === 1)
-      .map((d) => ({
+      ?.filter(d => d.is_active === 1)
+      .map(d => ({
         value: d.id,
         label: d.role,
-      }))
+      })),
   );
 
   const departmentDropdown = useSelector(
-    (DepartmentMasterSlice) =>
-      DepartmentMasterSlice.department.sortDepartmentData
+    DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData,
   );
 
+  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredCountryData);
 
-  
-
-  const CountryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
-  );
-
-  const CustomerData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getCustomerData
-  );
+  const CustomerData = useSelector(dashboardSlice => dashboardSlice.dashboard.getCustomerData);
 
   const AllcityDropDownData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+    dashboardSlice => dashboardSlice.dashboard.sortedCityData,
   );
 
   const designationDropdown = useSelector(
-    (DesignationSlice) =>
-      DesignationSlice.designationMaster.sortedDesignationData
+    DesignationSlice => DesignationSlice.designationMaster.sortedDesignationData,
   );
 
-  const stateDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.filteredStateData
-  );
+  const stateDropdown = useSelector(DashbordSlice => DashbordSlice.dashboard.filteredStateData);
 
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 13)
+  const checkRole = useSelector(DashbordSlice =>
+    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 13),
   );
   const dropdown = useSelector(
-    (DynamicFormDropDownSlice) =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
+    DynamicFormDropDownSlice => DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown,
   );
 
-  const statusData = useSelector((statusMasterSlice) =>
+  const statusData = useSelector(statusMasterSlice =>
     statusMasterSlice.statusMaster.filterStatusData
-      .filter((d) => d.is_active == 1)
-      .map((d) => ({ value: d.id, label: d.status }))
+      .filter(d => d.is_active == 1)
+      .map(d => ({ value: d.id, label: d.status })),
   );
 
   const [rows, setRows] = useState([mainJson]);
@@ -126,7 +114,7 @@ function CreateDynamicForm() {
   const [index, setIndex] = useState({ index: 0 });
 
   const [inputDataSource, setInputDataSource] = useState();
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const [radioSelect, setRadioSelect] = useState();
 
@@ -136,28 +124,28 @@ function CreateDynamicForm() {
   const [inputLabelValue, setInputLabelValue] = useState();
   const [minDate, setMinDate] = useState();
 
-  const [selectedValueErr, setSelectedValueErr] = useState("");
+  const [selectedValueErr, setSelectedValueErr] = useState('');
   const [min, setMin] = useState();
   const [max, setMax] = useState();
   const [maxErr, setMaxErr] = useState();
   const [selectMasterValue, setSelectMasterValue] = useState();
 
-  const handleChange = (idx, type) => async (e) => {
-    if (e.target.name === "inputDateRange1") {
+  const handleChange = (idx, type) => async e => {
+    if (e.target.name === 'inputDateRange1') {
       setMinDate(e.target.value);
     }
-    if (e.target.name === "inputLabel") {
+    if (e.target.name === 'inputLabel') {
       setInputLabelValue(e.target.value);
     }
 
-    if (e.target.name === "inputDataSource") {
+    if (e.target.name === 'inputDataSource') {
       setSelectMasterValue(e.target.value);
     }
 
     if (selectedValue) {
-      setSelectedValueErr("");
+      setSelectedValueErr('');
     } else {
-      setSelectedValueErr("Select Data Source");
+      setSelectedValueErr('Select Data Source');
     }
 
     setFormShow(false);
@@ -167,181 +155,142 @@ function CreateDynamicForm() {
     const { name, value } = e.target;
 
     const notAllowed = [
-      "ref_id",
-      "created_at",
-      "updated_at",
-      "attachment",
-      "query_type_id",
-      "query_type",
-      "object_id",
-      "tenant_id",
-      "ticket_id",
-      "user_id",
-      "confirmation_required",
-      "project_id",
-      "module_id",
-      "submodule_id",
-      "cuid",
-      "ticket_date",
-      "expected_solve_date",
-      "assign_to_department_id",
-      "assign_to_user_id",
-      "type_id",
-      "priority",
-      "status_id",
-      "description",
-      "from_department_id",
-      "remark",
-      "is_active",
-      "created_by",
-      "updated_by",
-      "passed_status",
-      "passed_status_changed_by",
-      "passed_status_changed_at",
-      "passed_status_remark",
-      "ticket_confirmation_otp",
-      "ticket_confirmation_otp_created_at",
+      'ref_id',
+      'created_at',
+      'updated_at',
+      'attachment',
+      'query_type_id',
+      'query_type',
+      'object_id',
+      'tenant_id',
+      'ticket_id',
+      'user_id',
+      'confirmation_required',
+      'project_id',
+      'module_id',
+      'submodule_id',
+      'cuid',
+      'ticket_date',
+      'expected_solve_date',
+      'assign_to_department_id',
+      'assign_to_user_id',
+      'type_id',
+      'priority',
+      'status_id',
+      'description',
+      'from_department_id',
+      'remark',
+      'is_active',
+      'created_by',
+      'updated_by',
+      'passed_status',
+      'passed_status_changed_by',
+      'passed_status_changed_at',
+      'passed_status_remark',
+      'ticket_confirmation_otp',
+      'ticket_confirmation_otp_created_at',
     ];
 
     if (
       !notAllowed.includes(
-        e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
-          .toLowerCase()
+        e.target.value.replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_').toLowerCase(),
       )
     ) {
-      if (e.target.name === "inputWidth") {
+      if (e.target.name === 'inputWidth') {
         rows[idx].inputWidth = e.target.value;
-      } else if (e.target.name === "inputType") {
+      } else if (e.target.name === 'inputType') {
         rows[idx].inputType = e.target.value;
-        if (e.target.value == "date") {
-          rows[idx].inputFormat = "y-MM-dd";
+        if (e.target.value == 'date') {
+          rows[idx].inputFormat = 'y-MM-dd';
         } else {
           rows[idx].inputFormat = null;
         }
-      } else if (e.target.name === "inputLabel") {
+      } else if (e.target.name === 'inputLabel') {
         rows[idx].inputLabel = e.target.value;
         rows[idx].inputName = e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, "_")
+          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
           .toLowerCase();
 
         labelNames[idx] = rows[idx].inputName;
-      } else if (e.target.name === "inputDefaultValue") {
+      } else if (e.target.name === 'inputDefaultValue') {
         rows[idx].inputDefaultValue = e.target.value;
-      } else if (e.target.name === "inputMandatory") {
+      } else if (e.target.name === 'inputMandatory') {
         rows[idx].inputMandatory = e.target.checked;
-      } else if (e.target.name === "inputMultiple") {
+      } else if (e.target.name === 'inputMultiple') {
         rows[idx].inputMultiple = e.target.checked;
-      } else if (e.target.name === "inputDataOption") {
+      } else if (e.target.name === 'inputDataOption') {
         rows[idx].inputOption = e.target.value;
-      } else if (e.target.name == "inputRange") {
+      } else if (e.target.name == 'inputRange') {
         rows[idx].inputAddOn.inputRange = e.target.value;
-      } else if (e.target.name == "inputRangeMin") {
+      } else if (e.target.name == 'inputRangeMin') {
         rows[idx].inputAddOn.inputRangeMin = e.target.value;
-      } else if (e.target.name == "inputRangeMax") {
+      } else if (e.target.name == 'inputRangeMax') {
         rows[idx].inputAddOn.inputRangeMax = e.target.value;
-      } else if (e.target.name == "inputDateRange1") {
+      } else if (e.target.name == 'inputDateRange1') {
         rows[idx].inputAddOn.inputDateRange1 = e.target.value;
-      } else if (e.target.name == "inputDateRange2") {
+      } else if (e.target.name == 'inputDateRange2') {
         rows[idx].inputAddOn.inputDateRange2 = e.target.value;
-      } else if (e.target.name == "datetime-local") {
+      } else if (e.target.name == 'datetime-local') {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
-      } else if (e.target.name == "inputFormat") {
+      } else if (e.target.name == 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
       }
 
-      
-      if (e.target.name === "inputDataSource" && e.target.value === "user") {
+      if (e.target.name === 'inputDataSource' && e.target.value === 'user') {
         const tempUserData = [];
         const test1 = e.target.value;
         rows[idx].inputAddOn.inputDataSource = test1;
 
         rows[idx].inputAddOn.inputDataSourceData = test1;
-        const inputRequired =
-          "id,employee_id,first_name,last_name,middle_name,is_active";
-        await new UserService()
-          .getUserForMyTickets(inputRequired)
-          .then((res) => {
-            if (res.status === 200) {
-              const data = res.data.data.filter((d) => d.is_active === 1);
+        const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+        await new UserService().getUserForMyTickets(inputRequired).then(res => {
+          if (res.status === 200) {
+            const data = res.data.data.filter(d => d.is_active === 1);
 
-              for (const key in data) {
-                tempUserData.push({
-                  value: data[key].id,
-                  label:
-                    data[key].first_name +
-                    " " +
-                    data[key].last_name +
-                    " (" +
-                    data[key].id +
-                    ")",
-                });
-              }
-              const aa = tempUserData.sort(function (a, b) {
-                return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            for (const key in data) {
+              tempUserData.push({
+                value: data[key].id,
+                label: data[key].first_name + ' ' + data[key].last_name + ' (' + data[key].id + ')',
               });
-              setUserData(aa);
-              rows[idx].inputAddOn.inputDataSourceData = aa;
-              setInputDataSource(aa);
             }
-          });
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "city"
-      ) {
+            const aa = tempUserData.sort(function (a, b) {
+              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            });
+            setUserData(aa);
+            rows[idx].inputAddOn.inputDataSourceData = aa;
+            setInputDataSource(aa);
+          }
+        });
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'city') {
         rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData;
         setInputDataSource(AllcityDropDownData);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "role"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'role') {
         rows[idx].inputAddOn.inputDataSourceData = roleDropdown;
         setInputDataSource(roleDropdown);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "country"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'country') {
         rows[idx].inputAddOn.inputDataSourceData = CountryData;
         setInputDataSource(CountryData);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "state"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'state') {
         rows[idx].inputAddOn.inputDataSourceData = stateDropdown;
         setInputDataSource(stateDropdown);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "designation"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'designation') {
         rows[idx].inputAddOn.inputDataSourceData = designationDropdown;
         setInputDataSource(designationDropdown);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "customer"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'customer') {
         rows[idx].inputAddOn.inputDataSourceData = CustomerData;
         setInputDataSource(CustomerData);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "department"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'department') {
         rows[idx].inputAddOn.inputDataSourceData = departmentDropdown;
         setInputDataSource(departmentDropdown);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "status"
-      ) {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'status') {
         rows[idx].inputAddOn.inputDataSourceData = statusData;
         setInputDataSource(statusData);
-      } else if (
-        e.target.name === "inputDataSource" &&
-        e.target.value === "query"
-      ) {
-        await new QueryTypeService().getQueryType().then((res) => {
+      } else if (e.target.name === 'inputDataSource' && e.target.value === 'query') {
+        await new QueryTypeService().getQueryType().then(res => {
           if (res.status === 200) {
             const data = res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }));
+              .filter(d => d.is_active == 1)
+              .map(d => ({ value: d.id, label: d.query_type_name }));
 
             rows[idx].inputAddOn.inputDataSourceData = data;
 
@@ -356,28 +305,26 @@ function CreateDynamicForm() {
 
       const newValue = e.target.name;
 
-      if (newValue === "inputOnChangeSource") {
+      if (newValue === 'inputOnChangeSource') {
         const dropDownValue = e.target.value;
         setSelectedValue(dropDownValue);
 
         rows[idx].inputAddOn.inputRadio = test;
-        await new DynamicFormDropdownMasterService()
-          .getDropdownById(dropDownValue)
-          .then((res) => {
-            if (res.status == 200) {
-              if (res.data.status == 1) {
-                const dropNames = res.data.data;
-                setRadioSelect(dropNames.master.dropdown_name);
-                const temp = [];
-                res.data.data.dropdown.forEach((d) => {
-                  temp.push({ label: d.label, value: d.id });
-                });
-                rows[idx].inputAddOn.inputRadio = temp;
-                setInputDataSource(temp);
-                rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
-              }
+        await new DynamicFormDropdownMasterService().getDropdownById(dropDownValue).then(res => {
+          if (res.status == 200) {
+            if (res.data.status == 1) {
+              const dropNames = res.data.data;
+              setRadioSelect(dropNames.master.dropdown_name);
+              const temp = [];
+              res.data.data.dropdown.forEach(d => {
+                temp.push({ label: d.label, value: d.id });
+              });
+              rows[idx].inputAddOn.inputRadio = temp;
+              setInputDataSource(temp);
+              rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
             }
-          });
+          }
+        });
       }
     }
   };
@@ -406,7 +353,7 @@ function CreateDynamicForm() {
     }
 
     const item = {
-      inputWidth: "col-sm-6",
+      inputWidth: 'col-sm-6',
       inputType: null,
       inputName: null,
       inputLabel: null,
@@ -432,27 +379,27 @@ function CreateDynamicForm() {
       setRows([...rows, item]);
       setRows([...rows, mainJson]);
     } else {
-      setNotify({ type: "danger", message: "Fill Complete Details !!!" });
+      setNotify({ type: 'danger', message: 'Fill Complete Details !!!' });
     }
   };
 
   const [labelErr, setLabelErr] = useState();
 
   const dataSourceOptions = [
-    { value: "", label: "Select Data Source" },
-    { value: "user", label: "User Master" },
-    { value: "department", label: "Department Master" },
-    { value: "role", label: "Role Master" },
-    { value: "country", label: "Country Master" },
-    { value: "state", label: "State Master" },
-    { value: "city", label: "City Master" },
-    { value: "designation", label: "Designation Master" },
-    { value: "customer", label: "Customer Master" },
-    { value: "status", label: "Status Master" },
-    { value: "query", label: "Query Type Master" },
+    { value: '', label: 'Select Data Source' },
+    { value: 'user', label: 'User Master' },
+    { value: 'department', label: 'Department Master' },
+    { value: 'role', label: 'Role Master' },
+    { value: 'country', label: 'Country Master' },
+    { value: 'state', label: 'State Master' },
+    { value: 'city', label: 'City Master' },
+    { value: 'designation', label: 'Designation Master' },
+    { value: 'customer', label: 'Customer Master' },
+    { value: 'status', label: 'Status Master' },
+    { value: 'query', label: 'Query Type Master' },
   ];
 
-  const handleRemoveSpecificRow = (index) => async () => {
+  const handleRemoveSpecificRow = index => async () => {
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
 
@@ -461,15 +408,15 @@ function CreateDynamicForm() {
 
   const handldeFormShow = () => {
     if (!inputLabelValue) {
-      setLabelErr("Label Is Required");
+      setLabelErr('Label Is Required');
     } else {
-      setLabelErr("");
+      setLabelErr('');
     }
 
     setFormShow(formShow == true ? false : true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const data = {
@@ -477,28 +424,23 @@ function CreateDynamicForm() {
       data: JSON.stringify(rows),
     };
 
-    await new DynamicFormService().postDynamicForm(data).then((res) => {
+    await new DynamicFormService().postDynamicForm(data).then(res => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           dispatch(dynamicFormData());
 
-          setNotify({ type: "success", message: res.data.message });
+          setNotify({ type: 'success', message: res.data.message });
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
-              state: { alert: { type: "success", message: res.data.message } },
+              state: { alert: { type: 'success', message: res.data.message } },
             });
           }, 3000);
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
-        setNotify({ type: "danger", message: res.message });
-        new ErrorLogService().sendErrorLog(
-          "User",
-          "Create_User",
-          "INSERT",
-          res.message
-        );
+        setNotify({ type: 'danger', message: res.message });
+        new ErrorLogService().sendErrorLog('User', 'Create_User', 'INSERT', res.message);
       }
     });
   };
@@ -527,7 +469,7 @@ function CreateDynamicForm() {
   };
 
   const [dateValue, setDateValue] = useState(new Date());
-  const onChangeDate = (value) => {
+  const onChangeDate = value => {
     setDateValue(new Date(value));
   };
 
@@ -603,7 +545,7 @@ function CreateDynamicForm() {
                           name="template_name"
                           id="template_name"
                           required
-                          onKeyPress={(e) => {
+                          onKeyPress={e => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                         />
@@ -611,71 +553,44 @@ function CreateDynamicForm() {
                     </div>
 
                     <div className="table-responsive">
-                      <table
-                        className="table table-bordered mt-3 table-responsive"
-                        id="tab_logic"
-                      >
+                      <table className="table table-bordered mt-3 table-responsive" id="tab_logic">
                         <thead>
                           <tr>
-                            <th className="text-center" style={{ width: "5%" }}>
-                              {" "}
-                              Sr No.{" "}
+                            <th className="text-center" style={{ width: '5%' }}>
+                              {' '}
+                              Sr No.{' '}
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "15%" }}
-                            >
-                              {" "}
-                              Type{" "}
+                            <th className="text-center" style={{ width: '15%' }}>
+                              {' '}
+                              Type{' '}
                             </th>
                             <th className="text-center"> Width </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
-                              Label{" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
+                              Label{' '}
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
-                              Def. Value{" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
+                              Def. Value{' '}
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
-                              Mandatory{" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
+                              Mandatory{' '}
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
                               Multiple
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
                               Format
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "20%" }}
-                            >
-                              {" "}
+                            <th className="text-center" style={{ width: '20%' }}>
+                              {' '}
                               Add-Ons
                             </th>
-                            <th
-                              className="text-center"
-                              style={{ width: "10%" }}
-                            >
-                              {" "}
+                            <th className="text-center" style={{ width: '10%' }}>
+                              {' '}
                               Action
                             </th>
                           </tr>
@@ -700,16 +615,12 @@ function CreateDynamicForm() {
                                     <option value="number">NUMBER</option>
                                     <option value="decimal">DECIMAL</option>
                                     <option value="date">DATE</option>
-                                    <option value="datetime-local">
-                                      DATE TIME
-                                    </option>
+                                    <option value="datetime-local">DATE TIME</option>
                                     <option value="time">TIME</option>
                                     <option value="select">SELECT</option>
                                     <option value="radio">RADIO</option>
                                     <option value="checkbox">CHECKBOX</option>
-                                    <option value="select-master">
-                                      SELECT MASTER
-                                    </option>
+                                    <option value="select-master">SELECT MASTER</option>
                                   </select>
                                 </td>
                                 <td>
@@ -739,14 +650,14 @@ function CreateDynamicForm() {
                                     value={item.inputLabel}
                                     onChange={handleChange(idx)}
                                     className="form-control form-control-sm"
-                                    onKeyPress={(e) => {
+                                    onKeyPress={e => {
                                       Validation.CharactersNumbersOnly(e);
                                     }}
                                   />
                                   {labelErr && (
                                     <p
                                       style={{
-                                        color: "red",
+                                        color: 'red',
                                       }}
                                     >
                                       {labelErr}
@@ -754,44 +665,32 @@ function CreateDynamicForm() {
                                   )}
                                 </td>
                                 <td>
-                                  {item.inputType === "date" ||
-                                  item.inputType === "time" ? (
+                                  {item.inputType === 'date' || item.inputType === 'time' ? (
                                     <input
-                                      type={
-                                        item.inputType === "date"
-                                          ? "date"
-                                          : "time"
-                                      }
+                                      type={item.inputType === 'date' ? 'date' : 'time'}
                                       name="inputDefaultValue"
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
                                       className="form-control form-control-sm"
-                                      onKeyPress={(e) => {
-                                        Validation.CharactersNumbersSpeicalOnly(
-                                          e
-                                        );
+                                      onKeyPress={e => {
+                                        Validation.CharactersNumbersSpeicalOnly(e);
                                       }}
                                     />
                                   ) : (
                                     <input
                                       type={
-                                        item.inputType === "datetime-local"
-                                          ? "datetime-local"
-                                          : "text"
+                                        item.inputType === 'datetime-local'
+                                          ? 'datetime-local'
+                                          : 'text'
                                       }
                                       name="inputDefaultValue"
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
                                       className="form-control form-control-sm"
-                                      onKeyPress={(e) => {
-                                        item.inputType === "number" ||
-                                        item.inputType === "decimal"
-                                          ? Validation.NumbersSpecialOnlyDecimal(
-                                              e
-                                            )
-                                          : Validation.CharactersNumbersSpeicalOnly(
-                                              e
-                                            );
+                                      onKeyPress={e => {
+                                        item.inputType === 'number' || item.inputType === 'decimal'
+                                          ? Validation.NumbersSpecialOnlyDecimal(e)
+                                          : Validation.CharactersNumbersSpeicalOnly(e);
                                       }}
                                     />
                                   )}
@@ -807,9 +706,9 @@ function CreateDynamicForm() {
                                 </td>
 
                                 <td>
-                                  {(rows[idx].inputType === "select-master" ||
-                                    rows[idx].inputType == "select" ||
-                                    rows[idx].inputType == "checkbox") && (
+                                  {(rows[idx].inputType === 'select-master' ||
+                                    rows[idx].inputType == 'select' ||
+                                    rows[idx].inputType == 'checkbox') && (
                                     <input
                                       type="checkbox"
                                       name="inputMultiple"
@@ -820,7 +719,7 @@ function CreateDynamicForm() {
                                 </td>
 
                                 <td>
-                                  {rows[idx].inputType == "date" && (
+                                  {rows[idx].inputType == 'date' && (
                                     <select
                                       className="form-control form-control-sm"
                                       required
@@ -829,21 +728,15 @@ function CreateDynamicForm() {
                                       value={rows[idx].inputFormat}
                                     >
                                       <option>Select Format</option>
-                                      <option value="y-MM-dd">
-                                        yyyy-mm-dd
-                                      </option>
-                                      <option value="dd-MM-y">
-                                        dd-mm-yyyy
-                                      </option>
-                                      <option value="dd-MM-y">
-                                        mm-dd-yyyy
-                                      </option>
+                                      <option value="y-MM-dd">yyyy-mm-dd</option>
+                                      <option value="dd-MM-y">dd-mm-yyyy</option>
+                                      <option value="dd-MM-y">mm-dd-yyyy</option>
                                     </select>
                                   )}
                                 </td>
 
                                 <td>
-                                  {rows[idx].inputType == "select-master" && (
+                                  {rows[idx].inputType == 'select-master' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -851,11 +744,8 @@ function CreateDynamicForm() {
                                         id="inputDataSource"
                                         name="inputDataSource"
                                       >
-                                        {dataSourceOptions.map((option) => (
-                                          <option
-                                            key={option.value}
-                                            value={option.value}
-                                          >
+                                        {dataSourceOptions.map(option => (
+                                          <option key={option.value} value={option.value}>
                                             {option.label}
                                           </option>
                                         ))}
@@ -863,7 +753,7 @@ function CreateDynamicForm() {
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == "radio" && (
+                                  {rows[idx].inputType == 'radio' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -872,28 +762,22 @@ function CreateDynamicForm() {
                                         name="inputOnChangeSource"
                                         // defaultValue={selectedValue}
                                       >
-                                        
-                                        
                                         <option>Select Data Source</option>
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return (
-                                              <option value={d.id}>
-                                                {d.dropdown_name}
-                                              </option>
-                                            );
+                                            return <option value={d.id}>{d.dropdown_name}</option>;
                                           })}
                                       </select>
                                       {!selectedValue && (
-                                        <small style={{ color: "red" }}>
+                                        <small style={{ color: 'red' }}>
                                           <b>Select Data Source</b>
                                         </small>
                                       )}
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == "checkbox" && (
+                                  {rows[idx].inputType == 'checkbox' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -906,22 +790,18 @@ function CreateDynamicForm() {
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return (
-                                              <option value={d.id}>
-                                                {d.dropdown_name}
-                                              </option>
-                                            );
+                                            return <option value={d.id}>{d.dropdown_name}</option>;
                                           })}
                                       </select>
                                       {!selectedValue && (
-                                        <small style={{ color: "red" }}>
+                                        <small style={{ color: 'red' }}>
                                           <b>Select Data Source</b>
                                         </small>
                                       )}
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == "select" && (
+                                  {rows[idx].inputType == 'select' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -934,22 +814,18 @@ function CreateDynamicForm() {
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return (
-                                              <option value={d.id}>
-                                                {d.dropdown_name}
-                                              </option>
-                                            );
+                                            return <option value={d.id}>{d.dropdown_name}</option>;
                                           })}
                                       </select>
                                       {!selectedValue && (
-                                        <small style={{ color: "red" }}>
+                                        <small style={{ color: 'red' }}>
                                           <b>Select Data Source</b>
                                         </small>
                                       )}
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType === "number" && (
+                                  {rows[idx].inputType === 'number' && (
                                     <div className="d-flex justify-content-between">
                                       <div class="form-group">
                                         <label>Min Number:</label>
@@ -959,9 +835,7 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={
-                                            rows[idx].inputAddOn.inputRangeMin
-                                          }
+                                          min={rows[idx].inputAddOn.inputRangeMin}
                                         />
                                       </div>
                                       <div className="form-group">
@@ -972,27 +846,20 @@ function CreateDynamicForm() {
                                           id="inputRangeMax"
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
-                                          max={
-                                            rows[idx].inputAddOn.inputRangeMax
-                                          }
+                                          max={rows[idx].inputAddOn.inputRangeMax}
                                         />
-                                        {parseFloat(
-                                          rows[idx].inputAddOn.inputRangeMin
-                                        ) >
-                                          parseFloat(
-                                            rows[idx].inputAddOn.inputRangeMax
-                                          ) && (
+                                        {parseFloat(rows[idx].inputAddOn.inputRangeMin) >
+                                          parseFloat(rows[idx].inputAddOn.inputRangeMax) && (
                                           <div className="text-danger">
-                                            {" "}
-                                            Max number should be greater than
-                                            Min number
+                                            {' '}
+                                            Max number should be greater than Min number
                                           </div>
                                         )}
                                       </div>
                                     </div>
                                   )}
 
-                                  {rows[idx].inputType === "decimal" && (
+                                  {rows[idx].inputType === 'decimal' && (
                                     <div className="d-flex justify-content-between">
                                       <div class="form-group">
                                         <label>Min Number:</label>
@@ -1002,9 +869,7 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={
-                                            rows[idx].inputAddOn.inputRangeMin
-                                          }
+                                          min={rows[idx].inputAddOn.inputRangeMin}
                                         />
                                       </div>
                                       <div className="form-group">
@@ -1016,22 +881,15 @@ function CreateDynamicForm() {
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
                                           // defaultValue={props.data.inputAddOn.inputRangeMax}
-                                          max={
-                                            rows[idx].inputAddOn.inputRangeMax
-                                          }
+                                          max={rows[idx].inputAddOn.inputRangeMax}
                                         />
 
                                         <>
-                                          {parseFloat(
-                                            rows[idx].inputAddOn.inputRangeMin
-                                          ) >
-                                            parseFloat(
-                                              rows[idx].inputAddOn.inputRangeMax
-                                            ) && (
+                                          {parseFloat(rows[idx].inputAddOn.inputRangeMin) >
+                                            parseFloat(rows[idx].inputAddOn.inputRangeMax) && (
                                             <div className="text-danger">
-                                              {" "}
-                                              Max number should be greater than
-                                              Min number
+                                              {' '}
+                                              Max number should be greater than Min number
                                             </div>
                                           )}
                                         </>
@@ -1039,7 +897,7 @@ function CreateDynamicForm() {
                                     </div>
                                   )}
 
-                                  {rows[idx].inputType === "date" && (
+                                  {rows[idx].inputType === 'date' && (
                                     // <span
                                     //   style={{
                                     //     display: "flex",
@@ -1084,8 +942,8 @@ function CreateDynamicForm() {
                                     // </span>
                                     <span
                                       style={{
-                                        display: "flex",
-                                        flexDirection: "column",
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                       }}
                                     >
                                       <input
@@ -1095,7 +953,7 @@ function CreateDynamicForm() {
                                         name="inputDateRange1"
                                         className="form-control form-control-sm"
                                       />
-                                      <small style={{ color: "red" }}>
+                                      <small style={{ color: 'red' }}>
                                         <b>Min date</b>
                                       </small>
                                       <input
@@ -1105,18 +963,15 @@ function CreateDynamicForm() {
                                         name="inputDateRange2"
                                         className="form-control form-control-sm"
                                         min={minDate}
-                                        max={
-                                          rows[idx].inputAddOn.inputDateRange
-                                        }
+                                        max={rows[idx].inputAddOn.inputDateRange}
                                       />
-                                      <small style={{ color: "red" }}>
+                                      <small style={{ color: 'red' }}>
                                         <b>Max date</b>
                                       </small>
                                     </span>
                                   )}
-                               
-                               
-                                  {rows[idx].inputType === "time" && (
+
+                                  {rows[idx].inputType === 'time' && (
                                     <div
                                       className="d-flex justify-content-between"
                                       key={rows[idx].key}
@@ -1129,9 +984,7 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={
-                                            rows[idx].inputAddOn.inputRangeMin
-                                          }
+                                          min={rows[idx].inputAddOn.inputRangeMin}
                                         />
                                       </div>
                                       <div className="form-group">
@@ -1142,15 +995,13 @@ function CreateDynamicForm() {
                                           id="inputRangeMax"
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
-                                          max={
-                                            rows[idx].inputAddOn.inputRangeMax
-                                          }
+                                          max={rows[idx].inputAddOn.inputRangeMax}
                                         />
                                       </div>
                                     </div>
                                   )}
 
-                                  {rows[idx].inputType === "datetime-local" && (
+                                  {rows[idx].inputType === 'datetime-local' && (
                                     <div className="d-flex justify-content-between">
                                       <div class="form-group">
                                         <label>Date-time:</label>
@@ -1160,9 +1011,7 @@ function CreateDynamicForm() {
                                           id="datetime-local"
                                           name="datetime-local"
                                           className="form-control form-control-sm"
-                                          min={
-                                            rows[idx].inputAddOn.inputDateTime
-                                          }
+                                          min={rows[idx].inputAddOn.inputDateTime}
                                         />
                                       </div>
                                     </div>
@@ -1227,7 +1076,7 @@ function CreateDynamicForm() {
                       </Link>
                     </div>
                   </form>
-                </div>{" "}
+                </div>{' '}
                 {/* Card Body */}
               </div>
               {/* Card */}
@@ -1240,9 +1089,9 @@ function CreateDynamicForm() {
                   }
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
-                      var range = data.inputAddOn.inputRange.split("|");
+                      var range = data.inputAddOn.inputRange.split('|');
                     } else if (data.inputAddOn.inputDateRange) {
-                      var range = data.inputAddOn.inputDateRange.split("|");
+                      var range = data.inputAddOn.inputDateRange.split('|');
                     }
 
                     return (
@@ -1253,34 +1102,26 @@ function CreateDynamicForm() {
                             {data.inputMandatory === true ? (
                               <Astrick color="red" size="13px" />
                             ) : (
-                              ""
+                              ''
                             )}
                           </b>
                         </label>
 
-                        {data.inputType === "text" && (
+                        {data.inputType === 'text' && (
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "textarea" && (
+                        {data.inputType === 'textarea' && (
                           <textarea
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             className="form-control form-control-sm"
@@ -1289,15 +1130,11 @@ function CreateDynamicForm() {
                           </textarea>
                         )}
 
-                        {data.inputType === "date" && (
+                        {data.inputType === 'date' && (
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1306,70 +1143,53 @@ function CreateDynamicForm() {
                             className="form-control form-control-sm"
                           />
                         )}
-                     
-                     
-                        {data.inputType === "datetime-local" && (
+
+                        {data.inputType === 'datetime-local' && (
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                            min={data.inputAddOn.inputDateRange ? range[0] : ''}
+                            max={data.inputAddOn.inputDateRange ? range[1] : ''}
                             className="form-control form-control-sm"
                           />
                         )}
 
-                        {data.inputType === "time" && (
+                        {data.inputType === 'time' && (
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputDateRange ? range[0] : ""}
-                            max={data.inputAddOn.inputDateRange ? range[1] : ""}
+                            min={data.inputAddOn.inputDateRange ? range[0] : ''}
+                            max={data.inputAddOn.inputDateRange ? range[1] : ''}
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "number" && (
+                        {data.inputType === 'number' && (
                           <input
                             type="text"
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             name={data.inputName}
                             // defaultValue={data.inputAddOn.inputRange}
                             defaultValue={data.inputDefaultValue}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            min={data.inputAddOn.inputRange ? range[0] : ''}
+                            max={data.inputAddOn.inputRange ? range[1] : ''}
                             className="form-control form-control-sm"
                           />
                         )}
 
-                        {data.inputType === "select" && (
+                        {data.inputType === 'select' && (
                           <select
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             // defaultValue={data.inputDefaultValue}
                             name={data.inputName}
@@ -1377,14 +1197,12 @@ function CreateDynamicForm() {
                           >
                             <option> {data.inputDefaultValue}</option>
                             {data.inputAddOn.inputRadio &&
-                              data.inputAddOn.inputRadio.map((option) => {
+                              data.inputAddOn.inputRadio.map(option => {
                                 return (
                                   <option
                                     selected={
-                                      parseInt(
-                                        data &&
-                                          data?.inputAddOn?.inputDataSource
-                                      ) === option.value
+                                      parseInt(data && data?.inputAddOn?.inputDataSource) ===
+                                      option.value
                                     }
                                     value={option.value}
                                   >
@@ -1395,7 +1213,7 @@ function CreateDynamicForm() {
                           </select>
                         )}
 
-                        {data?.inputType === "radio" && (
+                        {data?.inputType === 'radio' && (
                           <div className="row mt-3">
                             {data &&
                               data?.inputAddOn?.inputRadio?.map((i, index) => (
@@ -1420,7 +1238,7 @@ function CreateDynamicForm() {
                           </div>
                         )}
 
-                        {data.inputType === "checkbox" && (
+                        {data.inputType === 'checkbox' && (
                           <div className="row mt-3">
                             {data &&
                               data.inputAddOn.inputRadio.map((i, index) => (
@@ -1430,8 +1248,8 @@ function CreateDynamicForm() {
                                       className="sm-1"
                                       type="checkbox"
                                       style={{
-                                        marginRight: "8px",
-                                        marginLeft: "10px",
+                                        marginRight: '8px',
+                                        marginLeft: '10px',
                                       }}
                                     />
                                     <label
@@ -1446,7 +1264,7 @@ function CreateDynamicForm() {
                           </div>
                         )}
 
-                        {data.inputType === "decimal" && (
+                        {data.inputType === 'decimal' && (
                           <div className="d-flex justify-content-between">
                             <div class="form-group">
                               {/* <label>Number:</label> */}
@@ -1475,14 +1293,10 @@ function CreateDynamicForm() {
                           </div>
                         )}
 
-                        {data.inputType === "select-master" && (
+                        {data.inputType === 'select-master' && (
                           <select
                             id={
-                              data.inputName
-                                ? data.inputName
-                                    .replace(/ /g, "_")
-                                    .toLowerCase()
-                                : ""
+                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
                             }
                             defaultValue={data.inputAddOn.inputDataSource}
                             name={data.inputName}
@@ -1490,24 +1304,19 @@ function CreateDynamicForm() {
                           >
                             <option> {data.inputName}</option>
                             {data.inputAddOn.inputDataSourceData &&
-                              data.inputAddOn.inputDataSourceData.map(
-                                (option) => {
-                                  return (
-                                    <option
-                                      selected={
-                                        parseInt(
-                                          data &&
-                                            data?.inputAddOn
-                                              ?.inputDataSourceData
-                                        ) === option.value
-                                      }
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </option>
-                                  );
-                                }
-                              )}
+                              data.inputAddOn.inputDataSourceData.map(option => {
+                                return (
+                                  <option
+                                    selected={
+                                      parseInt(data && data?.inputAddOn?.inputDataSourceData) ===
+                                      option.value
+                                    }
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                );
+                              })}
                           </select>
                         )}
                       </div>
@@ -1516,7 +1325,7 @@ function CreateDynamicForm() {
                 })}
               </div>
             )}
-          </div>{" "}
+          </div>{' '}
           {/*ROW*/}
         </div>
         {/*CONTAINER*/}

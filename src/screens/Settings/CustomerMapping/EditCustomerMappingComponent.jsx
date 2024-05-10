@@ -463,7 +463,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
-
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
       userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
