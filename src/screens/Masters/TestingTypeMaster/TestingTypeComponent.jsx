@@ -1,61 +1,53 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
 
-import PageHeader from "../../../components/Common/PageHeader";
+import PageHeader from '../../../components/Common/PageHeader';
 
-import { Astrick } from "../../../components/Utilities/Style";
+import { Astrick } from '../../../components/Utilities/Style';
 
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import Alert from '../../../components/Common/Alert';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { useDispatch, useSelector } from "react-redux";
-import {
-  postTesting,
-  testingData,
-  updateTesting,
-} from "./TestingTypeComponentAction";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import {
-  handleModalOpen,
-  handleModalClose,
-} from "./TestingTypeComponentSlices";
+import { useDispatch, useSelector } from 'react-redux';
+import { postTesting, testingData, updateTesting } from './TestingTypeComponentAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { handleModalOpen, handleModalClose } from './TestingTypeComponentSlices';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function TestingTypeComponent() {
   const dispatch = useDispatch();
   const testingtypeData = useSelector(
-    (TestingTypeComponentSlices) =>
-      TestingTypeComponentSlices.testingData.testingData
+    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.testingData,
   );
+  const isLoading = useSelector(
+    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.isLoading.testingDataList,
+  );
+
   const exportData = useSelector(
-    (TestingTypeComponentSlices) =>
-      TestingTypeComponentSlices.testingData.exportTestingData
+    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.exportTestingData,
   );
   const modal = useSelector(
-    (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
+    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.modal,
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 39),
   );
   const notify = useSelector(
-    (TestingTypeComponentSlices) =>
-      TestingTypeComponentSlices.testingData.notify
+    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.notify,
   );
 
   const [data, setData] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -71,23 +63,23 @@ function TestingTypeComponent() {
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      cell: (row) => (
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={(e) => {
+            onClick={e => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Testing Type",
-                })
+                  modalHeader: 'Edit Testing Type',
+                }),
               );
             }}
           >
@@ -95,70 +87,70 @@ function TestingTypeComponent() {
           </button>
         </div>
       ),
-      width: "80px",
+      width: '80px',
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
 
     {
-      name: "Testing Type",
-      selector: (row) => row.testing_type,
+      name: 'Testing Type',
+      selector: row => row.testing_type,
       sortable: true,
-      width: "125px",
+      width: '125px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
         </div>
       ),
-      width: "100px",
+      width: '100px',
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
 
   const loadData = async () => {};
 
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
 
     const form = new FormData(e.target);
@@ -235,17 +227,17 @@ function TestingTypeComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
   useEffect(() => {
     loadData();
+    dispatch(testingData());
 
     if (!testingtypeData.length) {
-      dispatch(testingData());
       dispatch(getRoles());
     }
   }, []);
@@ -272,15 +264,15 @@ function TestingTypeComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add Testing Type",
-                      })
+                        modalHeader: 'Add Testing Type',
+                      }),
                     );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add
                 </button>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -303,7 +295,7 @@ function TestingTypeComponent() {
               className="btn btn-sm btn-warning text-white"
               type="button"
               onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -311,7 +303,7 @@ function TestingTypeComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -337,6 +329,8 @@ function TestingTypeComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
@@ -345,19 +339,16 @@ function TestingTypeComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-        >
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
           <Modal.Header
             closeButton
             onClick={() => {
               dispatch(
                 handleModalClose({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                })
+                  modalData: '',
+                  modalHeader: '',
+                }),
               );
             }}
           >
@@ -377,22 +368,18 @@ function TestingTypeComponent() {
                     name="testing_type"
                     maxLength={25}
                     required
-                    defaultValue={
-                      modal.modalData ? modal.modalData.testing_type : ""
-                    }
+                    defaultValue={modal.modalData ? modal.modalData.testing_type : ''}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
                     maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
 
@@ -418,10 +405,7 @@ function TestingTypeComponent() {
                                 : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_1">
                             Active
                           </label>
                         </div>
@@ -436,15 +420,10 @@ function TestingTypeComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
+                              modal.modalData && modal.modalData.is_active === 0 ? true : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_0">
                             Deactive
                           </label>
                         </div>
@@ -461,9 +440,9 @@ function TestingTypeComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -473,12 +452,12 @@ function TestingTypeComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
             ) : (
-              ""
+              ''
             )}
             <button
               type="button"
@@ -487,9 +466,9 @@ function TestingTypeComponent() {
                 dispatch(
                   handleModalClose({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  })
+                    modalData: '',
+                    modalHeader: '',
+                  }),
                 );
               }}
             >

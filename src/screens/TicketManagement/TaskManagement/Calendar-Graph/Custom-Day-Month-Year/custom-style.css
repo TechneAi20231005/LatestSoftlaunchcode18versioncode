@@ -58,3 +58,10 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer; /* Subtle shadow effect */
 }
+.range-bar-chart-container .apexcharts-bar-series rect {
+  margin: 10px 10px; /* Adjust this value to increase/decrease the gap */
+}
+.apexcharts-xaxis-annotations rect {
+  height: 400px;
+  /* background-color: #484c7f; */
+}

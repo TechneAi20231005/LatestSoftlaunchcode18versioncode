@@ -1,33 +1,34 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
 
+import { useSelector, useDispatch } from 'react-redux';
 
+import CityService from '../../../services/MastersService/CityService';
 
+import PageHeader from '../../../components/Common/PageHeader';
 
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
 
-import { useSelector, useDispatch } from "react-redux";
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { handleModalInStore, handleModalClose } from '../../Dashboard/DashbordSlice';
 
-import CityService from "../../../services/MastersService/CityService";
+import { Spinner } from 'react-bootstrap';
 
-import PageHeader from "../../../components/Common/PageHeader";
-
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { handleModalInStore,handleModalClose,  } from "../../Dashboard/DashbordSlice";
-
-import { Spinner } from "react-bootstrap";
-
-import { getCityData, getCountryData, getCountryDataSort, getStateDataSort, postCityData, updateCityData } from "../../Dashboard/DashboardAction";
-import { getRoles } from "../../Dashboard/DashboardAction"
+import {
+  getCityData,
+  getCountryData,
+  getCountryDataSort,
+  getStateDataSort,
+  postCityData,
+  updateCityData,
+} from '../../Dashboard/DashboardAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 function CityComponent() {
-
-
-  // const [stateDropdown, setStateDropdown] = useState(null);
   const [stateDropdownData, setStateDropdownData] = useState([]);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -37,42 +38,37 @@ function CityComponent() {
 
   const [stateName, setStateName] = useState(null);
 
-
-
-
   const [dependent, setDependent] = useState({
     country_id: null,
     state_id: null,
   });
 
-
-
   const searchRef = useRef();
 
   const dispatch = useDispatch();
-  const cityData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.cityData
-  );
-  const Notify = useSelector( (dashboardSlice) => dashboardSlice.dashboard.notify);
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
-  const StateData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredStateData)
-  const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard?.filteredCountryData)
-  const stateDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  const cityData = useSelector(dashboardSlice => dashboardSlice.dashboard.cityData);
+
+  const isLoading = useSelector(
+    dashboardSlice => dashboardSlice.dashboard.isLoading.getCityDataList,
   );
 
-  const ExportData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.exportCityData)
+  const Notify = useSelector(dashboardSlice => dashboardSlice.dashboard.notify);
+  const modal = useSelector(dashboardSlice => dashboardSlice.dashboard.modal);
+  const StateData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredStateData);
+  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard?.filteredCountryData);
+  const stateDropdown = useSelector(DashbordSlice => DashbordSlice.dashboard.activeState);
 
-  const checkRole = useSelector((DashboardSlice) =>DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7));
+  const ExportData = useSelector(dashboardSlice => dashboardSlice.dashboard.exportCityData);
+
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 7),
+  );
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -80,41 +76,34 @@ function CityComponent() {
     });
   }
 
-
   const [searchTerm, setSearchTerm] = useState('');
- 
+
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {
+  const handleSearch = value => {};
 
-  };
-  
-
-  const roleId = sessionStorage.getItem("role_id");
-
+  const roleId = sessionStorage.getItem('role_id');
 
   const columns = [
-
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      cell: (row) => (
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            
-            onClick={(e) => {
-        
+            onClick={e => {
               dispatch(
                 handleModalInStore({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit City",
-                })
-              );}}
+                  modalHeader: 'Edit City',
+                }),
+              );
+            }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
@@ -122,42 +111,42 @@ function CityComponent() {
       ),
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "City",
-      selector: (row) => row.city,
+      name: 'City',
+      selector: row => row.city,
       sortable: true,
-      width: "125px",
+      width: '125px',
     },
     {
-      name: "State",
-      selector: (row) => row.state,
+      name: 'State',
+      selector: row => row.state,
       sortable: true,
-      width: "125px",
+      width: '125px',
     },
     {
-      name: "Country",
-      selector: (row) => row.country,
+      name: 'Country',
+      selector: row => row.country,
       sortable: true,
-      width: "125px",
+      width: '125px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -165,145 +154,116 @@ function CityComponent() {
       ),
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "150px",
+      width: '150px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "150px",
+      width: '150px',
     },
   ];
-  const loadData = async () => {
-   
- 
 
-
-
-
-    
-  };
-
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
     const form = new FormData(e.target);
     var flag = 1;
 
-    var selectCountry = form.getAll("country_id");
-    var selectState = form.getAll("state_id");
-    if (selectCountry == "" || selectState == "") {
+    var selectCountry = form.getAll('country_id');
+    var selectState = form.getAll('state_id');
+    if (selectCountry == '' || selectState == '') {
       flag = 0;
-      if (selectCountry == "") {
-        alert("Please Select Country");
-      } else if (selectState == "") {
-        alert("Please Select State");
+      if (selectCountry == '') {
+        alert('Please Select Country');
+      } else if (selectState == '') {
+        alert('Please Select State');
       }
     }
     if (flag === 1) {
       if (!id) {
-        dispatch(postCityData(form)).then((res) => {
+        dispatch(postCityData(form)).then(res => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getCityData());
-  
           } else {
           }
         });
-      
-      
       } else {
-
-
-        dispatch(updateCityData({ id:id,
-          payload: form})).then((res) => {
-            if (res?.payload?.data?.status === 1) {
-              dispatch(getCityData());
-    
-            } else {
-            }
-          });
- 
-     
+        dispatch(updateCityData({ id: id, payload: form })).then(res => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCityData());
+          } else {
+          }
+        });
       }
     }
   };
 
-  const handleCountryChange = (e) => {
-
+  const handleCountryChange = e => {
     setStateDropdownData(
       stateDropdown &&
         stateDropdown
-          ?.filter((filterState) => filterState.country_id === e.value)
-          ?.map((d) => ({ value: d.id, label: d.state }))
+          ?.filter(filterState => filterState.country_id === e.value)
+          ?.map(d => ({ value: d.id, label: d.state })),
     );
-  
-
-    // setStateDropdown(
-    //   StateData
-    //     ?.filter((d) => d.country_id == e.value)
-    //     .map((d) => ({ value: d.id, label: d.state }))
-    // );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
-
-  
   useEffect(() => {
-
     dispatch(getCityData());
-    dispatch(getRoles())
-    dispatch(getCountryData())
-   dispatch(getStateDataSort())
-   dispatch(getCountryDataSort())
-  
+    dispatch(getRoles());
+    dispatch(getCountryData());
+    dispatch(getStateDataSort());
+    dispatch(getCountryDataSort());
 
-    if(!cityData.length || !checkRole.length || !StateData.length || !CountryData.length){
-     
+    if (!cityData.length || !checkRole.length || !StateData.length || !CountryData.length) {
     }
-    
   }, []);
 
   useEffect(() => {
-    setFilteredData(cityData.filter(customer => {
-      if (typeof searchTerm === 'string') {
-        if (typeof customer === 'string') {
-          return customer.toLowerCase().includes(searchTerm.toLowerCase());
-        } else if (typeof customer === 'object') {
-          return Object.values(customer).some(value =>
-            typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-          );
+    setFilteredData(
+      cityData.filter(customer => {
+        if (typeof searchTerm === 'string') {
+          if (typeof customer === 'string') {
+            return customer.toLowerCase().includes(searchTerm.toLowerCase());
+          } else if (typeof customer === 'object') {
+            return Object.values(customer).some(
+              value =>
+                typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase()),
+            );
+          }
         }
-      }
-      return false;
-    }));
+        return false;
+      }),
+    );
   }, [searchTerm, cityData]);
 
   useEffect(() => {
     if (dependent.country_id !== null) {
       const newStates = [...copyState];
-      const filterNewState = newStates.filter((state) => {
+      const filterNewState = newStates.filter(state => {
         if (state.country_id === dependent.country_id) {
           return {
             value: state.id,
@@ -323,21 +283,17 @@ function CityComponent() {
 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
-        setStateName(
-          stateDropdown?.filter((d) => modal.modalData.state_id == d.value)
-        );
+        setStateName(stateDropdown?.filter(d => modal.modalData.state_id == d.value));
       }
     }
   }, [modal.showModal, checkRole]);
-
-
 
   return (
     <div className="container-xxl">
       {Notify && (
         <>
-          {" "}
-          <Alert alertData={Notify} />{" "}
+          {' '}
+          <Alert alertData={Notify} />{' '}
         </>
       )}
       <PageHeader
@@ -354,16 +310,15 @@ function CityComponent() {
                       handleModalInStore({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add City",
-                      })
+                        modalHeader: 'Add City',
+                      }),
                     );
-                  
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add City
                 </button>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -377,20 +332,16 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onChange={(e) =>setSearchTerm(e.target.value)}
-
-     
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-             
-              style={{ marginTop: "0px", fontWeight: "600" }}
-              value={searchTerm} 
+              style={{ marginTop: '0px', fontWeight: '600' }}
+              value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -398,7 +349,7 @@ function CityComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -410,8 +361,6 @@ function CityComponent() {
           </div>
         </div>
       </div>
-   
-
 
       <div className="card mt-2">
         <div className="card-body">
@@ -420,14 +369,15 @@ function CityComponent() {
               {cityData && (
                 <DataTable
                   columns={columns}
-                 
                   data={cityData.filter(customer => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
                         return customer.toLowerCase().includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(value =>
-                          typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+                        return Object.values(customer).some(
+                          value =>
+                            typeof value === 'string' &&
+                            value.toLowerCase().includes(searchTerm.toLowerCase()),
                         );
                       }
                     }
@@ -436,6 +386,8 @@ function CityComponent() {
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -445,34 +397,20 @@ function CityComponent() {
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
-
-
-      <Modal
-        centered
-        show={modal.showModal}
-      
-      >
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-        >
-          <Modal.Header closeButton  onClick={() => {dispatch(
-                      handleModalClose({
-                        showModal: false,
-                        modalData: null,
-                        modalHeader: "Add City",
-                      }))}}>
+      <Modal centered show={modal.showModal}>
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+          <Modal.Header
+            closeButton
+            onClick={() => {
+              dispatch(
+                handleModalClose({
+                  showModal: false,
+                  modalData: null,
+                  modalHeader: 'Add City',
+                }),
+              );
+            }}
+          >
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -483,40 +421,32 @@ function CityComponent() {
                     Select Country :<Astrick color="red" size="13px" />
                   </label>
                   <Select
-          
-                    options={CountryData&& CountryData}
+                    options={CountryData && CountryData}
                     id="country_id"
                     name="country_id"
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? CountryData?.filter(
-                            (d) => modal?.modalData?.country_id == d.value
-                          )
-                        : ""
+                        ? CountryData?.filter(d => modal?.modalData?.country_id == d.value)
+                        : ''
                     }
                     required={true}
                   />
                 </div>
-
-
 
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
                     Select State :<Astrick color="red" size="13px" />
                   </label>
                   <Select
-             
                     options={stateDropdownData}
                     id="state_id"
                     name="state_id"
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? StateData.filter(
-                            (d) => modal.modalData.state_id == d.value
-                          )
-                        : ""
+                        ? StateData.filter(d => modal.modalData.state_id == d.value)
+                        : ''
                     }
                     required={true}
                   />
@@ -532,31 +462,29 @@ function CityComponent() {
                     name="city"
                     maxLength={25}
                     required
-                    defaultValue={modal.modalData ? modal.modalData.city : ""}
-                    onKeyPress={(e) => {
+                    defaultValue={modal.modalData ? modal.modalData.city : ''}
+                    onKeyPress={e => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={(e) => {
+                    onPaste={e => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={(e) => {
+                    onCopy={e => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
                     maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
                 {modal.modalData && (
@@ -581,10 +509,7 @@ function CityComponent() {
                                 : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_1">
                             Active
                           </label>
                         </div>
@@ -599,15 +524,10 @@ function CityComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
+                              modal.modalData && modal.modalData.is_active === 0 ? true : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_0">
                             Deactive
                           </label>
                         </div>
@@ -624,9 +544,9 @@ function CityComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -636,29 +556,25 @@ function CityComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
             ) : (
-              ""
+              ''
             )}
             <button
               type="button"
               className="btn btn-danger text-white"
-              onClick={() => {dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: null,
-                  modalHeader: "Add City",
-                }))}}
-              // onClick={() => {
-              //   handleModal({
-              //     showModal: false,
-              //     modalData: "",
-              //     modalHeader: "",
-              //   });
-              // }}
+              onClick={() => {
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: null,
+                    modalHeader: 'Add City',
+                  }),
+                );
+              }}
             >
               Cancel
             </button>
@@ -670,9 +586,9 @@ function CityComponent() {
 }
 function CityDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect( () => {
+  useEffect(() => {
     const tempData = [];
-     new CityService().getCity().then((res) => {
+    new CityService().getCity().then(res => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -729,4 +645,3 @@ function CityDropdown(props) {
 }
 
 export { CityComponent, CityDropdown };
-

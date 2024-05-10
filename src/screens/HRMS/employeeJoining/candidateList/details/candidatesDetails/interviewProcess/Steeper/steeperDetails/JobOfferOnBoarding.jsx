@@ -257,6 +257,7 @@ function JobOfferOnBoarding() {
           enableReinitialize
           validationSchema={jobOfferValidation({
             isSeniorHr: isSeniorHr,
+            isOnlyReject: clickFor === 'reject',
           })}
           onSubmit={(values, { resetForm }) => {
             handelJobOfferAndOnBoardingProcess({ formData: values, resetFunc: resetForm });
@@ -391,7 +392,7 @@ function JobOfferOnBoarding() {
                           component={CustomCurrencyInput}
                           // onKeyDown={NumbersOnly}
                           name="sr_hr_negotiable_salary"
-                          label="Negotiable Salary From Supper Admin"
+                          label="Negotiable Salary From Super Admin"
                           placeholder="Enter negotiable salary"
                           type="number"
                           requiredField

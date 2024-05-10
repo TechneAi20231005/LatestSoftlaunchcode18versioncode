@@ -20,6 +20,8 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const { currentCandidateId } = location.state;
+
+  // // custom hooks call
   const currentInterviewStepData = useCurrentInterviewStep();
 
   // // redux state

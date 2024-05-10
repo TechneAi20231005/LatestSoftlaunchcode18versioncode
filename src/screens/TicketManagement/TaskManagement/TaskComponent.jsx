@@ -1,37 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Dropdown, Modal } from "react-bootstrap";
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Dropdown, Modal } from 'react-bootstrap';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import { _attachmentUrl, userSessionData } from "../../../settings/constants";
-import Alert from "../../../components/Common/Alert";
-import ErrorLogService from "../../../services/ErrorLogService";
-import MyTicketService from "../../../services/TicketService/MyTicketService";
-import BasketService from "../../../services/TicketService/BasketService";
+import PageHeader from '../../../components/Common/PageHeader';
+import { _attachmentUrl, userSessionData } from '../../../settings/constants';
+import Alert from '../../../components/Common/Alert';
+import ErrorLogService from '../../../services/ErrorLogService';
+import MyTicketService from '../../../services/TicketService/MyTicketService';
+import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
   getTaskPlanner,
   getRegularizationTime,
   getTaskHistory,
   getTaskRegularizationTime,
-} from "../../../services/TicketService/TaskService";
-import { getAttachment } from "../../../services/OtherService/AttachmentService";
-import BasketDetails from "./components/BasketDetails";
-import TaskData from "./components/TaskData";
-import TaskModal from "./components/TaskModal";
-import ApproveRequestModal from "./components/ApproveRequestModal";
-import ApproveTaskRequestModal from "./components/ApproveTaskRequestModal";
-import ModuleSetting from "../../../services/SettingService/ModuleSetting";
-import { _base } from "../../../settings/constants";
-import TestCasesService from "../../../services/TicketService/TestCaseService";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import { Spinner } from "react-bootstrap";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import SprintService from "../../../services/TicketService/SprintService";
-import DataTable from "react-data-table-component";
+} from '../../../services/TicketService/TaskService';
+import { getAttachment } from '../../../services/OtherService/AttachmentService';
+import BasketDetails from './components/BasketDetails';
+import TaskData from './components/TaskData';
+import TaskModal from './components/TaskModal';
+import ApproveRequestModal from './components/ApproveRequestModal';
+import ApproveTaskRequestModal from './components/ApproveTaskRequestModal';
+import ModuleSetting from '../../../services/SettingService/ModuleSetting';
+import { _base } from '../../../settings/constants';
+import TestCasesService from '../../../services/TicketService/TestCaseService';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { Spinner } from 'react-bootstrap';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
+import SprintService from '../../../services/TicketService/SprintService';
+import DataTable from 'react-data-table-component';
 
 export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
@@ -54,31 +54,31 @@ export default function TaskComponent({ match }) {
   // SPrint State  Planning
   const [sprintModal, setSprintModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   });
   const [selectedOption, setSelectedOption] = useState(null);
   const [sprintInput, setSprintInput] = useState({
-    sprintName: "",
-    sprintDescription: "",
-    startDate: "",
-    endDate: "",
+    sprintName: '',
+    sprintDescription: '',
+    startDate: '',
+    endDate: '',
   });
   const sprintDropDownRef = useRef();
   const [sprintData, setSprintdata] = useState([]);
   const [sprintCardData, setSprintCardData] = useState([]);
   const [sprintDropDown, setSprintDropDown] = useState([]);
   const [currentSprintIndex, setCurrentSprintIndex] = useState(0);
-  const [disableNextBtn, setDisableNextBtn] = useState(false);
-  const [disablePrevtBtn, setDisablePrevBtn] = useState(false);
   const [sprintReport, setSprintReport] = useState([]);
   const [showSprintReport, setShowSprintReport] = useState(false);
   const [exportSprintData, setExportSprintData] = useState([]);
+  const [sprintFirstDate, setSprintFirstDate] = useState('');
+  const [sprintLastDate, setSprintLastDate] = useState('');
 
   const getTicketData = async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
-      .then((res) => {
+      .then(res => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             setTicketData(res.data.data);
@@ -92,15 +92,15 @@ export default function TaskComponent({ match }) {
           }
         }
       })
-      .catch((error) => {
+      .catch(error => {
         const { response } = error;
 
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Task",
-          "Get_Ticket",
-          "INSERT",
-          errorObject.data.message
+          'Task',
+          'Get_Ticket',
+          'INSERT',
+          errorObject.data.message,
         );
       });
   };
@@ -109,12 +109,12 @@ export default function TaskComponent({ match }) {
     setShowBasketModal(false);
   };
 
-  const handleShowBasketModal = async (id) => {
+  const handleShowBasketModal = async id => {
     setBasketData(null);
     if (id) {
       await new BasketService()
         .getBasketById(id)
-        .then((res) => {
+        .then(res => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setBasketData(null);
@@ -123,14 +123,14 @@ export default function TaskComponent({ match }) {
             }
           }
         })
-        .catch((error) => {
+        .catch(error => {
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
-            "Task",
-            "Get_Basket",
-            "INSERT",
-            errorObject.data.message
+            'Task',
+            'Get_Basket',
+            'INSERT',
+            errorObject.data.message,
           );
         });
     } else {
@@ -157,7 +157,7 @@ export default function TaskComponent({ match }) {
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  const getBasketData = async (sprint_id) => {
+  const getBasketData = async sprint_id => {
     const tempAllTaskList = [];
     const taskDataa = [];
     const tasksDataa = [];
@@ -166,7 +166,7 @@ export default function TaskComponent({ match }) {
     await new BasketService()
       .getBasketTaskData(ticketId, sprintId)
 
-      .then((res) => {
+      .then(res => {
         if (res.status === 200) {
           setShowLoaderModal(false);
           setIsLoading(false);
@@ -186,9 +186,7 @@ export default function TaskComponent({ match }) {
             res.data.data.map((tasks, index) => {
               setBasketStartDate(tasks.start_date);
               tasks.taskData.forEach((d, i) => {
-                let taskOwnerNames = d.taskOwners
-                  .map((owner) => owner.taskOwnerName)
-                  .join(", ");
+                let taskOwnerNames = d.taskOwners.map(owner => owner.taskOwnerName).join(', ');
                 tasksDataa.push({
                   ticket_id_name: d.ticket_id_name,
                   Task_Names: d.task_name,
@@ -207,8 +205,8 @@ export default function TaskComponent({ match }) {
             });
 
             setTasksData(tasksDataa);
-            res.data.data.forEach((dataa) => {
-              dataa.taskData.forEach((task) => {
+            res.data.data.forEach(dataa => {
+              dataa.taskData.forEach(task => {
                 tempAllTaskList.push({ value: task.id, label: task.task_name });
               });
             });
@@ -219,7 +217,7 @@ export default function TaskComponent({ match }) {
           }
         }
       })
-      .catch((error) => {
+      .catch(error => {
         setIsLoading(false);
       });
   };
@@ -236,14 +234,14 @@ export default function TaskComponent({ match }) {
       task_hours: null,
       priority: null,
       description: null,
-      status: "TO_DO",
+      status: 'TO_DO',
       assign_to_user_id: null,
       total_time: null,
       attachment: null,
       parent_name: null,
     };
     if (id) {
-      await getTaskData(id).then((res) => {
+      await getTaskData(id).then(res => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             temp = res.data.data;
@@ -252,7 +250,7 @@ export default function TaskComponent({ match }) {
         }
       });
 
-      await getTaskHistory(id).then((res) => {
+      await getTaskHistory(id).then(res => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             setTaskHistory(res.data.data);
@@ -286,7 +284,7 @@ export default function TaskComponent({ match }) {
 
     const temp = [];
 
-    taskOwners.forEach((user) => {
+    taskOwners.forEach(user => {
       let t = user;
       t = { ...t, status: null };
       temp.push(t);
@@ -310,13 +308,13 @@ export default function TaskComponent({ match }) {
   const [taskRegularizationRequest, setTaskRegularizationRequest] = useState(0);
 
   const handleRegularizationRequest = () => {
-    new getRegularizationTime(ticketId).then((res) => {
+    new getRegularizationTime(ticketId).then(res => {
       setRegularizationRequest(res.data.data);
     });
   };
 
   const handleTaskRegularizationRequest = () => {
-    new getTaskRegularizationTime().then((res) => {
+    new getTaskRegularizationTime().then(res => {
       setTaskRegularizationRequest(res.data.data);
     });
   };
@@ -349,78 +347,79 @@ export default function TaskComponent({ match }) {
 
   const [taskDropdown, setTaskDropdown] = useState();
 
-  const handleSprintModal = (data) => {
+  const handleSprintModal = data => {
     setSprintModal(data);
   };
 
   const loadData = async () => {
-    await new ModuleSetting().getSettingByName("Ticket", "Task").then((res) => {
+    await new ModuleSetting().getSettingByName('Ticket', 'Task').then(res => {
       if (res.status == 200) {
         if (res.data.status == 1) {
           setModuleSetting(res.data.data);
         }
       }
     });
-    await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
+    await new TestCasesService().getTaskBytTicket(ticketId).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-          setTaskDropdown(
-            temp.map((d) => ({ value: d.id, label: d.task_name }))
-          );
+          setTaskDropdown(temp.map(d => ({ value: d.id, label: d.task_name })));
         }
       }
     });
 
-    await new SprintService().getSprintByTicketId(ticketId).then((res) => {
+    await new SprintService().getSprintByTicketId(ticketId).then(res => {
       if (res?.data?.status === 1) {
-        setSprintdata(res?.data?.data);
-        let temp = res?.data?.data?.map((data) => ({
+        const { data } = res?.data;
+        setSprintdata(data);
+        let temp = res?.data?.data?.map(data => ({
           label: data.name,
           value: data.id,
         }));
         setSprintDropDown(temp);
+        setSprintFirstDate(data[data.length - 1]?.start_date);
+        setSprintLastDate(data[0]?.end_date);
       }
     });
   };
 
   const [buttonType, setButtontype] = useState();
   const [basketList, setBasketList] = useState(null);
-  const pushForward = async (e) => {
+  const pushForward = async e => {
     var sendArray = {
       user_id: parseInt(userSessionData.userId),
       ticket_id: parseInt(ticketId),
       basket_id_array: basketIdArray,
     };
 
-    await new BasketService().pushForward(sendArray).then((res) => {});
+    await new BasketService().pushForward(sendArray).then(res => {});
   };
 
   // sprint form handling
-  const sprintInputChangeHandler = (e) => {
-    setSprintInput((prevSate) => ({
+  const sprintInputChangeHandler = e => {
+    setSprintInput(prevSate => ({
       ...prevSate,
       [e.target.name]: e.target.value,
     }));
   };
 
   const sprintFormHandle = async () => {
-    const tenantId = localStorage.getItem("tenant_id");
+    const tenantId = localStorage.getItem('tenant_id');
     const ticket_id = data[0]?.ticket_id;
     const { startDate, endDate } = sprintInput;
 
     if (!startDate || !endDate) {
       setNotify({
-        type: "danger",
-        message: "Date is missing !!!",
+        type: 'danger',
+        message: 'Date is missing !!!',
       });
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
       setNotify({
-        type: "danger",
-        message: "End Date should be greater than start date",
+        type: 'danger',
+        message: 'End Date should be greater than start date',
       });
       return;
     }
@@ -437,59 +436,55 @@ export default function TaskComponent({ match }) {
     try {
       const res = await new SprintService().postSprintForTicket(payload);
       if (res?.data?.status) {
-        setNotify({ type: "success", message: res?.data?.message });
+        setNotify({ type: 'success', message: res?.data?.message });
         setSprintModal({
           showModal: false,
-          modalData: "",
-          modalHeader: "",
+          modalData: '',
+          modalHeader: '',
         });
         setSprintCardData([]);
         setSprintDropDown([]);
         setSprintInput({
-          sprintName: "",
-          sprintDescription: "",
-          startDate: "",
-          endDate: "",
+          sprintName: '',
+          sprintDescription: '',
+          startDate: '',
+          endDate: '',
         });
 
-        const sprintRes = await new SprintService().getSprintByTicketId(
-          ticketId
-        );
+        const sprintRes = await new SprintService().getSprintByTicketId(ticketId);
         if (sprintRes?.data?.status) {
           setSprintdata(sprintRes?.data?.data);
-          const temp = sprintRes?.data?.data?.map((data) => ({
+          const temp = sprintRes?.data?.data?.map(data => ({
             label: data.name,
             value: data.id,
           }));
           setSprintDropDown(temp);
         } else {
-          setNotify({ type: "danger", message: sprintRes?.data?.message });
+          setNotify({ type: 'danger', message: sprintRes?.data?.message });
         }
       } else {
-        setNotify({ type: "danger", message: res?.data?.message });
+        setNotify({ type: 'danger', message: res?.data?.message });
       }
     } catch (error) {
       setNotify({
-        type: "danger",
-        message: "An error occurred while processing your request.",
+        type: 'danger',
+        message: 'An error occurred while processing your request.',
       });
     }
   };
 
-  const sprintDropDownHandler = async (selectedOption) => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+  const sprintDropDownHandler = async selectedOption => {
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     setSprintCardData(sprintData);
-    setSelectedOption((prevStateOption) => {
+    setSelectedOption(prevStateOption => {
       if (selectedOption === prevStateOption) {
         setSprintCardData([]);
         getBasketData(0);
         return null;
       }
-      setSprintCardData((prevState) => {
-        let filteredArray = prevState?.filter(
-          (sprint) => sprint.id === selectedOption?.value
-        );
+      setSprintCardData(prevState => {
+        let filteredArray = prevState?.filter(sprint => sprint.id === selectedOption?.value);
         return filteredArray;
       });
 
@@ -499,100 +494,94 @@ export default function TaskComponent({ match }) {
   };
 
   const showNext = async () => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex(
-      (sprint) => sprint.id === currentSprintCard[0].id
-    );
+    let currentIndex = sprintData.findIndex(sprint => sprint.id === currentSprintCard[0].id);
 
     setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       setSprintCardData([sprintData[currentIndex + 1]]);
       await getBasketData(sprintData[currentIndex + 1]?.id);
     } else {
-      setDisableNextBtn(true);
+      // setDisableNextBtn(true);
     }
   };
 
   const showPrevious = async () => {
-    setDisableNextBtn(false);
-    setDisablePrevBtn(false);
+    // setDisableNextBtn(false);
+    // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex(
-      (sprint) => sprint.id === currentSprintCard[0].id
-    );
+    let currentIndex = sprintData.findIndex(sprint => sprint.id === currentSprintCard[0].id);
     setCurrentSprintIndex(currentIndex);
 
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
       setSprintCardData([sprintData[currentIndex - 1]]);
       await getBasketData(sprintData[currentIndex - 1]?.id);
     } else {
-      setDisablePrevBtn(true);
+      // setDisablePrevBtn(true);
     }
   };
 
-  const getSprintReport = async (sprintId) => {
-    await new SprintService()
-      .getSprintReportById(ticketId, sprintId)
-      .then((res) => {
-        if (res?.data?.status) {
-          let temp = res?.data?.data;
-          setSprintReport(temp);
-          setShowSprintReport(true);
-          let exportSprintReport = [];
-          let count = 0;
-          for (let i = 0; i < temp.length; i++) {
-            count++;
-            temp[i].counter = count;
-            exportSprintReport.push({
-              "Sr no": count,
-              "sprint Name": temp[i]?.sprint_name,
-              "Sprint Start date": temp[i]?.sprint_start_date,
-              "Sprint End Date": temp[i]?.sprint_end_date,
-              "Task Name": temp[i]?.task_name,
-              "Task Users": temp[i]?.task_owner,
-              "Task Start Date": temp[i]?.task_creation_Date,
-              "Task End Date": temp[i]?.task_delivery_scheduled,
-              "Task actual completed date": temp[i]?.task_completed_at,
-              "Task scheduled hours": temp[i]?.task_scheduled_Hours,
-              "Task actual hours played": temp[i]?.task_actual_worked,
-              "Task status": temp[i]?.task_status,
-              "Actual status": temp[i]?.task_actual_status,
-            });
-          }
-          setExportSprintData([...exportSprintReport]);
+  const getSprintReport = async sprintId => {
+    await new SprintService().getSprintReportById(ticketId, sprintId).then(res => {
+      if (res?.data?.status) {
+        let temp = res?.data?.data;
+        setSprintReport(temp);
+        setShowSprintReport(true);
+        let exportSprintReport = [];
+        let count = 0;
+        for (let i = 0; i < temp.length; i++) {
+          count++;
+          temp[i].counter = count;
+          exportSprintReport.push({
+            'Sr no': count,
+            'sprint Name': temp[i]?.sprint_name,
+            'Sprint Start date': temp[i]?.sprint_start_date,
+            'Sprint End Date': temp[i]?.sprint_end_date,
+            'Task Name': temp[i]?.task_name,
+            'Task Users': temp[i]?.task_owner,
+            'Task Start Date': temp[i]?.task_start_Date,
+            'Task End Date': temp[i]?.task_delivery_scheduled,
+            'Task actual completed date': temp[i]?.task_completed_at,
+            'Task scheduled hours': temp[i]?.task_scheduled_Hours,
+            'Task actual hours played': temp[i]?.task_actual_worked,
+            'Task status': temp[i]?.task_status,
+            'Actual status': temp[i]?.task_actual_status,
+          });
         }
-      });
+        setExportSprintData([...exportSprintReport]);
+      }
+    });
   };
 
-  const viewSprint = (sprintCard) => {
+  const viewSprint = sprintCard => {
     setShowSprintReport(false);
     setSprintModal({
       showModal: true,
       modalData: sprintCard,
-      modalHeader: "View",
+      modalHeader: 'View',
     });
   };
 
-  const updateSprint = async (sprintCard) => {
+  const updateSprint = async sprintCard => {
     setShowSprintReport(false);
-    const tenantId = localStorage.getItem("tenant_id");
+    const tenantId = localStorage.getItem('tenant_id');
     const ticket_id = data[0]?.ticket_id;
     let sprint_id = sprintModal?.modalData?.id;
     const { startDate, endDate } = sprintInput;
     if (!startDate || !endDate) {
       setNotify({
-        type: "danger",
-        message: "Date is missing !!!",
+        type: 'danger',
+        message: 'Date is missing !!!',
       });
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
       setNotify({
-        type: "danger",
-        message: "Start Date should be greater than end date",
+        type: 'danger',
+        message: 'Start Date should be greater than end date',
       });
       return;
     }
@@ -605,123 +594,117 @@ export default function TaskComponent({ match }) {
       end_date: sprintInput?.endDate,
     };
 
-    await new SprintService()
-      .updateSprintDetail(payload, sprint_id)
-      .then(async (res) => {
-        if (res?.data?.status === 1) {
-          setNotify({ type: "success", message: res?.data?.message });
-          setSprintModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-          setSprintInput({
-            sprintName: "",
-            sprintDescription: "",
-            startDate: "",
-            endDate: "",
-          });
-          await new SprintService()
-            .getSprintByTicketId(ticketId)
-            .then((res) => {
-              if (res?.data?.status) {
-                setSprintdata(res?.data?.data);
-                let temp = res.data.data.map((data) => ({
-                  label: data.name,
-                  value: data.id,
-                }));
-                setSprintDropDown(temp);
-                let showUpdatedData = res?.data?.data?.filter(
-                  (sprint) => sprint.id === sprint_id
-                );
-                setSprintCardData(showUpdatedData);
-              }
-            });
-        } else {
-          setNotify({ type: "danger", message: res?.data?.message });
-        }
-      });
+    await new SprintService().updateSprintDetail(payload, sprint_id).then(async res => {
+      if (res?.data?.status === 1) {
+        setNotify({ type: 'success', message: res?.data?.message });
+        setSprintModal({
+          showModal: false,
+          modalData: '',
+          modalHeader: '',
+        });
+        setSprintInput({
+          sprintName: '',
+          sprintDescription: '',
+          startDate: '',
+          endDate: '',
+        });
+        await new SprintService().getSprintByTicketId(ticketId).then(res => {
+          if (res?.data?.status) {
+            setSprintdata(res?.data?.data);
+            let temp = res?.data?.data?.map(data => ({
+              label: data.name,
+              value: data.id,
+            }));
+            setSprintDropDown(temp);
+            let showUpdatedData = res?.data?.data?.filter(sprint => sprint.id === sprint_id);
+            setSprintCardData(showUpdatedData);
+          }
+        });
+      } else {
+        setNotify({ type: 'danger', message: res?.data?.message });
+      }
+    });
   };
 
   const column = [
     {
-      name: "Sr no",
-      selector: (row) => row.counter,
+      name: 'Sr no',
+      selector: row => row.counter,
       sortable: true,
-      width: "5%",
+      width: '5%',
     },
     {
-      name: "Sprint Name",
-      selector: (row) => row?.sprint_name,
+      name: 'Sprint Name',
+      selector: row => row?.sprint_name,
       sortable: true,
-      width: "10%",
+      width: '10%',
     },
     {
-      name: "Sprint Start Date",
-      selector: (row) => row?.sprint_start_date,
+      name: 'Sprint Start Date',
+      selector: row => row?.sprint_start_date,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
     {
-      name: "Sprint End Date",
-      selector: (row) => row?.sprint_end_date,
+      name: 'Sprint End Date',
+      selector: row => row?.sprint_end_date,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
     {
-      name: "Task Name",
-      selector: (row) => row?.task_name,
+      name: 'Task Name',
+      selector: row => row?.task_name,
       sortable: true,
-      width: "15%",
+      width: '15%',
     },
     {
-      name: "Task User",
-      selector: (row) => row?.task_owner,
+      name: 'Task User',
+      selector: row => row?.task_owner,
       sortable: true,
-      width: "10%",
+      width: '10%',
     },
     {
-      name: "Task Start Date",
-      selector: (row) => row?.task_start_Date,
+      name: 'Task Start Date',
+      selector: row => row?.task_start_Date,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
     {
-      name: "Task End Date",
-      selector: (row) => row?.task_delivery_scheduled,
+      name: 'Task End Date',
+      selector: row => row?.task_delivery_scheduled,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
 
     {
-      name: "Task actual completion date",
-      selector: (row) => row?.task_completed_at,
+      name: 'Task actual completion date',
+      selector: row => row?.task_completed_at,
       sortable: true,
-      width: "10%",
+      width: '10%',
     },
     {
-      name: "Task schedule hours",
-      selector: (row) => row?.task_scheduled_Hours,
+      name: 'Task schedule hours',
+      selector: row => row?.task_scheduled_Hours,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
     {
-      name: "Task actual hours played",
-      selector: (row) => row?.task_actual_worked,
+      name: 'Task actual hours played',
+      selector: row => row?.task_actual_worked,
       sortable: true,
-      width: "8%",
+      width: '8%',
     },
     {
-      name: "Task status",
-      selector: (row) => row?.task_status,
+      name: 'Task status',
+      selector: row => row?.task_status,
       sortable: true,
-      width: "10%",
+      width: '10%',
     },
     {
-      name: "Task actual status",
-      selector: (row) => row?.task_actual_status,
+      name: 'Task actual status',
+      selector: row => row?.task_actual_status,
       sortable: true,
-      width: "10%",
+      width: '10%',
     },
   ];
 
@@ -737,7 +720,7 @@ export default function TaskComponent({ match }) {
     e.preventDefault();
   };
 
-  const dragOverHandler = (e) => {
+  const dragOverHandler = e => {
     e.preventDefault();
   };
 
@@ -758,7 +741,7 @@ export default function TaskComponent({ match }) {
   };
   const [showDetails, setShowDetails] = useState(false);
   const detailsHandler = () => {
-    setShowDetails((prev) => !prev);
+    setShowDetails(prev => !prev);
   };
 
   const date = new Date();
@@ -771,15 +754,7 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    console.log(
-      "sprintCardData[currentSprintIndex]?.id",
-      sprintCardData[currentSprintIndex]?.id
-    );
-    getBasketData(
-      sprintData[currentSprintIndex]?.id
-        ? sprintData[currentSprintIndex]?.id
-        : 0
-    );
+    getBasketData(sprintData[currentSprintIndex]?.id ? sprintData[currentSprintIndex]?.id : 0);
     loadData();
     getTicketData();
   }, []);
@@ -787,26 +762,24 @@ export default function TaskComponent({ match }) {
   function LoaderComponent() {
     return (
       // Container to center-align the spinner and loading text
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
         {/* Spinner element with custom styling */}
         <Spinner
           animation="border"
           role="status"
           style={{
-            width: "100px",
-            height: "100px",
-            borderWidth: "5px",
-            color: "#484c7f",
-            marginBottom: "10px",
+            width: '100px',
+            height: '100px',
+            borderWidth: '5px',
+            color: '#484c7f',
+            marginBottom: '10px',
           }}
         >
           {/* Visually hidden loading text for accessibility */}
           <span className="visually-hidden">Loading...</span>
         </Spinner>
         {/* Loading text displayed below the spinner */}
-        <div style={{ color: "#484c7f", fontSize: "16px", fontWeight: "bold" }}>
-          Loading...
-        </div>
+        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>Loading...</div>
       </div>
     );
   }
@@ -822,30 +795,15 @@ export default function TaskComponent({ match }) {
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
                 <strong>
-                  Ticket -{" "}
-                  {tasksData &&
-                    tasksData?.length > 0 &&
-                    tasksData[0].ticket_id_name}
-                  <i onClick={detailsHandler} style={{ cursor: "pointer" }}>
+                  Ticket - {tasksData && tasksData?.length > 0 && tasksData[0].ticket_id_name}
+                  <i onClick={detailsHandler} style={{ cursor: 'pointer' }}>
                     {showDetails ? (
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={<Tooltip>Hide Details</Tooltip>}
-                      >
-                        <i
-                          className="icofont-eye"
-                          style={{ fontSize: "27px" }}
-                        ></i>
+                      <OverlayTrigger placement="right" overlay={<Tooltip>Hide Details</Tooltip>}>
+                        <i className="icofont-eye" style={{ fontSize: '27px' }}></i>
                       </OverlayTrigger>
                     ) : (
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={<Tooltip>Show Details</Tooltip>}
-                      >
-                        <i
-                          className="icofont-eye-blocked"
-                          style={{ fontSize: "27px" }}
-                        ></i>
+                      <OverlayTrigger placement="right" overlay={<Tooltip>Show Details</Tooltip>}>
+                        <i className="icofont-eye-blocked" style={{ fontSize: '27px' }}></i>
                       </OverlayTrigger>
                     )}
                   </i>
@@ -868,17 +826,10 @@ export default function TaskComponent({ match }) {
                 {/* Hamburger Menu for manage task */}
                 <div className="col-2 text-end">
                   <Dropdown onClick={handleRegularizationRequest}>
-                    <Dropdown.Toggle
-                      as="button"
-                      variant=""
-                      className="btn btn-outline-primary p-1"
-                    >
+                    <Dropdown.Toggle as="button" variant="" className="btn btn-outline-primary p-1">
                       <i className="icofont-navigation-menu"></i>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu
-                      as="ul"
-                      className="border-0 shadow p-2 dropdown-menu-columns"
-                    >
+                    <Dropdown.Menu as="ul" className="border-0 shadow p-2 dropdown-menu-columns">
                       <li>
                         <ExportToExcel
                           className="btn btn-sm btn-danger btn-custom  w-100"
@@ -888,34 +839,30 @@ export default function TaskComponent({ match }) {
                         />
                       </li>
                       <li>
-                        {ownership &&
-                          (ownership === "TICKET" ||
-                            ownership === "PROJECT") && (
-                            <button
-                              className="btn btn-sm btn-primary text-white btn-custom w-100"
-                              onClick={(e) => {
-                                handleShowBasketModal(null);
-                              }}
-                            >
-                              Create Basket
-                            </button>
-                          )}
+                        {ownership && (ownership === 'TICKET' || ownership === 'PROJECT') && (
+                          <button
+                            className="btn btn-sm btn-primary text-white btn-custom w-100"
+                            onClick={e => {
+                              handleShowBasketModal(null);
+                            }}
+                          >
+                            Create Basket
+                          </button>
+                        )}
                       </li>
                       {/* Add Sprint Button  in hamburger*/}
 
                       <li>
                         <button
                           className="btn btn-sm btn-primary text-white btn-custom w-100"
-                          onClick={(e) => {
+                          onClick={e => {
                             handleSprintModal({
                               showModal: true,
-                              modalData: "",
-                              modalHeader: "Add",
+                              modalData: '',
+                              modalHeader: 'Add',
                             });
                           }}
-                          disabled={
-                            ownership !== "TICKET" && ownership !== "PROJECT"
-                          }
+                          disabled={ownership !== 'TICKET' && ownership !== 'PROJECT'}
                         >
                           + Sprint
                         </button>
@@ -953,7 +900,7 @@ export default function TaskComponent({ match }) {
                       <li>
                         <button
                           className="btn btn-sm btn-warning  text-white"
-                          onClick={(e) => {
+                          onClick={e => {
                             handleShowApproveTaskRequestModal();
                             handleTaskRegularizationRequest();
                           }}
@@ -990,15 +937,12 @@ export default function TaskComponent({ match }) {
                             key={index}
                             className="justify-content-start"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px',
                             }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
-                            >
+                            <div className="card" style={{ backgroundColor: '#EBF5FB' }}>
                               <div className="card-header">
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
@@ -1027,7 +971,7 @@ export default function TaskComponent({ match }) {
         <div className=" card mt-2">
           <div className="card-body">
             <div className="d-flex justify-content-around align-items-center p-2">
-              <div className={"col-2 text-end"}>
+              <div className={'col-2 text-end'}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="25"
@@ -1037,14 +981,7 @@ export default function TaskComponent({ match }) {
                   role="button"
                   onClick={showPrevious}
                 >
-                  <rect
-                    x="0.75"
-                    y="0.25"
-                    width="23.5"
-                    height="23.5"
-                    rx="11.75"
-                    fill="#F9FBFD"
-                  />
+                  <rect x="0.75" y="0.25" width="23.5" height="23.5" rx="11.75" fill="#F9FBFD" />
                   <rect
                     x="0.75"
                     y="0.25"
@@ -1065,12 +1002,10 @@ export default function TaskComponent({ match }) {
               </div>
 
               <div className="col-8 text-center">
-                <span className=" fs-4 text-primary fw-bold">
-                  {sprintCardData[0]?.name}
-                </span>
+                <span className=" fs-4 text-primary fw-bold">{sprintCardData[0]?.name}</span>
               </div>
               <div
-                className={"col-2 text-start"}
+                className={'col-2 text-start'}
                 onClick={showNext}
                 // disable={disableNextBtn}
               >
@@ -1082,14 +1017,7 @@ export default function TaskComponent({ match }) {
                   fill="none"
                   role="button"
                 >
-                  <rect
-                    x="0.75"
-                    y="0.25"
-                    width="23.5"
-                    height="23.5"
-                    rx="11.75"
-                    fill="#F9FBFD"
-                  />
+                  <rect x="0.75" y="0.25" width="23.5" height="23.5" rx="11.75" fill="#F9FBFD" />
                   <rect
                     x="0.75"
                     y="0.25"
@@ -1124,10 +1052,7 @@ export default function TaskComponent({ match }) {
                 </span>
               </div>
               <div className="fs-5">
-                <Link
-                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`}
-                  className="ms-1"
-                >
+                <Link to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`} className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
@@ -1143,7 +1068,7 @@ export default function TaskComponent({ match }) {
                   </svg>
                 </Link>
                 <Link
-                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph`}
+                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph/${sprintFirstDate}to${sprintLastDate}`}
                   className="ms-1"
                 >
                   <span>
@@ -1163,10 +1088,7 @@ export default function TaskComponent({ match }) {
                     </svg>
                   </span>
                 </Link>
-                <button
-                  className="border-0 p-0 ms-1"
-                  disabled={ownership !== "PROJECT"}
-                >
+                <button className="border-0 p-0 ms-1" disabled={ownership !== 'PROJECT'}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
@@ -1184,7 +1106,7 @@ export default function TaskComponent({ match }) {
                       setSprintModal({
                         showModal: true,
                         modalData: sprintCardData[0],
-                        modalHeader: "Update",
+                        modalHeader: 'Update',
                       });
                     }}
                   >
@@ -1273,11 +1195,11 @@ export default function TaskComponent({ match }) {
               <div className="col-2">
                 <div
                   className="col-3"
-                  style={{ marginRight: "5px", padding: "0px", width: "250px" }}
+                  style={{ marginRight: '5px', padding: '0px', width: '250px' }}
                 >
-                  <div className="card" style={{ backgroundColor: "#EBF5FB" }}>
+                  <div className="card" style={{ backgroundColor: '#EBF5FB' }}>
                     <div className="card-header">
-                      <p style={{ fontSize: "12px" }}>
+                      <p style={{ fontSize: '12px' }}>
                         <p>
                           User : {item.first_name} {item.last_name}
                         </p>
@@ -1289,14 +1211,11 @@ export default function TaskComponent({ match }) {
                         <button
                           className="btn btn-danger text-white btn-sm p-0 px-1"
                           type="button"
-                          onClick={(e) => {
+                          onClick={e => {
                             handleRequestSubmit(item.id, item.ticket_task_id);
                           }}
                         >
-                          <i
-                            className="icofont-ui-check"
-                            style={{ fontSize: "12px" }}
-                          ></i>
+                          <i className="icofont-ui-check" style={{ fontSize: '12px' }}></i>
                         </button>
                       </div>
                     </div>
@@ -1327,11 +1246,11 @@ export default function TaskComponent({ match }) {
                     return (
                       <div
                         draggable={true}
-                        onDragStart={(e) => dragStartHandler(e, ele)}
-                        onDragLeave={(e) => dragEndhandler(e)}
-                        onDragEnd={(e) => dragEndhandler(e, ele)}
-                        onDragOver={(e) => dragOverHandler(e)}
-                        onDrop={(e) => dropHandler(e, ele)}
+                        onDragStart={e => dragStartHandler(e, ele)}
+                        onDragLeave={e => dragEndhandler(e)}
+                        onDragEnd={e => dragEndhandler(e, ele)}
+                        onDragOver={e => dragOverHandler(e)}
+                        onDrop={e => dropHandler(e, ele)}
                         id={`basket_${index}`}
                         key={`basket_${index}`}
                         className="col-lg-4 col-md-12 col-sm-12"
@@ -1342,37 +1261,32 @@ export default function TaskComponent({ match }) {
                           </h5>
                           <span
                             className="badge bg-success text-end mt-2 p-1 px-3"
-                            style={{ fontSize: "14px" }}
+                            style={{ fontSize: '14px' }}
                           >
-                            {ele.total_worked ? ele.total_worked : 0}/
-                            {ele?.total_hours}
+                            {ele.total_worked ? ele.total_worked : 0}/{ele?.total_hours}
                           </span>
                         </div>
 
                         <div className="p-0 m-0 d-flex justify-content-between mt-1">
                           {ele &&
-                            (ele.ownership === "TICKET" ||
-                              ele.ownership === "BASKET" ||
-                              ele.ownership === "PROJECT") && (
+                            (ele.ownership === 'TICKET' ||
+                              ele.ownership === 'BASKET' ||
+                              ele.ownership === 'PROJECT') && (
                               <button
                                 type="button"
                                 key={`newTaskBtn_${index}`}
                                 className="btn btn-danger btn-sm text-white"
-                                style={{ padding: "10px 10px" }}
+                                style={{ padding: '10px 10px' }}
                                 name="newTaskButton"
-                                onClick={(e) => {
-                                  handleShowTaskModal(
-                                    ele.ticket_id,
-                                    ele.id,
-                                    null
-                                  );
+                                onClick={e => {
+                                  handleShowTaskModal(ele.ticket_id, ele.id, null);
                                 }}
                               >
                                 <i
                                   className="icofont-plus"
                                   style={{
-                                    fontSize: "10px",
-                                    marginRight: "4px",
+                                    fontSize: '10px',
+                                    marginRight: '4px',
                                   }}
                                 ></i>
                                 New Task
@@ -1381,18 +1295,13 @@ export default function TaskComponent({ match }) {
 
                           <form
                             method="post"
-                            onSubmit={(e) => {
+                            onSubmit={e => {
                               pushForward(e);
                             }}
                             encType="multipart/form-data"
                           >
                             <div>
-                              <input
-                                type="hidden"
-                                id="basket_id"
-                                name="basket_id"
-                                value={ele.id}
-                              />
+                              <input type="hidden" id="basket_id" name="basket_id" value={ele.id} />
                               <input
                                 type="hidden"
                                 id="basket_id_array"
@@ -1403,14 +1312,14 @@ export default function TaskComponent({ match }) {
                           </form>
 
                           {ele &&
-                            (ele.ownership === "TICKET" ||
-                              ele.ownership === "BASKET" ||
-                              ele.ownership === "PROJECT") && (
+                            (ele.ownership === 'TICKET' ||
+                              ele.ownership === 'BASKET' ||
+                              ele.ownership === 'PROJECT') && (
                               <button
                                 type="button"
                                 className="btn btn-primary text-white btn-sm"
-                                style={{ padding: "10px 10px" }}
-                                onClick={(e) => {
+                                style={{ padding: '10px 10px' }}
+                                onClick={e => {
                                   getTicketData();
 
                                   // Handle the click event here
@@ -1420,8 +1329,8 @@ export default function TaskComponent({ match }) {
                                 <i
                                   className="icofont-ui-edit"
                                   style={{
-                                    fontSize: "13px",
-                                    marginRight: "4px",
+                                    fontSize: '13px',
+                                    marginRight: '4px',
                                   }}
                                 ></i>
                                 Edit Basket
@@ -1432,7 +1341,7 @@ export default function TaskComponent({ match }) {
                         <div className="ticket-container" key={ele.id}>
                           <div className="ticket">
                             {ele.taskData &&
-                              ele.taskData.map((task) => {
+                              ele.taskData.map(task => {
                                 return (
                                   <TaskData
                                     key={task.id.toString()}
@@ -1455,9 +1364,7 @@ export default function TaskComponent({ match }) {
                     data={taskModalData}
                     show={showTaskModal}
                     ownership={ownership}
-                    loadBasket={() =>
-                      getBasketData(sprintCardData[currentSprintIndex]?.id || 0)
-                    }
+                    loadBasket={() => getBasketData(sprintCardData[currentSprintIndex]?.id || 0)}
                     allTaskList={allTaskList}
                     taskDropdown={taskDropdown}
                     close={handleCloseTaskModal}
@@ -1501,8 +1408,8 @@ export default function TaskComponent({ match }) {
                   onHide={() =>
                     handleSprintModal({
                       showModal: false,
-                      modalData: "",
-                      modalHeader: "",
+                      modalData: '',
+                      modalHeader: '',
                     })
                   }
                   centered
@@ -1516,10 +1423,7 @@ export default function TaskComponent({ match }) {
                   <Modal.Body>
                     <form className="">
                       <div className="mb-3">
-                        <label
-                          for="exampleFormControlInput1"
-                          className="form-label"
-                        >
+                        <label for="exampleFormControlInput1" className="form-label">
                           <b>Sprint Name</b>
                           <span>
                             <Astrick color="red" /> :
@@ -1531,18 +1435,15 @@ export default function TaskComponent({ match }) {
                           id="exampleFormControlInput1"
                           name="sprintName"
                           placeholder="Enter Sprint name"
-                          disabled={sprintModal?.modalHeader == "View"}
+                          disabled={sprintModal?.modalHeader == 'View'}
                           defaultValue={sprintModal?.modalData?.name}
-                          onChange={(e) => sprintInputChangeHandler(e)}
+                          onChange={e => sprintInputChangeHandler(e)}
                           maxlength={50}
                           required={true}
                         />
                       </div>
                       <div>
-                        <label
-                          for="exampleFormControlInput1"
-                          className="form-label"
-                        >
+                        <label for="exampleFormControlInput1" className="form-label">
                           <b>Sprint Description </b>
                           <span>
                             <Astrick color="red" /> :
@@ -1553,10 +1454,10 @@ export default function TaskComponent({ match }) {
                             className="form-control"
                             name="sprintDescription"
                             placeholder="Sprint Descriptions. . ."
-                            style={{ height: "40%" }}
+                            style={{ height: '40%' }}
                             id="floatingTextarea2"
-                            disabled={sprintModal?.modalHeader === "View"}
-                            onChange={(e) => sprintInputChangeHandler(e)}
+                            disabled={sprintModal?.modalHeader === 'View'}
+                            onChange={e => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.description}
                             maxlength={1000}
                             required={true}
@@ -1578,10 +1479,10 @@ export default function TaskComponent({ match }) {
                             className="form-control form-control-sm"
                             name="startDate"
                             id="startDate"
-                            disabled={sprintModal?.modalHeader === "View"}
-                            onChange={(e) => sprintInputChangeHandler(e)}
+                            disabled={sprintModal?.modalHeader === 'View'}
+                            onChange={e => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.start_date}
-                            onKeyDown={(e) => e.preventDefault()}
+                            onKeyDown={e => e.preventDefault()}
                             min={ticketStartDate}
                             max={expectedSolveDate}
                             required
@@ -1600,12 +1501,12 @@ export default function TaskComponent({ match }) {
                             className="form-control form-control-sm"
                             name="endDate"
                             id="endDate"
-                            disabled={sprintModal?.modalHeader === "View"}
-                            onChange={(e) => sprintInputChangeHandler(e)}
+                            disabled={sprintModal?.modalHeader === 'View'}
+                            onChange={e => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.end_date}
                             min={ticketStartDate}
                             max={expectedSolveDate}
-                            onKeyDown={(e) => e.preventDefault()}
+                            onKeyDown={e => e.preventDefault()}
                             required
                           />
                         </div>
@@ -1615,18 +1516,16 @@ export default function TaskComponent({ match }) {
                   <Modal.Footer>
                     <button
                       className={
-                        sprintModal?.modalHeader === "View"
-                          ? "d-none"
-                          : "px-4 btn btn-sm  text-white btn-custom"
+                        sprintModal?.modalHeader === 'View'
+                          ? 'd-none'
+                          : 'px-4 btn btn-sm  text-white btn-custom'
                       }
-                      style={{ backgroundColor: "#484C7F" }}
+                      style={{ backgroundColor: '#484C7F' }}
                       onClick={
-                        sprintModal.modalHeader === "Update"
-                          ? updateSprint
-                          : sprintFormHandle
+                        sprintModal.modalHeader === 'Update' ? updateSprint : sprintFormHandle
                       }
                     >
-                      {sprintModal.modalHeader === "Update" ? "Update" : "Save"}
+                      {sprintModal.modalHeader === 'Update' ? 'Update' : 'Save'}
                     </button>
                     <button
                       className="btn btn-sm btn-warning px-4 text-white"

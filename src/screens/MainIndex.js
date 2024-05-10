@@ -297,6 +297,7 @@ class MainIndex extends React.Component {
             <Route exact path={`/${_base}/Ticket/View/:id`} element={<ViewTicketComponent />} />
             <Route exact path={`/${_base}/Ticket/Basket/:id`} element={<BasketComponent />} />
             <Route exact path={`/${_base}/Ticket/Task/:id`} element={<TaskComponent />} />
+            {/* Sprint */}
             <Route
               exact
               path={`/${_base}/Ticket/Task/:id/sprint-calendar`}
@@ -304,7 +305,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/Ticket/Task/:id/sprint-graph`}
+              path={`/${_base}/Ticket/Task/:id/sprint-graph/:date`}
               element={<GraphWeekWise />}
             />
             <Route exact path={`/${_base}/TestCases/:ticketId/:taskId`} element={<TestCases />} />
@@ -482,6 +483,39 @@ class MainIndex extends React.Component {
             <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
             <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
             <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
+            {/* <Route
+              exact
+              path={`/${_base}/rotationalShiftMaster`}
+              element={<RoastedComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Shift/Create`}
+              element={<CreateShiftMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/EmployeeMaster`}
+              element={<EmployeeMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Employee/Create`}
+              element={<CreateEmployeeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CalendarMaster`}
+              element={<CalenderMaster />}
+            />
+
+            {/* Employee Joining routes */}
+            <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
+            <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
+            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
+            <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
+            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
+            <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
             {/* PO */}
             <Route
               exact
@@ -498,72 +532,6 @@ class MainIndex extends React.Component {
               path={`/${_base}/POOrderQuanitityReport`}
               element={<OrderQuantityReport />}
             />
-            {/* <Route
-            <Route
-              exact
-              path={`/${_base}/rotationalShiftMaster`}
-              element={<RoastedComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Shift/Create`}
-              element={<CreateShiftMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/EmployeeMaster`}
-              element={<EmployeeMasterComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Employee/Create`}
-              element={<CreateEmployeeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CalendarMaster`}
-              element={<CalenderMaster />}
-            />
-            {/* HRMS>> Employee Joining routes */}
-            <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
-            <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
-            <Route exact path={`/${_base}/CandidateList/:id`} element={<EmployeeJoining />} />
-            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
-            <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
-            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
-            <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
-            {/* <Route
-              exact
-              path={`/${_base}/rotationalShiftMaster`}
-              element={<RoastedComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Shift/Create`}
-              element={<CreateShiftMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/EmployeeMaster`}
-              element={<EmployeeMasterComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Employee/Create`}
-              element={<CreateEmployeeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CalendarMaster`}
-              element={<CalenderMaster />}
-            />
-            {/* Employee Joining routes */}
-            <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
-            <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
-            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
-            <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
-            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
-            <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
           </Routes>
         </div>
       </div>

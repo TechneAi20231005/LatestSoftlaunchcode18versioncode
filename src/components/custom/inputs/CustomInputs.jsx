@@ -3,6 +3,7 @@ import { useFormikContext, getIn } from 'formik';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import './style.scss';
 
 export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {

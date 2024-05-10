@@ -1,59 +1,53 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import PageHeader from "../../../components/Common/PageHeader";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from "../../../components/Common/Alert";
-import TemplateService from "../../../services/MastersService/TemplateService";
+import Alert from '../../../components/Common/Alert';
+import TemplateService from '../../../services/MastersService/TemplateService';
 
-import { _base } from "../../../settings/constants";
+import { _base } from '../../../settings/constants';
 
-import { Modal } from "react-bootstrap";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
+import { Modal } from 'react-bootstrap';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
 
-import { name } from "platform";
+import { name } from 'platform';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllTypeData,
   getParentData,
   postTemplateData,
   templateData,
-} from "./TemplateComponetAction";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import {
-  handleModalClose,
-  handleModalOpen,
-  hideNotification,
-} from "./TemplateComponetSlice";
+} from './TemplateComponetAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { handleModalClose, handleModalOpen, hideNotification } from './TemplateComponetSlice';
 
-import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 15),
   );
   const parent = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.getParentData,
   );
   const taskTypeDropdown = useSelector(
-    (TemplateComponetSlice) =>
-      TemplateComponetSlice.tempateMaster.getAllTypeData
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.getAllTypeData,
   );
   const userData = useSelector(
-    (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
+    MyTicketComponentSlice => MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser,
   );
 
   const editTaskModal = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.modal,
   );
   const [notify, setNotify] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const mainJson = {
     template_name: null,
@@ -79,10 +73,10 @@ const CreateTemplateComponent = () => {
     ],
   });
 
-  const [stack, setStack] = useState({ SE: "", AB: "" });
+  const [stack, setStack] = useState({ SE: '', AB: '' });
   const [data, setData] = useState([]);
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [ticketsData, setTicketsData] = useState([]);
   const [taskData, setTaskData] = useState([]);
 
@@ -93,14 +87,14 @@ const CreateTemplateComponent = () => {
   // };
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getTaskType()?.then(res => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data);
       }
     });
   };
 
-  const handleParentchange = async (e) => {
+  const handleParentchange = async e => {
     if (typeRef.current) {
       typeRef.current.clearValue();
     }
@@ -109,7 +103,7 @@ const CreateTemplateComponent = () => {
 
   const handleCheckInput = (e, idx) => {
     if (rows.length > 1) {
-      rows.forEach((ele) => {});
+      rows.forEach(ele => {});
     }
   };
   const handleAddRow = async () => {
@@ -126,8 +120,8 @@ const CreateTemplateComponent = () => {
     }
   };
 
-  const handleRemoveSpecificRow = (idx) => {
-    setRows((prevState) => {
+  const handleRemoveSpecificRow = idx => {
+    setRows(prevState => {
       const updatedRows = prevState.template_data.filter((_, i) => i !== idx);
 
       return {
@@ -138,7 +132,7 @@ const CreateTemplateComponent = () => {
   };
 
   const handleRemoveTask = (basketIndex, taskIndex) => {
-    setRows((prevRows) => {
+    setRows(prevRows => {
       const updatedTemplateData = [...prevRows.template_data];
       updatedTemplateData[basketIndex].basket_task.splice(taskIndex, 1);
 
@@ -150,7 +144,7 @@ const CreateTemplateComponent = () => {
   };
 
   const [show, setShow] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState('');
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(null);
@@ -165,15 +159,9 @@ const CreateTemplateComponent = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const CustomOption = ({
-    label,
-    options,
-    onClick,
-    closeDropdown,
-    openOptions,
-  }) => {
+  const CustomOption = ({ label, options, onClick, closeDropdown, openOptions }) => {
     const [expanded, setExpanded] = useState(false);
-    const handleClick = (e) => {
+    const handleClick = e => {
       setExpanded(!expanded);
       onClick(label);
       closeDropdown(); // Close the dropdown after clicking the option
@@ -182,15 +170,15 @@ const CreateTemplateComponent = () => {
     return (
       <div
         style={{
-          padding: "8px",
-          cursor: "pointer",
+          padding: '8px',
+          cursor: 'pointer',
         }}
         onClick={handleClick}
       >
         {label}
         {expanded && options && (
-          <div style={{ marginLeft: "20px" }}>
-            {options.map((option) => (
+          <div style={{ marginLeft: '20px' }}>
+            {options.map(option => (
               <CustomOption
                 key={option.label}
                 label={option.label}
@@ -208,21 +196,21 @@ const CreateTemplateComponent = () => {
   };
 
   const CustomMenuList = ({ options, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
+    const handleKeyDown = e => {
+      if (e.key === 'Enter') {
         setOpenOptions(true);
       }
     };
 
-    const toggleOptions = (label) => {
+    const toggleOptions = label => {
       if (openOptions.includes(label)) {
-        setOpenOptions(openOptions.filter((item) => item !== label));
+        setOpenOptions(openOptions.filter(item => item !== label));
       } else {
         setOpenOptions([...openOptions, label]);
       }
@@ -236,7 +224,7 @@ const CreateTemplateComponent = () => {
     };
 
     const filterOptions = (options, term) => {
-      return options.filter((option) => {
+      return options.filter(option => {
         const lowerCaseTerm = term.toLowerCase();
         const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
         const matchChildOptions =
@@ -248,7 +236,7 @@ const CreateTemplateComponent = () => {
       });
     };
 
-    const handleMouseEnter = (label) => {
+    const handleMouseEnter = label => {
       setHoveredIndex(label);
     };
 
@@ -256,19 +244,16 @@ const CreateTemplateComponent = () => {
       setHoveredIndex(null);
     };
 
-    const renderOptions = (options) => {
+    const renderOptions = options => {
       return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.4rem",
-              backgroundColor:
-                hoveredIndex === option.label
-                  ? "rgba(79, 184, 201, 0.5)"
-                  : "white",
-              transition: "background-color 0.3s",
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.4rem',
+              backgroundColor: hoveredIndex === option.label ? 'rgba(79, 184, 201, 0.5)' : 'white',
+              transition: 'background-color 0.3s',
             }}
             onMouseEnter={() => handleMouseEnter(option.label)}
             onMouseLeave={handleMouseLeave}
@@ -276,12 +261,12 @@ const CreateTemplateComponent = () => {
             <i
               className={
                 openOptions.includes(option.label) && option.options.length > 0
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
+                  ? 'icofont-rounded-down'
+                  : 'icofont-rounded-right'
               }
               style={{
-                marginRight: "5px",
-                cursor: "pointer",
+                marginRight: '5px',
+                cursor: 'pointer',
               }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -289,8 +274,8 @@ const CreateTemplateComponent = () => {
             <div
               onClick={() => handleSelect(option.label, option.ID)}
               style={{
-                cursor: "pointer",
-                transition: "color 0.3s",
+                cursor: 'pointer',
+                transition: 'color 0.3s',
               }}
             >
               {option.label}
@@ -301,10 +286,8 @@ const CreateTemplateComponent = () => {
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "1rem" }}>
-                <div style={{ marginLeft: "1rem" }}>
-                  {renderOptions(option.options)}
-                </div>
+              <div style={{ marginLeft: '1rem' }}>
+                <div style={{ marginLeft: '1rem' }}>{renderOptions(option.options)}</div>
               </div>
             )}
         </React.Fragment>
@@ -317,17 +300,17 @@ const CreateTemplateComponent = () => {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "relative",
-              width: "100%",
+              position: 'relative',
+              width: '100%',
               zIndex: 1000,
-              maxHeight: "300px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderWidth: "2px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderBottomRightRadius: "4px",
-              borderBottomLeftRadius: "4px",
+              maxHeight: '300px',
+              overflowY: 'auto',
+              border: '1px solid #ccc',
+              borderWidth: '2px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'white',
+              borderBottomRightRadius: '4px',
+              borderBottomLeftRadius: '4px',
             }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -336,50 +319,32 @@ const CreateTemplateComponent = () => {
               type="text"
               placeholder="Search..."
               style={{
-                padding: "8px",
-                border: "none",
-                width: "100%",
-                boxSizing: "border-box",
+                padding: '8px',
+                border: 'none',
+                width: '100%',
+                boxSizing: 'border-box',
               }}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
-            <div style={{ overflowY: "auto" }}>
-              {renderOptions(filteredOptions)}
-            </div>
+            <div style={{ overflowY: 'auto' }}>{renderOptions(filteredOptions)}</div>
           </div>
         )}
       </>
     );
   };
-  function transformData(taskData, hasPrimaryLabel = false) {
-    const primaryLabel = "Primary";
+  function transformData(taskData) {
     const options = [];
 
-    // Push the primary label if it hasn't been pushed before
-    if (!hasPrimaryLabel) {
-      options.push({
-        ID: null,
-        label: primaryLabel,
-        isStatic: true,
-        options: [],
-      });
-      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-    }
-
     // Process the taskData
-    taskData?.forEach((item) => {
+    taskData?.forEach(item => {
       const label = item.type_name;
 
-      if (label !== primaryLabel) {
-        // Push API labels directly into options array
-        options.push({
-          ID: item.parent_id,
-          label: label,
-          options: item.children
-            ? transformData(item.children, hasPrimaryLabel)
-            : [],
-        });
-      }
+      // Push API labels directly into options array
+      options.push({
+        ID: item.parent_id,
+        label: label,
+        options: item.children ? transformData(item.children) : [],
+      });
     });
 
     return options;
@@ -388,42 +353,41 @@ const CreateTemplateComponent = () => {
   // Transform the taskData
   const transformedOptions = transformData(taskData);
 
-  const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState("");
+  const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState('');
   const typeRef = useRef();
-  const shouldShowButton =
-    selectedOption === "START_FROM" || selectedOption === "END_FROM";
+  const shouldShowButton = selectedOption === 'START_FROM' || selectedOption === 'END_FROM';
 
-  const showHandler = (e) => {
+  const showHandler = e => {
     setShow(true);
   };
 
   const handleChange = (e, idx, type, name) => {
-    var value = type == "select2" ? e.value : e.target.value;
-    if (type == "select1") {
+    var value = type == 'select2' ? e.value : e.target.value;
+    if (type == 'select1') {
       setSelectedOption(e.target.value);
-      if (e.target.name == "basket_name" || e.target.name == "basket_task") {
-        setRows((prev) => {
+      if (e.target.name == 'basket_name' || e.target.name == 'basket_task') {
+        setRows(prev => {
           const newPrev = { ...prev };
           newPrev.template_data[idx][e.target.name] = value;
           return newPrev;
         });
       }
     }
-    if (name === "basket_owner") {
-      setRows((prev) => {
+    if (name === 'basket_owner') {
+      setRows(prev => {
         const newPrev = { ...prev };
         newPrev.template_data[idx][name] = value;
         return newPrev;
       });
     } else {
-      setRows((prev) => {
+      setRows(prev => {
         const newPrev = { ...prev };
         newPrev[e.target.name] = value;
         return newPrev;
       });
     }
   };
-  const submitHandler = (e) => {
+  const submitHandler = e => {
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -434,32 +398,32 @@ const CreateTemplateComponent = () => {
     if (a > 0) {
     } else {
       // rows.append("parent_id", selectedOptionId);
-      dispatch(postTemplateData(rows)).then((res) => {
+      dispatch(postTemplateData(rows)).then(res => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-          setNotify({ type: "success", message: res?.payload?.data?.message });
+          setNotify({ type: 'success', message: res?.payload?.data?.message });
           dispatch(templateData());
 
           setTimeout(() => {
             navigate(`/${_base}/Template`, {
               state: {
                 alert: {
-                  type: "success",
+                  type: 'success',
                   message: res?.payload?.data?.message,
                 },
               },
             });
           }, 3000);
         } else {
-          setNotify({ type: "danger", message: res?.payload?.data?.message });
+          setNotify({ type: 'danger', message: res?.payload?.data?.message });
         }
       });
     }
   };
 
-  const addTask = (e) => {
+  const addTask = e => {
     e.preventDefault();
 
-    const hoursInput = document.getElementById("hours_add");
+    const hoursInput = document.getElementById('hours_add');
     const enteredValue = hoursInput.value.trim();
     const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
 
@@ -471,16 +435,16 @@ const CreateTemplateComponent = () => {
 
     var form = new FormData(e.target);
     var temp = {
-      task_name: form.get("taskName"),
+      task_name: form.get('taskName'),
       // task_type_id: form.get("task_type_id"),
       // parent_id: form.get("parent_id"),
-      total_time: form.get("hours"),
-      days: form.get("days"),
-      start_days: form.get("start_days"),
+      total_time: form.get('hours'),
+      days: form.get('days'),
+      start_days: form.get('start_days'),
       task_type_id: selectedOptionId,
     };
 
-    var basket_id = form.get("basket_id");
+    var basket_id = form.get('basket_id');
 
     var tempData = rows;
     tempData.template_data[basket_id].basket_task.push(temp);
@@ -488,51 +452,45 @@ const CreateTemplateComponent = () => {
     setRows(null);
     setRows(tempData);
 
-    for (
-      var i = 0;
-      i < document.getElementsByClassName("taskField").length;
-      i++
-    ) {
-      document.getElementsByClassName("taskField")[i].value = "";
+    for (var i = 0; i < document.getElementsByClassName('taskField').length; i++) {
+      document.getElementsByClassName('taskField')[i].value = '';
     }
     if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
       typeRef.current.clearValue();
     }
-    if (document.getElementById("task_add").value != "") {
-      document.getElementById("task_add").value = "";
+    if (document.getElementById('task_add').value != '') {
+      document.getElementById('task_add').value = '';
     }
-    if (document.getElementById("days_add").value != "") {
-      document.getElementById("days_add").value = "";
+    if (document.getElementById('days_add').value != '') {
+      document.getElementById('days_add').value = '';
     }
-    if (document.getElementById("hours_add").value != "") {
-      document.getElementById("hours_add").value = "";
+    if (document.getElementById('hours_add').value != '') {
+      document.getElementById('hours_add').value = '';
     }
-    if (document.getElementById("start_days").value != "") {
-      document.getElementById("start_days").value = "";
+    if (document.getElementById('start_days').value != '') {
+      document.getElementById('start_days').value = '';
     }
     setShow(false);
   };
 
-  const handleCancelTask = (e) => {
+  const handleCancelTask = e => {
     setShow(false);
   };
 
   const handleEditTaskData = (e, basketIndex, idx, type, event) => {
     let value;
-    if (type === "select2") {
+    if (type === 'select2') {
       value = event.value;
     } else {
       value = e.target.value;
     }
 
-    setRows((prevRows) => {
+    setRows(prevRows => {
       const updatedTemplateData = [...prevRows.template_data];
-      const updatedBasketTask = [
-        ...updatedTemplateData[basketIndex].basket_task,
-      ];
+      const updatedBasketTask = [...updatedTemplateData[basketIndex].basket_task];
       const updatedTask = { ...updatedBasketTask[idx] };
 
-      if (type === "select2") {
+      if (type === 'select2') {
         updatedTask[e.name] = value;
       } else {
         updatedTask[e.target.name] = value;
@@ -554,8 +512,7 @@ const CreateTemplateComponent = () => {
       dispatch(getParentData());
     }
     if (!userData.length) {
-      const inputRequired =
-        "id,employee_id,first_name,last_name,middle_name,is_active";
+      const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
       dispatch(getUserForMyTicketsData(inputRequired));
     }
     if (!checkRole.length) {
@@ -591,17 +548,14 @@ const CreateTemplateComponent = () => {
                       id="template_name"
                       name="template_name"
                       required
-                      onChange={(e) => {
-                        handleChange(e, name, "select1");
+                      onChange={e => {
+                        handleChange(e, name, 'select1');
                       }}
                     />
-                    {error && <small style={{ color: "red" }}>{error}</small>}
+                    {error && <small style={{ color: 'red' }}>{error}</small>}
                   </div>
 
-                  <label
-                    className="col-sm-2 col-form-label"
-                    style={{ textAlign: "right" }}
-                  >
+                  <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
                     <b>
                       Calculate Days From :<Astrick color="red" size="13px" />
                     </b>
@@ -612,7 +566,7 @@ const CreateTemplateComponent = () => {
                       id="calculate_from"
                       name="calculate_from"
                       onChange={(e, index) => {
-                        handleChange(e, index, "select1");
+                        handleChange(e, index, 'select1');
                         setIsCalculatedFromTaken(() => e.target.value);
                       }}
                       required
@@ -626,10 +580,7 @@ const CreateTemplateComponent = () => {
                 </div>
 
                 <div className="">
-                  <table
-                    className="table table-bordered mt-3 table-responsive"
-                    id="tab_logic"
-                  >
+                  <table className="table table-bordered mt-3 table-responsive" id="tab_logic">
                     <thead>
                       <tr>
                         <th className="text-center"> # </th>
@@ -648,8 +599,8 @@ const CreateTemplateComponent = () => {
                                 type="text"
                                 name="basket_name"
                                 value={item.basket_name}
-                                onChange={(e) => {
-                                  handleChange(e, idx, "select1");
+                                onChange={e => {
+                                  handleChange(e, idx, 'select1');
                                 }}
                                 className="form-control form-control-sm"
                                 required={true}
@@ -662,19 +613,12 @@ const CreateTemplateComponent = () => {
                                   options={userData}
                                   id="basket_owner"
                                   name="basket_owner"
-                                  value={userData.filter((d) =>
+                                  value={userData.filter(d =>
                                     Array.isArray(item.basket_owner)
                                       ? item.basket_owner.includes(d.value)
-                                      : item.basket_owner === d.value
+                                      : item.basket_owner === d.value,
                                   )}
-                                  onChange={(e) =>
-                                    handleChange(
-                                      e,
-                                      idx,
-                                      "select2",
-                                      "basket_owner"
-                                    )
-                                  }
+                                  onChange={e => handleChange(e, idx, 'select2', 'basket_owner')}
                                 />
                               )}
                             </td>
@@ -731,7 +675,7 @@ const CreateTemplateComponent = () => {
                       <button
                         type="button"
                         class="btn btn-sm btn-primary"
-                        onClick={(e) => {
+                        onClick={e => {
                           showHandler();
                           setSelectedBasket(null);
                           setSelectedBasket(basketIndex);
@@ -746,13 +690,9 @@ const CreateTemplateComponent = () => {
                         <div className="row justify-content-sm-end">
                           <button
                             className="btn btn-sm btn-danger"
-                            style={{ width: "50px" }}
-                            onClick={(e) => {
-                              if (
-                                window.confirm(
-                                  "Are you sure to delete this record?"
-                                )
-                              ) {
+                            style={{ width: '50px' }}
+                            onClick={e => {
+                              if (window.confirm('Are you sure to delete this record?')) {
                                 handleRemoveTask(basketIndex, idx);
                               }
                             }}
@@ -761,16 +701,16 @@ const CreateTemplateComponent = () => {
                           </button>
                           <button
                             type="button"
-                            style={{ width: "50px" }}
+                            style={{ width: '50px' }}
                             className="btn btn-sm btn-info"
-                            onClick={(e) => {
+                            onClick={e => {
                               dispatch(
                                 handleModalOpen({
                                   showModal: true,
                                   modalData: task,
                                   basketIndex: basketIndex,
                                   taskIndex: idx,
-                                })
+                                }),
                               );
                             }}
                           >
@@ -791,11 +731,7 @@ const CreateTemplateComponent = () => {
                         </p> */}
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
-                          {
-                            taskTypeDropdown.find(
-                              (item) => item.value == task.task_type_id
-                            )?.label
-                          }
+                          {taskTypeDropdown.find(item => item.value == task.task_type_id)?.label}
                         </p>
 
                         <p className="p-0 m-0">
@@ -803,21 +739,14 @@ const CreateTemplateComponent = () => {
                           Days
                         </p>
                         <p className="p-0 m-0">
-                          <strong>{`Hours Required  ${stack.AB}`} :</strong>{" "}
-                          {task.total_time} hours Required
+                          <strong>{`Hours Required  ${stack.AB}`} :</strong> {task.total_time} hours
+                          Required
                         </p>
                         <p className="p-0 m-0">
-                          {iscalulatedFromTaken &&
-                          iscalulatedFromTaken === "START_FROM" ? (
-                            <b>
-                              {" "}
-                              Start Task After Days :{" " + task.start_days} Day
-                            </b>
+                          {iscalulatedFromTaken && iscalulatedFromTaken === 'START_FROM' ? (
+                            <b> Start Task After Days :{' ' + task.start_days} Day</b>
                           ) : (
-                            <b>
-                              {" "}
-                              End Task before Days :{" " + task.start_days} Days
-                            </b>
+                            <b> End Task before Days :{' ' + task.start_days} Days</b>
                           )}
                         </p>
 
@@ -826,13 +755,13 @@ const CreateTemplateComponent = () => {
                           <Modal
                             centered
                             show={editTaskModal.showModal}
-                            onHide={(e) => {
+                            onHide={e => {
                               dispatch(
                                 handleModalClose({
                                   showModal: false,
-                                  modalData: "",
-                                  modalHeader: "",
-                                })
+                                  modalData: '',
+                                  modalHeader: '',
+                                }),
                               );
                             }}
                           >
@@ -851,16 +780,14 @@ const CreateTemplateComponent = () => {
                                       id="task"
                                       name="task_name"
                                       required
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         handleEditTaskData(
                                           e,
                                           editTaskModal.basketIndex,
-                                          editTaskModal.taskIndex
+                                          editTaskModal.taskIndex,
                                         )
                                       }
-                                      defaultValue={
-                                        editTaskModal?.modalData?.task_name
-                                      }
+                                      defaultValue={editTaskModal?.modalData?.task_name}
                                       className="form-control form-control-sm"
                                     />
                                   </div>
@@ -944,40 +871,34 @@ const CreateTemplateComponent = () => {
                                   </label>
                                   <div
                                     style={{
-                                      position: "relative",
-                                      display: "inline-block",
-                                      width: "100%",
+                                      position: 'relative',
+                                      display: 'inline-block',
+                                      width: '100%',
                                     }}
                                   >
                                     <div
                                       style={{
-                                        padding: "8px",
-                                        border: "1px solid #ccc",
-                                        cursor: "pointer",
-                                        width: "100%",
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        cursor: 'pointer',
+                                        width: '100%',
                                       }}
-                                      onClick={(e) =>
-                                        handleSelectOptionClick(e)
-                                      }
+                                      onClick={e => handleSelectOptionClick(e)}
                                     >
-                                      {selectedOptions
-                                        ? selectedOptions
-                                        : "Select an option"}
+                                      {selectedOptions ? selectedOptions : 'Select an option'}
                                     </div>
                                     {isMenuOpen && (
                                       <div
                                         style={{
-                                          position: "absolute",
-                                          width: "100%", // Set the width to 100% to match the parent's width
-                                          top: "100%",
+                                          position: 'absolute',
+                                          width: '100%', // Set the width to 100% to match the parent's width
+                                          top: '100%',
                                           zIndex: 999, // Adjust the z-index as needed
                                         }}
                                       >
                                         <CustomMenuList
                                           options={transformedOptions}
-                                          onSelect={(label, ID) =>
-                                            handleSelect(label, ID)
-                                          }
+                                          onSelect={(label, ID) => handleSelect(label, ID)}
                                           // closeAllDropdowns={closeAllDropdowns}
                                         />
                                       </div>
@@ -1041,16 +962,14 @@ const CreateTemplateComponent = () => {
                                       type="number"
                                       id="days"
                                       name="days"
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         handleEditTaskData(
                                           e,
                                           editTaskModal.basketIndex,
-                                          editTaskModal.taskIndex
+                                          editTaskModal.taskIndex,
                                         )
                                       }
-                                      defaultValue={
-                                        editTaskModal?.modalData?.days
-                                      }
+                                      defaultValue={editTaskModal?.modalData?.days}
                                       className="form-control form-control-sm"
                                     />
                                   </div>
@@ -1066,17 +985,15 @@ const CreateTemplateComponent = () => {
                                       type="text"
                                       id="hours_required"
                                       name="total_time"
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         handleEditTaskData(
                                           e,
                                           editTaskModal.basketIndex,
-                                          editTaskModal.taskIndex
+                                          editTaskModal.taskIndex,
                                         )
                                       }
                                       className="form-control form-control-sm"
-                                      defaultValue={
-                                        editTaskModal?.modalData?.total_time
-                                      }
+                                      defaultValue={editTaskModal?.modalData?.total_time}
                                     />
                                   </div>
                                   <div className="col-sm-12">
@@ -1093,16 +1010,14 @@ const CreateTemplateComponent = () => {
                                       min="1"
                                       max="100"
                                       name="start_days"
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         handleEditTaskData(
                                           e,
                                           editTaskModal.basketIndex,
-                                          editTaskModal.taskIndex
+                                          editTaskModal.taskIndex,
                                         )
                                       }
-                                      defaultValue={
-                                        editTaskModal?.modalData?.start_days
-                                      }
+                                      defaultValue={editTaskModal?.modalData?.start_days}
                                       className="form-control form-control-sm"
                                     />
                                   </div>
@@ -1192,50 +1107,35 @@ const CreateTemplateComponent = () => {
                                 <div>
                                   <button
                                     type="button"
-                                    onClick={(e) => {
+                                    onClick={e => {
                                       // Validate the "Hours Required" field
-                                      const hoursInput =
-                                        document.getElementById(
-                                          "hours_required"
-                                        );
-                                      const enteredValue =
-                                        hoursInput.value.trim();
-                                      const timeRegex =
-                                        /^(?:2[0-3]|[01][0-9]):[0-5][0-9]/;
+                                      const hoursInput = document.getElementById('hours_required');
+                                      const enteredValue = hoursInput.value.trim();
+                                      const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]/;
 
                                       if (!timeRegex.test(enteredValue)) {
                                         // If the format is invalid, show an alert and prevent further execution
-                                        alert(
-                                          "Invalid time format. Please use 'HH:mm' format"
-                                        );
+                                        alert("Invalid time format. Please use 'HH:mm' format");
                                         return;
                                       }
 
                                       // Validate the "Start Days" field for min-max range
-                                      const startDaysInput =
-                                        document.getElementById("start_days");
+                                      const startDaysInput = document.getElementById('start_days');
                                       const startDaysValue = parseInt(
                                         startDaysInput.value.trim(),
-                                        10
+                                        10,
                                       ); // Convert to integer
 
-                                      if (
-                                        startDaysValue < 1 ||
-                                        startDaysValue > 100
-                                      ) {
+                                      if (startDaysValue < 1 || startDaysValue > 100) {
                                         // If the value is out of range, show an alert and prevent further execution
-                                        alert(
-                                          "Start days must be between 1 and 100."
-                                        );
+                                        alert('Start days must be between 1 and 100.');
                                         return;
                                       }
 
                                       // Validate other required fields
-                                      const taskName = document
-                                        .getElementById("task")
-                                        .value.trim();
+                                      const taskName = document.getElementById('task').value.trim();
                                       const daysRequired = document
-                                        .getElementById("days")
+                                        .getElementById('days')
                                         .value.trim();
                                       const hoursRequired = enteredValue; // Use validated value
                                       const startDays = startDaysValue; // Use validated value
@@ -1246,9 +1146,7 @@ const CreateTemplateComponent = () => {
                                         !hoursRequired ||
                                         !startDays
                                       ) {
-                                        alert(
-                                          "Please fill out all required fields."
-                                        );
+                                        alert('Please fill out all required fields.');
                                         return; // Prevent further execution
                                       }
 
@@ -1256,13 +1154,13 @@ const CreateTemplateComponent = () => {
                                       dispatch(
                                         handleModalClose({
                                           showModal: false,
-                                          modalData: "",
-                                          modalHeader: "",
-                                        })
+                                          modalData: '',
+                                          modalHeader: '',
+                                        }),
                                       );
                                     }}
                                     className="btn btn-sm btn-primary"
-                                    style={{ backgroundColor: "#484C7F" }}
+                                    style={{ backgroundColor: '#484C7F' }}
                                   >
                                     Submit
                                   </button>
@@ -1270,13 +1168,13 @@ const CreateTemplateComponent = () => {
                                   <button
                                     type="button"
                                     className="btn btn-sm btn-danger"
-                                    onClick={(e) =>
+                                    onClick={e =>
                                       dispatch(
                                         handleModalClose({
                                           showModal: false,
-                                          modalData: "",
-                                          modalHeader: "",
-                                        })
+                                          modalData: '',
+                                          modalHeader: '',
+                                        }),
                                       )
                                     }
                                   >
@@ -1323,38 +1221,34 @@ const CreateTemplateComponent = () => {
                               </label>
                               <div
                                 style={{
-                                  position: "relative",
-                                  display: "inline-block",
-                                  width: "100%",
+                                  position: 'relative',
+                                  display: 'inline-block',
+                                  width: '100%',
                                 }}
                               >
                                 <div
                                   style={{
-                                    padding: "8px",
-                                    border: "1px solid #ccc",
-                                    cursor: "pointer",
-                                    width: "100%",
+                                    padding: '8px',
+                                    border: '1px solid #ccc',
+                                    cursor: 'pointer',
+                                    width: '100%',
                                   }}
-                                  onClick={(e) => handleSelectOptionClick(e)}
+                                  onClick={e => handleSelectOptionClick(e)}
                                 >
-                                  {selectedOptions
-                                    ? selectedOptions
-                                    : "Select an option"}
+                                  {selectedOptions ? selectedOptions : 'Select an option'}
                                 </div>
                                 {isMenuOpen && (
                                   <div
                                     style={{
-                                      position: "absolute",
-                                      width: "100%", // Set the width to 100% to match the parent's width
-                                      top: "100%",
+                                      position: 'absolute',
+                                      width: '100%', // Set the width to 100% to match the parent's width
+                                      top: '100%',
                                       zIndex: 999, // Adjust the z-index as needed
                                     }}
                                   >
                                     <CustomMenuList
                                       options={transformedOptions}
-                                      onSelect={(label, ID) =>
-                                        handleSelect(label, ID)
-                                      }
+                                      onSelect={(label, ID) => handleSelect(label, ID)}
                                       // closeAllDropdowns={closeAllDropdowns}
                                     />
                                   </div>
@@ -1421,16 +1315,15 @@ const CreateTemplateComponent = () => {
                                 required
                               />
                               <label>
-                                {iscalulatedFromTaken &&
-                                iscalulatedFromTaken === "START_FROM" ? (
+                                {iscalulatedFromTaken && iscalulatedFromTaken === 'START_FROM' ? (
                                   <b>
-                                    {" "}
+                                    {' '}
                                     Start Task After Days :
                                     <Astrick color="red" size="13px" />
                                   </b>
                                 ) : (
                                   <b>
-                                    {" "}
+                                    {' '}
                                     End Task before Days :
                                     <Astrick color="red" size="13px" />
                                   </b>
@@ -1459,14 +1352,14 @@ const CreateTemplateComponent = () => {
                               <button
                                 type="Submit"
                                 className="btn btn-sm btn-primary"
-                                style={{ width: "25%" }}
+                                style={{ width: '25%' }}
                               >
                                 Add Task
                               </button>
                               <button
                                 type="button"
                                 className="btn btn-sm btn-danger"
-                                style={{ width: "25%" }}
+                                style={{ width: '25%' }}
                                 onClick={handleCancelTask}
                               >
                                 Cancel
