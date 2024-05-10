@@ -17,7 +17,6 @@ import { RenderIf } from '../../../../utils';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
 import { getDesignationData } from '../../../Dashboard/DashboardAction';
-import { NumbersOnly } from '../../../../components/Utilities/Validation';
 import {
   addCandidatesMasterThunk,
   getCandidatesMasterListThunk,
@@ -238,7 +237,6 @@ function AddCandidatesModal({ show, close }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      // onKeyDown={NumbersOnly}
                       name="expected_ctc"
                       label="Expected Monthly Salary (Net)"
                       placeholder="Enter expected monthly salary"
@@ -248,7 +246,6 @@ function AddCandidatesModal({ show, close }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      // onKeyDown={NumbersOnly}
                       name="current_ctc"
                       label="Current Monthly Salary"
                       placeholder="Enter current monthly salary"

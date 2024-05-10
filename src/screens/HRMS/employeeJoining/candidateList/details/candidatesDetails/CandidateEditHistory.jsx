@@ -1,5 +1,6 @@
 import React from 'react';
 import DataTable from 'react-data-table-component';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
 // // static import
@@ -27,14 +28,34 @@ function CandidateEditHistory() {
     {
       name: 'Preferred Role',
       sortable: true,
-      selector: row => row?.preferred_role || '--',
+      selector: row => row?.designation || '--',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Preferred Location',
       sortable: true,
-      selector: row => row?.preferred_location || '--',
+      selector: row =>
+        row?.locations?.length ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>
+                {row?.locations?.map(location =>
+                  location?.location_name ? `${location?.location_name}, ` : '--',
+                )}
+              </Tooltip>
+            }
+          >
+            <span>
+              {row?.locations?.map(location =>
+                location?.location_name ? `${location?.location_name}, ` : '--',
+              )}
+            </span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
       width: '150px',
     },

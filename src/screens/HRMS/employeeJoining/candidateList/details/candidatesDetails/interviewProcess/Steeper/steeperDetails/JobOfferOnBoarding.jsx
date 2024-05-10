@@ -10,7 +10,6 @@ import {
   CustomDropdown,
   CustomInput,
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
-import { NumbersOnly } from '../../../../../../../../../components/Utilities/Validation';
 import { getBranchMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getDesignationData } from '../../../../../../../../Dashboard/DashboardAction';
 import { jobOfferValidation } from './validation/jobOfferValidation';
@@ -333,7 +332,6 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          // onKeyDown={NumbersOnly}
                           name="current_salary"
                           label="Current Salary"
                           placeholder="Enter current salary"
@@ -346,7 +344,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="max_salary"
                         label="Max Salary(In Hand)"
                         value={salaryFiltered?.max_salary || ''}
@@ -359,7 +356,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="preferred_salary"
                         label="Preferred Salary"
                         placeholder="Enter preferred salary"
@@ -371,7 +367,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="hr_negotiable_salary"
                         label="Negotiable Salary"
                         placeholder="Enter negotiable salary"
@@ -390,7 +385,6 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          // onKeyDown={NumbersOnly}
                           name="sr_hr_negotiable_salary"
                           label="Negotiable Salary From Super Admin"
                           placeholder="Enter negotiable salary"
