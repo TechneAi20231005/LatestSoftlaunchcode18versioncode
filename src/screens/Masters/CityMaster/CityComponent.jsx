@@ -213,20 +213,22 @@ function CityComponent() {
       }
     }
     if (flag === 1) {
-      if (!id) {
-        dispatch(postCityData(form)).then((res) => {
-          if (res?.payload?.data?.status === 1) {
+      try {
+        if (!id) {
+          const res = await dispatch(postCityData(form));
+          if (res.payload.data.status === 1) {
             dispatch(getCityData());
           } else {
           }
-        });
-      } else {
-        dispatch(updateCityData({ id: id, payload: form })).then((res) => {
-          if (res?.payload?.data?.status === 1) {
+        } else {
+          const res = await dispatch(updateCityData({ id: id, payload: form }));
+          if (res.payload.data.status === 1) {
             dispatch(getCityData());
           } else {
           }
-        });
+        }
+      } catch (error) {
+        console.log("Error updating or posting city data:", error);
       }
     }
   };
