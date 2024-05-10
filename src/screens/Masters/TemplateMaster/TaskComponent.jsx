@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
-import TemplateService from "../../../services/MastersService/TemplateService";
-import { useParams } from "react-router-dom";
+import React, { useState, useRef, useEffect } from 'react';
+import TemplateService from '../../../services/MastersService/TemplateService';
+import { useParams } from 'react-router-dom';
 
-import Alert from "../../../components/Common/Alert";
+import Alert from '../../../components/Common/Alert';
 
-import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import { useDispatch, useSelector } from "react-redux";
-import { templateData } from "./TemplateComponetAction";
+import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
+import { useDispatch, useSelector } from 'react-redux';
+import { templateData } from './TemplateComponetAction';
 export default function TaskComponent(props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(null);
@@ -39,8 +39,6 @@ export default function TaskComponent(props) {
     task_type_id: props?.taskData?.parent_name,
   });
 
-
-  
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -48,13 +46,11 @@ export default function TaskComponent(props) {
   const [show, setShow] = useState(false);
 
   const searchRef = useRef();
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     const search = searchRef.current.value;
     if (search.length > 0) {
-      const temp = data.filter((d) => {
-        return d.department
-          .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g"));
+      const temp = data.filter(d => {
+        return d.department.toLowerCase().match(new RegExp(search.toLowerCase(), 'g'));
       });
 
       setData(temp);
@@ -62,21 +58,21 @@ export default function TaskComponent(props) {
   };
 
   const CustomMenuList = ({ options, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
+    const handleKeyDown = e => {
+      if (e.key === 'Enter') {
         setOpenOptions(true);
       }
     };
 
-    const toggleOptions = (label) => {
+    const toggleOptions = label => {
       if (openOptions.includes(label)) {
-        setOpenOptions(openOptions.filter((item) => item !== label));
+        setOpenOptions(openOptions.filter(item => item !== label));
       } else {
         setOpenOptions([...openOptions, label]);
       }
@@ -90,7 +86,7 @@ export default function TaskComponent(props) {
     };
 
     const filterOptions = (options, term) => {
-      return options.filter((option) => {
+      return options.filter(option => {
         const lowerCaseTerm = term.toLowerCase();
         const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
         const matchChildOptions =
@@ -102,7 +98,7 @@ export default function TaskComponent(props) {
       });
     };
 
-    const handleMouseEnter = (label) => {
+    const handleMouseEnter = label => {
       setHoveredIndex(label);
     };
 
@@ -110,19 +106,16 @@ export default function TaskComponent(props) {
       setHoveredIndex(null);
     };
 
-    const renderOptions = (options) => {
+    const renderOptions = options => {
       return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.4rem",
-              backgroundColor:
-                hoveredIndex === option.label
-                  ? "rgba(79, 184, 201, 0.5)"
-                  : "white",
-              transition: "background-color 0.3s",
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.4rem',
+              backgroundColor: hoveredIndex === option.label ? 'rgba(79, 184, 201, 0.5)' : 'white',
+              transition: 'background-color 0.3s',
             }}
             onMouseEnter={() => handleMouseEnter(option.label)}
             onMouseLeave={handleMouseLeave}
@@ -130,12 +123,12 @@ export default function TaskComponent(props) {
             <i
               className={
                 openOptions.includes(option.label) && option.options.length > 0
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
+                  ? 'icofont-rounded-down'
+                  : 'icofont-rounded-right'
               }
               style={{
-                marginRight: "5px",
-                cursor: "pointer",
+                marginRight: '5px',
+                cursor: 'pointer',
               }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -143,8 +136,8 @@ export default function TaskComponent(props) {
             <div
               onClick={() => handleSelect(option.label, option.ID)}
               style={{
-                cursor: "pointer",
-                transition: "color 0.3s",
+                cursor: 'pointer',
+                transition: 'color 0.3s',
               }}
             >
               {option.label}
@@ -155,10 +148,8 @@ export default function TaskComponent(props) {
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "1rem" }}>
-                <div style={{ marginLeft: "1rem" }}>
-                  {renderOptions(option.options)}
-                </div>
+              <div style={{ marginLeft: '1rem' }}>
+                <div style={{ marginLeft: '1rem' }}>{renderOptions(option.options)}</div>
               </div>
             )}
         </React.Fragment>
@@ -171,17 +162,17 @@ export default function TaskComponent(props) {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "relative",
-              width: "100%",
+              position: 'relative',
+              width: '100%',
               zIndex: 1000,
-              maxHeight: "300px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderWidth: "2px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderBottomRightRadius: "4px",
-              borderBottomLeftRadius: "4px",
+              maxHeight: '300px',
+              overflowY: 'auto',
+              border: '1px solid #ccc',
+              borderWidth: '2px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'white',
+              borderBottomRightRadius: '4px',
+              borderBottomLeftRadius: '4px',
             }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -190,16 +181,14 @@ export default function TaskComponent(props) {
               type="text"
               placeholder="Search..."
               style={{
-                padding: "8px",
-                border: "none",
-                width: "100%",
-                boxSizing: "border-box",
+                padding: '8px',
+                border: 'none',
+                width: '100%',
+                boxSizing: 'border-box',
               }}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
-            <div style={{ overflowY: "auto" }}>
-              {renderOptions(filteredOptions)}
-            </div>
+            <div style={{ overflowY: 'auto' }}>{renderOptions(filteredOptions)}</div>
           </div>
         )}
       </>
@@ -212,7 +201,7 @@ export default function TaskComponent(props) {
     const options = [];
 
     // Process the taskData
-    taskData?.forEach((item) => {
+    taskData?.forEach(item => {
       const label = item.type_name;
 
       // Push API labels directly into options array
@@ -231,7 +220,7 @@ export default function TaskComponent(props) {
 
   const handleTaskDelete = (e, idx) => {
     var temp = { is_active: 0 };
-    new TemplateService().deleteTask(idx, temp).then((res) => {
+    new TemplateService().deleteTask(idx, temp).then(res => {
       if (res.status == 200) {
         props.refreshData(id);
       }
@@ -239,11 +228,11 @@ export default function TaskComponent(props) {
   };
 
   const handleShow = () => {
-    setShow((prev) => !prev);
+    setShow(prev => !prev);
   };
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getTaskType()?.then(res => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data);
       }
@@ -251,15 +240,15 @@ export default function TaskComponent(props) {
   };
 
   const handleChange = (e, type) => {
-    if (type === "select2") {
+    if (type === 'select2') {
       const selectedValue = e.value; // Access the 'value' property
 
-      const name = "task_type_id";
+      const name = 'task_type_id';
 
       const updatedData = { ...data, [name]: selectedValue };
       setData(updatedData);
-    } else if (type === "select3") {
-      const name = "parent_id";
+    } else if (type === 'select3') {
+      const name = 'parent_id';
 
       const selectedValue = e.value;
       const updatedData = { ...data, [name]: selectedValue };
@@ -275,18 +264,16 @@ export default function TaskComponent(props) {
     }
   };
 
-
-  
   const [taskTypeDropdown, setTaskTypeDropdown] = useState();
   const [parent, setParent] = useState();
 
   useEffect(() => {
     loadData();
-    new TaskTicketTypeService().getParent().then((res) => {
+    new TaskTicketTypeService().getParent().then(res => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           if (res.status === 200) {
-            const mappedData = res.data.data.map((d) => ({
+            const mappedData = res.data.data.map(d => ({
               value: d.id,
               label: d.type_name,
             }));
@@ -298,15 +285,13 @@ export default function TaskComponent(props) {
       }
     });
 
-    new TaskTicketTypeService().getAllType().then((res) => {
+    new TaskTicketTypeService().getAllType().then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
 
           setTaskTypeDropdown(
-            temp
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
+            temp.filter(d => d.is_active == 1).map(d => ({ value: d.id, label: d.type_name })),
           );
         }
       }
@@ -318,63 +303,53 @@ export default function TaskComponent(props) {
     setShow(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     const taskName = document.querySelector('input[name="task"]').value.trim();
 
-    const daysRequired = document
-      .querySelector('input[name="days"]')
-      .value.trim();
-    const hoursRequired = document
-      .querySelector('input[name="total_time"]')
-      .value.trim();
-    const startDays = document
-      .querySelector('input[name="start_days"]')
-      .value.trim();
+    const daysRequired = document.querySelector('input[name="days"]').value.trim();
+    const hoursRequired = document.querySelector('input[name="total_time"]').value.trim();
+    const startDays = document.querySelector('input[name="start_days"]').value.trim();
 
     if (!taskName || !daysRequired || !hoursRequired || !startDays) {
-      alert("Please fill out all required fields.");
+      alert('Please fill out all required fields.');
       return;
     }
     setNotify(null);
     e.preventDefault();
-    new TemplateService()
-      .updateTask(props.taskData.task_id, data)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            props.refreshData(id);
-            setNotify({ type: "success", message: res.data.message });
-            setShow(false);
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
+    new TemplateService().updateTask(props.taskData.task_id, data).then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          props.refreshData(id);
+          setNotify({ type: 'success', message: res.data.message });
+          setShow(false);
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
-      });
+      } else {
+        setNotify({ type: 'danger', message: res.data.message });
+      }
+    });
   };
 
   return (
     <div
       className="card mt-1 card-body d-flex justify-content-between mt-3"
-      style={{ borderRadius: "10px", boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)" }}
+      style={{ borderRadius: '10px', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)' }}
     >
       {notify && <Alert alertData={notify} />}
 
       {!show && (
         <p>
           <strong>{props.taskData.task_name}</strong>
-          <span style={{ float: `right` }}>
-            {props.taskData.start_days} days
-          </span>
+          <span style={{ float: `right` }}>{props.taskData.start_days} days</span>
         </p>
       )}
       {!show && (
         <div>
           <button
             className="btn btn-sm btn-danger"
-            onClick={(e) => {
-              if (window.confirm("Are you sure to delete this record?")) {
+            onClick={e => {
+              if (window.confirm('Are you sure to delete this record?')) {
                 handleTaskDelete(e, props.taskData.task_id);
               }
             }}
@@ -390,15 +365,13 @@ export default function TaskComponent(props) {
         <>
           <p>
             {props.taskData.task_name}
-            <span style={{ float: `right` }}>
-              {props.taskData.task_total_time} Days
-            </span>
+            <span style={{ float: `right` }}>{props.taskData.task_total_time} Days</span>
           </p>
           <div>
             <button
               className="btn btn-sm btn-danger"
-              onClick={(e) => {
-                if (window.confirm("Are you sure to delete this record?")) {
+              onClick={e => {
+                if (window.confirm('Are you sure to delete this record?')) {
                   handleTaskDelete(e, props.taskData.task_id);
                 }
               }}
@@ -424,10 +397,7 @@ export default function TaskComponent(props) {
                   <h5 className="modal-title  fw-bold" id="createprojectlLabel">
                     Update task
                   </h5>
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={handleShow}
-                  >
+                  <button className="btn btn-sm btn-primary" onClick={handleShow}>
                     <i className="icofont-ui-close"></i>
                   </button>
                 </div>
@@ -442,7 +412,7 @@ export default function TaskComponent(props) {
                           className="col-7 form-control form-control-sm"
                           defaultValue={props.taskData.task_name}
                           name="task"
-                          onInput={(e) => handleChange(e, "standard")}
+                          onInput={e => handleChange(e, 'standard')}
                         />
                         <br />
 
@@ -454,38 +424,34 @@ export default function TaskComponent(props) {
                         </label>
                         <div
                           style={{
-                            position: "relative",
-                            display: "inline-block",
-                            width: "100%",
+                            position: 'relative',
+                            display: 'inline-block',
+                            width: '100%',
                           }}
                         >
                           <div
                             style={{
-                              padding: "8px",
-                              border: "1px solid #ccc",
-                              cursor: "pointer",
-                              width: "100%",
+                              padding: '8px',
+                              border: '1px solid #ccc',
+                              cursor: 'pointer',
+                              width: '100%',
                             }}
-                            onClick={(e) => handleSelectOptionClick(e)}
+                            onClick={e => handleSelectOptionClick(e)}
                           >
-                            {selectedOptions
-                              ? selectedOptions
-                              : props.taskData.parent_name}
+                            {selectedOptions ? selectedOptions : props.taskData.parent_name}
                           </div>
                           {isMenuOpen && (
                             <div
                               style={{
-                                position: "absolute",
-                                width: "100%", // Set the width to 100% to match the parent's width
-                                top: "100%",
+                                position: 'absolute',
+                                width: '100%', // Set the width to 100% to match the parent's width
+                                top: '100%',
                                 zIndex: 999, // Adjust the z-index as needed
                               }}
                             >
                               <CustomMenuList
                                 options={transformedOptions}
-                                onSelect={(label, ID) =>
-                                  handleSelect(label, ID)
-                                }
+                                onSelect={(label, ID) => handleSelect(label, ID)}
                                 // closeAllDropdowns={closeAllDropdowns}
                               />
                             </div>
@@ -501,27 +467,25 @@ export default function TaskComponent(props) {
                           defaultValue={props.taskData.task_days}
                           name="days"
                           required
-                          onInput={(e) => {
+                          onInput={e => {
                             const value = parseInt(e.target.value);
                             if (value > 100) {
-                              e.target.setCustomValidity(
-                                "Day should be maximum 100"
-                              );
+                              e.target.setCustomValidity('Day should be maximum 100');
                             } else {
-                              e.target.setCustomValidity("");
+                              e.target.setCustomValidity('');
                             }
-                            handleChange(e, "standard");
+                            handleChange(e, 'standard');
 
                             // Display error message manually
                             const errorSpan = e.target.nextElementSibling; // Get the next element (error span)
                             if (value > 100) {
-                              errorSpan.innerText = "Day should be maximum 100"; // Set error message
+                              errorSpan.innerText = 'Day should be maximum 100'; // Set error message
                             } else {
-                              errorSpan.innerText = ""; // Clear error message
+                              errorSpan.innerText = ''; // Clear error message
                             }
                           }}
                         />
-                        <span className="error" style={{ color: "red" }}></span>
+                        <span className="error" style={{ color: 'red' }}></span>
 
                         <br />
 
@@ -530,13 +494,11 @@ export default function TaskComponent(props) {
                         <input
                           className="form-control form-control-sm"
                           defaultValue={
-                            props.taskData.total_hours
-                              ? props.taskData.total_hours
-                              : "00:00"
+                            props.taskData.total_hours ? props.taskData.total_hours : '00:00'
                           }
                           name="total_time"
                           type="text"
-                          onInput={(e) => handleChange(e, "standard")}
+                          onInput={e => handleChange(e, 'standard')}
                         />
                         <br />
 
@@ -577,10 +539,7 @@ export default function TaskComponent(props) {
                         <br />
 
                         <label>
-                          Start task{" "}
-                          {props.calculatedays === "START_FROM"
-                            ? "after"
-                            : "before"}{" "}
+                          Start task {props.calculatedays === 'START_FROM' ? 'after' : 'before'}{' '}
                           days :
                         </label>
                         <Astrick color="red" size="13px" />
@@ -592,25 +551,17 @@ export default function TaskComponent(props) {
                           className="form-control form-control-sm"
                           defaultValue={props.taskData.start_days}
                           name="start_days"
-                          onChange={(e) => handleChange(e, "standard")} // Changed onInput to onChange
+                          onChange={e => handleChange(e, 'standard')} // Changed onInput to onChange
                         />
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleSubmit}
-                  >
+                  <button type="button" className="btn btn-primary" onClick={handleSubmit}>
                     Update
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleCancle}
-                  >
+                  <button type="button" className="btn btn-danger" onClick={handleCancle}>
                     Cancel
                   </button>
                 </div>

@@ -1,72 +1,58 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
 
-import CountryService from "../../../services/MastersService/CountryService";
+import CountryService from '../../../services/MastersService/CountryService';
 
-import PageHeader from "../../../components/Common/PageHeader";
+import PageHeader from '../../../components/Common/PageHeader';
 
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   getCountryData,
   getRoles,
   postCountryData,
   updateCountryData,
-} from "../../Dashboard/DashboardAction";
-import {
-  handleModalInStore,
-  handleModalClose,
-} from "../../Dashboard/DashbordSlice";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+} from '../../Dashboard/DashboardAction';
+import { handleModalInStore, handleModalClose } from '../../Dashboard/DashbordSlice';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function CountryComponent() {
   const [data, setData] = useState(null);
 
   const [notify, setNotify] = useState();
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const searchRef = useRef();
   const dispatch = useDispatch();
-  const countryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.countryData
-  );
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const countryData = useSelector(dashboardSlice => dashboardSlice.dashboard.countryData);
+  const Notify = useSelector(dashboardSlice => dashboardSlice.dashboard.notify);
+  const modal = useSelector(dashboardSlice => dashboardSlice.dashboard.modal);
 
   const isLoading = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.isLoading.CountyDataList
+    dashboardSlice => dashboardSlice.dashboard.isLoading.CountyDataList,
   );
 
-  const showLoadermodal = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.showLoaderModal
-  );
-  const ExportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportCountryData
-  );
+  const showLoadermodal = useSelector(dashboardSlice => dashboardSlice.dashboard.showLoaderModal);
+  const ExportData = useSelector(dashboardSlice => dashboardSlice.dashboard.exportCountryData);
 
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5)
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 5),
   );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -74,35 +60,31 @@ function CountryComponent() {
     });
   }
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {};
+  const handleSearch = value => {};
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "100px",
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      width: '100px',
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#depedit"
-            onClick={(e) => {
+            onClick={e => {
               dispatch(
                 handleModalInStore({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Country",
-                })
+                  modalHeader: 'Edit Country',
+                }),
               );
             }}
           >
@@ -110,81 +92,81 @@ function CountryComponent() {
           </button>
         </div>
       ),
-      width: "80px",
+      width: '80px',
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "Country",
-      selector: (row) => row.country,
+      name: 'Country',
+      selector: row => row.country,
       sortable: true,
-      width: "125px",
+      width: '125px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
         </div>
       ),
-      width: "100px",
+      width: '100px',
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
 
   const loadData = async () => {};
 
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
     const form = new FormData(e.target);
     setNotify(null);
     if (!id) {
-      dispatch(postCountryData(form)).then((res) => {
+      dispatch(postCountryData(form)).then(res => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getCountryData());
         } else {
         }
       });
     } else {
-      dispatch(updateCountryData({ id: id, payload: form })).then((res) => {
+      dispatch(updateCountryData({ id: id, payload: form })).then(res => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getCountryData());
         } else {
@@ -198,8 +180,8 @@ function CountryComponent() {
     data,
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
@@ -235,15 +217,15 @@ function CountryComponent() {
                       handleModalInStore({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add Country",
-                      })
+                        modalHeader: 'Add Country',
+                      }),
                     );
                   }}
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Country
                 </button>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -259,7 +241,7 @@ function CountryComponent() {
               placeholder="Search by Country Name...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -268,7 +250,7 @@ function CountryComponent() {
               type="button"
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -276,7 +258,7 @@ function CountryComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -295,19 +277,15 @@ function CountryComponent() {
               {countryData && (
                 <DataTable
                   columns={columns}
-                  data={countryData.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
+                  data={countryData.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
+                          value =>
+                            typeof value === 'string' &&
+                            value.toLowerCase().includes(searchTerm.toLowerCase()),
                         );
                       }
                     }
@@ -328,10 +306,7 @@ function CountryComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-        >
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
           <Modal.Header
             closeButton
             onClick={() => {
@@ -339,8 +314,8 @@ function CountryComponent() {
                 handleModalClose({
                   showModal: false,
                   modalData: null,
-                  modalHeader: "Add Country",
-                })
+                  modalHeader: 'Add Country',
+                }),
               );
             }}
           >
@@ -361,33 +336,29 @@ function CountryComponent() {
                     maxLength={25}
                     minLength={4}
                     required
-                    defaultValue={
-                      modal.modalData ? modal.modalData.country : ""
-                    }
-                    onKeyPress={(e) => {
+                    defaultValue={modal.modalData ? modal.modalData.country : ''}
+                    onKeyPress={e => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={(e) => {
+                    onPaste={e => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={(e) => {
+                    onCopy={e => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
                     maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
 
@@ -413,10 +384,7 @@ function CountryComponent() {
                                 : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_1">
                             Active
                           </label>
                         </div>
@@ -431,15 +399,10 @@ function CountryComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
+                              modal.modalData && modal.modalData.is_active === 0 ? true : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_0">
                             Deactive
                           </label>
                         </div>
@@ -456,9 +419,9 @@ function CountryComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -469,12 +432,12 @@ function CountryComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
             ) : (
-              ""
+              ''
             )}
             <button
               type="button"
@@ -483,9 +446,9 @@ function CountryComponent() {
                 dispatch(
                   handleModalClose({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  })
+                    modalData: '',
+                    modalHeader: '',
+                  }),
                 );
               }}
             >
@@ -502,7 +465,7 @@ function CountryDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CountryService().getCountry().then((res) => {
+    new CountryService().getCountry().then(res => {
       if (res.status === 200) {
         const data = res.data.data;
         for (const key in data) {
@@ -533,9 +496,7 @@ function CountryDropdown(props) {
               Select Country
             </option>
           )}
-          {props?.defaultValue != 0 && (
-            <option value={0}>Select Country</option>
-          )}
+          {props?.defaultValue != 0 && <option value={0}>Select Country</option>}
           {data.map(function (item, i) {
             if (props?.defaultValue && props?.defaultValue == item.id) {
               return (

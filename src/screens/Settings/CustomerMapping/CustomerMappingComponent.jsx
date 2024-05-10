@@ -1,43 +1,38 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import Select from "react-select";
-import { _base } from "../../../settings/constants";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import CustomerMappingSlice from "./Slices/CustomerMappingSlice";
-import {
-  exportCustomerMappingData,
-  getCustomerMappingData,
-} from "./Slices/CustomerMappingAction";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import DashbordSlice from "../../Dashboard/DashbordSlice";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../../services/ErrorLogService';
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import Select from 'react-select';
+import { _base } from '../../../settings/constants';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import CustomerMappingSlice from './Slices/CustomerMappingSlice';
+import { exportCustomerMappingData, getCustomerMappingData } from './Slices/CustomerMappingAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import DashbordSlice from '../../Dashboard/DashbordSlice';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const data = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.customerMappingData
+    CustomerMappingSlice => CustomerMappingSlice.customerMaster.customerMappingData,
   );
 
   const isLoading = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.isLoading.customerMappingList
+    CustomerMappingSlice => CustomerMappingSlice.customerMaster.isLoading.customerMappingList,
   );
 
   const exportData = useSelector(
-    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.exportData
+    CustomerMappingSlice => CustomerMappingSlice.customerMaster.exportData,
   );
 
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
+  const checkRole = useSelector(DashbordSlice =>
+    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 32),
   );
 
   const location = useLocation();
@@ -49,19 +44,16 @@ export default function CustomerMappingComponent() {
   // const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null)
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -75,21 +67,21 @@ export default function CustomerMappingComponent() {
   //   // setData(result);
   // };
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   // const handleSearch = (e) => {
   //   setSearchTerm(e.target.value);
   // };
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  const handleSearch = value => {};
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "80px",
-      cell: (row) => (
+      width: '80px',
+      cell: row => (
         <div className="btn-group" role="group">
           <Link
             to={`/${_base}/CustomerMapping/Edit/` + row.id}
@@ -101,32 +93,28 @@ export default function CustomerMappingComponent() {
       ),
     },
     {
-      name: "Sr.No",
-      selector: (row) => row.Sro,
+      name: 'Sr.No',
+      selector: row => row.Sro,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
     {
-      name: "Query",
-      selector: (row) => row["Query"],
+      name: 'Query',
+      selector: row => row['Query'],
       sortable: true,
-      with: "200px",
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      with: '200px',
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.query_type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.query_type_name && row.query_type_name.length < 10
                     ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + "...."}
+                    : row.query_type_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -136,44 +124,44 @@ export default function CustomerMappingComponent() {
     },
 
     {
-      name: "Template",
-      selector: (row) => row.template_name,
+      name: 'Template',
+      selector: row => row.template_name,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Form",
-      selector: (row) => row.dynamic_form_name,
+      name: 'Form',
+      selector: row => row.dynamic_form_name,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
 
     {
-      name: "Department",
-      selector: (row) => row.department_name,
+      name: 'Department',
+      selector: row => row.department_name,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
-    { name: "Priority", selector: (row) => row.priority, sortable: true },
+    { name: 'Priority', selector: row => row.priority, sortable: true },
     {
-      name: "Approach",
-      selector: (row) => row.approach,
+      name: 'Approach',
+      selector: row => row.approach,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -181,36 +169,35 @@ export default function CustomerMappingComponent() {
       ),
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
-  const makeActive = (id) => {
+  const makeActive = id => {
     // e.preventDefault();
     const data = new FormData();
-    data.append("is_default", 1);
-
-    new CustomerMappingService().updateCustomerMapping(id, data).then((res) => {
+    data.append('is_default', 1);
+    new CustomerMappingService().updateCustomerMapping(id, data).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           loadData();
@@ -279,8 +266,8 @@ export default function CustomerMappingComponent() {
     // })
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
@@ -319,11 +306,10 @@ export default function CustomerMappingComponent() {
                   to={`/${_base}/CustomerMapping/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Create
-                  Mapping Setting
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Create Mapping Setting
                 </Link>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -338,7 +324,7 @@ export default function CustomerMappingComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               // onKeyDown={handleKeyDown}
             />
           </div>
@@ -348,7 +334,7 @@ export default function CustomerMappingComponent() {
               type="button"
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -356,7 +342,7 @@ export default function CustomerMappingComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -373,17 +359,15 @@ export default function CustomerMappingComponent() {
           {data && (
             <DataTable
               columns={columns}
-              data={data.filter((customer) => {
-                if (typeof searchTerm === "string") {
-                  if (typeof customer === "string") {
-                    return customer
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase());
-                  } else if (typeof customer === "object") {
+              data={data.filter(customer => {
+                if (typeof searchTerm === 'string') {
+                  if (typeof customer === 'string') {
+                    return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                  } else if (typeof customer === 'object') {
                     return Object.values(customer).some(
-                      (value) =>
-                        typeof value === "string" &&
-                        value.toLowerCase().includes(searchTerm.toLowerCase())
+                      value =>
+                        typeof value === 'string' &&
+                        value.toLowerCase().includes(searchTerm.toLowerCase()),
                     );
                   }
                 }
