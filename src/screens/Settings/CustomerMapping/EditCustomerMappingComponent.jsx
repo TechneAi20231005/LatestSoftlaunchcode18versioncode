@@ -4,6 +4,7 @@ import CustomerMappingService from "../../../services/SettingService/CustomerMap
 import { _base, userSessionData } from "../../../settings/constants";
 
 import ErrorLogService from "../../../services/ErrorLogService";
+import { ToastContainer, toast } from "react-toastify";
 
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
@@ -425,14 +426,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     if (value > 100) {
       e.target.value = 0;
       ratiowiseData[index] = 0;
-      alert("Cannot Enter More than 100 !!!");
+      toast.error("Cannot Enter More than 100 !!!");
     } else {
       ratiowiseData[index] = value;
       const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       if (sum > 100) {
         e.target.value = 0;
         ratiowiseData[index] = 0;
-        alert("Ratio Total Must Be 100 !!!");
+        toast.error("Ratio Total Must Be 100 !!!");
       } else {
         const newData = ratiowiseData?.map((ratio, idx) => ({
           user_id: userDropdown[idx]?.value || null,

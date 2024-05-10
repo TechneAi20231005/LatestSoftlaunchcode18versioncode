@@ -8,20 +8,17 @@ import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
 import Select from "react-select";
 import { Astrick } from "../../../components/Utilities/Style";
+import { ToastContainer, toast } from "react-toastify";
 
 import DepartmentService from "../../../services/MastersService/DepartmentService";
-import CustomerTypeService from "../../../services/MastersService/CustomerTypeService";
-import QueryTypeService from "../../../services/MastersService/QueryTypeService";
-import TemplateService from "../../../services/MastersService/TemplateService";
+
 import DynamicFormService from "../../../services/MastersService/DynamicFormService";
 import UserService from "../../../services/MastersService/UserService";
 import { useRef } from "react";
 import Table from "react-bootstrap/Table";
 
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
-import { CustomerMappingSlice } from "./Slices/CustomerMappingSlice";
 import {
   getQueryTypeData,
   getTemplateData,
@@ -49,17 +46,13 @@ export default function CreateCustomerMappingComponent() {
   const history = useNavigate();
   const [notify, setNotify] = useState();
 
-  const userDropdownRef = useRef();
   const departmentDropdownRef = useRef();
-
-  const [customerType, setCustomerType] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
 
   const [selectedDynamicForm, setSelectedDynamicForm] = useState();
 
-  const [template, setTemplate] = useState();
   const [userData, setUserData] = useState([]);
 
   const [department, setDepartment] = useState();
@@ -71,7 +64,6 @@ export default function CreateCustomerMappingComponent() {
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(0);
 
-  const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
   const roleId = sessionStorage.getItem("role_id");
 
@@ -87,22 +79,13 @@ export default function CreateCustomerMappingComponent() {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
 
-  const customerTypeDropdown = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.customerTypeData
-  );
-
-  const queryType = useSelector(
-    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.queryTypeData
-  );
-  const queryTypeDropdown = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.queryTypeDropDownData
-  );
-
-  const templateDropdown = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.templateDropDownData
+  const {
+    customerTypeData: customerTypeDropdown,
+    queryTypeData: queryType,
+    queryTypeDropDownData: queryTypeDropdown,
+    templateDropDownData: templateDropdown,
+  } = useSelector(
+    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster
   );
 
   const [data, setData] = useState({
@@ -139,9 +122,10 @@ export default function CreateCustomerMappingComponent() {
   };
 
   const getDynamicForm = async () => {
-    await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+    try {
+      const res = await new DynamicFormService().getDynamicForm();
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           const data = res.data.data.filter((d) => d.is_active == 1);
           const select = res.data.data
             .filter((d) => d.is_active == 1)
@@ -150,7 +134,10 @@ export default function CreateCustomerMappingComponent() {
           setDynamicFormDropdown(select);
         }
       }
-    });
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching dynamic form:", error);
+    }
   };
 
   const handleQueryType = async (e) => {
@@ -248,8 +235,11 @@ export default function CreateCustomerMappingComponent() {
       if (res.status == 200) {
         if (res.data.status == 1) {
           const dropdown = res.data.data
-            .filter((d) => d.is_active == 1)
-            .filter((d) => d.multiple_department_id.includes(e.value))
+            .filter(
+              (d) =>
+                d.is_active == 1 && d.multiple_department_id.includes(e.value)
+            )
+
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
@@ -272,7 +262,7 @@ export default function CreateCustomerMappingComponent() {
 
     if (newValue > 100) {
       e.target.value = 0;
-      alert("Cannot Enter More than 100 !!!");
+      toast.error("Cannot Enter More than 100 !!!");
     } else {
       const newData = [...userData];
       newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
@@ -283,7 +273,7 @@ export default function CreateCustomerMappingComponent() {
 
       if (sum > 100) {
         e.target.value = 0;
-        alert("Ratio Total Must Be 100 !!!");
+        toast.error("Ratio Total Must Be 100 !!!");
       } else {
         setUserData(newData);
         setRatioTotal(sum);
