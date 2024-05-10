@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
-import { _base, userSessionData } from '../../../settings/constants';
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
+import { _base, userSessionData } from "../../../settings/constants";
 
-import ErrorLogService from '../../../services/ErrorLogService';
+import ErrorLogService from "../../../services/ErrorLogService";
+import { ToastContainer, toast } from "react-toastify";
 
-import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
-import Select from 'react-select';
-import { Astrick } from '../../../components/Utilities/Style';
+import PageHeader from "../../../components/Common/PageHeader";
+import Alert from "../../../components/Common/Alert";
+import Select from "react-select";
+import { Astrick } from "../../../components/Utilities/Style";
 
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
-import DepartmentService from '../../../services/MastersService/DepartmentService';
-import CustomerTypeService from '../../../services/MastersService/CustomerTypeService';
-import QueryTypeService from '../../../services/MastersService/QueryTypeService';
-import TemplateService from '../../../services/MastersService/TemplateService';
-import DynamicFormService from '../../../services/MastersService/DynamicFormService';
-import UserService from '../../../services/MastersService/UserService';
+import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import DepartmentService from "../../../services/MastersService/DepartmentService";
+import CustomerTypeService from "../../../services/MastersService/CustomerTypeService";
+import QueryTypeService from "../../../services/MastersService/QueryTypeService";
+import TemplateService from "../../../services/MastersService/TemplateService";
+import DynamicFormService from "../../../services/MastersService/DynamicFormService";
+import UserService from "../../../services/MastersService/UserService";
 
-import Table from 'react-bootstrap/Table';
-import { useDispatch, useSelector } from 'react-redux';
-import { getRoles } from '../../Dashboard/DashboardAction';
+import Table from "react-bootstrap/Table";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../../Dashboard/DashboardAction";
 
 export function getDateTime() {
   var now = new Date();
@@ -31,7 +32,8 @@ export function getDateTime() {
   let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
-  var datetime = year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+  var datetime =
+    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
   return datetime;
 }
 
@@ -67,9 +69,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
 
-  const roleId = sessionStorage.getItem('role_id');
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 32),
+  const roleId = sessionStorage.getItem("role_id");
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
 
   const [data, setData] = useState({
@@ -100,103 +102,107 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   });
 
   const [userData, setUserData] = useState([]);
-  const priority = ['Low', 'Medium', 'High', 'Very High'];
-  const [confirmationRequired, setConfirmationRequired] = useState('');
-  const [statusData, setstatusData] = useState('');
+  const priority = ["Low", "Medium", "High", "Very High"];
+  const [confirmationRequired, setConfirmationRequired] = useState("");
+  const [statusData, setstatusData] = useState("");
   const [ratioData, setRatioData] = useState([]);
 
-  const handleConfirmationChange = e => {
+  const handleConfirmationChange = (e) => {
     setConfirmationRequired(e?.target?.value);
   };
 
-  const handleStatusChange = e => {
+  const handleStatusChange = (e) => {
     setstatusData(e?.target?.value);
   };
 
   const loadData = async () => {
-    var tempData = '';
-    await new CustomerMappingService().getCustomerMappingById(mappingId).then(res => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          tempData = res.data.data;
-          setRatioData(
-            tempData?.user_policy2?.map(d => ({
-              user_id: d.user_id,
-              ratio: d.ratio,
-            })),
-          );
-          setData({
-            approach: tempData.approach,
-            confirmation_required: tempData.confirmation_required,
-            created_at: tempData.created_at,
-            created_by: tempData.created_by,
-            customer_id: tempData.customer_id,
-            customer_type_id: tempData.customer_type_id,
-            department_id: tempData.department_id,
-            dynamic_form_id: tempData.dynamic_form_id,
-            id: tempData.id,
-            is_active: tempData.is_active,
-            is_default: tempData.is_default,
-            module_id: tempData.module_id,
-            priority: tempData.priority,
-            project_id: tempData.project_id,
-            query_type_id: tempData.query_type_id,
-            remark: tempData.remark,
-            sla: tempData.sla,
-            sub_module_id: tempData.sub_module_id,
-            template_id: tempData.template_id,
-            tenant_id: tempData.tenant_id,
-            updated_at: tempData.updated_at,
-            updated_by: tempData.updated_by,
-            user_policy: tempData.user_policy,
-            user_policy2: tempData.user_policy2,
+    var tempData = "";
+    await new CustomerMappingService()
+      .getCustomerMappingById(mappingId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            tempData = res.data.data;
+            setRatioData(
+              tempData?.user_policy2?.map((d) => ({
+                user_id: d.user_id,
+                ratio: d.ratio,
+              }))
+            );
+            setData({
+              approach: tempData.approach,
+              confirmation_required: tempData.confirmation_required,
+              created_at: tempData.created_at,
+              created_by: tempData.created_by,
+              customer_id: tempData.customer_id,
+              customer_type_id: tempData.customer_type_id,
+              department_id: tempData.department_id,
+              dynamic_form_id: tempData.dynamic_form_id,
+              id: tempData.id,
+              is_active: tempData.is_active,
+              is_default: tempData.is_default,
+              module_id: tempData.module_id,
+              priority: tempData.priority,
+              project_id: tempData.project_id,
+              query_type_id: tempData.query_type_id,
+              remark: tempData.remark,
+              sla: tempData.sla,
+              sub_module_id: tempData.sub_module_id,
+              template_id: tempData.template_id,
+              tenant_id: tempData.tenant_id,
+              updated_at: tempData.updated_at,
+              updated_by: tempData.updated_by,
+              user_policy: tempData.user_policy,
+              user_policy2: tempData.user_policy2,
 
-            user_policy_label: tempData.user_policy_label,
-          });
-          setConfirmationRequired(res?.data?.data?.confirmation_required == 1 ? 1 : 0);
-          setstatusData(res?.data?.data?.is_active == 1 ? 1 : 0);
+              user_policy_label: tempData.user_policy_label,
+            });
+            setConfirmationRequired(
+              res?.data?.data?.confirmation_required == 1 ? 1 : 0
+            );
+            setstatusData(res?.data?.data?.is_active == 1 ? 1 : 0);
+          }
         }
-      }
-    });
+      });
 
     dispatch(getRoles());
 
-    await new CustomerTypeService().getCustomerType().then(res => {
+    await new CustomerTypeService().getCustomerType().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
+          const data = res.data.data.filter((d) => d.is_active == 1);
           const select = res.data.data
-            .filter(d => d.is_active)
-            .map(d => ({ value: d.id, label: d.type_name }));
+            .filter((d) => d.is_active)
+            .map((d) => ({ value: d.id, label: d.type_name }));
           setCustomerType(data);
           setCustomerTypeDropdown(select);
         }
       }
     });
 
-    await new CustomerMappingService().getPriorityDropdown().then(res => {
+    await new CustomerMappingService().getPriorityDropdown().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const select = res.data.data
-            .filter(d => d.is_active)
-            .map(d => ({ value: d.id, label: d.label }));
+            .filter((d) => d.is_active)
+            .map((d) => ({ value: d.id, label: d.label }));
         }
       }
     });
 
-    await new QueryTypeService().getQueryType().then(res => {
+    await new QueryTypeService().getQueryType().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
-          const select = res.data.data.map(d => ({
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.query_type_name,
           }));
           setQueryType(data);
           setQueryTypeDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({ value: d.id, label: d.query_type_name })),
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.query_type_name }))
           );
         }
       }
@@ -204,11 +210,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     await getDynamicForm();
 
-    await new TemplateService().getTemplate().then(res => {
+    await new TemplateService().getTemplate().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
-          const select = res.data.data.map(d => ({
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.template_name,
           }));
@@ -221,9 +227,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     setUserDropdown(null);
 
-    if (tempData.approach == 'RW' && tempData.user_policy) {
+    if (tempData.approach == "RW" && tempData.user_policy) {
       tempData.user_policy.forEach((d, i) => {
-        var x = d.split(':');
+        var x = d.split(":");
         if (x.length > 1) {
           ratiowiseData[i] = parseInt(x[1]);
         }
@@ -231,20 +237,22 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       var sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       setRatioTotal(sum);
     }
-    await new UserService().getUserWithMultipleDepartment().then(res => {
+    await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: '', label: 'Select User' }];
+          var defaultValue = [{ value: "", label: "Select User" }];
 
           const dropdown = res.data.data
-            .filter(d => d.is_active == 1)
-            .filter(d => d.multiple_department_id.includes(tempData.department_id))
-            .map(d => ({
+            .filter((d) => d.is_active == 1)
+            .filter((d) =>
+              d.multiple_department_id.includes(tempData.department_id)
+            )
+            .map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')',
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
 
-          if (tempData.approach == 'RW') {
+          if (tempData.approach == "RW") {
             //DONT DELETE
             // const q = res.data.data.filter((d) => d.is_active == 1).filter((d) => d.multiple_department_id.includes(e.value))
             //   .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")",ratio:0 }));
@@ -259,11 +267,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const getDynamicForm = async () => {
-    await new DynamicFormService().getDynamicForm().then(res => {
+    await new DynamicFormService().getDynamicForm().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
-          const select = res.data.data.map(d => ({
+          const data = res.data.data.filter((d) => d.is_active == 1);
+          const select = res.data.data.map((d) => ({
             value: d.id,
             label: d.template_name,
           }));
@@ -274,43 +282,43 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  const handleQueryType = async e => {
+  const handleQueryType = async (e) => {
     setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
     await getDynamicForm();
 
-    const queryTypeTemp = queryType.filter(d => d.id == e.value);
+    const queryTypeTemp = queryType.filter((d) => d.id == e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter(d => d.id == queryTypeTemp[0].form_id)
-      .map(d => ({ value: d.id, label: d.template_name }));
+      .filter((d) => d.id == queryTypeTemp[0].form_id)
+      .map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
-      setData(prev => {
+      setData((prev) => {
         const newPrev = { ...prev };
-        newPrev['dynamic_form_id'] = queryTypeTemp[0].form_id;
+        newPrev["dynamic_form_id"] = queryTypeTemp[0].form_id;
         return newPrev;
       });
       setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
       setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form',
+        type: "warning",
+        message: "No Form is mapped but still you can map new form",
       });
     }
   };
 
   const getDepartment = async () => {
-    await new DepartmentService().getDepartment().then(res => {
+    await new DepartmentService().getDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data.filter(d => d.is_active == 1));
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
+          setDepartment(res.data.data.filter((d) => d.is_active == 1));
+          var defaultValue = [{ value: 0, label: "Select Department" }];
           var dropwdown = res.data.data
-            .filter(d => d.is_active == 1)
-            .map(d => ({ value: d.id, label: d.department }));
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
           setDepartmentDropdown(defaultValue);
         }
@@ -319,17 +327,17 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const getUser = async () => {
-    await new UserService().getUser().then(res => {
+    await new UserService().getUser().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
+          const data = res.data.data.filter((d) => d.is_active == 1);
           setUser(data);
-          var defaultValue = [{ value: 0, label: 'Select User' }];
+          var defaultValue = [{ value: 0, label: "Select User" }];
           var dropwdown = res.data.data
-            .filter(d => d.is_active == 1)
-            .map(d => ({
+            .filter((d) => d.is_active == 1)
+            .map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')',
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
           defaultValue = [...defaultValue, ...dropwdown];
           setUserDropdown(dropwdown);
@@ -340,38 +348,38 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    if (type === 'Select2' && nameField === 'customer_type_id') {
+    if (type === "Select2" && nameField === "customer_type_id") {
       setSelectedCustomer(e?.length);
     }
     const value =
-      type === 'Select2' && nameField === 'customer_type_id'
-        ? e?.map(i => i.value)
+      type === "Select2" && nameField === "customer_type_id"
+        ? e?.map((i) => i.value)
         : e?.value
         ? e?.value
         : e?.target?.value;
-    if (nameField == 'approach' && value != data.approach) {
+    if (nameField == "approach" && value != data.approach) {
       setRatiowiseData([]);
       setDepartmentDropdown(null);
       setUserDropdown(null);
-      setData(prev => {
+      setData((prev) => {
         const newPrev = { ...prev };
-        newPrev['department_id'] = null;
-        newPrev['user_policy'] = null;
-        newPrev['user_policy_label'] = null;
+        newPrev["department_id"] = null;
+        newPrev["user_policy"] = null;
+        newPrev["user_policy_label"] = null;
         return newPrev;
       });
       handleGetDepartmentUsers(e);
       await getDepartment();
     }
 
-    if (nameField == 'department_id' && data.department_id != value) {
-      setData(prev => {
+    if (nameField == "department_id" && data.department_id != value) {
+      setData((prev) => {
         const newPrev = { ...prev };
-        newPrev['user_policy_label'] = null;
+        newPrev["user_policy_label"] = null;
         return newPrev;
       });
     }
-    setData(prev => {
+    setData((prev) => {
       const newPrev = { ...prev };
       newPrev[nameField] = value;
       return newPrev;
@@ -380,23 +388,23 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleGetDepartmentUsers = async (e, additional_id = null) => {
     setUserDropdown(null);
-    await new UserService().getUserWithMultipleDepartment().then(res => {
+    await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: '', label: 'Select User' }];
+          var defaultValue = [{ value: "", label: "Select User" }];
           const dropdown = res.data.data
-            .filter(d => d.is_active == 1)
-            .filter(d =>
+            .filter((d) => d.is_active == 1)
+            .filter((d) =>
               additional_id
                 ? d.multiple_department_id.includes(additional_id)
-                : d.multiple_department_id.includes(e.value),
+                : d.multiple_department_id.includes(e.value)
             )
-            .map(d => ({
+            .map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')',
+              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
             }));
 
-          if (data.approach == 'RW') {
+          if (data.approach == "RW") {
             //DONT DELETE
             // const q = res.data.data.filter((d) => d.is_active == 1).filter((d) => d.multiple_department_id.includes(e.value))
             //   .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name+" ("+ d.id +")",ratio:0 }));
@@ -411,27 +419,33 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  const handleRatioInput = index => e => {
+  const handleRatioInput = (index) => async (e) => {
     e.preventDefault();
-    const newValue = parseInt(e.target.value) || 0;
+    const value = parseInt(e?.target?.value) || 0;
 
-    if (newValue > 100) {
+    if (value > 100) {
       e.target.value = 0;
-      alert('Cannot Enter More than 100 !!!');
+      ratiowiseData[index] = 0;
+      toast.error("Cannot Enter More than 100 !!!");
     } else {
-      const newData = [...userData];
-      newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
-      const sum = newData.reduce((result, item) => result + (item ? item.ratio : 0), 0);
-
+      ratiowiseData[index] = value;
+      const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       if (sum > 100) {
         e.target.value = 0;
-        alert('Ratio Total Must Be 100 !!!');
+        ratiowiseData[index] = 0;
+        toast.error("Ratio Total Must Be 100 !!!");
       } else {
+        const newData = ratiowiseData?.map((ratio, idx) => ({
+          user_id: userDropdown[idx]?.value || null,
+          ratio: ratio,
+        }));
         setUserData(newData);
-        setRatioTotal(sum);
+        setRatioTotal(sum); // Update ratio total after changing the value
+        const ratiosToSend = newData?.filter((_, idx) => idx !== index);
       }
     }
   };
+
   const customerDetail = useRef();
   const queryTypeDetail = useRef();
   const dynamicDetail = useRef();
@@ -447,21 +461,20 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const useridDetail = useRef();
 
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
-      userIDs = useridDetail?.current?.props?.value.map(item => item.value);
+      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
     } else {
       const value = useridDetail?.current?.props?.value?.value;
       userIDs = value ? [value] : [];
     }
 
-    const ratiosToSend = ratiowiseData?.filter(ratio => ratio !== 0);
+    const ratiosToSend = ratiowiseData?.filter((ratio) => ratio !== 0);
     const getUserData = () => {
       // Get an array of user IDs
-      const userIds = userDropdown?.map(ele => ele?.value);
-
+      const userIds = userDropdown?.map((ele) => ele?.value);
       return userIds;
     };
 
@@ -500,7 +513,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.confirmation_required = confirmationId;
     form.approach = approachId;
     form.department_id = departmentId;
-    if (data.approach === 'RW') {
+    if (data.approach === "RW") {
       form.user_id = RwuserID;
       // form.ratio = ratiosToSend;
       form.userData = userData?.length > 0 ? userData : ratioData;
@@ -510,15 +523,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     form.status = statusID;
 
-    form.tenant_id = sessionStorage.getItem('tenant_id');
+    form.tenant_id = sessionStorage.getItem("tenant_id");
     form.updated_by = userSessionData.userId;
     form.updated_at = getDateTime();
 
     // const form = new FormData(e.target);
     var flag = 1;
-    if (data.approach === 'RW') {
+    if (data.approach === "RW") {
       if (ratioTotal !== 100) {
-        alert('Sum Must Be 100');
+        alert("Sum Must Be 100");
         flag = 0;
       }
     }
@@ -526,7 +539,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     if (flag == 1) {
       await new CustomerMappingService()
         .updateCustomerMapping(mappingId, form)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               history(
@@ -535,24 +548,24 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 },
                 {
                   state: {
-                    alert: { type: 'success', message: res.data.message },
+                    alert: { type: "success", message: res.data.message },
                   },
-                },
+                }
               );
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              setNotify({ type: "danger", message: res.data.message });
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            setNotify({ type: "danger", message: res.message });
             new ErrorLogService().sendErrorLog(
-              'Customer',
-              'Create_Customer',
-              'INSERT',
-              res.message,
+              "Customer",
+              "Create_Customer",
+              "INSERT",
+              res.message
             );
           }
         })
-        .catch(error => {});
+        .catch((error) => {});
     }
   };
 
@@ -574,7 +587,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           <div className="card mt-2">
             <div className="card-body">
               {data && (
-                <form onSubmit={handleForm} method="post" encType="multipart/form-data">
+                <form
+                  onSubmit={handleForm}
+                  method="post"
+                  encType="multipart/form-data"
+                >
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>Select Customer Type :</b>
@@ -589,11 +606,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           isMulti
                           defaultValue={
                             data &&
-                            customerTypeDropdown.filter(d =>
-                              data.customer_type_id.includes(d.value),
+                            customerTypeDropdown.filter((d) =>
+                              data.customer_type_id.includes(d.value)
                             )
                           }
-                          onChange={e => handleAutoChanges(e, 'Select2', 'customer_type_id')}
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "customer_type_id")
+                          }
                         />
                       )}
                     </div>
@@ -613,10 +632,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           options={queryTypeDropdown}
                           ref={queryTypeDetail}
                           defaultValue={queryTypeDropdown.filter(
-                            d => data.query_type_id == d.value,
+                            (d) => data.query_type_id == d.value
                           )}
-                          onChange={e => {
-                            handleAutoChanges(e, 'Select2', 'query_type_id');
+                          onChange={(e) => {
+                            handleAutoChanges(e, "Select2", "query_type_id");
                             handleQueryType(e);
                           }}
                         />
@@ -636,19 +655,25 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           ref={dynamicDetail}
                           options={dynamicFormDropdown}
                           defaultValue={dynamicFormDropdown.filter(
-                            d => data.dynamic_form_id == d.value,
+                            (d) => data.dynamic_form_id == d.value
                           )}
-                          onChange={e => handleAutoChanges(e, 'Select2', 'dynamic_form_id')}
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                          }
                         />
                       )}
-                      {selectedDynamicForm && dynamicFormDropdown && 'H' && (
+                      {selectedDynamicForm && dynamicFormDropdown && "H" && (
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
                           ref={dynamicDetail}
                           defaultValue={selectedDynamicForm}
-                          options={dynamicFormDropdown ? dynamicFormDropdown : ''}
-                          onChange={e => handleAutoChanges(e, 'Select2', 'dynamic_form_id')}
+                          options={
+                            dynamicFormDropdown ? dynamicFormDropdown : ""
+                          }
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                          }
                         />
                       )}
                     </div>
@@ -665,8 +690,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           name="template_id"
                           options={templateDropdown}
                           ref={templateDetail}
-                          defaultValue={templateDropdown.filter(d => data.template_id == d.value)}
-                          onChange={e => handleAutoChanges(e, 'Select2', 'template_id')}
+                          defaultValue={templateDropdown.filter(
+                            (d) => data.template_id == d.value
+                          )}
+                          onChange={(e) =>
+                            handleAutoChanges(e, "Select2", "template_id")
+                          }
                         />
                       )}
                     </div>
@@ -685,7 +714,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         name="priority"
                         ref={priorityDetail}
                         required={true}
-                        onChange={e => handleAutoChanges(e, 'Select', 'priority')}
+                        onChange={(e) =>
+                          handleAutoChanges(e, "Select", "priority")
+                        }
                         value={data.priority}
                       >
                         <option value="">Select Priority</option>
@@ -716,8 +747,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               onChange={handleStatusChange}
                               key={Math.random()}
                             />
-                            <label className="form-check-label" htmlFor="is_active_1">
-                              Active{' '}
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
+                              Active{" "}
                             </label>
                           </div>
                         </div>
@@ -735,7 +769,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               defaultChecked={statusData == 0 ? true : false}
                               key={Math.random()}
                             />
-                            <label className="form-check-label" htmlFor="is_active_0">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
                               Deactive
                             </label>
                           </div>
@@ -752,10 +789,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       </label>
                     </div>
 
-                    <div className="col-sm-1" style={{ textAlign: 'left' }}>
+                    <div className="col-sm-1" style={{ textAlign: "left" }}>
                       <div
                         className="form-group mt-2 text-left d-flex justify-content-between"
-                        style={{ textAlign: 'left' }}
+                        style={{ textAlign: "left" }}
                       >
                         <div className="form-check">
                           <input
@@ -768,7 +805,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             defaultChecked={confirmationRequired == 1}
                             onChange={handleConfirmationChange}
                           />
-                          <label className="form-check-label" htmlFor="confirmation_required_yes">
+                          <label
+                            className="form-check-label"
+                            htmlFor="confirmation_required_yes"
+                          >
                             Yes
                           </label>
                         </div>
@@ -784,7 +824,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             defaultChecked={confirmationRequired == 0}
                             onChange={handleConfirmationChange}
                           />
-                          <label className="form-check-label" htmlFor="confirmation_required_no">
+                          <label
+                            className="form-check-label"
+                            htmlFor="confirmation_required_no"
+                          >
                             No
                           </label>
                         </div>
@@ -805,8 +848,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         name="approach"
                         ref={approachDetail}
                         required={true}
-                        onChange={e => {
-                          handleAutoChanges(e, 'Select', 'approach');
+                        onChange={(e) => {
+                          handleAutoChanges(e, "Select", "approach");
                         }}
                         value={data.approach}
                       >
@@ -815,12 +858,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <option value="HLT">User Having Less Ticket</option>
                         <option value="SP">Single Person</option>
                         <option value="RW">Ratio Wise</option>
-                        {selectedCustomer == 0 && <option value="SELF">Self</option>}
+                        {selectedCustomer == 0 && (
+                          <option value="SELF">Self</option>
+                        )}
                         <option value="AU">Assign to user</option>
                       </select>
                     </div>
                   </div>
-                  {data.approach !== 'SELF' && data.approach !== 'AU' && (
+                  {data.approach !== "SELF" && data.approach !== "AU" && (
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>
@@ -833,12 +878,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             id="department_id"
                             name="department_id"
                             defaultValue={departmentDropdown.filter(
-                              d => data.department_id == d.value,
+                              (d) => data.department_id == d.value
                             )}
                             options={departmentDropdown}
                             ref={departmentDropdownRef}
-                            onChange={e => {
-                              handleAutoChanges(e, 'Select2', 'department_id');
+                            onChange={(e) => {
+                              handleAutoChanges(e, "Select2", "department_id");
                               handleGetDepartmentUsers(e);
                             }}
                           />
@@ -847,125 +892,133 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       </div>
                     </div>
                   )}
-                  {data.approach !== 'SELF' && data.approach !== 'AU' && (
+                  {data.approach !== "SELF" && data.approach !== "AU" && (
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>
                           Select User :<Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {data && userDropdown && data.approach != 'RW' && (
+                      {data && userDropdown && data.approach != "RW" && (
                         <div className="col-sm-4">
                           <Select
-                            isMulti={data.approach != 'SP'}
+                            isMulti={data.approach != "SP"}
                             isSearchable={true}
                             name="user_id[]"
                             className="basic-multi-select"
                             classNamePrefix="select"
                             ref={useridDetail}
                             defaultValue={
-                              data && data.approach == 'SP'
-                                ? userDropdown.filter(d => d.value === data.user_policy?.user_id)
-                                : data.user_policy?.map(d => ({
+                              data && data.approach == "SP"
+                                ? userDropdown.filter(
+                                    (d) => d.value === data.user_policy?.user_id
+                                  )
+                                : data.user_policy?.map((d) => ({
                                     value: d.user_id,
                                     label: d.user_name,
                                   }))
                             }
                             options={userDropdown}
                             required
-                            style={{ zIndex: '100' }}
+                            style={{ zIndex: "100" }}
                           />
                         </div>
                       )}
                       {!userDropdown && (
-                        <span className="mt-2" style={{ marginTop: '10%', fontSize: '16px' }}>
+                        <span
+                          className="mt-2"
+                          style={{ marginTop: "10%", fontSize: "16px" }}
+                        >
                           Loading.....
                         </span>
                       )}
 
-                      {userDropdown && data.approach == 'RW' && data.department_id && (
-                        <div className="col-sm-6">
-                          <Table bordered className="mt-2" id="table">
-                            <thead>
-                              <tr className="text-center">
-                                <th>#</th>
-                                <th>Selected User</th>
-                                <th>Enter Ratio</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {userDropdown.map((ele, i) => {
-                                // Find the corresponding user policy in user_policy array
-                                const userPolicy = data.user_policy?.find(policy =>
-                                  policy.startsWith(`${ele.value}:`),
-                                );
-                                // Extract the ratio value from the user policy
-                                const defaultRatio = userPolicy
-                                  ? parseInt(userPolicy.split(':')[1])
-                                  : 0;
-                                return (
-                                  <tr>
-                                    <td>{i + 1}</td>
-                                    <td>
-                                      <input
-                                        type="hidden"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_id[]"
-                                        value={ele.value}
-                                        ref={useridDetail}
-                                        readOnly
-                                      />
-                                      <input
-                                        type="text"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_name[]"
-                                        value={ele.label}
-                                        ref={userNameDetail}
-                                        readOnly
-                                      />
-                                    </td>
+                      {userDropdown &&
+                        data.approach == "RW" &&
+                        data.department_id && (
+                          <div className="col-sm-6">
+                            <Table bordered className="mt-2" id="table">
+                              <thead>
+                                <tr className="text-center">
+                                  <th>#</th>
+                                  <th>Selected User</th>
+                                  <th>Enter Ratio</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {userDropdown.map((ele, i) => {
+                                  // Find the corresponding user policy in user_policy array
+                                  const userPolicy = data.user_policy?.find(
+                                    (policy) =>
+                                      policy.startsWith(`${ele.value}:`)
+                                  );
+                                  // Extract the ratio value from the user policy
+                                  const defaultRatio = userPolicy
+                                    ? parseInt(userPolicy.split(":")[1])
+                                    : 0;
+                                  return (
+                                    <tr>
+                                      <td>{i + 1}</td>
+                                      <td>
+                                        <input
+                                          type="hidden"
+                                          className="form-control form-control-sm"
+                                          id={`index_` + Math.random()}
+                                          name="user_id[]"
+                                          value={ele.value}
+                                          ref={useridDetail}
+                                          readOnly
+                                        />
+                                        <input
+                                          type="text"
+                                          className="form-control form-control-sm"
+                                          id={`index_` + Math.random()}
+                                          name="user_name[]"
+                                          value={ele.label}
+                                          ref={userNameDetail}
+                                          readOnly
+                                        />
+                                      </td>
 
-                                    <td>
-                                      <input
-                                        type="text"
-                                        className="form-control col-sm-2"
-                                        name="ratio[]"
-                                        defaultValue={defaultRatio}
-                                        ref={userRatioDetail}
-                                        //  defaultValue={
-                                        //    ratiowiseData ? ratiowiseData[i] : 0
-                                        //  }
-                                        onInput={handleRatioInput(i)}
-                                        //  max="100"
-                                      />
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                              <tr>
-                                <td colSpan={2} className="text-right">
-                                  <b>TOTAL</b>
-                                </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          className="form-control col-sm-2"
+                                          name="ratio[]"
+                                          defaultValue={defaultRatio}
+                                          ref={userRatioDetail}
+                                          //  defaultValue={
+                                          //    ratiowiseData ? ratiowiseData[i] : 0
+                                          //  }
+                                          onInput={handleRatioInput(i)}
+                                          //  max="100"
+                                        />
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                                <tr>
+                                  <td colSpan={2} className="text-right">
+                                    <b>TOTAL</b>
+                                  </td>
 
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control col-sm-2"
-                                    id={`index_` + Math.random()}
-                                    value={ratioTotal}
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </div>
-                      )}
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control col-sm-2"
+                                      id={`index_` + Math.random()}
+                                      value={ratioTotal}
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </Table>
+                          </div>
+                        )}
                     </div>
                   )}
 
-                  <div className="mt-3" style={{ textAlign: 'right' }}>
+                  <div className="mt-3" style={{ textAlign: "right" }}>
                     <button type="submit" className="btn btn-primary btn-sm">
                       Update
                     </button>
