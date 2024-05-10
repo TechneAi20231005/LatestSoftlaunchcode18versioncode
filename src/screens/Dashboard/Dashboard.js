@@ -322,12 +322,14 @@ export default function HrDashboard(props) {
                         lineHeight: 'revert-layer',
                       }}
                     >
+
                       {' '}
                       {`Regularization`}
                       <br />
                       {`Request : ${
                         approvedNotifications?.length ? approvedNotifications?.length : 0
                       }`}
+
                     </button>
                     {approvedNotifications?.length > 0 && (
                       <div
@@ -464,6 +466,10 @@ export default function HrDashboard(props) {
                               const date = ele.created_at.split(' ')[0];
                               const time = ele.created_at.split(' ')[1];
 
+                              const parts1 = ele?.url?.split("/"); // Split the string by '/'
+                              const ticketID1 =
+                                parts1 && parts1[parts1?.length - 1];
+
                               return (
                                 <li className="py-2 mb-1 border-bottom" key={index}>
                                   <div
@@ -471,7 +477,7 @@ export default function HrDashboard(props) {
                                     style={{ cursor: 'pointer' }}
                                     onClick={e => {
                                       handleShowApproveRequestModal();
-                                      handleRegularizationRequest(ticketID);
+                                      handleRegularizationRequest(ticketID1);
                                     }}
                                   >
                                     {ele.url && (
