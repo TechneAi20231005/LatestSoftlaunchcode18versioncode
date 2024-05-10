@@ -1,38 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-import ErrorLogService from "../../../services/ErrorLogService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { _base, userSessionData } from "../../../settings/constants";
-import { _attachmentUrl } from "../../../settings/constants";
-import {
-  getAttachment,
-  deleteAttachment,
-} from "../../../services/OtherService/AttachmentService";
-import Select from "react-select";
-import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
-import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import DepartmentService from "../../../services/MastersService/DepartmentService";
-import UserService from "../../../services/MastersService/UserService";
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { _base, userSessionData } from '../../../settings/constants';
+import { _attachmentUrl } from '../../../settings/constants';
+import { getAttachment, deleteAttachment } from '../../../services/OtherService/AttachmentService';
+import Select from 'react-select';
+import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
+import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import DepartmentService from '../../../services/MastersService/DepartmentService';
+import UserService from '../../../services/MastersService/UserService';
 
-import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
 
-  const [ip, setIp] = useState("");
+  const [ip, setIp] = useState('');
 
   const featchData = async () => {
     try {
-      const res = await axios.get("https://api.ipify.org/?format=json");
+      const res = await axios.get('https://api.ipify.org/?format=json');
       setIp(res.data.ip);
     } catch (error) {}
   };
@@ -43,8 +40,8 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   });
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -80,26 +77,26 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [authorities, SetAuthorities] = useState();
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 41),
   );
 
   const sectionRef = useRef();
   const dispatch = useDispatch();
   const tdsPercentageRef = useRef();
 
-  const handleTdsChange = (e) => {
+  const handleTdsChange = e => {
     setTdsData([e.target.value]);
   };
   const [showTdsFileds, setShowTdsFileds] = useState(false);
-  const handleTdsApplicable = (e) => {
+  const handleTdsApplicable = e => {
     if (e.target.checked) {
       setShowTdsFileds(e.target.checked);
     } else {
       setShowTdsFileds((e.target.checked = false));
-      sectionRef.current.value = "";
+      sectionRef.current.value = '';
       setTdsPercentage(null);
       setTdsAmount(0);
     }
@@ -122,7 +119,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [authority, setAuthority] = useState();
   const [netPaymentError, setNetPaymentError] = useState();
 
-  const handleTcsApplicable = (e) => {
+  const handleTcsApplicable = e => {
     if (e) {
       if (e.target.checked) {
         setIsTcsApplicable(1);
@@ -132,58 +129,56 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   };
 
-  const handleOriginalBillNeed = (e) => {
+  const handleOriginalBillNeed = e => {
     const newValue = e.target.checked ? 1 : 0;
     setIsOriginalBill(newValue);
   };
 
-  const handleTaxable = (e) => {
+  const handleTaxable = e => {
     setTaxable(e.target.value);
   };
-  const handleGst = (e) => {
+  const handleGst = e => {
     setGst(e.target.value);
   };
-  const handleRoundOff = (e) => {
+  const handleRoundOff = e => {
     setRoundOff(e.target.value);
   };
-  const handleTcs = (e) => {
+  const handleTcs = e => {
     setTcs(e.target.value);
   };
 
-  const handleTds = (e) => {
+  const handleTds = e => {
     setTdsPercent(e.target.value);
   };
-  const handleDebit = (e) => {
+  const handleDebit = e => {
     setDebit(e.target.value);
   };
 
-  const handleTdsPercentage = (e) => {
-    const selectedContition = constitution.filter((d) => d.id === e.value);
+  const handleTdsPercentage = e => {
+    const selectedContition = constitution.filter(d => d.id === e.value);
     setTdsPercentage(selectedContition[0].percentage);
   };
 
-  const handleSectionDropDownChange = async (e) => {
-    await new BillCheckingTransactionService()
-      .getSectionMappingDropdown(e.value)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setTdsPercentage(0);
-            setConstitutionDropdown(null);
-            setConstitution(res.data.data);
+  const handleSectionDropDownChange = async e => {
+    await new BillCheckingTransactionService().getSectionMappingDropdown(e.value).then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setTdsPercentage(0);
+          setConstitutionDropdown(null);
+          setConstitution(res.data.data);
 
-            setConstitutionDropdown(
-              res.data.data.map((d) => ({
-                value: d.id,
-                label: d.constitution_name,
-              }))
-            );
-          }
+          setConstitutionDropdown(
+            res.data.data.map(d => ({
+              value: d.id,
+              label: d.constitution_name,
+            })),
+          );
         }
-      });
+      }
+    });
   };
 
-  const handleTDSSectionChange = (e) => {
+  const handleTDSSectionChange = e => {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
   };
@@ -191,29 +186,27 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [assignTo, setAssignTo] = useState();
   const [assignToDropdown, setAssignToDropdown] = useState();
 
-  const handleAssignToPerson = async (e) => {
-    await new DropdownService().getMappedEmp(e.value).then((res) => {
+  const handleAssignToPerson = async e => {
+    await new DropdownService().getMappedEmp(e.value).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setAssignTo(res.data.data);
           setAssignToDropdown(null);
-          setAssignToDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.employee_name }))
-          );
+          setAssignToDropdown(res.data.data.map(d => ({ value: d.id, label: d.employee_name })));
         }
       }
     });
   };
 
-  const handleBillTypeChange = (e) => {
+  const handleBillTypeChange = e => {
     // Clear the userDropdown state
     setAssignToDropdown(null);
   };
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
   const endFinancialYear = new Date(currentDate.getFullYear(), 2, 31); // Month is zero-based (2 for March)
@@ -221,74 +214,64 @@ export default function CreateBillCheckingTransaction({ match }) {
   const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
 
   const startYear = startFinancialYear.getFullYear();
-  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
-  const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
 
   const handleReset = () => {};
-  const handleFilter = async (e) => {
+  const handleFilter = async e => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    await new BillTransactionService()
-      .getBillCheckData(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          const tempData = [];
-          let counter = 1;
-          const temp = res.data.data;
-          for (const key in temp) {
-            tempData.push({
-              id: counter++,
-              task_name: temp[key].task_name,
-              tester_status: temp[key].tester_status,
-              ba_status: temp[key].ba_status,
-              developer_status: temp[key].developer_status,
-              priority: temp[key].priority,
-              severity: temp[key].severity,
-            });
-            setData(null);
-            setData(tempData);
-          }
+    await new BillTransactionService().getBillCheckData(formData).then(res => {
+      if (res.status === 200) {
+        const tempData = [];
+        let counter = 1;
+        const temp = res.data.data;
+        for (const key in temp) {
+          tempData.push({
+            id: counter++,
+            task_name: temp[key].task_name,
+            tester_status: temp[key].tester_status,
+            ba_status: temp[key].ba_status,
+            developer_status: temp[key].developer_status,
+            priority: temp[key].priority,
+            severity: temp[key].severity,
+          });
+          setData(null);
+          setData(tempData);
         }
-      });
+      }
+    });
   };
 
   const loadData = async () => {
-    await new BillCheckingTransactionService()
-      ._getBillTypeDataDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = res.data.data.filter((d) => d.is_active === 1);
-            setBillType(res.data.data);
-            setDeta(res.data.data);
-            setBillTypeDropdown(
-              temp.map((d) => ({ value: d.id, label: d.bill_type }))
-            );
-          }
+    await new BillCheckingTransactionService()._getBillTypeDataDropdown().then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const temp = res.data.data.filter(d => d.is_active === 1);
+          setBillType(res.data.data);
+          setDeta(res.data.data);
+          setBillTypeDropdown(temp.map(d => ({ value: d.id, label: d.bill_type })));
         }
-      });
+      }
+    });
 
-    await new BillCheckingTransactionService()
-      .getBillCreateAuthority()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setAuthority(res.data.access);
-          }
+    await new BillCheckingTransactionService().getBillCreateAuthority().then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setAuthority(res.data.access);
         }
-      });
+      }
+    });
 
-    await new BillCheckingTransactionService()
-      .getUpdatedAuthorities()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            SetAuthorities(res.data.data);
-          }
+    await new BillCheckingTransactionService().getUpdatedAuthorities().then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          SetAuthorities(res.data.data);
         }
-      });
+      }
+    });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -300,106 +283,94 @@ export default function CreateBillCheckingTransaction({ match }) {
     // });
     dispatch(getRoles());
 
-    await new BillCheckingTransactionService()
-      .getSectionDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setSectionDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.section_name }))
-            );
-            setConstitutionDropdown(
-              res.data.data.map((d) => ({
-                value: d.id,
-                label: d.constitution_name,
-              }))
-            );
-          }
+    await new BillCheckingTransactionService().getSectionDropdown().then(res => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setSectionDropdown(res.data.data.map(d => ({ value: d.id, label: d.section_name })));
+          setConstitutionDropdown(
+            res.data.data.map(d => ({
+              value: d.id,
+              label: d.constitution_name,
+            })),
+          );
         }
-      });
+      }
+    });
 
-    await new BillCheckingTransactionService()
-      .getVendorsDropdown()
-      .then((res) => {
-        const filterData = res?.data?.data.filter(
-          (d) => d.consider_in_payment === "YES"
-        );
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            const temp = filterData.filter((d) => d.is_active == 1);
-            setVendor(res.data.data);
-            setVendorDropdown(
-              temp.map((d) => ({
-                value: d.id,
-                label: d.vendor_name,
-              }))
-            );
-          }
+    await new BillCheckingTransactionService().getVendorsDropdown().then(res => {
+      const filterData = res?.data?.data.filter(d => d.consider_in_payment === 'YES');
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const temp = filterData.filter(d => d.is_active == 1);
+          setVendor(res.data.data);
+          setVendorDropdown(
+            temp.map(d => ({
+              value: d.id,
+              label: d.vendor_name,
+            })),
+          );
         }
-      });
+      }
+    });
 
-    await new DepartmentService().getDepartment().then((res) => {
+    await new DepartmentService().getDepartment().then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setDepartment(res.data.data);
-          setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
-          );
+          setDepartmentDropdown(res.data.data.map(d => ({ value: d.id, label: d.department })));
         }
       }
     });
 
-    const inputRequired = "id,employee_id,first_name,last_name,middle_name";
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
+    const inputRequired = 'id,employee_id,first_name,last_name,middle_name';
+    await new UserService().getUserForMyTickets(inputRequired).then(res => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+          const temp = res.data.data.filter(d => d.is_active == 1);
           setUser(res.data.data);
-          setUserDropdown(
-            temp.map((d) => ({ value: d.id, label: d.user_name }))
-          );
+          setUserDropdown(temp.map(d => ({ value: d.id, label: d.user_name })));
         }
       }
     });
   };
 
-  const handleModal = (data) => {
+  const handleModal = data => {
     setModal(data);
   };
-  const handleImageClick = (e) => {
-    setModal({ showModal: true, modalData: "", modalHeader: "" });
+  const handleImageClick = e => {
+    setModal({ showModal: true, modalData: '', modalHeader: '' });
   };
 
-  const handleForm = async (e) => {
+  const handleForm = async e => {
     e.preventDefault();
 
     const form = new FormData(e.target);
     setNotify(null);
-    form.delete("attachment[]");
-    form.append("client_ip_address", ip);
+    form.delete('attachment[]');
+    form.append('client_ip_address', ip);
 
     if (showTdsFileds) {
-      form.append("is_tds_applicable", 1);
+      form.append('is_tds_applicable', 1);
     } else {
-      form.append("is_tds_applicable", 0);
+      form.append('is_tds_applicable', 0);
     }
 
     if (igst === 1) {
-      form.append("is_igst_applicable", 1);
+      form.append('is_igst_applicable', 1);
     } else {
-      form.append("is_igst_applicable", 0);
+      form.append('is_igst_applicable', 0);
     }
 
     if (isTcsApplicable === 1) {
-      form.append("is_tcs_applicable", 1);
+      form.append('is_tcs_applicable', 1);
     } else {
-      form.append("is_tcs_applicable", 0);
+      form.append('is_tcs_applicable', 0);
     }
 
     if (isOriginal === 1) {
-      form.append("is_original_bill_needed", 1);
+      form.append('is_original_bill_needed', 1);
     } else {
-      form.append("is_original_bill_needed", 0);
+      form.append('is_original_bill_needed', 0);
     }
 
     if (selectedFiles) {
@@ -417,47 +388,47 @@ export default function CreateBillCheckingTransaction({ match }) {
             {
               pathname: `/${_base}/BillCheckingTransaction`,
             },
-            { state: { alert: { type: "success", message: res.data.message } } }
+            { state: { alert: { type: 'success', message: res.data.message } } },
           );
           loadData();
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
-        setNotify({ type: "danger", message: res.data.message });
+        setNotify({ type: 'danger', message: res.data.message });
         new ErrorLogService().sendErrorLog(
-          "BillCheckingTransaction",
-          "BillCheckingTransaction",
-          "INSERT",
-          res.message
+          'BillCheckingTransaction',
+          'BillCheckingTransaction',
+          'INSERT',
+          res.message,
         );
       }
     } catch (error) {
       const { response } = error;
       const { request, ...errorObject } = response;
-      setNotify({ type: "danger", message: "Request Error !!!" });
+      setNotify({ type: 'danger', message: 'Request Error !!!' });
       new ErrorLogService().sendErrorLog(
-        "BillCheckingTransaction",
-        "BillCheckingTransaction",
-        "INSERT",
-        errorObject.data.message
+        'BillCheckingTransaction',
+        'BillCheckingTransaction',
+        'INSERT',
+        errorObject.data.message,
       );
     }
   };
 
   const fileInputRef = useRef(null);
-  const handleShowFiles = (e) => {
+  const handleShowFiles = e => {
     const selectedFiles = e.target.files;
     const selectedFilesArray = Array.from(selectedFiles);
 
-    const imagesArray = selectedFilesArray.map((file) => {
+    const imagesArray = selectedFilesArray.map(file => {
       return URL.createObjectURL(file);
     });
 
     setShowFiles(imagesArray);
   };
   const [igst, setIgst] = useState(0);
-  const handleIgst = (e) => {
+  const handleIgst = e => {
     if (e) {
       if (e.target.checked) {
         setIgst(1);
@@ -468,7 +439,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
 
   const [isOriginal, setIsOriginal] = useState(0);
-  const handleIsOriginal = (e) => {
+  const handleIsOriginal = e => {
     if (e) {
       if (e.target.checked) {
         setIsOriginal(1);
@@ -480,7 +451,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const date = new Date();
   const futureDate = date.getDate();
   date.setDate(futureDate);
-  const defaultValue = date.toLocaleDateString("en-CA");
+  const defaultValue = date.toLocaleDateString('en-CA');
 
   useEffect(() => {
     loadData();
@@ -489,7 +460,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://api.ipify.org/?format=json");
+        const response = await axios.get('https://api.ipify.org/?format=json');
         setIp(response.data.ip);
       } catch (error) {
         // Handle errors here
@@ -503,9 +474,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     var tdsAmount = 0;
     if (tdsAmount >= 0) {
       tdsAmount =
-        (parseFloat(taxable ? taxable : 0) *
-          parseFloat(tdsPercentage ? tdsPercentage : 0)) /
-        100;
+        (parseFloat(taxable ? taxable : 0) * parseFloat(tdsPercentage ? tdsPercentage : 0)) / 100;
       setTdsAmount(Math.ceil(tdsAmount));
     }
   }, [billAmount, tdsPercentage]);
@@ -524,7 +493,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const loadAttachment = async () => {
     setNotify(null);
     if (id) {
-      await getAttachment(id, "BILL_CHECK").then((res) => {
+      await getAttachment(id, 'BILL_CHECK').then(res => {
         if (res.status === 200) {
           setAttachment(null);
           setAttachment(res.data.data);
@@ -537,15 +506,10 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const validFileTypes = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "application/pdf",
-  ];
+  const validFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
       var totalSize = 0; // Initialize total size
 
@@ -585,46 +549,42 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
 
       // if (tempSelectedFile.length <= 10) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
       setSelectedFiles(tempSelectedFile);
       // }
       // else {
       //   alert("You can only upload a maximum of 10 attachments.");
       // }
-    } else if (type === "DELETE") {
-      let filteredFileArray = selectedFiles.filter(
-        (item, index) => id !== index
-      );
+    } else if (type === 'DELETE') {
+      let filteredFileArray = selectedFiles.filter((item, index) => id !== index);
       setSelectedFiles(filteredFileArray);
     }
-    e.target.value = ""; // Reset the input field
+    e.target.value = ''; // Reset the input field
   };
 
   const handleDeleteAttachment = (e, id) => {
-    setSelectedFiles((prevSelectedFiles) =>
-      prevSelectedFiles.filter((item, index) => id !== index)
-    );
+    setSelectedFiles(prevSelectedFiles => prevSelectedFiles.filter((item, index) => id !== index));
     loadAttachment();
   };
 
   // maximum length check for attachments
-  const maxLengthCheck = (e) => {
+  const maxLengthCheck = e => {
     if (e.target.files.length > 10) {
-      alert("You Can Upload Only 10 Attachments");
-      document.getElementById("attachment").value = null;
+      alert('You Can Upload Only 10 Attachments');
+      document.getElementById('attachment').value = null;
       setSelectedFiles(null);
     }
   };
 
   const [billAmountValues, setBillAmountValues] = useState({
-    tcs: "",
-    bill_amount: "",
-    net_payment: "",
-    debit_advance: "",
-    taxable_amount: "",
-    igst_amount: "",
-    gst_amount: "",
-    round_off: "",
+    tcs: '',
+    bill_amount: '',
+    net_payment: '',
+    debit_advance: '',
+    taxable_amount: '',
+    igst_amount: '',
+    gst_amount: '',
+    round_off: '',
   });
 
   function handleInputChange(event, type) {
@@ -632,8 +592,8 @@ export default function CreateBillCheckingTransaction({ match }) {
 
     if (/^\d+(\.\d{0,2})?$/.test(value)) {
       setBillAmountValues({ ...billAmountValues, [name]: value });
-    } else if (value === "") {
-      setBillAmountValues({ ...billAmountValues, [name]: "" });
+    } else if (value === '') {
+      setBillAmountValues({ ...billAmountValues, [name]: '' });
     }
   }
 
@@ -641,20 +601,20 @@ export default function CreateBillCheckingTransaction({ match }) {
     const { name, value } = event.target;
 
     // Allow only '-' if it's the only character
-    if (value === "-") {
+    if (value === '-') {
       event.target.value = value;
     } else {
       // Remove any non-numeric, decimal point, or negative sign characters
-      let input = value.replace(/[^0-9.-]/g, "");
+      let input = value.replace(/[^0-9.-]/g, '');
 
       // Check if the input has more than one dot
       if ((input.match(/\./g) || []).length > 1) {
         // If so, remove all dots after the first one
-        input = input.replace(/\.(?=.*\.)/g, "");
+        input = input.replace(/\.(?=.*\.)/g, '');
       }
 
       // Check if the input has more than 2 decimal places
-      if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+      if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
         // If so, round the input to 2 decimal places
         input = parseFloat(input).toFixed(2);
       }
@@ -662,10 +622,10 @@ export default function CreateBillCheckingTransaction({ match }) {
       // Check if the input has more than one negative sign
       if ((input.match(/-/g) || []).length > 1) {
         // If so, remove all negative signs after the first one
-        input = input.replace(/-(?=.*-)/g, "");
-      } else if (input.indexOf("-") > 0) {
+        input = input.replace(/-(?=.*-)/g, '');
+      } else if (input.indexOf('-') > 0) {
         // If there's a negative sign not at the beginning, remove it
-        input = input.replace("-", "");
+        input = input.replace('-', '');
       }
 
       event.target.value = input;
@@ -676,30 +636,18 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // calculate Bill Amount value
   const billValue =
-    parseFloat(
-      billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
-    ) +
+    parseFloat(billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0) +
     (igst === 0
-      ? parseFloat(
-          billAmountValues.gst_amount ? billAmountValues.gst_amount : 0
-        )
-      : parseFloat(
-          billAmountValues.igst_amount ? billAmountValues.igst_amount : 0
-        )) +
+      ? parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0)
+      : parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0)) +
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0) +
     parseFloat(billAmountValues.tcs ? billAmountValues.tcs : 0);
 
   const BillValue =
-    parseFloat(
-      billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
-    ) +
+    parseFloat(billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0) +
     (igst === 0
-      ? parseFloat(
-          billAmountValues.gst_amount ? billAmountValues.gst_amount : 0
-        )
-      : parseFloat(
-          billAmountValues.igst_amount ? billAmountValues.igst_amount : 0
-        )) +
+      ? parseFloat(billAmountValues.gst_amount ? billAmountValues.gst_amount : 0)
+      : parseFloat(billAmountValues.igst_amount ? billAmountValues.igst_amount : 0)) +
     parseFloat(billAmountValues.round_off ? billAmountValues.round_off : 0);
 
   const BillAmount = billValue.toFixed(2);
@@ -707,9 +655,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   // calculate tds amount value
   const tdsAmountValue =
-    (parseFloat(
-      billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0
-    ) *
+    (parseFloat(billAmountValues.taxable_amount ? billAmountValues.taxable_amount : 0) *
       parseFloat(tdsPercentage)) /
     100;
 
@@ -721,15 +667,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (isTcsApplicable === 1) {
       netPayment =
         parseFloat(BillAmount ? BillAmount : 0) -
-        parseFloat(
-          billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-        );
+        parseFloat(billAmountValues.debit_advance ? billAmountValues.debit_advance : 0);
     } else {
       netPayment =
         parseFloat(BillAmount1 ? BillAmount1 : 0) -
-        parseFloat(
-          billAmountValues.debit_advance ? billAmountValues.debit_advance : 0
-        );
+        parseFloat(billAmountValues.debit_advance ? billAmountValues.debit_advance : 0);
     }
 
     setNetPayment(Math.round(netPayment));
@@ -739,7 +681,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       setNetPayment(Math.round(netPayment));
     }
     if (netPayment < 0) {
-      setNetPaymentError("Net bill payment should be positive value");
+      setNetPaymentError('Net bill payment should be positive value');
     } else {
       setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
     }
@@ -757,19 +699,16 @@ export default function CreateBillCheckingTransaction({ match }) {
     }
   }, [checkRole]);
 
+  const [roundOffError, setRoundOffError] = useState('');
 
-  
-
-  const [roundOffError, setRoundOffError] = useState("");
-
-  const handleRoundOffChangee = (e) => {
+  const handleRoundOffChangee = e => {
     const inputValue = e.target.value;
 
     // Example: Validate that the value is a valid number
     if (!/^-?\d*\.?\d{0,2}$/.test(inputValue)) {
-      setRoundOffError("Invalid input");
+      setRoundOffError('Invalid input');
     } else {
-      setRoundOffError("");
+      setRoundOffError('');
     }
 
     // Update the state with the new value
@@ -787,7 +726,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          <form method="POST" onSubmit={(e) => handleForm(e)}>
+          <form method="POST" onSubmit={e => handleForm(e)}>
             {/* ********* MAIN DATA ********* */}
             <div className="card mt-2">
               <div className="card-header bg-primary text-white p-2">
@@ -808,7 +747,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         className="form-control form-control"
                         options={billTypeDropdown}
                         // onChange={(e) => handleAssignToPerson(e)}
-                        onChange={(e) => {
+                        onChange={e => {
                           handleAssignToPerson(e);
                           handleBillTypeChange(e); // Call the function to clear the assign to field
                         }}
@@ -870,7 +809,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       name="vendor_bill_no"
                       required
                       maxLength={25}
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         Validation.CharactersNumbersSpeicalOnly(e);
                       }}
                     />
@@ -879,7 +818,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Bill Date: <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -899,7 +838,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Received Date: <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -918,7 +857,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Debit Advance: <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -933,20 +872,20 @@ export default function CreateBillCheckingTransaction({ match }) {
                       value={billAmountValues.debit_advance}
                       onChange={handleInputChange}
                       required
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         const allowedKeys = [
-                          "0",
-                          "1",
-                          "2",
-                          "3",
-                          "4",
-                          "5",
-                          "6",
-                          "7",
-                          "8",
-                          "9",
-                          ".",
-                          "Backspace",
+                          '0',
+                          '1',
+                          '2',
+                          '3',
+                          '4',
+                          '5',
+                          '6',
+                          '7',
+                          '8',
+                          '9',
+                          '.',
+                          'Backspace',
                         ];
                         const inputValue = e.key;
 
@@ -955,18 +894,15 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }
 
                         const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf(".");
+                        const decimalIndex = currentInput.indexOf('.');
 
-                        if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
-                        ) {
+                        if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
                           e.preventDefault();
                         }
 
                         if (
                           currentInput.length >= 10 &&
-                          inputValue !== "." &&
+                          inputValue !== '.' &&
                           decimalIndex === -1
                         ) {
                           e.preventDefault();
@@ -978,7 +914,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Taxable Amount: <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -992,29 +928,26 @@ export default function CreateBillCheckingTransaction({ match }) {
                       value={billAmountValues.taxable_amount}
                       onChange={handleInputChange}
                       required
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         const inputValue = e.key;
                         const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf(".");
+                        const decimalIndex = currentInput.indexOf('.');
 
                         if (
                           !/^\d$/.test(inputValue) &&
-                          inputValue !== "." &&
-                          inputValue !== "Backspace"
+                          inputValue !== '.' &&
+                          inputValue !== 'Backspace'
                         ) {
                           e.preventDefault();
                         }
 
-                        if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
-                        ) {
+                        if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
                           e.preventDefault();
                         }
 
                         if (
                           currentInput.length >= 10 &&
-                          inputValue !== "." &&
+                          inputValue !== '.' &&
                           decimalIndex === -1
                         ) {
                           e.preventDefault();
@@ -1028,20 +961,17 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_igst_applicable"
-                        onChange={(e) => {
+                        onChange={e => {
                           handleIgst(e);
                         }}
-                        onKeyPress={(e) => {
+                        onKeyPress={e => {
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
                       />
 
-                      <label
-                        className="col-sm-3 col-form-label"
-                        style={{ width: "200px" }}
-                      >
+                      <label className="col-sm-3 col-form-label" style={{ width: '200px' }}>
                         <b>
                           IGST/GST :<Astrick color="red" size="13px" />
                         </b>
@@ -1057,46 +987,43 @@ export default function CreateBillCheckingTransaction({ match }) {
                           name="gst_amount"
                           maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
                           value={billAmountValues.gst_amount}
-                          onChange={(e) => handleInputChange(e)}
+                          onChange={e => handleInputChange(e)}
                           required
-                          onKeyPress={(e) => {
+                          onKeyPress={e => {
                             const inputValue = e.key;
                             const currentInput = e.target.value;
-                            const decimalIndex = currentInput.indexOf(".");
+                            const decimalIndex = currentInput.indexOf('.');
 
                             if (
                               !/^\d$/.test(inputValue) &&
-                              inputValue !== "." &&
-                              inputValue !== "Backspace"
+                              inputValue !== '.' &&
+                              inputValue !== 'Backspace'
                             ) {
                               e.preventDefault();
                             }
 
-                            if (
-                              decimalIndex !== -1 &&
-                              currentInput.length - decimalIndex > 2
-                            ) {
+                            if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
                               e.preventDefault();
                             }
 
                             if (
                               currentInput.length >= 10 &&
-                              inputValue !== "." &&
+                              inputValue !== '.' &&
                               decimalIndex === -1
                             ) {
                               e.preventDefault();
                             }
                           }}
-                          onInput={(e) => {
+                          onInput={e => {
                             const value = e.target.value;
-                            const parts = value.split(".");
+                            const parts = value.split('.');
 
                             if (parts.length > 1) {
                               // Ensure only 2 decimal places
                               parts[1] = parts[1].slice(0, 2);
                             }
 
-                            e.target.value = parts.join(".");
+                            e.target.value = parts.join('.');
 
                             if (value.length > 13) {
                               e.target.value = value.slice(0, 13);
@@ -1112,46 +1039,43 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="igst_amount"
                         maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
                         value={billAmountValues.igst_amount}
-                        onChange={(e) => handleInputChange(e)}
+                        onChange={e => handleInputChange(e)}
                         required
-                        onKeyPress={(e) => {
+                        onKeyPress={e => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf(".");
+                          const decimalIndex = currentInput.indexOf('.');
 
                           if (
                             !/^\d$/.test(inputValue) &&
-                            inputValue !== "." &&
-                            inputValue !== "Backspace"
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
                           ) {
                             e.preventDefault();
                           }
 
-                          if (
-                            decimalIndex !== -1 &&
-                            currentInput.length - decimalIndex > 2
-                          ) {
+                          if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
                             e.preventDefault();
                           }
 
                           if (
                             currentInput.length >= 10 &&
-                            inputValue !== "." &&
+                            inputValue !== '.' &&
                             decimalIndex === -1
                           ) {
                             e.preventDefault();
                           }
                         }}
-                        onInput={(e) => {
+                        onInput={e => {
                           const value = e.target.value;
-                          const parts = value.split(".");
+                          const parts = value.split('.');
 
                           if (parts.length > 1) {
                             // Ensure only 2 decimal places
                             parts[1] = parts[1].slice(0, 2);
                           }
 
-                          e.target.value = parts.join(".");
+                          e.target.value = parts.join('.');
 
                           if (value.length > 13) {
                             e.target.value = value.slice(0, 13);
@@ -1162,10 +1086,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   </div>
 
                   <div className=" col ">
-                    <label
-                      className="col-sm-3 col-form-label"
-                      style={{ width: "200px" }}
-                    >
+                    <label className="col-sm-3 col-form-label" style={{ width: '200px' }}>
                       <b> Round Off: </b>
                     </label>
 
@@ -1177,45 +1098,39 @@ export default function CreateBillCheckingTransaction({ match }) {
                       name="round_off"
                       maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
                       value={billAmountValues.round_off}
-                      onChange={(e) => handleRoundOffChange(e)}
-                      onKeyPress={(e) => {
+                      onChange={e => handleRoundOffChange(e)}
+                      onKeyPress={e => {
                         const allowedKeys = [
-                          "0",
-                          "1",
-                          "2",
-                          "3",
-                          "4",
-                          "5",
-                          "6",
-                          "7",
-                          "8",
-                          "9",
-                          ".",
-                          "Backspace",
-                          "-",
+                          '0',
+                          '1',
+                          '2',
+                          '3',
+                          '4',
+                          '5',
+                          '6',
+                          '7',
+                          '8',
+                          '9',
+                          '.',
+                          'Backspace',
+                          '-',
                         ];
                         const inputValue = e.key;
                         const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf(".");
+                        const decimalIndex = currentInput.indexOf('.');
 
                         // Allow '-' only at the beginning of the input
-                        if (
-                          inputValue === "-" &&
-                          e.target.selectionStart !== 0
-                        ) {
+                        if (inputValue === '-' && e.target.selectionStart !== 0) {
                           e.preventDefault();
                         }
 
-                        if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
-                        ) {
+                        if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
                           e.preventDefault();
                         }
 
                         if (
                           currentInput.length >= 10 &&
-                          inputValue !== "." &&
+                          inputValue !== '.' &&
                           decimalIndex === -1
                         ) {
                           e.preventDefault();
@@ -1225,7 +1140,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           e.preventDefault();
                         }
                       }}
-                      onBlur={(e) => {
+                      onBlur={e => {
                         const value = e.target.value;
 
                         // Check if the value is a valid number
@@ -1233,9 +1148,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                         if (!isValidNumber) {
                           // Display an error message or take appropriate action.
-                          alert(
-                            "Invalid round off value. Please enter a valid number."
-                          );
+                          alert('Invalid round off value. Please enter a valid number.');
                           // You might also reset the value or set an error state in your application.
                         }
                       }}
@@ -1247,11 +1160,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
-                        TCS Amount:{" "}
-                        {isTcsApplicable == 1 && (
-                          <Astrick color="red" size="13px" />
-                        )}
+                        {' '}
+                        TCS Amount: {isTcsApplicable == 1 && <Astrick color="red" size="13px" />}
                       </b>
                     </label>
 
@@ -1265,7 +1175,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         value={billAmountValues.tcs}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
-                        onKeyPress={(e) => {
+                        onKeyPress={e => {
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
                       />
@@ -1280,7 +1190,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
-                        onKeyPress={(e) => {
+                        onKeyPress={e => {
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
                       />
@@ -1290,7 +1200,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className="col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Bill Amount: <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -1300,11 +1210,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       className="form-control form-control-sm"
                       id="bill_amount"
                       name="bill_amount"
-                      value={
-                        BillAmount > 0 && isTcsApplicable == 1
-                          ? BillAmount
-                          : BillAmount1
-                      }
+                      value={BillAmount > 0 && isTcsApplicable == 1 ? BillAmount : BillAmount1}
                       readOnly={true}
                     />
                   </div>
@@ -1313,14 +1219,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <input
                       className="sm-1"
                       type="checkbox"
-                      style={{ marginRight: "8px", marginLeft: "10px" }}
+                      style={{ marginRight: '8px', marginLeft: '10px' }}
                       id="is_tds_applicable"
-                      onChange={(e) => handleTdsApplicable(e)}
+                      onChange={e => handleTdsApplicable(e)}
                     />
-                    <label
-                      className="col-form-label"
-                      style={{ width: "100px" }}
-                    >
+                    <label className="col-form-label" style={{ width: '100px' }}>
                       <b>TDS Applicable:</b>
                     </label>
                   </div>
@@ -1329,22 +1232,17 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_tcs_applicable"
-                        onChange={(e) => {
+                        onChange={e => {
                           handleTcsApplicable(e);
                         }}
                         disabled={
-                          authorities && authorities.TCS_Applicable === false
-                            ? true
-                            : false
+                          authorities && authorities.TCS_Applicable === false ? true : false
                         }
                       />
                     )}
-                    <label
-                      className="col-form-label"
-                      style={{ width: "100px" }}
-                    >
+                    <label className="col-form-label" style={{ width: '100px' }}>
                       <b>TCS Applicable:</b>
                     </label>
                   </div>
@@ -1353,22 +1251,16 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <input
                       className="sm-1"
                       type="checkbox"
-                      style={{ marginRight: "8px", marginLeft: "10px" }}
+                      style={{ marginRight: '8px', marginLeft: '10px' }}
                       id="is_original_bill_needed"
-                      onChange={(e) => {
+                      onChange={e => {
                         handleIsOriginal(e);
                       }}
                       disabled={
-                        authorities &&
-                        authorities.Original_Bill_Needed === false
-                          ? true
-                          : false
+                        authorities && authorities.Original_Bill_Needed === false ? true : false
                       }
                     />
-                    <label
-                      className="col-form-label"
-                      style={{ width: "100px" }}
-                    >
+                    <label className="col-form-label" style={{ width: '100px' }}>
                       <b>Original Bill Needed</b>
                     </label>
                   </div>
@@ -1378,8 +1270,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" form-group row mt-3 ">
                     <div className="col-md-3  ">
                       <label className="col-form-label">
-                        <b>TDS section : </b>{" "}
-                        <Astrick color="red" size="13px" />
+                        <b>TDS section : </b> <Astrick color="red" size="13px" />
                       </label>
                       {sectionDropdown && (
                         <Select
@@ -1390,7 +1281,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           options={sectionDropdown}
                           ref={sectionRef}
                           required
-                          onChange={(e) => {
+                          onChange={e => {
                             handleSectionDropDownChange(e);
                             handleTDSSectionChange(e);
                           }}
@@ -1400,8 +1291,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
-                        <b>TDS Constitution : </b>{" "}
-                        <Astrick color="red" size="13px" />
+                        <b>TDS Constitution : </b> <Astrick color="red" size="13px" />
                       </label>
                       {tdsData && tdsData.length > 0 && (
                         <span>
@@ -1409,11 +1299,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               id="tds_constitution"
                               name="tds_constitution"
-                              options={
-                                constitutionDropdown
-                                  ? constitutionDropdown
-                                  : null
-                              }
+                              options={constitutionDropdown ? constitutionDropdown : null}
                               onChange={handleTdsPercentage}
                             />
                           )}
@@ -1429,16 +1315,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                               id="tds_constitution"
                               name="tds_constitution"
                               isDisabled={
-                                constitutionDropdown &&
-                                !constitutionDropdown.length
-                                  ? true
-                                  : false
+                                constitutionDropdown && !constitutionDropdown.length ? true : false
                               }
-                              options={
-                                constitutionDropdown
-                                  ? constitutionDropdown
-                                  : null
-                              }
+                              options={constitutionDropdown ? constitutionDropdown : null}
                               onChange={handleTdsPercentage}
                             />
                           )}
@@ -1460,7 +1339,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultValue={tdsPercentage}
                         readOnly
                         ref={tdsPercentageRef}
-                        onChange={(e) => handleTds(e)}
+                        onChange={e => handleTds(e)}
                       />
                     </div>
 
@@ -1486,7 +1365,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
                       <b>
-                        {" "}
+                        {' '}
                         Net Payment : <Astrick color="red" size="13px" />
                       </b>
                     </label>
@@ -1503,7 +1382,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                   {netPaymentError && (
                     <p
                       style={{
-                        color: "red",
+                        color: 'red',
                       }}
                     >
                       {netPaymentError}
@@ -1550,9 +1429,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="audit_remark"
                         rows="4"
                         maxLength={1000}
-                        readOnly={
-                          authority.Internal_Audit === false ? true : false
-                        }
+                        readOnly={authority.Internal_Audit === false ? true : false}
                       />
                     )}
                   </div>
@@ -1563,7 +1440,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className="col-sm-4 mt-3">
                       <label className=" col-form-label">
                         <b>
-                          Upload Attachment :<Astrick color="red" size="13px" />{" "}
+                          Upload Attachment :<Astrick color="red" size="13px" />{' '}
                         </b>
                       </label>
                       <input
@@ -1575,12 +1452,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         ref={fileInputRef}
                         capture="camera"
                         multiple
-                        required={
-                          selectedFiles && selectedFiles.length <= 0
-                            ? true
-                            : false
-                        }
-                        onChange={(e) => {
+                        required={selectedFiles && selectedFiles.length <= 0 ? true : false}
+                        onChange={e => {
                           const selectedFile = e.target.files[0];
 
                           // Check if the file type is one of the allowed types
@@ -1605,7 +1478,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           //   e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                           // }
 
-                          uploadAttachmentHandler(e, "UPLOAD", "");
+                          uploadAttachmentHandler(e, 'UPLOAD', '');
                           // maxLengthCheck(e, "UPLOAD");
                         }}
                       />
@@ -1615,11 +1488,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                 <div
                   className="attachments-container"
                   style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    maxWidth: "100%",
-                    maxHeight: "400px", // Example maximum height
-                    overflowY: "auto", // Enable vertical scrolling if needed
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    maxWidth: '100%',
+                    maxHeight: '400px', // Example maximum height
+                    overflowY: 'auto', // Enable vertical scrolling if needed
                   }}
                 >
                   {selectedFiles &&
@@ -1628,31 +1501,31 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <div
                           key={index}
                           style={{
-                            marginRight: "20px",
-                            marginBottom: "20px", // Add margin bottom for spacing between attachments
-                            width: "100px", // Set a fixed width for consistency
+                            marginRight: '20px',
+                            marginBottom: '20px', // Add margin bottom for spacing between attachments
+                            width: '100px', // Set a fixed width for consistency
                           }}
                         >
                           <div
                             className="card"
                             style={{
-                              backgroundColor: "#EBF5FB",
-                              height: "100%", // Set the height of the card to fill the container
-                              display: "flex", // Use flexbox to align content vertically
-                              flexDirection: "column", // Align content in a column layout
+                              backgroundColor: '#EBF5FB',
+                              height: '100%', // Set the height of the card to fill the container
+                              display: 'flex', // Use flexbox to align content vertically
+                              flexDirection: 'column', // Align content in a column layout
                             }}
                           >
                             <div
                               className="card-header"
-                              style={{ padding: "10px", overflow: "hidden" }}
+                              style={{ padding: '10px', overflow: 'hidden' }}
                             >
                               <span
                                 style={{
-                                  display: "inline-block",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  maxWidth: "100%", // Ensure the span does not exceed the container width
+                                  display: 'inline-block',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '100%', // Ensure the span does not exceed the container width
                                 }}
                               >
                                 {attachment.fileName}
@@ -1669,14 +1542,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                               <button
                                 className="btn btn-danger text-white btn-sm p-1"
                                 type="button"
-                                onClick={(e) => {
-                                  uploadAttachmentHandler(e, "DELETE", index);
+                                onClick={e => {
+                                  uploadAttachmentHandler(e, 'DELETE', index);
                                 }}
                               >
-                                <i
-                                  className="icofont-ui-delete"
-                                  style={{ fontSize: "15px" }}
-                                ></i>
+                                <i className="icofont-ui-delete" style={{ fontSize: '15px' }}></i>
                               </button>
                             </div>
                           </div>
@@ -1688,14 +1558,11 @@ export default function CreateBillCheckingTransaction({ match }) {
             </div>
             {/* CARD */}
 
-            <div className="mt-3" style={{ textAlign: "right" }}>
+            <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-primary">
                 Submit
               </button>
-              <Link
-                to={`/${_base}/BillCheckingTransaction`}
-                className="btn btn-danger text-white"
-              >
+              <Link to={`/${_base}/BillCheckingTransaction`} className="btn btn-danger text-white">
                 Cancel
               </Link>
             </div>
@@ -1704,24 +1571,21 @@ export default function CreateBillCheckingTransaction({ match }) {
             size="xl"
             centered
             show={modal.showModal}
-            onHide={(e) => {
+            onHide={e => {
               handleModal({
                 showModal: false,
-                modalData: "",
-                modalHeader: "",
+                modalData: '',
+                modalHeader: '',
               });
             }}
           >
             <Modal.Header closeButton />
-            <Modal.Body style={{ alignItems: "center" }}>
+            <Modal.Body style={{ alignItems: 'center' }}>
               {showFiles &&
                 showFiles.map((d, i) => {
                   return (
                     <div className="row">
-                      <div
-                        className="card"
-                        style={{ backgroundColor: "#EBF5FB" }}
-                      >
+                      <div className="card" style={{ backgroundColor: '#EBF5FB' }}>
                         <img className="col-md mt-2" src={d} />
                       </div>
                     </div>

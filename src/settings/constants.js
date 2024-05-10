@@ -28,7 +28,8 @@ export var dataFormat = { status: 0, message: null, data: null };
 //   "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
 // export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
 
-export const ALPHA_NUMERIC_REGEX = /^(?=.*[a-zA-Z])(?=.*[0-9]?)[a-zA-Z0-9\s!@#$%^&*()_+[\]{};':"\\|,.<>/?-]*$/;
+export const ALPHA_NUMERIC_REGEX =
+  /^(?=.*[a-zA-Z])(?=.*[0-9]?)[a-zA-Z0-9\s!@#$%^&*()_+[\]{};':"\\|,.<>/?-]*$/;
 export const ONLY_CHARACTER_REGEX = /^[a-zA-Z\s]+$/;
 
 export const _base = REACT_APP_ROOT_URL;
