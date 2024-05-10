@@ -357,7 +357,7 @@ function BillCheckingTransaction() {
                 </Link>
               </li>
 
-              {row &&
+              {(row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
@@ -367,7 +367,8 @@ function BillCheckingTransaction() {
                     row.is_assign_to != 1) ||
                   (row.level != parseInt(row.total_level) &&
                     row.is_approver == 1)) &&
-                row.is_active == 1 || row["Is cancelled"]==0 && (
+                row.is_active == 1) ||
+                (row["Is cancelled"] === 0 && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -377,7 +378,7 @@ function BillCheckingTransaction() {
                       <i className="icofont-history"></i> History
                     </Link>
                   </li>
-                )}
+                ))}
 
               {((row.is_assign_to == 1 && row.level == row.total_level) ||
                 row.is_active == 0) && (
@@ -392,8 +393,6 @@ function BillCheckingTransaction() {
                 </li>
               )}
 
-            
-            
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>

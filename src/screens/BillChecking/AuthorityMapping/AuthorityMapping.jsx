@@ -38,6 +38,7 @@ import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponen
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
+  const [statusData, setstatusData] = useState();
 
   const roleId = sessionStorage.getItem("role_id");
   const dispatch = useDispatch();
@@ -227,9 +228,6 @@ const AuthorityMapping = () => {
       sortable: true,
     },
   ];
-  const [statusData, setstatusData] = useState();
- 
-  
 
   const handleStatusChange = (e) => {
     setstatusData(e?.target?.value);
