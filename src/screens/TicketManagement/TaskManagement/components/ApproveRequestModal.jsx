@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal, Spinner, Table } from "react-bootstrap";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import Alert from "../../../../components/Common/Alert";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal, Spinner, Table } from 'react-bootstrap';
+import ErrorLogService from '../../../../services/ErrorLogService';
+import Alert from '../../../../components/Common/Alert';
 import {
   getRegularizationTime,
   changeStatusRegularizationTime,
-} from "../../../../services/TicketService/TaskService";
+} from '../../../../services/TicketService/TaskService';
 
-const ApproveRequestModal = (props) => {
+const ApproveRequestModal = props => {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
   const [dataa, setDataa] = useState([]);
@@ -24,13 +24,13 @@ const ApproveRequestModal = (props) => {
     // Assuming getRegularizationTime is a function that returns a Promise
     new getRegularizationTime(ticketId)
 
-      .then((res) => {
+      .then(res => {
         if (res.status == 200) {
           setShowLoaderModal(false);
 
           if (res.data.data) {
             // Process the data
-            const temp = res.data.data.map((d) => ({
+            const temp = res.data.data.map(d => ({
               id: d.id,
               created_by_name: d.created_by_name,
               from_date: d.from_date,
@@ -54,7 +54,7 @@ const ApproveRequestModal = (props) => {
           }
         }
       })
-      .catch((error) => {
+      .catch(error => {
         // Handle errors, e.g., show an error message to the user
       });
   };
@@ -66,7 +66,7 @@ const ApproveRequestModal = (props) => {
     setSelectAll(newSelectAll);
 
     // Update the state with the new array where is_checked is set based on newSelectAll value
-    const newData = rquestData.map((d) => ({
+    const newData = rquestData.map(d => ({
       ...d,
       is_checked: newSelectAll ? 1 : 0,
     }));
@@ -75,8 +75,8 @@ const ApproveRequestModal = (props) => {
     setData(newData);
 
     // Update checkboxes to reflect the new state
-    const checkboxes = document.getElementsByName("status[]");
-    checkboxes.forEach((checkbox) => {
+    const checkboxes = document.getElementsByName('status[]');
+    checkboxes.forEach(checkbox => {
       checkbox.checked = newSelectAll;
     });
   };
@@ -90,28 +90,28 @@ const ApproveRequestModal = (props) => {
     setData(newData);
   };
 
-  const handleForm = (type) => {
+  const handleForm = type => {
     setNotify(null);
     const formData = { type: type, payload: data };
-    const check = formData.payload.filter((d) => {
+    const check = formData.payload.filter(d => {
       return d.is_checked == 1;
     });
 
     if (check.length > 0) {
-      new changeStatusRegularizationTime(formData).then((res) => {
+      new changeStatusRegularizationTime(formData).then(res => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
+            setNotify({ type: 'success', message: res.data.message });
             props.hide();
 
-            new getRegularizationTime(props.ticketId).then((res) => {
+            new getRegularizationTime(props.ticketId).then(res => {
               setNotify(null);
               if (res.data.data && res.data.data.length > 0) {
                 setNotify(null);
 
                 var temp = [];
                 // setData(null);
-                res.data.data.forEach((d) => {
+                res.data.data.forEach(d => {
                   temp.push({
                     id: d.id,
                     created_by_name: d.created_by_name,
@@ -134,14 +134,14 @@ const ApproveRequestModal = (props) => {
               }
             });
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         }
       });
     } else {
       setNotify({
-        type: "danger",
-        message: "Please select the checkbox against request !!!",
+        type: 'danger',
+        message: 'Please select the checkbox against request !!!',
       });
     }
   };
@@ -160,19 +160,17 @@ const ApproveRequestModal = (props) => {
     >
       {notify && <Alert alertData={notify} />}
       <Modal.Header closeButton>
-        <Modal.Title id="example-custom-modal-styling-title">
-          Request Regularization
-        </Modal.Title>
+        <Modal.Title id="example-custom-modal-styling-title">Request Regularization</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {showLoaderModal && (
           <div
             style={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              minHeight: "calc(100% - 1rem)",
-              margin: "0",
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              minHeight: 'calc(100% - 1rem)',
+              margin: '0',
             }}
           >
             <div className="text-center">
@@ -191,27 +189,25 @@ const ApproveRequestModal = (props) => {
           <>
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              <div style={{ fontWeight: "bold" }}>
-                Ticket ID :{ticketIdName}
-              </div>
+              <div style={{ fontWeight: 'bold' }}>Ticket ID :{ticketIdName}</div>
               <div className="text-right">
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
-                  style={{ backgroundColor: "#484C7F", marginRight: "5px" }}
-                  onClick={(e) => handleForm("APPROVED")}
+                  style={{ backgroundColor: '#484C7F', marginRight: '5px' }}
+                  onClick={e => handleForm('APPROVED')}
                 >
                   Approve
                 </button>
                 <button
                   type="button"
                   className="btn btn-danger btn-sm text-white"
-                  onClick={(e) => handleForm("REJECTED")}
+                  onClick={e => handleForm('REJECTED')}
                 >
                   Reject
                 </button>
@@ -219,16 +215,12 @@ const ApproveRequestModal = (props) => {
             </div>
 
             <div className="table-responsive">
-              <table
-                className="table table-bordered mt-3 table-responsive"
-                id="tab_logic"
-              >
+              <table className="table table-bordered mt-3 table-responsive" id="tab_logic">
                 <thead>
                   <tr>
                     <th className="text-center"> Sr. No. </th>
                     <th className="text-center">
-                      <input type="checkbox" onChange={handleSelectAll} />{" "}
-                      Select
+                      <input type="checkbox" onChange={handleSelectAll} /> Select
                     </th>
                     <th className="text-center"> Task Name </th>
                     <th className="text-center"> Requested By </th>
@@ -251,18 +243,13 @@ const ApproveRequestModal = (props) => {
                           <td>{i + 1}</td>
 
                           <td>
-                            <input
-                              type="hidden"
-                              id={`status_${i}`}
-                              name="id[]"
-                              value={x.id}
-                            />
+                            <input type="hidden" id={`status_${i}`} name="id[]" value={x.id} />
                             <input
                               type="checkbox"
                               id={`status_${i}`}
                               name="status[]"
-                              onChange={(e) => handleInputChange(e, i)}
-                              disabled={x.status !== "PENDING"}
+                              onChange={e => handleInputChange(e, i)}
+                              disabled={x.status !== 'PENDING'}
                             />
                           </td>
                           <td title={x.task_name}>{x.task_name}</td>
@@ -321,7 +308,7 @@ const ApproveRequestModal = (props) => {
                               value={x.actual_time}
                               required
                               readOnly={true}
-                              style={{ width: "100px" }}
+                              style={{ width: '100px' }}
                             />
                           </td>
 
@@ -333,7 +320,7 @@ const ApproveRequestModal = (props) => {
                               name="scheduled_time[]"
                               value={x.scheduled_time}
                               required
-                              style={{ width: "100px" }}
+                              style={{ width: '100px' }}
                               readOnly={true}
                             />
                           </td>
@@ -344,7 +331,7 @@ const ApproveRequestModal = (props) => {
                               id={`remark${i}`}
                               name="remark[]"
                               value={x.remark}
-                              style={{ width: "100px" }}
+                              style={{ width: '100px' }}
                               required
                               readOnly={true}
                             />
@@ -357,7 +344,7 @@ const ApproveRequestModal = (props) => {
                               name="status[]"
                               value={x.status}
                               required
-                              style={{ width: "100px" }}
+                              style={{ width: '100px' }}
                               readOnly={true}
                             />
                           </td>
@@ -370,10 +357,7 @@ const ApproveRequestModal = (props) => {
           </>
         ) : (
           <>
-            <p
-              className="text-center opacity-50"
-              style={{ fontWeight: "bold", fontSize: 20 }}
-            >
+            <p className="text-center opacity-50" style={{ fontWeight: 'bold', fontSize: 20 }}>
               No record found
             </p>
           </>
