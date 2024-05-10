@@ -6,7 +6,7 @@ export default function errorHandler(response = '') {
       toast.error(response.data.message);
     }
     if (response.status === 500) {
-      toast.error(response.data.message ?? 'Server error! Please try again.');
+      toast.error('Server error! Please try again.');
     }
     if (response.status === 400) {
       toast.error(response.data.message);

@@ -242,7 +242,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                       push({
                                         step_title: '',
                                         designation_id: '',
-                                        designation_id: '',
+                                        employee_id: '',
                                         employee_email: '',
                                       })
                                     }
