@@ -13,6 +13,20 @@
   }
 }
 
+@media only screen and (max-width: 575px) {
+  .po_order_quantity_report_container {
+    .btn_container {
+      justify-content: space-between;
+      button {
+        width: 100%;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 426px) {
   .po_order_quantity_report_container {
     h3 {
@@ -20,12 +34,3 @@
     }
   }
 }
-// @media only screen and (max-width: 320px) {
-//   .po_order_quantity_report_container {
-//     .button_container {
-//       button {
-//         font-size: 10px;
-//       }
-//     }
-//   }
-// }

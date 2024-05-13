@@ -146,8 +146,8 @@ function VendorExportReport() {
         >
           {({ resetForm, dirty }) => (
             <Form>
-              <Row className="row_gap_3">
-                <Col sm={6} lg={3}>
+              <Row className="align-items-md-end row_gap_3">
+                <Col sm={6} md={4} lg={3}>
                   <Field
                     component={CustomReactSelect}
                     options={venderData}
@@ -178,26 +178,26 @@ function VendorExportReport() {
                     range
                   />
                 </Col>
+                <Col lg={3} className="d-flex justify-content-md-end btn_container">
+                  <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+                    <i className="icofont-search-1 " /> Search
+                  </button>
+                  <button
+                    className="btn btn-info text-white"
+                    type="reset"
+                    disabled={!dirty}
+                    onClick={() => handelResetFilter({ restFunc: resetForm })}
+                  >
+                    <i className="icofont-refresh text-white" /> Reset
+                  </button>
+                  <ExportToExcel
+                    className="btn btn-danger"
+                    apiData={transformDataForExport(requisitionHistoryList)}
+                    fileName="Vendor export report"
+                    disabled={!requisitionHistoryList?.length}
+                  />
+                </Col>
               </Row>
-              <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
-                  <i className="icofont-search-1 " /> Search
-                </button>
-                <button
-                  className="btn btn-info text-white"
-                  type="reset"
-                  disabled={!dirty}
-                  onClick={() => handelResetFilter({ restFunc: resetForm })}
-                >
-                  <i className="icofont-refresh text-white" /> Reset
-                </button>
-                <ExportToExcel
-                  className="btn btn-danger"
-                  apiData={transformDataForExport(requisitionHistoryList)}
-                  fileName="Vendor export report"
-                  disabled={!requisitionHistoryList?.length}
-                />
-              </div>
             </Form>
           )}
         </Formik>

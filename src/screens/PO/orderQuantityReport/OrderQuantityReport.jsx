@@ -13,8 +13,8 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import PoOrderQanFilterModal from './PoOrderQanFilterModal';
 import { getVenderListThunk } from '../../../redux/services/po/common';
 import { getRequisitionHistoryThunk } from '../../../redux/services/po/history';
-import './style.scss';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import './style.scss';
 
 function OrderQuantityReport() {
   // // initial state
@@ -172,8 +172,8 @@ function OrderQuantityReport() {
           >
             {({ resetForm, dirty }) => (
               <Form>
-                <Row className="row_gap_3">
-                  <Col sm={6} lg={3}>
+                <Row className="align-items-md-end row_gap_3">
+                  <Col sm={6} md={4} lg={3}>
                     <Field
                       component={CustomReactSelect}
                       options={venderData}
@@ -204,26 +204,25 @@ function OrderQuantityReport() {
                       range
                     />
                   </Col>
-                </Row>
-                <div className="d-flex justify-content-end mt-3 gap-2 button_container">
-                  <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
-                    <i className="icofont-search-1 " /> Search
-                  </button>
-                  <button
-                    className="btn btn-info text-white"
-                    type="reset"
-                    disabled={!dirty}
-                    onClick={() => handelResetFilter({ restFunc: resetForm })}
-                  >
-                    <i className="icofont-refresh text-white" /> Reset
-                  </button>
-                  <ExportToExcel
-                    className="btn btn-danger"
-                    apiData={transformDataForExport(modifiedRequisitionHistoryList)}
-                    fileName="Order Qty report"
-                    disabled={!requisitionHistoryList?.length}
-                  />
-                  {/* <button
+                  <Col lg={3} className="d-flex justify-content-md-end btn_container">
+                    <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+                      <i className="icofont-search-1 " /> Search
+                    </button>
+                    <button
+                      className="btn btn-info text-white"
+                      type="reset"
+                      disabled={!dirty}
+                      onClick={() => handelResetFilter({ restFunc: resetForm })}
+                    >
+                      <i className="icofont-refresh text-white" /> Reset
+                    </button>
+                    <ExportToExcel
+                      className="btn btn-danger"
+                      apiData={transformDataForExport(modifiedRequisitionHistoryList)}
+                      fileName="Order Qty report"
+                      disabled={!requisitionHistoryList?.length}
+                    />
+                    {/* <button
                     className="btn btn-sm btn-primary text-white px-3"
                     type="button"
                     onClick={() => setOpenPoOrderQanFilterModal(true)}
@@ -231,7 +230,8 @@ function OrderQuantityReport() {
                     <i className="icofont-filter me-1" />
                     Filter
                   </button> */}
-                </div>
+                  </Col>
+                </Row>
               </Form>
             )}
           </Formik>
