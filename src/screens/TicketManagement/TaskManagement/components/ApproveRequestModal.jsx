@@ -103,6 +103,7 @@ const ApproveRequestModal = props => {
           if (res.data.status == 1) {
             setNotify({ type: 'success', message: res.data.message });
             props.hide();
+            props.loadNotifcation();
 
             new getRegularizationTime(props.ticketId).then(res => {
               setNotify(null);
