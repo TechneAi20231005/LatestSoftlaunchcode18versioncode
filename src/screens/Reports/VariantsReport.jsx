@@ -321,9 +321,7 @@ export default function ResourcePlanningReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label htmlFor="" className="">
-                  <b>
-                    Select User :<Astrick color="red" size="13px" />
-                  </b>
+                  <b>Select User :</b>
                 </label>
                 {userData && (
                   <Select
@@ -333,7 +331,7 @@ export default function ResourcePlanningReportComponent() {
                     className="basic-multi-select"
                     classNamePrefix="select"
                     options={userData && userData}
-                    required
+                    // required
                     style={{ zIndex: "100" }}
                   />
                 )}
