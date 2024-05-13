@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import PageHeader from "../../../components/Common/PageHeader";
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from "../../../components/Common/Alert";
-import TemplateService from "../../../services/MastersService/TemplateService";
+import Alert from '../../../components/Common/Alert';
+import TemplateService from '../../../services/MastersService/TemplateService';
 
-import TaskComponent from "./TaskComponent";
-import { useParams } from "react-router-dom";
+import TaskComponent from './TaskComponent';
+import { useParams } from 'react-router-dom';
 
-import { Modal } from "react-bootstrap";
+import { Modal } from 'react-bootstrap';
 
-import { Astrick } from "../../../components/Utilities/Style";
+import { Astrick } from '../../../components/Utilities/Style';
 
-import Select from "react-select";
-import { _base } from "../../../settings/constants";
+import Select from 'react-select';
+import { _base } from '../../../settings/constants';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addTaskinBasketData,
   basketinEditData,
@@ -24,33 +24,33 @@ import {
   templateData,
   updateBasketModalData,
   updateTemplateData,
-} from "./TemplateComponetAction";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleBasketModal, handleTaskModal } from "./TemplateComponetSlice";
+} from './TemplateComponetAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { handleBasketModal, handleTaskModal } from './TemplateComponetSlice';
 
-import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-import TaskTicketTypeService from "../../../services/MastersService/TaskTicketTypeService";
+import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
 
 const EditTemplateComponent = ({ match, props }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const CustomMenuList = ({ options, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
+    const handleKeyDown = e => {
+      if (e.key === 'Enter') {
         setOpenOptions(true);
       }
     };
 
-    const toggleOptions = (label) => {
+    const toggleOptions = label => {
       if (openOptions.includes(label)) {
-        setOpenOptions(openOptions.filter((item) => item !== label));
+        setOpenOptions(openOptions.filter(item => item !== label));
       } else {
         setOpenOptions([...openOptions, label]);
       }
@@ -64,7 +64,7 @@ const EditTemplateComponent = ({ match, props }) => {
     };
 
     const filterOptions = (options, term) => {
-      return options.filter((option) => {
+      return options.filter(option => {
         const lowerCaseTerm = term.toLowerCase();
         const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
         const matchChildOptions =
@@ -76,7 +76,7 @@ const EditTemplateComponent = ({ match, props }) => {
       });
     };
 
-    const handleMouseEnter = (label) => {
+    const handleMouseEnter = label => {
       setHoveredIndex(label);
     };
 
@@ -84,19 +84,16 @@ const EditTemplateComponent = ({ match, props }) => {
       setHoveredIndex(null);
     };
 
-    const renderOptions = (options) => {
+    const renderOptions = options => {
       return options.map((option, index) => (
         <React.Fragment key={option.label}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.4rem",
-              backgroundColor:
-                hoveredIndex === option.label
-                  ? "rgba(79, 184, 201, 0.5)"
-                  : "white",
-              transition: "background-color 0.3s",
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.4rem',
+              backgroundColor: hoveredIndex === option.label ? 'rgba(79, 184, 201, 0.5)' : 'white',
+              transition: 'background-color 0.3s',
             }}
             onMouseEnter={() => handleMouseEnter(option.label)}
             onMouseLeave={handleMouseLeave}
@@ -104,12 +101,12 @@ const EditTemplateComponent = ({ match, props }) => {
             <i
               className={
                 openOptions.includes(option.label) && option.options.length > 0
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
+                  ? 'icofont-rounded-down'
+                  : 'icofont-rounded-right'
               }
               style={{
-                marginRight: "5px",
-                cursor: "pointer",
+                marginRight: '5px',
+                cursor: 'pointer',
               }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -117,8 +114,8 @@ const EditTemplateComponent = ({ match, props }) => {
             <div
               onClick={() => handleSelect(option.label, option.ID)}
               style={{
-                cursor: "pointer",
-                transition: "color 0.3s",
+                cursor: 'pointer',
+                transition: 'color 0.3s',
               }}
             >
               {option.label}
@@ -129,10 +126,8 @@ const EditTemplateComponent = ({ match, props }) => {
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "1rem" }}>
-                <div style={{ marginLeft: "1rem" }}>
-                  {renderOptions(option.options)}
-                </div>
+              <div style={{ marginLeft: '1rem' }}>
+                <div style={{ marginLeft: '1rem' }}>{renderOptions(option.options)}</div>
               </div>
             )}
         </React.Fragment>
@@ -145,17 +140,17 @@ const EditTemplateComponent = ({ match, props }) => {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "relative",
-              width: "100%",
+              position: 'relative',
+              width: '100%',
               zIndex: 1000,
-              maxHeight: "300px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderWidth: "2px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderBottomRightRadius: "4px",
-              borderBottomLeftRadius: "4px",
+              maxHeight: '300px',
+              overflowY: 'auto',
+              border: '1px solid #ccc',
+              borderWidth: '2px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'white',
+              borderBottomRightRadius: '4px',
+              borderBottomLeftRadius: '4px',
             }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -164,16 +159,14 @@ const EditTemplateComponent = ({ match, props }) => {
               type="text"
               placeholder="Search..."
               style={{
-                padding: "8px",
-                border: "none",
-                width: "100%",
-                boxSizing: "border-box",
+                padding: '8px',
+                border: 'none',
+                width: '100%',
+                boxSizing: 'border-box',
               }}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
-            <div style={{ overflowY: "auto" }}>
-              {renderOptions(filteredOptions)}
-            </div>
+            <div style={{ overflowY: 'auto' }}>{renderOptions(filteredOptions)}</div>
           </div>
         )}
       </>
@@ -186,7 +179,7 @@ const EditTemplateComponent = ({ match, props }) => {
     const options = [];
 
     // Process the taskData
-    taskData?.forEach((item) => {
+    taskData?.forEach(item => {
       const label = item.type_name;
 
       // Push API labels directly into options array
@@ -203,26 +196,23 @@ const EditTemplateComponent = ({ match, props }) => {
   const transformedOptions = transformData(taskData);
 
   const taskTypeDropdown = useSelector(
-    (TemplateComponetSlice) =>
-      TemplateComponetSlice.tempateMaster.getAllTypeData
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.getAllTypeData,
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 15),
   );
   const userData = useSelector(
-    (MyTicketComponentSlice) =>
-      MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser
+    MyTicketComponentSlice => MyTicketComponentSlice.myTicketComponent.sortAssigntoSelfUser,
   );
 
   const addBasketModal = useSelector(
-    (TemplateComponetSlice) =>
-      TemplateComponetSlice.tempateMaster.addBasketModal
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.addBasketModal,
   );
   const addTaskModal = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.addTaskModal
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.addTaskModal,
   );
   const basketId = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.basketId
+    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.basketId,
   );
 
   const [notify, setNotify] = useState(null);
@@ -244,21 +234,21 @@ const EditTemplateComponent = ({ match, props }) => {
     ],
   });
 
-  const [stack, setStack] = useState({ SE: "", AB: "" });
+  const [stack, setStack] = useState({ SE: '', AB: '' });
 
   const [show, setShow] = useState(false);
   const [modal, setModal] = useState({ shown: false, modalData: null });
-  const [error, setError] = useState("");
-  const [selectedOption, setSelectedOption] = useState("");
+  const [error, setError] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
   const [calculatedays, setCalculatedays] = useState();
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
-  const handleAddBasketModal = (data) => {
+  const handleAddBasketModal = data => {
     dispatch(handleBasketModal(data));
   };
 
-  const handleAddTaskModal = (data) => {};
+  const handleAddTaskModal = data => {};
   const mainJson = {
     template_name: null,
     template_data: [
@@ -285,22 +275,21 @@ const EditTemplateComponent = ({ match, props }) => {
     } else {
     }
   };
-  const handleRemoveSpecificRow = (idx) => () => {
+  const handleRemoveSpecificRow = idx => () => {
     if (idx > 0) {
       setNewData({
         template_data: newData.template_data.filter((_, i) => i !== idx),
       });
     }
   };
-  const shouldShowButton =
-    selectedOption === "START_FROM" || selectedOption === "END_FROM";
+  const shouldShowButton = selectedOption === 'START_FROM' || selectedOption === 'END_FROM';
 
-  const showHandler = (e) => {
-    setShow((prev) => true);
+  const showHandler = e => {
+    setShow(prev => true);
   };
 
   const loadData = async () => {
-    await new TemplateService().getTemplateById(templateId).then((res) => {
+    await new TemplateService().getTemplateById(templateId).then(res => {
       setCalculatedays(res.data.data.AB);
       if (res.status === 200) {
         const newData = {
@@ -312,11 +301,11 @@ const EditTemplateComponent = ({ match, props }) => {
 
         setSatrtEndValue(res.data.data.AB);
         setNewData(null);
-        setNewData((prevData) => ({ ...prevData, ...newData }));
+        setNewData(prevData => ({ ...prevData, ...newData }));
       }
     });
 
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getTaskType()?.then(res => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data);
       }
@@ -325,12 +314,11 @@ const EditTemplateComponent = ({ match, props }) => {
 
     dispatch(getRoles());
 
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
     dispatch(getUserForMyTicketsData(inputRequired));
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = e => {
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
@@ -340,7 +328,7 @@ const EditTemplateComponent = ({ match, props }) => {
     });
     if (a > 0) {
     } else {
-      dispatch(postTemplateData(rows)).then((res) => {
+      dispatch(postTemplateData(rows)).then(res => {
         if (res?.payload?.data?.status && res?.payload?.status == 200) {
           navigate(`/${_base}/Template`);
         }
@@ -348,18 +336,18 @@ const EditTemplateComponent = ({ match, props }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("basket_name", modal.modalData.basket_name);
-    formData.append("basket_owner", modal.modalData.basket_owner);
+    formData.append('basket_name', modal.modalData.basket_name);
+    formData.append('basket_owner', modal.modalData.basket_owner);
 
     dispatch(
       updateBasketModalData({
         id: modal.modalData.basket_id,
         payload: formData,
-      })
+      }),
     );
     handleHideModal();
     loadData();
@@ -367,8 +355,8 @@ const EditTemplateComponent = ({ match, props }) => {
 
   const handleChange = (e, type) => {
     setSelectedOption(e);
-    if (type == "select1") {
-      setModal((prev) => ({
+    if (type == 'select1') {
+      setModal(prev => ({
         ...prev,
         modalData: {
           ...prev.modalData,
@@ -376,8 +364,8 @@ const EditTemplateComponent = ({ match, props }) => {
         },
       }));
     }
-    if (type == "select2") {
-      setModal((prev) => ({
+    if (type == 'select2') {
+      setModal(prev => ({
         ...prev,
         modalData: {
           ...prev.modalData,
@@ -387,17 +375,17 @@ const EditTemplateComponent = ({ match, props }) => {
     }
   };
 
-  const [startEndValue, setSatrtEndValue] = useState("");
+  const [startEndValue, setSatrtEndValue] = useState('');
 
   const handleShow = () => {
-    setShow((prev) => !prev);
+    setShow(prev => !prev);
   };
 
   const handleNewChange = (e, idx, type, name) => {
-    const value = type === "select1" ? e.target.value : e.value;
+    const value = type === 'select1' ? e.target.value : e.value;
     setSatrtEndValue(e.target.value);
 
-    setNewData((prevData) => {
+    setNewData(prevData => {
       const newDataCopy = { ...prevData };
       const newTemplateData = [...newDataCopy.template_data];
 
@@ -421,12 +409,12 @@ const EditTemplateComponent = ({ match, props }) => {
     setModal({ shown: false, modalData: null });
   };
 
-  const addTask = (e) => {
+  const addTask = e => {
     e.preventDefault();
     const form = new FormData(e.target);
-    const taskName = form.get("taskName");
-    const hours = form.get("hours");
-    const days = form.get("days");
+    const taskName = form.get('taskName');
+    const hours = form.get('hours');
+    const days = form.get('days');
 
     const task = {
       task_name: taskName,
@@ -434,7 +422,7 @@ const EditTemplateComponent = ({ match, props }) => {
       days: days,
     };
 
-    setNewData((prevData) => {
+    setNewData(prevData => {
       const updatedTemplateData = [...prevData.template_data];
       const lastBasket = updatedTemplateData[updatedTemplateData.length - 1];
 
@@ -458,14 +446,14 @@ const EditTemplateComponent = ({ match, props }) => {
     setShow(false);
   };
 
-  const handleAddBasket = async (e) => {
+  const handleAddBasket = async e => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
     var flag = 1;
 
     if (selectUserRef.current.commonProps.hasValue == false) {
-      alert("Please Select User");
+      alert('Please Select User');
       e.preventDefault();
       flag = 0;
     } else {
@@ -477,40 +465,38 @@ const EditTemplateComponent = ({ match, props }) => {
     }
   };
 
-  const updateTemplate = async (e) => {
+  const updateTemplate = async e => {
     e.preventDefault();
     const form = new FormData(e.target);
     for (const entry of form.entries(form)) {
     }
 
-    dispatch(updateTemplateData({ id: templateId, payload: form })).then(
-      (res) => {
-        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-          setNotify({ type: "success", message: res?.payload?.data?.message });
-          dispatch(templateData());
+    dispatch(updateTemplateData({ id: templateId, payload: form })).then(res => {
+      if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        setNotify({ type: 'success', message: res?.payload?.data?.message });
+        dispatch(templateData());
 
-          setTimeout(() => {
-            navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: "success",
-                  message: res?.payload?.data?.message,
-                },
+        setTimeout(() => {
+          navigate(`/${_base}/Template`, {
+            state: {
+              alert: {
+                type: 'success',
+                message: res?.payload?.data?.message,
               },
-            });
-          }, 3000);
-        } else {
-          setNotify({ type: "danger", message: res?.payload?.data?.message });
-        }
+            },
+          });
+        }, 3000);
+      } else {
+        setNotify({ type: 'danger', message: res?.payload?.data?.message });
       }
-    );
+    });
   };
 
-  const handleAddTask = async (e) => {
+  const handleAddTask = async e => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    formData.append("task_type_id", selectedOptionId);
+    formData.append('task_type_id', selectedOptionId);
 
     for (const entry of formData.entries(formData)) {
     }
@@ -519,13 +505,13 @@ const EditTemplateComponent = ({ match, props }) => {
         templateId: templateId,
         basketId: basketId,
         payload: formData,
-      })
-    ).then((res) => {
+      }),
+    ).then(res => {
       if (res.payload.data.status == 1) {
         loadData();
-        setNotify({ type: "success", message: res.payload.data.message });
+        setNotify({ type: 'success', message: res.payload.data.message });
       } else {
-        setNotify({ type: "danger", message: res.payload.data.message });
+        setNotify({ type: 'danger', message: res.payload.data.message });
         loadData();
       }
     });
@@ -595,21 +581,18 @@ const EditTemplateComponent = ({ match, props }) => {
                   id="template_name"
                   name="template_name"
                   required
-                  onChange={(e) => {
-                    handleNewChange(e, null, null, "template_name");
+                  onChange={e => {
+                    handleNewChange(e, null, null, 'template_name');
                   }}
                   defaultValue={newData && newData.template_name}
                 />
-                {error && <small style={{ color: "red" }}>{error}</small>}
+                {error && <small style={{ color: 'red' }}>{error}</small>}
               </div>
 
               {/* {modal.modalData && ( */}
 
               {/* )} */}
-              <label
-                className="col-sm-2 col-form-label"
-                style={{ textAlign: "right" }}
-              >
+              <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
                 <b>Calculate Days From :</b>
               </label>
               <div className="col-sm-3">
@@ -617,20 +600,14 @@ const EditTemplateComponent = ({ match, props }) => {
                   className="form-control form-control-sm"
                   id="calculate_from"
                   name="calculate_from"
-                  onChange={(e) => handleNewChange(e, null, null, "AB")}
+                  onChange={e => handleNewChange(e, null, null, 'AB')}
                   defaultValue={data && data.AB}
                 >
                   <option value="">Calculate Days From</option>
-                  <option
-                    selected={data && data.AB == "START_FROM"}
-                    value="START_FROM"
-                  >
+                  <option selected={data && data.AB == 'START_FROM'} value="START_FROM">
                     From Start
                   </option>
-                  <option
-                    selected={data && data.AB == "END_FROM"}
-                    value="END_FROM"
-                  >
+                  <option selected={data && data.AB == 'END_FROM'} value="END_FROM">
                     From End
                   </option>
                 </select>
@@ -703,15 +680,15 @@ const EditTemplateComponent = ({ match, props }) => {
         <Modal
           centered
           show={addBasketModal.showModal}
-          onHide={(e) => {
+          onHide={e => {
             handleAddBasketModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: '',
             });
           }}
         >
-          {" "}
+          {' '}
           <Modal.Header></Modal.Header>
           <Modal.Body>
             <form method="post" onSubmit={handleAddBasket}>
@@ -751,20 +728,20 @@ const EditTemplateComponent = ({ match, props }) => {
                   <button
                     type="submit"
                     className="btn btn-sm btn-primary"
-                    style={{ backgroundColor: "#484C7F" }}
+                    style={{ backgroundColor: '#484C7F' }}
                   >
                     Submit
                   </button>
                   <button
                     type="button"
                     className="btn btn-sm btn-danger"
-                    onClick={(e) => {
+                    onClick={e => {
                       dispatch(
                         handleBasketModal({
                           showModal: false,
-                          modalData: "",
-                          modalHeader: "",
-                        })
+                          modalData: '',
+                          modalHeader: '',
+                        }),
                       );
                     }}
                   >
@@ -779,17 +756,17 @@ const EditTemplateComponent = ({ match, props }) => {
         <Modal
           centered
           show={addTaskModal.showModal}
-          onHide={(e) => {
+          onHide={e => {
             dispatch(
               handleTaskModal({
                 showModal: false,
-                modalData: "",
-                modalHeader: "",
-              })
+                modalData: '',
+                modalHeader: '',
+              }),
             );
           }}
         >
-          {" "}
+          {' '}
           <Modal.Header></Modal.Header>
           <Modal.Body>
             <form method="post" onSubmit={handleAddTask}>
@@ -818,28 +795,28 @@ const EditTemplateComponent = ({ match, props }) => {
                 </label>
                 <div
                   style={{
-                    position: "relative",
-                    display: "inline-block",
-                    width: "100%",
+                    position: 'relative',
+                    display: 'inline-block',
+                    width: '100%',
                   }}
                 >
                   <div
                     style={{
-                      padding: "8px",
-                      border: "1px solid #ccc",
-                      cursor: "pointer",
-                      width: "100%",
+                      padding: '8px',
+                      border: '1px solid #ccc',
+                      cursor: 'pointer',
+                      width: '100%',
                     }}
-                    onClick={(e) => handleSelectOptionClick(e)}
+                    onClick={e => handleSelectOptionClick(e)}
                   >
-                    {selectedOptions ? selectedOptions : "Select an option"}
+                    {selectedOptions ? selectedOptions : 'Select an option'}
                   </div>
                   {isMenuOpen && (
                     <div
                       style={{
-                        position: "absolute",
-                        width: "100%", // Set the width to 100% to match the parent's width
-                        top: "100%",
+                        position: 'absolute',
+                        width: '100%', // Set the width to 100% to match the parent's width
+                        top: '100%',
                         zIndex: 999, // Adjust the z-index as needed
                       }}
                     >
@@ -895,7 +872,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   />
                 </div>
 
-                {startEndValue && startEndValue == "START_FROM" ? (
+                {startEndValue && startEndValue == 'START_FROM' ? (
                   <div className="col-sm-12">
                     <label className="col-form-label">
                       <b>
@@ -938,7 +915,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   <button
                     type="submit"
                     className="btn btn-sm btn-primary"
-                    style={{ backgroundColor: "#484C7F" }}
+                    style={{ backgroundColor: '#484C7F' }}
                   >
                     Submit
                   </button>
@@ -946,13 +923,13 @@ const EditTemplateComponent = ({ match, props }) => {
                   <button
                     type="button"
                     className="btn btn-sm btn-danger"
-                    onClick={(e) =>
+                    onClick={e =>
                       dispatch(
                         handleTaskModal({
                           showModal: false,
-                          modalData: "",
-                          modalHeader: "",
-                        })
+                          modalData: '',
+                          modalHeader: '',
+                        }),
                       )
                     }
                   >
@@ -981,31 +958,31 @@ const EditTemplateComponent = ({ match, props }) => {
                       <button
                         type="button"
                         className="btn btn-danger fw-bold text-white btn-sm"
-                        onClick={(e) => {
+                        onClick={e => {
                           dispatch(
                             handleTaskModal({
                               showModal: true,
                               modalData: data,
-                            })
+                            }),
                           );
                           setSelectedOptions(null);
                         }}
                       >
                         <i
                           className="icofont-ui-edit"
-                          style={{ fontSize: "13px", marginRight: "4px" }}
+                          style={{ fontSize: '13px', marginRight: '4px' }}
                         ></i>
                         Add Task
                       </button>
                       <button
                         type="button"
                         className="btn btn-primary text-white btn-sm"
-                        style={{ padding: "10px 10px" }}
-                        onClick={(e) => handleModal(e, true, data)}
+                        style={{ padding: '10px 10px' }}
+                        onClick={e => handleModal(e, true, data)}
                       >
                         <i
                           className="icofont-ui-edit"
-                          style={{ fontSize: "13px", marginRight: "4px" }}
+                          style={{ fontSize: '13px', marginRight: '4px' }}
                         ></i>
                         Edit Basket
                       </button>
@@ -1037,7 +1014,7 @@ const EditTemplateComponent = ({ match, props }) => {
                         id="basket_name"
                         name="basket_name"
                         // value={data.basket_name}
-                        onChange={(e) => handleChange(e, "select1")}
+                        onChange={e => handleChange(e, 'select1')}
                         className="form-control form-control-sm"
                         defaultValue={modal && modal.modalData.basket_name}
                       />
@@ -1053,14 +1030,11 @@ const EditTemplateComponent = ({ match, props }) => {
                             <Select
                               id="basket_owner"
                               name="basket_owner"
-                              onChange={(e) => handleChange(e, "select2")}
+                              onChange={e => handleChange(e, 'select2')}
                               options={userData}
                               defaultValue={
                                 modal.modalData &&
-                                userData.filter(
-                                  (emp) =>
-                                    emp.value === modal.modalData.basket_owner
-                                )
+                                userData.filter(emp => emp.value === modal.modalData.basket_owner)
                               }
                             />
                           )}
@@ -1072,7 +1046,7 @@ const EditTemplateComponent = ({ match, props }) => {
                       <button
                         type="submit"
                         className="btn btn-sm btn-primary"
-                        style={{ backgroundColor: "#484C7F" }}
+                        style={{ backgroundColor: '#484C7F' }}
                         onClick={handleSubmit}
                       >
                         Update
@@ -1080,8 +1054,8 @@ const EditTemplateComponent = ({ match, props }) => {
                       <button
                         type="button"
                         className="btn btn-sm btn-primary"
-                        style={{ backgroundColor: "#FFBA32" }}
-                        onClick={(e) => handleModal(e, false, null)}
+                        style={{ backgroundColor: '#FFBA32' }}
+                        onClick={e => handleModal(e, false, null)}
                       >
                         Close
                       </button>

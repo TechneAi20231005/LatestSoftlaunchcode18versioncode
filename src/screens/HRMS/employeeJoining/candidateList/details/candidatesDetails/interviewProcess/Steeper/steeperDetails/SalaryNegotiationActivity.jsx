@@ -69,9 +69,7 @@ function SalaryNegotiationActivity() {
 
   // // life cycle
   useEffect(() => {
-    if (!salaryNegationActivityList?.length) {
-      dispatch(getSalaryNegotiatingActivityDataThunk({ currentId: currentCandidateId }));
-    }
+    dispatch(getSalaryNegotiatingActivityDataThunk({ currentId: currentCandidateId }));
   }, [currentCandidateId]);
 
   return (

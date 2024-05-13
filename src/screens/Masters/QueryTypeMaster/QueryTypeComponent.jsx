@@ -1,28 +1,28 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import Tooltip from "react-bootstrap/Tooltip";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import Tooltip from 'react-bootstrap/Tooltip';
 
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import QueryTypeService from "../../../services/MastersService/QueryTypeService";
-import DynamicFormService from "../../../services/MastersService/DynamicFormService";
-import Alert from "../../../components/Common/Alert";
+import PageHeader from '../../../components/Common/PageHeader';
+import Select from 'react-select';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../../services/ErrorLogService';
+import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import DynamicFormService from '../../../services/MastersService/DynamicFormService';
+import Alert from '../../../components/Common/Alert';
 
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import Dropdown from "react-bootstrap/Dropdown";
+import Dropdown from 'react-bootstrap/Dropdown';
 
-import { Spinner } from "react-bootstrap";
-import CustomerService from "../../../services/MastersService/CustomerService";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+import { Spinner } from 'react-bootstrap';
+import CustomerService from '../../../services/MastersService/CustomerService';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
@@ -34,8 +34,8 @@ function QueryTypeComponent() {
 
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
@@ -46,10 +46,10 @@ function QueryTypeComponent() {
 
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
+  const checkRole = useSelector(DashbordSlice =>
+    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 14),
   );
 
   // ***************************** Edit & View Popup*************************************
@@ -59,12 +59,12 @@ function QueryTypeComponent() {
   const [filteredEmployees, setFilteredEmployees] = useState(modal.modalData);
   const [modalEditPopup, setModalEditPopup] = useState({
     showModalEditPopup: false,
-    modalDataEditPopup: "",
-    modalHeaderEditPopup: "",
+    modalDataEditPopup: '',
+    modalHeaderEditPopup: '',
   });
   const [customerDropdown, setCustomerDropdown] = useState();
   const [selectedcustomer, setSelectedCustomer] = useState();
-  const handleModalEditPopup = (editData) => {
+  const handleModalEditPopup = editData => {
     setModalEditPopup(editData);
   };
 
@@ -74,8 +74,8 @@ function QueryTypeComponent() {
     setShow(true);
     handleModalEditPopup({
       showModal: false,
-      modalData: "",
-      modalHeader: "",
+      modalData: '',
+      modalHeader: '',
     });
   };
 
@@ -86,23 +86,21 @@ function QueryTypeComponent() {
 
   const [modalQueryGroup, setModalQueryGroup] = useState({
     showModalQueryGroup: false,
-    modalDataQueryGroup: "",
-    modalHeaderQueryGroup: "",
+    modalDataQueryGroup: '',
+    modalHeaderQueryGroup: '',
   });
 
-  const handleModalQueryGroup = (data) => {
+  const handleModalQueryGroup = data => {
     setModalQueryGroup(data);
   };
   //   *********************************End Query Group*************************************
 
   const viewSearchRef = useRef();
-  const handleViewSearch = (e) => {
+  const handleViewSearch = e => {
     const search = viewSearchRef.current.value;
     if (search.length > 0) {
-      const temp = queryGroupData.filter((d) => {
-        return d.group_name
-          .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g"));
+      const temp = queryGroupData.filter(d => {
+        return d.group_name.toLowerCase().match(new RegExp(search.toLowerCase(), 'g'));
       });
       setQueryGroupData(temp);
       const exportTemporaryData = [];
@@ -110,7 +108,7 @@ function QueryTypeComponent() {
         exportTemporaryData.push({
           Sr: temp[i].counter,
           group_name: temp[i].group_name,
-          Status: temp[i].is_active ? "Active" : "Deactive",
+          Status: temp[i].is_active ? 'Active' : 'Deactive',
           created_at: temp[i].created_at,
           created_by: temp[i].created_by,
           updated_at: temp[i].updated_at,
@@ -121,7 +119,7 @@ function QueryTypeComponent() {
       setExportQueryGroupData(null);
       setExportQueryGroupData(exportTemporaryData);
     } else {
-      alert("Please Search Query Group Name");
+      alert('Please Search Query Group Name');
     }
   };
   const searchRef = useRef();
@@ -129,12 +127,9 @@ function QueryTypeComponent() {
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -150,28 +145,28 @@ function QueryTypeComponent() {
 
   const [queryGroups, setQueryGroups] = useState();
 
-  const handleModal = (data) => {
+  const handleModal = data => {
     setModal(data);
   };
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "80px",
-      cell: (row) => (
+      width: '80px',
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={(e) => {
+            onClick={e => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Query Type",
+                modalHeader: 'Edit Query Type',
               });
             }}
           >
@@ -181,29 +176,25 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "Query Type Name",
-      selector: (row) => row.query_type_name,
+      name: 'Query Type Name',
+      selector: row => row.query_type_name,
       sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.query_type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.query_type_name && row.query_type_name.length < 10
                     ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + "...."}
+                    : row.query_type_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -212,23 +203,19 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Form Name",
-      selector: (row) => row.form_name,
+      name: 'Form Name',
+      selector: row => row.form_name,
       sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.form_name && (
             <OverlayTrigger overlay={<Tooltip>{row.form_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.form_name && row.form_name.length < 10
                     ? row.form_name
-                    : row.form_name.substring(0, 10) + "...."}
+                    : row.form_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -237,25 +224,19 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Query Group",
-      selector: (row) => row.query_group_name,
+      name: 'Query Group',
+      selector: row => row.query_group_name,
       sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.query_group_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row.query_group_name} </Tooltip>}
-            >
+            <OverlayTrigger overlay={<Tooltip>{row.query_group_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.query_group_name && row.query_group_name.length < 10
                     ? row.query_group_name
-                    : row.query_group_name.substring(0, 10) + "...."}
+                    : row.query_group_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -264,18 +245,18 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -283,28 +264,28 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
 
@@ -312,28 +293,28 @@ function QueryTypeComponent() {
 
   const columnsEditPopup = [
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "80px",
-      cell: (row) => (
+      width: '80px',
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={(e) => {
+            onClick={e => {
               handleModalQueryGroup({
                 showModalQueryGroup: true,
                 modalDataQueryGroup: row,
-                modalHeaderQueryGroup: " Edit Query Group",
+                modalHeaderQueryGroup: ' Edit Query Group',
               });
             }}
           >
@@ -344,25 +325,21 @@ function QueryTypeComponent() {
     },
 
     {
-      name: "Query Group",
-      width: "250px",
-      selector: (row) => row.group_name,
+      name: 'Query Group',
+      width: '250px',
+      selector: row => row.group_name,
       sortable: true,
 
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.group_name && (
             <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.group_name && row.group_name.length < 123
                     ? row.group_name
-                    : row.group_name.substring(0, 123) + "...."}
+                    : row.group_name.substring(0, 123) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -372,21 +349,18 @@ function QueryTypeComponent() {
     },
 
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
           {row.is_active == 1 && (
-            <span
-              className="badge"
-              style={{ width: "4rem", backgroundColor: "#484c7f" }}
-            >
+            <span className="badge" style={{ width: '4rem', backgroundColor: '#484c7f' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -395,23 +369,19 @@ function QueryTypeComponent() {
     },
 
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      width: '175px',
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
-            onClick={(e) => {
+            onClick={e => {
               handleFormQueryGroup({
                 showModalQueryGroup: true,
                 modalQueryGroup: row,
-                modalHeaderQueryGroup: "",
+                modalHeaderQueryGroup: '',
               });
             }}
           >
@@ -419,10 +389,10 @@ function QueryTypeComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.created_at && row.created_at.length < 123
                       ? row.created_at
-                      : row.created_at.substring(0, 123) + "...."}
+                      : row.created_at.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -432,22 +402,22 @@ function QueryTypeComponent() {
       ),
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "150px",
+      width: '150px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "150px",
+      width: '150px',
     },
   ];
 
@@ -456,12 +426,12 @@ function QueryTypeComponent() {
     const exportTempQueryGroupData = [];
     await new QueryTypeService()
       .getAllQueryGroup()
-      .then((res) => {
+      .then(res => {
         if (res.data.status == 1) {
           setQueryGroupDropdown(
             res.data.data
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.group_name }))
+              .filter(d => d.is_active == 1)
+              .map(d => ({ value: d.id, label: d.group_name })),
           );
         }
 
@@ -487,7 +457,7 @@ function QueryTypeComponent() {
             exportTempQueryGroupData.push({
               Sr: data[i].counter,
               group_name: data[i].group_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
+              Status: data[i].is_active ? 'Active' : 'Deactive',
               created_at: data[i].created_at,
               created_by: data[i].created_by,
               updated_at: data[i].updated_at,
@@ -499,14 +469,14 @@ function QueryTypeComponent() {
           setExportQueryGroupData(exportTempQueryGroupData);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "QueryType",
-          "Get_QueryType",
-          "INSERT",
-          errorObject.data.message
+          'QueryType',
+          'Get_QueryType',
+          'INSERT',
+          errorObject.data.message,
         );
       });
   };
@@ -515,14 +485,14 @@ function QueryTypeComponent() {
 
   // **************************************Add Query Group *****************************************
   const [notifyy, setNotifyy] = useState(null);
-  const handleIsActive = (e) => {
-    if (e.target.id === "is_active_1") {
+  const handleIsActive = e => {
+    if (e.target.id === 'is_active_1') {
       setIsActive(1);
     } else {
       setIsActive(0);
     }
   };
-  const handleFormQueryGroup = (id) => async (e) => {
+  const handleFormQueryGroup = id => async e => {
     e.preventDefault();
     const form = new FormData(e.target);
     setNotify(null);
@@ -530,67 +500,67 @@ function QueryTypeComponent() {
     if (!id) {
       await new QueryTypeService()
         .postQueryGroup(form)
-        .then((res) => {
+        .then(res => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setModalQueryGroup({
                 showModalQueryGroup: false,
-                modalDataQueryGroup: "",
-                modalHeaderQueryGroup: "",
+                modalDataQueryGroup: '',
+                modalHeaderQueryGroup: '',
               });
 
-              setNotify({ type: "success", message: res.data.message });
+              setNotify({ type: 'success', message: res.data.message });
               loadData();
               loadDataEditPopup();
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Create_QueryType",
-              "INSERT",
-              res.message
+              'QueryType',
+              'Create_QueryType',
+              'INSERT',
+              res.message,
             );
           }
         })
-        .catch((error) => {
-          setNotify({ type: "danger", message: "Connection Error !!!" });
+        .catch(error => {
+          setNotify({ type: 'danger', message: 'Connection Error !!!' });
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Remark Error !!!" });
+          setNotify({ type: 'danger', message: 'Remark Error !!!' });
           new ErrorLogService().sendErrorLog(
-            "QueryType",
-            "Create_QueryType",
-            "INSERT",
-            errorObject.data.message
+            'QueryType',
+            'Create_QueryType',
+            'INSERT',
+            errorObject.data.message,
           );
         });
     } else {
-      form.delete("is_active");
-      form.append("is_active", isActive);
-      await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
+      form.delete('is_active');
+      form.append('is_active', isActive);
+      await new QueryTypeService().updateQueryGroup(id, form).then(res => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setNotifyy({ type: "success", message: res.data.message });
+            setNotifyy({ type: 'success', message: res.data.message });
             setModalQueryGroup({
               showModalQueryGroup: false,
-              modalDataQueryGroup: "",
-              modalHeaderQueryGroup: "",
+              modalDataQueryGroup: '',
+              modalHeaderQueryGroup: '',
             });
             loadData();
             loadDataEditPopup();
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
           new ErrorLogService().sendErrorLog(
-            "QueryType",
-            "Update_QueryType",
-            "UPDATE",
-            res.message
+            'QueryType',
+            'Update_QueryType',
+            'UPDATE',
+            res.message,
           );
         }
       });
@@ -611,7 +581,7 @@ function QueryTypeComponent() {
     const exportTempData = [];
     await new QueryTypeService()
       .getQueryType()
-      .then((res) => {
+      .then(res => {
         if (res.status === 200) {
           setShowLoaderModal(false);
 
@@ -647,7 +617,7 @@ function QueryTypeComponent() {
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
               query_group_name: temp[i].query_group_name,
-              Status: data[i].is_active ? "Active" : "Deactive",
+              Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
               created_at: data[i].created_at,
               created_by: data[i].created_by,
@@ -660,64 +630,62 @@ function QueryTypeComponent() {
           setExportData(exportTempData);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "QueryType",
-          "Get_QueryType",
-          "INSERT",
-          errorObject.data.message
+          'QueryType',
+          'Get_QueryType',
+          'INSERT',
+          errorObject.data.message,
         );
       });
 
-    await new DynamicFormService().getDynamicForm().then((res) => {
+    await new DynamicFormService().getDynamicForm().then(res => {
       if (res.data.status == 1) {
         setShowLoaderModal(false);
 
-        setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
+        setDynamicForm(res.data.data.filter(d => d.is_active === 1));
         setDynamicFormDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.template_name }))
+            .filter(d => d.is_active == 1)
+            .map(d => ({ value: d.id, label: d.template_name })),
         );
       }
     });
 
-    await new CustomerService().getCustomer().then((res) => {
+    await new CustomerService().getCustomer().then(res => {
       if (res.data.status == 1) {
-        setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
+        setSelectedCustomer(res.data.data.filter(d => d.is_active === 1));
         setCustomerDropdown(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.name }))
+          res.data.data.filter(d => d.is_active == 1).map(d => ({ value: d.id, label: d.name })),
         );
       }
     });
     dispatch(getRoles());
   };
 
-  const handleClearData = (e) => {
+  const handleClearData = e => {
     if (viewSearchRef.current.value != null) {
-      document.getElementById("search_resultt").value = "";
+      document.getElementById('search_resultt').value = '';
     }
     loadData();
     loadDataEditPopup();
   };
 
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
     setNotify(null);
-    var selectFormId = form.getAll("form_id");
-    var selectCustomerId = form.getAll("customer_id");
-    var selectQueryGroup = form.getAll("query_group_data[]");
+    var selectFormId = form.getAll('form_id');
+    var selectCustomerId = form.getAll('customer_id');
+    var selectQueryGroup = form.getAll('query_group_data[]');
 
     if (selectFormId.length === 0) {
       flag = 0;
-      alert("Please select Form");
+      alert('Please select Form');
     }
     // if (selectCustomerId.length === 0) {
     //   flag = 0;
@@ -725,80 +693,80 @@ function QueryTypeComponent() {
     // }
     if (selectQueryGroup.length === 0) {
       flag = 0;
-      alert("Please Select query group");
+      alert('Please Select query group');
     }
 
     if (flag === 1) {
       try {
         if (!id) {
-          form.delete("is_active");
-          form.append("is_active", 1);
+          form.delete('is_active');
+          form.append('is_active', 1);
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
             setShowLoaderModal(false);
             if (res.data.status === 1) {
               setShowLoaderModal(false);
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false, modalData: '', modalHeader: '' });
+              setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Create_QueryType",
-              "INSERT",
-              res.message
+              'QueryType',
+              'Create_QueryType',
+              'INSERT',
+              res.message,
             );
           }
         } else {
-          form.delete("is_active");
-          form.append("is_active", isActive);
+          form.delete('is_active');
+          form.append('is_active', isActive);
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
             setShowLoaderModal(false);
             if (res.data.status === 1) {
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
-              setNotify({ type: "success", message: res.data.message });
+              setModal({ showModal: false, modalData: '', modalHeader: '' });
+              setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "QueryType",
-              "Edit_QueryType",
-              "INSERT",
-              res.message
+              'QueryType',
+              'Edit_QueryType',
+              'INSERT',
+              res.message,
             );
           }
         }
       } catch (error) {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Remark Error !!!" });
+        setNotify({ type: 'danger', message: 'Remark Error !!!' });
         new ErrorLogService().sendErrorLog(
-          "QueryType",
-          "Create_QueryType",
-          "INSERT",
-          errorObject.data.message
+          'QueryType',
+          'Create_QueryType',
+          'INSERT',
+          errorObject.data.message,
         );
       }
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
-  const handleViewSearchKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleViewSearchKeyDown = event => {
+    if (event.key === 'Enter') {
       handleViewSearch();
     }
   };
@@ -831,15 +799,14 @@ function QueryTypeComponent() {
                       handleModal({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add Query Type",
+                        modalHeader: 'Add Query Type',
                       });
                     }}
                   >
-                    <i className="icofont-plus-circle me-2 fs-6"></i>Add Query
-                    Type
+                    <i className="icofont-plus-circle me-2 fs-6"></i>Add Query Type
                   </button>
                 ) : (
-                  ""
+                  ''
                 )}
               </div>
             );
@@ -863,7 +830,7 @@ function QueryTypeComponent() {
                 className="btn btn-sm btn-warning text-white"
                 type="button"
                 onClick={handleSearch}
-                style={{ marginTop: "0px", fontWeight: "600" }}
+                style={{ marginTop: '0px', fontWeight: '600' }}
               >
                 <i className="icofont-search-1 "></i> Search
               </button>
@@ -871,7 +838,7 @@ function QueryTypeComponent() {
                 className="btn btn-sm btn-info text-white"
                 type="button"
                 onClick={() => window.location.reload(false)}
-                style={{ marginTop: "0px", fontWeight: "600" }}
+                style={{ marginTop: '0px', fontWeight: '600' }}
               >
                 <i className="icofont-refresh text-white"></i> Reset
               </button>
@@ -889,7 +856,7 @@ function QueryTypeComponent() {
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {console.log("data", data)}
+                {console.log('data', data)}
                 {!isLoading && data && (
                   <DataTable
                     columns={columns}
@@ -923,18 +890,15 @@ function QueryTypeComponent() {
         <Modal
           centered
           show={modal.showModal}
-          onHide={(e) => {
+          onHide={e => {
             handleModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: '',
             });
           }}
         >
-          <form
-            method="post"
-            onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-          >
+          <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
             <Modal.Header closeButton>
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
             </Modal.Header>
@@ -953,12 +917,10 @@ function QueryTypeComponent() {
                       placeholder="Please start with string"
                       maxLength={50}
                       required
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         Validation.CharactersNumbersOnly(e);
                       }}
-                      defaultValue={
-                        modal.modalData ? modal.modalData.query_type_name : ""
-                      }
+                      defaultValue={modal.modalData ? modal.modalData.query_type_name : ''}
                     />
                   </div>
                   <div className="col-sm-12">
@@ -973,9 +935,7 @@ function QueryTypeComponent() {
                       defaultValue={
                         modal.modalData &&
                         dynamicFormDropdown &&
-                        dynamicFormDropdown.filter(
-                          (d) => d.value == modal.modalData.form_id
-                        )
+                        dynamicFormDropdown.filter(d => d.value == modal.modalData.form_id)
                       }
                       required={true}
                     />
@@ -996,7 +956,7 @@ function QueryTypeComponent() {
                           required
                           defaultValue={
                             modal.modalData &&
-                            modal.modalData.query_group_data.map((d) => ({
+                            modal.modalData.query_group_data.map(d => ({
                               value: d.query_type_group_id,
                               label: d.group_name,
                             }))
@@ -1004,26 +964,23 @@ function QueryTypeComponent() {
                         />
                       )}
                     </div>
-                    <div className="col-md-2" style={{ marginTop: "30px" }}>
+                    <div className="col-md-2" style={{ marginTop: '30px' }}>
                       <Dropdown style={{}}>
-                        <Dropdown.Toggle
-                          variant="btn btn-secondary text-white"
-                          id="dropdown-basic"
-                        >
+                        <Dropdown.Toggle variant="btn btn-secondary text-white" id="dropdown-basic">
                           <i className="icofont-listine-dots"></i>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu as="ul" st>
                           <li
                             className="btn btn-sm btn-warning text-white"
-                            onClick={(e) => {
+                            onClick={e => {
                               handleModalEditPopup({
                                 showModalEditPopup: true,
-                                modalDataEditPopup: "",
-                                modalHeaderEditPopup: "Add Query Group",
+                                modalDataEditPopup: '',
+                                modalHeaderEditPopup: 'Add Query Group',
                               });
                             }}
-                            style={{ width: "100%", zIndex: 100 }}
+                            style={{ width: '100%', zIndex: 100 }}
                           >
                             <i className="icofont-ui-edit"></i> Edit & View
                           </li>
@@ -1033,10 +990,10 @@ function QueryTypeComponent() {
                               handleModalQueryGroup({
                                 showModalQueryGroup: true,
                                 modalDataQueryGroup: null,
-                                modalHeaderQueryGroup: "Add Query Group",
+                                modalHeaderQueryGroup: 'Add Query Group',
                               });
                             }}
-                            style={{ width: "100%", zIndex: 100 }}
+                            style={{ width: '100%', zIndex: 100 }}
                           >
                             <i className="icofont-ui-edit"></i> Add
                           </li>
@@ -1062,18 +1019,14 @@ function QueryTypeComponent() {
                   </div>
 
                   <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Remark :
-                    </label>
+                    <label className="form-label font-weight-bold">Remark :</label>
                     <input
                       type="text"
                       className="form-control form-control-sm"
                       id="remark"
                       name="remark"
                       maxLength={50}
-                      defaultValue={
-                        modal.modalData ? modal.modalData.remark : ""
-                      }
+                      defaultValue={modal.modalData ? modal.modalData.remark : ''}
                       // required
                     />
                   </div>
@@ -1090,23 +1043,19 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_1"
-                              onClick={(e) => {
+                              onClick={e => {
                                 handleIsActive(e);
                               }}
                               value={isActive}
                               defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 1
+                                modal.modalData && modal.modalData.is_active === 1
                                   ? true
                                   : !modal.modalData
                                   ? true
                                   : false
                               }
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_1"
-                            >
+                            <label className="form-check-label" htmlFor="is_active_1">
                               Active
                             </label>
                           </div>
@@ -1118,22 +1067,16 @@ function QueryTypeComponent() {
                               type="radio"
                               name="is_active"
                               id="is_active_0"
-                              onClick={(e) => {
+                              onClick={e => {
                                 handleIsActive(e);
                               }}
                               value={isActive}
                               readOnly={modal.modalData ? false : true}
                               defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 0
-                                  ? true
-                                  : false
+                                modal.modalData && modal.modalData.is_active === 0 ? true : false
                               }
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_0"
-                            >
+                            <label className="form-check-label" htmlFor="is_active_0">
                               Deactive
                             </label>
                           </div>
@@ -1150,26 +1093,24 @@ function QueryTypeComponent() {
                   type="submit"
                   className="btn btn-primary text-white"
                   style={{
-                    backgroundColor: "#484C7F",
-                    width: "80px",
-                    padding: "8px",
+                    backgroundColor: '#484C7F',
+                    width: '80px',
+                    padding: '8px',
                   }}
                 >
                   Add
                 </button>
               )}
-              {modal.modalData &&
-              checkRole &&
-              checkRole[0]?.can_update === 1 ? (
+              {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: "#484C7F" }}
+                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Update
                 </button>
               ) : (
-                ""
+                ''
               )}
               <button
                 type="button"
@@ -1177,8 +1118,8 @@ function QueryTypeComponent() {
                 onClick={() => {
                   handleModal({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
+                    modalData: '',
+                    modalHeader: '',
                   });
                 }}
               >
@@ -1194,26 +1135,22 @@ function QueryTypeComponent() {
         centered
         size="sm"
         show={modalQueryGroup.showModalQueryGroup}
-        onHide={(e) => {
+        onHide={e => {
           handleModalQueryGroup({
             showModalQueryGroup: false,
-            modalDataQueryGroup: "",
-            modalHeaderQueryGroup: "",
+            modalDataQueryGroup: '',
+            modalHeaderQueryGroup: '',
           });
         }}
       >
         <form
           method="post"
           onSubmit={handleFormQueryGroup(
-            modalQueryGroup.modalDataQueryGroup
-              ? modalQueryGroup.modalDataQueryGroup.id
-              : ""
+            modalQueryGroup.modalDataQueryGroup ? modalQueryGroup.modalDataQueryGroup.id : '',
           )}
         >
           <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">
-              {modalQueryGroup.modalHeaderQueryGroup}
-            </Modal.Title>
+            <Modal.Title className="fw-bold">{modalQueryGroup.modalHeaderQueryGroup}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="deadline-form">
@@ -1225,7 +1162,7 @@ function QueryTypeComponent() {
                   {modalQueryGroup.modalDataQueryGroup && (
                     <input
                       type="text"
-                      style={{ height: "40px" }}
+                      style={{ height: '40px' }}
                       id="group_name"
                       name="group_name"
                       placeholder=""
@@ -1234,11 +1171,11 @@ function QueryTypeComponent() {
                         modalQueryGroup.modalDataQueryGroup &&
                         modalQueryGroup.modalDataQueryGroup.group_name
                           ? modalQueryGroup.modalDataQueryGroup.group_name
-                          : ""
+                          : ''
                       }
                       maxLength={50}
                       required
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         Validation.CharactersNumbersOnly(e);
                       }}
                     />
@@ -1247,13 +1184,13 @@ function QueryTypeComponent() {
                   {!modalQueryGroup.modalDataQueryGroup && (
                     <input
                       type="text"
-                      style={{ height: "40px" }}
+                      style={{ height: '40px' }}
                       id="group_name"
                       name="group_name"
                       placeholder=""
                       maxLength={50}
                       required
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         Validation.CharactersNumbersOnly(e);
                       }}
                     />
@@ -1275,7 +1212,7 @@ function QueryTypeComponent() {
                           name="is_active"
                           id="is_active_1"
                           value="1"
-                          onClick={(e) => handleIsActive(e)}
+                          onClick={e => handleIsActive(e)}
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 1
@@ -1285,10 +1222,7 @@ function QueryTypeComponent() {
                               : false
                           }
                         />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_1"
-                        >
+                        <label className="form-check-label" htmlFor="is_active_1">
                           Active
                         </label>
                       </div>
@@ -1301,11 +1235,9 @@ function QueryTypeComponent() {
                           name="is_active"
                           id="is_active_0"
                           value="0"
-                          style={{ marginLeft: "auto" }}
-                          readOnly={
-                            modalQueryGroup.modalDataQueryGroup ? false : true
-                          }
-                          onClick={(e) => handleIsActive(e)}
+                          style={{ marginLeft: 'auto' }}
+                          readOnly={modalQueryGroup.modalDataQueryGroup ? false : true}
+                          onClick={e => handleIsActive(e)}
                           defaultChecked={
                             modalQueryGroup.modalDataQueryGroup &&
                             modalQueryGroup.modalDataQueryGroup.is_active === 0
@@ -1313,10 +1245,7 @@ function QueryTypeComponent() {
                               : false
                           }
                         />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_0"
-                        >
+                        <label className="form-check-label" htmlFor="is_active_0">
                           Deactive
                         </label>
                       </div>
@@ -1332,9 +1261,9 @@ function QueryTypeComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -1345,7 +1274,7 @@ function QueryTypeComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
@@ -1357,8 +1286,8 @@ function QueryTypeComponent() {
               onClick={() => {
                 handleModalQueryGroup({
                   showModalQueryGroup: false,
-                  modalDataQueryGroup: "",
-                  modalHeaderQueryGroup: "",
+                  modalDataQueryGroup: '',
+                  modalHeaderQueryGroup: '',
                 });
               }}
             >
@@ -1373,11 +1302,11 @@ function QueryTypeComponent() {
       {/* *****************************************Edit & Veiw Popup******************************* */}
       <Modal
         show={modalEditPopup.showModalEditPopup}
-        onHide={(e) => {
+        onHide={e => {
           handleModalEditPopup({
             showModalEditPopup: false,
-            modalDataEditPopup: "",
-            modalHeaderEditPopup: "",
+            modalDataEditPopup: '',
+            modalHeaderEditPopup: '',
           });
         }}
         size="xl"
@@ -1411,7 +1340,7 @@ function QueryTypeComponent() {
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
-                  onClick={(e) => {
+                  onClick={e => {
                     handleClearData(e);
                   }}
                 >
@@ -1429,7 +1358,7 @@ function QueryTypeComponent() {
               <div className="card-body">
                 <div className="row clearfix g-3">
                   <div className="col-sm-12">
-                    {console.log("queryGroupData", queryGroupData)}
+                    {console.log('queryGroupData', queryGroupData)}
                     {data && (
                       <DataTable
                         columns={columnsEditPopup}
@@ -1459,7 +1388,7 @@ function QueryTypeDropdown(props) {
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const tempData = [];
-    new QueryTypeService().getQueryType().then((res) => {
+    new QueryTypeService().getQueryType().then(res => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -1489,12 +1418,8 @@ function QueryTypeDropdown(props) {
           required={props.required ? true : false}
           readOnly={props.readonly ? true : false}
         >
-          {props.defaultValue == 0 && (
-            <option value="">Select Query Type</option>
-          )}
-          {props.defaultValue != 0 && (
-            <option value="">Select Query Type </option>
-          )}
+          {props.defaultValue == 0 && <option value="">Select Query Type</option>}
+          {props.defaultValue != 0 && <option value="">Select Query Type </option>}
           {data.map(function (item, i) {
             if (props.defaultValue && props.defaultValue == item.id) {
               return (

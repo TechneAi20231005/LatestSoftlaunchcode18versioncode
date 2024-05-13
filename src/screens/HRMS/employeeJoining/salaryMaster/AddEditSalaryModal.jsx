@@ -15,7 +15,6 @@ import {
 import { addEditSalaryValidation } from './validation/addEditSalary';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
-import { NumbersOnly } from '../../../../components/Utilities/Validation';
 import {
   addSalaryMasterThunk,
   editSalaryMasterThunk,
@@ -187,7 +186,6 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   <Col sm={6} md={6} lg={3}>
                     <Field
                       component={CustomCurrencyInput}
-                      // onKeyDown={NumbersOnly}
                       name="max_salary"
                       label="Max salary(In Hand)"
                       placeholder="Enter max salary"

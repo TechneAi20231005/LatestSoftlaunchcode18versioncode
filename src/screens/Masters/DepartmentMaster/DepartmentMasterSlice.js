@@ -1,20 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
-import {
-  departmentData,
-  postdepartment,
-  updateDepartment,
-} from "./DepartmentMasterAction";
+import { createSlice } from '@reduxjs/toolkit';
+import { departmentData, postdepartment, updateDepartment } from './DepartmentMasterAction';
 
 const initialState = {
-  status: "",
-  err: "",
+  status: '',
+  err: '',
   departmentData: [],
   exportDepartmentData: [],
   sortDepartmentData: [],
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   },
   isLoading: {
     departmentDataList: false,
@@ -22,7 +18,7 @@ const initialState = {
 };
 
 export const departmentMasterSlice = createSlice({
-  name: "departmentMasterSlice",
+  name: 'departmentMasterSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -35,9 +31,9 @@ export const departmentMasterSlice = createSlice({
       state.modal = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(departmentData.pending, (state) => {
-      state.status = "loading";
+  extraReducers: builder => {
+    builder.addCase(departmentData.pending, state => {
+      state.status = 'loading';
       state.isLoading.departmentDataList = true;
       state.notify = null;
     });
@@ -47,7 +43,7 @@ export const departmentMasterSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let departmentData = payload.data.data;
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < departmentData.length; i++) {
@@ -56,7 +52,7 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-        let filterdata = payload.data.data.filter((d) => d.is_active == 1);
+        let filterdata = payload.data.data.filter(d => d.is_active == 1);
         let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {
@@ -73,7 +69,7 @@ export const departmentMasterSlice = createSlice({
           exportDepartmentData.push({
             Sr: departmentData[i].counter,
             Department: departmentData[i].department,
-            Status: departmentData[i].is_active ? "Active" : "Deactive",
+            Status: departmentData[i].is_active ? 'Active' : 'Deactive',
             Remark: departmentData[i].remark,
             created_at: departmentData[i].created_at,
             created_by: departmentData[i].created_by,
@@ -84,15 +80,15 @@ export const departmentMasterSlice = createSlice({
         state.exportDepartmentData = exportDepartmentData;
       }
     });
-    builder.addCase(departmentData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(departmentData.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
 
     //__________________________post____________________________
 
-    builder.addCase(postdepartment.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(postdepartment.pending, state => {
+      state.status = 'loading';
       state.isLoading.departmentDataList = true;
       state.notify = null;
     });
@@ -103,27 +99,27 @@ export const departmentMasterSlice = createSlice({
         let postdepartment = payload.data.data;
         state.isLoading.departmentDataList = false;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         state.postdepartment = postdepartment;
         state.notify = null;
-        state.notify = { type: "success", message: payload.data.message };
-        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        state.notify = { type: 'success', message: payload.data.message };
+        let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: "danger", message: payload.data.message };
+        let notify = { type: 'danger', message: payload.data.message };
         state.notify = null;
         state.notify = notify;
       }
     });
-    builder.addCase(postdepartment.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(postdepartment.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
 
     //_____________________________updateData______________________________
-    builder.addCase(updateDepartment.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(updateDepartment.pending, state => {
+      state.status = 'loading';
       state.notify = null;
       state.isLoading.departmentDataList = true;
     });
@@ -134,26 +130,25 @@ export const departmentMasterSlice = createSlice({
         let updateDepartment = payload.data.data;
         state.isLoading.departmentDataList = false;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.notify = null;
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
         state.showLoaderModal = false;
         state.updateDepartment = updateDepartment;
 
-        let modal = { showModal: false, modalData: "", modalHeader: "" };
+        let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(updateDepartment.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(updateDepartment.rejected, state => {
+      state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
   },
 });
 
-export const { handleModalOpen, handleModalClose } =
-  departmentMasterSlice.actions;
+export const { handleModalOpen, handleModalClose } = departmentMasterSlice.actions;
 
 export default departmentMasterSlice.reducer;

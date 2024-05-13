@@ -1,23 +1,23 @@
-import React, { useEffect, useState, useRef, useDebugValue } from "react";
-import { Link, useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
+import React, { useEffect, useState, useRef, useDebugValue } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
-import PageHeader from "../../../components/Common/PageHeader";
+import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
+import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from "../../../components/Common/Alert";
+import Alert from '../../../components/Common/Alert';
 
-import "react-data-table-component-extensions/dist/index.css";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import 'react-data-table-component-extensions/dist/index.css';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 export default function DynamicFormDropdownComponent() {
   const location = useLocation();
@@ -30,33 +30,30 @@ export default function DynamicFormDropdownComponent() {
 
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
   });
 
   const [exportData, setExportData] = useState(null);
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
+  const checkRole = useSelector(DashbordSlice =>
+    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 35),
   );
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {};
+  const handleSearch = value => {};
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -64,16 +61,16 @@ export default function DynamicFormDropdownComponent() {
     });
   }
 
-  const handleModal = (data) => {
+  const handleModal = data => {
     setModal(data);
   };
 
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      cell: (row) => (
+      cell: row => (
         <div className="btn-group" role="group">
           <Link
             to={`/${_base}/DynamicFormDropdown/Edit/` + row.id}
@@ -84,26 +81,22 @@ export default function DynamicFormDropdownComponent() {
         </div>
       ),
     },
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', selector: row => row.counter, sortable: true },
 
     {
-      name: "Dropdown Name",
-      selector: (row) => row.dropdown_name,
+      name: 'Dropdown Name',
+      selector: row => row.dropdown_name,
       sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      cell: row => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           {row.dropdown_name && (
             <OverlayTrigger overlay={<Tooltip>{row.dropdown_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.dropdown_name && row.dropdown_name.length < 10
                     ? row.dropdown_name
-                    : row.dropdown_name.substring(0, 10) + "...."}
+                    : row.dropdown_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -113,34 +106,29 @@ export default function DynamicFormDropdownComponent() {
     },
 
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      cell: (row) => (
+      cell: row => (
         <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
+          {row.is_active == 1 && <span className="badge bg-primary">Active</span>}
+          {row.is_active == 0 && <span className="badge bg-danger">Deactive</span>}
         </div>
       ),
     },
 
-    { name: "Created At", selector: (row) => row.created_at, sortable: true },
-    { name: "Created By", selector: (row) => row.created_by, sortable: true },
+    { name: 'Created At', selector: row => row.created_at, sortable: true },
+    { name: 'Created By', selector: row => row.created_by, sortable: true },
 
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    { name: 'Updated At', selector: row => row.updated_at, sortable: true },
+    { name: 'Updated By', selector: row => row.updated_by, sortable: true },
   ];
 
   const loadData = async () => {
     setIsLoading(true); // Set loading state to true when starting data fetching
 
     try {
-      const res =
-        await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
+      const res = await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
 
       if (res.status === 200) {
         let counter = 1;
@@ -168,7 +156,7 @@ export default function DynamicFormDropdownComponent() {
           exportTempData.push({
             Sr: data[key].counter,
             Dropdown: data[key].dropdown_name,
-            Status: data[key].is_active ? "Active" : "Deactive",
+            Status: data[key].is_active ? 'Active' : 'Deactive',
             created_at: temp[key].created_at,
             created_by: temp[key].created_by,
             updated_at: data[key].updated_at,
@@ -179,16 +167,16 @@ export default function DynamicFormDropdownComponent() {
         setExportData(exportTempData);
       }
     } catch (error) {
-      console.error("Error occurred while fetching data:", error);
+      console.error('Error occurred while fetching data:', error);
       const { response } = error;
 
       if (response) {
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
-          errorObject.data.message
+          'Status',
+          'Get_Status',
+          'INSERT',
+          errorObject.data.message,
         );
       }
     } finally {
@@ -197,14 +185,14 @@ export default function DynamicFormDropdownComponent() {
   };
 
   useEffect(() => {
-    const listener = (event) => {
-      if (event.code === "Enter") {
+    const listener = event => {
+      if (event.code === 'Enter') {
         handleSearch();
       }
     };
-    document.addEventListener("keydown", listener);
+    document.addEventListener('keydown', listener);
     return () => {
-      document.removeEventListener("keydown", listener);
+      document.removeEventListener('keydown', listener);
     };
   }, [data]);
 
@@ -249,14 +237,14 @@ export default function DynamicFormDropdownComponent() {
               className="form-control"
               placeholder="Search by Dropdown Name...."
               ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
             >
@@ -266,7 +254,7 @@ export default function DynamicFormDropdownComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -287,19 +275,15 @@ export default function DynamicFormDropdownComponent() {
               {!isLoading && data && (
                 <DataTable
                   columns={columns}
-                  data={data.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
+                  data={data.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
+                          value =>
+                            typeof value === 'string' &&
+                            value.toLowerCase().includes(searchTerm.toLowerCase()),
                         );
                       }
                     }

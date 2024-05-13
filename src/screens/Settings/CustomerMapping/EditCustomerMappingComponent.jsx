@@ -4,6 +4,7 @@ import CustomerMappingService from "../../../services/SettingService/CustomerMap
 import { _base, userSessionData } from "../../../settings/constants";
 
 import ErrorLogService from "../../../services/ErrorLogService";
+import { ToastContainer, toast } from "react-toastify";
 
 import PageHeader from "../../../components/Common/PageHeader";
 import Alert from "../../../components/Common/Alert";
@@ -418,30 +419,33 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  const handleRatioInput = (index) => (e) => {
+  const handleRatioInput = (index) => async (e) => {
     e.preventDefault();
-    const newValue = parseInt(e.target.value) || 0;
+    const value = parseInt(e?.target?.value) || 0;
 
-    if (newValue > 100) {
+    if (value > 100) {
       e.target.value = 0;
-      alert("Cannot Enter More than 100 !!!");
+      ratiowiseData[index] = 0;
+      toast.error("Cannot Enter More than 100 !!!");
     } else {
-      const newData = [...userData];
-      newData[index] = { user_id: userDropdown[index]?.value, ratio: newValue };
-      const sum = newData.reduce(
-        (result, item) => result + (item ? item.ratio : 0),
-        0
-      );
-
+      ratiowiseData[index] = value;
+      const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       if (sum > 100) {
         e.target.value = 0;
-        alert("Ratio Total Must Be 100 !!!");
+        ratiowiseData[index] = 0;
+        toast.error("Ratio Total Must Be 100 !!!");
       } else {
+        const newData = ratiowiseData?.map((ratio, idx) => ({
+          user_id: userDropdown[idx]?.value || null,
+          ratio: ratio,
+        }));
         setUserData(newData);
-        setRatioTotal(sum);
+        setRatioTotal(sum); // Update ratio total after changing the value
+        const ratiosToSend = newData?.filter((_, idx) => idx !== index);
       }
     }
   };
+
   const customerDetail = useRef();
   const queryTypeDetail = useRef();
   const dynamicDetail = useRef();
@@ -459,7 +463,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
-
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
       userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
@@ -472,7 +475,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const getUserData = () => {
       // Get an array of user IDs
       const userIds = userDropdown?.map((ele) => ele?.value);
-
       return userIds;
     };
 

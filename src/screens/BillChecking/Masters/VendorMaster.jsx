@@ -3424,7 +3424,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className="col-sm-3 ">
+                  {/* <div className="col-sm-3 ">
                     <label className="form-label font-weight-bold">
                       Consider In Payment :<Astrick color="red" size="13px" />
                     </label>
@@ -3473,6 +3473,31 @@ function VendorMaster({ match }) {
                       >
                         PETTY CASH
                       </option>
+                    </select>
+                  </div> */}
+
+                  <div className="col-sm-3">
+                    <label className="form-label font-weight-bold">
+                      Consider In Payment :<Astrick color="red" size="13px" />
+                    </label>
+                    <select
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="consider_in_payment"
+                      name="consider_in_payment"
+                      maxLength="20"
+                      onChange={(e) => {
+                        handleConsideredInPay(e);
+                      }}
+                      onKeyPress={(e) => {
+                        Validation.CharactersNumbersOnlyForPan(e);
+                      }}
+                      defaultValue={modal.modalData.consider_in_payment}
+                    >
+                      <option value="">SELECT...</option>
+                      <option value="YES">YES</option>
+                      <option value="NO">NO</option>
+                      <option value="PETTY_CASH">PETTY CASH</option>
                     </select>
                   </div>
 
