@@ -1,3 +1,16 @@
+@media only screen and (max-width: 575px) {
+  .po_history_container {
+    .btn_container {
+      justify-content: space-between;
+      button {
+        width: 100%;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
 @media only screen and (max-width: 426px) {
   .po_history_container {
     h3 {

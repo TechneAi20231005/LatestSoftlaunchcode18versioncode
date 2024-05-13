@@ -33,11 +33,11 @@ function GenerateRequisition() {
         <h3 className="fw-bold text_primary"> Generate Requisition</h3>
         <div className="btn_container">
           {uploadFileGenerateRequisition ? (
-            <button className="btn btn-dark" disabled>
+            <button className="btn btn-dark px-md-5" disabled>
               <Spinner animation="border" size="sm" />{' '}
             </button>
           ) : (
-            <label htmlFor="fileUpload" className="btn btn-dark" aria-disabled>
+            <label htmlFor="fileUpload" className="btn btn-dark ms-0">
               <i className="icofont-upload-alt me-2 fs-6" />
               Upload Files
             </label>

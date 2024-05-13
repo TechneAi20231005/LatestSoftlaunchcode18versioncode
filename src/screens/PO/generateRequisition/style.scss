@@ -9,7 +9,7 @@
     display: flex;
     .btn {
       max-height: 35px;
-      width: 100%;
+      width: auto;
     }
   }
 }
@@ -22,14 +22,13 @@
       font-size: 14px;
     }
     .btn_container {
-      column-gap: 10px;
       width: 100%;
-      label {
-        width: 130px;
+      justify-content: space-between;
+      column-gap: 10px;
+      .btn {
+        width: 50%;
+        font-size: 10px;
       }
-    }
-    .btn {
-      font-size: 10px;
     }
     a {
       height: 31px;

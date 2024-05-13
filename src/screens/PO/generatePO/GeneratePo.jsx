@@ -72,7 +72,7 @@ function GeneratePo() {
       <h3 className="fw-bold text_primary "> Generate PO</h3>
       <Stack gap={3}>
         <ExportToExcel
-          className="btn btn-dark"
+          className="btn btn-dark ms-0"
           buttonTitle="PO Bulk Upload File"
           apiData={transformDataForExport(requisitionHistoryList)}
           fileName="PO Bulk Upload File Records"
@@ -113,7 +113,7 @@ function GeneratePo() {
                 </Col>
               </Row>
 
-              <div className="d-flex justify-content-end mt-3 gap-2">
+              <div className="d-flex justify-content-md-end mt-3 btn_container">
                 <button className="btn btn-dark px-4" type="submit">
                   Proceed
                 </button>

@@ -4,6 +4,7 @@ import DataTable from 'react-data-table-component';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Field, Formik } from 'formik';
+import { toast } from 'react-toastify';
 
 // // static import
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
@@ -139,7 +140,7 @@ function PendingOrder() {
       navigate('preview');
       setOrderQuantityValues({});
     } else {
-      alert('Please enter order quantity');
+      toast.error('Please enter order quantity');
     }
   };
 
@@ -157,7 +158,7 @@ function PendingOrder() {
       setToggleFilter(false);
       setOrderQuantityValues({});
     } else {
-      alert('Please enter order quantity');
+      toast.error('Please enter order quantity');
     }
   };
 

@@ -166,8 +166,8 @@ function PoHistory() {
         >
           {({ resetForm, dirty }) => (
             <Form>
-              <Row className="row_gap_3">
-                <Col sm={4} lg={3}>
+              <Row className="align-items-md-end row_gap_3">
+                <Col sm={6} md={4} lg={3}>
                   <Field
                     component={CustomReactSelect}
                     options={venderData}
@@ -198,26 +198,26 @@ function PoHistory() {
                     range
                   />
                 </Col>
+                <Col lg={3} className="d-flex justify-content-md-end btn_container">
+                  <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+                    <i className="icofont-search-1 " /> Search
+                  </button>
+                  <button
+                    className="btn btn-info text-white"
+                    type="reset"
+                    onClick={() => handelResetFilter({ restFunc: resetForm })}
+                    disabled={!dirty}
+                  >
+                    <i className="icofont-refresh text-white" /> Reset
+                  </button>
+                  <ExportToExcel
+                    className="btn btn-danger"
+                    apiData={transformDataForExport(requisitionHistoryList)}
+                    fileName="Order History"
+                    disabled={!requisitionHistoryList?.length}
+                  />
+                </Col>
               </Row>
-              <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
-                  <i className="icofont-search-1 " /> Search
-                </button>
-                <button
-                  className="btn btn-info text-white"
-                  type="reset"
-                  onClick={() => handelResetFilter({ restFunc: resetForm })}
-                  disabled={!dirty}
-                >
-                  <i className="icofont-refresh text-white" /> Reset
-                </button>
-                <ExportToExcel
-                  className="btn btn-danger"
-                  apiData={transformDataForExport(requisitionHistoryList)}
-                  fileName="Order History"
-                  disabled={!requisitionHistoryList?.length}
-                />
-              </div>
             </Form>
           )}
         </Formik>
