@@ -134,6 +134,7 @@ const RequestModal = (props) => {
         setNotify({ type: "success", message: res?.payload?.data?.message });
         setTimeout(() => {
           props.close();
+          props.taskData();
         }, 1000);
       } else {
         setNotify({ type: "danger", message: res?.payload?.data?.message });
@@ -597,11 +598,7 @@ const RequestModal = (props) => {
                                     )
                                   }
                                   required
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
 
@@ -620,11 +617,7 @@ const RequestModal = (props) => {
                                       "to_date"
                                     )
                                   }
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
                                   required
                                 />
                               </td>
@@ -638,11 +631,7 @@ const RequestModal = (props) => {
                                   onChange={(e) =>
                                     handleFromTimeChange(index, e.target.value)
                                   }
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
                                   required
                                 />
                                 <i className="icofont-clock"></i>
@@ -657,11 +646,7 @@ const RequestModal = (props) => {
                                     handleToTimeChange(index, e.target.value)
                                   }
                                   required
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
                               <td>
@@ -677,14 +662,9 @@ const RequestModal = (props) => {
                                       : row.total_time || "00:00"
                                   }
                                   required
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
-
                               <td>
                                 <input
                                   title={remark && remark ? remark : ""}
@@ -694,11 +674,12 @@ const RequestModal = (props) => {
                                   value={row.remark}
                                   onChange={(e) => handleRemarkChange(e, index)} // Assuming you have a function to handle remark changes
                                   required
-                                  disabled={
-                                    (row.status === "REJECTED" ||
-                                      row.status === "APPROVED") &&
-                                    !row.isAddingNewRow
-                                  }
+                                  disabled={row.is_regularized === "YES"}
+                                  // disabled={
+                                  //   (row.status === "REJECTED" ||
+                                  //     row.status === "APPROVED") &&
+                                  //   !row.isAddingNewRow
+                                  // }
                                 />
                               </td>
                               <td>

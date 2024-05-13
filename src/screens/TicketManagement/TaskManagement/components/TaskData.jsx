@@ -661,6 +661,7 @@ export default function TaskData(props) {
           data={data}
           isRegularisedData={isRegularisedData}
           show={requestModal}
+          taskData={loadBasket}
           hide={handleRequestModal}
           regularizeTimeData={regularizeTimeData}
           close={handleCloseRequestModal}
