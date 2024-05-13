@@ -1,65 +1,52 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
 
-import DepartmentService from "../../../services/MastersService/DepartmentService";
+import DepartmentService from '../../../services/MastersService/DepartmentService';
 
-import PageHeader from "../../../components/Common/PageHeader";
+import PageHeader from '../../../components/Common/PageHeader';
 
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  departmentData,
-  postdepartment,
-  updateDepartment,
-} from "./DepartmentMasterAction";
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { useDispatch, useSelector } from 'react-redux';
+import { departmentData, postdepartment, updateDepartment } from './DepartmentMasterAction';
 
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { handleModalClose, handleModalOpen } from "./DepartmentMasterSlice";
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { handleModalClose, handleModalOpen } from './DepartmentMasterSlice';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function DepartmentComponent() {
   const dispatch = useDispatch();
   const department = useSelector(
-    (DepartmentMasterSlice) => DepartmentMasterSlice.department.departmentData
+    DepartmentMasterSlice => DepartmentMasterSlice.department.departmentData,
   );
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 9)
+  const isLoading = useSelector(
+    DepartmentMasterSlice => DepartmentMasterSlice.department.isLoading.departmentDataList,
   );
-  const modal = useSelector(
-    (DashboardSlice) => DashboardSlice.department.modal
+
+  const checkRole = useSelector(DashboardSlice =>
+    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 9),
   );
-  const Notify = useSelector(
-    (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify
-  );
+  const modal = useSelector(DashboardSlice => DashboardSlice.department.modal);
+  const Notify = useSelector(DepartmentMasterSlice => DepartmentMasterSlice.department.notify);
   const exportData = useSelector(
-    (DepartmentMasterSlice) =>
-      DepartmentMasterSlice.department.exportDepartmentData
+    DepartmentMasterSlice => DepartmentMasterSlice.department.exportDepartmentData,
   );
- 
 
   const [notify, setNotify] = useState();
 
-  
-
-
-  const roleId = sessionStorage.getItem("role_id");
-
-
+  const roleId = sessionStorage.getItem('role_id');
 
   const searchRef = useRef();
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
+    return data.filter(d => {
       for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
+        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
           return true;
         }
       }
@@ -67,33 +54,29 @@ function DepartmentComponent() {
     });
   }
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
-
-
-  const handleSearch = (value) => {
-   
-  };
+  const handleSearch = value => {};
   const columns = [
     {
-      name: "Action",
-      selector: (row) => {},
+      name: 'Action',
+      selector: row => {},
       sortable: false,
-      width: "80px",
-      cell: (row) => (
+      width: '80px',
+      cell: row => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={(e) => {
+            onClick={e => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Department",
-                })
+                  modalHeader: 'Edit Department',
+                }),
               );
             }}
           >
@@ -103,31 +86,31 @@ function DepartmentComponent() {
       ),
     },
     {
-      name: "Sr",
-      selector: (row) => row.counter,
+      name: 'Sr',
+      selector: row => row.counter,
       sortable: true,
-      width: "60px",
+      width: '60px',
     },
     {
-      name: "Department",
-      selector: (row) => row.department,
+      name: 'Department',
+      selector: row => row.department,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Status",
-      selector: (row) => row.is_active,
+      name: 'Status',
+      selector: row => row.is_active,
       sortable: true,
-      width: "150px",
-      cell: (row) => (
+      width: '150px',
+      cell: row => (
         <div>
           {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
@@ -135,143 +118,56 @@ function DepartmentComponent() {
       ),
     },
     {
-      name: "Created At",
-      selector: (row) => row.created_at,
+      name: 'Created At',
+      selector: row => row.created_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Created By",
-      selector: (row) => row.created_by,
+      name: 'Created By',
+      selector: row => row.created_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
+      name: 'Updated At',
+      selector: row => row.updated_at,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
+      name: 'Updated By',
+      selector: row => row.updated_by,
       sortable: true,
-      width: "175px",
+      width: '175px',
     },
   ];
 
-  const loadData = async () => {
- 
-  };
+  const loadData = async () => {};
 
-  const handleForm = (id) => async (e) => {
+  const handleForm = id => async e => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postdepartment(form)).then((res) => {
+      dispatch(postdepartment(form)).then(res => {
         if (res?.payload?.data?.status === 1) {
-       
           dispatch(departmentData());
-
         } else {
         }
       });
-    
-
-      //   .postDepartment(form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.data.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Department",
-      //         "Create_Department",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Department",
-      //       "Create_Department",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
-      dispatch(updateDepartment({ id: id, payload: form })).then((res) => {
+      dispatch(updateDepartment({ id: id, payload: form })).then(res => {
         if (res?.payload?.data?.status === 1) {
-       
-      dispatch(departmentData());
-
+          dispatch(departmentData());
         } else {
         }
       });
-
-  
-      //   .updateDepartment(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status == 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Department",
-      //         "Edit_Department",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Department",
-      //       "Edit_Department",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     }
   };
 
-
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = event => {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
@@ -279,9 +175,8 @@ function DepartmentComponent() {
   useEffect(() => {
     loadData();
 
+    dispatch(departmentData());
     if (!department.length) {
-      dispatch(departmentData());
-
       dispatch(getRoles());
     }
   }, []);
@@ -303,16 +198,15 @@ function DepartmentComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: "Add Department",
-                      })
+                        modalHeader: 'Add Department',
+                      }),
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add
-                  Department
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Department
                 </button>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -327,8 +221,7 @@ function DepartmentComponent() {
               className="form-control"
               placeholder="Search by Department Name...."
               ref={searchRef}
-         
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -337,7 +230,7 @@ function DepartmentComponent() {
               type="button"
               value={searchTerm}
               onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -345,7 +238,7 @@ function DepartmentComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -365,20 +258,15 @@ function DepartmentComponent() {
               {department && (
                 <DataTable
                   columns={columns}
-               
-                  data={department.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
+                  data={department.filter(customer => {
+                    if (typeof searchTerm === 'string') {
+                      if (typeof customer === 'string') {
+                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                      } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
+                          value =>
+                            typeof value === 'string' &&
+                            value.toLowerCase().includes(searchTerm.toLowerCase()),
                         );
                       }
                     }
@@ -389,6 +277,8 @@ function DepartmentComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressPending={isLoading}
+                  progressComponent={<TableLoadingSkelton />}
                 />
               )}
             </div>
@@ -396,24 +286,17 @@ function DepartmentComponent() {
         </div>
       </div>
 
-      <Modal
-        centered
-        show={modal.showModal}
-        
-      >
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
-        >
+      <Modal centered show={modal.showModal}>
+        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
           <Modal.Header
             closeButton
             onClick={() => {
               dispatch(
                 handleModalClose({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                })
+                  modalData: '',
+                  modalHeader: '',
+                }),
               );
             }}
           >
@@ -433,33 +316,29 @@ function DepartmentComponent() {
                     name="department"
                     required
                     maxLength={30}
-                    defaultValue={
-                      modal.modalData ? modal.modalData.department : ""
-                    }
-                    onKeyPress={(e) => {
+                    defaultValue={modal.modalData ? modal.modalData.department : ''}
+                    onKeyPress={e => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={(e) => {
+                    onPaste={e => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={(e) => {
+                    onCopy={e => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
                     maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
                 {modal.modalData && (
@@ -484,10 +363,7 @@ function DepartmentComponent() {
                                 : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_1">
                             Active
                           </label>
                         </div>
@@ -502,15 +378,10 @@ function DepartmentComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
+                              modal.modalData && modal.modalData.is_active === 0 ? true : false
                             }
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
+                          <label className="form-check-label" htmlFor="is_active_0">
                             Deactive
                           </label>
                         </div>
@@ -527,9 +398,9 @@ function DepartmentComponent() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px',
                 }}
               >
                 Add
@@ -539,12 +410,12 @@ function DepartmentComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
             ) : (
-              ""
+              ''
             )}
             <button
               type="button"
@@ -553,9 +424,9 @@ function DepartmentComponent() {
                 dispatch(
                   handleModalClose({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  })
+                    modalData: '',
+                    modalHeader: '',
+                  }),
                 );
               }}
             >
@@ -570,9 +441,9 @@ function DepartmentComponent() {
 
 function DepartmentDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect( () => {
+  useEffect(() => {
     const tempData = [];
-     new DepartmentService().getDepartment().then((res) => {
+    new DepartmentService().getDepartment().then(res => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
@@ -603,9 +474,7 @@ function DepartmentDropdown(props) {
               Select Department
             </option>
           )}
-          {props.defaultValue != 0 && (
-            <option value="">Select Department</option>
-          )}
+          {props.defaultValue != 0 && <option value="">Select Department</option>}
           {data.map(function (item, i) {
             if (props.defaultValue && props.defaultValue == item.id) {
               return (

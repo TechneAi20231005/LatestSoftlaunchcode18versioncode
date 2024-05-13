@@ -211,14 +211,12 @@ function Profile() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           res.data.data.profile_picture =
-            `${_attachmentUrl}` +
-            res.data.data.profile_picture;
+            "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
           setData(res.data.data);
         }
       }
     });
   };
-  console.log("data", data);
   const fileChangedHandler = (e) => {
     let file_size = e.target.files[0].size;
     if (file_size > 2000000) {

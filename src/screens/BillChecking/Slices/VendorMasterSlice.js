@@ -25,10 +25,12 @@ const initialState = {
   getVendorMasterData: [],
   exportData: [],
   vendorMasterDropDown: [],
+  vendorMasterDropDownNew: [],
+
   getVendorAllData: [],
   paymentDropDownData: [],
   state: [],
-  postVendor:''
+  postVendor: "",
 };
 
 export const VendorMasterSlice = createSlice({
@@ -61,13 +63,17 @@ export const VendorMasterSlice = createSlice({
           value: d.id,
           label: d.vendor_name,
         }));
-
+        const vendorMasterDropDownNew = getVendorMasterData.map((d) => ({
+          value: d.id,
+          label: d.vendor_name,
+        }));
         state.status = "succeded";
         state.showLoaderModal = false;
         state.modal = { showModal: false, modalData: null, modalHeader: "" };
         state.notify = { type: "success", message: payload.data.message };
 
         state.vendorMasterDropDown = vendorMasterDropDown;
+        state.vendorMasterDropDownNew = vendorMasterDropDownNew;
       }
     });
     builder.addCase(getVendorMasterData.rejected, (state) => {
@@ -88,7 +94,7 @@ export const VendorMasterSlice = createSlice({
         state.notify = { type: "success", message: payload.data.message };
 
         state.showLoaderModal = false;
-        state.postVendor=postVendor
+        state.postVendor = postVendor;
       } else {
         state.notify = { type: "danger", message: payload.data.message };
       }

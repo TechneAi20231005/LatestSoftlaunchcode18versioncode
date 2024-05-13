@@ -1,20 +1,23 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   exportCustomerMappingData,
   getCustomerMappingData,
   getQueryTypeData,
   getTemplateData,
   getcustomerTypeData,
-} from "./CustomerMappingAction";
+} from './CustomerMappingAction';
 
 const initialState = {
-  status: "",
-  err: "",
-  notify: "",
+  status: '',
+  err: '',
+  notify: '',
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
+  },
+  isLoading: {
+    customerMappingList: false,
   },
   customerMappingData: [],
   exportTempData: [],
@@ -26,7 +29,7 @@ const initialState = {
 };
 
 export const CustomerMappingSlice = createSlice({
-  name: "CustomerMappingSlice",
+  name: 'CustomerMappingSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -39,15 +42,17 @@ export const CustomerMappingSlice = createSlice({
       state.modal = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(getCustomerMappingData.pending, (state) => {
-      state.status = "loading";
+  extraReducers: builder => {
+    builder.addCase(getCustomerMappingData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getCustomerMappingData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.customerMappingList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.status = "succeded";
+        state.status = 'succeded';
 
         let counter = 1;
         const data = payload.data.data;
@@ -86,7 +91,7 @@ export const CustomerMappingSlice = createSlice({
             Priority: data[i].priority,
             Approach: data[i].approach,
             remark: data[i].remark,
-            is_active: data[i].is_active == 1 ? "Active" : "Deactive",
+            is_active: data[i].is_active == 1 ? 'Active' : 'Deactive',
             created_at: data[i].created_at,
             created_by: data[i].created_by,
             updated_at: data[i].updated_at,
@@ -94,21 +99,22 @@ export const CustomerMappingSlice = createSlice({
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: data[i].dynamic_form_name,
             customer_type_name: data[i].customer_type_name,
-            confirmation_required:
-              data[i].confirmation_required == 1 ? "Yes" : "no",
+            confirmation_required: data[i].confirmation_required == 1 ? 'Yes' : 'no',
           });
         }
         state.exportTempData = exportTempData;
       }
     });
-    builder.addCase(getCustomerMappingData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getCustomerMappingData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.customerMappingList = false;
     });
 
     //ExportCustomerMapping
 
-    builder.addCase(exportCustomerMappingData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(exportCustomerMappingData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.customerMappingList = true;
     });
 
     builder.addCase(exportCustomerMappingData.fulfilled, (state, action) => {
@@ -116,13 +122,14 @@ export const CustomerMappingSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
+        state.isLoading.customerMappingList = false;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
 
         let exportData = [];
         let count = 1;
-        for (let i = 0; i < exportTempateData.length; i++) {
+        for (let i = 0; i < exportTempateData?.length; i++) {
           exportTempateData[i].counter = count++;
         }
 
@@ -135,8 +142,7 @@ export const CustomerMappingSlice = createSlice({
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
-            is_active:
-              exportTempateData[i].is_active == 1 ? "Active" : "Deactive",
+            is_active: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
             created_at: exportTempateData[i].created_at,
             created_by: exportTempateData[i].created_by,
             updated_at: exportTempateData[i].updated_at,
@@ -144,91 +150,94 @@ export const CustomerMappingSlice = createSlice({
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: exportTempateData[i].dynamic_form_name,
             customer_type_name: exportTempateData[i].customer_type_name,
-            "Assign User": exportTempateData[i].mapped_user,
-            confirmation_required:
-              exportTempateData[i].confirmation_required == 1 ? "Yes" : "no",
+            'Assign User': exportTempateData[i].mapped_user,
+            confirmation_required: exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
           });
           state.exportData = exportData;
         }
       }
     });
-    builder.addCase(exportCustomerMappingData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(exportCustomerMappingData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.customerMappingList = false;
     });
 
-    builder.addCase(getcustomerTypeData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(getcustomerTypeData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getcustomerTypeData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         const select = payload.data.data
-          .filter((d) => d.is_active)
-          .map((d) => ({ value: d.id, label: d.type_name }));
+          .filter(d => d.is_active)
+          .map(d => ({ value: d.id, label: d.type_name }));
         state.customerTypeData = select;
 
-        state.status = "succeded";
+        state.status = 'succeded';
 
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(getcustomerTypeData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getcustomerTypeData.rejected, state => {
+      state.status = 'rejected';
     });
 
-    builder.addCase(getQueryTypeData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(getQueryTypeData.pending, state => {
+      state.status = 'loading';
     });
     builder.addCase(getQueryTypeData.fulfilled, (state, action) => {
       const { payload } = action;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const queryTypeData = payload.data.data.filter((d) => d.is_active == 1);
+        const queryTypeData = payload.data.data.filter(d => d.is_active == 1);
         const queryTypeDropDownData = payload.data.data
-          .filter((d) => d.is_active === 1)
-          .map((d) => ({ value: d.id, label: d.query_type_name }));
+          .filter(d => d.is_active === 1)
+          .map(d => ({ value: d.id, label: d.query_type_name }));
         state.queryTypeData = queryTypeData;
         state.queryTypeDropDownData = queryTypeDropDownData;
-        state.status = "succeded";
+        state.status = 'succeded';
 
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(getQueryTypeData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getQueryTypeData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.customerMappingList = false;
     });
 
-    builder.addCase(getTemplateData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(getTemplateData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.customerMappingList = true;
     });
     builder.addCase(getTemplateData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log("payload", payload);
+      state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const activeTemplate = payload.data.data.filter(
-          (d) => d.is_active == 1
-        );
+        const activeTemplate = payload.data.data.filter(d => d.is_active == 1);
 
-        let templateDropDownData = activeTemplate.map((d) => ({
+        let templateDropDownData = activeTemplate.map(d => ({
           value: d.id,
           label: d.template_name,
         }));
         state.templateDropDownData = templateDropDownData;
-        state.status = "succeded";
+        state.status = 'succeded';
 
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
       } else {
-        state.notify = { type: "danger", message: payload.data.message };
+        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(getTemplateData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getTemplateData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.customerMappingList = false;
     });
   },
 });

@@ -1,19 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   dynamicFormData,
   dynamicFormDropDownData,
   getAllDropDownData,
-} from "./DynamicFormDropDownAction";
+} from './DynamicFormDropDownAction';
 
 const initialState = {
-  status: "",
-  err: "",
-  notify: "",
-  sortDropDown:[],
+  status: '',
+  err: '',
+  notify: '',
+  sortDropDown: [],
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: '',
+  },
+  isLoading: {
+    dyanamicFormList: false,
   },
   getDynamicFormDropDownData: [],
   exportDynamicFormDropDownData: [],
@@ -23,12 +26,11 @@ const initialState = {
 };
 
 export const DynamicFormDropDownSlice = createSlice({
-  name: "DynamicFormDropDownSlice",
+  name: 'DynamicFormDropDownSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-    
     },
     handleModalOpen: (state, action) => {
       state.modal = action.payload;
@@ -37,16 +39,17 @@ export const DynamicFormDropDownSlice = createSlice({
       state.modal = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(dynamicFormDropDownData.pending, (state) => {
-      state.status = "loading";
-      
+  extraReducers: builder => {
+    builder.addCase(dynamicFormDropDownData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(dynamicFormDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.status = "succeded";
+        state.status = 'succeded';
         let counter = 1;
         let getDynamicFormData = [];
         const temp = payload.data.data;
@@ -71,7 +74,7 @@ export const DynamicFormDropDownSlice = createSlice({
           exportDynamicFormData.push({
             Sr: getDynamicFormData[i].counter,
             dropdown_name: temp[i].dropdown_name,
-            Status: temp[i].is_active ? "Active" : "Deactive",
+            Status: temp[i].is_active ? 'Active' : 'Deactive',
             created_at: temp[i].created_at,
             created_by: temp[i].created_by,
             updated_at: temp[i].updated_at,
@@ -81,22 +84,24 @@ export const DynamicFormDropDownSlice = createSlice({
         state.exportDynamicFormData = exportDynamicFormData;
       }
     });
-    builder.addCase(dynamicFormDropDownData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(dynamicFormDropDownData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.dyanamicFormList = false;
     });
 
-    builder.addCase(dynamicFormData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(dynamicFormData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(dynamicFormData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.status = "succeded";
+        state.status = 'succeded';
         let counter = 1;
         let getDynamicFormDropDownData = [];
         const temp = payload.data.data;
-     
         for (const key in temp) {
           getDynamicFormDropDownData.push({
             counter: counter++,
@@ -116,7 +121,7 @@ export const DynamicFormDropDownSlice = createSlice({
           getDynamicFormData.push({
             Sr: getDynamicFormDropDownData[i].counter,
             form_Name: temp[i].template_name,
-            Status: temp[i].is_active ? "Active" : "Deactive",
+            Status: temp[i].is_active ? 'Active' : 'Deactive',
             created_at: temp[i].created_at,
             created_by: temp[i].created_by,
             updated_at: temp[i].updated_at,
@@ -126,29 +131,33 @@ export const DynamicFormDropDownSlice = createSlice({
         state.getDynamicFormData = getDynamicFormData;
       }
     });
-    builder.addCase(dynamicFormData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(dynamicFormData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.dyanamicFormList = false;
     });
 
-    builder.addCase(getAllDropDownData.pending, (state) => {
-      state.status = "loading";
+    builder.addCase(getAllDropDownData.pending, state => {
+      state.status = 'loading';
+      state.isLoading.dyanamicFormList = true;
     });
     builder.addCase(getAllDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.status = "succeded";
-        let dropDownData = payload.data.data.map((d) => ({
+        state.status = 'succeded';
+        let dropDownData = payload.data.data.map(d => ({
           label: d.dropdown_name,
           value: d.id,
         }));
         state.dropDownData = dropDownData;
-        let sortDropDown = payload.data.data
-        state.sortDropDown = sortDropDown 
+        let sortDropDown = payload.data.data;
+        state.sortDropDown = sortDropDown;
       }
     });
-    builder.addCase(getAllDropDownData.rejected, (state) => {
-      state.status = "rejected";
+    builder.addCase(getAllDropDownData.rejected, state => {
+      state.status = 'rejected';
+      state.isLoading.dyanamicFormList = false;
     });
   },
 });

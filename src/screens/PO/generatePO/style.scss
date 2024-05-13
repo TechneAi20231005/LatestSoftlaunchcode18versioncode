@@ -1,0 +1,28 @@
+.generate_po_container {
+  form {
+    border: 1px solid var(--bs-gray-300);
+    border-radius: 2px;
+    padding: 15px;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .generate_po_container {
+    .btn_container {
+      justify-content: space-between;
+      button {
+        width: 100%;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 426px) {
+  .generate_po_container {
+    h3 {
+      font-size: 14px;
+    }
+  }
+}

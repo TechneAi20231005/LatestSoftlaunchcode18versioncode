@@ -17,27 +17,30 @@ import ManageMenuService from "../../services/MenuManagementService/ManageMenuSe
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTenant } from "./TenantConponentAction";
 
-
 import {
   getCityData,
   getCountryDataSort,
   getRoles,
   getStateData,
   getStateDataSort,
-
 } from "../Dashboard/DashboardAction";
 import DashbordSlice from "../Dashboard/DashbordSlice";
 import { posttenantData } from "./TenantConponentAction";
 import { tenantmasterSlice, handleError } from "./TenantComponentSlice";
 
 export default function CreateTenant({ match }) {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const cityDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.sortedCityData);
-  const stateDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.stateData);
+  const cityDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.sortedCityData
+  );
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.stateData
+  );
   // const countryDropdown = useSelector((DashbordSlice) => DashbordSlice.dashboard.filteredCountryData);
-  const checkRole = useSelector(DashbordSlice => DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33))
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33)
+  );
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
@@ -46,7 +49,8 @@ export default function CreateTenant({ match }) {
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
 
-  const notify = useSelector(TenantComponentSlice => TenantComponentSlice.tenantMaster.notify
+  const notify = useSelector(
+    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
   );
 
   const roleId = sessionStorage.getItem("role_id");
@@ -76,6 +80,7 @@ export default function CreateTenant({ match }) {
   // const [cityDropdown, setCityDropdown] = useState(null);
   const [stateDropdownData, setStateDropdownData] = useState(false);
   const [cityDropdownData, setCityDropdownData] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleDependentChange = (e, type) => {
     if (type == "COUNTRY") {
@@ -84,8 +89,11 @@ export default function CreateTenant({ match }) {
       //     .filter((d) => d.country_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.state }))
       // );
-      setStateDropdownData(stateDropdown.filter((filterState) => filterState.country_id === e.value).map((d) => ({ value: d.id, label: d.state })))
-
+      setStateDropdownData(
+        stateDropdown
+          .filter((filterState) => filterState.country_id === e.value)
+          .map((d) => ({ value: d.id, label: d.state }))
+      );
     }
     if (type == "STATE") {
       // setCityDropdown(
@@ -93,21 +101,21 @@ export default function CreateTenant({ match }) {
       //     .filter((d) => d.state_id == e.value)
       //     .map((d) => ({ value: d.id, label: d.city }))
       // );
-      setCityDropdownData(AllcityDropDownData.filter((filterState) => filterState.state_id === e.value).map((d) => ({ value: d.id, label: d.city })))
-
+      setCityDropdownData(
+        AllcityDropDownData.filter(
+          (filterState) => filterState.state_id === e.value
+        ).map((d) => ({ value: d.id, label: d.city }))
+      );
     }
   };
 
-  const [inputState, setInputState] = useState({
-
-  });
+  const [inputState, setInputState] = useState({});
 
   const [contactValid, setContactValid] = useState(false);
 
   const [contactNumber, setContactNumber] = useState(null);
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
-
 
     if (contactValidation.length === 0) {
       setInputState({
@@ -228,23 +236,30 @@ export default function CreateTenant({ match }) {
     // });
 
     dispatch(posttenantData(formData)).then((res) => {
-
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-
         navigate(`/${_base}/TenantMaster`);
-        dispatch(getAllTenant())
-        dispatch(handleError({ type: "success", message: res.payload.data.message }))
-
+        dispatch(getAllTenant());
+        dispatch(
+          handleError({ type: "success", message: res.payload.data.message })
+        );
       } else {
-        dispatch(handleError({ type: "danger", message: res.payload.data.message }))
+        dispatch(
+          handleError({ type: "danger", message: res.payload.data.message })
+        );
       }
     });
   };
 
-
+  const handleKeyPress = (e) => {
+    if (Validation.onlyCapitalLetter(e)) {
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Only capital letters are allowed");
+    }
+  };
 
   useEffect(() => {
-    dispatch(handleError(null))
+    dispatch(handleError(null));
     if (isMasterAdmin !== "MasterAdmin") {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -288,9 +303,30 @@ export default function CreateTenant({ match }) {
                 }}
               />
             </div>
+
+            <label className="col-sm-2 col-form-label">
+              <b>
+                Ticket ID Series :<Astrick color="red" />
+              </b>
+            </label>
+            <div className="col-sm-4">
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                id="series"
+                name="series"
+                placeholder="Enter Tenant Id Series"
+                maxLength={2}
+                required
+                onKeyPress={(e) => handleKeyPress(e)}
+              />
+              {errorMessage && (
+                <div style={{ color: "red" }}>{errorMessage}</div>
+              )}
+            </div>
           </div>
 
-          <div className="form-group row mt-2">
+          {/* <div className="form-group row mt-2">
             <label className="col-sm-2 col-form-label">
               <b>
                 Company Type : <Astrick color="red" />
@@ -302,6 +338,55 @@ export default function CreateTenant({ match }) {
                 id="company_type"
                 options={companyType}
               />
+
+              <div className="form-group row mt-3">
+                <div className="col-sm-12">
+                  <h5 className="text-danger">
+                    <b>Important Note:</b>
+                  </h5>
+                  <ul>
+                    <li>Do not make any changes in first row</li>
+                    <li>Do not change query type after export in file</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div> */}
+
+          <div className="form-group row mt-2">
+            <label className="col-sm-2 col-form-label">
+              <b>
+                Company Type : <Astrick color="red" />
+              </b>
+            </label>
+            <div className="col-sm-8">
+              {" "}
+              {/* Use col-sm-10 to make Select take up remaining space */}
+              <div className="row">
+                {" "}
+                {/* Nested row */}
+                <div className="col-sm-6">
+                  {" "}
+                  {/* Adjust the width of the Select */}
+                  <Select
+                    name="company_type"
+                    id="company_type"
+                    options={companyType}
+                  />
+                </div>
+                <div className="col-sm-6">
+                  {" "}
+                  {/* Use the remaining space for the note */}
+                  <div className="form-group">
+                    <h5 className="text-danger">
+                      <b>Important Note:</b>
+                    </h5>
+                    <ul>
+                      <li>Enter two capital alphabets only.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -315,15 +400,15 @@ export default function CreateTenant({ match }) {
               <input
                 type="text"
                 className="form-control form-control-sm"
-
                 id="email_id"
                 name="email_id"
                 placeholder="Email Address"
                 required
-                onKeyPress={e => { Validation.emailOnly(e) }}
-              // value={email}
+                onKeyPress={(e) => {
+                  Validation.emailOnly(e);
+                }}
+                // value={email}
               />
-
             </div>
           </div>
 
@@ -344,7 +429,6 @@ export default function CreateTenant({ match }) {
                 minLength={10}
                 maxLength={10}
                 onChange={handleContactValidation}
-
                 onKeyPress={(e) => {
                   Validation.MobileNumbersOnly(e);
                 }}
@@ -359,7 +443,6 @@ export default function CreateTenant({ match }) {
                 </small>
               )}
             </div>
-
           </div>
         </div>
 
