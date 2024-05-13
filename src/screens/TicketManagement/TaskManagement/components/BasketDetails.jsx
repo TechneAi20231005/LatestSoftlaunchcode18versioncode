@@ -118,7 +118,8 @@ export default function BasketDetails(props) {
   };
   const [ticketData, setTicketData] = useState();
   const loadData = async () => {
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
@@ -212,6 +213,7 @@ export default function BasketDetails(props) {
                     id="basket_owner"
                     name={`${props.data ? "basket_owner" : "basket_owner[]"}`}
                     options={user}
+                    required
                     defaultValue={
                       props.data &&
                       props.data.basket_owner &&
@@ -236,7 +238,8 @@ export default function BasketDetails(props) {
                   onChange={handleFromDate}
                   required
                   readOnly={props.data && props.data.start_date ? true : false}
-                  min={ticketData && ticketData.ticket_date}
+                  // min={ticketData && ticketData.ticket_date}
+                  min={new Date().toISOString().slice(0, 10)}
                   value={props.data ? props.data.start_date : null}
                 />
               </div>
@@ -281,6 +284,3 @@ export default function BasketDetails(props) {
     </>
   );
 }
-
-
-
