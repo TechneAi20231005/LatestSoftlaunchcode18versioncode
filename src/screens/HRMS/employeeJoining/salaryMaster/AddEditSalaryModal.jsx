@@ -30,13 +30,13 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   const dispatch = useDispatch();
 
   const addEditSalaryInitialValue = {
-    department_id: type === 'EDIT' ? currentSalaryData?.department_id : '',
-    designation_id: type === 'EDIT' ? currentSalaryData?.designation_id : '',
+    department_id: type === 'EDIT' ? currentSalaryData?.department_id?.toString() : '',
+    designation_id: type === 'EDIT' ? currentSalaryData?.designation_id?.toString() : '',
     location_id:
       type === 'EDIT' ? currentSalaryData?.locations?.map(location => location?.location_id) : '',
     // location_id: type === 'EDIT' ? [3] : '',
     experience_level: type === 'EDIT' ? currentSalaryData?.experience_level : '',
-    max_salary: type === 'EDIT' ? currentSalaryData?.max_salary : '',
+    max_salary: type === 'EDIT' ? +currentSalaryData?.max_salary : '',
     remark: type === 'EDIT' ? currentSalaryData?.remark || '' : '',
     is_active: type === 'EDIT' ? currentSalaryData?.is_active?.toString() : 1,
   };
@@ -134,7 +134,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
-          {() => (
+          {({ dirty }) => (
             <Form>
               <Stack gap={3}>
                 <Row className="gap-3 gap-sm-0">
@@ -228,7 +228,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit">
+                <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
                   {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button onClick={close} className="btn btn-shadow-light px-3" type="button">

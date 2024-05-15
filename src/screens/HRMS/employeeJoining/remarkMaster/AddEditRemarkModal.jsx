@@ -75,7 +75,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
-          {() => (
+          {({ dirty }) => (
             <Form>
               <Row className="gap-3">
                 <Col sm={12}>
@@ -121,7 +121,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit">
+                <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
                   {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button onClick={close} className="btn btn-shadow-light px-3" type="button">

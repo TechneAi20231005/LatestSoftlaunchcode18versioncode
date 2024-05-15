@@ -65,25 +65,25 @@ function JobOfferOnBoarding() {
       ? salaryOfferedByHrAndSrHrData?.[0]?.location_id || ''
       : '',
     relevant_experience: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.relevant_experience || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.relevant_experience ?? ''
       : '',
     experience_level: salaryOfferedByHrAndSrHrData.length
       ? salaryOfferedByHrAndSrHrData?.[0]?.experience_level || ''
       : '',
     current_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.current_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.current_salary ?? ''
       : '',
     max_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.max_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.max_salary ?? ''
       : '',
     preferred_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.preferred_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.preferred_salary ?? ''
       : '',
     hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary ?? ''
       : '',
     sr_hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ?? ''
       : '',
     remark_id: '',
     other_remark: '',
