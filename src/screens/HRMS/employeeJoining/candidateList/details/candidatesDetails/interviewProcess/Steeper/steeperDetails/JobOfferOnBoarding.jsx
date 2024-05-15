@@ -52,8 +52,6 @@ function JobOfferOnBoarding() {
     state => state?.interViewProcess,
   );
 
-  // console.log(interviewProcessData);
-
   // //  local state
   const [formValue, setFormValue] = useState('');
   const [clickFor, setClickFor] = useState('');

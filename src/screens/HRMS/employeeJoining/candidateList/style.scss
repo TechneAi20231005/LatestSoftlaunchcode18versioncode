@@ -1,3 +1,15 @@
 .row_gap_3 {
   row-gap: 8px;
 }
+
+@media only screen and (max-width: 575px) {
+  .btn_container {
+    justify-content: space-between;
+    button {
+      width: 100%;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}

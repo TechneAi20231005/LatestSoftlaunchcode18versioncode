@@ -331,7 +331,7 @@ function CandidatesDetails() {
                 </Row>
               </Stack>
               <RenderIf render={currentMode === 'EDIT'}>
-                <div className="d-flex justify-content-end mt-3 gap-2">
+                <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">
                   <button className="btn btn-dark px-4" type="submit">
                     Update
                   </button>
