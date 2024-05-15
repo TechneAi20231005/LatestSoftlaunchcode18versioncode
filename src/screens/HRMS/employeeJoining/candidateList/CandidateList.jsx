@@ -170,8 +170,8 @@ function CandidateList() {
             );
           }}
         />
-        <Row>
-          <Col xs={12} md={8} xxl={9}>
+        <Row className="row_gap_3">
+          <Col xs={12} md={7} xxl={8}>
             <input
               type="search"
               name="interview_search"
@@ -181,7 +181,7 @@ function CandidateList() {
               className="form-control"
             />
           </Col>
-          <Col xs={12} md={4} xxl={3} className="text-end mt-2 mt-md-0">
+          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
             <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
               <i className="icofont-search-1 " /> Search
             </button>
