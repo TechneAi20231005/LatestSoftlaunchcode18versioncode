@@ -110,7 +110,7 @@ function FollowUp() {
               </Row>
             </Stack>
 
-            <div className="d-flex justify-content-end mt-3 gap-2">
+            <div className="d-flex justify-content-sm-end gap-2 my-3 btn_container">
               <button className="btn btn-dark px-4" type="submit" disabled={isLoading?.addFollowUp}>
                 {isLoading?.addFollowUp ? <Spinner animation="border" size="sm" /> : 'Add'}
               </button>
