@@ -10,15 +10,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { consolidatedData } from "./ConsolidatedAction";
 import { getRoles } from "../Dashboard/DashboardAction";
 import ConsolidatedSlice from "./ConsolidatedSlice";
+import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 function ConsolidatedView() {
   const dispatch = useDispatch();
   const consolatedData = useSelector(
     (ConsolidatedSlice) => ConsolidatedSlice.consolidatedData.consolidatedData
   );
+
+  
+
+  const isLoading = useSelector(
+    (ConsolidatedSlice) =>
+      ConsolidatedSlice.consolidatedData.isLoading.consolidatedDataList
+  );
+
+  
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
+
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 34)
   );
@@ -29,8 +40,6 @@ function ConsolidatedView() {
   const loadData = async () => {
     dispatch(consolidatedData());
     dispatch(getRoles());
-
-    
   };
 
   useEffect(() => {
@@ -39,7 +48,6 @@ function ConsolidatedView() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -53,7 +61,9 @@ function ConsolidatedView() {
             <Tab.Content>
               <Tab.Pane eventKey="All">
                 <div className="row  ml-2 mr-2">
-                  {consolatedData &&
+                  {isLoading && <TableLoadingSkelton />}
+                  {!isLoading &&
+                    consolatedData &&
                     consolatedData.map((data, index) => {
                       return (
                         <CurrentClientProject
@@ -67,17 +77,6 @@ function ConsolidatedView() {
             </Tab.Content>
           </div>
         </div>
-        <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal>
       </Tab.Container>
     </div>
   );

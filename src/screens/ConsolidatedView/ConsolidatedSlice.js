@@ -3,8 +3,11 @@ import { consolidatedData } from "./ConsolidatedAction";
 const initialState = {
   status: "",
   err: "",
+  isLoading: {
+    consolidatedDataList: false,
+  },
   showLoaderModal: false,
-  consolidatedData:[]
+  consolidatedData: [],
 };
 
 export const ConsolidatedSlice = createSlice({
@@ -13,19 +16,20 @@ export const ConsolidatedSlice = createSlice({
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-   
     },
   },
   extraReducers: (builder) => {
     builder.addCase(consolidatedData.pending, (state) => {
+      state.isLoading.consolidatedDataList = true;
       state.status = "loading";
     });
     builder.addCase(consolidatedData.fulfilled, (state, action) => {
       const { payload } = action;
+      state.isLoading.consolidatedDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let consolidatedData = payload.data.data;
-      
+
         state.status = "succeded";
         state.showLoaderModal = false;
         let count = 1;
@@ -37,6 +41,7 @@ export const ConsolidatedSlice = createSlice({
     });
     builder.addCase(consolidatedData.rejected, (state) => {
       state.status = "rejected";
+      state.isLoading.consolidatedDataList = false;
     });
   },
 });
