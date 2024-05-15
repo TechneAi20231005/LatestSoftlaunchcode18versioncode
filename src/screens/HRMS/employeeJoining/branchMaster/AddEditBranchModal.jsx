@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -75,7 +75,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
-          {() => (
+          {({ dirty }) => (
             <Form>
               <Row className="gap-3">
                 <Col sm={12}>
@@ -121,7 +121,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit">
+                <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
                   {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button onClick={close} className="btn btn-shadow-light px-3" type="button">

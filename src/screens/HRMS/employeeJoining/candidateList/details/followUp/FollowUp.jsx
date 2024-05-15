@@ -101,7 +101,7 @@ function FollowUp() {
                     onChange={event => {
                       setFieldValue('attachment_file', event.target.files[0]);
                     }}
-                    accept=".jpg, .jpeg, .png, .pdf, .docx,"
+                    accept=".jpg, .jpeg, .pdf, .docx, .csv"
                   />
                   <RenderIf render={errors.attachment_file && touched.attachment_file}>
                     <div className="invalid-feedback">{errors.attachment_file}</div>

@@ -26,16 +26,18 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
   // // initial state
   const dispatch = useDispatch();
   const addInterviewInitialValue = {
-    department_id: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.department_id : '',
-    designation_id: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.designation_id : '',
+    department_id:
+      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.department_id?.toString() : '',
+    designation_id:
+      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.designation_id?.toString() : '',
     experience_level:
       type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.experience_level : '',
     step_details:
       type === 'EDIT' || type === 'VIEW'
         ? currentInterviewData?.details?.map(detail => ({
             step_title: detail.step_title || '',
-            designation_id: detail.designation_id || '',
-            employee_id: detail.employee_id || '',
+            designation_id: detail.designation_id?.toString() || '',
+            employee_id: detail.employee_id?.toString() || '',
             employee_email: detail.employee_email || '',
           }))
         : [
@@ -157,7 +159,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
             }
           }}
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, dirty }) => (
             <Form>
               <Row className="">
                 <Col md={4} lg={4}>
@@ -359,7 +361,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                   </button>
                 ) : (
                   <>
-                    <button className="btn btn-dark px-4" type="submit">
+                    <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
                       {type === 'ADD' ? 'Save' : 'Update'}
                     </button>
                     <button onClick={close} className="btn btn-shadow-light px-3" type="button">
@@ -373,11 +375,10 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
         </Formik>
       </CustomModal>
 
+      {/* Add edit interview steps confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
-        message={`Do you want to ${
-          type === 'ADD' ? 'Add' : 'update'
-        } Assignment for It department to software Developer?`}
+        message={`Do you want to ${type === 'ADD' ? 'Add' : 'update'} this record?`}
         type="success"
         onSuccess={handelAddEditInterview}
         onClose={() => setOpenConfirmModal({ open: false })}
