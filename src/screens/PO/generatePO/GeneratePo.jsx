@@ -61,7 +61,7 @@ function GeneratePo() {
     dispatch(
       poBulkUploadFileExportBeCheckThunk({
         onSuccessHandler: () => {
-          dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+          dispatch(getRequisitionHistoryThunk({ filterData: { type: 'export' } }));
         },
       }),
     );
@@ -70,7 +70,7 @@ function GeneratePo() {
   // // life cycle
   useEffect(() => {
     dispatch(getVenderListThunk());
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+    dispatch(getRequisitionHistoryThunk({ filterData: { type: 'export' } }));
   }, []);
 
   return (

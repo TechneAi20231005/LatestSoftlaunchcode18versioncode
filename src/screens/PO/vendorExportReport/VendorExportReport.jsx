@@ -116,6 +116,7 @@ function VendorExportReport() {
       to_order_date: formData?.order_date?.length ? formData?.order_date?.[1] : '',
       from_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
       to_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+      type: 'venderExportReport',
     };
     dispatch(getRequisitionHistoryThunk({ filterData: apiData }));
   };
