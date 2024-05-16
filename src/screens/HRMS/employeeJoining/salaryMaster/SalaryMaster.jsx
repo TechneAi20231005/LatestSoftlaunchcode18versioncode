@@ -10,7 +10,8 @@ import AddEditSalaryModal from './AddEditSalaryModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getSalaryMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/salaryMaster';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../../utils/customFunction';
+import { customSearchHandler, formatNumberWithCurrency } from '../../../../utils/customFunction';
+
 function SalaryMaster() {
   // // initial state
   const dispatch = useDispatch();
@@ -92,7 +93,7 @@ function SalaryMaster() {
     },
     {
       name: 'Salary (Net)',
-      selector: row => row?.max_salary || '--',
+      selector: row => (row?.max_salary ? formatNumberWithCurrency(row?.max_salary) : '--'),
       sortable: true,
       width: '175px',
     },

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 // // static import
 import TableLoadingSkelton from '../../../../../../components/custom/loader/TableLoadingSkelton';
+import { formatNumberWithCurrency } from '../../../../../../utils/customFunction';
 
 function CandidateEditHistory() {
   // // redux state
@@ -69,14 +70,18 @@ function CandidateEditHistory() {
     {
       name: 'Current Monthly Salary',
       sortable: true,
-      selector: row => row?.current_monthly_salary || '--',
+      selector: row =>
+        row?.current_monthly_salary ? formatNumberWithCurrency(row?.current_monthly_salary) : '--',
       sortable: true,
       width: '175px',
     },
     {
       name: 'Expected Monthly Salary (Net)',
       sortable: true,
-      selector: row => row?.expected_monthly_salary || '--',
+      selector: row =>
+        row?.expected_monthly_salary
+          ? formatNumberWithCurrency(row?.expected_monthly_salary)
+          : '--',
       sortable: true,
       width: '215px',
     },

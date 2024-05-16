@@ -160,7 +160,7 @@ function CandidatesDetails() {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
-          {({ touched, errors, setFieldValue, resetForm }) => (
+          {({ touched, errors, setFieldValue, resetForm, dirty }) => (
             <Form>
               <Stack gap={3}>
                 <Row className="gap-3 gap-sm-0">
@@ -332,7 +332,7 @@ function CandidatesDetails() {
               </Stack>
               <RenderIf render={currentMode === 'EDIT'}>
                 <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">
-                  <button className="btn btn-dark px-4" type="submit">
+                  <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
                     Update
                   </button>
                   <button

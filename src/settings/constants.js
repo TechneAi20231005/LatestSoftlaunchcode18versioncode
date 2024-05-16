@@ -31,6 +31,7 @@ export var dataFormat = { status: 0, message: null, data: null };
 export const ALPHA_NUMERIC_REGEX =
   /^(?=.*[a-zA-Z])(?=.*[0-9]?)[a-zA-Z0-9\s!@#$%^&*()_+[\]{};':"\\|,.<>/?-]*$/;
 export const ONLY_CHARACTER_REGEX = /^[a-zA-Z\s]+$/;
+export const EMAIL_REGEX = /^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
 
 export const _base = REACT_APP_ROOT_URL;
 export const _apiUrl = REACT_APP_API_URL;

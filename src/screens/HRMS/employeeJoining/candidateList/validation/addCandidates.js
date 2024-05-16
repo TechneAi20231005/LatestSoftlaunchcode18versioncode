@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ONLY_CHARACTER_REGEX } from '../../../../../settings/constants';
+import { EMAIL_REGEX, ONLY_CHARACTER_REGEX } from '../../../../../settings/constants';
 
 export const addCandidatesValidation = Yup.object().shape({
   source_id: Yup.string().required('Source is required'),
@@ -36,7 +36,7 @@ export const addCandidatesValidation = Yup.object().shape({
   mobile_no: Yup.string()
     .required('Phone number is required')
     .matches(/^[6-9]\d{9}$/, 'Invalid phone number'),
-  email: Yup.string().email('Invalid email'),
+  email: Yup.string().matches(EMAIL_REGEX, 'Invalid email').email('Invalid email'),
   relevant_experience: Yup.string().required('Current years of work experience is required'),
   expected_ctc: Yup.number().min(0, 'Expected monthly salary must be 0 or greater'),
   current_ctc: Yup.number().min(0, 'Current monthly salary must be 0 or greater'),
