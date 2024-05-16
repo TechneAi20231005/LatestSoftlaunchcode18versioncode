@@ -82,7 +82,7 @@ function GeneratePo() {
           buttonTitle="PO Bulk Upload File"
           apiData={transformDataForExport(requisitionHistoryList?.data)}
           fileName="PO Bulk Upload File Records"
-          disabled={!requisitionHistoryList?.data.length || getRequisitionHistoryList}
+          disabled={!requisitionHistoryList?.data?.length || getRequisitionHistoryList}
           onClickHandler={handelBeExportCheck}
         />
         <Formik
