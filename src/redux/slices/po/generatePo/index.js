@@ -35,7 +35,8 @@ const generatePoSlice = createSlice({
       newPoDataList.forEach(newItem => {
         const existingIndex = state.userAddedPoDataList.findIndex(item => item.id === newItem.id);
         if (existingIndex !== -1) {
-          state.userAddedPoDataList[existingIndex].order_qty = newItem.order_qty;
+          state.userAddedPoDataList[existingIndex].order_qty =
+            Number(state.userAddedPoDataList[existingIndex].order_qty) + Number(newItem.order_qty);
         } else {
           state.userAddedPoDataList.push(newItem);
         }
