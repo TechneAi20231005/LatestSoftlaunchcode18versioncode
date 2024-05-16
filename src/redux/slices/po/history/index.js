@@ -3,6 +3,7 @@ import { getRequisitionHistoryThunk } from '../../../services/po/history';
 
 const initialState = {
   requisitionHistoryList: [],
+  requisitionHistoryExportDataList: [],
   isLoading: {
     getRequisitionHistoryList: false,
   },
@@ -26,12 +27,17 @@ const requisitionHistoryPoSlice = createSlice({
       })
       .addCase(getRequisitionHistoryThunk.fulfilled, (state, action) => {
         state.isLoading.getRequisitionHistoryList = false;
-        state.requisitionHistoryList = action.payload.data;
+        if (action.payload.isExport) {
+          state.requisitionHistoryExportDataList = action.payload.data;
+        } else {
+          state.requisitionHistoryList = action.payload.data;
+        }
         state.successMsg.getRequisitionHistoryList = action.payload.msg;
       })
       .addCase(getRequisitionHistoryThunk.rejected, (state, action) => {
         state.isLoading.getRequisitionHistoryList = false;
         state.requisitionHistoryList = [];
+        state.requisitionHistoryExportDataList = [];
         state.errorMsg.getRequisitionHistoryList = action.error.message;
       });
   },

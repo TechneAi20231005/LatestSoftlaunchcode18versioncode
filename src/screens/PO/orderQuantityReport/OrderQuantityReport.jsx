@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Container, Row, Stack } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
@@ -23,6 +23,12 @@ function OrderQuantityReport() {
   // // local state
   const [openPoOrderQanFilterModal, setOpenPoOrderQanFilterModal] = useState(false);
   const [modifiedRequisitionHistoryList, setModifiedRequisitionHistoryList] = useState([]);
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} },
+  );
 
   // // redux state
   const {
@@ -115,49 +121,67 @@ function OrderQuantityReport() {
   };
 
   const handelApplyFilter = ({ formData }) => {
-    const apiData = {
+    const formatApiData = {
       vender_name: formData?.vender_name?.length ? formData?.vender_name : '',
       from_order_date: formData?.order_date?.length ? formData?.order_date?.[0] : '',
       to_order_date: formData?.order_date?.length ? formData?.order_date?.[1] : '',
       from_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
       to_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+    };
+    setPaginationData({ currentFilterData: formatApiData });
+    const apiData = {
+      ...formatApiData,
+      limit: paginationData.rowPerPage,
+      page: paginationData.currentPage,
       type: 'orderQuantityReport',
     };
     dispatch(getRequisitionHistoryThunk({ filterData: apiData }));
   };
 
   const handelResetFilter = ({ restFunc }) => {
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'orderQuantityReport',
+        },
+      }),
+    );
     restFunc();
   };
 
   // //modifying data and  calculating total order qty
   useEffect(() => {
-    if (requisitionHistoryList.length > 0) {
-      let total = 0;
-      requisitionHistoryList.forEach(item => {
-        total += parseInt(item.new_qty);
-      });
-
+    if (requisitionHistoryList?.data?.length > 0) {
       setModifiedRequisitionHistoryList([
-        ...requisitionHistoryList,
+        ...requisitionHistoryList?.data,
         {
           order_date: 'Total',
-          new_qty: total,
+          new_qty: requisitionHistoryList?.total_qty,
         },
       ]);
     } else {
       setModifiedRequisitionHistoryList([]);
     }
-  }, [requisitionHistoryList]);
+  }, [requisitionHistoryList?.data]);
 
   // // life cycle
   useEffect(() => {
     if (!venderList?.length) {
       dispatch(getVenderListThunk());
     }
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
-  }, []);
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          ...paginationData.currentFilterData,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'orderQuantityReport',
+        },
+      }),
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <>
@@ -221,7 +245,7 @@ function OrderQuantityReport() {
                       className="btn btn-danger"
                       apiData={transformDataForExport(modifiedRequisitionHistoryList)}
                       fileName="Order Qty report"
-                      disabled={!requisitionHistoryList?.length}
+                      disabled={!requisitionHistoryList?.data?.length}
                     />
                     {/* <button
                     className="btn btn-sm btn-primary text-white px-3"
@@ -241,6 +265,15 @@ function OrderQuantityReport() {
             data={modifiedRequisitionHistoryList}
             progressPending={getRequisitionHistoryList}
             progressComponent={<TableLoadingSkelton />}
+            pagination
+            paginationServer
+            paginationTotalRows={paginationData.rowPerPage * requisitionHistoryList?.total_pages}
+            paginationDefaultPage={paginationData.currentPage}
+            onChangePage={page => setPaginationData({ currentPage: page })}
+            onChangeRowsPerPage={newPageSize => {
+              setPaginationData({ rowPerPage: newPageSize });
+              setPaginationData({ currentPage: 1 });
+            }}
           />
         </Stack>
       </Container>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spinner } from 'react-bootstrap';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 
@@ -10,6 +11,7 @@ export const ExportToExcel = ({
   disabled,
   btnType = 'button',
   onClickHandler,
+  isLoading,
 }) => {
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -31,7 +33,13 @@ export const ExportToExcel = ({
       disabled={disabled}
       type={btnType}
     >
-      <i className="icofont-download"></i> {buttonTitle ? buttonTitle : 'Export'}
+      {isLoading ? (
+        <Spinner animation="border" size="sm" />
+      ) : (
+        <>
+          <i className="icofont-download" /> {buttonTitle ? buttonTitle : 'Export'}
+        </>
+      )}
     </button>
   );
 };
