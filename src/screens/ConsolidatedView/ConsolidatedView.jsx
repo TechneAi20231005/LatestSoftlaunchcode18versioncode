@@ -11,6 +11,7 @@ import { consolidatedData } from "./ConsolidatedAction";
 import { getRoles } from "../Dashboard/DashboardAction";
 import ConsolidatedSlice from "./ConsolidatedSlice";
 import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
+import CardLoadingSkeleton from "../../components/custom/loader/CardLoadingSkeleton";
 
 function ConsolidatedView() {
   const dispatch = useDispatch();
@@ -18,14 +19,11 @@ function ConsolidatedView() {
     (ConsolidatedSlice) => ConsolidatedSlice.consolidatedData.consolidatedData
   );
 
-  
-
   const isLoading = useSelector(
     (ConsolidatedSlice) =>
       ConsolidatedSlice.consolidatedData.isLoading.consolidatedDataList
   );
 
-  
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
@@ -61,7 +59,7 @@ function ConsolidatedView() {
             <Tab.Content>
               <Tab.Pane eventKey="All">
                 <div className="row  ml-2 mr-2">
-                  {isLoading && <TableLoadingSkelton />}
+                  {isLoading && <CardLoadingSkeleton />}
                   {!isLoading &&
                     consolatedData &&
                     consolatedData.map((data, index) => {
