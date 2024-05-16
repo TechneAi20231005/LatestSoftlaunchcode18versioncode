@@ -58,7 +58,13 @@ function GeneratePo() {
   };
 
   const handelBeExportCheck = () => {
-    dispatch(poBulkUploadFileExportBeCheckThunk());
+    dispatch(
+      poBulkUploadFileExportBeCheckThunk({
+        onSuccessHandler: () => {
+          dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+        },
+      }),
+    );
   };
 
   // // life cycle
