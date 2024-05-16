@@ -101,7 +101,7 @@ function FollowUp() {
                     onChange={event => {
                       setFieldValue('attachment_file', event.target.files[0]);
                     }}
-                    accept=".jpg, .jpeg, .png, .pdf, .docx,"
+                    accept=".jpg, .jpeg, .pdf, .docx, .csv"
                   />
                   <RenderIf render={errors.attachment_file && touched.attachment_file}>
                     <div className="invalid-feedback">{errors.attachment_file}</div>
@@ -110,7 +110,7 @@ function FollowUp() {
               </Row>
             </Stack>
 
-            <div className="d-flex justify-content-end mt-3 gap-2">
+            <div className="d-flex justify-content-sm-end gap-2 my-3 btn_container">
               <button className="btn btn-dark px-4" type="submit" disabled={isLoading?.addFollowUp}>
                 {isLoading?.addFollowUp ? <Spinner animation="border" size="sm" /> : 'Add'}
               </button>

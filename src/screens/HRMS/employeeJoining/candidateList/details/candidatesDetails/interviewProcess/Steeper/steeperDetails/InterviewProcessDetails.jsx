@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Col, Row, Spinner } from 'react-bootstrap';
+import { Col, Row, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Field, Form, Formik } from 'formik';
 import { useLocation } from 'react-router-dom';
@@ -89,7 +89,7 @@ function InterviewProcessDetails() {
 
   return (
     <>
-      <Container fluid>
+      <>
         <RenderIf render={showScheduleBtn}>
           <RenderIf render={currentInterviewStepData?.scheduled_datetime}>
             <p className="mb-0">Interview schedule at</p>
@@ -151,7 +151,7 @@ function InterviewProcessDetails() {
                 </RenderIf>
               </Row>
 
-              <div className="d-flex justify-content-end mt-3 gap-2">
+              <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">
                 <button
                   className="btn btn-dark"
                   type="submit"
@@ -175,7 +175,7 @@ function InterviewProcessDetails() {
             </Form>
           )}
         </Formik>
-      </Container>
+      </>
 
       <InterviewScheduleRescheduleModal
         open={openInterviewScheduleModal}
