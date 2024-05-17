@@ -19,7 +19,9 @@ const requisitionHistoryPoSlice = createSlice({
   name: 'Requisition History PO',
   initialState,
   reducers: {
-    // ==> normal reducer functions go here
+    resetRequisitionHistoryExportDataList(state, action) {
+      state.requisitionHistoryExportDataList = [];
+    },
   },
   extraReducers(builder) {
     builder
@@ -51,4 +53,5 @@ const requisitionHistoryPoSlice = createSlice({
   },
 });
 
+export const { resetRequisitionHistoryExportDataList } = requisitionHistoryPoSlice.actions;
 export default requisitionHistoryPoSlice.reducer;
