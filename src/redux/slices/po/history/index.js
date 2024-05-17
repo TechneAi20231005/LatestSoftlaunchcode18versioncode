@@ -6,6 +6,7 @@ const initialState = {
   requisitionHistoryExportDataList: [],
   isLoading: {
     getRequisitionHistoryList: false,
+    getRequisitionHistoryExportDataList: false,
   },
   errorMsg: {
     getRequisitionHistoryList: '',
@@ -23,19 +24,26 @@ const requisitionHistoryPoSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getRequisitionHistoryThunk.pending, (state, action) => {
-        state.isLoading.getRequisitionHistoryList = true;
+        const { filterData } = action.meta.arg;
+        if (filterData?.datatype) {
+          state.isLoading.getRequisitionHistoryExportDataList = true;
+        } else {
+          state.isLoading.getRequisitionHistoryList = true;
+        }
       })
       .addCase(getRequisitionHistoryThunk.fulfilled, (state, action) => {
-        state.isLoading.getRequisitionHistoryList = false;
         if (action.payload.isExport) {
           state.requisitionHistoryExportDataList = action.payload.data;
+          state.isLoading.getRequisitionHistoryExportDataList = false;
         } else {
+          state.isLoading.getRequisitionHistoryList = false;
           state.requisitionHistoryList = action.payload.data;
         }
         state.successMsg.getRequisitionHistoryList = action.payload.msg;
       })
       .addCase(getRequisitionHistoryThunk.rejected, (state, action) => {
         state.isLoading.getRequisitionHistoryList = false;
+        state.isLoading.getRequisitionHistoryExportDataList = false;
         state.requisitionHistoryList = [];
         state.requisitionHistoryExportDataList = [];
         state.errorMsg.getRequisitionHistoryList = action.error.message;

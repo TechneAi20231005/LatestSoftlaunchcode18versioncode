@@ -34,7 +34,8 @@ function VendorExportReport() {
   } = useSelector(state => state?.poCommon);
   const {
     requisitionHistoryList,
-    isLoading: { getRequisitionHistoryList },
+    requisitionHistoryExportDataList,
+    isLoading: { getRequisitionHistoryList, getRequisitionHistoryExportDataList },
   } = useSelector(state => state?.requisitionHistory);
 
   //  table column data
@@ -145,7 +146,22 @@ function VendorExportReport() {
         },
       }),
     );
+    setPaginationData({ currentFilterData: {} });
     restFunc();
+  };
+
+  const exportDataHandler = () => {
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          ...paginationData.currentFilterData,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'venderExportReport',
+          datatype: 'ALL',
+        },
+      }),
+    );
   };
 
   // // life cycle
@@ -224,9 +240,13 @@ function VendorExportReport() {
                   </button>
                   <ExportToExcel
                     className="btn btn-danger"
-                    apiData={transformDataForExport(requisitionHistoryList?.data)}
+                    apiData={transformDataForExport(requisitionHistoryExportDataList?.data)}
                     fileName="Vendor export report"
-                    disabled={!requisitionHistoryList?.data?.length}
+                    disabled={
+                      !requisitionHistoryList?.data?.length || getRequisitionHistoryExportDataList
+                    }
+                    isLoading={getRequisitionHistoryExportDataList}
+                    onApiClick={exportDataHandler}
                   />
                 </Col>
               </Row>
@@ -240,7 +260,7 @@ function VendorExportReport() {
           progressComponent={<TableLoadingSkelton />}
           pagination
           paginationServer
-          paginationTotalRows={paginationData.rowPerPage * requisitionHistoryList?.total_pages}
+          paginationTotalRows={requisitionHistoryList?.total_count}
           paginationDefaultPage={paginationData.currentPage}
           onChangePage={page => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={newPageSize => {

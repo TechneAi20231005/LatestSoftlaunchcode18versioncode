@@ -22,7 +22,12 @@ function OrderQuantityReport() {
 
   // // local state
   const [openPoOrderQanFilterModal, setOpenPoOrderQanFilterModal] = useState(false);
-  const [modifiedRequisitionHistoryList, setModifiedRequisitionHistoryList] = useState([]);
+  const [modifiedRequisition, setModifiedRequisition] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { grid: [], export: [] },
+  );
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -37,7 +42,8 @@ function OrderQuantityReport() {
   } = useSelector(state => state?.poCommon);
   const {
     requisitionHistoryList,
-    isLoading: { getRequisitionHistoryList },
+    requisitionHistoryExportDataList,
+    isLoading: { getRequisitionHistoryList, getRequisitionHistoryExportDataList },
   } = useSelector(state => state?.requisitionHistory);
 
   //  table column data
@@ -148,23 +154,53 @@ function OrderQuantityReport() {
         },
       }),
     );
+    setPaginationData({ currentFilterData: {} });
     restFunc();
+  };
+
+  const exportDataHandler = () => {
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          ...paginationData.currentFilterData,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'orderQuantityReport',
+          datatype: 'ALL',
+        },
+      }),
+    );
   };
 
   // //modifying data and  calculating total order qty
   useEffect(() => {
     if (requisitionHistoryList?.data?.length > 0) {
-      setModifiedRequisitionHistoryList([
-        ...requisitionHistoryList?.data,
-        {
-          order_date: 'Total',
-          new_qty: requisitionHistoryList?.total_qty,
-        },
-      ]);
+      setModifiedRequisition({
+        grid: [
+          ...requisitionHistoryList?.data,
+          {
+            order_date: 'Total',
+            new_qty: requisitionHistoryList?.total_qty,
+          },
+        ],
+      });
     } else {
-      setModifiedRequisitionHistoryList([]);
+      setModifiedRequisition({ grid: [] });
     }
-  }, [requisitionHistoryList?.data]);
+    if (requisitionHistoryExportDataList?.data?.length > 0) {
+      setModifiedRequisition({
+        export: [
+          ...requisitionHistoryExportDataList?.data,
+          {
+            order_date: 'Total',
+            new_qty: requisitionHistoryExportDataList?.total_qty,
+          },
+        ],
+      });
+    } else {
+      setModifiedRequisition({ export: [] });
+    }
+  }, [requisitionHistoryList?.data, requisitionHistoryExportDataList?.data]);
 
   // // life cycle
   useEffect(() => {
@@ -243,9 +279,13 @@ function OrderQuantityReport() {
                     </button>
                     <ExportToExcel
                       className="btn btn-danger"
-                      apiData={transformDataForExport(modifiedRequisitionHistoryList)}
+                      apiData={transformDataForExport(modifiedRequisition?.export)}
                       fileName="Order Qty report"
-                      disabled={!requisitionHistoryList?.data?.length}
+                      disabled={
+                        !requisitionHistoryList?.data?.length || getRequisitionHistoryExportDataList
+                      }
+                      isLoading={getRequisitionHistoryExportDataList}
+                      onApiClick={exportDataHandler}
                     />
                     {/* <button
                     className="btn btn-sm btn-primary text-white px-3"
@@ -262,12 +302,12 @@ function OrderQuantityReport() {
           </Formik>
           <DataTable
             columns={columns}
-            data={modifiedRequisitionHistoryList}
+            data={modifiedRequisition?.grid}
             progressPending={getRequisitionHistoryList}
             progressComponent={<TableLoadingSkelton />}
             pagination
             paginationServer
-            paginationTotalRows={paginationData.rowPerPage * requisitionHistoryList?.total_pages}
+            paginationTotalRows={requisitionHistoryList?.total_count}
             paginationDefaultPage={paginationData.currentPage}
             onChangePage={page => setPaginationData({ currentPage: page })}
             onChangeRowsPerPage={newPageSize => {
