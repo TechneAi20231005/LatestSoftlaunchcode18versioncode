@@ -194,7 +194,7 @@ export default function Header() {
               }
             }}
           >
-            <span className="fa fa-bars"></span>
+            <span className="fa fa-bars my-4"></span>
           </button>
 
           <div className="h-right d-flex align-items-center mr-2 mr-lg-0 order-1">
@@ -214,7 +214,7 @@ export default function Header() {
                   style={{ zIndex: -200 }}
                 >
                   <i
-                    className="icofont-alarm fs-4"
+                    className="icofont-alarm fs-4 "
                     style={{ zIndex: -100, color: "#484c7f" }}
                   >
                     <span

@@ -23254,6 +23254,14 @@ body.rtl_mode
   animation-delay: 0.05s;
 }
 
+/* Media query for screens smaller than 768px (typical mobile devices) */
+@media (max-width: 767px) {
+  .dropdown-animation {
+    margin-left: 60px;
+    margin-top: 45px; /* Apply margin-top only for mobile devices */
+  }
+}
+
 @-webkit-keyframes eliment-animation {
   to {
     opacity: 1;
