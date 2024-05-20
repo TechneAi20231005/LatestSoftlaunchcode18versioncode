@@ -11,7 +11,7 @@ export const interViewProcessValidation = Yup.object().shape({
       }
       return true;
     })
-    .matches(ALPHA_NUMERIC_REGEX, 'Supporting remark name must be alphanumeric')
+    .matches(ALPHA_NUMERIC_REGEX, 'Specify other remark name must be alphanumeric')
     .min(2, 'Specify other remarks must be at least 2 characters')
     .max(1000, 'Specify other remarks must be at most 1000 characters'),
 });

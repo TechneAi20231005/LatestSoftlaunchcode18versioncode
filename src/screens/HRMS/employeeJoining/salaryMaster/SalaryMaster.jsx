@@ -10,7 +10,8 @@ import AddEditSalaryModal from './AddEditSalaryModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getSalaryMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/salaryMaster';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../../utils/customFunction';
+import { customSearchHandler, formatNumberWithCurrency } from '../../../../utils/customFunction';
+
 function SalaryMaster() {
   // // initial state
   const dispatch = useDispatch();
@@ -61,10 +62,6 @@ function SalaryMaster() {
     {
       name: 'Location',
       selector: row =>
-        row?.locations?.map(location =>
-          location?.location_name ? `${location?.location_name}, ` : '--',
-        ),
-      selector: row =>
         row?.locations?.length ? (
           <OverlayTrigger
             placement="top"
@@ -96,7 +93,7 @@ function SalaryMaster() {
     },
     {
       name: 'Salary (Net)',
-      selector: row => row?.max_salary || '--',
+      selector: row => (row?.max_salary ? formatNumberWithCurrency(row?.max_salary) : '--'),
       sortable: true,
       width: '175px',
     },
@@ -212,8 +209,8 @@ function SalaryMaster() {
             );
           }}
         />
-        <Row>
-          <Col xs={12} md={8} xxl={9}>
+        <Row className="row_gap_3">
+          <Col xs={12} md={7} xxl={8}>
             <input
               type="search"
               name="interview_search"
@@ -223,7 +220,7 @@ function SalaryMaster() {
               className="form-control"
             />
           </Col>
-          <Col xs={12} md={4} xxl={3} className="text-end mt-2 mt-md-0">
+          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
             <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
               <i className="icofont-search-1 " /> Search
             </button>

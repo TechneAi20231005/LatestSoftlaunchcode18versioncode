@@ -10,7 +10,6 @@ import {
   CustomDropdown,
   CustomInput,
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
-import { NumbersOnly } from '../../../../../../../../../components/Utilities/Validation';
 import { getBranchMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getDesignationData } from '../../../../../../../../Dashboard/DashboardAction';
 import { jobOfferValidation } from './validation/jobOfferValidation';
@@ -53,8 +52,6 @@ function JobOfferOnBoarding() {
     state => state?.interViewProcess,
   );
 
-  // console.log(interviewProcessData);
-
   // //  local state
   const [formValue, setFormValue] = useState('');
   const [clickFor, setClickFor] = useState('');
@@ -68,25 +65,25 @@ function JobOfferOnBoarding() {
       ? salaryOfferedByHrAndSrHrData?.[0]?.location_id || ''
       : '',
     relevant_experience: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.relevant_experience || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.relevant_experience ?? ''
       : '',
     experience_level: salaryOfferedByHrAndSrHrData.length
       ? salaryOfferedByHrAndSrHrData?.[0]?.experience_level || ''
       : '',
     current_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.current_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.current_salary ?? ''
       : '',
     max_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.max_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.max_salary ?? ''
       : '',
     preferred_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.preferred_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.preferred_salary ?? ''
       : '',
     hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary ?? ''
       : '',
     sr_hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary || ''
+      ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ?? ''
       : '',
     remark_id: '',
     other_remark: '',
@@ -333,7 +330,6 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          // onKeyDown={NumbersOnly}
                           name="current_salary"
                           label="Current Salary"
                           placeholder="Enter current salary"
@@ -346,7 +342,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="max_salary"
                         label="Max Salary(In Hand)"
                         value={salaryFiltered?.max_salary || ''}
@@ -359,7 +354,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="preferred_salary"
                         label="Preferred Salary"
                         placeholder="Enter preferred salary"
@@ -371,7 +365,6 @@ function JobOfferOnBoarding() {
                     <Col sm={6} md={6} lg={4}>
                       <Field
                         component={CustomCurrencyInput}
-                        // onKeyDown={NumbersOnly}
                         name="hr_negotiable_salary"
                         label="Negotiable Salary"
                         placeholder="Enter negotiable salary"
@@ -390,7 +383,6 @@ function JobOfferOnBoarding() {
                       <Col sm={6} md={6} lg={4}>
                         <Field
                           component={CustomCurrencyInput}
-                          // onKeyDown={NumbersOnly}
                           name="sr_hr_negotiable_salary"
                           label="Negotiable Salary From Super Admin"
                           placeholder="Enter negotiable salary"

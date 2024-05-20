@@ -1,0 +1,36 @@
+.po_order_quantity_report_container {
+  .rdt_TableRow {
+    &:last-child {
+      .rdt_TableCell {
+        &:first-child,
+        &:last-child {
+          div {
+            font-weight: 700;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .po_order_quantity_report_container {
+    .btn_container {
+      justify-content: space-between;
+      button {
+        width: 100%;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 426px) {
+  .po_order_quantity_report_container {
+    h3 {
+      font-size: 14px;
+    }
+  }
+}

@@ -18,10 +18,8 @@ function RemarkHistory() {
 
   // // life cycle
   useEffect(() => {
-    if (!remarkHistoryList?.length) {
-      dispatch(getRemarkHistoryListThunk({ currentId: currentCandidateId }));
-    }
-  }, []);
+    dispatch(getRemarkHistoryListThunk({ currentId: currentCandidateId }));
+  }, [currentCandidateId]);
   return (
     <Container fluid className="employee_joining_details_container">
       <h5 className="mb-0 text-primary">Remark History</h5>

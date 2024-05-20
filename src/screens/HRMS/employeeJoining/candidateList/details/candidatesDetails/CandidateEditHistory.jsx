@@ -1,9 +1,11 @@
 import React from 'react';
 import DataTable from 'react-data-table-component';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
 // // static import
 import TableLoadingSkelton from '../../../../../../components/custom/loader/TableLoadingSkelton';
+import { formatNumberWithCurrency } from '../../../../../../utils/customFunction';
 
 function CandidateEditHistory() {
   // // redux state
@@ -27,14 +29,34 @@ function CandidateEditHistory() {
     {
       name: 'Preferred Role',
       sortable: true,
-      selector: row => row?.preferred_role || '--',
+      selector: row => row?.designation || '--',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Preferred Location',
       sortable: true,
-      selector: row => row?.preferred_location || '--',
+      selector: row =>
+        row?.locations?.length ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>
+                {row?.locations?.map(location =>
+                  location?.location_name ? `${location?.location_name}, ` : '--',
+                )}
+              </Tooltip>
+            }
+          >
+            <span>
+              {row?.locations?.map(location =>
+                location?.location_name ? `${location?.location_name}, ` : '--',
+              )}
+            </span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
       width: '150px',
     },
@@ -48,14 +70,18 @@ function CandidateEditHistory() {
     {
       name: 'Current Monthly Salary',
       sortable: true,
-      selector: row => row?.current_monthly_salary || '--',
+      selector: row =>
+        row?.current_monthly_salary ? formatNumberWithCurrency(row?.current_monthly_salary) : '--',
       sortable: true,
       width: '175px',
     },
     {
       name: 'Expected Monthly Salary (Net)',
       sortable: true,
-      selector: row => row?.expected_monthly_salary || '--',
+      selector: row =>
+        row?.expected_monthly_salary
+          ? formatNumberWithCurrency(row?.expected_monthly_salary)
+          : '--',
       sortable: true,
       width: '215px',
     },

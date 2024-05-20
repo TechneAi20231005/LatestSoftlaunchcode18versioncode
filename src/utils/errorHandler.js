@@ -6,7 +6,7 @@ export default function errorHandler(response = '') {
       toast.error(response.data.message);
     }
     if (response.status === 500) {
-      toast.error(response.data.message ?? 'Server error! Please try again.');
+      toast.error('Server error! Please try again later.');
     }
     if (response.status === 400) {
       toast.error(response.data.message);
@@ -22,9 +22,9 @@ export default function errorHandler(response = '') {
       toast.error(response.data.message.join('\n'));
     }
     if (response.data.message === undefined || response.data.message === '') {
-      toast.error('Server error! Please try again.');
+      toast.error('Something went wrong! Please try again later.');
     }
   } else {
-    toast.error('Something went wrong! Please try again.');
+    toast.error('Something went wrong! Please try again later.');
   }
 }

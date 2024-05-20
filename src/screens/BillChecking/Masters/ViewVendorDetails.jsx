@@ -29,6 +29,8 @@ const ViewVendorDetails = ({ match }) => {
   const { id } = useParams();
   const [data, setData] = useState(null);
 
+  
+
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
@@ -574,14 +576,15 @@ const ViewVendorDetails = ({ match }) => {
                   <label className="form-label font-weight-bold">
                     Consider In Payment :
                   </label>
-                  <select
+                  <input
                     type="text"
                     className="form-control form-control-sm"
                     id="consider_in_payment"
                     name="consider_in_payment"
                     disabled
+                    value={data && data?.consider_in_payment}
                   >
-                    <option value="">SELECT...</option>
+                    {/* <option value="">SELECT...</option>
                     <option
                       selected={data && data.consider_in_payment == "YES"}
                       value="YES"
@@ -601,8 +604,8 @@ const ViewVendorDetails = ({ match }) => {
                       value="PETTY_CASH"
                     >
                       PETTY CASH
-                    </option>
-                  </select>
+                    </option> */}
+                  </input>
                 </div>
 
                 <div className="col-sm-3 mt-4">

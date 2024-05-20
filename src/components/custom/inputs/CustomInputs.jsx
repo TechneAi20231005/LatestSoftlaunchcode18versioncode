@@ -1,6 +1,8 @@
 import React from 'react';
 import { useFormikContext, getIn } from 'formik';
 import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import './style.scss';
 
@@ -31,10 +33,12 @@ export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) =
 
   return (
     <div className={`${props.styleData} space-y-10 ${props.pswClassName}`}>
-      <label>
-        {props.label}
-        {props.requiredField && <span className="mendatory_sign">*</span>}
-      </label>
+      {!props.withOutLabel && (
+        <label>
+          {props.label}
+          {props.requiredField && <span className="mendatory_sign">*</span>}
+        </label>
+      )}
       <div className="psw_input_container">
         <input
           {...field}
@@ -168,27 +172,25 @@ export const CustomReactSelect = ({
     optionsWithOther = [...options, { label: 'Other', value: 'other' }];
   }
   return (
-    <>
-      <div className={props.styleData + ' max_250'} style={props.style}>
-        {!props.withOutLabel && (
-          <label>
-            {props.label}
-            {props.requiredField && <span className="mendatory_sign">*</span>}
-          </label>
-        )}
-        <Select
-          name={field.name}
-          value={getValue()}
-          onChange={onChange}
-          placeholder={props.placeholder}
-          options={props.addOtherOption ? optionsWithOther : options}
-          isMulti={isMulti}
-          className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
-          isDisabled={disabled}
-        />
-        {error && touch && <div className="invalid-feedback">{error}</div>}
-      </div>
-    </>
+    <div className={props.styleData} style={props.style}>
+      {!props.withOutLabel && (
+        <label className="sss">
+          {props.label}
+          {props.requiredField && <span className="mendatory_sign">*</span>}
+        </label>
+      )}
+      <Select
+        name={field.name}
+        value={getValue()}
+        onChange={onChange}
+        placeholder={props.placeholder}
+        options={props.addOtherOption ? optionsWithOther : options}
+        isMulti={isMulti}
+        className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+        isDisabled={disabled}
+      />
+      {error && touch && <div className="invalid-feedback">{error}</div>}
+    </div>
   );
 };
 
@@ -254,5 +256,59 @@ export const CustomCheckbox = ({ field, form: { touched, errors }, ...props }) =
       </div>
       {error && touch && <div className="invalid-feedback d-block mt-0">{error}</div>}
     </>
+  );
+};
+
+export const CustomReactDatePicker = ({
+  field,
+  form: { touched, errors },
+  range = false,
+  ...props
+}) => {
+  const touch = touched[field.name];
+  const error = errors[field.name];
+
+  return (
+    <div className={`${props.styleData} space-y-10`}>
+      {!props.withOutLabel && (
+        <label>
+          {props.label}
+          {props.requiredField && <span className="mendatory_sign">*</span>}
+        </label>
+      )}
+      {range ? (
+        <DatePicker
+          {...props}
+          startDate={field.value[0] ? new Date(field.value[0]) : null}
+          endDate={field.value[1] ? new Date(field.value[1]) : null}
+          selectsRange
+          onChange={dates => {
+            field.onChange({
+              target: {
+                name: field.name,
+                value: dates,
+              },
+            });
+          }}
+          className={`form-control ${error && touch ? 'is-invalid' : ''} ${props.inputClassName}`}
+        />
+      ) : (
+        <DatePicker
+          {...field}
+          {...props}
+          selected={field.value ? new Date(field.value) : null}
+          onChange={date => {
+            field.onChange({
+              target: {
+                name: field.name,
+                value: date,
+              },
+            });
+          }}
+          className={`form-control ${error && touch ? 'is-invalid' : ''} ${props.inputClassName}`}
+        />
+      )}
+      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+    </div>
   );
 };

@@ -15,7 +15,7 @@ import { RenderIf } from '../../../../../../utils';
 import CandidateEditHistory from './CandidateEditHistory';
 import { editCandidatesValidation } from './validation/editCandidatesDetails';
 import CustomAlertModal from '../../../../../../components/custom/modal/CustomAlertModal';
-import { NumbersOnly } from '../../../../../../components/Utilities/Validation';
+import { FormSkeleton } from '../../../../../../components/custom/loader';
 import {
   editCandidatesMasterThunk,
   getCandidatesDetailsThunk,
@@ -149,202 +149,208 @@ function CandidatesDetails() {
         <i className="icofont-edit me-1 cp" onClick={() => setCurrentMode('EDIT')} />
       </div>
       <hr className="primary_divider mt-1" />
-      <Formik
-        initialValues={editCandidateInitialValue}
-        enableReinitialize
-        validationSchema={editCandidatesValidation}
-        onSubmit={values => {
-          setOpenConfirmModal({ open: true, formData: values });
-        }}
-      >
-        {({ touched, errors, setFieldValue, resetForm }) => (
-          <Form>
-            <Stack gap={3}>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    data={sourceType}
-                    component={CustomDropdown}
-                    name="source_id"
-                    label="Source"
-                    placeholder={sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'}
-                    disabled
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomInput}
-                    name="full_name"
-                    label="Full Name"
-                    placeholder="Enter full name"
-                    disabled
-                  />
-                </Col>
-              </Row>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomInput}
-                    name="dob"
-                    type="date"
-                    label="Date Of Birth"
-                    disabled
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <Field
-                    options={preferredRole}
-                    component={CustomReactSelect}
-                    name="designation_id"
-                    label="Preferred Role"
-                    placeholder={status === 'loading' ? 'Loading...' : 'Select'}
-                    disabled
-                  />
-                </Col>
-              </Row>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    options={preferredLocation}
-                    component={CustomReactSelect}
-                    name="location_id"
-                    label="Preferred Location"
-                    placeholder={branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'}
-                    isMulti
-                    disabled
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomInput}
-                    name="mobile_no"
-                    label="Phone Number"
-                    placeholder="Enter contact number"
-                    type="number"
-                    disabled
-                  />
-                </Col>
-              </Row>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomInput}
-                    name="email"
-                    label="Email"
-                    placeholder="Enter email address"
-                    disabled
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <Field
-                    data={experienceLevel}
-                    component={CustomDropdown}
-                    name="relevant_experience"
-                    label="Current Years Of Work Experience"
-                    placeholder="Select"
-                    requiredField
-                    disabled={currentMode === 'VIEW'}
-                  />
-                </Col>
-              </Row>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomCurrencyInput}
-                    // onKeyDown={NumbersOnly}
-                    name="expected_ctc"
-                    label="Expected Monthly Salary (Net)"
-                    placeholder="Enter expected monthly salary"
-                    type="number"
-                    disabled={currentMode === 'VIEW'}
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomCurrencyInput}
-                    // onKeyDown={NumbersOnly}
-                    name="current_ctc"
-                    label="Current Monthly Salary"
-                    placeholder="Enter current monthly salary"
-                    type="number"
-                    disabled={currentMode === 'VIEW'}
-                  />
-                </Col>
-              </Row>
-              <Row className="gap-3 gap-sm-0">
-                <Col sm={6} md={6}>
-                  <Field
-                    component={CustomInput}
-                    name="notice_period"
-                    label="Notice Period (In days)"
-                    placeholder="Enter notice period in days"
-                    type="number"
-                    disabled={currentMode === 'VIEW'}
-                  />
-                </Col>
-                <Col sm={6} md={6}>
-                  <label>
-                    Resume
-                    {/* <span className="mendatory_sign">*</span> */}
-                  </label>
-                  {currentMode === 'VIEW' ? (
-                    <div>
-                      {details?.attachments.length ? (
-                        details?.attachments?.map((fileData, index) => (
-                          <a
-                            href={`${REACT_APP_ATTACHMENT_URL}/${fileData}`}
-                            target="_blank"
-                            key={index}
-                          >
-                            File-{index + 1}, &nbsp;
-                          </a>
-                        ))
-                      ) : (
-                        <small className="opacity-75">N/A</small>
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      <input
-                        type="file"
-                        name="resume_path"
-                        disabled
-                        className={`form-control ${
-                          errors.resume_path && touched.resume_path ? 'is-invalid' : ''
-                        }`}
-                        onChange={event => {
-                          setFieldValue('resume_path', event.currentTarget.files[0]);
-                        }}
-                        accept=".jpeg, .jpg, .png, .pdf, .docx"
-                      />
-                      <RenderIf render={errors.resume_path && touched.resume_path}>
-                        <div className="invalid-feedback">{errors.resume_path}</div>
-                      </RenderIf>
-                    </>
-                  )}
-                </Col>
-              </Row>
-            </Stack>
-            <RenderIf render={currentMode === 'EDIT'}>
-              <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit">
-                  Update
-                </button>
-                <button
-                  className="btn btn-shadow-light px-3"
-                  type="button"
-                  onClick={() => {
-                    setCurrentMode('VIEW');
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </RenderIf>
-          </Form>
-        )}
-      </Formik>
+      {isLoading?.getCandidatesDetailsData ? (
+        <FormSkeleton columnLength={2} />
+      ) : (
+        <Formik
+          initialValues={editCandidateInitialValue}
+          enableReinitialize
+          validationSchema={editCandidatesValidation}
+          onSubmit={values => {
+            setOpenConfirmModal({ open: true, formData: values });
+          }}
+        >
+          {({ touched, errors, setFieldValue, resetForm, dirty }) => (
+            <Form>
+              <Stack gap={3}>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      data={sourceType}
+                      component={CustomDropdown}
+                      name="source_id"
+                      label="Source"
+                      placeholder={
+                        sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'
+                      }
+                      disabled
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomInput}
+                      name="full_name"
+                      label="Full Name"
+                      placeholder="Enter full name"
+                      disabled
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomInput}
+                      name="dob"
+                      type="date"
+                      label="Date Of Birth"
+                      disabled
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Field
+                      options={preferredRole}
+                      component={CustomReactSelect}
+                      name="designation_id"
+                      label="Preferred Role"
+                      placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      options={preferredLocation}
+                      component={CustomReactSelect}
+                      name="location_id"
+                      label="Preferred Location"
+                      placeholder={
+                        branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                      }
+                      isMulti
+                      disabled
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomInput}
+                      name="mobile_no"
+                      label="Phone Number"
+                      placeholder="Enter contact number"
+                      type="number"
+                      disabled
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomInput}
+                      name="email"
+                      label="Email"
+                      placeholder="Enter email address"
+                      disabled
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Field
+                      data={experienceLevel}
+                      component={CustomDropdown}
+                      name="relevant_experience"
+                      label="Current Years Of Work Experience"
+                      placeholder="Select"
+                      requiredField
+                      disabled={currentMode === 'VIEW'}
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomCurrencyInput}
+                      name="expected_ctc"
+                      label="Expected Monthly Salary (Net)"
+                      placeholder="Enter expected monthly salary"
+                      type="number"
+                      disabled={currentMode === 'VIEW'}
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomCurrencyInput}
+                      name="current_ctc"
+                      label="Current Monthly Salary"
+                      placeholder="Enter current monthly salary"
+                      type="number"
+                      disabled={currentMode === 'VIEW'}
+                    />
+                  </Col>
+                </Row>
+                <Row className="gap-3 gap-sm-0">
+                  <Col sm={6} md={6}>
+                    <Field
+                      component={CustomInput}
+                      name="notice_period"
+                      label="Notice Period (In days)"
+                      placeholder="Enter notice period in days"
+                      type="number"
+                      disabled={currentMode === 'VIEW'}
+                    />
+                  </Col>
+                  <Col sm={6} md={6}>
+                    <label>
+                      Resume
+                      {/* <span className="mendatory_sign">*</span> */}
+                    </label>
+                    {currentMode === 'VIEW' ? (
+                      <div>
+                        {details?.attachments.length ? (
+                          details?.attachments?.map((fileData, index) => (
+                            <a
+                              href={`${REACT_APP_ATTACHMENT_URL}${fileData}`}
+                              target="_blank"
+                              key={index}
+                            >
+                              File-{index + 1}, &nbsp;
+                            </a>
+                          ))
+                        ) : (
+                          <small className="opacity-75">N/A</small>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <input
+                          type="file"
+                          name="resume_path"
+                          disabled
+                          className={`form-control ${
+                            errors.resume_path && touched.resume_path ? 'is-invalid' : ''
+                          }`}
+                          onChange={event => {
+                            setFieldValue('resume_path', event.currentTarget.files[0]);
+                          }}
+                          accept=".jpeg, .jpg, .png, .pdf, .docx"
+                        />
+                        <RenderIf render={errors.resume_path && touched.resume_path}>
+                          <div className="invalid-feedback">{errors.resume_path}</div>
+                        </RenderIf>
+                      </>
+                    )}
+                  </Col>
+                </Row>
+              </Stack>
+              <RenderIf render={currentMode === 'EDIT'}>
+                <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">
+                  <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
+                    Update
+                  </button>
+                  <button
+                    className="btn btn-shadow-light px-3"
+                    type="button"
+                    onClick={() => {
+                      setCurrentMode('VIEW');
+                      resetForm();
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </RenderIf>
+            </Form>
+          )}
+        </Formik>
+      )}
 
       {/* Add edit branch master confirmation modal */}
       <CustomAlertModal

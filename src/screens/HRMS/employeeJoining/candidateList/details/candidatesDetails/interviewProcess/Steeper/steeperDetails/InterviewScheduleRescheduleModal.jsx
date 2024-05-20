@@ -47,7 +47,6 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
     );
   };
 
-  console.log(currentInterviewStepData?.scheduled_datetime);
   return (
     <CustomModal show={open} title="Select Interview Slot" width="sm" onClose={onClose}>
       <Formik

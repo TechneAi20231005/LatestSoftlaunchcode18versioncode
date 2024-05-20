@@ -44,6 +44,10 @@
   color: var(--primary-color);
 }
 
+.row_gap_3 {
+  row-gap: 8px;
+}
+
 .skeleton {
   height: 30px;
   border-radius: 5px;
