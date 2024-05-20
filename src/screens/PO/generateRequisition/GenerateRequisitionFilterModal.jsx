@@ -111,6 +111,7 @@ function GenerateRequisitionFilterModal({
 
   const handleReset = ({ restFun }) => {
     restFun();
+    setFilterModalData({});
     dispatch(
       getGenerateRequisitionListThunk({
         limit: paginationData.rowPerPage,
@@ -227,7 +228,7 @@ function GenerateRequisitionFilterModal({
               <button
                 className="btn btn-info text-white"
                 type="reset"
-                disabled={!dirty}
+                disabled={!dirty && !Object.keys(prevFilterModalData).length}
                 onClick={() => handleReset({ restFun: resetForm })}
               >
                 <i className="icofont-refresh text-white" /> Reset
