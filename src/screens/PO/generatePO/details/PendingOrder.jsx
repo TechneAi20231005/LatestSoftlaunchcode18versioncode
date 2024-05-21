@@ -20,6 +20,7 @@ import {
   addUserPendingOrderRequest,
 } from '../../../../redux/slices/po/generatePo';
 import { RenderIf } from '../../../../utils';
+import { NumbersOnly } from '../../../../components/Utilities/Validation';
 import './style.scss';
 
 function PendingOrder() {
@@ -81,6 +82,7 @@ function PendingOrder() {
             value={orderQuantityValues[row.id] || ''}
             onChange={e => handleOrderQuantityChange(row.id, e.target.value)}
             className="form-control w-100"
+            onKeyDown={NumbersOnly}
           />
         </Col>
       ),
@@ -178,6 +180,7 @@ function PendingOrder() {
             item => item?.category === filterFormValue?.selectedItemsCategory,
           )?.item,
           itemName: filterFormValue?.selectedItemsCategory,
+          type: '',
         }),
       );
     }

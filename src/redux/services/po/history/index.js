@@ -9,7 +9,11 @@ export const getRequisitionHistoryThunk = createAsyncThunk(
       const response = await customAxios.post(`poRequisition/getPoRequisitionData`, filterData);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return {
+            data: response?.data,
+            msg: response?.data?.message,
+            isExport: filterData?.datatype ? true : false,
+          };
         } else {
           errorHandler(response);
         }
