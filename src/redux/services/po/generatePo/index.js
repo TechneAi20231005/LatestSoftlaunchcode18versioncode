@@ -49,12 +49,13 @@ export const createPendingOrderThunk = createAsyncThunk(
 
 export const poBulkUploadFileExportBeCheckThunk = createAsyncThunk(
   'po/poBulkUploadFileExportBeCheck',
-  async () => {
+  async ({ onSuccessHandler }) => {
     try {
       const response = await customAxios.post(`poRequisition/exportData`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           toast.success(response?.data?.message);
+          onSuccessHandler();
           return response?.data?.message;
         } else {
           errorHandler(response);

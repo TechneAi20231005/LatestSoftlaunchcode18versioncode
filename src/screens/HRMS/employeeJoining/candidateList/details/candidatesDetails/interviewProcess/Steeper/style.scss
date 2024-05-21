@@ -1,6 +1,7 @@
 .stepper_wrapper {
   display: flex;
   justify-content: space-between;
+  overflow-x: auto;
   margin-bottom: 20px;
   .stepper_item {
     position: relative;
@@ -45,6 +46,9 @@
       .icofont-sand-clock {
         font-size: 15px;
       }
+    }
+    p {
+      min-width: 150px;
     }
   }
 }

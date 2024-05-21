@@ -29,7 +29,7 @@ export const useJobOfferSalaryFiltered = (data, designationId, locationId, exper
       const filtered = data?.find(
         item =>
           parseInt(item.designation_id) === +designationId &&
-          item.location_id.includes(+locationId) &&
+          item.location_id?.includes(+locationId) &&
           item.experience_level === experienceLevel,
       );
       setFilteredData(filtered);

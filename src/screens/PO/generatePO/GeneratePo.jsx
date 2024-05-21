@@ -58,13 +58,19 @@ function GeneratePo() {
   };
 
   const handelBeExportCheck = () => {
-    dispatch(poBulkUploadFileExportBeCheckThunk());
+    dispatch(
+      poBulkUploadFileExportBeCheckThunk({
+        onSuccessHandler: () => {
+          dispatch(getRequisitionHistoryThunk({ filterData: { type: 'export' } }));
+        },
+      }),
+    );
   };
 
   // // life cycle
   useEffect(() => {
     dispatch(getVenderListThunk());
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+    dispatch(getRequisitionHistoryThunk({ filterData: { type: 'export' } }));
   }, []);
 
   return (
@@ -74,9 +80,9 @@ function GeneratePo() {
         <ExportToExcel
           className="btn btn-dark ms-0"
           buttonTitle="PO Bulk Upload File"
-          apiData={transformDataForExport(requisitionHistoryList)}
+          apiData={transformDataForExport(requisitionHistoryList?.data)}
           fileName="PO Bulk Upload File Records"
-          disabled={!requisitionHistoryList.length || getRequisitionHistoryList}
+          disabled={!requisitionHistoryList?.data?.length || getRequisitionHistoryList}
           onClickHandler={handelBeExportCheck}
         />
         <Formik
@@ -84,7 +90,7 @@ function GeneratePo() {
           enableReinitialize
           validationSchema={generatePoFilterValidation}
           onSubmit={values => {
-            navigate(`venderName=${values?.vender_name}`, { state: { generatePoFilter: values } });
+            navigate(`po`, { state: { generatePoFilter: values } });
             dispatch(resetUserAddedOrderList());
           }}
         >
