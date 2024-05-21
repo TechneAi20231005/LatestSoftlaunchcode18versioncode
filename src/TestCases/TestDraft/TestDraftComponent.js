@@ -10,6 +10,7 @@ import ReviewedTestDraftComponent from "./ReviewedTestDraftComponent";
 import ReviewedTestDraftDetails from "./ReviewedTestDraftDetails";
 import { Astrick } from "../../components/Utilities/Style";
 import { useLocation } from "react-router-dom";
+import DownloadFormatFileModal from "./DownloadFormatFileModal";
 export default function TestDraftComponent() {
   // local state
   const [currentTab, setCurrentTab] = useState("test_draft");
@@ -21,14 +22,14 @@ export default function TestDraftComponent() {
     { label: "Review Test Draft", value: "review_test_draft" },
   ];
 
-  const [modal, setModal] = useState({
+  const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: "",
     modalHeader: "",
   });
-
-  const handleModal = (data) => {
-    setModal(data);
+  console.log("downloadmodal", downloadmodal);
+  const handleDownloadModal = (data) => {
+    setDownloadModal(data);
   };
   return (
     <div className="container-xxl">
@@ -36,40 +37,37 @@ export default function TestDraftComponent() {
         headerTitle="Test Draft"
         renderRight={() => {
           return (
-            <div className="col-md-6 d-flex justify-content-end">
+            <div className="d-flex justify-content-sm-end btn_container">
               <button
-                className="btn btn-primary text-white"
+                className="btn btn-primary text-white me-2"
                 style={{
-                  color: "white",
-                  fontWeight: "600",
+                  // fontWeight: "600",
                   fontFamily: "Open Sans",
                 }}
               >
                 Filter <i className="icofont-filter" />
               </button>
+
               <button
-                className="btn btn btn-set-task w-sm-100"
+                className="btn btn-success text-white me-2"
                 style={{
-                  backgroundColor: " #198754",
-                  color: "white",
-                  fontWeight: "600",
+                  // fontWeight: "600",
                   fontFamily: "Open Sans",
                 }}
                 onClick={(e) => {
-                  handleModal({
+                  handleDownloadModal({
                     showModal: true,
-                    modalData: "", // You can add relevant data here
-                    modalHeader: "Edit Test Case ",
+                    modalData: "",
+                    modalHeader: "Edit Test Case",
                   });
                 }}
               >
                 Download Format File
               </button>
               <button
-                className="btn btn-warning btn-set-task w-sm-100"
+                className="btn btn-warning text-white"
                 style={{
-                  color: "white",
-                  fontWeight: "600",
+                  // fontWeight: "600",
                   fontFamily: "Open Sans",
                 }}
               >
@@ -77,10 +75,8 @@ export default function TestDraftComponent() {
               </button>
               {currentTab === "review_test_draft" && (
                 <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  //   apiData={ExportData}
+                  className="btn btn-danger text-white ms-2"
                   style={{
-                    color: "white",
                     fontWeight: "600",
                     fontFamily: "Open Sans",
                   }}
@@ -105,7 +101,14 @@ export default function TestDraftComponent() {
       <RenderIf render={currentTab === "review_test_draft"}>
         <ReviewedTestDraftDetails />
       </RenderIf>
-      <Modal
+
+      {downloadmodal.showModal === true && (
+        <DownloadFormatFileModal
+          show={downloadmodal}
+          close={() => setDownloadModal(false)}
+        />
+      )}
+      {/* <Modal
         centered
         show={modal.showModal}
         size="lg"
@@ -188,7 +191,7 @@ export default function TestDraftComponent() {
             </button>
           </Modal.Footer>
         </form>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

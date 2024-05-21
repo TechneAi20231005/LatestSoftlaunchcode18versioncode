@@ -1,38 +1,90 @@
-import React, { useEffect } from "react";
-import { Container } from "react-bootstrap";
+import React, { useEffect, useState, useRef } from "react";
+import { Container, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
 import { Link } from "react-router-dom";
 import { _base } from "../../settings/constants";
 
 function ReviewedTestDraftDetails() {
-  // // initial state
   const data = [
     {
       id: 1,
       name: "John Doe",
       age: 30,
       email: "john@example.com",
+      result: "pass",
     },
     {
       id: 2,
       name: "Jane Smith",
       age: 25,
       email: "jane@example.com",
+      result: "fail",
+    },
+    {
+      id: 3,
+      name: "Jane desoza",
+      age: 25,
+      email: "jane@example.com",
+      result: "pass",
+    },
+
+    {
+      id: 4,
+      name: "Jane sing",
+      age: 25,
+      email: "jane@example.com",
+      result: "fail",
     },
     // Add more objects as needed
   ];
 
-  const columns = [
+  const columns = (handleFilterClick) => [
     {
-      name: "Sr. No.",
+      name: (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          Sr. No.
+          <i
+            // onClick={() => handleFilterClick("Sr. No.")}
+            class="icofont-filter"
+          ></i>
+        </div>
+      ),
       selector: (row, index) => index + 1,
       sortable: false,
       width: "80px",
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center" }}>{row.id}</div>
       ),
+    },
+    {
+      name: (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          Module
+          <i
+            className="icofont-filter"
+            style={{ marginLeft: "5px", cursor: "pointer" }}
+            onClick={(e) => handleFilterClick(e, "name")}
+          ></i>
+        </div>
+      ),
+      selector: (row) => row.name,
+      sortable: false,
+      width: "100px",
+    },
+    {
+      name: (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          Submodule
+          <i
+            class="icofont-filter"
+            style={{ marginLeft: "5px", cursor: "pointer" }}
+            onClick={(e) => handleFilterClick(e, "result")}
+          ></i>
+        </div>
+      ),
+      selector: (row) => row.result,
+      sortable: false,
+      width: "150px",
     },
 
     {
@@ -49,12 +101,6 @@ function ReviewedTestDraftDetails() {
           <input type="checkbox" />
         </div>
       ),
-    },
-    {
-      name: "Module",
-      selector: (row) => row.name,
-      sortable: false,
-      width: "100px",
     },
 
     {
@@ -76,18 +122,194 @@ function ReviewedTestDraftDetails() {
       ),
     },
   ];
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [filterColumn, setFilterColumn] = useState(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [filteredData, setFilteredData] = useState(data);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  // const iconRef = useRef(null);
+
+  const handleFilterClick = (event, column) => {
+    const rect = event.target.getBoundingClientRect();
+    setModalPosition({ top: rect.bottom, left: rect.left });
+    setFilterColumn(column);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setFilterColumn(null);
+    // setSelectedFilters([]);
+  };
+
+  const handleApplyFilter = () => {
+    let newData = data;
+    if (selectedFilters.length > 0 && filterColumn) {
+      newData = data.filter((row) =>
+        selectedFilters.includes(row[filterColumn])
+      );
+    }
+    setFilteredData(newData);
+    closeModal();
+  };
+
+  const handleCheckboxChange = (event, value) => {
+    if (event.target.checked) {
+      setSelectedFilters((prev) => [...prev, value]);
+    } else {
+      setSelectedFilters((prev) => prev.filter((filter) => filter !== value));
+    }
+  };
+
+  const handleSelectAll = (event, uniqueValues) => {
+    if (event.target.checked) {
+      setSelectedFilters(uniqueValues);
+    } else {
+      setSelectedFilters([]);
+    }
+  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchRef = useRef();
+
+  // Function to filter rquestData based on search terms
+
+  const filteredUniqueValues = filterColumn
+    ? Array.from(new Set(data.map((row) => row[filterColumn]))).filter(
+        (value) => value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
+
+  const MyModal = ({
+    show,
+    handleClose,
+    handleApply,
+    position,
+    filterColumn,
+    handleCheckboxChange,
+    selectedFilters = [],
+    handleSelectAll,
+    uniqueValues,
+    searchTerm,
+    setSearchTerm,
+  }) => {
+    const [inputFocused, setInputFocused] = useState(false);
+    const searchRef = useRef(null);
+
+    useEffect(() => {
+      if (show && searchRef.current && !inputFocused) {
+        searchRef.current.focus();
+        setInputFocused(true);
+      }
+    }, [show, inputFocused]);
+
+    const allSelected = uniqueValues.every((value) =>
+      selectedFilters.includes(value)
+    );
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: position.top,
+          left: position.left,
+          zIndex: 1050,
+          backgroundColor: "white",
+          border: "1px solid #ccc",
+          padding: "10px",
+          borderRadius: "5px",
+          // width: "300px",
+        }}
+      >
+        <div>
+          <div className="w-100">
+            <input
+              type="text"
+              // id="search"
+              ref={searchRef}
+              placeholder="Search Here"
+              // name="search"
+              className="form-control"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="filterAll"
+              name="filterAll"
+              checked={allSelected}
+              onChange={(e) => handleSelectAll(e, uniqueValues)}
+            />
+            <label
+              style={{ marginLeft: "5px" }}
+              className="mt-2"
+              htmlFor="filterAll"
+            >
+              Select All
+            </label>
+          </div>
+          {uniqueValues.map((value, index) => (
+            <div key={index} className="mx-3">
+              <input
+                type="checkbox"
+                id={`filter${index}`}
+                name={`filter${index}`}
+                checked={selectedFilters.includes(value)}
+                onChange={(e) => handleCheckboxChange(e, value)}
+              />
+              <label style={{ marginLeft: "5px" }} htmlFor={`filter${index}`}>
+                {value}
+              </label>
+            </div>
+          ))}
+          {console.log("selectedFilters", selectedFilters)}
+          <button className="btn btn-primary mt-3" onClick={handleApply}>
+            Apply
+          </button>
+          <button className="btn btn-warning mt-3" onClick={handleClose}>
+            Cancel
+          </button>
+          <button
+            className="btn btn-shadow-light px-3 mt-3"
+            onClick={handleClose}
+          >
+            Clear All
+          </button>
+        </div>
+      </div>
+    );
+  };
   return (
     <>
       <Container fluid className="employee_joining_details_container">
-        <DataTable
-          columns={columns}
-          data={data}
-          defaultSortField="role_id"
-          pagination
-          selectableRows={false}
-          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          highlightOnHover={true}
-        />
+        <div>
+          <DataTable
+            columns={columns(handleFilterClick)}
+            data={filteredData ? filteredData : data}
+            defaultSortField="role_id"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+          {modalIsOpen && (
+            <MyModal
+              show={modalIsOpen}
+              handleClose={closeModal}
+              handleApply={handleApplyFilter}
+              position={modalPosition}
+              filterColumn={filterColumn}
+              handleCheckboxChange={handleCheckboxChange}
+              selectedFilters={selectedFilters}
+              handleSelectAll={handleSelectAll}
+              uniqueValues={filteredUniqueValues}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          )}
+        </div>
       </Container>
     </>
   );

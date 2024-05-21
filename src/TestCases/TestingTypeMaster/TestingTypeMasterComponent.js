@@ -6,6 +6,7 @@ import edit from "../../assets/images/edit.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import { Modal, Form } from "react-bootstrap";
+import AddTestingTypeModal from "./AddTestingTypeModal";
 
 function TestingTypeMasterComponent() {
   // // initial state
@@ -142,79 +143,9 @@ function TestingTypeMasterComponent() {
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
       />
-
-      <Modal
-        centered
-        show={modal.showModal}
-        size="lg"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
-      >
-        <form
-          method="post"
-          // onSubmit={handleBulkUpload}
-        >
-          <Modal.Header>
-            <Modal.Title className="fw-bold text-primary ">
-              Add Testing Type
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="col">
-              <div className="col-md-12 ">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold font-size-16px lh-21.79px mb-0">
-                    Testing Type Title <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    // placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-12 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold mb-0">
-                    Remark
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    // placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              type="button"
-              className="btn btn btn-lg p-2 btn-primary "
-              style={{ width: "100px" }}
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              className="btn btn btn-lg shadow  p-2 text-primary"
-              style={{ backgroundColor: " white", width: "100px" }}
-              onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal>
+      {modal.showModal === true && (
+        <AddTestingTypeModal show={modal} close={() => setModal(false)} />
+      )}
     </div>
   );
 }

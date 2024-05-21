@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Modal, Form } from "react-bootstrap";
+import AddFunctionMasterModal from "./AddFunctionMasterModal";
 
 function FunctionMasterComponent() {
   // // initial state
@@ -142,8 +139,10 @@ function FunctionMasterComponent() {
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
       />
-
-      <Modal
+      {modal.showModal === true && (
+        <AddFunctionMasterModal show={modal} close={() => setModal(false)} />
+      )}
+      {/* <Modal
         centered
         show={modal.showModal}
         size="lg"
@@ -214,7 +213,7 @@ function FunctionMasterComponent() {
             </button>
           </Modal.Footer>
         </form>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

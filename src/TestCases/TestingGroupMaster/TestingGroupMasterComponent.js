@@ -6,6 +6,7 @@ import edit from "../../assets/images/edit.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import { Modal, Form } from "react-bootstrap";
+import AddTestingGroupModal from "./AddTestingGroupModal";
 
 function TestingGroupMasterComponent() {
   // // initial state
@@ -142,8 +143,10 @@ function TestingGroupMasterComponent() {
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
       />
-
-      <Modal
+      {modal.showModal === true && (
+        <AddTestingGroupModal show={modal} close={() => setModal(false)} />
+      )}
+      {/* <Modal
         centered
         show={modal.showModal}
         size="lg"
@@ -214,7 +217,7 @@ function TestingGroupMasterComponent() {
             </button>
           </Modal.Footer>
         </form>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

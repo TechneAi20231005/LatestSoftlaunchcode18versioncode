@@ -7,9 +7,20 @@ import Vector from "../../assets/images/Vector.png";
 import icons_back from "../../assets/images/icons_back.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Modal, Form } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { _base } from "../../settings/constants";
+import { Field, Form, Formik } from "formik";
+import { editTestCaseValidation } from "./Validation/EditTestCase";
+import { Col, Row, Stack, Spinner } from "react-bootstrap";
+import {
+  CustomDropdown,
+  CustomInput,
+  CustomTextArea,
+} from "../../components/custom/inputs/CustomInputs";
+import EditTestCaseModal from "./EditTestCaseModal";
+import DownloadFormatFileModal from "./DownloadFormatFileModal";
+// import { CustomDropdown } from "../../components/custom/inputs/CustomInputs";
 
 function ReviewedTestDraftComponent() {
   const [currentTab, setCurrentTab] = useState("review_test_draft");
@@ -32,6 +43,40 @@ function ReviewedTestDraftComponent() {
   const handleDownloadModal = (data) => {
     setDownloadModal(data);
   };
+
+  // const testCaseInitialValue = {
+  //   project_name: "",
+  //   module_name: "",
+  //   submodule_name: "",
+  //   function: "",
+  //   field: "",
+  //   testing_type: "",
+  //   testing_group: "",
+  //   test_id: "",
+  //   severity: "",
+  //   steps: "",
+  //   test_description: "",
+  //   expected_result: "",
+  // };
+
+  // const handelAddCandidates = (formData) => {
+  //   console.log("form", formData);
+  //   const candidatesData = new FormData();
+  //   candidatesData.append("project_name", formData.project_name);
+  //   candidatesData.append("module_name", formData.module_name);
+  //   candidatesData.append("submodule_name", formData.submodule_name);
+  //   candidatesData.append("function", formData.function);
+  //   candidatesData.append("field", formData.field);
+
+  //   candidatesData.append("testing_type", formData.testing_type);
+
+  //   candidatesData.append("testing_group", formData.testing_group);
+  //   candidatesData.append("test_id", formData.test_id);
+  //   candidatesData.append("severity", formData.severity);
+  //   candidatesData.append("steps", formData.steps);
+  //   candidatesData.append("test_description", formData.test_description);
+  //   candidatesData.append("expected_result", formData.expected_result);
+  // };
   // // initial state
   const data = [
     {
@@ -264,282 +309,15 @@ function ReviewedTestDraftComponent() {
           Send To Reviewer
         </button>
       </div>
-
-      <Modal
-        centered
-        show={modal.showModal}
-        size="lg"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
-      >
-        <form
-          method="post"
-          // onSubmit={handleBulkUpload}
-        >
-          <Modal.Header>
-            <Modal.Title className="fw-bold text-primary ">
-              Edit Test Case
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="row">
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Project Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Module Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Submodule Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Function <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">Field</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Testing Type <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Testing Group <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Test Id <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Severity <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">Steps</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Test Description <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    className="form-control-lg"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Expected Result <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    className="form-control-lg"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-primary shadow p-2">
-              Update
-            </button>
-            <button
-              type="button"
-              className="btn btn shadow p-2 text-primary"
-              style={{ backgroundColor: " white" }}
-              onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal>
-
-      <Modal
-        centered
-        show={downloadmodal.showModal}
-        size="lg"
-        onHide={(e) => {
-          handleDownloadModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
-      >
-        <form
-          method="post"
-          // onSubmit={handleBulkUpload}
-        >
-          <Modal.Body>
-            <div className="row">
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Project Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Module Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Submodule Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              type="submit"
-              className="btn btn-primary text-white"
-              style={{ backgroundColor: " #198754", color: "white" }}
-            >
-              Download CSV
-            </button>
-            <button
-              type="button"
-              className="btn btn shadow p-2"
-              style={{ backgroundColor: " white", color: "black" }}
-              onClick={() => {
-                handleDownloadModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal>
+      {modal.showModal === true && (
+        <EditTestCaseModal show={modal} close={() => setModal(false)} />
+      )}
+      {downloadmodal.showModal === true && (
+        <DownloadFormatFileModal
+          show={downloadmodal}
+          close={() => setDownloadModal(false)}
+        />
+      )}
     </div>
   );
 }

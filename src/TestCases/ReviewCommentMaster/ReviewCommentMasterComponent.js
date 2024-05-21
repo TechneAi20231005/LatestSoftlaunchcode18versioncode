@@ -1,62 +1,138 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Modal, Form } from "react-bootstrap";
+import ReviewCommentMasterModal from "./Validation/ReviewCommentMasterModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getReviewCommentMasterListThunk } from "../../redux/services/testCases/reviewCommentMaster";
+import { customSearchHandler } from "../../utils/customFunction";
+import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 function ReviewCommentMasterComponent() {
-  // // initial state
+  const dispatch = useDispatch();
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
+  // // redux state
+  const { reviewCommentMasetrList, isLoading } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
+
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredRevieCommentMasterList, setFilteredReviewCommentkMasterList] =
+    useState([]);
+
+  const [addEditReviewCommentModal, setAddEditReviewCommentModal] = useState({
+    type: "",
+    data: "",
+    open: false,
   });
 
-  const handleModal = (data) => {
-    setModal(data);
+  // Function to handle search button click
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(
+      reviewCommentMasetrList,
+      searchValue
+    );
+    setFilteredReviewCommentkMasterList(filteredList);
   };
-  const data = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 30,
-      email: "john@example.com",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 25,
-      email: "jane@example.com",
-    },
-    // Add more objects as needed
-  ];
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchValue("");
+    setFilteredReviewCommentkMasterList(reviewCommentMasetrList);
+  };
+
+  // Update the useEffect to update the filtered list when reviewCommentMasetrList changes
+  useEffect(() => {
+    setFilteredReviewCommentkMasterList(reviewCommentMasetrList);
+  }, [reviewCommentMasetrList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
 
   const columns = [
     {
-      name: "Module",
-      selector: (row) => row.name,
+      name: "Sr. No.",
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: "70px",
+    },
+    {
+      name: "Action",
+      selector: (row) => (
+        <i
+          className="icofont-edit text-primary cp"
+          onClick={() =>
+            setAddEditReviewCommentModal({
+              type: "EDIT",
+              data: row,
+              open: true,
+            })
+          }
+        />
+      ),
+      sortable: false,
+      width: "70px",
+    },
+
+    {
+      name: "Status",
+      selector: (row) => (row.is_active === 1 ? "Active" : "Deactive"),
       sortable: false,
       width: "100px",
     },
 
     {
-      name: "Module",
-      selector: (row) => row.name,
+      name: "Reviewer Comment Title",
+      selector: (row) => row.reviewer_comment,
       sortable: false,
-      width: "100px",
+      width: "200px",
     },
 
     {
-      name: "Module",
-      selector: (row) => row.name,
+      name: "Created At",
+      selector: (row) => row.created_at,
       sortable: false,
-      width: "100px",
+      width: "175px",
+    },
+
+    {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: false,
+      width: "175px",
+    },
+    {
+      name: "Updated At",
+      selector: (row) => row.updated_at,
+      sortable: false,
+      width: "175px",
+    },
+
+    {
+      name: "Updated By",
+      selector: (row) => row.updated_by,
+      sortable: false,
+      width: "175px",
     },
   ];
+
+  const transformDataForExport = (data) => {
+    return data?.map((row, index) => ({
+      "Sr No.": index + 1,
+      "Reviewer Comment Title": row?.reviewer_comment || "--",
+      "Created At": row?.created_at || "--",
+      "Created By": row?.created_by || "--",
+      "Updated At": row?.updated_at || "--",
+      "Updated By": row?.updated_by || "--",
+    }));
+  };
+
+  useEffect(() => {
+    dispatch(getReviewCommentMasterListThunk());
+  }, []);
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -74,13 +150,13 @@ function ReviewCommentMasterComponent() {
                     display: "flex",
                     alignItems: "center",
                   }}
-                  onClick={(e) => {
-                    handleModal({
-                      showModal: true,
-                      modalData: "", // You can add relevant data here
-                      modalHeader: "Add Testing Type",
-                    });
-                  }}
+                  onClick={() =>
+                    setAddEditReviewCommentModal({
+                      type: "ADD",
+                      data: "",
+                      open: true,
+                    })
+                  }
                 >
                   <i
                     className="icofont-plus"
@@ -95,7 +171,11 @@ function ReviewCommentMasterComponent() {
       />
       <div className="col-md-12 d-flex justify-content-start">
         <div className="col">
-          <input className="form-control form-control-md"></input>
+          <input
+            className="form-control form-control-md"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e?.target?.value)}
+          ></input>
         </div>
         <button
           className="btn btn-warning text-white"
@@ -104,6 +184,7 @@ function ReviewCommentMasterComponent() {
             fontWeight: "600",
             fontFamily: "Open Sans",
           }}
+          onClick={handleSearch}
         >
           <i style={{ marginRight: "8px" }} class="icofont-search"></i>
           Search
@@ -111,13 +192,13 @@ function ReviewCommentMasterComponent() {
 
         <ExportToExcel
           className="btn btn-sm btn-danger"
-          //   apiData={ExportData}
+          apiData={transformDataForExport(filteredRevieCommentMasterList)}
           style={{
             color: "white",
             fontWeight: "600",
             fontFamily: "Open Sans",
           }}
-          fileName="State master Records"
+          fileName="Review Comment Records"
         />
 
         <button
@@ -127,6 +208,7 @@ function ReviewCommentMasterComponent() {
             fontWeight: "600",
             fontFamily: "Open Sans",
           }}
+          onClick={handleReset}
         >
           <i style={{ marginRight: "8px" }} class="icofont-refresh"></i>
           Reset
@@ -135,86 +217,21 @@ function ReviewCommentMasterComponent() {
 
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredRevieCommentMasterList}
         defaultSortField="role_id"
         pagination
         selectableRows={false}
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
+        progressPending={isLoading?.getReviewCommentMasterList}
+        progressComponent={<TableLoadingSkelton />}
       />
-
-      <Modal
-        centered
-        show={modal.showModal}
-        size="lg"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
-      >
-        <form
-          method="post"
-          // onSubmit={handleBulkUpload}
-        >
-          <Modal.Header>
-            <Modal.Title className="fw-bold text-primary ">
-              Add Reviewer Comment
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="col">
-              <div className="col-md-12 ">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold font-size-16px lh-21.79px mb-0">
-                    Reviewer Comment Title <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-12 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold mb-0">
-                    Remark
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button
-              type="button"
-              className="btn btn btn-lg p-2 btn-primary "
-              style={{ width: "100px" }}
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              className="btn btn btn-lg shadow  p-2 text-primary"
-              style={{ backgroundColor: " white", width: "100px" }}
-              onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal>
+      <ReviewCommentMasterModal
+        show={addEditReviewCommentModal?.open}
+        type={addEditReviewCommentModal?.type}
+        currentReviewCommentData={addEditReviewCommentModal?.data}
+        close={(prev) => setAddEditReviewCommentModal({ ...prev, open: false })}
+      />
     </div>
   );
 }
