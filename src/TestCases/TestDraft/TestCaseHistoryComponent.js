@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
 import PageHeader from "../../components/Common/PageHeader";
 
 function TestCaseHistoryComponent() {

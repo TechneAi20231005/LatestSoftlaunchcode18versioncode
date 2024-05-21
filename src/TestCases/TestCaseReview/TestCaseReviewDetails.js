@@ -2,15 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
-import Vector from "../../assets/images/Vector.png";
-import approve from "../../assets/images/approve.png";
 
-import icons_back from "../../assets/images/icons_back.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import { Modal, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { _base } from "../../settings/constants";
 
 function TestCaseReviewDetails() {
@@ -46,11 +41,8 @@ function TestCaseReviewDetails() {
       name: "Action",
       selector: (row) => (
         <>
-          <img
-            src={edit}
-            style={{ width: "22px" }}
-            className="mx-2 mb-1"
-            alt=""
+          <i
+            className="icofont-edit text-primary cp"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -200,11 +192,7 @@ function TestCaseReviewDetails() {
             fontWeight: "600",
           }}
         >
-          <img
-            src={Vector}
-            style={{ width: "18px", marginRight: "8px" }} // Adjust the margin as needed
-            alt=""
-          />
+          <i style={{ fontSize: 20 }} class="icofont-paper-plane"></i>
           Resend
         </button>
         <button
@@ -232,7 +220,7 @@ function TestCaseReviewDetails() {
             fontWeight: "600",
           }}
         >
-          <img src={approve} className="" alt="" /> Approve
+          Approve
         </button>
       </div>
 

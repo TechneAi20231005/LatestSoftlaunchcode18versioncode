@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { Modal, Form } from "react-bootstrap";
 
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import CustomTab from "../../components/custom/tabs/CustomTab";
 import { RenderIf } from "../../utils";
 import TestDraftDetails from "./TestDraftDetails";
-import ReviewedTestDraftComponent from "./ReviewedTestDraftComponent";
 import ReviewedTestDraftDetails from "./ReviewedTestDraftDetails";
-import { Astrick } from "../../components/Utilities/Style";
-import { useLocation } from "react-router-dom";
 import DownloadFormatFileModal from "./DownloadFormatFileModal";
 export default function TestDraftComponent() {
   // local state

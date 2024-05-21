@@ -2,25 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
-import Vector from "../../assets/images/Vector.png";
-import icons_back from "../../assets/images/icons_back.png";
 import PageHeader from "../../components/Common/PageHeader";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { _base } from "../../settings/constants";
-import { Field, Form, Formik } from "formik";
-import { editTestCaseValidation } from "./Validation/EditTestCase";
-import { Col, Row, Stack, Spinner } from "react-bootstrap";
-import {
-  CustomDropdown,
-  CustomInput,
-  CustomTextArea,
-} from "../../components/custom/inputs/CustomInputs";
 import EditTestCaseModal from "./EditTestCaseModal";
 import DownloadFormatFileModal from "./DownloadFormatFileModal";
-// import { CustomDropdown } from "../../components/custom/inputs/CustomInputs";
 
 function ReviewedTestDraftComponent() {
   const [currentTab, setCurrentTab] = useState("review_test_draft");
@@ -44,40 +31,6 @@ function ReviewedTestDraftComponent() {
     setDownloadModal(data);
   };
 
-  // const testCaseInitialValue = {
-  //   project_name: "",
-  //   module_name: "",
-  //   submodule_name: "",
-  //   function: "",
-  //   field: "",
-  //   testing_type: "",
-  //   testing_group: "",
-  //   test_id: "",
-  //   severity: "",
-  //   steps: "",
-  //   test_description: "",
-  //   expected_result: "",
-  // };
-
-  // const handelAddCandidates = (formData) => {
-  //   console.log("form", formData);
-  //   const candidatesData = new FormData();
-  //   candidatesData.append("project_name", formData.project_name);
-  //   candidatesData.append("module_name", formData.module_name);
-  //   candidatesData.append("submodule_name", formData.submodule_name);
-  //   candidatesData.append("function", formData.function);
-  //   candidatesData.append("field", formData.field);
-
-  //   candidatesData.append("testing_type", formData.testing_type);
-
-  //   candidatesData.append("testing_group", formData.testing_group);
-  //   candidatesData.append("test_id", formData.test_id);
-  //   candidatesData.append("severity", formData.severity);
-  //   candidatesData.append("steps", formData.steps);
-  //   candidatesData.append("test_description", formData.test_description);
-  //   candidatesData.append("expected_result", formData.expected_result);
-  // };
-  // // initial state
   const data = [
     {
       id: 1,
@@ -99,11 +52,8 @@ function ReviewedTestDraftComponent() {
       name: "Action",
       selector: (row) => (
         <>
-          <img
-            src={edit}
-            style={{ width: "22px" }}
-            className="mx-2 mb-1"
-            alt=""
+          <i
+            className="icofont-edit text-primary cp"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -287,12 +237,6 @@ function ReviewedTestDraftComponent() {
           // onClick={() => setCurrentTab("review_test_draft")}
           className="btn btn-primary text-white"
         >
-          <img
-            src={icons_back}
-            style={{ width: "18px" }}
-            className="my-1 mb-1"
-            alt=""
-          />{" "}
           Back
         </Link>
         <button
@@ -300,12 +244,7 @@ function ReviewedTestDraftComponent() {
           className="btn btn-sm btn"
           style={{ backgroundColor: " #198754", color: "white" }}
         >
-          <img
-            src={Vector}
-            style={{ width: "15px" }}
-            className="my-1 mb-1"
-            alt=""
-          />{" "}
+          <i style={{ fontSize: "20px" }} class="icofont-paper-plane"></i> {""}
           Send To Reviewer
         </button>
       </div>

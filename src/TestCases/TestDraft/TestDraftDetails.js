@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { Container } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Astrick } from "../../components/Utilities/Style";
-import edit from "../../assets/images/edit.png";
 
 function TestDraftDetails() {
   // // initial state
@@ -27,12 +25,7 @@ function TestDraftDetails() {
       name: "Action",
       selector: (row) => (
         <>
-          <img
-            src={edit}
-            style={{ width: "22px" }}
-            className="mx-2 mb-1"
-            alt=""
-          />
+          <i className="icofont-edit text-primary cp" />
 
           <i
             style={{
