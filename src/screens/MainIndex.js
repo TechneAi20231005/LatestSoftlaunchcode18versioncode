@@ -889,12 +889,12 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/GeneratePO/:id`}
+              path={`/${_base}/GeneratePO/po`}
               element={<PendingOrder />}
             />
             <Route
               exact
-              path={`/${_base}/GeneratePO/:id/preview`}
+              path={`/${_base}/GeneratePO/po/preview`}
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />

@@ -13,6 +13,7 @@ import {
 } from '../../../../../redux/slices/po/generatePo';
 import { createPendingOrderThunk } from '../../../../../redux/services/po/generatePo';
 import { _base } from '../../../../../settings/constants';
+import { NumbersOnly } from '../../../../../components/Utilities/Validation';
 import './style.scss';
 
 function PoPreview() {
@@ -67,6 +68,7 @@ function PoPreview() {
               value={orderQtyInputValue}
               onChange={e => setOrderQtyInputValue(e.target.value)}
               className="form-control w-100"
+              onKeyDown={NumbersOnly}
             />
           </Col>
         ) : (

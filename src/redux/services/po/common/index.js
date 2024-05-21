@@ -36,10 +36,12 @@ export const getItemCategoryListThunk = createAsyncThunk('po/getItemCategoryList
 
 export const getKnockoffWtRangeListThunk = createAsyncThunk(
   'po/getKnockoffWtRangeList',
-  async ({ categoryName, itemName }) => {
+  async ({ categoryName, itemName, type }) => {
     try {
       const response = await customAxios.get(
-        `poRequisition/getPoWeightSizeData/${categoryName}/${itemName}`,
+        `poRequisition/getPoWeightSizeData${categoryName ? `/${categoryName}` : ''}${
+          itemName ? `/${itemName}` : ''
+        }${type ? `?type=${type}` : ''}`,
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

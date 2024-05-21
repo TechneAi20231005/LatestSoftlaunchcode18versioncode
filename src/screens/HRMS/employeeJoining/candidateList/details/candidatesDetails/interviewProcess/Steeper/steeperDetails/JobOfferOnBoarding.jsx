@@ -85,8 +85,12 @@ function JobOfferOnBoarding() {
     sr_hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
       ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ?? ''
       : '',
-    remark_id: '',
-    other_remark: '',
+    remark_id: salaryOfferedByHrAndSrHrData.length
+      ? salaryOfferedByHrAndSrHrData?.[0]?.remark_id ?? ''
+      : '',
+    other_remark: salaryOfferedByHrAndSrHrData.length
+      ? salaryOfferedByHrAndSrHrData?.[0]?.remark_description ?? ''
+      : '',
   };
 
   // // dropdown data
