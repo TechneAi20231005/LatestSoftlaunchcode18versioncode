@@ -1,46 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Field, Form, Formik } from "formik";
-import { Col, Row, Stack, Spinner } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import CustomModal from "../../components/custom/modal/CustomModal";
-import { CustomInput } from "../../components/custom/inputs/CustomInputs";
+import {
+  CustomInput,
+  CustomRadioButton,
+} from "../../components/custom/inputs/CustomInputs";
+import CustomAlertModal from "../../components/custom/modal/CustomAlertModal";
 import { addTestingType } from "./Validation/AddTestingType";
+import { RenderIf } from "../../utils";
 
-function AddTestingTypeModal({ show, close }) {
-  // // initial state
+import {
+  addTestingTypeMasterThunk,
+  editTestingTypeMasterThunk,
+  getTestingTypeMasterListThunk,
+} from "../../redux/services/testCases/testingTypeMaster";
+
+function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
   const dispatch = useDispatch();
-
-  const testingTypeInitialValues = {
-    title: "",
-    remark: "",
+  const addEditTestingTypeInitialValue = {
+    type_name: type === "EDIT" ? currentTestingTypeData?.type_name : "",
+    remark: type === "EDIT" ? currentTestingTypeData?.remark || "" : "",
+    is_active:
+      type === "EDIT" ? currentTestingTypeData?.is_active?.toString() : 1,
   };
 
-  const handleTestingType = (formData) => {
-    console.log("form", formData);
-    const candidatesData = new FormData();
+  // // redux state
+  const { isLoading } = useSelector((state) => state?.testingTypeMaster);
+
+  // // local state
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: "",
+  });
+  // // function
+
+  const handleAddEditTestingType = () => {
+    if (type === "ADD") {
+      dispatch(
+        addTestingTypeMasterThunk({
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getTestingTypeMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        })
+      );
+    } else {
+      dispatch(
+        editTestingTypeMasterThunk({
+          currentId: currentTestingTypeData?.id,
+          formData: openConfirmModal?.formData,
+          onSuccessHandler: () => {
+            setOpenConfirmModal({ open: false });
+            close();
+            dispatch(getTestingTypeMasterListThunk());
+          },
+          onErrorHandler: () => {
+            setOpenConfirmModal({ open: false });
+          },
+        })
+      );
+    }
   };
+
   return (
     <>
-      <CustomModal show={show} title="Add Testing Type" width="md">
+      <CustomModal
+        show={show}
+        title={`${type === "ADD" ? "Add" : "Edit"} Testing Type`}
+        width="md"
+      >
         <Formik
-          initialValues={testingTypeInitialValues}
+          initialValues={addEditTestingTypeInitialValue}
           validationSchema={addTestingType}
           onSubmit={(values) => {
-            console.log("val", values);
-            handleTestingType(values);
-            // setOtpModal(true);
+            setOpenConfirmModal({ open: true, formData: values });
           }}
         >
-          {({ values, touched, errors, setFieldValue }) => (
+          {({ dirty }) => (
             <Form>
               <Row className="gap-3">
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
-                    name="title"
+                    name="type_name"
                     label="Testing Type Title"
-                    placeholder="Enter Reviewer Comment Title"
+                    placeholder="Enter Testing Type Title"
                     requiredField
                   />
                 </Col>
@@ -52,11 +104,39 @@ function AddTestingTypeModal({ show, close }) {
                     placeholder="Enter Remark"
                   />
                 </Col>
+
+                <RenderIf render={type === "EDIT"}>
+                  <div className="d-flex align-items-center mt-3">
+                    <p className="mb-2 pe-2">
+                      Status<span className="mendatory_sign">*</span> :
+                    </p>
+                    <Field
+                      component={CustomRadioButton}
+                      type="radio"
+                      name="is_active"
+                      label="Active"
+                      value="1"
+                      inputClassName="me-1"
+                    />
+                    <Field
+                      component={CustomRadioButton}
+                      type="radio"
+                      name="is_active"
+                      label="Deactive"
+                      value="0"
+                      inputClassName="me-1"
+                    />
+                  </div>
+                </RenderIf>
               </Row>
 
               <div className="d-flex justify-content-end gap-2 mt-3">
-                <button className="btn btn-dark px-4" type="submit">
-                  Save
+                <button
+                  className="btn btn-dark px-4"
+                  type="submit"
+                  disabled={!dirty}
+                >
+                  {type === "ADD" ? "Save" : "Update"}
                 </button>
                 <button
                   onClick={() => close()}
@@ -70,6 +150,20 @@ function AddTestingTypeModal({ show, close }) {
           )}
         </Formik>
       </CustomModal>
+
+      <CustomAlertModal
+        show={openConfirmModal?.open}
+        type="success"
+        message={`Do you want to ${
+          type === "ADD" ? "save" : "update"
+        } this record?`}
+        onSuccess={handleAddEditTestingType}
+        onClose={() => setOpenConfirmModal({ open: false })}
+        // isLoading={
+        //   isLoading?.addReviewCommentMaster ||
+        //   isLoading?.editReviewCommentMaster
+        // }
+      />
     </>
   );
 }

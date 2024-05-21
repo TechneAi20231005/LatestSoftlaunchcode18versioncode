@@ -5,8 +5,8 @@ import {
 } from "../../../settings/constants";
 export const addReviewCommentValidation = Yup.object().shape({
   reviewer_comment: Yup.string()
-    .max(50, "Supporting title must be at most 50 characters")
-    .matches(ONLY_CHARACTER_REGEX, "Supporting remark name must be alphabets"),
+    .max(50, "Review comment title must be at most 50 characters")
+    .matches(ONLY_CHARACTER_REGEX, "Review comment title must be alphabets"),
   remark: Yup.string()
     .min(2, "Remark description must be at least 2 characters")
     .max(100, "Remark description must be at most 100 characters")

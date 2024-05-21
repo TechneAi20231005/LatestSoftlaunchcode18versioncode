@@ -56,7 +56,7 @@ import requisitionHistoryPoSlice from "../slices/po/history";
 
 // // Test Cases
 import reviewCommentMasterSlice from "../slices/testCases/reviewCommentMaster";
-
+import testingTypeMasterSlice from "../slices/testCases/testingTypeMaster";
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -111,6 +111,7 @@ export const store = configureStore({
 
     // // Test Cases
     reviewCommentMaster: reviewCommentMasterSlice,
+    testingTypeMaster: testingTypeMasterSlice,
   },
 
   middleware: (getDefaultMiddleware) =>
