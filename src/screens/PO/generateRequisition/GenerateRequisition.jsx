@@ -17,6 +17,7 @@ function GenerateRequisition() {
   // // initial state
   const dispatch = useDispatch();
   const fileRef = useRef();
+  const debounceTimeoutRef = useRef(null);
 
   // // redux state
   const {
@@ -127,7 +128,7 @@ function GenerateRequisition() {
     }
   };
 
-  const handleSearch = () => {
+  const handelFetchData = () => {
     dispatch(
       getGenerateRequisitionListThunk({
         limit: paginationData.rowPerPage,
@@ -138,29 +139,29 @@ function GenerateRequisition() {
     );
   };
 
-  const handleReset = () => {
-    setSearchValue('');
-    dispatch(
-      getGenerateRequisitionListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        search: '',
-        filterValue: {},
-      }),
-    );
+  const debouncedSearch = () => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      handelFetchData();
+    }, 500);
   };
 
   // // life cycle
   useEffect(() => {
-    dispatch(
-      getGenerateRequisitionListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        search: searchValue,
-        filterValue: filterModalData,
-      }),
-    );
-  }, []);
+    if (searchValue) {
+      debouncedSearch();
+    } else {
+      handelFetchData();
+    }
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchValue, paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <>
@@ -211,18 +212,13 @@ function GenerateRequisition() {
               />
             </Col>
             <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-              <button
-                className="btn btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                disabled={!searchValue}
-              >
+              <button className="btn btn-warning text-white" type="button" disabled={!searchValue}>
                 <i className="icofont-search-1 " /> Search
               </button>
               <button
                 className="btn btn-info text-white"
                 type="button"
-                onClick={handleReset}
+                onClick={() => setSearchValue('')}
                 disabled={!searchValue}
               >
                 <i className="icofont-refresh text-white" /> Reset
