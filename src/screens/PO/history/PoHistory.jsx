@@ -3,6 +3,7 @@ import { Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 
 // // static import
 import {
@@ -142,18 +143,36 @@ function PoHistory() {
   const handelApplyFilter = ({ formData }) => {
     const formatApiData = {
       vender_name: formData?.vender_name?.length ? formData?.vender_name : '',
-      from_order_date: formData?.order_date?.length ? formData?.order_date?.[0] : '',
-      to_order_date: formData?.order_date?.length ? formData?.order_date?.[1] : '',
-      from_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
-      to_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+      from_order_date: formData?.order_date?.length
+        ? formData?.order_date?.[0]
+          ? moment(formData?.order_date?.[0])?.format()
+          : ''
+        : '',
+      to_order_date: formData?.order_date?.length
+        ? formData?.order_date?.[1]
+          ? moment(formData?.order_date?.[1]).format()
+          : ''
+        : '',
+      from_delivery_date: formData?.delivery_date?.length
+        ? formData?.delivery_date?.[0]
+          ? moment(formData?.delivery_date?.[0]).format()
+          : ''
+        : '',
+      to_delivery_date: formData?.delivery_date?.length
+        ? formData?.delivery_date?.[1]
+          ? moment(formData?.delivery_date?.[1]).format()
+          : ''
+        : '',
     };
     setPaginationData({ currentFilterData: formatApiData });
+
     const apiData = {
       ...formatApiData,
       limit: paginationData.rowPerPage,
       page: paginationData.currentPage,
       type: 'history',
     };
+
     dispatch(getRequisitionHistoryThunk({ filterData: apiData }));
   };
 

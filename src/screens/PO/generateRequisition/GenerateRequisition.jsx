@@ -81,7 +81,7 @@ function GenerateRequisition() {
       width: '120px',
     },
     {
-      name: 'Open Piece ',
+      name: 'Open Pieces ',
       selector: row => row?.open_qty || '---',
       sortable: true,
       width: '120px',
@@ -105,7 +105,24 @@ function GenerateRequisition() {
     const bulkUploadData = new FormData();
     if (file) {
       bulkUploadData.append('po_attachments', file);
-      dispatch(uploadFileGenerateRequisitionThunk({ formData: bulkUploadData }));
+      dispatch(
+        uploadFileGenerateRequisitionThunk({
+          formData: bulkUploadData,
+          onSuccessHandler: () => {
+            dispatch(
+              getGenerateRequisitionListThunk({
+                limit: paginationData.rowPerPage,
+                page: paginationData.currentPage,
+                search: '',
+                filterValue: {},
+              }),
+            );
+          },
+          onErrorHandler: file => {
+            window.open(`${REACT_APP_ATTACHMENT_URL}${file}`)?.focus();
+          },
+        }),
+      );
       fileRef.current.value = null;
     }
   };

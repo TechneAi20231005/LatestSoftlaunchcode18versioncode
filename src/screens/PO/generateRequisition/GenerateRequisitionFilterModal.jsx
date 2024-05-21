@@ -126,12 +126,8 @@ function GenerateRequisitionFilterModal({
   // // life cycle for category dropdown, weight range ans size range dropdown
   useEffect(() => {
     if (open) {
-      if (!itemCategoryList?.length) {
-        dispatch(getItemCategoryListThunk());
-        dispatch(
-          getKnockoffWtRangeListThunk({ categoryName: '', itemName: '', type: 'filterData' }),
-        );
-      }
+      dispatch(getItemCategoryListThunk());
+      dispatch(getKnockoffWtRangeListThunk({ categoryName: '', itemName: '', type: 'filterData' }));
     }
   }, [open]);
 
@@ -225,6 +221,9 @@ function GenerateRequisitionFilterModal({
               </Col>
             </Row>
             <div className="d-flex justify-content-end mt-3 gap-2">
+              <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+                <i className="icofont-search-1 " /> Search
+              </button>
               <button
                 className="btn btn-info text-white"
                 type="reset"
@@ -232,9 +231,6 @@ function GenerateRequisitionFilterModal({
                 onClick={() => handleReset({ restFun: resetForm })}
               >
                 <i className="icofont-refresh text-white" /> Reset
-              </button>
-              <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
-                <i className="icofont-search-1 " /> Search
               </button>
             </div>
           </Form>

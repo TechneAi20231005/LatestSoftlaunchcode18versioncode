@@ -90,7 +90,7 @@ function GeneratePo() {
           enableReinitialize
           validationSchema={generatePoFilterValidation}
           onSubmit={values => {
-            navigate(`venderName=${values?.vender_name}`, { state: { generatePoFilter: values } });
+            navigate(`po`, { state: { generatePoFilter: values } });
             dispatch(resetUserAddedOrderList());
           }}
         >
