@@ -1786,6 +1786,7 @@ export default function MyTicketComponent() {
           loadData();
           setSelectedRows([]);
           setSelectedRowss([]);
+          setUnpassedTickets();
           setSelectAllNames(false);
           const forms = {
             limit: 10,
@@ -2283,10 +2284,6 @@ export default function MyTicketComponent() {
           );
 
           setIsLoading(false);
-          console.log(
-            "crated",
-            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
-          );
 
           if (type == "PLUS" && res.data.data.data.length > 0) {
             setCreatedByMeData({

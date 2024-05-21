@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import TimeRegularizationSlice from "../../BasketManagement/Slices/TimeRegularizationSlice";
 import { postTimeRegularizationData } from "../../BasketManagement/Slices/TimeRegularizationAction";
+import TableLoadingSkelton from "../../../../components/custom/loader/TableLoadingSkelton";
 const RequestModal = (props) => {
   const [notify, setNotify] = useState(null);
   const [inputList, setInputList] = useState([
@@ -54,6 +55,7 @@ const RequestModal = (props) => {
   const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
   const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFirstCheckboxChange = (e) => {
     if (e) {
@@ -159,11 +161,16 @@ const RequestModal = (props) => {
   const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
   const loadData = () => {
+    setIsLoading(null);
+    setIsLoading(true);
     new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(
       (res) => {
-        if (res.data.data) {
-          // setData(null);
-          setRegularizeTimeData(res.data.data);
+        if (res.status === 200) {
+          setIsLoading(false);
+          if (res.data.data) {
+            // setData(null);
+            setRegularizeTimeData(res.data.data);
+          }
         }
       }
     );
@@ -435,150 +442,286 @@ const RequestModal = (props) => {
 
           <Modal.Body>
             <div className="table-responsive">
-              <table
-                className="table table-bordered mt-3 table-responsive"
-                id="tab_logic"
-              >
-                <thead>
-                  <tr>
-                    <th className="text-center"> Sr No </th>
-                    <th className="text-center"> From Date </th>
-                    <th className="text-center"> To Date </th>
-                    <th className="text-center"> From Time </th>
-                    <th className="text-center"> To Time </th>
-                    <th className="text-center"> Actual Time </th>
+              {isLoading === true ? (
+                <TableLoadingSkelton />
+              ) : (
+                <table
+                  className="table table-bordered mt-3 table-responsive"
+                  id="tab_logic"
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-center"> Sr No </th>
+                      <th className="text-center"> From Date </th>
+                      <th className="text-center"> To Date </th>
+                      <th className="text-center"> From Time </th>
+                      <th className="text-center"> To Time </th>
+                      <th className="text-center"> Actual Time </th>
 
-                    <th className="text-center"> Remark </th>
-                    {regularizeTimeData && regularizeTimeData.length > 0 && (
-                      <th className="text-center"> Status</th>
-                    )}
-                    <th className="text-center"> Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {regularizeTimeData && regularizeTimeData.length > 0 ? (
-                    <>
-                      {regularizeTimeData &&
-                        regularizeTimeData.map((row, index) => {
-                          const handleFromDateChange = (
-                            index,
-                            value,
-                            dateType
-                          ) => {
-                            if (dateType === "from_date") {
-                              setFromDate((prevFromDates) => ({
-                                ...prevFromDates,
-                                [index]: value,
-                              }));
-                            } else if (dateType === "to_date") {
-                              setToDate((prevToDates) => ({
-                                ...prevToDates,
-                                [index]: value,
-                              }));
-                            }
+                      <th className="text-center"> Remark </th>
+                      {regularizeTimeData && regularizeTimeData.length > 0 && (
+                        <th className="text-center"> Status</th>
+                      )}
+                      <th className="text-center"> Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {regularizeTimeData && regularizeTimeData.length > 0 ? (
+                      <>
+                        {regularizeTimeData &&
+                          regularizeTimeData.map((row, index) => {
+                            const handleFromDateChange = (
+                              index,
+                              value,
+                              dateType
+                            ) => {
+                              if (dateType === "from_date") {
+                                setFromDate((prevFromDates) => ({
+                                  ...prevFromDates,
+                                  [index]: value,
+                                }));
+                              } else if (dateType === "to_date") {
+                                setToDate((prevToDates) => ({
+                                  ...prevToDates,
+                                  [index]: value,
+                                }));
+                              }
 
-                            const updatedData = [...regularizeTimeData];
-                            updatedData[index].from_date = value;
-                            // Calculate actual time
-                            const actualTime = calculateActualTime(
-                              updatedData[index].from_date,
-                              updatedData[index].to_date,
-                              updatedData[index].from_time,
-                              updatedData[index].to_time
+                              const updatedData = [...regularizeTimeData];
+                              updatedData[index].from_date = value;
+                              // Calculate actual time
+                              const actualTime = calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+
+                              updatedData[index].actual_time = actualTime;
+                              setRegularizeTimeData(updatedData);
+                            };
+
+                            const handleToDateChange = (index, value) => {
+                              const updatedData = [...regularizeTimeData];
+                              updatedData[index].to_date = value;
+                              // Calculate actual time
+                              const actualTime = calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                              const [hours, minutes] = actualTime
+                                .split(":")
+                                .map(Number);
+                              const actualTimeValue = hours * 60 + minutes;
+
+                              updatedData[index].actual_time = actualTime;
+                              setRegularizeTimeData(updatedData);
+                            };
+
+                            const handleFromTimeChange = (index, value) => {
+                              const updatedData = [...regularizeTimeData];
+                              updatedData[index].from_time = value;
+                              // Calculate actual time
+                              const actualTime = calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                              const [hours, minutes] = actualTime
+                                .split(":")
+                                .map(Number);
+                              const actualTimeValue = hours * 60 + minutes;
+
+                              updatedData[index].actual_time = actualTime;
+                              setRegularizeTimeData(updatedData);
+                            };
+
+                            const handleToTimeChange = (index, value) => {
+                              const updatedData = [...regularizeTimeData];
+                              updatedData[index].to_time = value;
+                              // Calculate actual time
+                              const actualTime = calculateActualTime(
+                                updatedData[index].from_date,
+                                updatedData[index].to_date,
+                                updatedData[index].from_time,
+                                updatedData[index].to_time
+                              );
+                              // Check if actual time exceeds a certain limit (e.g., 12 hours)
+                              const [hours, minutes] = actualTime
+                                .split(":")
+                                .map(Number);
+                              const actualTimeValue = hours * 60 + minutes;
+                              if (actualTimeValue > 12 * 60) {
+                                alert(
+                                  "Actual time is greater than 12:00 hours."
+                                );
+                                // Optionally, you might want to revert the changes made
+                                // or handle this situation according to your app's logic
+                                return;
+                              }
+
+                              updatedData[index].actual_time = actualTime;
+                              setRegularizeTimeData(updatedData);
+                            };
+
+                            // Return JSX for rendering here
+
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  <input
+                                    type="date"
+                                    className="form-control form-control-sm"
+                                    name={`from_date[${index}]`}
+                                    min={basketStartDate}
+                                    max={formattedDate}
+                                    value={row.from_date}
+                                    onChange={(e) =>
+                                      handleFromDateChange(
+                                        index,
+                                        e.target.value,
+                                        "from_date"
+                                      )
+                                    }
+                                    required
+                                    disabled={row.is_regularized === "YES"}
+                                  />
+                                </td>
+
+                                <td>
+                                  <input
+                                    type="date"
+                                    className="form-control form-control-sm"
+                                    name={`to_date[${index}]`}
+                                    min={fromDate[index]}
+                                    max={formattedDate}
+                                    value={row.to_date}
+                                    onChange={(e) =>
+                                      handleToDateChange(
+                                        index,
+                                        e.target.value,
+                                        "to_date"
+                                      )
+                                    }
+                                    disabled={row.is_regularized === "YES"}
+                                    required
+                                  />
+                                </td>
+
+                                <td>
+                                  <input
+                                    type="time"
+                                    className="form-control form-control-sm"
+                                    name={`from_time[${index}]`}
+                                    value={row.from_time}
+                                    onChange={(e) =>
+                                      handleFromTimeChange(
+                                        index,
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={row.is_regularized === "YES"}
+                                    required
+                                  />
+                                  <i className="icofont-clock"></i>
+                                </td>
+                                <td>
+                                  <input
+                                    type="time"
+                                    className="form-control form-control-sm"
+                                    name={`to_time[${index}]`}
+                                    value={row.to_time}
+                                    onChange={(e) =>
+                                      handleToTimeChange(index, e.target.value)
+                                    }
+                                    required
+                                    disabled={row.is_regularized === "YES"}
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    className="form-control form-control-sm-2"
+                                    name={`actual_time[${index}]`}
+                                    style={{ width: "5rem", height: 32 }}
+                                    value={
+                                      row.actual_time &&
+                                      row.actual_time !== "NaN:NaN"
+                                        ? row.actual_time
+                                        : row.total_time || "00:00"
+                                    }
+                                    required
+                                    disabled={row.is_regularized === "YES"}
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    title={remark && remark ? remark : ""}
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    name={`remark[${index}]`}
+                                    value={row.remark}
+                                    onChange={(e) =>
+                                      handleRemarkChange(e, index)
+                                    } // Assuming you have a function to handle remark changes
+                                    required
+                                    disabled={row.is_regularized === "YES"}
+                                    // disabled={
+                                    //   (row.status === "REJECTED" ||
+                                    //     row.status === "APPROVED") &&
+                                    //   !row.isAddingNewRow
+                                    // }
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    name="status"
+                                    defaultValue={row.status}
+                                    disabled
+                                    required
+                                  />
+                                  <i className="icofont-clock"></i>
+                                </td>
+
+                                <td>
+                                  {index + 1 === 1 && (
+                                    <button
+                                      onClick={addRoww}
+                                      className="btn btn-primary"
+                                      style={{ backgroundColor: "#484C7F" }}
+                                      disabled={row.status === "PENDING"}
+                                    >
+                                      <i className="icofont-plus-circle"></i>
+                                    </button>
+                                  )}
+                                  {index + 1 > 1 && (
+                                    <button
+                                      className="mr10 mr-1 btn btn-danger"
+                                      onClick={(row) =>
+                                        handleRemoveClickk(index)
+                                      }
+                                      disabled={
+                                        row.status === "REJECTED" ||
+                                        row.status === "APPROVED"
+                                      }
+                                    >
+                                      <i className="icofont-ui-delete"></i>
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
                             );
-
-                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
-                            // if (actualTime > 12 * 60) {
-                            //   alert("Actual time is greater than 12:00 hours.");
-                            //   // Optionally, you might want to revert the changes made
-                            //   // or handle this situation according to your app's logic
-                            //   return;
-                            // }
-
-                            updatedData[index].actual_time = actualTime;
-                            setRegularizeTimeData(updatedData);
-                          };
-
-                          const handleToDateChange = (index, value) => {
-                            const updatedData = [...regularizeTimeData];
-                            updatedData[index].to_date = value;
-                            // Calculate actual time
-                            const actualTime = calculateActualTime(
-                              updatedData[index].from_date,
-                              updatedData[index].to_date,
-                              updatedData[index].from_time,
-                              updatedData[index].to_time
-                            );
-                            const [hours, minutes] = actualTime
-                              .split(":")
-                              .map(Number);
-                            const actualTimeValue = hours * 60 + minutes;
-                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
-                            // if (actualTimeValue > 12 * 60) {
-                            //   alert("Actual time is greater than 12:00 hours.");
-                            //   // Optionally, you might want to revert the changes made
-                            //   // or handle this situation according to your app's logic
-                            //   return;
-                            // }
-
-                            updatedData[index].actual_time = actualTime;
-                            setRegularizeTimeData(updatedData);
-                          };
-
-                          const handleFromTimeChange = (index, value) => {
-                            const updatedData = [...regularizeTimeData];
-                            updatedData[index].from_time = value;
-                            // Calculate actual time
-                            const actualTime = calculateActualTime(
-                              updatedData[index].from_date,
-                              updatedData[index].to_date,
-                              updatedData[index].from_time,
-                              updatedData[index].to_time
-                            );
-                            const [hours, minutes] = actualTime
-                              .split(":")
-                              .map(Number);
-                            const actualTimeValue = hours * 60 + minutes;
-                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
-                            // if (actualTimeValue > 12 * 60) {
-                            //   alert("Actual time is greater than 12:00 hours.");
-                            //   // Optionally, you might want to revert the changes made
-                            //   // or handle this situation according to your app's logic
-                            //   return;
-                            // }
-
-                            updatedData[index].actual_time = actualTime;
-                            setRegularizeTimeData(updatedData);
-                          };
-
-                          const handleToTimeChange = (index, value) => {
-                            const updatedData = [...regularizeTimeData];
-                            updatedData[index].to_time = value;
-                            // Calculate actual time
-                            const actualTime = calculateActualTime(
-                              updatedData[index].from_date,
-                              updatedData[index].to_date,
-                              updatedData[index].from_time,
-                              updatedData[index].to_time
-                            );
-                            // Check if actual time exceeds a certain limit (e.g., 12 hours)
-                            const [hours, minutes] = actualTime
-                              .split(":")
-                              .map(Number);
-                            const actualTimeValue = hours * 60 + minutes;
-                            if (actualTimeValue > 12 * 60) {
-                              alert("Actual time is greater than 12:00 hours.");
-                              // Optionally, you might want to revert the changes made
-                              // or handle this situation according to your app's logic
-                              return;
-                            }
-
-                            updatedData[index].actual_time = actualTime;
-                            setRegularizeTimeData(updatedData);
-                          };
-
-                          // Return JSX for rendering here
-
+                          })}
+                      </>
+                    ) : (
+                      <>
+                        {rows.map((row, index) => {
                           return (
                             <tr key={index}>
                               <td>{index + 1}</td>
@@ -591,17 +734,16 @@ const RequestModal = (props) => {
                                   max={formattedDate}
                                   value={row.from_date}
                                   onChange={(e) =>
-                                    handleFromDateChange(
+                                    handleDateChange(
                                       index,
+                                      "from_date",
                                       e.target.value,
-                                      "from_date"
+                                      row.from_time
                                     )
                                   }
                                   required
-                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
-
                               <td>
                                 <input
                                   type="date"
@@ -611,17 +753,17 @@ const RequestModal = (props) => {
                                   max={formattedDate}
                                   value={row.to_date}
                                   onChange={(e) =>
-                                    handleToDateChange(
+                                    handleDateChange(
                                       index,
+                                      "to_date",
                                       e.target.value,
-                                      "to_date"
+                                      row.from_time,
+                                      row.to_time
                                     )
                                   }
-                                  disabled={row.is_regularized === "YES"}
                                   required
                                 />
                               </td>
-
                               <td>
                                 <input
                                   type="time"
@@ -629,13 +771,17 @@ const RequestModal = (props) => {
                                   name={`from_time[${index}]`}
                                   value={row.from_time}
                                   onChange={(e) =>
-                                    handleFromTimeChange(index, e.target.value)
+                                    handleActualTimeChange(
+                                      index,
+                                      e.target.value,
+                                      row.to_time
+                                    )
                                   }
-                                  disabled={row.is_regularized === "YES"}
                                   required
                                 />
                                 <i className="icofont-clock"></i>
                               </td>
+
                               <td>
                                 <input
                                   type="time"
@@ -643,76 +789,53 @@ const RequestModal = (props) => {
                                   name={`to_time[${index}]`}
                                   value={row.to_time}
                                   onChange={(e) =>
-                                    handleToTimeChange(index, e.target.value)
+                                    handleActualTimeChange(
+                                      index,
+                                      row.from_time,
+                                      e.target.value
+                                    )
                                   }
                                   required
-                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
+
                               <td>
                                 <input
                                   type="text"
                                   className="form-control form-control-sm-2"
                                   name={`actual_time[${index}]`}
                                   style={{ width: "5rem", height: 32 }}
-                                  value={
-                                    row.actual_time &&
-                                    row.actual_time !== "NaN:NaN"
-                                      ? row.actual_time
-                                      : row.total_time || "00:00"
-                                  }
+                                  value={row.actual_time}
                                   required
-                                  disabled={row.is_regularized === "YES"}
                                 />
                               </td>
+
                               <td>
                                 <input
                                   title={remark && remark ? remark : ""}
                                   type="text"
                                   className="form-control form-control-sm"
                                   name={`remark[${index}]`}
-                                  value={row.remark}
-                                  onChange={(e) => handleRemarkChange(e, index)} // Assuming you have a function to handle remark changes
-                                  required
-                                  disabled={row.is_regularized === "YES"}
-                                  // disabled={
-                                  //   (row.status === "REJECTED" ||
-                                  //     row.status === "APPROVED") &&
-                                  //   !row.isAddingNewRow
-                                  // }
-                                />
-                              </td>
-                              <td>
-                                <input
-                                  type="text"
-                                  className="form-control form-control-sm"
-                                  name="status"
-                                  defaultValue={row.status}
-                                  disabled
+                                  defaultValue={row && row.remark}
                                   required
                                 />
-                                <i className="icofont-clock"></i>
                               </td>
 
                               <td>
-                                {index + 1 === 1 && (
+                                {index + 1 == 1 && (
                                   <button
-                                    onClick={addRoww}
+                                    onClick={addRow}
                                     className="btn btn-primary"
                                     style={{ backgroundColor: "#484C7F" }}
-                                    disabled={row.status === "PENDING"}
                                   >
                                     <i className="icofont-plus-circle"></i>
                                   </button>
                                 )}
+
                                 {index + 1 > 1 && (
                                   <button
                                     className="mr10 mr-1 btn btn-danger"
-                                    onClick={(row) => handleRemoveClickk(index)}
-                                    disabled={
-                                      row.status === "REJECTED" ||
-                                      row.status === "APPROVED"
-                                    }
+                                    onClick={() => handleRemoveClick()}
                                   >
                                     <i className="icofont-ui-delete"></i>
                                   </button>
@@ -721,136 +844,11 @@ const RequestModal = (props) => {
                             </tr>
                           );
                         })}
-                    </>
-                  ) : (
-                    <>
-                      {rows.map((row, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <input
-                                type="date"
-                                className="form-control form-control-sm"
-                                name={`from_date[${index}]`}
-                                min={basketStartDate}
-                                max={formattedDate}
-                                value={row.from_date}
-                                onChange={(e) =>
-                                  handleDateChange(
-                                    index,
-                                    "from_date",
-                                    e.target.value,
-                                    row.from_time
-                                  )
-                                }
-                                required
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="date"
-                                className="form-control form-control-sm"
-                                name={`to_date[${index}]`}
-                                min={fromDate[index]}
-                                max={formattedDate}
-                                value={row.to_date}
-                                onChange={(e) =>
-                                  handleDateChange(
-                                    index,
-                                    "to_date",
-                                    e.target.value,
-                                    row.from_time,
-                                    row.to_time
-                                  )
-                                }
-                                required
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="time"
-                                className="form-control form-control-sm"
-                                name={`from_time[${index}]`}
-                                value={row.from_time}
-                                onChange={(e) =>
-                                  handleActualTimeChange(
-                                    index,
-                                    e.target.value,
-                                    row.to_time
-                                  )
-                                }
-                                required
-                              />
-                              <i className="icofont-clock"></i>
-                            </td>
-
-                            <td>
-                              <input
-                                type="time"
-                                className="form-control form-control-sm"
-                                name={`to_time[${index}]`}
-                                value={row.to_time}
-                                onChange={(e) =>
-                                  handleActualTimeChange(
-                                    index,
-                                    row.from_time,
-                                    e.target.value
-                                  )
-                                }
-                                required
-                              />
-                            </td>
-
-                            <td>
-                              <input
-                                type="text"
-                                className="form-control form-control-sm-2"
-                                name={`actual_time[${index}]`}
-                                style={{ width: "5rem", height: 32 }}
-                                value={row.actual_time}
-                                required
-                              />
-                            </td>
-
-                            <td>
-                              <input
-                                title={remark && remark ? remark : ""}
-                                type="text"
-                                className="form-control form-control-sm"
-                                name={`remark[${index}]`}
-                                defaultValue={row && row.remark}
-                                required
-                              />
-                            </td>
-
-                            <td>
-                              {index + 1 == 1 && (
-                                <button
-                                  onClick={addRow}
-                                  className="btn btn-primary"
-                                  style={{ backgroundColor: "#484C7F" }}
-                                >
-                                  <i className="icofont-plus-circle"></i>
-                                </button>
-                              )}
-
-                              {index + 1 > 1 && (
-                                <button
-                                  className="mr10 mr-1 btn btn-danger"
-                                  onClick={() => handleRemoveClick()}
-                                >
-                                  <i className="icofont-ui-delete"></i>
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </>
-                  )}
-                </tbody>
-              </table>
+                      </>
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </Modal.Body>
 
