@@ -583,9 +583,7 @@ export default function CreateCustomerMappingComponent() {
                           required
                           value="1"
                           defaultChecked={
-                            data &&
-                            (data.confirmation_required == 1 ||
-                              data.confirmation_required == "1")
+                            data && data.confirmation_required !== "1"
                           }
                         />
                         <label
