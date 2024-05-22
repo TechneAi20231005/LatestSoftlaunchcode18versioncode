@@ -9,22 +9,10 @@ function CardLoadingSkeleton({ rowCount = 3 }) {
             <div key={colIndex} className="col-md-4">
               <div className="card">
                 <div className="card-body">
-                  <div
-                    className="skeleton skeleton-text mb-3"
-                    style={{ width: "80%", height: "20px" }}
-                  />
-                  <div
-                    className="skeleton skeleton-text mb-3"
-                    style={{ width: "60%", height: "20px" }}
-                  />
-                  <div
-                    className="skeleton skeleton-text mb-3"
-                    style={{ width: "70%", height: "20px" }}
-                  />
-                  <div
-                    className="skeleton skeleton-text"
-                    style={{ width: "90%", height: "20px" }}
-                  />
+                  <div className="skeleton skeleton-text mb-3 w-80"></div>
+                  <div className="skeleton skeleton-text mb-3 w-60"></div>
+                  <div className="skeleton skeleton-text mb-3 w-70"></div>
+                  <div className="skeleton skeleton-text w-90"></div>
                 </div>
               </div>
             </div>

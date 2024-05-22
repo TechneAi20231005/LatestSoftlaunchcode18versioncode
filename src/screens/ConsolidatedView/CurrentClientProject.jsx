@@ -155,7 +155,7 @@ export default function CurrentClientProject(props) {
 
   return (
     <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4 mt-3">
-      <div className="card" style={{ borderRadius: "10px", width: "400px" }}>
+      <div className="card" style={{ borderRadius: "10px", width: "100%" }}>
         <div
           className="card-body shadow-lg p-4"
           style={{ borderRadius: "10px" }}
