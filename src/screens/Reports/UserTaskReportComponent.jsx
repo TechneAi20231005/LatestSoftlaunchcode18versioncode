@@ -236,7 +236,9 @@ function UserTaskReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label>
-                  <b>Select User :</b>
+                  <b>
+                    Select User :<Astrick color="red" size="13px" />
+                  </b>
                 </label>
                 <Select
                   isMulti
@@ -245,6 +247,7 @@ function UserTaskReportComponent() {
                   className="basic-multi-select"
                   classNamePrefix="select"
                   options={userData}
+                  required
                   style={{ zIndex: "100" }}
                 />
               </div>

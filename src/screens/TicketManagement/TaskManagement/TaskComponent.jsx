@@ -1123,9 +1123,10 @@ export default function TaskComponent({ match }) {
                 </span>
               </div>
               <div className="fs-5">
-
-                {/* <Link to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`} className="ms-1">
-
+                <Link
+                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`}
+                  className="ms-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
@@ -1139,8 +1140,8 @@ export default function TaskComponent({ match }) {
                       fill="white"
                     />
                   </svg>
-                </Link> */}
-                {/* <Link
+                </Link>
+                <Link
                   to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph/${sprintFirstDate}to${sprintLastDate}`}
                   className="ms-1"
                 >
@@ -1160,9 +1161,7 @@ export default function TaskComponent({ match }) {
                       />
                     </svg>
                   </span>
-
-                </Link> */}
-
+                </Link>
                 <button
                   className="border-0 p-0 ms-1"
                   disabled={ownership !== "PROJECT"}
