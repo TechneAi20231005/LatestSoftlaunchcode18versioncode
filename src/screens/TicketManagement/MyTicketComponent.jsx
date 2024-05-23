@@ -244,43 +244,38 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-            {console.log("taau", localStorage.getItem)}
-            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {/* {data.created_by == localStorage.getItem("id") ||
-                data.assign_to_user_id == localStorage.getItem("id") ||
-                (data.status_name !== "Solved" &&
-                  data.passed_status !== "REJECT" &&
-                  localStorage.getItem("account_for" === "SELF")) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem("id")
-                ) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Edit/` + data.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: "100" }}
-                    >
-                      <i className="icofont-ui-edit"></i> Edit
-                    </Link>
-                  </li>
-                ))} */}
-                {console.log("createdby",data.created_by == localStorage.getItem("id"))}
-                {console.log("assignuser",data.assign_to_user_id == localStorage.getItem("id"))}
-                {console.log( "pp",userDepartment?.[0].ticket_show_type !=="DEPARTMENT_TICKETS"==data.assign_to_user_id !== localStorage.getItem("id"))}
+            {console.log(
+              "createdby",
+              data.created_by == localStorage.getItem("id")
+            )}
+            {console.log(
+              "assignto",
+              data.assign_to_user_id !== localStorage.getItem("id")
+            )}
+            {console.log(
+              "aa",
+              userDepartment?.[0].ticket_show_type == "DEPARTMENT_TICKETS"
+            )}
+            {console.log("department", userDepartment?.[0].ticket_show_type)}
+            {console.log(
+              "gg",
+              ((data.assign_to_user_id !== localStorage.getItem("id")) ==
+                userDepartment?.[0].ticket_show_type) !==
+                "DEPARTMENT_TICKETS"
+            )}
 
+            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {typeof data.status_name === "string" &&
                 data.status_name !== "Solved" &&
                 data.passed_status !== "REJECT" &&
-                // data.created_by == localStorage.getItem("id") && 
+                // data.created_by == localStorage.getItem("id") &&
                 // data.assign_to_user_id == localStorage.getItem("id") &&
                 localStorage.getItem("account_for") === "SELF" &&
                 data?.projectowner?.filter(
                   (d) => d.user_id == localStorage.getItem("id")
                 ) &&
                 userDepartment?.[0].ticket_show_type ==
-                  "DEPARTMENT_TICKETS" && 
-                  
-                  (
+                  "DEPARTMENT_TICKETS" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
