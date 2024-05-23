@@ -107,12 +107,9 @@ const DayWiseCalendar = (props) => {
                 </div>
               </div>
               <div className="col-6 d-flex align-items-center justify-content-end text-end ">
-                <div className="col-9 ">
+                <div className="col-9 d-flex gap-2 justify-content-end ">
                   {data?.taskOwners.map((userName, id) => (
-                    <div
-                      key={id}
-                      className="d-flex gap-2 justify-content-end text-end"
-                    >
+                    <div key={id} className="text-end">
                       <Avatar round size="45px" name={userName} />
                     </div>
                   ))}
