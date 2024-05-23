@@ -558,14 +558,6 @@ export default function EditTicketComponent({ match }) {
               value: d.id,
               label: d.first_name + " " + d.last_name,
             }));
-
-          const entryUserselect = res.payload.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + " " + d.last_name,
-            }));
-
           setUser(data);
 
           setEmailData(
@@ -576,7 +568,7 @@ export default function EditTicketComponent({ match }) {
           emilData?.filter((d) => d.id === data?.created_by);
 
           setUserDropdown(select);
-          setUserdrp(entryUserselect);
+          setUserdrp(select);
         }
       }
     });

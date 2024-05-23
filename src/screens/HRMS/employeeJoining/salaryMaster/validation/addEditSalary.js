@@ -6,7 +6,7 @@ export const addEditSalaryValidation = Yup.object().shape({
   designation_id: Yup.string().required('Designation is required'),
   location_id: Yup.array()
     .min(1, 'Please select at least one location')
-    .required('Preferred designation is required'),
+    .required('Preferred role is required'),
   experience_level: Yup.string().required('Experience level is required'),
   max_salary: Yup.number()
     .positive('Max salary must be positive')

@@ -68,8 +68,7 @@ function PendingOrder() {
     },
     {
       name: 'Pending Quantity',
-      selector: (row, index) =>
-        row?.open_qty ? <p className="bg-warning px-1">{row?.open_qty}</p> : '---',
+      selector: (row, index) => row?.open_qty || '---',
       sortable: false,
     },
     {
@@ -84,7 +83,6 @@ function PendingOrder() {
             onChange={e => handleOrderQuantityChange(row.id, e.target.value)}
             className="form-control w-100"
             onKeyDown={NumbersOnly}
-            min={1}
           />
         </Col>
       ),
@@ -105,7 +103,6 @@ function PendingOrder() {
         </>
       ),
       value: items?.category,
-      searchableItem: `${items?.item} ${items?.category}`,
     })),
   ];
 
@@ -125,21 +122,6 @@ function PendingOrder() {
     })),
   ];
 
-  const customFilterOption = (option, searchText) => {
-    if (!searchText) {
-      return true;
-    }
-    const searchWords = searchText.toLowerCase().split(' ');
-    if (option.data && option.data.searchableItem) {
-      for (const word of searchWords) {
-        if (option.data.searchableItem.toLowerCase().includes(word)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
   // Function to handle input change for order quantity
   const handleOrderQuantityChange = (id, value) => {
     setOrderQuantityValues(prevState => ({
@@ -147,22 +129,18 @@ function PendingOrder() {
       [id]: value,
     }));
   };
+
   const handelSave = () => {
     if (Object.keys(orderQuantityValues).length > 0) {
-      const allValuesGreaterThanZero = Object.values(orderQuantityValues).every(value => value > 0);
-      if (allValuesGreaterThanZero) {
-        dispatch(
-          addUserPendingOrderRequest({
-            orderQtyData: orderQuantityValues,
-            vender_name: generatePoFilter?.vender_name,
-            delivery_date: generatePoFilter?.delivery_date,
-          }),
-        );
-        navigate('preview');
-        setOrderQuantityValues({});
-      } else {
-        toast.error('Each order quantity should be greater than 0');
-      }
+      dispatch(
+        addUserPendingOrderRequest({
+          orderQtyData: orderQuantityValues,
+          vender_name: generatePoFilter?.vender_name,
+          delivery_date: generatePoFilter?.delivery_date,
+        }),
+      );
+      navigate('preview');
+      setOrderQuantityValues({});
     } else {
       toast.error('Please enter order quantity');
     }
@@ -170,22 +148,17 @@ function PendingOrder() {
 
   const handelSaveAndAddMore = ({ resetFunc }) => {
     if (Object.keys(orderQuantityValues).length > 0) {
-      const allValuesGreaterThanZero = Object.values(orderQuantityValues).every(value => value > 0);
-      if (allValuesGreaterThanZero) {
-        dispatch(
-          addUserPendingOrderRequest({
-            orderQtyData: orderQuantityValues,
-            vender_name: generatePoFilter?.vender_name,
-            delivery_date: generatePoFilter?.delivery_date,
-          }),
-        );
-        dispatch(resetPendingOrderListData());
-        resetFunc();
-        setToggleFilter(false);
-        setOrderQuantityValues({});
-      } else {
-        toast.error('Each order quantity should be greater than 0');
-      }
+      dispatch(
+        addUserPendingOrderRequest({
+          orderQtyData: orderQuantityValues,
+          vender_name: generatePoFilter?.vender_name,
+          delivery_date: generatePoFilter?.delivery_date,
+        }),
+      );
+      dispatch(resetPendingOrderListData());
+      resetFunc();
+      setToggleFilter(false);
+      setOrderQuantityValues({});
     } else {
       toast.error('Please enter order quantity');
     }
@@ -203,10 +176,10 @@ function PendingOrder() {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
         getKnockoffWtRangeListThunk({
-          itemName: itemCategoryList?.find(
+          categoryName: itemCategoryList?.find(
             item => item?.category === filterFormValue?.selectedItemsCategory,
           )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
+          itemName: filterFormValue?.selectedItemsCategory,
           type: '',
         }),
       );
@@ -218,10 +191,10 @@ function PendingOrder() {
     if (filterFormValue?.selectedItemsCategory && filterFormValue?.selectedWeightRange) {
       dispatch(
         getSizeRangeListThunk({
-          itemName: itemCategoryList?.find(
+          categoryName: itemCategoryList?.find(
             item => item?.category === filterFormValue?.selectedItemsCategory,
           )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
+          itemName: filterFormValue?.selectedItemsCategory,
           weightRange: filterFormValue?.selectedWeightRange,
         }),
       );
@@ -267,7 +240,7 @@ function PendingOrder() {
           selectedWeightRange: '',
         }}
       >
-        {({ values, resetForm, setFieldValue, dirty }) => {
+        {({ values, resetForm }) => {
           setFilterFormValue(values);
           return (
             <Stack gap={3}>
@@ -280,7 +253,6 @@ function PendingOrder() {
                   withOutLabel
                   placeholder={getItemCategoryList ? 'Loading...' : 'Select'}
                   isSearchable
-                  filterOption={customFilterOption}
                 />
                 <button
                   className="btn btn-warning text-white"
@@ -292,8 +264,8 @@ function PendingOrder() {
               </div>
 
               <RenderIf render={toggleFilter}>
-                <Row className="align-items-end">
-                  <Col md={5}>
+                <Row>
+                  <Col>
                     <Field
                       component={CustomReactSelect}
                       options={weightRangeData}
@@ -304,7 +276,7 @@ function PendingOrder() {
                       isSearchable
                     />
                   </Col>
-                  <Col md={5}>
+                  <Col>
                     <Field
                       component={CustomReactSelect}
                       options={sizeRangeData}
@@ -315,19 +287,6 @@ function PendingOrder() {
                       isSearchable
                       disabled={!values?.selectedWeightRange}
                     />
-                  </Col>
-                  <Col md={2}>
-                    <button
-                      className="btn btn-info text-white w-100 py-2"
-                      type="button"
-                      onClick={() => {
-                        setFieldValue('selectedWeightRange', '');
-                        setFieldValue('selectedSizeRange', '');
-                      }}
-                      disabled={!dirty}
-                    >
-                      <i className="icofont-refresh text-white" /> Reset
-                    </button>
                   </Col>
                 </Row>
               </RenderIf>
