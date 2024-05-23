@@ -26,19 +26,20 @@ function SalaryNegotiationActivity() {
       width: '70px',
     },
     {
-      name: 'Salary',
+      name: 'HR Negotiated salary',
       sortable: true,
-      selector: row => (row?.max_salary ? formatNumberWithCurrency(row?.max_salary) : '--'),
-      width: '120px',
+      selector: row =>
+        row?.hr_negotiable_salary ? formatNumberWithCurrency(row?.hr_negotiable_salary) : '--',
+      width: '175px',
     },
     {
-      name: 'Negotiated salary',
+      name: 'Sr HR Negotiated salary',
       sortable: true,
       selector: row =>
         row?.sr_hr_negotiable_salary
           ? formatNumberWithCurrency(row?.sr_hr_negotiable_salary)
           : '--',
-      width: '150px',
+      width: '200px',
     },
 
     {

@@ -1,13 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { uploadFileGenerateRequisitionThunk } from '../../../services/po/generateRequisition';
+import {
+  getGenerateRequisitionListThunk,
+  uploadFileGenerateRequisitionThunk,
+} from '../../../services/po/generateRequisition';
 
 const initialState = {
+  generateRequisitionListData: [],
   isLoading: {
     uploadFileGenerateRequisition: false,
+    generateRequisitionList: false,
   },
-  errorMsg: { uploadFileGenerateRequisition: '' },
-  successMsg: { uploadFileGenerateRequisition: '' },
+  errorMsg: { uploadFileGenerateRequisition: '', generateRequisitionList: '' },
+  successMsg: { uploadFileGenerateRequisition: '', generateRequisitionLis: '' },
 };
 const generateRequisitionSlice = createSlice({
   name: 'Generate Requisition',
@@ -28,6 +33,21 @@ const generateRequisitionSlice = createSlice({
       .addCase(uploadFileGenerateRequisitionThunk.rejected, (state, action) => {
         state.isLoading.uploadFileGenerateRequisition = false;
         state.errorMsg.uploadFileGenerateRequisition = action.error.message;
+      })
+
+      // // get generate requisitions list data
+      .addCase(getGenerateRequisitionListThunk.pending, (state, action) => {
+        state.isLoading.generateRequisitionList = true;
+      })
+      .addCase(getGenerateRequisitionListThunk.fulfilled, (state, action) => {
+        state.isLoading.generateRequisitionList = false;
+        state.generateRequisitionListData = action.payload?.data;
+        state.successMsg.generateRequisitionList = action.payload?.msg;
+      })
+      .addCase(getGenerateRequisitionListThunk.rejected, (state, action) => {
+        state.isLoading.generateRequisitionList = false;
+        state.generateRequisitionListData = [];
+        state.errorMsg.generateRequisitionList = action.error.message;
       });
   },
 });

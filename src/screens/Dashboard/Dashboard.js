@@ -10,6 +10,7 @@ import {
   postTimerData,
   deleteTask,
   getRegularizationTime,
+  getRegularizationTimeHistory,
 } from "../../services/TicketService/TaskService";
 import { _base } from "../../settings/constants";
 import {
@@ -79,6 +80,7 @@ export default function HrDashboard(props) {
   const location = useLocation();
   const [approvedNotifications, setApprovedNotifications] = useState();
   const [notifications, setNotifications] = useState([]);
+  const [historyData, setHistoryData] = useState([]);
 
   const [allRequest, setAllRequest] = useState();
   const data = props.data;
@@ -197,6 +199,7 @@ export default function HrDashboard(props) {
       }
     });
   };
+
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
   const loadData = () => {
@@ -234,7 +237,47 @@ export default function HrDashboard(props) {
   };
 
   const handleHistoryModal = () => {
+    setIsLoading(null);
+    setIsLoading(true);
+    new getRegularizationTimeHistory()
+
+      .then((res) => {
+        // Process the data
+        if (res.status === 200) {
+          setIsLoading(false);
+
+          if (res.data.data) {
+            const temp = res.data.data
+              ?.filter((d) => d?.status_remark !== "PENDING")
+              ?.map((d) => ({
+                id: d.id,
+                created_by_name: d.created_by_name,
+                from_date: d.from_date,
+                to_date: d.to_date,
+                from_time: d.from_time,
+                to_time: d.to_time,
+                remark: d.remark,
+                is_checked: 0,
+                regularization_time_status: d.regularization_time_status,
+                task_name: d.task_name,
+                ticket_id_name: d.ticket_id_name,
+                actual_time: d.actual_time,
+                task_hours: d.task_hours,
+                scheduled_time: d.scheduled_time,
+                status: d.status_remark,
+              }));
+
+            // Assuming setDataa is a function to set the state
+            setHistoryData(temp);
+          }
+        } else {
+        }
+      })
+      .catch((error) => {
+        // Handle errors, e.g., show an error message to the user
+      });
     const data = null;
+
     setHistoryModal({ show: true, data: data });
   };
   const handleCloseHistoryModal = () => {
@@ -253,37 +296,44 @@ export default function HrDashboard(props) {
 
   const [regularizationRequest, setRegularizationRequest] = useState([]);
   const [ticketID, setTicketID] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notificationId, setNotificationId] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
-    setTicketID(cuurentData);
-    new getRegularizationTime(cuurentData).then((res) => {
-      const temp = res?.data?.data
-        ?.filter((d) => d.status_remark === "PENDING")
-        .map((d) => ({
-          id: d.id,
-          created_by_name: d.created_by_name,
-          from_date: d.from_date,
-          to_date: d.to_date,
-          from_time: d.from_time,
-          to_time: d.to_time,
-          remark: d.remark,
-          is_checked: 0,
-          regularization_time_status: d.regularization_time_status,
-          task_name: d.task_name,
-          ticket_id_name: d.ticket_id_name,
-          actual_time: d.actual_time,
-          task_hours: d.task_hours,
-          scheduled_time: d.scheduled_time,
-          status: d.status_remark,
-        }));
-      setRegularizationRequest(temp);
+    setIsLoading(null);
+    setIsLoading(true);
+    setTicketID(cuurentData.ticketID);
+    setNotificationId(cuurentData.notificationid);
+    new getRegularizationTime(cuurentData.ticketID).then((res) => {
+      if (res.status === 200) {
+        setIsLoading(false);
+        const temp = res?.data?.data
+          ?.filter((d) => d.status_remark === "PENDING")
+          .map((d) => ({
+            id: d.id,
+            created_by_name: d.created_by_name,
+            from_date: d.from_date,
+            to_date: d.to_date,
+            from_time: d.from_time,
+            to_time: d.to_time,
+            remark: d.remark,
+            is_checked: 0,
+            regularization_time_status: d.regularization_time_status,
+            task_name: d.task_name,
+            ticket_id_name: d.ticket_id_name,
+            actual_time: d.actual_time,
+            task_hours: d.task_hours,
+            scheduled_time: d.scheduled_time,
+            status: d.status_remark,
+          }));
+
+        setRegularizationRequest(temp);
+      }
     });
   };
 
   return (
     <div className="container-xxl">
-      {/* <PageHeader headerTitle="Dashboard" />
-      <button>time </button> */}
       <div
         style={{
           display: "flex",
@@ -294,18 +344,6 @@ export default function HrDashboard(props) {
         <PageHeader headerTitle="Dashboard" />
 
         <div style={{ position: "relative", marginTop: "-40px" }}>
-          {/* <button
-            className="badge bg-primary p-2"
-            style={{
-              width: "auto",
-              padding: "0.5rem 2rem",
-              lineHeight: "13px",
-            }}
-          >
-            Regularization
-            <br className="mt-2" />
-            Request
-          </button> */}
           {(historyModal.show || approveRequestModal.show) === false && (
             <Dropdown
               className="notifications"
@@ -319,7 +357,7 @@ export default function HrDashboard(props) {
                 className="nav-link dropdown-toggle pulse"
                 style={{ zIndex: -200 }}
               >
-                <div className=" me-3">
+                <div className=" me-3" style={{ marginLeft: "28%" }}>
                   <div>
                     <button
                       class=" badge bg-primary p-2 mt-3 "
@@ -329,30 +367,22 @@ export default function HrDashboard(props) {
                         lineHeight: "revert-layer",
                       }}
                     >
-                      {" "}
-                      {`Regularization`}
-                      <br />
-                      {`Request : ${
-                        approvedNotifications?.length
-                          ? approvedNotifications?.length
-                          : 0
-                      }`}
+                      Regularization
                     </button>
                     {approvedNotifications?.length > 0 && (
                       <div
                         className="notification-circle"
                         style={{
                           position: "absolute",
-                          top: "1px",
-                          right: "20px",
+                          top: "-10px",
+                          right: "-10px",
                           padding: "3px",
-                          zIndex: "auto",
                           backgroundColor: "rgb(255, 24, 67)",
                           borderRadius: "50%",
-                          // display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
                           color: "white",
+                          textAlign: "center",
                           fontSize: "0.8rem",
                           fontWeight: "bold",
                           minWidth: "20px", // Minimum width to prevent squishing
@@ -416,7 +446,7 @@ export default function HrDashboard(props) {
 
                               const parts = ele.url.split("/"); // Split the string by '/'
                               const ticketID = parts[parts.length - 1]; // Get the last part of the array
-
+                              const notificationid = ele.id;
                               return (
                                 <li
                                   className="py-2 mb-1 border-bottom"
@@ -427,7 +457,10 @@ export default function HrDashboard(props) {
                                     style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                       handleShowApproveRequestModal();
-                                      handleRegularizationRequest(ticketID);
+                                      handleRegularizationRequest({
+                                        ticketID,
+                                        notificationid,
+                                      });
                                     }}
                                   >
                                     {ele.url && (
@@ -496,13 +529,7 @@ export default function HrDashboard(props) {
                                     }}
                                   >
                                     {ele.url && (
-                                      // <Link to={`/${_base}/${ele.url}`}>
-                                      <p
-                                        className="d-flex justify-content-between mb-0"
-                                        // onClick={(e) =>
-                                        //   handleReadNotification(e, ele.id)
-                                        // }
-                                      >
+                                      <p className="d-flex justify-content-between mb-0">
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
                                             {" "}
@@ -594,6 +621,8 @@ export default function HrDashboard(props) {
                 hide={handleCloseApproveRequestModal}
                 data={regularizationRequest && regularizationRequest}
                 ticketId={ticketID}
+                isLoading={isLoading}
+                notificationId={notificationId}
               />
             )}
           </>
@@ -603,33 +632,11 @@ export default function HrDashboard(props) {
               <TimeRegularizationHistory
                 show={historyModal.show}
                 hide={handleCloseHistoryModal}
+                data={historyData}
+                isLoading={isLoading}
               />
             )}
           </>
-          {/* {approvedNotifications?.length > 0 && (
-            <div
-              className="notification-circle"
-              style={{
-                position: "absolute",
-                top: "-14px",
-                right: "18px",
-                padding: "3px",
-                zIndex: "auto",
-                backgroundColor: "rgb(255, 24, 67)",
-                borderRadius: "50%",
-                // display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-                fontSize: "0.8rem",
-                fontWeight: "bold",
-                minWidth: "20px", // Minimum width to prevent squishing
-                height: "auto", // Let the height adjust automatically}}
-              }}
-            >
-              {approvedNotifications.length}
-            </div>
-          )} */}
         </div>
       </div>
       <div className="row">

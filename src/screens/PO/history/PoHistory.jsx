@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 
 // // static import
 import {
@@ -19,6 +20,14 @@ function PoHistory() {
   // // initial state
   const dispatch = useDispatch();
 
+  // // local state
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} },
+  );
+
   // // redux state
   const {
     venderList,
@@ -26,14 +35,16 @@ function PoHistory() {
   } = useSelector(state => state?.poCommon);
   const {
     requisitionHistoryList,
-    isLoading: { getRequisitionHistoryList },
+    requisitionHistoryExportDataList,
+    isLoading: { getRequisitionHistoryList, getRequisitionHistoryExportDataList },
   } = useSelector(state => state?.requisitionHistory);
 
   //  table column data
   const columns = [
     {
       name: 'Sr No.',
-      selector: (row, index) => index + 1,
+      selector: (row, index) =>
+        (paginationData.currentPage - 1) * paginationData.rowPerPage + index + 1,
       sortable: false,
       width: '70px',
     },
@@ -130,19 +141,67 @@ function PoHistory() {
   };
 
   const handelApplyFilter = ({ formData }) => {
-    const apiData = {
+    const formatApiData = {
       vender_name: formData?.vender_name?.length ? formData?.vender_name : '',
-      from_order_date: formData?.order_date?.length ? formData?.order_date?.[0] : '',
-      to_order_date: formData?.order_date?.length ? formData?.order_date?.[1] : '',
-      from_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
-      to_delivery_date: formData?.delivery_date?.length ? formData?.delivery_date?.[0] : '',
+      from_order_date: formData?.order_date?.length
+        ? formData?.order_date?.[0]
+          ? moment(formData?.order_date?.[0])?.format()
+          : ''
+        : '',
+      to_order_date: formData?.order_date?.length
+        ? formData?.order_date?.[1]
+          ? moment(formData?.order_date?.[1]).format()
+          : ''
+        : '',
+      from_delivery_date: formData?.delivery_date?.length
+        ? formData?.delivery_date?.[0]
+          ? moment(formData?.delivery_date?.[0]).format()
+          : ''
+        : '',
+      to_delivery_date: formData?.delivery_date?.length
+        ? formData?.delivery_date?.[1]
+          ? moment(formData?.delivery_date?.[1]).format()
+          : ''
+        : '',
     };
+    setPaginationData({ currentFilterData: formatApiData });
+
+    const apiData = {
+      ...formatApiData,
+      limit: paginationData.rowPerPage,
+      page: paginationData.currentPage,
+      type: 'history',
+    };
+
     dispatch(getRequisitionHistoryThunk({ filterData: apiData }));
   };
 
   const handelResetFilter = ({ restFunc }) => {
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'history',
+        },
+      }),
+    );
+    setPaginationData({ currentFilterData: {} });
     restFunc();
+  };
+
+  const exportDataHandler = () => {
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          ...paginationData.currentFilterData,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'history',
+          datatype: 'ALL',
+        },
+      }),
+    );
   };
 
   // // life cycle
@@ -150,8 +209,17 @@ function PoHistory() {
     if (!venderList?.length) {
       dispatch(getVenderListThunk());
     }
-    dispatch(getRequisitionHistoryThunk({ filterData: '' }));
-  }, []);
+    dispatch(
+      getRequisitionHistoryThunk({
+        filterData: {
+          ...paginationData.currentFilterData,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          type: 'history',
+        },
+      }),
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <Container fluid className="po_history_container">
@@ -212,9 +280,13 @@ function PoHistory() {
                   </button>
                   <ExportToExcel
                     className="btn btn-danger"
-                    apiData={transformDataForExport(requisitionHistoryList)}
+                    apiData={transformDataForExport(requisitionHistoryExportDataList?.data || [])}
                     fileName="Order History"
-                    disabled={!requisitionHistoryList?.length}
+                    disabled={
+                      !requisitionHistoryList?.data?.length || getRequisitionHistoryExportDataList
+                    }
+                    isLoading={getRequisitionHistoryExportDataList}
+                    onApiClick={exportDataHandler}
                   />
                 </Col>
               </Row>
@@ -224,9 +296,18 @@ function PoHistory() {
 
         <DataTable
           columns={columns}
-          data={requisitionHistoryList}
+          data={requisitionHistoryList?.data}
           progressPending={getRequisitionHistoryList}
           progressComponent={<TableLoadingSkelton />}
+          pagination
+          paginationServer
+          paginationTotalRows={requisitionHistoryList?.total_count}
+          paginationDefaultPage={paginationData.currentPage}
+          onChangePage={page => setPaginationData({ currentPage: page })}
+          onChangeRowsPerPage={newPageSize => {
+            setPaginationData({ rowPerPage: newPageSize });
+            setPaginationData({ currentPage: 1 });
+          }}
         />
       </Stack>
     </Container>

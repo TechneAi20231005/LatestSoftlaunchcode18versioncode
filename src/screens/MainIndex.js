@@ -523,8 +523,8 @@ class MainIndex extends React.Component {
               element={<GenerateRequisition />}
             />
             <Route exact path={`/${_base}/GeneratePO`} element={<GeneratePo />} />
-            <Route exact path={`/${_base}/GeneratePO/:id`} element={<PendingOrder />} />
-            <Route exact path={`/${_base}/GeneratePO/:id/preview`} element={<PoPreview />} />
+            <Route exact path={`/${_base}/GeneratePO/po`} element={<PendingOrder />} />
+            <Route exact path={`/${_base}/GeneratePO/po/preview`} element={<PoPreview />} />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
             <Route exact path={`/${_base}/POVendorExportReport`} element={<VendorExportReport />} />
             <Route

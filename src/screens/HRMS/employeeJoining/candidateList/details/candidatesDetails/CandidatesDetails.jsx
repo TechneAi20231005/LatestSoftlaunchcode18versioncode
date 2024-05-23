@@ -34,8 +34,10 @@ function CandidatesDetails() {
 
   // getCandidatesDetailsData
   // // redux state
-  const { candidateDetailsData, isLoading } = useSelector(state => state?.candidatesMaster);
-  const { details } = candidateDetailsData;
+  const {
+    candidateDetailsData: { details },
+    isLoading,
+  } = useSelector(state => state?.candidatesMaster);
 
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
     state => state?.branchMaster,
@@ -250,7 +252,7 @@ function CandidatesDetails() {
                       label="Current Years Of Work Experience"
                       placeholder="Select"
                       requiredField
-                      disabled={currentMode === 'VIEW'}
+                      disabled={currentMode === 'VIEW' || details?.application_status_id !== 1}
                     />
                   </Col>
                 </Row>

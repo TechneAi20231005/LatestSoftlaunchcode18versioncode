@@ -85,8 +85,12 @@ function JobOfferOnBoarding() {
     sr_hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
       ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ?? ''
       : '',
-    remark_id: '',
-    other_remark: '',
+    remark_id: salaryOfferedByHrAndSrHrData.length
+      ? salaryOfferedByHrAndSrHrData?.[0]?.remark_id ?? ''
+      : '',
+    other_remark: salaryOfferedByHrAndSrHrData.length
+      ? salaryOfferedByHrAndSrHrData?.[0]?.remark_description ?? ''
+      : '',
   };
 
   // // dropdown data
@@ -303,7 +307,7 @@ function JobOfferOnBoarding() {
                             Relevant Experience &nbsp;
                             <RenderIf render={!errors?.relevant_experience}>
                               <small className="opacity-50">
-                                (Relevant experience should be 0.1 to 100)
+                                (Relevant experience should be 0 to 100)
                               </small>
                             </RenderIf>
                           </>
