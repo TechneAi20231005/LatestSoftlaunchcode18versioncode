@@ -92,21 +92,6 @@ function GenerateRequisitionFilterModal({
   const handleSearch = values => {
     setFilterModalData(values);
     onClose();
-    if (
-      values?.item?.length ||
-      values?.category?.length ||
-      values?.weight_range?.length ||
-      values?.size_range?.length
-    ) {
-      dispatch(
-        getGenerateRequisitionListThunk({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
-          search: searchValue,
-          filterValue: values,
-        }),
-      );
-    }
   };
 
   const handleReset = ({ restFun }) => {
