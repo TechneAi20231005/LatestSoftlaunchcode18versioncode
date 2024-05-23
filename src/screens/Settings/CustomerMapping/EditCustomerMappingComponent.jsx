@@ -65,6 +65,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [user, setUser] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
+  
+
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
   const [ratioTotal, setRatioTotal] = useState(0);
@@ -387,7 +389,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleGetDepartmentUsers = async (e, additional_id = null) => {
-    setUserDropdown(null);
+    console.log(e);
+    useridDetail.current?.clearValue();
+
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
