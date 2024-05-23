@@ -41,12 +41,10 @@ export function getDateTime() {
 }
 
 export default function CreateCustomerMappingComponent() {
-  const location = useLocation();
-
   const history = useNavigate();
-  const [notify, setNotify] = useState();
-
+  const dispatch = useDispatch();
   const departmentDropdownRef = useRef();
+  const [notify, setNotify] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
@@ -63,11 +61,9 @@ export default function CreateCustomerMappingComponent() {
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(0);
+  const [showUserSelect, setShowUserSelect] = useState(false);
 
   const [ratioTotal, setRatioTotal] = useState(0);
-  const roleId = sessionStorage.getItem("role_id");
-
-  const dispatch = useDispatch();
 
   const [confirmationRequired, setConfirmationRequired] = useState("");
 
@@ -76,7 +72,7 @@ export default function CreateCustomerMappingComponent() {
   };
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
 
   const {
@@ -115,8 +111,6 @@ export default function CreateCustomerMappingComponent() {
     user_policy_label: [],
   });
 
-  const priority = ["Low", "Medium", "High", "Very High"];
-
   const loadData = async () => {
     await getDynamicForm();
   };
@@ -135,7 +129,6 @@ export default function CreateCustomerMappingComponent() {
         }
       }
     } catch (error) {
-      // Handle errors here
       console.error("Error fetching dynamic form:", error);
     }
   };
@@ -147,7 +140,7 @@ export default function CreateCustomerMappingComponent() {
     setSelectedDynamicForm(null);
     await getDynamicForm();
 
-    const queryTypeTemp = queryType.filter((d) => d.id == e.value);
+    const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
       .filter((d) => d.id == queryTypeTemp[0].form_id)
@@ -310,7 +303,6 @@ export default function CreateCustomerMappingComponent() {
     };
 
     const RwuserID = getUserData();
-    const ratiosToSend = ratiowiseData?.filter((ratio) => ratio !== 0);
 
     const customerID = customerDetail?.current?.props?.value;
     const queryTypeid = queryTypeDetail?.current?.props?.value?.value;
@@ -354,7 +346,7 @@ export default function CreateCustomerMappingComponent() {
     form.created_at = getDateTime();
 
     var flag = 1;
-    if (data?.approach == "RW") {
+    if (data?.approach === "RW") {
       if (
         (ratioTotal && ratioTotal > 100) ||
         (ratioTotal && ratioTotal < 100)
@@ -404,7 +396,6 @@ export default function CreateCustomerMappingComponent() {
           );
         });
     } else {
-      // alert("Error No 25");
     }
   };
 
@@ -567,11 +558,8 @@ export default function CreateCustomerMappingComponent() {
                     </label>
                   </div>
 
-                  <div className="col-sm-1" style={{ textAlign: "left" }}>
-                    <div
-                      className="form-group mt-2 text-left d-flex justify-content-between"
-                      style={{ textAlign: "left" }}
-                    >
+                  <div className="col-sm-1">
+                    <div className="form-group mt-2 text-left d-flex justify-content-between">
                       <div className="form-check">
                         <input
                           className="form-check-input"
@@ -594,7 +582,7 @@ export default function CreateCustomerMappingComponent() {
                         </label>
                       </div>
 
-                      <div className="form-check">
+                      <div className="form-check mx-2">
                         <input
                           className="form-check-input"
                           type="radio"
@@ -643,7 +631,7 @@ export default function CreateCustomerMappingComponent() {
                       <option value="HLT">User Having Less Ticket</option>
                       <option value="SP">Single Person</option>
                       <option value="RW">Ratio Wise</option>
-                      {selectedCustomer == 0 && (
+                      {selectedCustomer === 0 && (
                         <option value="SELF">Self</option>
                       )}
                       <option value="AU">Assign to user</option>
@@ -669,16 +657,12 @@ export default function CreateCustomerMappingComponent() {
                           onChange={(e) => {
                             handleAutoChanges(e, "Select2", "department_id");
                             handleGetDepartmentUsers(e);
+                            setShowUserSelect(true);
                           }}
                         />
                       )}
                       {data.approach && !departmentDropdown && (
-                        <span
-                          className="mt-2"
-                          style={{ marginTop: "10%", fontSize: "16px" }}
-                        >
-                          Loading.....
-                        </span>
+                        <span className="mt-2">Loading.....</span>
                       )}
                     </div>
                   </div>
@@ -691,32 +675,30 @@ export default function CreateCustomerMappingComponent() {
                         Select User :<Astrick color="red" size="13px" />
                       </b>
                     </label>
-                    {userDropdown && data.approach != "RW" && (
-                      <div className="col-sm-4">
-                        <Select
-                          isMulti={data.approach != "SP"}
-                          isSearchable={true}
-                          ref={useridDetail}
-                          name="user_id[]"
-                          className="basic-multi-select"
-                          classNamePrefix="select"
-                          options={userDropdown}
-                          required
-                          style={{ zIndex: "100" }}
-                        />
-                      </div>
+                    {showUserSelect && (
+                      <>
+                        {userDropdown && data.approach !== "RW" && (
+                          <div className="col-sm-4">
+                            <Select
+                              isMulti={data.approach !== "SP"}
+                              isSearchable={true}
+                              ref={useridDetail}
+                              name="user_id[]"
+                              className="basic-multi-select"
+                              classNamePrefix="select"
+                              options={userDropdown}
+                              required
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {data.approach && data.department_id && !userDropdown && (
-                      <span
-                        className="mt-2"
-                        style={{ marginTop: "10%", fontSize: "16px" }}
-                      >
-                        Loading.....
-                      </span>
+                      <span className="mt-2">Loading.....</span>
                     )}
 
-                    {userDropdown && data.approach == "RW" && (
+                    {userDropdown && data.approach === "RW" && (
                       <div className="col-sm-6">
                         <Table bordered className="mt-2" id="table">
                           <thead>
@@ -785,7 +767,7 @@ export default function CreateCustomerMappingComponent() {
                   </div>
                 )}
 
-                <div className="mt-3" style={{ textAlign: "right" }}>
+                <div className="mt-3 d-flex justify-content-end">
                   <button type="submit" className="btn btn-primary btn-sm">
                     Submit
                   </button>
