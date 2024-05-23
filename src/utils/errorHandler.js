@@ -14,6 +14,9 @@ export default function errorHandler(response = '') {
     if (response.status === 403) {
       toast.error(response.data.message);
     }
+    if (response.status === 422) {
+      toast.error(response.data.message);
+    }
     if (response.status === 401) {
       // // logoutAction({ forceLogout: true })
       toast.error('user force logout');

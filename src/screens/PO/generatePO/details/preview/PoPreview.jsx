@@ -3,6 +3,7 @@ import { Col, Container, Spinner } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 // // static import
 import CustomAlertModal from '../../../../../components/custom/modal/CustomAlertModal';
@@ -10,6 +11,7 @@ import {
   deleteUserPendingOrderRequest,
   editUserPendingOrderRequest,
   resetPendingOrderListData,
+  resetUserAddedOrderList,
 } from '../../../../../redux/slices/po/generatePo';
 import { createPendingOrderThunk } from '../../../../../redux/services/po/generatePo';
 import { _base } from '../../../../../settings/constants';
@@ -129,12 +131,21 @@ function PoPreview() {
     );
   };
 
+  const handelCancelPo = () => {
+    dispatch(resetUserAddedOrderList());
+    navigate(`/${_base}/GeneratePO`);
+  };
+
   const handelEditOrder = id => {
-    dispatch(editUserPendingOrderRequest({ current_id: id, order_qty: orderQtyInputValue }));
-    setOrderQty({
-      isEditable: false,
-      currentId: id,
-    });
+    if (orderQtyInputValue > 0) {
+      dispatch(editUserPendingOrderRequest({ current_id: id, order_qty: orderQtyInputValue }));
+      setOrderQty({
+        isEditable: false,
+        currentId: id,
+      });
+    } else {
+      toast.error('Order quantity should be greater than 0');
+    }
   };
 
   const handelDeleteOrder = () => {
@@ -162,6 +173,9 @@ function PoPreview() {
             onClick={handelCreatePo}
           >
             {isLoading?.createPendingOrder ? <Spinner animation="border" size="sm" /> : 'Submit'}
+          </button>
+          <button className="btn btn-danger text-white px-4" type="button" onClick={handelCancelPo}>
+            Cancel
           </button>
         </div>
       </Container>

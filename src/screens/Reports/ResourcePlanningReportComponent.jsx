@@ -11,22 +11,20 @@ import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import { Spinner, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { _base, userSessionData } from "../../settings/constants";
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
+import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../Dashboard/DashboardAction";
 
 export default function ResourcePlanningReportComponent() {
-
-
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const roleId = sessionStorage.getItem("role_id")
+  const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null)
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==25)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 25)
   );
 
   const [todate, setTodate] = useState([]);
@@ -61,11 +59,14 @@ export default function ResourcePlanningReportComponent() {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     const tempUserData = [];
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = res.data.data.filter(
+          (d) => d.is_active === 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -85,8 +86,6 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
@@ -95,7 +94,7 @@ export default function ResourcePlanningReportComponent() {
     //     }
     //   }
     // })
-    dispatch(getRoles())
+    dispatch(getRoles());
 
     const data = [];
     const exportData = [];
@@ -147,7 +146,7 @@ export default function ResourcePlanningReportComponent() {
               setShowLoaderModal(false);
               let sr = 1;
               const data = res.data.data;
-         
+
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -177,7 +176,9 @@ export default function ResourcePlanningReportComponent() {
 
                 const exportTempData = [];
                 for (const i in data) {
-                  const tasks = Array.isArray(data[i].tasks) ? data[i].tasks : [];
+                  const tasks = Array.isArray(data[i].tasks)
+                    ? data[i].tasks
+                    : [];
                   let counter = 1;
                   for (const task of tasks) {
                     exportTempData.push({
@@ -245,10 +246,12 @@ export default function ResourcePlanningReportComponent() {
                 <tr>
                   <td>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
-                  <td >
+                  <td>
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}> {task.ticket_id} </span>
-
+                      <span style={{ fontWeight: "bold" }}>
+                        {" "}
+                        {task.ticket_id}{" "}
+                      </span>
                     </Link>
                     - {task.task_name}
                   </td>
@@ -271,7 +274,7 @@ export default function ResourcePlanningReportComponent() {
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [])
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -292,7 +295,7 @@ export default function ResourcePlanningReportComponent() {
                   className="basic-multi-select"
                   classNamePrefix="select"
                   options={userData}
-                  required
+                  // required
                   style={{ zIndex: "100" }}
                 />
               </div>

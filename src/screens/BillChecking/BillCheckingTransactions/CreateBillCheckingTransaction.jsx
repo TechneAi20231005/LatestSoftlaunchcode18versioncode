@@ -1221,7 +1221,14 @@ export default function CreateBillCheckingTransaction({ match }) {
                       type="checkbox"
                       style={{ marginRight: '8px', marginLeft: '10px' }}
                       id="is_tds_applicable"
-                      onChange={e => handleTdsApplicable(e)}
+
+                      disabled={
+                        authorities && authorities.All_Update_Bill === false
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => handleTdsApplicable(e)}
+
                     />
                     <label className="col-form-label" style={{ width: '100px' }}>
                       <b>TDS Applicable:</b>
