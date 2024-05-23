@@ -203,7 +203,7 @@ function CandidatesDetails() {
                       options={preferredRole}
                       component={CustomReactSelect}
                       name="designation_id"
-                      label="Preferred Designation"
+                      label="Preferred Role"
                       placeholder={status === 'loading' ? 'Loading...' : 'Select'}
                       disabled
                     />

@@ -240,7 +240,7 @@ function PoHistory() {
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
-                    label="Vendor Name :"
+                    label="Vender Name :"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     isSearchable
                     isMulti
@@ -252,15 +252,7 @@ function PoHistory() {
                     type="date"
                     name="order_date"
                     label="Order Date :"
-                    placeholderText="dd/mm/yyyy"
-                    dateFormat="dd/MM/yyy"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    onKeyDown={e => {
-                      e.preventDefault();
-                    }}
-                    isClearable
+                    placeholderText="mm/dd/yyyy"
                     range
                   />
                 </Col>
@@ -269,15 +261,7 @@ function PoHistory() {
                     component={CustomReactDatePicker}
                     type="date"
                     name="delivery_date"
-                    placeholderText="dd/mm/yyyy"
-                    dateFormat="dd/MM/yyy"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    onKeyDown={e => {
-                      e.preventDefault();
-                    }}
-                    isClearable
+                    placeholderText="mm/dd/yyyy"
                     label="Delivery Date :"
                     range
                   />
@@ -324,7 +308,6 @@ function PoHistory() {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30, 200]}
         />
       </Stack>
     </Container>

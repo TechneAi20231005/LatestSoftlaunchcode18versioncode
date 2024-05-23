@@ -27,11 +27,11 @@ function CandidateEditHistory() {
       width: '150px',
     },
     {
-      name: 'Preferred Designation',
+      name: 'Preferred Role',
       sortable: true,
       selector: row => row?.designation || '--',
       sortable: true,
-      width: '175px',
+      width: '150px',
     },
     {
       name: 'Preferred Location',
