@@ -7952,8 +7952,17 @@ fieldset:disabled .btn {
   order: 0 !important;
 }
 
+/* Apply .order-1 class for all devices */
 .order-1 {
   order: 1 !important;
+}
+
+/* Override .order-1 class specifically for tablets */
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Styles for tablets */
+  .order-1 {
+    order: initial !important; /* Reset order property to its initial value */
+  }
 }
 
 .order-2 {
@@ -23259,6 +23268,22 @@ body.rtl_mode
   .dropdown-animation {
     margin-left: 60px;
     margin-top: 45px; /* Apply margin-top only for mobile devices */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Styles for tablets */
+  .dropdown-animation {
+    margin-left: 207px;
+    margin-top: 51px; /* Apply margin-top only for tablets */
+  }
+}
+
+/* Media query for screens smaller than 320px (mobile devices S) */
+@media (max-width: 320px) {
+  .dropdown-animation {
+    margin-left: 26px;
+    /* Adjust margin-top as needed for mobile devices S */
   }
 }
 

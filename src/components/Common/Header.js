@@ -503,7 +503,7 @@ export default function Header() {
             <span className="fa fa-bars"></span>
           </button> */}
 
-          <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 "></div>
+          <div className="order-lg-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 "></div>
         </div>
       </nav>
     </div>
