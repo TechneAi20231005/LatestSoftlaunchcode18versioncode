@@ -230,6 +230,8 @@ export default function MyTicketComponent() {
     setRemarkModal(data);
   };
 
+  const UserId = localStorage.getItem("id");
+
   const actionComponent = (data, type) => {
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
@@ -244,27 +246,28 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
+              {/* {data.created_by == localStorage.getItem("id") ||
                 data.assign_to_user_id == localStorage.getItem("id") ||
                 (data.status_name !== "Solved" &&
                   data.passed_status !== "REJECT" &&
                   localStorage.getItem("account_for" === "SELF")) ||
                 (data?.projectowner?.filter(
                   (d) => d.user_id == localStorage.getItem("id")
-                ) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Edit/` + data.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: "100" }}
-                    >
-                      <i className="icofont-ui-edit"></i> Edit
-                    </Link>
-                  </li>
-                ))}
+                ) && ( */}
+              {console.log("data", data)}
+              {/* {data.assign_to_user_id === Number(UserId) && (assign_to_department_id === login_user_dept_id) && (assign_to_ticket_type_show === login_ticket_type_show)} */}
+                <li>
+                  <Link
+                    to={`/${_base}/Ticket/Edit/` + data.id}
+                    className="btn btn-sm btn-warning text-white"
+                    style={{ width: "100%", zIndex: "100" }}
+                  >
+                    <i className="icofont-ui-edit"></i> Edit
+                  </Link>
+                </li>
+              {/* )} */}
 
               <li>
-                {" "}
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
@@ -274,12 +277,39 @@ export default function MyTicketComponent() {
                 </Link>{" "}
               </li>
 
-              {data.created_by != localStorage.getItem("id") &&
+              {/* {data.created_by != localStorage.getItem("id") &&
                 data.basket_configured === 0 &&
                 localStorage.getItem("account_for") === "SELF" &&
                 data.status_name != "Solved" &&
                 data.passed_status !== "REJECT" &&
-                data.passed_status !== "UNPASS" && (
+                data.passed_status !== "UNPASS" && ( */}
+
+              {/* {data.assign_to_user_id === Number(UserId) && (
+                <li>
+                  <Link
+                    to={`/${_base}/Ticket/Basket/` + data.id}
+                    className="btn btn-sm btn-primary text-white"
+                    style={{ width: "100%", zIndex: 100 }}
+                  >
+                    <i className="icofont-bucket2"></i>Basket
+                  </Link>
+                </li>
+              )} */}
+
+              {/* )} */}
+
+              {/* {(data.created_by != localStorage.getItem("id") &&
+                data.basket_configured > 0 &&
+                data.status_name != "Solved" &&
+                localStorage.getItem("account_for" === "SELF")) ||
+                (data?.projectowner?.filter(
+                  (d) => d.user_id == localStorage.getItem("id")
+                ) && ( */}
+
+              {((data.created_by != UserId && data.basket_configured === 0) ||
+                (data.assign_to_user_id == UserId &&
+                  data.basket_configured === 0)) &&
+                localStorage.getItem("account_for") === "SELF" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}
@@ -291,13 +321,11 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {(data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0 &&
-                data.status_name != "Solved" &&
-                localStorage.getItem("account_for" === "SELF")) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem("id")
-                ) && (
+              {((data.created_by != localStorage.getItem("id") &&
+                data.basket_configured > 0) ||
+                (data.assign_to_user_id == localStorage.getItem("id") &&
+                  data.basket_configured > 0)) &&
+                localStorage.getItem("account_for") === "SELF" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -307,7 +335,9 @@ export default function MyTicketComponent() {
                       <i className="icofont-tasks"></i> Task
                     </Link>
                   </li>
-                ))}
+                )}
+
+              {/* ))} */}
 
               <li>
                 <Link
@@ -318,6 +348,18 @@ export default function MyTicketComponent() {
                   <i className="icofont-history"></i> History
                 </Link>
               </li>
+
+              {data.created_by === Number(UserId) && (
+                <li>
+                  <button
+                    className=" btn btn-sm  btn-secondary text-white"
+                    style={{ width: "100%", zIndex: 100 }}
+                    onClick={(e) => handleConfirmationModal(e, data)}
+                  >
+                    Confirm
+                  </button>
+                </li>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
