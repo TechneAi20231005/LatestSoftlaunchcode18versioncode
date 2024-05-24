@@ -731,14 +731,13 @@ export default function CreateCustomerMappingComponent() {
                                       readOnly
                                     />
                                   </td>
+                                  {console.log(ratiowiseData)}
                                   <td>
                                     <input
                                       type="text"
                                       className="form-control col-sm-2"
                                       name="ratio[]"
-                                      defaultValue={
-                                        ratiowiseData ? ratiowiseData[i] : 0
-                                      }
+                                      defaultValue={0}
                                       ref={userRatioDetail}
                                       onInput={handleRatioInput(i)}
                                     />
