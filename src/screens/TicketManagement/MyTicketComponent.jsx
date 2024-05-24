@@ -244,26 +244,13 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-            {console.log(
-              "createdby",
-              data.created_by == localStorage.getItem("id")
-            )}
-            {console.log(
-              "assignto",
-              data.assign_to_user_id !== localStorage.getItem("id")
-            )}
-            {console.log(
-              "aa",
-              userDepartment?.[0].ticket_show_type == "DEPARTMENT_TICKETS"
-            )}
+            {console.log("createdby",data.created_by === localStorage.getItem("id"))}
+            {console.log("assignto",data.assign_to_user_id !== localStorage.getItem("id") )}
+            {console.log("loginuserDepartment",userDepartment?.[0].ticket_show_type === "DEPARTMENT_TICKETS" )}
             {console.log("department", userDepartment?.[0].ticket_show_type)}
-            {console.log(
-              "gg",
-              ((data.assign_to_user_id !== localStorage.getItem("id")) ==
-                userDepartment?.[0].ticket_show_type) !==
-                "DEPARTMENT_TICKETS"
-            )}
-
+            {console.log("department",userDepartment)}
+           
+           
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {typeof data.status_name === "string" &&
                 data.status_name !== "Solved" &&
