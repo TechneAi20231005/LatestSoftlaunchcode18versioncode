@@ -149,7 +149,8 @@ export default function HrDashboard(props) {
     });
   }
 
-  const [timerState, setTimerState] = useState();
+ 
+  
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {

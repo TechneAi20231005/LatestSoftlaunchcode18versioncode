@@ -17,43 +17,40 @@ import Alert from "./Alert";
 import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
 
 export default function Header() {
+  const userId = userSessionData.userId;
   const [tenantId, setTenantId] = useState();
   const [tenantDropdown, setTenantDropdown] = useState();
   const [showDropdown, setShowDropdown] = useState();
-
-  const [notify, setNotify] = useState(null);
-  const { id } = useParams();
-  const ticketId = id;
-
-  const history = useNavigate();
+  const [notify, setNotify] = useState();
   const [notifications, setNotifications] = useState([]);
   const [notificationHeight, setNotificationHeight] = useState(200);
   const [refreshInterval, setRefreshInterval] = useState(5000 || 0);
   const [show, setShow] = useState(false);
   const [approvedNotifications, setApprovedNotifications] = useState();
   const [allRequest, setAllRequest] = useState();
-
-  const userId = userSessionData.userId;
+  const [showNotificationIcon, setShowNotificationIcon] = useState(true);
+  const [data, setData] = useState(null);
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
   const loadNotifcation = () => {
     getNotification().then((res) => {
-      if (res.status === 200) {
+      if (res.data.status === 1 && res.status === 200) {
         setNotifications(null);
         setApprovedNotifications(null);
         if (res.data.data !== null) {
           if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
-            var height = 0;
+            const length = res.data.data.result.length;
+            const allRequests = res?.data?.data?.result?.filter(
+              (d) => d?.status !== 1
+            );
+            const height = 0;
             setNotifications(res.data.data.result);
 
             setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status == 1)
+              res?.data?.data?.result?.filter((d) => d?.status === 1)
             );
 
-            setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status != 1)
-            );
+            setAllRequest(allRequests);
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
@@ -63,7 +60,6 @@ export default function Header() {
       }
     });
   };
-
   const handleReadNotification = (e, id) => {
     markedReadNotification(id).then((res) => {
       loadNotifcation();
@@ -76,51 +72,16 @@ export default function Header() {
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 
-  const [approveRequestModal, setApproveRequestModal] = useState({
-    show: false,
-    data: null,
-  });
-
-  const [historyModal, setHistoryModal] = useState({
-    show: false,
-    data: null,
-  });
-
   const handleMarkAllNotification = (e) => {
     getAllmarkAllAsReadNotification(userId).then((res) => {
       loadNotifcation();
     });
   };
 
-  const [showNotificationIcon, setShowNotificationIcon] = useState(true);
-  const handleShowNotificationIcon = () => {
-    setShowNotificationIcon((prev) => !prev);
-  };
-
-  const handleShowApproveRequestModal = () => {
-    const data = null;
-    setApproveRequestModal({ show: true, data: data });
-    setNotify(null);
-  };
-  const handleCloseApproveRequestModal = () => {
-    const data = null;
-    setApproveRequestModal({ show: false, data: data });
-  };
-
-  const handleHistoryModal = () => {
-    const data = null;
-    setHistoryModal({ show: true, data: data });
-  };
-  const handleCloseHistoryModal = () => {
-    const data = null;
-    setHistoryModal({ show: false, data: data });
-  };
-
-  const [data, setData] = useState(null);
   const loadData = async (e) => {
     new UserService().getUserById(localStorage.getItem("id")).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
             "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
@@ -130,7 +91,7 @@ export default function Header() {
     });
     new TenantService().getTenant().then((res) => {
       if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter((d) => d.is_active == 1);
+        const temp = res.data.data.filter((d) => d.is_active === 1);
         setTenantDropdown(
           temp.map((d) => ({ value: d.id, label: d.company_name }))
         );
@@ -165,7 +126,6 @@ export default function Header() {
     });
   };
 
-  useEffect(() => {}, []);
   useEffect(() => {
     loadData();
   }, [showApprovedOnly]);
@@ -184,7 +144,7 @@ export default function Header() {
           <button
             className="navbar-toggler p-0 border-0 menu-toggle order-3"
             onClick={() => {
-              var side = document.getElementById("mainSideMenu");
+              const side = document.getElementById("mainSideMenu");
               if (side) {
                 if (side.classList.contains("open")) {
                   side.classList.remove("open");
@@ -275,7 +235,7 @@ export default function Header() {
                             return (
                               <li
                                 className="py-2 mb-1 border-bottom"
-                                key={index}
+                                key={ele.id}
                               >
                                 <div
                                   className="flex-fill ms-2"
@@ -417,7 +377,7 @@ export default function Header() {
                         options={tenantDropdown}
                         onChange={handleTenantLogin}
                         defaultValue={tenantDropdown.filter(
-                          (d) => d.value == tenantId
+                          (d) => d.value === tenantId
                         )}
                       />
                     )}
@@ -486,22 +446,6 @@ export default function Header() {
               </Dropdown.Menu>
             </Dropdown>
           </div>
-
-          {/* <button
-            className="navbar-toggler p-0 border-0 menu-toggle order-3"
-            onClick={() => {
-              var side = document.getElementById("mainSideMenu");
-              if (side) {
-                if (side.classList.contains("open")) {
-                  side.classList.remove("open");
-                } else {
-                  side.classList.add("open");
-                }
-              }
-            }}
-          >
-            <span className="fa fa-bars"></span>
-          </button> */}
 
           <div className="order-lg-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 "></div>
         </div>
