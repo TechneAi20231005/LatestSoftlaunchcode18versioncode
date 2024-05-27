@@ -41,7 +41,7 @@ function RemarkHistory() {
               <div>
                 <p>Remark Title : {remark?.remark_description || 'N/A'}</p>
                 <RenderIf render={remark?.other_remark}>
-                  <p>Supported Remark Title : {remark?.other_remark || 'N/A'}</p>
+                  <p>Specific Remark : {remark?.other_remark || 'N/A'}</p>
                 </RenderIf>
               </div>
               {/* <p className="mt-4 opacity-50">{remark?.remark_description || 'N/A'}</p> */}

@@ -307,7 +307,7 @@ function JobOfferOnBoarding() {
                             Relevant Experience &nbsp;
                             <RenderIf render={!errors?.relevant_experience}>
                               <small className="opacity-50">
-                                (Relevant experience should be 0.1 to 100)
+                                (Relevant experience should be 0 to 100)
                               </small>
                             </RenderIf>
                           </>

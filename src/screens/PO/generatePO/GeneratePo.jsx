@@ -41,19 +41,19 @@ function GeneratePo() {
   // // function
   const transformDataForExport = data => {
     return data?.map((row, index) => ({
-      'Delivery Date': row?.delivery_date || '--',
-      'Order Date': row?.order_date || '--',
-      Karagir: row?.karagir || '--',
-      Item: row?.item || '--',
-      Category: row?.category || '--',
-      'Size Range': row?.size_range || '--',
-      'Weight Range': row?.weight_range || '--',
-      'Exact Weight': row?.exact_wt || '--',
-      'Purity Range': row?.purity_range || '--',
-      'New Order': row?.new_qty || '--',
-      'Karagir Wt Range': row?.karagir_wt_range || '--',
-      'Knock Off Wt Range': row?.knockoff_wt_range || '--',
-      'Karagir Size Range': row?.karagir_size_range || '--',
+      'Delivery Date': row?.delivery_date ?? '--',
+      'Order Date': row?.order_date ?? '--',
+      Karagir: row?.karagir ?? '--',
+      Item: row?.item ?? '--',
+      Category: row?.category ?? '--',
+      'Size Range': row?.size_range ?? '--',
+      'Weight Range': row?.weight_range ?? '--',
+      'Exact Weight': row?.exact_wt ?? '--',
+      'Purity Range': row?.purity_range ?? '--',
+      'New Order': row?.new_qty ?? '--',
+      'Karagir Wt Range': row?.karagir_wt_range ?? '--',
+      'Knock Off Wt Range': row?.knockoff_wt_range ?? '--',
+      'Karagir Size Range': row?.karagir_size_range ?? '--',
     }));
   };
 
@@ -102,7 +102,7 @@ function GeneratePo() {
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
-                    label="Vender Name :"
+                    label="Vendor Name :"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     requiredField
                     isSearchable

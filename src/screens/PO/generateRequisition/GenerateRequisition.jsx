@@ -17,6 +17,7 @@ function GenerateRequisition() {
   // // initial state
   const dispatch = useDispatch();
   const fileRef = useRef();
+  const debounceTimeoutRef = useRef(null);
 
   // // redux state
   const {
@@ -47,20 +48,20 @@ function GenerateRequisition() {
     },
     {
       name: 'Item',
-      selector: row => row?.item || '---',
+      selector: row => row?.item ?? '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Category',
-      selector: row => row?.category || '---',
+      selector: row => row?.category ?? '---',
       sortable: false,
       width: '200px',
     },
 
     {
       name: 'Karagir Size Range',
-      selector: row => row?.size_range || '---',
+      selector: row => row?.size_range ?? '---',
       sortable: true,
       width: '175px',
     },
@@ -69,32 +70,32 @@ function GenerateRequisition() {
       name: filterModalData?.knockoff_karagir === 1 ? 'Karagir Wt Range' : 'Knock Off Wt Range',
       selector: row =>
         filterModalData?.knockoff_karagir === 1
-          ? row?.karagir_wt_range || '---'
-          : row?.knockoff_wt_range || '---',
+          ? row?.karagir_wt_range ?? '---'
+          : row?.knockoff_wt_range ?? '---',
       sortable: true,
       width: '175px',
     },
     {
       name: 'Exact Weight',
-      selector: row => row?.exact_wt || '---',
+      selector: row => row?.exact_wt ?? '---',
       sortable: true,
       width: '120px',
     },
     {
       name: 'Open Pieces ',
-      selector: row => row?.open_qty || '---',
+      selector: row => row?.open_qty ?? '---',
       sortable: true,
       width: '120px',
     },
     {
       name: 'Purity Range',
-      selector: row => row?.purity_range || '---',
+      selector: row => row?.purity_range ?? '---',
       sortable: true,
       width: '140px',
     },
     {
       name: 'Total Weight',
-      selector: row => row?.total_wt || '---',
+      selector: row => row?.total_wt ?? '---',
       sortable: true,
       width: '140px',
     },
@@ -127,7 +128,7 @@ function GenerateRequisition() {
     }
   };
 
-  const handleSearch = () => {
+  const handelFetchData = () => {
     dispatch(
       getGenerateRequisitionListThunk({
         limit: paginationData.rowPerPage,
@@ -138,29 +139,34 @@ function GenerateRequisition() {
     );
   };
 
+  const debouncedSearch = () => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      handelFetchData();
+    }, 500);
+  };
+
   const handleReset = () => {
+    setFilterModalData({});
     setSearchValue('');
-    dispatch(
-      getGenerateRequisitionListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        search: '',
-        filterValue: {},
-      }),
-    );
   };
 
   // // life cycle
   useEffect(() => {
-    dispatch(
-      getGenerateRequisitionListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        search: searchValue,
-        filterValue: filterModalData,
-      }),
-    );
-  }, []);
+    if (searchValue) {
+      debouncedSearch();
+    } else {
+      handelFetchData();
+    }
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchValue, filterModalData, paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <>
@@ -211,19 +217,14 @@ function GenerateRequisition() {
               />
             </Col>
             <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-              <button
-                className="btn btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                disabled={!searchValue}
-              >
+              <button className="btn btn-warning text-white" type="button" disabled={!searchValue}>
                 <i className="icofont-search-1 " /> Search
               </button>
               <button
                 className="btn btn-info text-white"
                 type="button"
                 onClick={handleReset}
-                disabled={!searchValue}
+                disabled={!searchValue && !Object.keys(filterModalData).length}
               >
                 <i className="icofont-refresh text-white" /> Reset
               </button>
@@ -237,9 +238,17 @@ function GenerateRequisition() {
           </Row>
           <div className="text-end">
             <b className="me-2">
-              Total Weight: {generateRequisitionListData?.total?.total_open_wt ?? 'N/A'}
+              Total Weight:{' '}
+              {generateRequisitionListData?.total?.total_open_wt
+                ? parseFloat(Number(generateRequisitionListData?.total?.total_open_wt).toFixed(2))
+                : 'N/A'}
             </b>
-            <b>Open Pieces: {generateRequisitionListData?.total?.total_open ?? 'N/A'}</b>
+            <b>
+              Open Pieces:{' '}
+              {generateRequisitionListData?.total?.total_open
+                ? parseFloat(Number(generateRequisitionListData?.total?.total_open).toFixed(2))
+                : 'N/A'}
+            </b>
           </div>
           <DataTable
             columns={columns}
@@ -255,6 +264,7 @@ function GenerateRequisition() {
               setPaginationData({ rowPerPage: newPageSize });
               setPaginationData({ currentPage: 1 });
             }}
+            paginationRowsPerPageOptions={[10, 15, 20, 25, 30, 200]}
           />
         </Stack>
       </Container>
