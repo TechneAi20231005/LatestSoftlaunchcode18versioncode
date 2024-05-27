@@ -1,74 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/Common/PageHeader";
 import { getData } from "../../services/DashboardService";
 import Chart from "react-apexcharts";
-import dateFormat from "dateformat";
-import { awsData } from "../../components/Data/test.json";
+
 import * as time from "../../components/Utilities/Functions";
 import {
   postTimerData,
-  deleteTask,
   getRegularizationTime,
   getRegularizationTimeHistory,
 } from "../../services/TicketService/TaskService";
 import { _base } from "../../settings/constants";
-import {
-  getAllDashboardData,
-  getAllUserById,
-  getCityData,
-  getCountryData,
-  getCountryDataSort,
-  getCustomerData,
-  getCustomerType,
-  getDynamiucFormData,
-  getEmployeeData,
-  getNotifications,
-  getStateData,
-  getStateDataSort,
-} from "./DashboardAction";
-import { dashboardSlice } from "./DashbordSlice";
-import { getRoles } from "./DashboardAction";
-import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
-import {
-  getUserForMyTicketsData,
-  getUserTicketsTest,
-} from "../TicketManagement/MyTicketComponentAction";
-import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
-import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
-import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
-import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
-import {
-  getSubModuleById,
-  subModuleMaster,
-} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
-import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
-import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
-import {
-  getCustomerMappingData,
-  getQueryTypeData,
-  getTemplateData,
-  getcustomerTypeData,
-} from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import {
-  dynamicFormData,
-  dynamicFormDropDownData,
-  getAllDropDownData,
-} from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
-import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
-import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
-import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
-import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
-import {
-  getParentDropdown,
-  taskAndTicketMaster,
-} from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
-import {
-  getBasketByIdData,
-  getBasketTaskData,
-  getmoduleSetting,
-} from "../TicketManagement/TaskManagement/TaskComponentAction";
-import { useDispatch } from "react-redux";
+
 import { getNotification } from "../../services/NotificationService/NotificationService";
 import Dropdown from "react-bootstrap/Dropdown";
 import ApproveRequestModal from "../TicketManagement/TaskManagement/components/ApproveRequestModal";
@@ -76,21 +19,31 @@ import TimeRegularizationHistory from "../TicketManagement/TaskManagement/compon
 
 export default function HrDashboard(props) {
   const history = useNavigate();
-  const dispatch = useDispatch();
-  const location = useLocation();
+
   const [approvedNotifications, setApprovedNotifications] = useState();
   const [notifications, setNotifications] = useState([]);
   const [historyData, setHistoryData] = useState([]);
-
   const [allRequest, setAllRequest] = useState();
-  const data = props.data;
-  var v1 = 50;
-  var v2 = 50;
   const [count, setCount] = useState();
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
   const [notificationHeight, setNotificationHeight] = useState(200);
+  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+  const [approveRequestModal, setApproveRequestModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [historyModal, setHistoryModal] = useState({
+    show: false,
+    data: null,
+  });
+
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
+  const [ticketID, setTicketID] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notificationId, setNotificationId] = useState();
 
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
@@ -129,7 +82,8 @@ export default function HrDashboard(props) {
   async function get() {
     const id = sessionStorage.getItem("id");
     await getData(id).then((res) => {
-      if (res.status == 200) {
+      console.log("res", res);
+      if (res.status === 200) {
         setCount(res.data.data.count);
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
@@ -148,8 +102,6 @@ export default function HrDashboard(props) {
       }
     });
   }
-
-  const [timerState, setTimerState] = useState();
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
@@ -182,13 +134,12 @@ export default function HrDashboard(props) {
             var height = 0;
             setNotifications(res.data.data.result);
 
-            // setApprovedNotifications(res.data.data.for_me);
             setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status == 1)
+              res?.data?.data?.result?.filter((d) => d?.status === 1)
             );
 
             setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status != 0)
+              res?.data?.data?.result?.filter((d) => d?.status !== 0)
             );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
@@ -199,34 +150,6 @@ export default function HrDashboard(props) {
       }
     });
   };
-
-  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
-
-  const loadData = () => {
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
-    dispatch(getEmployeeData());
-    dispatch(getNotifications());
-    dispatch(getAllDashboardData());
-
-    dispatch(getAllUserById(localStorage.getItem("id")));
-  };
-
-  useEffect(() => {
-    get();
-    loadNotifcation();
-  }, []);
-
-  useEffect(() => {
-    const account_for = localStorage.getItem("account_for");
-
-    if (account_for === "CUSTOMER") {
-      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
-    }
-
-    loadData();
-  }, []);
-
   const handleShowApproveRequestModal = () => {
     const data = null;
     setApproveRequestModal({ show: true, data: data });
@@ -284,20 +207,6 @@ export default function HrDashboard(props) {
     const data = null;
     setHistoryModal({ show: false, data: data });
   };
-  const [approveRequestModal, setApproveRequestModal] = useState({
-    show: false,
-    data: null,
-  });
-
-  const [historyModal, setHistoryModal] = useState({
-    show: false,
-    data: null,
-  });
-
-  const [regularizationRequest, setRegularizationRequest] = useState([]);
-  const [ticketID, setTicketID] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [notificationId, setNotificationId] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
     setIsLoading(null);
@@ -332,22 +241,41 @@ export default function HrDashboard(props) {
     });
   };
 
+  const loadData = () => {
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
+    // dispatch(getEmployeeData());
+    // dispatch(getNotifications());
+    // dispatch(getAllDashboardData());
+
+    // dispatch(getAllUserById(localStorage.getItem("id")));
+  };
+
+  useEffect(() => {
+    get();
+    loadNotifcation();
+  }, []);
+
+  useEffect(() => {
+    const account_for = localStorage.getItem("account_for");
+
+    if (account_for === "CUSTOMER") {
+      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
+    }
+
+    loadData();
+  }, []);
+
   return (
     <div className="container-xxl">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <div className="d-flex justify-content-between align-items-center">
         <PageHeader headerTitle="Dashboard" />
 
-        <div style={{ position: "relative", marginTop: "-40px" }}>
+        <div className="position-relative mt-n4">
           {(historyModal.show || approveRequestModal.show) === false && (
             <Dropdown
               className="notifications"
-              style={{ zIndex: -200 }}
+              // style={{ zIndex: -200 }}
               onClick={() => {
                 loadNotifcation();
               }}
@@ -355,17 +283,17 @@ export default function HrDashboard(props) {
               <Dropdown.Toggle
                 as="a"
                 className="nav-link dropdown-toggle pulse"
-                style={{ zIndex: -200 }}
+                // style={{ zIndex: -200 }}
               >
                 <div className=" me-3" style={{ marginLeft: "28%" }}>
                   <div>
                     <button
                       class=" badge bg-primary p-2"
-                      style={{
-                        width: "auto",
-                        padding: "0.5rem 2rem",
-                        lineHeight: "revert-layer",
-                      }}
+                      // style={{
+                      //   width: "auto",
+                      //   padding: "0.5rem 2rem",
+                      //   lineHeight: "revert-layer",
+                      // }}
                     >
                       Regularization
                     </button>
@@ -385,8 +313,8 @@ export default function HrDashboard(props) {
                           textAlign: "center",
                           fontSize: "0.8rem",
                           fontWeight: "bold",
-                          minWidth: "20px", // Minimum width to prevent squishing
-                          height: "auto", // Let the height adjust automatically}}
+                          minWidth: "20px",
+                          height: "auto",
                         }}
                       >
                         {approvedNotifications.length}
@@ -649,7 +577,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Pending Task</strong>
+                    <strong>Pending Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
@@ -675,7 +603,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Working Task</strong>
+                    <strong>Working Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
@@ -701,7 +629,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Completed Task</strong>
+                    <strong>Completed Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
@@ -727,7 +655,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Total Task</strong>
+                    <strong>Total Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
@@ -888,7 +816,8 @@ export default function HrDashboard(props) {
                     }
                   })}
 
-                {dailyTask &&
+                {console.log("previousTask", previousTask)}
+                {previousTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
                     if (ele.time_status == "START") {
