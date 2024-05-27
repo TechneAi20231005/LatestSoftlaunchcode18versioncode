@@ -57,6 +57,9 @@ import requisitionHistoryPoSlice from "../slices/po/history";
 // // Test Cases
 import reviewCommentMasterSlice from "../slices/testCases/reviewCommentMaster";
 import testingTypeMasterSlice from "../slices/testCases/testingTypeMaster";
+import testingGroupMasterSlice from "../slices/testCases/testingGroup";
+import functionMasterSlice from "../slices/testCases/functionMaster";
+import downloadFormatSlice from "../slices/testCases/downloadFormatFile";
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -112,6 +115,9 @@ export const store = configureStore({
     // // Test Cases
     reviewCommentMaster: reviewCommentMasterSlice,
     testingTypeMaster: testingTypeMasterSlice,
+    testingGroupMaster: testingGroupMasterSlice,
+    functionMaster: functionMasterSlice,
+    downloadFormat: downloadFormatSlice,
   },
 
   middleware: (getDefaultMiddleware) =>

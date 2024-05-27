@@ -176,16 +176,16 @@ import PoPreview from "./PO/generatePO/details/preview/PoPreview";
 import PoHistory from "./PO/history/PoHistory";
 import VendorExportReport from "./PO/vendorExportReport/VendorExportReport";
 import OrderQuantityReport from "./PO/orderQuantityReport/OrderQuantityReport";
-import TestDraftComponent from "../TestCases/TestDraft/TestDraftComponent";
-import ReviewedTestDraftComponent from "../TestCases/TestDraft/ReviewedTestDraftComponent";
-import ReviewedTestDraftDetails from "../TestCases/TestDraft/ReviewedTestDraftDetails";
-import TestCaseReviewComponent from "../TestCases/TestCaseReview/TestCaseReviewComponent";
-import TestCaseReviewDetails from "../TestCases/TestCaseReview/TestCaseReviewDetails";
-import ReviewCommentMasterComponent from "../TestCases/ReviewCommentMaster/ReviewCommentMasterComponent";
-import TestingTypeMasterComponent from "../TestCases/TestingTypeMaster/TestingTypeMasterComponent";
-import TestingGroupMasterComponent from "../TestCases/TestingGroupMaster/TestingGroupMasterComponent";
-import FunctionMasterComponent from "../TestCases/FunctionMaster/FunctionMasterComponent";
-import TestCaseHistoryComponent from "../TestCases/TestDraft/TestCaseHistoryComponent";
+import ReviewedTestDraftComponent from "./TestCases/TestDraft/ReviewedTestDraftComponent";
+import ReviewedTestDraftDetails from "./TestCases/TestDraft/ReviewedTestDraftDetails";
+import TestCaseReviewComponent from "./TestCases/TestCaseReview/TestCaseReviewComponent";
+import TestCaseReviewDetails from "./TestCases/TestCaseReview/TestCaseReviewDetails";
+import ReviewCommentMasterComponent from "./TestCases/ReviewCommentMaster/ReviewCommentMasterComponent";
+import TestingTypeMasterComponent from "./TestCases/TestingTypeMaster/TestingTypeMasterComponent";
+import TestingGroupMasterComponent from "./TestCases/TestingGroupMaster/TestingGroupMasterComponent";
+import FunctionMasterComponent from "./TestCases/FunctionMaster/FunctionMasterComponent";
+import TestCaseHistoryComponent from "./TestCases/TestDraft/TestCaseHistoryComponent";
+import TestDraftComponent from "./TestCases/TestDraft/TestDraftComponent";
 
 class MainIndex extends React.Component {
   constructor(props) {
