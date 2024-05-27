@@ -42,7 +42,6 @@ const testingGroupMasterSlice = createSlice({
         state.isLoading.addTestingGroupMaster = true;
       })
       .addCase(addTestingGroupMasterThunk.fulfilled, (state, action) => {
-        console.log("action", action.payload);
         state.isLoading.addTestingGroupMaster = false;
         state.successMsg.addTestingGroupMaster = action.payload;
       })

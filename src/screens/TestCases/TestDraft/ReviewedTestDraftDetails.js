@@ -100,8 +100,8 @@ function ReviewedTestDraftDetails() {
       cell: (row) => (
         <div>
           <Link
+            className="link_underline_primary"
             to={`/${_base}/ReviewedTestDraftComponent`}
-            className="text-underline-blue"
           >
             {row.name}
           </Link>

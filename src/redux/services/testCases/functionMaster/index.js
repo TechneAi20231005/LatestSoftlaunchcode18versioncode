@@ -10,7 +10,6 @@ export const getFunctionMasterListThunk = createAsyncThunk(
       const response = await customAxios.get(
         `testCases/testingFunction/getTestingFunction`
       );
-      console.log("response", response);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };

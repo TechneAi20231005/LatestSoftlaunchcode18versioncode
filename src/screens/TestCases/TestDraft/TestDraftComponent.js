@@ -58,12 +58,12 @@ export default function TestDraftComponent({ close }) {
       return;
     }
 
-    const form = new FormData();
-    form.append("file_attachment[]", file);
-
+    const formData = new FormData();
+    formData.append("file_attachment", file);
+    console.log("Form Data:", formData.get("file_attachment"));
     dispatch(
       importTestDraftThunk({
-        form,
+        formData,
         onSuccessHandler: () => {
           // setOpenConfirmModal({ open: false });
           close();
@@ -86,12 +86,12 @@ export default function TestDraftComponent({ close }) {
         renderRight={() => {
           return (
             <div className="d-flex justify-content-sm-end btn_container">
-              <button className="btn btn-primary text-white me-2 custom-font">
+              <button className="btn btn-primary text-white me-2 ">
                 Filter <i className="icofont-filter" />
               </button>
 
               <button
-                className="btn btn-success text-white me-2 custom-font"
+                className="btn btn-success text-white me-2 "
                 onClick={(e) => {
                   handleDownloadModal({
                     showModal: true,
@@ -110,13 +110,13 @@ export default function TestDraftComponent({ close }) {
                     modalHeader: "Bulk Upload Vendor",
                   });
                 }}
-                className="btn btn-warning text-white custom-font"
+                className="btn btn-warning text-white "
               >
                 Import Test Draft File
               </button>
               {currentTab === "review_test_draft" && (
                 <ExportToExcel
-                  className="btn btn-danger text-white ms-2 custom-font"
+                  className="btn btn-danger text-white ms-2 "
                   fileName="State master Records"
                 />
               )}

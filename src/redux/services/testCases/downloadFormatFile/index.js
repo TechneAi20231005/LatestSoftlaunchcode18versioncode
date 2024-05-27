@@ -114,7 +114,8 @@ export const importTestDraftThunk = createAsyncThunk(
           return response?.data?.message;
         } else {
           onErrorHandler();
-          URL = `${_attachmentUrl}` + response.data.data;
+          URL = `${_attachmentUrl}` + response.data.data.error_file;
+
           window.open(URL, "_blank")?.focus();
           errorHandler(response);
         }

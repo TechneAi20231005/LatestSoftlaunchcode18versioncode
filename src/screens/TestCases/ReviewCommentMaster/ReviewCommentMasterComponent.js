@@ -140,7 +140,7 @@ function ReviewCommentMasterComponent() {
         <PageHeader headerTitle="Review Comment Master" />
         <div style={{ marginTop: "-30px" }}>
           <button
-            className="btn btn-primary text-white custom-font"
+            className="btn btn-primary text-white "
             onClick={() =>
               setAddEditReviewCommentModal({
                 type: "ADD",

@@ -136,7 +136,7 @@ function FunctionMasterComponent() {
         <PageHeader headerTitle="Function Master" />
         <div style={{ marginTop: "-30px" }}>
           <button
-            className="btn btn-primary text-white custom-font"
+            className="btn btn-primary text-white "
             onClick={() =>
               setAddEditFunctionModal({
                 type: "ADD",

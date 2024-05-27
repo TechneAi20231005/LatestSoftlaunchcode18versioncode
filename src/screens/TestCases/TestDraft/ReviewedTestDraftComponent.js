@@ -63,7 +63,7 @@ function ReviewedTestDraftComponent() {
             }}
           />
           <Link to={`/${_base}/TestCaseHistoryComponent`}>
-            <i className="icofont-history text-dark w-10  cp bg-warning rounded-circle  ml-2 icon-large mx-2 custom-font" />
+            <i className="icofont-history text-dark w-10  cp bg-warning rounded-circle  ml-2 icon-large mx-2 " />
           </Link>
         </>
       ),
@@ -131,11 +131,11 @@ function ReviewedTestDraftComponent() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button className="btn btn-primary text-white custom-font">
+              <button className="btn btn-primary text-white ">
                 Filter <i className="icofont-filter" />
               </button>
               <button
-                className="btn btn btn-set-task w-sm-100 custom-font"
+                className="btn btn btn-set-task w-sm-100 bg-success text-white"
                 onClick={(e) => {
                   handleDownloadModal({
                     showModal: true,
@@ -146,11 +146,11 @@ function ReviewedTestDraftComponent() {
               >
                 Download Format File
               </button>
-              <button className="btn btn-warning btn-set-task w-sm-100 custom-font">
+              <button className="btn btn-warning btn-set-task w-sm-100 ">
                 Import Test Draft File
               </button>
               <ExportToExcel
-                className="btn btn-sm btn-danger custom-font"
+                className="btn btn-sm btn-danger "
                 //   apiData={ExportData}
 
                 fileName="State master Records"
@@ -204,10 +204,7 @@ function ReviewedTestDraftComponent() {
         >
           Back
         </Link>
-        <button
-          type="submit"
-          className="btn btn-sm btn bg-custom text-white custom-font"
-        >
+        <button type="submit" className="btn btn-sm btn bg-success text-white">
           <i class="icofont-paper-plane"></i> {""}
           Send To Reviewer
         </button>

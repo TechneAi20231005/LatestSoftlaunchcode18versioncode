@@ -22,7 +22,7 @@ import {
 
 function DownloadFormatFileModal({ show, close }) {
   const {
-    getProjectMouleList,
+    getProjectModuleList,
     getMouleList,
     getSubMouleList,
     getModuleData,
@@ -89,7 +89,7 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   useEffect(() => {
-    if (!getProjectMouleList) {
+    if (!getProjectModuleList) {
       dispatch(getProjectModuleMasterThunk());
     }
     if (!getMouleList) {
@@ -118,7 +118,7 @@ function DownloadFormatFileModal({ show, close }) {
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
                   <Field
-                    data={getProjectMouleList}
+                    data={getProjectModuleList}
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
@@ -154,7 +154,7 @@ function DownloadFormatFileModal({ show, close }) {
               </Row>
 
               <div className="d-flex justify-content-end gap-2 mt-3">
-                <button type="submit" className="btn btn bg-custom text-white">
+                <button type="submit" className="btn btn bg-success text-white">
                   Download CSV
                 </button>
                 <button

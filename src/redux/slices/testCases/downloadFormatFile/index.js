@@ -13,7 +13,7 @@ import {
 } from "../../../services/testCases/downloadFormatFile";
 
 const initialState = {
-  getProjectMouleList: [],
+  getProjectModuleList: [],
   getMouleList: [],
   getSubMouleList: [],
   getModuleData: [],
@@ -21,15 +21,15 @@ const initialState = {
 
   isLoading: {
     downloadFormatFile: false,
-    getProjectMouleList: false,
+    getProjectModuleList: false,
     importTestDraftFile: false,
     getMouleList: false,
     getModuleData: false,
     getSubModuleData: false,
     getSubMouleList: false,
   },
-  errorMsg: { getProjectMouleList: "" },
-  successMsg: { getProjectMouleList: "" },
+  errorMsg: { getProjectModuleList: "" },
+  successMsg: { getProjectModuleList: "" },
 };
 const downloadFormatSlice = createSlice({
   name: "Download Format File",
@@ -43,18 +43,18 @@ const downloadFormatSlice = createSlice({
       // // get project
 
       .addCase(getProjectModuleMasterThunk.pending, (state, action) => {
-        state.isLoading.getProjectMouleList = true;
+        state.isLoading.getProjectModuleList = true;
       })
       .addCase(getProjectModuleMasterThunk.fulfilled, (state, action) => {
-        state.isLoading.getProjectMouleList = false;
-        state.getProjectMouleList = action?.payload?.data
+        state.isLoading.getProjectModuleList = false;
+        state.getProjectModuleList = action?.payload?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.project_name }));
-        state.successMsg.getProjectMouleList = action.payload;
+        state.successMsg.getProjectModuleList = action.payload;
       })
       .addCase(getProjectModuleMasterThunk.rejected, (state, action) => {
-        state.isLoading.getProjectMouleList = false;
-        state.errorMsg.getProjectMouleList = action.error.message;
+        state.isLoading.getProjectModuleList = false;
+        state.errorMsg.getProjectModuleList = action.error.message;
       })
 
       // // get module
@@ -96,7 +96,7 @@ const downloadFormatSlice = createSlice({
         state.errorMsg.getSubMouleList = action.error.message;
       })
 
-      // // add remark master
+      // // download format file
       .addCase(downloadFormatFileThunk.pending, (state, action) => {
         state.isLoading.downloadFormatFile = true;
       })

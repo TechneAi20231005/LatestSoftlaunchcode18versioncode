@@ -117,12 +117,12 @@ function TestCaseReviewDetails() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button className="btn btn-primary text-white custom-font">
+              <button className="btn btn-primary text-white c">
                 Filter <i className="icofont-filter" />
               </button>
 
               <ExportToExcel
-                className="btn btn-sm btn-danger custom-font"
+                className="btn btn-sm btn-danger "
                 //   apiData={ExportData}
 
                 fileName="State master Records"
@@ -169,21 +169,21 @@ function TestCaseReviewDetails() {
       <div className=" d-flex  justify-content-end">
         <button
           type="submit"
-          className="btn btn-sm mx-2 custom-font btn-warning text-white"
+          className="btn btn-sm mx-2  btn-warning text-white"
         >
           <i class="icofont-paper-plane icon-large"></i>
           Resend
         </button>
         <button
           type="submit"
-          className="btn btn-lg mx-2 btn-danger text-white custom-font"
+          className="btn btn-lg mx-2 btn-danger text-white "
         >
           Reject
         </button>
 
         <button
           type="submit"
-          className="btn btn-lg mx-2 btn-success custom-font text-white "
+          className="btn btn-lg mx-2 btn-success  text-white "
         >
           Approve
         </button>

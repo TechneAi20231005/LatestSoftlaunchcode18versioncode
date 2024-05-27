@@ -10,7 +10,6 @@ export const getTestingGroupMasterListThunk = createAsyncThunk(
       const response = await customAxios.get(
         `testCases/testingGroup/getTestingGroup`
       );
-      console.log("response", response);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -33,7 +32,6 @@ export const addTestingGroupMasterThunk = createAsyncThunk(
         `testCases/testingGroup/addTestingGroup`,
         formData
       );
-      console.log("responseT", response);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

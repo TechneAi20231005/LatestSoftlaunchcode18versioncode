@@ -24427,17 +24427,3 @@ abbr[title] {
   overflow-y: hidden;
   /* Hide the vertical scrollbar */
 }
-.custom-font {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 600;
-}
-.bg-custom {
-  background-color: #198754; /* Your custom background color */
-}
-.icon-large {
-  font-size: 16px; /* Adjust the size as needed */
-}
-.text-underline-blue {
-  text-decoration: underline;
-  color: blue; /* Or any other desired color */
-}

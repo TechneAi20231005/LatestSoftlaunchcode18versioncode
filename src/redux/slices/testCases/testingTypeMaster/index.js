@@ -12,8 +12,16 @@ const initialState = {
     addTestingTypeMaster: false,
     editTestingTypeMaster: false,
   },
-  errorMsg: { getTestingTypeMasterList: "" },
-  successMsg: { getTestingMasterList: "" },
+  errorMsg: {
+    getTestingTypeMasterList: "",
+    addTestingTypeMaster: "",
+    editTestingTypeMaster: "",
+  },
+  successMsg: {
+    getTestingMasterList: "",
+    addTestingTypeMaster: "",
+    editTestingTypeMaster: "",
+  },
 };
 const testingTypeMasterSlice = createSlice({
   name: "Testing Type master",
@@ -42,7 +50,6 @@ const testingTypeMasterSlice = createSlice({
         state.isLoading.addTestingTypeMaster = true;
       })
       .addCase(addTestingTypeMasterThunk.fulfilled, (state, action) => {
-        console.log("action", action.payload);
         state.isLoading.addTestingTypeMaster = false;
         state.successMsg.addTestingTypeMaster = action.payload;
       })
