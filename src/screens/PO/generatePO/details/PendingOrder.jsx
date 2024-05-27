@@ -45,6 +45,7 @@ function PendingOrder() {
   } = useSelector(state => state?.poCommon);
 
   const {
+    userAddedPoDataList,
     pendingOrderList,
     isLoading: { getPendingOrderList },
   } = useSelector(state => state?.generatePo);
@@ -69,7 +70,11 @@ function PendingOrder() {
     {
       name: 'Pending Quantity',
       selector: (row, index) =>
-        row?.open_qty ? <p className="bg-warning px-1">{row?.open_qty}</p> : '---',
+        row?.open_qty ? (
+          <p className="bg-warning px-1">{row?.open_qty > 0 ? row?.open_qty : 0}</p>
+        ) : (
+          '---'
+        ),
       sortable: false,
     },
     {
@@ -103,7 +108,7 @@ function PendingOrder() {
           </div>
         </>
       ),
-      value: items?.category,
+      value: items?.id,
       searchableItem: `${items?.item} ${items?.category}`,
     })),
   ];
@@ -191,6 +196,10 @@ function PendingOrder() {
     }
   };
 
+  const getItemName = categoryId => itemCategoryList?.find(item => item?.id === categoryId)?.item;
+  const geCategoryName = categoryId =>
+    itemCategoryList?.find(item => item?.id === categoryId)?.category;
+
   // // life cycle for category dropdown
   useEffect(() => {
     if (!itemCategoryList?.length) {
@@ -203,10 +212,8 @@ function PendingOrder() {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
         getKnockoffWtRangeListThunk({
-          itemName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
+          itemName: getItemName(filterFormValue?.selectedItemsCategory),
+          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           type: '',
         }),
       );
@@ -215,14 +222,12 @@ function PendingOrder() {
 
   // // life cycle for size range dropdown
   useEffect(() => {
-    if (filterFormValue?.selectedItemsCategory && filterFormValue?.selectedWeightRange) {
+    if (filterFormValue?.selectedItemsCategory) {
       dispatch(
         getSizeRangeListThunk({
-          itemName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
-          weightRange: filterFormValue?.selectedWeightRange,
+          itemName: getItemName(filterFormValue?.selectedItemsCategory),
+          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
+          weightRange: filterFormValue?.selectedWeightRange || 0,
         }),
       );
     }
@@ -237,10 +242,8 @@ function PendingOrder() {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
         getPendingOrderListThunk({
-          categoryName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          itemName: filterFormValue?.selectedItemsCategory,
+          itemName: getItemName(filterFormValue?.selectedItemsCategory),
+          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           weightRange: filterFormValue?.selectedWeightRange,
           sizeRange: filterFormValue?.selectedSizeRange,
         }),
@@ -292,7 +295,7 @@ function PendingOrder() {
               </div>
 
               <RenderIf render={toggleFilter}>
-                <Row className="align-items-end">
+                <Row className="align-items-end row_gap_3">
                   <Col md={5}>
                     <Field
                       component={CustomReactSelect}
@@ -313,12 +316,11 @@ function PendingOrder() {
                       name="selectedSizeRange"
                       placeholder={getSizeRangeList ? 'Loading...' : 'Select'}
                       isSearchable
-                      disabled={!values?.selectedWeightRange}
                     />
                   </Col>
                   <Col md={2}>
                     <button
-                      className="btn btn-info text-white w-100 py-2"
+                      className="btn btn-info text-white w-100 ms-0 py-md-2"
                       type="button"
                       onClick={() => {
                         setFieldValue('selectedWeightRange', '');
@@ -340,7 +342,7 @@ function PendingOrder() {
                   progressComponent={<TableLoadingSkelton />}
                 />
 
-                <div className="d-flex justify-content-end mt-3 gap-2">
+                <div className="d-flex justify-content-end mt-3 gap-2 btn_container">
                   <button
                     className="btn btn-dark"
                     type="button"
@@ -355,6 +357,15 @@ function PendingOrder() {
                   >
                     Save
                   </button>
+                  <RenderIf render={userAddedPoDataList?.length}>
+                    <button
+                      className="btn btn-info text-white px-5"
+                      type="button"
+                      onClick={() => navigate('preview')}
+                    >
+                      Preview
+                    </button>
+                  </RenderIf>
                 </div>
               </RenderIf>
             </Stack>
