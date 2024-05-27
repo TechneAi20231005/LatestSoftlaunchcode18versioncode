@@ -43,55 +43,55 @@ function VendorExportReport() {
   const columns = [
     {
       name: 'Order Date',
-      selector: row => row?.order_date || '---',
+      selector: row => row?.order_date ?? '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Delivery Date',
-      selector: row => row?.delivery_date || '---',
+      selector: row => row?.delivery_date ?? '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Item',
-      selector: row => row?.item || '---',
+      selector: row => row?.item ?? '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'Category',
-      selector: row => row?.category || '---',
+      selector: row => row?.category ?? '---',
       sortable: false,
       width: '200px',
     },
     {
       name: 'Purity',
-      selector: row => row?.purity_range || '---',
+      selector: row => row?.purity_range ?? '---',
       sortable: false,
       width: '120px',
     },
     {
       name: 'karagir Wt Range',
-      selector: row => row?.karagir_wt_range || '---',
+      selector: row => row?.karagir_wt_range ?? '---',
       sortable: true,
       width: '150px',
     },
     {
       name: 'karagir Size Range',
-      selector: row => row?.karagir_size_range || '---',
+      selector: row => row?.karagir_size_range ?? '---',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Exact Weight',
-      selector: row => row?.exact_wt || '---',
+      selector: row => row?.exact_wt ?? '---',
       sortable: true,
       width: '120px',
     },
     {
       name: 'Order Quantity',
-      selector: row => row?.new_qty || '---',
+      selector: row => row?.new_qty ?? '---',
       sortable: true,
       width: '140px',
     },
@@ -106,16 +106,15 @@ function VendorExportReport() {
   // // function
   const transformDataForExport = data => {
     return data?.map((row, index) => ({
-      'Order Date': row?.order_date || '--',
-      'Delivery Date': row?.delivery_date || '--',
-      Item: row?.item || '--',
-      Category: row?.category || '--',
-      Karagir: row?.karagir || '--',
-      Purity: row?.purity_range || '--',
-      'Karagir Wt Range': row?.karagir_wt_range || '--',
-      'Karagir Size Range': row?.karagir_size_range || '--',
-      'Exact Weight': row?.exact_wt || '--',
-      'Order Quantity': row?.new_qty || '--',
+      'Order Date': row?.order_date ?? '--',
+      'Delivery Date': row?.delivery_date ?? '--',
+      Item: row?.item ?? '--',
+      Category: row?.category ?? '--',
+      Purity: row?.purity_range ?? '--',
+      'Karagir Wt Range': row?.karagir_wt_range ?? '--',
+      'Karagir Size Range': row?.karagir_size_range ?? '--',
+      'Exact Weight': row?.exact_wt ?? '--',
+      'Order Quantity': row?.new_qty ?? '--',
     }));
   };
 
@@ -217,7 +216,7 @@ function VendorExportReport() {
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
-                    label="Vender Name :"
+                    label="Vendor Name :"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     isSearchable
                     isMulti
@@ -229,7 +228,15 @@ function VendorExportReport() {
                     type="date"
                     name="order_date"
                     label="Order Date :"
-                    placeholderText="mm/dd/yyyy"
+                    placeholderText="dd/mm/yyyy"
+                    dateFormat="dd/MM/yyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    onKeyDown={e => {
+                      e.preventDefault();
+                    }}
+                    isClearable
                     range
                   />
                 </Col>
@@ -239,7 +246,15 @@ function VendorExportReport() {
                     type="date"
                     name="delivery_date"
                     label="Delivery Date :"
-                    placeholderText="mm/dd/yyyy"
+                    placeholderText="dd/mm/yyyy"
+                    dateFormat="dd/MM/yyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    onKeyDown={e => {
+                      e.preventDefault();
+                    }}
+                    isClearable
                     range
                   />
                 </Col>
@@ -284,6 +299,7 @@ function VendorExportReport() {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30, 200]}
         />
       </Stack>
     </Container>
