@@ -181,12 +181,12 @@ export default function CreateCustomerMappingComponent() {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status == 200) {
-        if (res.payload.data.status == 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active == 1);
+      if (res.payload.status === 200) {
+        if (res.payload.data.status === 1) {
+          const data = res.payload.data.data.filter((d) => d.is_active === 1);
           setUser(data);
           var dropwdown = res.payload.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + " " + d.last_name + " (" + d.id + ")",
@@ -225,12 +225,12 @@ export default function CreateCustomerMappingComponent() {
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           const dropdown = res.data.data
             .filter(
               (d) =>
-                d.is_active == 1 && d.multiple_department_id.includes(e.value)
+                d.is_active === 1 && d.multiple_department_id.includes(e.value)
             )
 
             .map((d) => ({
@@ -244,6 +244,9 @@ export default function CreateCustomerMappingComponent() {
             defaultValue = [...dropdown];
           }
           setUserDropdown(defaultValue.filter((option) => option.value !== ""));
+          if (dropdown.length === 0) {
+            setUserDropdown([{ value: "", label: "No data found" }]);
+          }
         }
       }
     });
@@ -661,9 +664,6 @@ export default function CreateCustomerMappingComponent() {
                           }}
                         />
                       )}
-                      {data.approach && !departmentDropdown && (
-                        <span className="mt-2">Loading.....</span>
-                      )}
                     </div>
                   </div>
                 )}
@@ -692,10 +692,6 @@ export default function CreateCustomerMappingComponent() {
                           </div>
                         )}
                       </>
-                    )}
-
-                    {data.approach && data.department_id && !userDropdown && (
-                      <span className="mt-2">Loading.....</span>
                     )}
 
                     {userDropdown && data.approach === "RW" && (
