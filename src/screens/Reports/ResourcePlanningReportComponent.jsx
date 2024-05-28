@@ -11,22 +11,22 @@ import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
 import { Spinner, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { _base, userSessionData } from "../../settings/constants";
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
+
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../Dashboard/DashboardAction";
+import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 export default function ResourcePlanningReportComponent() {
-
+  const dispatch = useDispatch();
 
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const roleId = sessionStorage.getItem("role_id")
-  // const [checkRole, setCheckRole] = useState(null)
-  const dispatch = useDispatch();
+
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==25)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 25)
   );
 
   const [todate, setTodate] = useState([]);
@@ -61,11 +61,14 @@ export default function ResourcePlanningReportComponent() {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     const tempUserData = [];
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = res.data.data.filter(
+          (d) => d.is_active === 1 && d.account_for === "SELF"
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
@@ -85,23 +88,9 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //     }
-    //   }
-    // })
-    dispatch(getRoles())
-
-    const data = [];
-    const exportData = [];
+    dispatch(getRoles());
   };
 
-  const [startDate, setStartDate] = useState(null);
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
     const setdateformat = gettodatevalue.split("-");
@@ -127,7 +116,8 @@ export default function ResourcePlanningReportComponent() {
 
   const handleForm = async (e) => {
     setShowLoaderModal(null);
-    setShowLoaderModal(true);
+    setIsLoading(true);
+
     e.preventDefault();
     const formData = new FormData(e.target);
     const tempData = [];
@@ -142,12 +132,14 @@ export default function ResourcePlanningReportComponent() {
             formData
           );
           if (res.status === 200) {
+            console.log("res", res);
             setShowLoaderModal(false);
             if (res.data.status === 1) {
-              setShowLoaderModal(false);
+              setIsLoading(false);
+
               let sr = 1;
               const data = res.data.data;
-         
+
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -162,22 +154,11 @@ export default function ResourcePlanningReportComponent() {
                 setData(null);
                 setData(tempData);
 
-                // Export data
-                // const exportTempData = [];
-                // for (const i in data) {
-                //     const tasks = Array.isArray(data[i].tasks) ? data[i].tasks.map(task => task.task_name).join(", ") : "";
-                //     exportTempData.push({
-                //         Sr: data[i].counter,
-                //         date: data[i].date,
-                //         user_name: data[i].user_name,
-                //         task_name: tasks,
-                //         task_hours: data[i].hours,
-                //       });
-                // }
-
                 const exportTempData = [];
                 for (const i in data) {
-                  const tasks = Array.isArray(data[i].tasks) ? data[i].tasks : [];
+                  const tasks = Array.isArray(data[i].tasks)
+                    ? data[i].tasks
+                    : [];
                   let counter = 1;
                   for (const task of tasks) {
                     exportTempData.push({
@@ -244,11 +225,13 @@ export default function ResourcePlanningReportComponent() {
               return (
                 <tr>
                   <td>{key + 1}</td>
-                  {/*        // Updated by Asmita Margaje */}
-                  <td >
-                    <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}> {task.ticket_id} </span>
 
+                  <td>
+                    <Link to={`/${_base}/Ticket/Task/${task.id}`}>
+                      <span style={{ fontWeight: "bold" }}>
+                        {" "}
+                        {task.ticket_id}{" "}
+                      </span>
                     </Link>
                     - {task.task_name}
                   </td>
@@ -267,17 +250,15 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [])
+  }, []);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Resource Planing Report" />
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
+      <div className="card mt-2">
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
@@ -293,7 +274,6 @@ export default function ResourcePlanningReportComponent() {
                   classNamePrefix="select"
                   options={userData}
                   required
-                  style={{ zIndex: "100" }}
                 />
               </div>
 
@@ -327,12 +307,11 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-2">
+            <div className="row mt-4">
+              <div className="col-md-6">
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   <i className="icofont-search-1 "></i> Search
                 </button>
@@ -340,19 +319,11 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
               </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: "right",
-                  marginTop: "20px",
-                  fontWeight: "600",
-                }}
-              >
+              <div className="col-md-6 d-flex justify-content-end">
                 <ExportToExcel
                   className="btn btn-sm btn-danger"
                   apiData={exportData}
@@ -368,7 +339,8 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {isLoading && <TableLoadingSkelton />}
+              {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={data}

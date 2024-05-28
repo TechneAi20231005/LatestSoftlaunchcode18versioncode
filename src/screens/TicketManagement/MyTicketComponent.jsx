@@ -22,10 +22,10 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import "./custome.css";
 import { Spinner } from "react-bootstrap";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
 import { useSelector, useDispatch } from "react-redux";
-import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
+
 import { getRoles } from "../Dashboard/DashboardAction";
 import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
@@ -34,8 +34,6 @@ export default function MyTicketComponent() {
   const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
-
-  const roleId = sessionStorage.getItem("role_id");
 
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState("");
@@ -55,22 +53,18 @@ export default function MyTicketComponent() {
   const [assignedToMeExport, setAssignedToMeExport] = useState(null);
 
   const [yourTask, setYourTask] = useState(null);
-  const [yourTaskExport, setYourTaskExport] = useState(null);
 
   const [createdByMe, setCreatedByMe] = useState(null);
-  const [createdByMeExport, setCreatedByMeExport] = useState(null);
 
   const [departmentwiseTicket, setDepartmentwiseTicket] = useState(null);
-  const [departmentwiseTicketExport, setDepartmentwiseTicketExport] =
-    useState(null);
+
   const [ticketShowType, setTicketShowType] = useState(null);
 
   const [userDepartment, setUserDepartment] = useState();
 
-  const [exportData, setExportData] = useState(null);
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 17)
   );
 
   const [modal, setModal] = useState({
@@ -79,12 +73,6 @@ export default function MyTicketComponent() {
     modalHeader: "",
   });
   const [remarkModal, setRemarkModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
-
-  const [bulkRemarkModal, setBulkRemarkModal] = useState({
     showModal: false,
     modalData: "",
     modalHeader: "",
@@ -210,16 +198,6 @@ export default function MyTicketComponent() {
           }
         }
       });
-  };
-  const menuStyle = {
-    position: "absolute",
-    bottom: "100%",
-    left: 0,
-    transform: "translateY(-5px)",
-    backgroundColor: "#fff",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-    borderRadius: "4px",
-    padding: "10px",
   };
 
   const handleModal = (data) => {
@@ -2001,13 +1979,12 @@ export default function MyTicketComponent() {
       alert("Please fill at least one field.");
       return; // Exit the function early
     }
-    var flag = 1;
+
     var filterExport = [];
 
     if (toDate < startDate) {
       alert("Please select Date After From date");
     } else {
-      var flag = 1;
       onClosePopup();
       await new ReportService()
         .getTicketReport(formData)
@@ -2132,13 +2109,13 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           if (res.data.status == 1) {
             setAssignedToMe(
               res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
             );
           }
         }
+        setIsLoading(false);
       });
     } else if (k == "created_by_me") {
       const forms = {
@@ -2148,13 +2125,13 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
             res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           );
         }
+        setIsLoading(false);
       });
     } else if (k == "departmenyourTaskt") {
       const forms = {
@@ -2164,7 +2141,6 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           if (res.data.status == 1) {
             setDepartmentWiseData(res.data.data);
 
@@ -2173,6 +2149,7 @@ export default function MyTicketComponent() {
             );
           }
         }
+        setIsLoading(false);
       });
     } else if (k == "your_task") {
       const forms = {
@@ -2187,12 +2164,12 @@ export default function MyTicketComponent() {
             setYourTaskData(res.data.data);
 
             setYourTask();
-            setIsLoading(false);
 
             setYourTask(res.data.data.data);
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
+        setIsLoading(false);
       });
     } else if (k == "unpassed_columns") {
       const forms = {
@@ -2201,16 +2178,21 @@ export default function MyTicketComponent() {
         page: 1,
       };
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
-          if (res.data.status == 1) {
-            setUnpassedData(res.data.data);
+      await new MyTicketService()
+        .getUserTicketsTest(forms)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setUnpassedData(res.data.data);
 
-            setUnpassedTickets(res.data.data.data);
+              setUnpassedTickets(res.data.data.data);
+            }
           }
-        }
-      });
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -2236,22 +2218,28 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setAssignedToMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
-          );
-          setIsLoading(false);
-          if (type == "PLUS" && res.data.data.data.length > 0) {
-            setAssignedToMeData({
-              ...assignedToMeData,
-              current_page: assignedToMeData.current_page + 1,
-            });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            setAssignedToMe(
+              res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
+            );
+
+            if (type == "PLUS" && res.data.data.data.length > 0) {
+              setAssignedToMeData({
+                ...assignedToMeData,
+                current_page: assignedToMeData.current_page + 1,
+              });
+            }
           }
+          setIsLoading(false);
         }
-      }
-    });
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleCreatedByMeRowChanged = async (e, type) => {
@@ -2276,24 +2264,28 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCreatedByMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
-          );
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            setCreatedByMe(
+              res?.data?.data?.data.filter((d) => d.passed_status !== "REJECT")
+            );
 
-          setIsLoading(false);
-
-          if (type == "PLUS" && res.data.data.data.length > 0) {
-            setCreatedByMeData({
-              ...createdByMeData,
-              current_page: createdByMeData.current_page + 1,
-            });
+            if (type == "PLUS" && res.data.data.data.length > 0) {
+              setCreatedByMeData({
+                ...createdByMeData,
+                current_page: createdByMeData.current_page + 1,
+              });
+            }
           }
         }
-      }
-    });
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
@@ -2318,24 +2310,28 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setDepartmentwiseTicket(
-            res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-          );
-          setIsLoading(false);
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            setDepartmentwiseTicket(
+              res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+            );
 
-          if (type == "PLUS" && res.data.data.data.length > 0) {
-            setDepartmentWiseData({
-              ...departmentWiseData,
-              current_page: departmentWiseData.current_page + 1,
-            });
+            if (type == "PLUS" && res.data.data.data.length > 0) {
+              setDepartmentWiseData({
+                ...departmentWiseData,
+                current_page: departmentWiseData.current_page + 1,
+              });
+            }
           }
-          setIsLoading(false);
         }
-      }
-    });
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleYourTaskRowChanged = async (e, type) => {
@@ -2360,22 +2356,29 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setYourTask(
-            res.data.data.data.filter((d) => d.passed_status !== "REJECT")
-          );
-          setIsLoading(false);
-          if (type == "PLUS" && res.data.data.data.length > 0) {
-            setYourTaskData({
-              ...yourTaskData,
-              current_page: yourTaskData.current_page + 1,
-            });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setYourTask(
+              res.data.data.data.filter((d) => d.passed_status !== "REJECT")
+            );
+
+            if (type == "PLUS" && res.data.data.data.length > 0) {
+              setYourTaskData({
+                ...yourTaskData,
+                current_page: yourTaskData.current_page + 1,
+              });
+            }
           }
         }
-      }
-    });
+        setIsLoading(false);
+      })
+      .catch((res) => {
+        setNotify({ type: "danger", message: res.data.message });
+        setIsLoading(false);
+      });
   };
 
   const handleUnpassedRowChanged = async (e, type) => {
@@ -2402,18 +2405,26 @@ export default function MyTicketComponent() {
       return;
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setUnpassedTickets(res.data.data.data);
-          setIsLoading(false);
-          setUnpassedData({
-            ...unpassedData,
-            current_page: res.data.data.current_page,
-          });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            setUnpassedTickets(res.data.data.data);
+
+            setUnpassedData({
+              ...unpassedData,
+              current_page: res.data.data.current_page,
+            });
+          }
         }
-      }
-    });
+
+        setIsLoading(false);
+      })
+      .catch((res) => {
+        setNotify({ type: "danger", message: res.data.message });
+        setIsLoading(false);
+      });
   };
 
   const customStyles = {
@@ -2795,19 +2806,24 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && searchResult && (
-                          <DataTable
-                            columns={searchResultColumns}
-                            data={searchResult}
-                            defaultSortField="title"
-                            paginations
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"500px"}
-                            selectableRows={false}
-                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (searchResult && searchResult.length > 0 ? (
+                            <DataTable
+                              columns={searchResultColumns}
+                              data={searchResult}
+                              defaultSortField="title"
+                              pagination
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={"500px"}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </Tab>
@@ -2825,18 +2841,24 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && assignedToMe && (
-                          <DataTable
-                            columns={assignedToMeColumns}
-                            data={assignedToMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"700px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (assignedToMe && assignedToMe.length > 0 ? (
+                            <DataTable
+                              columns={assignedToMeColumns}
+                              data={assignedToMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={"700px"}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -2887,20 +2909,27 @@ export default function MyTicketComponent() {
                           typeOf="CreatedByMe"
                         />
                       )}
+
                       {isLoading && <TableLoadingSkelton />}
-                      {!isLoading && createdByMe && (
-                        <DataTable
-                          customStyles={customStyles}
-                          columns={createdByMeColumns}
-                          data={createdByMe}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={"500px"}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                          responsive={true}
-                        />
-                      )}
+                      {!isLoading &&
+                        (createdByMe && createdByMe.length > 0 ? (
+                          <DataTable
+                            customStyles={customStyles}
+                            columns={createdByMeColumns}
+                            data={createdByMe}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={"500px"}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                            responsive={true}
+                          />
+                        ) : (
+                          <div className="text-center no-data-message">
+                            No data found
+                          </div>
+                        ))}
+
                       <div className="back-to-top pull-right mt-6 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
@@ -2955,18 +2984,25 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && departmentwiseTicket && (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"800px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (departmentwiseTicket &&
+                          departmentwiseTicket.length > 0 ? (
+                            <DataTable
+                              columns={departmentwisetTicketColumns}
+                              data={departmentwiseTicket}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={"800px"}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -3019,18 +3055,24 @@ export default function MyTicketComponent() {
                           />
                         )}
                         {isLoading && <TableLoadingSkelton />}
-                        {!isLoading && yourTask && (
-                          <DataTable
-                            columns={yourTaskColumns}
-                            data={yourTask}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={"500px"}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (yourTask && yourTask.length > 0 ? (
+                            <DataTable
+                              columns={yourTaskColumns}
+                              data={yourTask}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={"500px"}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -3141,18 +3183,22 @@ export default function MyTicketComponent() {
 
                       {isLoading && <TableLoadingSkelton />}
 
-                      {!isLoading && unpassedTickets && (
-                        <DataTable
-                          columns={unpassedColumns}
-                          data={unpassedTickets}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={"500px"}
-                          selectableRows={false}
-                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                          highlightOnHover={true}
-                        />
-                      )}
+                      {!isLoading &&
+                        (unpassedTickets && unpassedTickets.length > 0 ? (
+                          <DataTable
+                            columns={unpassedColumns}
+                            data={unpassedTickets}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={"500px"}
+                            selectableRows={false}
+                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            highlightOnHover={true}
+                          />
+                        ) : (
+                          <div className="text-center">No data found</div>
+                        ))}
+
                       <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select

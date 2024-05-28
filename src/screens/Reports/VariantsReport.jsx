@@ -8,20 +8,21 @@ import ReportService from "../../services/ReportService/ReportService";
 import PageHeader from "../../components/Common/PageHeader";
 import Select from "react-select";
 import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+
 import { getRoles } from "../Dashboard/DashboardAction";
 import { useDispatch, useSelector } from "react-redux";
+import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 38)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
-  const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
+
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todate, setTodate] = useState([]);
@@ -77,28 +78,18 @@ export default function ResourcePlanningReportComponent() {
       selector: (row) => row.task_completed_at,
       sortable: true,
     },
-    // { name: 'Action', width:"18%", button: true,
-    //     ignoreRowClick: true,
-    //     allowOverflow: true,
-    //     cell: row =>
-    //     <button type="button" className="btn btn-sm btn-danger text-white"
-    //     name="a"
-    //     onClick={(e)=>getTasks(e,row.user_id,toDateRef.current.value,fromDateRef.current.value)}>
-    //     <i className='icofont-ui-delete text-white'
-    //     style={{fontSize:'15px'}}></i>
-    // </button>
-    // }
   ];
 
   const loadData = async () => {
+    setShowLoaderModal(true);
     const tempUserData = [];
-    const exportTempData = [];
+
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         const data = res.data.data.filter(
-          (d) => d.is_active == 1 && d.account_for === "SELF"
+          (d) => d.is_active === 1 && d.account_for === "SELF"
         );
         for (const key in data) {
           tempUserData.push({
@@ -116,76 +107,11 @@ export default function ResourcePlanningReportComponent() {
           return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
         });
         setUserData(aa);
+        setShowLoaderModal(false);
       }
     });
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
     dispatch(getRoles());
-
-    // const data = [];
-    // await new ReportService()
-    //   .variantsReport()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       let counter = 1;
-    //       const temp = res.data.data;
-    //       for (const key in temp) {
-    //         data.push({
-    //           sr: counter++,
-    //           ticket_id: temp[key].ticket_id,
-    //           task_owner: temp[key].task_owner,
-    //           task_name: temp[key].task_name,
-    //           task_start_Date: temp[key].task_start_Date,
-    //           task_scheduled_Hours: temp[key].task_scheduled_Hours,
-    //           task_actual_worked: temp[key].task_actual_worked,
-    //           task_delivery_scheduled: temp[key].task_delivery_scheduled,
-    //           task_last_update: temp[key].task_last_update,
-    //           task_status: temp[key].task_status,
-    //           task_actual_status: temp[key].task_actual_status,
-    //           task_completed_at: temp[key].task_completed_at,
-    //         });
-    //       }
-    // setData(null);
-    // setData(data);
-    // for (const i in temp) {
-    //   exportTempData.push({
-    //     sr: counter++,
-    //     ticket_id: temp[i].ticket_id,
-    //     task_owner: temp[i].task_owner,
-    //     task_name: temp[i].task_name,
-    //     task_start_Date: temp[i].task_start_Date,
-    //     task_scheduled_Hours: temp[i].task_scheduled_Hours,
-    //     task_actual_worked: temp[i].task_actual_worked,
-    //     task_delivery_scheduled: temp[i].task_delivery_scheduled,
-    //     task_last_update: temp[i].task_last_update,
-    //     task_status: temp[i].task_status,
-    //     task_actual_status: temp[i].task_actual_status,
-    //     task_completed_at: temp[i].task_completed_at,
-    //   });
-    // }
-
-    //   setExportData(null);
-    //   setExportData(exportTempData);
-    // }
-    // }
-    // )
-    // .catch((error) => {
-    //   const { response } = error;
-    //   const { request, ...errorObject } = response;
-    //   new ErrorLogService().sendErrorLog(
-    //     "VariantsReport",
-    //     "Get_VariantsReport",
-    //     "INSERT",
-    //     errorObject.data.message
-    //   );
-    // });
   };
 
   const handleFromDate = (e) => {
@@ -212,7 +138,7 @@ export default function ResourcePlanningReportComponent() {
   };
 
   const handleForm = async (e) => {
-    setShowLoaderModal(true);
+    setIsLoading(true);
     e.preventDefault();
     const formData = new FormData(e.target);
     const tempData = [];
@@ -221,12 +147,11 @@ export default function ResourcePlanningReportComponent() {
     if (todateformat > fromdateformat) {
       alert("Please select Date After From date");
     } else {
-      var flag = 1;
       await new ReportService()
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            // setShowLoaderModal(false);
             if (res.data.status == 1) {
               let sr = 1;
               const data = res.data.data;
@@ -250,6 +175,7 @@ export default function ResourcePlanningReportComponent() {
                 }
                 setData(null);
                 setData(tempData);
+                setIsLoading(false);
                 let count = 1;
                 for (const key in data) {
                   exportTempData.push({
@@ -305,8 +231,6 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
@@ -315,7 +239,7 @@ export default function ResourcePlanningReportComponent() {
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
+      <div className="card mt-2">
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
@@ -334,7 +258,6 @@ export default function ResourcePlanningReportComponent() {
                     classNamePrefix="select"
                     options={userData && userData}
                     required
-                    style={{ zIndex: "100" }}
                   />
                 )}
               </div>
@@ -369,12 +292,11 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-2">
+            <div className="row mt-4">
+              <div className="col-md-6">
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   <i className="icofont-search-1 "></i> Search
                 </button>
@@ -382,27 +304,19 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
               </div>
-              {data && data.length > 0 && (
-                <div
-                  className="col-md-10"
-                  style={{
-                    textAlign: "right",
-                    marginTop: "20px",
-                    fontWeight: "600",
-                  }}
-                >
+              <div className="col-md-6 d-flex justify-content-end">
+                {data && data.length > 0 && (
                   <ExportToExcel
                     className="btn btn-sm btn-danger"
                     apiData={exportData && exportData}
                     fileName="Variance Report"
                   />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </form>
         </div>
@@ -412,7 +326,8 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {isLoading && <TableLoadingSkelton />}
+              {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -421,8 +336,6 @@ export default function ResourcePlanningReportComponent() {
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
-                  // expandableRows
-                  // expandableRowsComponent={ExpandedComponent}
                 />
               )}
             </div>
