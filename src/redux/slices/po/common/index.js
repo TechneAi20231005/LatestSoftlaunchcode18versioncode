@@ -1,33 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   getItemCategoryListThunk,
-  getKnockoffWtRangeListThunk,
-  getSizeRangeListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk,
   getVenderListThunk,
 } from '../../../services/po/common';
 
 const initialState = {
   venderList: [],
   itemCategoryList: [],
-  knockoffWtRangeList: [],
-  sizeRangeList: [],
+  karagirKnockOffWtSizeRangeFilterData: [],
   isLoading: {
     getVenderList: false,
     getItemCategoryList: false,
-    getKnockoffWtRangeList: false,
-    getSizeRangeList: false,
+    getKaragirKnockOffWtSizeRangeFilterData: false,
   },
   errorMsg: {
     getVenderList: '',
     getItemCategoryList: '',
-    getKnockoffWtRangeList: '',
-    getSizeRangeList: '',
+    getKaragirKnockOffWtSizeRangeFilterData: '',
   },
   successMsg: {
     getVenderList: '',
     getItemCategoryList: '',
-    getKnockoffWtRangeList: '',
-    getSizeRangeList: '',
+    getKaragirKnockOffWtSizeRangeFilterData: '',
   },
 };
 const poCommonSlice = createSlice({
@@ -67,34 +62,19 @@ const poCommonSlice = createSlice({
         state.errorMsg.getItemCategoryList = action.error.message;
       })
 
-      // // knockoff_wt_range list
-      .addCase(getKnockoffWtRangeListThunk.pending, (state, action) => {
-        state.isLoading.getKnockoffWtRangeList = true;
+      // // getKaragirKnockOffWtSizeRangeFilterData
+      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.pending, (state, action) => {
+        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = true;
       })
-      .addCase(getKnockoffWtRangeListThunk.fulfilled, (state, action) => {
-        state.isLoading.getKnockoffWtRangeList = false;
-        state.knockoffWtRangeList = action.payload.data;
-        state.successMsg.getKnockoffWtRangeList = action.payload.msg;
+      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.fulfilled, (state, action) => {
+        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+        state.karagirKnockOffWtSizeRangeFilterData = action.payload.data;
+        state.successMsg.getKaragirKnockOffWtSizeRangeFilterData = action.payload.msg;
       })
-      .addCase(getKnockoffWtRangeListThunk.rejected, (state, action) => {
-        state.isLoading.getKnockoffWtRangeList = false;
-        state.knockoffWtRangeList = [];
-        state.errorMsg.getKnockoffWtRangeList = action.error.message;
-      })
-
-      // // size range list
-      .addCase(getSizeRangeListThunk.pending, (state, action) => {
-        state.isLoading.getSizeRangeList = true;
-      })
-      .addCase(getSizeRangeListThunk.fulfilled, (state, action) => {
-        state.isLoading.getSizeRangeList = false;
-        state.sizeRangeList = action.payload.data;
-        state.successMsg.getSizeRangeList = action.payload.msg;
-      })
-      .addCase(getSizeRangeListThunk.rejected, (state, action) => {
-        state.isLoading.getSizeRangeList = false;
-        state.sizeRangeList = [];
-        state.errorMsg.getSizeRangeList = action.error.message;
+      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.rejected, (state, action) => {
+        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+        state.karagirKnockOffWtSizeRangeFilterData = [];
+        state.errorMsg.getKaragirKnockOffWtSizeRangeFilterData = action.error.message;
       });
   },
 });

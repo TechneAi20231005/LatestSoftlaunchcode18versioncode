@@ -8,10 +8,10 @@ import CustomModal from '../../../components/custom/modal/CustomModal';
 import { CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
-  getKnockoffWtRangeListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk,
 } from '../../../redux/services/po/common';
-import { RenderIf } from '../../../utils';
 import { getGenerateRequisitionListThunk } from '../../../redux/services/po/generateRequisition';
+import { RenderIf } from '../../../utils';
 
 function GenerateRequisitionFilterModal({
   open,
@@ -34,8 +34,8 @@ function GenerateRequisitionFilterModal({
   // // redux state
   const {
     itemCategoryList,
-    knockoffWtRangeList,
-    isLoading: { getItemCategoryList, getKnockoffWtRangeList },
+    karagirKnockOffWtSizeRangeFilterData: { karagir_wt_range, knockoff_wt_range, size_range },
+    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData },
   } = useSelector(state => state?.poCommon);
 
   // // dropdown data
@@ -51,23 +51,23 @@ function GenerateRequisitionFilterModal({
   ];
   const itemOptionData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...itemCategoryList?.map(items => ({
+    ...(itemCategoryList?.map(items => ({
       label: items?.item,
       value: items?.item,
-    })),
+    })) || []),
   ];
 
   const categoryOptionData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...itemCategoryList?.map(items => ({
+    ...(itemCategoryList?.map(items => ({
       label: items?.category,
       value: items?.category,
-    })),
+    })) || []),
   ];
 
   const knockOffWeightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(knockoffWtRangeList?.knockoff_wt_range?.map(items => ({
+    ...(knockoff_wt_range?.map(items => ({
       label: items,
       value: items,
     })) || []),
@@ -75,7 +75,7 @@ function GenerateRequisitionFilterModal({
 
   const karagirWeightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(knockoffWtRangeList?.karagir_wt_range?.map(items => ({
+    ...(karagir_wt_range?.map(items => ({
       label: items,
       value: items,
     })) || []),
@@ -83,7 +83,7 @@ function GenerateRequisitionFilterModal({
 
   const sizeRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(knockoffWtRangeList?.size_range?.map(items => ({
+    ...(size_range?.map(items => ({
       label: items,
       value: items,
     })) || []),
@@ -111,8 +111,18 @@ function GenerateRequisitionFilterModal({
   // // life cycle for category dropdown, weight range ans size range dropdown
   useEffect(() => {
     if (open) {
-      dispatch(getItemCategoryListThunk());
-      dispatch(getKnockoffWtRangeListThunk({ categoryName: '', itemName: '', type: 'filterData' }));
+      if (!itemCategoryList?.length) {
+        dispatch(getItemCategoryListThunk());
+      }
+      if (!karagir_wt_range?.length || !knockoff_wt_range?.length || !size_range?.length) {
+        dispatch(
+          getKaragirKnockOffWtSizeRangeFilterListThunk({
+            itemName: '',
+            categoryName: '',
+            type: 'filterData',
+          }),
+        );
+      }
     }
   }, [open]);
 
@@ -171,8 +181,8 @@ function GenerateRequisitionFilterModal({
                     styleData="w-100"
                     name="weight_range"
                     label="Knock Off Weight Range"
-                    placeholder={getKnockoffWtRangeList ? 'Loading...' : 'Select'}
-                    disabled={getKnockoffWtRangeList}
+                    placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                    disabled={getKaragirKnockOffWtSizeRangeFilterData}
                     isSearchable
                     isMulti
                   />
@@ -184,8 +194,8 @@ function GenerateRequisitionFilterModal({
                     styleData="w-100"
                     name="weight_range"
                     label="Karagir Weight Range"
-                    placeholder={getKnockoffWtRangeList ? 'Loading...' : 'Select'}
-                    disabled={getKnockoffWtRangeList}
+                    placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                    disabled={getKaragirKnockOffWtSizeRangeFilterData}
                     isSearchable
                     isMulti
                   />
@@ -198,8 +208,8 @@ function GenerateRequisitionFilterModal({
                   styleData="w-100"
                   name="size_range"
                   label="Karagir Size Range"
-                  placeholder={getKnockoffWtRangeList ? 'Loading...' : 'Select'}
-                  disabled={getKnockoffWtRangeList}
+                  placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                  disabled={getKaragirKnockOffWtSizeRangeFilterData}
                   isSearchable
                   isMulti
                 />

@@ -11,8 +11,7 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 import { CustomReactSelect } from '../../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
-  getKnockoffWtRangeListThunk,
-  getSizeRangeListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk,
 } from '../../../../redux/services/po/common';
 import { getPendingOrderListThunk } from '../../../../redux/services/po/generatePo';
 import {
@@ -39,9 +38,8 @@ function PendingOrder() {
   // // redux state
   const {
     itemCategoryList,
-    knockoffWtRangeList,
-    sizeRangeList,
-    isLoading: { getItemCategoryList, getKnockoffWtRangeList, getSizeRangeList },
+    karagirKnockOffWtSizeRangeFilterData: { karagir_wt_range, size_range },
+    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData },
   } = useSelector(state => state?.poCommon);
 
   const {
@@ -71,7 +69,11 @@ function PendingOrder() {
       name: 'Pending Quantity',
       selector: (row, index) =>
         row?.open_qty ? (
-          <p className="bg-warning px-1">{row?.open_qty > 0 ? row?.open_qty : 0}</p>
+          <p className="bg-warning px-1">
+            {Number(row?.open_qty) - Number(row?.total_po_qty) > 0
+              ? Number(row?.open_qty) - Number(row?.total_po_qty)
+              : 0}
+          </p>
         ) : (
           '---'
         ),
@@ -98,35 +100,33 @@ function PendingOrder() {
   // // dropdown data
   const categoryData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...itemCategoryList?.map(items => ({
+    ...(itemCategoryList?.map(items => ({
       label: (
-        <>
-          <div className="d-flex">
-            <p className="mb-0">{items?.item}</p>
-            <i className="icofont-caret-right text-warning fs-5" />
-            <p className="mb-0"> {items?.category}</p>
-          </div>
-        </>
+        <div className="d-flex" key={Math.random()}>
+          <p className="mb-0">{items?.item}</p>
+          <i className="icofont-caret-right text-warning fs-5" />
+          <p className="mb-0"> {items?.category}</p>
+        </div>
       ),
       value: items?.id,
       searchableItem: `${items?.item} ${items?.category}`,
-    })),
+    })) || []),
   ];
 
   const weightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...knockoffWtRangeList?.map(items => ({
-      label: items?.knockoff_wt_range,
-      value: items?.knockoff_wt_range,
-    })),
+    ...(karagir_wt_range?.map(items => ({
+      label: items?.karagir_wt_range,
+      value: items?.karagir_wt_range,
+    })) || []),
   ];
 
   const sizeRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...sizeRangeList?.map(items => ({
+    ...(size_range?.map(items => ({
       label: items?.size_range,
       value: items?.size_range,
-    })),
+    })) || []),
   ];
 
   const customFilterOption = (option, searchText) => {
@@ -207,11 +207,11 @@ function PendingOrder() {
     }
   }, []);
 
-  // // life cycle for weight range dropdown
+  // // life cycle for weight range and size range dropdown
   useEffect(() => {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
-        getKnockoffWtRangeListThunk({
+        getKaragirKnockOffWtSizeRangeFilterListThunk({
           itemName: getItemName(filterFormValue?.selectedItemsCategory),
           categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           type: '',
@@ -219,23 +219,6 @@ function PendingOrder() {
       );
     }
   }, [generatePoFilter?.vender_name, filterFormValue?.selectedItemsCategory]);
-
-  // // life cycle for size range dropdown
-  useEffect(() => {
-    if (filterFormValue?.selectedItemsCategory) {
-      dispatch(
-        getSizeRangeListThunk({
-          itemName: getItemName(filterFormValue?.selectedItemsCategory),
-          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
-          weightRange: filterFormValue?.selectedWeightRange || 0,
-        }),
-      );
-    }
-  }, [
-    generatePoFilter?.vender_name,
-    filterFormValue?.selectedItemsCategory,
-    filterFormValue?.selectedWeightRange,
-  ]);
 
   // // life cycle for pending order data
   useEffect(() => {
@@ -303,7 +286,9 @@ function PendingOrder() {
                       styleData="w-100"
                       label="Weight:"
                       name="selectedWeightRange"
-                      placeholder={getKnockoffWtRangeList ? 'Loading...' : 'Select'}
+                      placeholder={
+                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                      }
                       isSearchable
                     />
                   </Col>
@@ -314,7 +299,9 @@ function PendingOrder() {
                       styleData="w-100"
                       label="Size:"
                       name="selectedSizeRange"
-                      placeholder={getSizeRangeList ? 'Loading...' : 'Select'}
+                      placeholder={
+                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                      }
                       isSearchable
                     />
                   </Col>
