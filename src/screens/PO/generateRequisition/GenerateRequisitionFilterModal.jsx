@@ -49,19 +49,23 @@ function GenerateRequisitionFilterModal({
       value: 1,
     },
   ];
+
+  const uniqueItems = [...new Set(itemCategoryList?.map(item => item.item))];
+  const uniqueCategories = [...new Set(itemCategoryList?.map(item => item.category))];
+
   const itemOptionData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(itemCategoryList?.map(items => ({
-      label: items?.item,
-      value: items?.item,
+    ...(uniqueItems?.map(item => ({
+      label: item,
+      value: item,
     })) || []),
   ];
 
   const categoryOptionData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(itemCategoryList?.map(items => ({
-      label: items?.category,
-      value: items?.category,
+    ...(uniqueCategories?.map(category => ({
+      label: category,
+      value: category,
     })) || []),
   ];
 
