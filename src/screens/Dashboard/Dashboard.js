@@ -244,11 +244,6 @@ export default function HrDashboard(props) {
   const loadData = () => {
     const inputRequired =
       "id,employee_id,first_name,last_name,middle_name,is_active";
-    // dispatch(getEmployeeData());
-    // dispatch(getNotifications());
-    // dispatch(getAllDashboardData());
-
-    // dispatch(getAllUserById(localStorage.getItem("id")));
   };
 
   useEffect(() => {
@@ -271,11 +266,10 @@ export default function HrDashboard(props) {
       <div className="d-flex justify-content-between align-items-center">
         <PageHeader headerTitle="Dashboard" />
 
-        <div className="position-relative mt-n4">
+        <div className="regularization-button">
           {(historyModal.show || approveRequestModal.show) === false && (
             <Dropdown
               className="notifications"
-              // style={{ zIndex: -200 }}
               onClick={() => {
                 loadNotifcation();
               }}
@@ -283,40 +277,14 @@ export default function HrDashboard(props) {
               <Dropdown.Toggle
                 as="a"
                 className="nav-link dropdown-toggle pulse"
-                // style={{ zIndex: -200 }}
               >
-                <div className=" me-3" style={{ marginLeft: "28%" }}>
+                <div className="me-3" style={{ marginLeft: "28%" }}>
                   <div>
-                    <button
-                      class=" badge bg-primary p-2"
-                      // style={{
-                      //   width: "auto",
-                      //   padding: "0.5rem 2rem",
-                      //   lineHeight: "revert-layer",
-                      // }}
-                    >
+                    <button class=" badge bg-primary p-2">
                       Regularization
                     </button>
                     {approvedNotifications?.length > 0 && (
-                      <div
-                        className="notification-circle"
-                        style={{
-                          position: "absolute",
-                          top: "-10px",
-                          right: "-10px",
-                          padding: "3px",
-                          backgroundColor: "rgb(255, 24, 67)",
-                          borderRadius: "50%",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          color: "white",
-                          textAlign: "center",
-                          fontSize: "0.8rem",
-                          fontWeight: "bold",
-                          minWidth: "20px",
-                          height: "auto",
-                        }}
-                      >
+                      <div className="notification-circle">
                         {approvedNotifications.length}
                       </div>
                     )}
@@ -325,7 +293,7 @@ export default function HrDashboard(props) {
               </Dropdown.Toggle>
 
               <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
-                <div className="card border-0" style={{ width: "30rem" }}>
+                <div className="card border-0 w-30" style={{ width: "30rem" }}>
                   <div className="card-header border-0 p-3">
                     <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                       <span>
