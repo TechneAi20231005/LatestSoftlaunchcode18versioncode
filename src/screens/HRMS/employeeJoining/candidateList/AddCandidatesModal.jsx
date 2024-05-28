@@ -214,6 +214,7 @@ function AddCandidatesModal({ show, close }) {
                       placeholder="Enter contact number"
                       requiredField
                       type="number"
+                      maxLength="10"
                     />
                   </Col>
                   <Col sm={6} md={6}>
