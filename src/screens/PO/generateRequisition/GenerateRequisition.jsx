@@ -245,9 +245,9 @@ function GenerateRequisition() {
             </b>
             <b>
               Open Pieces:{' '}
-              {generateRequisitionListData?.total?.total_open
+              {generateRequisitionListData?.total?.total_open > 0
                 ? parseFloat(Number(generateRequisitionListData?.total?.total_open).toFixed(2))
-                : 'N/A'}
+                : '0'}
             </b>
           </div>
           <DataTable
