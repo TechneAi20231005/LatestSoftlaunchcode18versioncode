@@ -53,8 +53,9 @@ function FollowUpHistory() {
                   <a
                     href={`${REACT_APP_ATTACHMENT_URL}${followUp?.attachment_file}`}
                     target="_blank"
+                    className="link_underline_primary"
                   >
-                    Attachment
+                    {followUp?.attachment_file?.split('/')?.pop()}
                   </a>
                 ) : (
                   'N/A'

@@ -302,8 +302,9 @@ function CandidatesDetails() {
                               href={`${REACT_APP_ATTACHMENT_URL}${fileData}`}
                               target="_blank"
                               key={index}
+                              className="link_underline_primary"
                             >
-                              File-{index + 1}, &nbsp;
+                              {fileData?.split('/').pop()} &nbsp;
                             </a>
                           ))
                         ) : (
