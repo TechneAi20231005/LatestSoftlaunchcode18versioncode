@@ -26,7 +26,9 @@ import DepartmentMappingService from "../../services/MastersService/DepartmentMa
 import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
 import { useDispatch, useSelector } from "react-redux";
 import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import { getRoles } from "../Dashboard/DashboardAction";
+import { getEmployeeDataById, getRoles } from "../Dashboard/DashboardAction";
+import { getUserForMyTicketsData } from "./MyTicketComponentAction";
+import DashbordSlice from "../Dashboard/DashbordSlice";
 
 export default function CreateTicketComponent() {
   const history = useNavigate();
@@ -89,6 +91,25 @@ export default function CreateTicketComponent() {
 
   const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
+  const userCustomerId = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.customerTypeId
+  );
+  console.log("userCustomerId", userCustomerId);
+  console.log("customerMapping", customerMapping);
+  console.log(
+    "self",
+    customerMapping?.filter((item) => item.customer_type_id === "")
+  );
+ 
+  // console.log(
+  //   "customer",
+  //   customerMapping.filter((d) => d.customer_type_id)
+  // );
+
+  // console.log("customerMappingss", customerMapping);
+
+  const account_for = localStorage.getItem("account_for");
+
   const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
@@ -309,6 +330,19 @@ export default function CreateTicketComponent() {
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerMappingData
   );
+
+  // const customerID =
+  //   account_for === "CUSTOMER" &&
+  //   customerMapping?.filter((item) => item.customer_type_id != "");
+  // const customerIdValue = customerID?.filter(
+  //   (d) => d.customer_type_id === userCustomerId
+  // );
+  // console.log("customerIdValue", customerIdValue);
+  console.log(
+    "fffff",
+    customerMapping?.filter((item) => item.customer_type_id != "")
+  );
+  console.log("mappingId", data);
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
@@ -323,13 +357,31 @@ export default function CreateTicketComponent() {
     setIsSubmitted(true);
 
     const formData = new FormData(e.target);
+    // const arr = customerMapping?.filter((item) => item.customer_type_id === "");
+    // console.log("customerMapping?.filter((i", arr);
+    // return;
+    if (
+      account_for === "SELF" &&
+      customerMapping?.filter((item) => item.customer_type_id === "")
+    ) {
+      formData.append("customer_mapping_id", data && data.customer_mapping_id);
+    } else {
+      const customerID =
+        account_for === "CUSTOMER" &&
+        customerMapping?.filter((item) => item.customer_type_id != "");
+      const customerIdValue = customerID?.filter(
+        (d) => d.customer_type_id === userCustomerId
+      );
+      console.log("customerIdValue", customerIdValue);
+      formData.append("customer_mapping_id", customerIdValue);
+    }
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
       }
     }
 
-    formData.append("parent_id", selectedOptionId);
+    formData.append("r", selectedOptionId);
 
     var flag = 1;
 
@@ -544,10 +596,14 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = "";
     const queryTypeTemp = [];
+    console.log("id", localStorage.getItem("id"));
+
+    dispatch(getEmployeeDataById(localStorage.getItem("id")));
 
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
+        console.log(res);
         const queryType = [];
         const department = [];
         if (res.data.status === 1) {
@@ -579,6 +635,14 @@ export default function CreateTicketComponent() {
             queryType.push({ id: q.id, query_type_name: q.query_type_name });
           });
         setQueryType(queryType);
+      }
+    });
+
+    const inputRequired =
+      "id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id";
+    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      if (res.payload.status == 200) {
+        console.log("dataNew", res.payload.data);
       }
     });
 
@@ -689,6 +753,7 @@ export default function CreateTicketComponent() {
       queryTypeRef.current.clearValue();
     }
     await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
+      console.log("res", res);
       if (res.data.status == 1) {
         setQueryGroupTypeData(
           res.data.data
@@ -846,14 +911,17 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
+      {console.log("data", data)}
+
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
-        <input
+        {console.log(data)}
+        {/* <input
           type="hidden"
           className="form-control form-control-sm"
           id="customer_mapping_id"
           name="customer_mapping_id"
           value={data && data.customer_mapping_id}
-        />
+        /> */}
 
         <div className="card mt-2">
           <div className="card-body">
@@ -954,6 +1022,12 @@ export default function CreateTicketComponent() {
                     />
                   )}
                 </div>
+                {console.log(
+                  "queryGroupTypeData",
+                  queryGroupTypeData?.filter(
+                    (d) => d.value === data.query_type_id
+                  )
+                )}
 
                 {queryGroupTypeData && (
                   <div className="col-sm-3">
