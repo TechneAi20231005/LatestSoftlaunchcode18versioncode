@@ -26,9 +26,11 @@ const CustomFilterModal = ({
   const allSelected = uniqueValues.every((value) =>
     selectedFilters.includes(value)
   );
-
+  const topClass = position.top ? `top-${position.top}` : "";
+  const leftClass = position.left ? `left-${position.left}` : "";
   return (
     <div
+      // className={`z-index-1050  ${topClass} ${leftClass} `}
       style={{
         position: "absolute",
         top: position.top,

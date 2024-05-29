@@ -20,7 +20,9 @@ export default function TestDraftComponent({ close }) {
   // local state
 
   const dispatch = useDispatch();
+  const { getTestDraftData } = useSelector((state) => state?.downloadFormat);
 
+  console.log("getTestDraftData", getTestDraftData);
   const [currentTab, setCurrentTab] = useState("test_draft");
   const tabsLabel = [
     {
@@ -60,13 +62,11 @@ export default function TestDraftComponent({ close }) {
 
     const formData = new FormData();
     formData.append("file_attachment", file);
-    console.log("Form Data:", formData.get("file_attachment"));
     dispatch(
       importTestDraftThunk({
         formData,
         onSuccessHandler: () => {
-          // setOpenConfirmModal({ open: false });
-          close();
+          setBulkModal({ showModal: false });
         },
         onErrorHandler: () => {
           // setOpenConfirmModal({ open: false });
@@ -78,6 +78,7 @@ export default function TestDraftComponent({ close }) {
     dispatch(getProjectModuleMasterThunk());
     dispatch(getModuleMasterThunk());
     dispatch(getSubModuleMasterThunk());
+    dispatch(importTestDraftThunk());
   }, []);
   return (
     <div className="container-xxl">
@@ -133,7 +134,7 @@ export default function TestDraftComponent({ close }) {
         />
       </div>
       <RenderIf render={currentTab === "test_draft"}>
-        <TestDraftDetails />
+        <TestDraftDetails data={getTestDraftData} />
       </RenderIf>
       <RenderIf render={currentTab === "review_test_draft"}>
         <ReviewedTestDraftDetails />

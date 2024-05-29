@@ -12,15 +12,15 @@ function TestingGroupMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { testingGroupMasetrList, isLoading } = useSelector(
+  const { testingGroupMasterList, isLoading } = useSelector(
     (state) => state?.testingGroupMaster
   );
 
   const [searchValue, setSearchValue] = useState("");
-  const [filteredTestingGruopMasterList, setFilterTestingGroupMasterList] =
+  const [filteredTestingGroupMasterList, setFilterTestingGroupMasterList] =
     useState([]);
 
-  const [addEditTestingGrouptModal, setAddEditTestingGroupModal] = useState({
+  const [addEditTestingGroupModal, setAddEditTestingGroupModal] = useState({
     type: "",
     data: "",
     open: false,
@@ -29,7 +29,7 @@ function TestingGroupMasterComponent() {
   // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(
-      testingGroupMasetrList,
+      testingGroupMasterList,
       searchValue
     );
     setFilterTestingGroupMasterList(filteredList);
@@ -38,18 +38,8 @@ function TestingGroupMasterComponent() {
   // Function to handle reset button click
   const handleReset = () => {
     setSearchValue("");
-    setFilterTestingGroupMasterList(testingGroupMasetrList);
+    setFilterTestingGroupMasterList(testingGroupMasterList);
   };
-
-  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
-  useEffect(() => {
-    setFilterTestingGroupMasterList(testingGroupMasetrList);
-  }, [testingGroupMasetrList]);
-
-  // Function to handle search onchange
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
 
   const columns = [
     {
@@ -78,8 +68,22 @@ function TestingGroupMasterComponent() {
 
     {
       name: "Status",
-      selector: (row) => (row.is_active === 1 ? "Active" : "Deactive"),
-      sortable: false,
+      selector: (row) => row.is_active,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          {row.is_active == 1 && (
+            <span className="badge bg-primary" style={{ width: "4rem" }}>
+              Active
+            </span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger" style={{ width: "4rem" }}>
+              DeActive
+            </span>
+          )}
+        </div>
+      ),
       width: "100px",
     },
 
@@ -132,6 +136,16 @@ function TestingGroupMasterComponent() {
   useEffect(() => {
     dispatch(getTestingGroupMasterListThunk());
   }, []);
+
+  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
+  useEffect(() => {
+    setFilterTestingGroupMasterList(testingGroupMasterList);
+  }, [testingGroupMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
 
   return (
     <div className="container-xxl">
@@ -187,16 +201,16 @@ function TestingGroupMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={transformDataForExport(filteredTestingGruopMasterList)}
+            apiData={transformDataForExport(filteredTestingGroupMasterList)}
             fileName="Review Comment Records"
-            disabled={!filteredTestingGruopMasterList?.length}
+            disabled={!filteredTestingGroupMasterList?.length}
           />
         </Col>
       </Row>
 
       <DataTable
         columns={columns}
-        data={filteredTestingGruopMasterList}
+        data={filteredTestingGroupMasterList}
         defaultSortField="role_id"
         pagination
         selectableRows={false}
@@ -206,9 +220,9 @@ function TestingGroupMasterComponent() {
         progressComponent={<TableLoadingSkelton />}
       />
       <AddTestingGroupModal
-        show={addEditTestingGrouptModal?.open}
-        type={addEditTestingGrouptModal?.type}
-        currentTestingGroupData={addEditTestingGrouptModal?.data}
+        show={addEditTestingGroupModal?.open}
+        type={addEditTestingGroupModal?.type}
+        currentTestingGroupData={addEditTestingGroupModal?.data}
         close={(prev) => setAddEditTestingGroupModal({ ...prev, open: false })}
       />
     </div>

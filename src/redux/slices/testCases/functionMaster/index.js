@@ -6,14 +6,16 @@ import {
 } from "../../../services/testCases/functionMaster";
 
 const initialState = {
-  functionMasetrList: [],
+  functionMasterList: [],
+  filterFunctionMasterList: [],
   isLoading: {
     getFunctionMasterList: false,
     addFunctionMaster: false,
     editFunctionMaster: false,
+    filterFunctionMasterList: false,
   },
-  errorMsg: { getFunctionMasterList: "" },
-  successMsg: { getFunctionMasterList: "" },
+  errorMsg: { getFunctionMasterList: "", filterFunctionMasterList: "" },
+  successMsg: { getFunctionMasterList: "", filterFunctionMasterList: "" },
 };
 const functionMasterSlice = createSlice({
   name: "Function master",
@@ -28,12 +30,15 @@ const functionMasterSlice = createSlice({
       })
       .addCase(getFunctionMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getFunctionMasterList = false;
-        state.functionMasetrList = action?.payload?.data;
+        state.functionMasterList = action?.payload?.data;
+        state.filterFunctionMasterList = action?.payload?.data
+          ?.filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.function_name }));
         state.successMsg.getFunctionMasterList = action.payload.msg;
       })
       .addCase(getFunctionMasterListThunk.rejected, (state, action) => {
         state.isLoading.getFunctionMasterList = false;
-        state.functionMasetrList = [];
+        state.functionMasterList = [];
         state.errorMsg.getFunctionMasterList = action.error.message;
       })
 

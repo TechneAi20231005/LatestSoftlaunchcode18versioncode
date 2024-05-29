@@ -6,21 +6,25 @@ import {
 } from "../../../services/testCases/testingTypeMaster";
 
 const initialState = {
-  testingTypeMasetrList: [],
+  testingTypeMasterList: [],
+  filterTestingTypeMasterList: [],
   isLoading: {
     getTestingTypeMasterList: false,
     addTestingTypeMaster: false,
     editTestingTypeMaster: false,
+    filterTestingTypeMasterList: false,
   },
   errorMsg: {
     getTestingTypeMasterList: "",
     addTestingTypeMaster: "",
     editTestingTypeMaster: "",
+    filterTestingTypeMasterList: "",
   },
   successMsg: {
     getTestingMasterList: "",
     addTestingTypeMaster: "",
     editTestingTypeMaster: "",
+    filterTestingTypeMasterList: "",
   },
 };
 const testingTypeMasterSlice = createSlice({
@@ -36,12 +40,15 @@ const testingTypeMasterSlice = createSlice({
       })
       .addCase(getTestingTypeMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getTestingTypeMasterList = false;
-        state.testingTypeMasetrList = action?.payload?.data;
+        state.testingTypeMasterList = action?.payload?.data;
+        state.filterTestingTypeMasterList = action?.payload?.data
+          ?.filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.type_name }));
         state.successMsg.getTestingMasterList = action.payload.msg;
       })
       .addCase(getTestingTypeMasterListThunk.rejected, (state, action) => {
         state.isLoading.getTestingTypeMasterList = false;
-        state.testingTypeMasetrList = [];
+        state.testingTypeMasterList = [];
         state.errorMsg.getTestingTypeMasterList = action.error.message;
       })
 

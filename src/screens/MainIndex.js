@@ -930,7 +930,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/TestCaseReviewDetails`}
+              path={`/${_base}/TestCaseReviewDetails/:test_plan_id`}
               element={<TestCaseReviewDetails />}
             />
             <Route

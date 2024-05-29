@@ -7,14 +7,25 @@ import {
 } from "../../../services/testCases/reviewCommentMaster";
 
 const initialState = {
-  reviewCommentMasetrList: [],
+  reviewCommentMasterList: [],
+  getFilterReviewCommentMasterList: [],
+
   isLoading: {
     getReviewCommentMasterList: false,
+    getFilterReviewCommentMasterList: false,
     addReviewCommentMaster: false,
     editReviewCommentMaster: false,
   },
-  errorMsg: { getReviewCommentMasterList: "" },
-  successMsg: { getReviewCommentMasterList: "" },
+  errorMsg: {
+    getReviewCommentMasterList: "",
+    getFilterReviewCommentMasterList: "",
+    editReviewCommentMaster: "",
+  },
+  successMsg: {
+    getReviewCommentMasterList: "",
+    getFilterReviewCommentMasterList: "",
+    editReviewCommentMaster: "",
+  },
 };
 const reviewCommentMasterSlice = createSlice({
   name: "Review Comment master",
@@ -29,12 +40,15 @@ const reviewCommentMasterSlice = createSlice({
       })
       .addCase(getReviewCommentMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getReviewCommentMasterList = false;
-        state.reviewCommentMasetrList = action?.payload?.data;
+        state.reviewCommentMasterList = action?.payload?.data;
+        state.getFilterReviewCommentMasterList = action?.payload?.data
+          ?.filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.reviewer_comment }));
         state.successMsg.getReviewCommentMasterList = action.payload.msg;
       })
       .addCase(getReviewCommentMasterListThunk.rejected, (state, action) => {
         state.isLoading.getReviewCommentMasterList = false;
-        state.reviewCommentMasetrList = [];
+        state.reviewCommentMasterList = [];
         state.errorMsg.getReviewCommentMasterList = action.error.message;
       })
 

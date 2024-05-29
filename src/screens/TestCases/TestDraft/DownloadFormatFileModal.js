@@ -1,18 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Field, Form, Formik } from "formik";
-import { Col, Row, Stack, Spinner } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import CustomModal from "../../../components/custom/modal/CustomModal";
 import {
   CustomDropdown,
-  CustomInput,
   CustomReactSelect,
-  CustomTextArea,
 } from "../../../components/custom/inputs/CustomInputs";
 import { downloadFormatFile } from "./Validation/DownloadFormatFile";
-import ProjectService from "../../../services/ProjectManagementService/ProjectService";
-import ModuleService from "../../../services/ProjectManagementService/ModuleService";
-import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
+
 import {
   downloadFormatFileThunk,
   getModuleMasterThunk,
@@ -78,12 +74,9 @@ function DownloadFormatFileModal({ show, close }) {
         submodule_id,
 
         onSuccessHandler: () => {
-          // setOpenConfirmModal({ open: false });
           close();
         },
-        onErrorHandler: () => {
-          // setOpenConfirmModal({ open: false });
-        },
+        onErrorHandler: () => {},
       })
     );
   };
@@ -100,9 +93,6 @@ function DownloadFormatFileModal({ show, close }) {
     }
   }, []);
 
-  useEffect(() => {
-    // loadData();
-  }, []);
   return (
     <>
       <CustomModal show={show} title="Download Format File" width="lg">
@@ -113,7 +103,7 @@ function DownloadFormatFileModal({ show, close }) {
             handleDownloadFormatFile({ formData: values });
           }}
         >
-          {({ values, touched, errors, setFieldValue }) => (
+          {({ setFieldValue }) => (
             <Form>
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>

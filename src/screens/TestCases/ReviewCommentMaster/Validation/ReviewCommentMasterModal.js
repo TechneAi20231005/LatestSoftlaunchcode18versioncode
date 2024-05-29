@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Field, Form, Formik } from "formik";
-import { Col, Row, Stack, Spinner } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addReviewCommentValidation } from "./AddReviewComment";
 import CustomModal from "../../../../components/custom/modal/CustomModal";
@@ -29,9 +29,6 @@ function ReviewCommentMasterModal({
     is_active:
       type === "EDIT" ? currentReviewCommentData?.is_active?.toString() : 1,
   };
-
-  // // redux state
-  const { isLoading } = useSelector((state) => state?.reviewCommentMaster);
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({

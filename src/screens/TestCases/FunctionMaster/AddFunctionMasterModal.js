@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Field, Form, Formik } from "formik";
 import { Col, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import {
   CustomInput,
   CustomRadioButton,
 } from "../../../components/custom/inputs/CustomInputs";
-import CustomAlertModal from "../../../components/custom/modal/CustomAlertModal";
 import { RenderIf } from "../../../utils";
 
 import {
@@ -26,44 +25,30 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
     is_active: type === "EDIT" ? currentFunctionData?.is_active?.toString() : 1,
   };
 
-  // // redux state
-  const { isLoading } = useSelector((state) => state?.functionMaster);
-
-  // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({
-    open: false,
-    formData: "",
-  });
   // // function
 
-  const handleAddEditFunction = () => {
+  const handleAddEditFunction = ({ formData }) => {
     if (type === "ADD") {
       dispatch(
         addFunctionMasterThunk({
-          formData: openConfirmModal?.formData,
+          formData: formData,
           onSuccessHandler: () => {
-            setOpenConfirmModal({ open: false });
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {
-            setOpenConfirmModal({ open: false });
-          },
+          onErrorHandler: () => {},
         })
       );
     } else {
       dispatch(
         editFunctionMasterThunk({
           currentId: currentFunctionData?.id,
-          formData: openConfirmModal?.formData,
+          formData: formData,
           onSuccessHandler: () => {
-            setOpenConfirmModal({ open: false });
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {
-            setOpenConfirmModal({ open: false });
-          },
+          onErrorHandler: () => {},
         })
       );
     }
@@ -80,7 +65,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
           initialValues={addEditFunctionInitialValue}
           validationSchema={addFunctionMasterValidation}
           onSubmit={(values) => {
-            setOpenConfirmModal({ open: true, formData: values });
+            handleAddEditFunction({ formData: values });
           }}
         >
           {({ dirty }) => (
@@ -149,19 +134,6 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
           )}
         </Formik>
       </CustomModal>
-
-      <CustomAlertModal
-        show={openConfirmModal?.open}
-        type="success"
-        message={`Do you want to ${
-          type === "ADD" ? "save" : "update"
-        } this record?`}
-        onSuccess={handleAddEditFunction}
-        onClose={() => setOpenConfirmModal({ open: false })}
-        isLoading={
-          isLoading?.addFunctionMaster || isLoading?.editFunctionMaster
-        }
-      />
     </>
   );
 }

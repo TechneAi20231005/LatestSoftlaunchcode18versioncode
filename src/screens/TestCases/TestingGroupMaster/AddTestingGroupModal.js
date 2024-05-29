@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Field, Form, Formik } from "formik";
 import { Col, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import CustomModal from "../../../components/custom/modal/CustomModal";
 import {
   CustomInput,
   CustomRadioButton,
 } from "../../../components/custom/inputs/CustomInputs";
-import CustomAlertModal from "../../../components/custom/modal/CustomAlertModal";
 import { RenderIf } from "../../../utils";
 import {
   addTestingGroupMasterThunk,
@@ -26,44 +25,28 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
       type === "EDIT" ? currentTestingGroupData?.is_active?.toString() : 1,
   };
 
-  // // redux state
-  const { isLoading } = useSelector((state) => state?.testingGroupMaster);
-
-  // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({
-    open: false,
-    formData: "",
-  });
-  // // function
-
-  const handleAddEditTestingGroup = () => {
+  const handleAddEditTestingGroup = ({ formData }) => {
     if (type === "ADD") {
       dispatch(
         addTestingGroupMasterThunk({
-          formData: openConfirmModal?.formData,
+          formData: formData,
           onSuccessHandler: () => {
-            setOpenConfirmModal({ open: false });
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {
-            setOpenConfirmModal({ open: false });
-          },
+          onErrorHandler: () => {},
         })
       );
     } else {
       dispatch(
         editTestingGroupMasterThunk({
           currentId: currentTestingGroupData?.id,
-          formData: openConfirmModal?.formData,
+          formData: formData,
           onSuccessHandler: () => {
-            setOpenConfirmModal({ open: false });
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {
-            setOpenConfirmModal({ open: false });
-          },
+          onErrorHandler: () => {},
         })
       );
     }
@@ -80,7 +63,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
           initialValues={addEditTestingGroupInitialValue}
           validationSchema={addTestingGroupValidation}
           onSubmit={(values) => {
-            setOpenConfirmModal({ open: true, formData: values });
+            handleAddEditTestingGroup({ formData: values });
           }}
         >
           {({ dirty }) => (
@@ -149,19 +132,6 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
           )}
         </Formik>
       </CustomModal>
-
-      <CustomAlertModal
-        show={openConfirmModal?.open}
-        type="success"
-        message={`Do you want to ${
-          type === "ADD" ? "save" : "update"
-        } this record?`}
-        onSuccess={handleAddEditTestingGroup}
-        onClose={() => setOpenConfirmModal({ open: false })}
-        isLoading={
-          isLoading?.addTestingGroupMaster || isLoading?.editTestingGroupMaster
-        }
-      />
     </>
   );
 }

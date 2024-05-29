@@ -32,6 +32,7 @@ export const addFunctionMasterThunk = createAsyncThunk(
         `testCases/testingFunction/addTestingFunction`,
         formData
       );
+
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

@@ -13,12 +13,12 @@ function ReviewCommentMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { reviewCommentMasetrList, isLoading } = useSelector(
+  const { reviewCommentMasterList, isLoading } = useSelector(
     (state) => state?.reviewCommentMaster
   );
 
   const [searchValue, setSearchValue] = useState("");
-  const [filteredRevieCommentMasterList, setFilteredReviewCommentkMasterList] =
+  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] =
     useState([]);
 
   const [addEditReviewCommentModal, setAddEditReviewCommentModal] = useState({
@@ -30,27 +30,17 @@ function ReviewCommentMasterComponent() {
   // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(
-      reviewCommentMasetrList,
+      reviewCommentMasterList,
       searchValue
     );
-    setFilteredReviewCommentkMasterList(filteredList);
+    setFilteredReviewCommentMasterList(filteredList);
   };
 
   // Function to handle reset button click
   const handleReset = () => {
     setSearchValue("");
-    setFilteredReviewCommentkMasterList(reviewCommentMasetrList);
+    setFilteredReviewCommentMasterList(reviewCommentMasterList);
   };
-
-  // Update the useEffect to update the filtered list when reviewCommentMasetrList changes
-  useEffect(() => {
-    setFilteredReviewCommentkMasterList(reviewCommentMasetrList);
-  }, [reviewCommentMasetrList]);
-
-  // Function to handle search onchange
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
 
   const columns = [
     {
@@ -79,11 +69,20 @@ function ReviewCommentMasterComponent() {
 
     {
       name: "Status",
-      selector: (row) => (row.is_active === 1 ? "Active" : "Deactive"),
-      sortable: false,
+      selector: (row) => row.is_active,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          {row.is_active == 1 && (
+            <span className="badge bg-primary">Active</span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger">DeActive</span>
+          )}
+        </div>
+      ),
       width: "100px",
     },
-
     {
       name: "Reviewer Comment Title",
       selector: (row) => row.reviewer_comment,
@@ -134,6 +133,15 @@ function ReviewCommentMasterComponent() {
     dispatch(getReviewCommentMasterListThunk());
   }, []);
 
+  // Update the useEffect to update the filtered list when reviewCommentMasterList changes
+  useEffect(() => {
+    setFilteredReviewCommentMasterList(reviewCommentMasterList);
+  }, [reviewCommentMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
   return (
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
@@ -188,15 +196,15 @@ function ReviewCommentMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={transformDataForExport(filteredRevieCommentMasterList)}
+            apiData={transformDataForExport(filteredReviewCommentMasterList)}
             fileName="Review Comment Records"
-            disabled={!filteredRevieCommentMasterList?.length}
+            disabled={!filteredReviewCommentMasterList?.length}
           />
         </Col>
       </Row>
       <DataTable
         columns={columns}
-        data={filteredRevieCommentMasterList}
+        data={filteredReviewCommentMasterList}
         defaultSortField="role_id"
         pagination
         selectableRows={false}

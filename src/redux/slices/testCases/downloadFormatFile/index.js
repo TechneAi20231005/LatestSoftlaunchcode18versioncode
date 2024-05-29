@@ -1,15 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  addFunctionMasterThunk,
-  editFunctionMasterThunk,
-  getFunctionMasterListThunk,
-} from "../../../services/testCases/functionMaster";
+
 import {
   downloadFormatFileThunk,
+  editTestCaseThunk,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
   getSubModuleMasterThunk,
   importTestDraftThunk,
+  sendTestCaseReviewerThunk,
 } from "../../../services/testCases/downloadFormatFile";
 
 const initialState = {
@@ -18,6 +16,9 @@ const initialState = {
   getSubMouleList: [],
   getModuleData: [],
   getSubModuleData: [],
+  getTestDraftData: [],
+  editTestCase: false,
+  sendTestCasesReviewer: false,
 
   isLoading: {
     downloadFormatFile: false,
@@ -27,6 +28,8 @@ const initialState = {
     getModuleData: false,
     getSubModuleData: false,
     getSubMouleList: false,
+    editTestCase: false,
+    sendTestCasesReviewer: false,
   },
   errorMsg: { getProjectModuleList: "" },
   successMsg: { getProjectModuleList: "" },
@@ -116,10 +119,39 @@ const downloadFormatSlice = createSlice({
       .addCase(importTestDraftThunk.fulfilled, (state, action) => {
         state.isLoading.importTestDraftFile = false;
         state.successMsg.importTestDraftFile = action.payload;
+        state.getTestDraftData = action.payload.data;
       })
       .addCase(importTestDraftThunk.rejected, (state, action) => {
         state.isLoading.importTestDraftFile = false;
         state.errorMsg.importTestDraftFile = action.error.message;
+      })
+
+      // // send test cases to reviewer
+
+      .addCase(sendTestCaseReviewerThunk.pending, (state, action) => {
+        state.isLoading.sendTestCasesReviewer = true;
+      })
+      .addCase(sendTestCaseReviewerThunk.fulfilled, (state, action) => {
+        state.isLoading.sendTestCasesReviewer = false;
+        state.successMsg.sendTestCasesReviewer = action.payload;
+      })
+      .addCase(sendTestCaseReviewerThunk.rejected, (state, action) => {
+        state.isLoading.sendTestCasesReviewer = false;
+        state.errorMsg.sendTestCasesReviewer = action.error.message;
+      })
+
+      ////edit test cases
+
+      .addCase(editTestCaseThunk.pending, (state, action) => {
+        state.isLoading.editTestCase = true;
+      })
+      .addCase(editTestCaseThunk.fulfilled, (state, action) => {
+        state.isLoading.editTestCase = false;
+        state.successMsg.editTestCase = action.payload;
+      })
+      .addCase(editTestCaseThunk.rejected, (state, action) => {
+        state.isLoading.editTestCase = false;
+        state.errorMsg.editTestCase = action.error.message;
       });
   },
 });

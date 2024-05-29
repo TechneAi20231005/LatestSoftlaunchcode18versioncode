@@ -9,29 +9,110 @@ import {
   CustomTextArea,
 } from "../../../components/custom/inputs/CustomInputs";
 import { editTestCaseValidation } from "./Validation/EditTestCase";
+import {
+  editTestCaseThunk,
+  getModuleMasterThunk,
+  getProjectModuleMasterThunk,
+  getSubModuleMasterThunk,
+  importTestDraftThunk,
+} from "../../../redux/services/testCases/downloadFormatFile";
+import { getFunctionMasterListThunk } from "../../../redux/services/testCases/functionMaster";
+import { getTestingGroupMasterListThunk } from "../../../redux/services/testCases/testingGroupMaster";
+import { getTestingTypeMasterListThunk } from "../../../redux/services/testCases/testingTypeMaster";
 
-function EditTestCaseModal({ show, close }) {
+function EditTestCaseModal({ show, close, type, currentTestCasesData }) {
   // // initial state
+
+  const severityData = [
+    {
+      value: "High",
+      label: "High",
+    },
+    {
+      value: "Medium",
+      label: "Medium",
+    },
+    {
+      value: "Medium",
+      label: "Medium",
+    },
+  ];
   const dispatch = useDispatch();
 
+  const { filterFunctionMasterList } = useSelector(
+    (state) => state?.functionMaster
+  );
+
+  const { filterTestingGroupMasterList } = useSelector(
+    (state) => state?.testingGroupMaster
+  );
+  const { filterTestingTypeMasterList } = useSelector(
+    (state) => state?.testingTypeMaster
+  );
+
+  console.log("filterFunctionMasterList", filterFunctionMasterList);
+  console.log("filterTestingGroupMasterList", filterTestingGroupMasterList);
+
+  console.log("filterTestingTypeMasterList", filterTestingTypeMasterList);
+
+  const {
+    getProjectModuleList,
+    getMouleList,
+    getSubMouleList,
+    getModuleData,
+    getSubModuleData,
+  } = useSelector((state) => state?.downloadFormat);
+
+  console.log("currentTestCasesData", currentTestCasesData);
   const testCaseInitialValue = {
-    project_name: "",
-    module_name: "",
-    submodule_name: "",
-    function: "",
-    field: "",
-    testing_type: "",
-    testing_group: "",
-    test_id: "",
-    severity: "",
-    steps: "",
-    test_description: "",
-    expected_result: "",
+    project_id:
+      type === "EDIT" ? currentTestCasesData?.project_id?.toString() : "",
+    module_id:
+      type === "EDIT" ? currentTestCasesData?.module_id?.toString() : "",
+    submodule_id:
+      type === "EDIT" ? currentTestCasesData?.submodule_id?.toString() : "",
+    function_id:
+      type === "EDIT" ? currentTestCasesData?.function_id?.toString() : "",
+    field: type === "EDIT" ? currentTestCasesData?.field : "",
+    type_id: type === "EDIT" ? currentTestCasesData?.type_id?.toString() : "",
+    group_id: type === "EDIT" ? currentTestCasesData?.group_id?.toString() : "",
+    id: type === "EDIT" ? currentTestCasesData?.id : "",
+    severity: type === "EDIT" ? currentTestCasesData?.severity : "",
+    steps: type === "EDIT" ? currentTestCasesData?.steps : "",
+    test_description:
+      type === "EDIT" ? currentTestCasesData?.test_description : "",
+    expected_result:
+      type === "EDIT" ? currentTestCasesData?.expected_result : "",
   };
 
-  const handelAddCandidates = (formData) => {
-    const candidatesData = new FormData();
+  const handleEditTestCase = ({ formData }) => {
+    dispatch(
+      editTestCaseThunk({
+        currentId: currentTestCasesData?.id,
+        formData: formData,
+        onSuccessHandler: () => {
+          close();
+          dispatch(importTestDraftThunk());
+        },
+        onErrorHandler: () => {},
+      })
+    );
   };
+
+  useEffect(() => {
+    if (!getProjectModuleList) {
+      dispatch(getProjectModuleMasterThunk());
+    }
+    if (!getMouleList) {
+      dispatch(getModuleMasterThunk());
+    }
+    if (!getSubMouleList) {
+      dispatch(getSubModuleMasterThunk());
+    }
+    dispatch(getFunctionMasterListThunk());
+    dispatch(getTestingGroupMasterListThunk());
+    dispatch(getTestingTypeMasterListThunk());
+  }, []);
   return (
     <>
       <CustomModal show={show} title="Edit Test Case" width="lg">
@@ -39,7 +120,7 @@ function EditTestCaseModal({ show, close }) {
           initialValues={testCaseInitialValue}
           validationSchema={editTestCaseValidation}
           onSubmit={(values) => {
-            handelAddCandidates(values);
+            handleEditTestCase({ formData: values });
           }}
         >
           {({ values, touched, errors, setFieldValue }) => (
@@ -48,9 +129,9 @@ function EditTestCaseModal({ show, close }) {
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
                   <Field
-                    // data={departmentType}
+                    data={getProjectModuleList}
                     component={CustomDropdown}
-                    name="project_name"
+                    name="project_id"
                     label="Project Name"
                     // placeholder={
                     //   isDepartmentDataListLoading === 'loading' ? 'Loading...' : 'Select'
@@ -60,17 +141,17 @@ function EditTestCaseModal({ show, close }) {
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    // data={designationType}
+                    data={getMouleList}
                     component={CustomDropdown}
-                    name="module_name"
+                    name="module_id"
                     label="Module Name"
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    // data={experienceLevel}
+                    data={getSubMouleList}
                     component={CustomDropdown}
-                    name="submodule_name"
+                    name="submodule_id"
                     label="SubModule Name"
                     placeholder="Select"
                   />
@@ -78,10 +159,11 @@ function EditTestCaseModal({ show, close }) {
 
                 <Col md={4} lg={4}>
                   <Field
-                    component={CustomInput}
-                    name="function"
+                    data={filterFunctionMasterList}
+                    component={CustomDropdown}
+                    name="function_id"
                     label="Function"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter function name"
                     requiredField
                   />
                 </Col>
@@ -91,42 +173,45 @@ function EditTestCaseModal({ show, close }) {
                     component={CustomInput}
                     name="field"
                     label="Field"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter field name"
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    component={CustomInput}
-                    name="testing_type"
+                    data={filterTestingTypeMasterList}
+                    component={CustomDropdown}
+                    name="type_id"
                     label="Testing Type"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter testing type name"
                     requiredField
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    component={CustomInput}
-                    name="testing_group"
+                    data={filterTestingGroupMasterList}
+                    component={CustomDropdown}
+                    name="group_id"
                     label="Testing Group"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter testing group name"
                     requiredField
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
                     component={CustomInput}
-                    name="test_id"
+                    name="id"
                     label="Test Id"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter test id name"
                     requiredField
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    component={CustomInput}
+                    data={severityData}
+                    component={CustomDropdown}
                     name="severity"
                     label="Severity"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter Severity"
                     requiredField
                   />
                 </Col>
@@ -136,7 +221,7 @@ function EditTestCaseModal({ show, close }) {
                     component={CustomTextArea}
                     name="steps"
                     label="Steps"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter steps"
                   />
                 </Col>
 
@@ -145,7 +230,7 @@ function EditTestCaseModal({ show, close }) {
                     component={CustomTextArea}
                     name="test_description"
                     label="Test Description"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter test description"
                     requiredField
                   />
                 </Col>
@@ -155,7 +240,7 @@ function EditTestCaseModal({ show, close }) {
                     component={CustomTextArea}
                     name="expected_result"
                     label="Expected Result"
-                    placeholder="Enter referred by name"
+                    placeholder="Enter expected result"
                     requiredField
                   />
                 </Col>

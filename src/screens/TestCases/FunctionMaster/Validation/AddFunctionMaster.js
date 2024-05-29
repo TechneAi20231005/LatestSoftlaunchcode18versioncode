@@ -5,6 +5,7 @@ import {
 } from "../../../../settings/constants";
 export const addFunctionMasterValidation = Yup.object().shape({
   function_name: Yup.string()
+    .required("Function title is required ")
     .max(50, "Function  title must be at most 50 characters")
     .matches(ONLY_CHARACTER_REGEX, "Function title must be alphabets"),
   remark: Yup.string()

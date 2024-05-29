@@ -13,14 +13,14 @@ function TestingTypeMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { testingTypeMasetrList, isLoading } = useSelector(
+  const { testingTypeMasterList, isLoading } = useSelector(
     (state) => state?.testingTypeMaster
   );
   const [searchValue, setSearchValue] = useState("");
   const [filteredTestingTypeMasterList, setFilterTestingTypeMasterList] =
     useState([]);
 
-  const [addEditTestingTypetModal, setAddEditTestingTypeModal] = useState({
+  const [addEditTestingTypeModal, setAddEditTestingTypeModal] = useState({
     type: "",
     data: "",
     open: false,
@@ -29,7 +29,7 @@ function TestingTypeMasterComponent() {
   // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(
-      testingTypeMasetrList,
+      testingTypeMasterList,
       searchValue
     );
     setFilterTestingTypeMasterList(filteredList);
@@ -38,18 +38,8 @@ function TestingTypeMasterComponent() {
   // Function to handle reset button click
   const handleReset = () => {
     setSearchValue("");
-    setFilterTestingTypeMasterList(testingTypeMasetrList);
+    setFilterTestingTypeMasterList(testingTypeMasterList);
   };
-
-  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
-  useEffect(() => {
-    setFilterTestingTypeMasterList(testingTypeMasetrList);
-  }, [testingTypeMasetrList]);
-
-  // Function to handle search onchange
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
 
   const columns = [
     {
@@ -78,8 +68,22 @@ function TestingTypeMasterComponent() {
 
     {
       name: "Status",
-      selector: (row) => (row.is_active === 1 ? "Active" : "Deactive"),
-      sortable: false,
+      selector: (row) => row.is_active,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          {row.is_active == 1 && (
+            <span className="badge bg-primary" style={{ width: "4rem" }}>
+              Active
+            </span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger" style={{ width: "4rem" }}>
+              DeActive
+            </span>
+          )}
+        </div>
+      ),
       width: "100px",
     },
 
@@ -132,6 +136,16 @@ function TestingTypeMasterComponent() {
   useEffect(() => {
     dispatch(getTestingTypeMasterListThunk());
   }, []);
+
+  // Update the useEffect to update the filtered list when testingTypeMasterList changes
+  useEffect(() => {
+    setFilterTestingTypeMasterList(testingTypeMasterList);
+  }, [testingTypeMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
 
   return (
     <div className="container-xxl">
@@ -206,9 +220,9 @@ function TestingTypeMasterComponent() {
         progressComponent={<TableLoadingSkelton />}
       />
       <AddTestingTypeModal
-        show={addEditTestingTypetModal?.open}
-        type={addEditTestingTypetModal?.type}
-        currentTestingTypeData={addEditTestingTypetModal?.data}
+        show={addEditTestingTypeModal?.open}
+        type={addEditTestingTypeModal?.type}
+        currentTestingTypeData={addEditTestingTypeModal?.data}
         close={(prev) => setAddEditTestingTypeModal({ ...prev, open: false })}
       />
     </div>

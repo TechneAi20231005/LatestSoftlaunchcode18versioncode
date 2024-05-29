@@ -60,6 +60,7 @@ import testingTypeMasterSlice from "../slices/testCases/testingTypeMaster";
 import testingGroupMasterSlice from "../slices/testCases/testingGroup";
 import functionMasterSlice from "../slices/testCases/functionMaster";
 import downloadFormatSlice from "../slices/testCases/downloadFormatFile";
+import testCaseReviewSlice from "../slices/testCases/testCaseReview";
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -118,6 +119,7 @@ export const store = configureStore({
     testingGroupMaster: testingGroupMasterSlice,
     functionMaster: functionMasterSlice,
     downloadFormat: downloadFormatSlice,
+    testCaseReview: testCaseReviewSlice,
   },
 
   middleware: (getDefaultMiddleware) =>

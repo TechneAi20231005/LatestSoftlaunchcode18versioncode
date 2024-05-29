@@ -5,6 +5,7 @@ import {
 } from "../../../../settings/constants";
 export const addTestingType = Yup.object().shape({
   type_name: Yup.string()
+    .required("Testing type is required")
     .max(50, "Testing type  title must be at most 50 characters")
     .matches(ONLY_CHARACTER_REGEX, "Testing type title must be alphabets"),
   remark: Yup.string()

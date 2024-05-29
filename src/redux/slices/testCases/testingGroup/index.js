@@ -6,14 +6,19 @@ import {
 } from "../../../services/testCases/testingGroupMaster";
 
 const initialState = {
-  testingGroupMasetrList: [],
+  testingGroupMasterList: [],
+  filterTestingGroupMasterList: [],
   isLoading: {
     getTestingGroupMasterList: false,
     addTestingGroupMaster: false,
     editTestingGroupMaster: false,
+    filterTestingGroupMasterList: false,
   },
-  errorMsg: { getTestingGroupMasterList: "" },
-  successMsg: { getTestingGroupMasterList: "" },
+  errorMsg: { getTestingGroupMasterList: "", filterTestingGroupMasterList: "" },
+  successMsg: {
+    getTestingGroupMasterList: "",
+    filterTestingGroupMasterList: "",
+  },
 };
 const testingGroupMasterSlice = createSlice({
   name: "Testing Group master",
@@ -28,12 +33,15 @@ const testingGroupMasterSlice = createSlice({
       })
       .addCase(getTestingGroupMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getTestingGroupMasterList = false;
-        state.testingGroupMasetrList = action?.payload?.data;
+        state.testingGroupMasterList = action?.payload?.data;
+        state.filterTestingGroupMasterList = action?.payload?.data
+          ?.filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.group_name }));
         state.successMsg.getTestingGroupMasterList = action.payload.msg;
       })
       .addCase(getTestingGroupMasterListThunk.rejected, (state, action) => {
         state.isLoading.getTestingGroupMasterList = false;
-        state.testingGroupMasetrList = [];
+        state.testingGroupMasterList = [];
         state.errorMsg.getTestingGroupMasterList = action.error.message;
       })
 

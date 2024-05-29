@@ -5,6 +5,7 @@ import {
 } from "../../../../settings/constants";
 export const addReviewCommentValidation = Yup.object().shape({
   reviewer_comment: Yup.string()
+    .required("Reviewer comment is required")
     .max(50, "Review comment title must be at most 50 characters")
     .matches(ONLY_CHARACTER_REGEX, "Review comment title must be alphabets"),
   remark: Yup.string()

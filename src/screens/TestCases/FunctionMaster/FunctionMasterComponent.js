@@ -12,7 +12,7 @@ function FunctionMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { functionMasetrList, isLoading } = useSelector(
+  const { functionMasterList, isLoading } = useSelector(
     (state) => state?.functionMaster
   );
   const [searchValue, setSearchValue] = useState("");
@@ -20,7 +20,7 @@ function FunctionMasterComponent() {
     []
   );
 
-  const [addEditFunctiontModal, setAddEditFunctionModal] = useState({
+  const [addEditFunctionModal, setAddEditFunctionModal] = useState({
     type: "",
     data: "",
     open: false,
@@ -28,25 +28,15 @@ function FunctionMasterComponent() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(functionMasetrList, searchValue);
+    const filteredList = customSearchHandler(functionMasterList, searchValue);
     setFilterFunctionMasterList(filteredList);
   };
 
   // Function to handle reset button click
   const handleReset = () => {
     setSearchValue("");
-    setFilterFunctionMasterList(functionMasetrList);
+    setFilterFunctionMasterList(functionMasterList);
   };
-
-  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
-  useEffect(() => {
-    setFilterFunctionMasterList(functionMasetrList);
-  }, [functionMasetrList]);
-
-  // Function to handle search onchange
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
 
   const columns = [
     {
@@ -75,8 +65,22 @@ function FunctionMasterComponent() {
 
     {
       name: "Status",
-      selector: (row) => (row.is_active === 1 ? "Active" : "Deactive"),
-      sortable: false,
+      selector: (row) => row.is_active,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          {row.is_active == 1 && (
+            <span className="badge bg-primary" style={{ width: "4rem" }}>
+              Active
+            </span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger" style={{ width: "4rem" }}>
+              DeActive
+            </span>
+          )}
+        </div>
+      ),
       width: "100px",
     },
 
@@ -129,6 +133,16 @@ function FunctionMasterComponent() {
   useEffect(() => {
     dispatch(getFunctionMasterListThunk());
   }, []);
+
+  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
+  useEffect(() => {
+    setFilterFunctionMasterList(functionMasterList);
+  }, [functionMasterList]);
+
+  // Function to handle search onchange
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
 
   return (
     <div className="container-xxl">
@@ -203,9 +217,9 @@ function FunctionMasterComponent() {
         progressComponent={<TableLoadingSkelton />}
       />
       <AddFunctionMasterModal
-        show={addEditFunctiontModal?.open}
-        type={addEditFunctiontModal?.type}
-        currentFunctionData={addEditFunctiontModal?.data}
+        show={addEditFunctionModal?.open}
+        type={addEditFunctionModal?.type}
+        currentFunctionData={addEditFunctionModal?.data}
         close={(prev) => setAddEditFunctionModal({ ...prev, open: false })}
       />
     </div>

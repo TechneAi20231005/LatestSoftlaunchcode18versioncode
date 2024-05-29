@@ -111,12 +111,65 @@ export const importTestDraftThunk = createAsyncThunk(
         if (response?.data?.status === 1) {
           onSuccessHandler();
           toast.success(response?.data?.message);
-          return response?.data?.message;
+          return { data: response?.data.data, msg: response?.data?.message };
+          // return response?.data?.message;
         } else {
           onErrorHandler();
           URL = `${_attachmentUrl}` + response.data.data.error_file;
 
           window.open(URL, "_blank")?.focus();
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      onErrorHandler();
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const sendTestCaseReviewerThunk = createAsyncThunk(
+  "sendTestCaseReviewer",
+  async ({ formData, onSuccessHandler, onErrorHandler }) => {
+    try {
+      const response = await customAxios.post(
+        `testCases/send/sendTestCasesReviewer`,
+        formData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          onErrorHandler();
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      onErrorHandler();
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const editTestCaseThunk = createAsyncThunk(
+  "editTestCase/editTestCaseThunk",
+  async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
+    try {
+      const response = await customAxios.post(
+        `testCases/editTestCase/postTestdraftTestcase/${currentId}`,
+        formData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          onErrorHandler();
           errorHandler(response);
         }
       }
