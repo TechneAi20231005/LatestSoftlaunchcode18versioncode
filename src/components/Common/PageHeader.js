@@ -8,7 +8,7 @@ class PageHeader extends React.Component {
     return (
       <div className="row align-items-center" style={{ marginTop: '-40px' }}>
         <div className="border-0">
-          <div className="card-header no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+          <div className="card-header no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
             <h3
               className={`fw-bold mb-0 text_primary ps-${paddingStart} d-flex align-items-center`}
             >
