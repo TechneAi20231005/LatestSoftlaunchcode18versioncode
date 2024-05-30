@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { EMAIL_REGEX, ONLY_CHARACTER_REGEX } from '../../../../../settings/constants';
+import { EMAIL_REGEX, ONLY_CHARACTER_REGEX } from '../../../../../utils/regexPool';
 
 export const addCandidatesValidation = Yup.object().shape({
   source_id: Yup.string().required('Source is required'),

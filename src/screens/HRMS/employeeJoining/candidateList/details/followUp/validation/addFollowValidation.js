@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../../../utils/regexPool';
 
 export const addFollowValidation = Yup.object().shape({
   add_follow_up: Yup.string()
@@ -9,13 +9,17 @@ export const addFollowValidation = Yup.object().shape({
     .required('Follow up is required'),
   next_follow_up_date: Yup.date()
     .required('Follow up date & time is required')
-    .test('is-future', 'Follow up date & time must be in the future', value => {
+    .test('is-future', 'Follow up date & time must be in the future', (value) => {
       if (!value) return true;
       const now = new Date();
       return value > now;
     }),
-  attachment_file: Yup.mixed().test('fileSize', 'Attachment size must be less than 2MB', value => {
-    if (!value) return true; // Allow empty values
-    return value?.size <= 2000000; //2mb
-  }),
+  attachment_file: Yup.mixed().test(
+    'fileSize',
+    'Attachment size must be less than 2MB',
+    (value) => {
+      if (!value) return true; // Allow empty values
+      return value?.size <= 2000000; //2mb
+    }
+  )
 });
