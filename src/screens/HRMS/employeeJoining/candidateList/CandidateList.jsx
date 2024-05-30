@@ -64,7 +64,7 @@ function CandidateList() {
     },
     {
       name: 'Application Id',
-      selector: row => row?.id || '--',
+      selector: row => row?.application_id || '--',
       sortable: true,
       width: '150px',
     },

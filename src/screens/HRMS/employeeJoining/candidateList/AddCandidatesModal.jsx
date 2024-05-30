@@ -9,7 +9,7 @@ import {
   CustomCurrencyInput,
   CustomDropdown,
   CustomInput,
-  CustomReactSelect,
+  CustomReactSelect
 } from '../../../../components/custom/inputs/CustomInputs';
 import { addCandidatesValidation } from './validation/addCandidates';
 import OtpVerificationModal from './OtpVerificationModal';
@@ -19,7 +19,7 @@ import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employ
 import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import {
   addCandidatesMasterThunk,
-  getCandidatesMasterListThunk,
+  getCandidatesMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 import { experienceLevel } from '../../../../settings/constants';
 
@@ -40,57 +40,57 @@ function AddCandidatesModal({ show, close }) {
     expected_ctc: '',
     current_ctc: '',
     notice_period: '',
-    resume_path: null,
+    resume_path: null
   };
 
   // // redux state
-  const { isLoading } = useSelector(state => state?.candidatesMaster);
+  const { isLoading } = useSelector((state) => state?.candidatesMaster);
 
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
-    state => state?.branchMaster,
+    (state) => state?.branchMaster
   );
   const { getDesignationData: designationMasterList, status } = useSelector(
-    DesignationSlice => DesignationSlice.designationMaster,
+    (DesignationSlice) => DesignationSlice.designationMaster
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
-    state => state?.sourceMaster,
+    (state) => state?.sourceMaster
   );
 
   // // dropdown data
   const preferredRole = designationMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.designation,
-      value: item?.id,
+      value: item?.id
     }));
 
   const preferredLocation = branchMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.location_name,
-      value: item?.id,
+      value: item?.id
     }));
 
   const sourceType = sourceMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.source_name,
-      value: item?.id,
+      value: item?.id
     }));
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
 
   // // handel add candidates
-  const handelAddCandidates = formData => {
+  const handelAddCandidates = (formData) => {
     const candidatesData = new FormData();
     candidatesData.append('source_id', formData.source_id);
     candidatesData.append('full_name', formData.full_name);
     candidatesData.append('dob', formData.dob);
-    formData.designation_id.forEach(id => {
+    formData.designation_id.forEach((id) => {
       candidatesData.append('designation_id[]', id);
     });
-    formData.location_id.forEach(id => {
+    formData.location_id.forEach((id) => {
       candidatesData.append('location_id[]', id);
     });
 
@@ -108,8 +108,8 @@ function AddCandidatesModal({ show, close }) {
         onSuccessHandler: () => {
           close();
           dispatch(getCandidatesMasterListThunk());
-        },
-      }),
+        }
+      })
     );
   };
 
@@ -132,7 +132,7 @@ function AddCandidatesModal({ show, close }) {
         <Formik
           initialValues={candidatesInitialValue}
           validationSchema={addCandidatesValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             handelAddCandidates(values);
             // setOtpModal(true);
           }}
@@ -272,7 +272,7 @@ function AddCandidatesModal({ show, close }) {
                       className={`form-control ${
                         errors.resume_path && touched.resume_path ? 'is-invalid' : ''
                       }`}
-                      onChange={event => {
+                      onChange={(event) => {
                         setFieldValue('resume_path', event.currentTarget.files[0]);
                       }}
                       accept=".jpg, .jpeg, .png, .pdf, .docx,"

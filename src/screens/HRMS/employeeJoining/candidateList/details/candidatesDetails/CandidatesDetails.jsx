@@ -9,7 +9,7 @@ import {
   CustomCurrencyInput,
   CustomDropdown,
   CustomInput,
-  CustomReactSelect,
+  CustomReactSelect
 } from '../../../../../../components/custom/inputs/CustomInputs';
 import { RenderIf } from '../../../../../../utils';
 import CandidateEditHistory from './CandidateEditHistory';
@@ -18,7 +18,7 @@ import CustomAlertModal from '../../../../../../components/custom/modal/CustomAl
 import { FormSkeleton } from '../../../../../../components/custom/loader';
 import {
   editCandidatesMasterThunk,
-  getCandidatesDetailsThunk,
+  getCandidatesDetailsThunk
 } from '../../../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 import { getDesignationData } from '../../../../../Dashboard/DashboardAction';
 import { getBranchMasterListThunk } from '../../../../../../redux/services/hrms/employeeJoining/branchMaster';
@@ -36,17 +36,17 @@ function CandidatesDetails() {
   // // redux state
   const {
     candidateDetailsData: { details },
-    isLoading,
-  } = useSelector(state => state?.candidatesMaster);
+    isLoading
+  } = useSelector((state) => state?.candidatesMaster);
 
   const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
-    state => state?.branchMaster,
+    (state) => state?.branchMaster
   );
   const { getDesignationData: designationMasterList, status } = useSelector(
-    DesignationSlice => DesignationSlice.designationMaster,
+    (DesignationSlice) => DesignationSlice.designationMaster
   );
   const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
-    state => state?.sourceMaster,
+    (state) => state?.sourceMaster
   );
 
   // // local state
@@ -59,36 +59,36 @@ function CandidatesDetails() {
     full_name: details?.full_name,
     dob: details?.dob,
     designation_id: details?.designation_id,
-    location_id: details?.location_id?.map(id => +id),
+    location_id: details?.location_id?.map((id) => +id),
     mobile_no: details?.mobile_no,
     email: details?.email,
     relevant_experience: details?.relevant_experience,
     expected_ctc: details?.expected_monthly_salary || '',
     current_ctc: details?.current_monthly_salary || '',
     notice_period: details?.notice_period || '',
-    resume_path: `${REACT_APP_ATTACHMENT_URL}${details?.resume}`,
+    resume_path: `${REACT_APP_ATTACHMENT_URL}${details?.resume}`
   };
 
   // // dropdown data
   const preferredRole = designationMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.designation,
-      value: item?.id,
+      value: item?.id
     }));
 
   const preferredLocation = branchMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.location_name,
-      value: item?.id,
+      value: item?.id
     }));
 
   const sourceType = sourceMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.source_name,
-      value: item?.id,
+      value: item?.id
     }));
 
   // // handel add candidates
@@ -121,8 +121,8 @@ function CandidatesDetails() {
         },
         onErrorHandler: () => {
           setOpenConfirmModal({ open: false });
-        },
-      }),
+        }
+      })
     );
   };
 
@@ -145,7 +145,7 @@ function CandidatesDetails() {
       <div className="d-flex justify-content-between align-items-center text-primary">
         <h5 className="mb-0">
           Candidates Details{' '}
-          <span className="fs-6 text-black opacity-50 ml-1">&nbsp; #{details?.id}</span>
+          <span className="fs-6 text-black opacity-50 ml-1">&nbsp; #{details?.application_id}</span>
         </h5>
 
         <i className="icofont-edit me-1 cp" onClick={() => setCurrentMode('EDIT')} />
@@ -158,7 +158,7 @@ function CandidatesDetails() {
           initialValues={editCandidateInitialValue}
           enableReinitialize
           validationSchema={editCandidatesValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -320,7 +320,7 @@ function CandidatesDetails() {
                           className={`form-control ${
                             errors.resume_path && touched.resume_path ? 'is-invalid' : ''
                           }`}
-                          onChange={event => {
+                          onChange={(event) => {
                             setFieldValue('resume_path', event.currentTarget.files[0]);
                           }}
                           accept=".jpeg, .jpg, .png, .pdf, .docx"
