@@ -207,7 +207,7 @@ export default function HrDashboard(props) {
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getEmployeeData());
     dispatch(getNotifications());
-    dispatch(getAllDashboardData());
+    // dispatch(getAllDashboardData());
 
     dispatch(getAllUserById(localStorage.getItem("id")));
   };
