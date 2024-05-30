@@ -63,3 +63,8 @@
     background-color: var(--skeleton-bg-2);
   }
 }
+
+.link_underline_primary {
+  text-decoration: underline;
+  color: var(--bs-blue);
+}
