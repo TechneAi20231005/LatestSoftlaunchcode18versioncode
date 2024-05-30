@@ -819,7 +819,6 @@ export default function CreateTicketComponent() {
             newPrev["customer_mapping_id"] = mappingId[0];
             newPrev["confirmation_required"] = x[0].confirmation_required;
             newPrev["priority"] = x[0].priority;
-            console.log("newPrev", newPrev);
             return newPrev;
           });
         }
