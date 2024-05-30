@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Table } from "react-bootstrap";
-import ErrorLogService from "../../../../services/ErrorLogService";
+
 import Alert from "../../../../components/Common/Alert";
-import { requestRegularizationTime } from "../../../../services/TicketService/TaskService";
+
 import {
   getRegularizationTime,
   getRegularizationTimeData,
@@ -12,27 +12,16 @@ import {
 } from "../../../../services/TicketService/TaskService";
 
 import { useDispatch, useSelector } from "react-redux";
-import TimeRegularizationSlice from "../../BasketManagement/Slices/TimeRegularizationSlice";
+
 import { postTimeRegularizationData } from "../../BasketManagement/Slices/TimeRegularizationAction";
 import TableLoadingSkelton from "../../../../components/custom/loader/TableLoadingSkelton";
 const RequestModal = (props) => {
   const [notify, setNotify] = useState(null);
-  const [inputList, setInputList] = useState([
-    {
-      from_time: "00:00",
-      to_time: "00:00",
-      from_date: null,
-      to_date: null,
-    },
-  ]);
 
   const basketStartDate = props.date;
 
   const [date, setDate] = useState("");
-  const [time, setTime] = useState(null);
 
-  const [fromTime, setFromTime] = useState("");
-  const [toTime, setToTime] = useState("");
   const [timeDifference, setTimeDifference] = useState("");
   const dispatch = useDispatch();
 
@@ -54,7 +43,7 @@ const RequestModal = (props) => {
 
   const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
   const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFirstCheckboxChange = (e) => {
@@ -465,6 +454,7 @@ const RequestModal = (props) => {
                       <th className="text-center"> Action</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {regularizeTimeData && regularizeTimeData.length > 0 ? (
                       <>
@@ -567,15 +557,25 @@ const RequestModal = (props) => {
                               setRegularizeTimeData(updatedData);
                             };
 
-                            // Return JSX for rendering here
-
                             return (
-                              <tr key={index}>
+                              <tr
+                                key={index}
+                                className={
+                                  row.is_active === 0 ? "strikethrough" : ""
+                                }
+                              >
                                 <td>{index + 1}</td>
-                                <td>
+                                <td
+                                  className={
+                                    row.is_active === 0 ? "strikethrough" : ""
+                                  }
+                                >
                                   <input
-                                    type="date"
-                                    className="form-control form-control-sm"
+                                    type={row.is_active === 0 ? "text" : "date"}
+                                    className={`form-control form-control-sm ${
+                                      row.is_active === 0 ? "strikethrough" : ""
+                                    }`}
+                                    // className="form-control form-control-sm"
                                     name={`from_date[${index}]`}
                                     min={basketStartDate}
                                     max={formattedDate}
@@ -594,8 +594,10 @@ const RequestModal = (props) => {
 
                                 <td>
                                   <input
-                                    type="date"
-                                    className="form-control form-control-sm"
+                                    type={row.is_active === 0 ? "text" : "date"}
+                                    className={`form-control form-control-sm ${
+                                      row.is_active === 0 ? "strikethrough" : ""
+                                    }`}
                                     name={`to_date[${index}]`}
                                     min={fromDate[index]}
                                     max={formattedDate}
@@ -614,8 +616,10 @@ const RequestModal = (props) => {
 
                                 <td>
                                   <input
-                                    type="time"
-                                    className="form-control form-control-sm"
+                                    type={row.is_active === 0 ? "text" : "time"}
+                                    className={`form-control form-control-sm${
+                                      row.is_active === 0 ? "strikethrough" : ""
+                                    }`}
                                     name={`from_time[${index}]`}
                                     value={row.from_time}
                                     onChange={(e) =>
@@ -631,7 +635,7 @@ const RequestModal = (props) => {
                                 </td>
                                 <td>
                                   <input
-                                    type="time"
+                                    type={row.is_active === 0 ? "text" : "time"}
                                     className="form-control form-control-sm"
                                     name={`to_time[${index}]`}
                                     value={row.to_time}

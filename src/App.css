@@ -63,3 +63,13 @@
     background-color: var(--skeleton-bg-2);
   }
 }
+
+.strikethrough {
+  text-decoration: line-through !important;
+  color: black;
+  opacity: 0.5;
+}
+.link_underline_primary {
+  text-decoration: underline;
+  color: var(--bs-blue);
+}

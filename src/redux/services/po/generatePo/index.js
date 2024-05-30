@@ -8,9 +8,9 @@ export const getPendingOrderListThunk = createAsyncThunk(
   async ({ categoryName, itemName, weightRange, sizeRange }) => {
     try {
       const response = await customAxios.get(
-        `poRequisition/getPoReqOpenQtyData/${categoryName}/${itemName}${
-          weightRange ? `/${weightRange}` : ''
-        }${sizeRange ? `/${sizeRange}` : ''}`,
+        `poRequisition/getPoReqOpenQtyData?item=${itemName}&category=${categoryName}${
+          weightRange ? `&karagir_wt_range=${weightRange}` : ''
+        }${sizeRange ? `&size_range=${sizeRange}` : ''}`,
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

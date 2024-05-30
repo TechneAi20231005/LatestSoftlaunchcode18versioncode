@@ -83,8 +83,9 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
               <Row className="mt-4">
                 <Col sm={12}>
                   <p>
+                    {console.log(values)}
                     Interview for {details?.full_name} candidates has been schedule on{' '}
-                    <b>{values?.interview_date}</b> at <b> {values?.time}</b>
+                    <b>{values?.date}</b> at <b> {values?.time}</b>
                   </p>
 
                   <p className="fw-bold text-center">Do you want to send an invitation?</p>

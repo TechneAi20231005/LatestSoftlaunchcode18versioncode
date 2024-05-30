@@ -14,7 +14,7 @@ function RemarkHistory() {
   const { currentCandidateId } = location.state;
 
   // // redux state
-  const { remarkHistoryList, isLoading } = useSelector(state => state?.candidatesRemarkHistory);
+  const { remarkHistoryList, isLoading } = useSelector((state) => state?.candidatesRemarkHistory);
 
   // // life cycle
   useEffect(() => {
@@ -27,7 +27,7 @@ function RemarkHistory() {
       {isLoading?.getRemarkHistoryList ? (
         [...new Array(3)].map(() => (
           <>
-            <div className="remark_history d-flex justify-content-between  mt-3 gap-3">
+            <div className="d-flex justify-content-between  mt-3 gap-3">
               <div className="skeleton w-25" />
               <div className="skeleton mt-5 w-50" />
             </div>
@@ -37,14 +37,15 @@ function RemarkHistory() {
       ) : remarkHistoryList?.length ? (
         remarkHistoryList?.map((remark, index) => (
           <div key={index}>
-            <div className="remark_history d-flex justify-content-between">
+            <div className="d-flex justify-content-between">
               <div>
+                <p>Step Title : {remark?.step_title || 'N/A'}</p>
+
                 <p>Remark Title : {remark?.remark_description || 'N/A'}</p>
                 <RenderIf render={remark?.other_remark}>
                   <p>Specific Remark : {remark?.other_remark || 'N/A'}</p>
                 </RenderIf>
               </div>
-              {/* <p className="mt-4 opacity-50">{remark?.remark_description || 'N/A'}</p> */}
               <p className="mt-5 opacity-50">{`${remark?.created_by || 'N/A'}, ${
                 remark?.created_at || 'N/A'
               }`}</p>

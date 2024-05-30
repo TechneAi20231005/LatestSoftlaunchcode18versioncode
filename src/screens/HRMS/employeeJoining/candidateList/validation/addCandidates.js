@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { EMAIL_REGEX, ONLY_CHARACTER_REGEX } from '../../../../../settings/constants';
+import { EMAIL_REGEX, ONLY_CHARACTER_REGEX } from '../../../../../utils/regexPool';
 
 export const addCandidatesValidation = Yup.object().shape({
   source_id: Yup.string().required('Source is required'),
@@ -28,8 +28,8 @@ export const addCandidatesValidation = Yup.object().shape({
     .required('Date of Birth is required'),
 
   designation_id: Yup.array()
-    .required('Preferred role is required')
-    .min(1, 'Please select at least one Preferred role'),
+    .required('Preferred designation  is required')
+    .min(1, 'Please select at least one Preferred designation '),
   location_id: Yup.array()
     .required('Preferred location is required')
     .min(1, 'Please select at least one location'),
