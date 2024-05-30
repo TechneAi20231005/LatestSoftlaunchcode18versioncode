@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import PageHeader from "../../components/Common/PageHeader";
-import { getData } from "../../services/DashboardService";
-import Chart from "react-apexcharts";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/Common/PageHeader';
+import { getData } from '../../services/DashboardService';
+import Chart from 'react-apexcharts';
 
-import * as time from "../../components/Utilities/Functions";
+import * as time from '../../components/Utilities/Functions';
 import {
   postTimerData,
   getRegularizationTime,
-  getRegularizationTimeHistory,
-} from "../../services/TicketService/TaskService";
-import { _base } from "../../settings/constants";
-import "./DashboardStyle.css";
+  getRegularizationTimeHistory
+} from '../../services/TicketService/TaskService';
+import { _base } from '../../settings/constants';
+import './DashboardStyle.css';
 
-import { getNotification } from "../../services/NotificationService/NotificationService";
-import Dropdown from "react-bootstrap/Dropdown";
-import ApproveRequestModal from "../TicketManagement/TaskManagement/components/ApproveRequestModal";
-import TimeRegularizationHistory from "../TicketManagement/TaskManagement/components/TimeRegularizationHistory";
+import { getNotification } from '../../services/NotificationService/NotificationService';
+import Dropdown from 'react-bootstrap/Dropdown';
+import ApproveRequestModal from '../TicketManagement/TaskManagement/components/ApproveRequestModal';
+import TimeRegularizationHistory from '../TicketManagement/TaskManagement/components/TimeRegularizationHistory';
 
 export default function HrDashboard() {
   const history = useNavigate();
@@ -33,12 +33,12 @@ export default function HrDashboard() {
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [historyModal, setHistoryModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [regularizationRequest, setRegularizationRequest] = useState([]);
@@ -49,38 +49,38 @@ export default function HrDashboard() {
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
     Chart: {
-      height: "auto",
+      height: 'auto'
     },
     options: {
       chart: {
-        type: "donut",
+        type: 'donut'
       },
-      labels: ["Pending Task", "Working Tasks", "Completed Task"],
+      labels: ['Pending Task', 'Working Tasks', 'Completed Task'],
 
-      colors: ["#ff1843", "#ffc107", "#198754", "#FBFBFB"],
+      colors: ['#ff1843', '#ffc107', '#198754', '#FBFBFB'],
 
       dataLables: {
         style: {
-          textColor: "white",
-          colors: ["#333", "#fff"],
-        },
-      },
-    },
+          textColor: 'white',
+          colors: ['#333', '#fff']
+        }
+      }
+    }
   });
   const checkTokenExpiration = () => {
-    const tokenExpirationTime = localStorage.getItem("jwt_token_expiration");
+    const tokenExpirationTime = localStorage.getItem('jwt_token_expiration');
     const currentTime = new Date().getTime();
 
     if (tokenExpirationTime && currentTime > tokenExpirationTime) {
-      localStorage.removeItem("jwt_token");
-      localStorage.removeItem("jwt_token_expiration");
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('jwt_token_expiration');
       sessionStorage.clear();
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
   async function get() {
-    const id = sessionStorage.getItem("id");
+    const id = sessionStorage.getItem('id');
     await getData(id).then((res) => {
       if (res.status === 200) {
         setCount(res.data.data.count);
@@ -90,12 +90,10 @@ export default function HrDashboard() {
         const updatedChartData = {
           ...chartData,
           series: [
-            res.data.data.count.pendingTask
-              ? res.data.data.count.pendingTask
-              : 0,
+            res.data.data.count.pendingTask ? res.data.data.count.pendingTask : 0,
             res.data.data.count.workingTask,
-            res.data.data.count.completedTask,
-          ],
+            res.data.data.count.completedTask
+          ]
         };
         setChartData(updatedChartData);
       }
@@ -104,12 +102,12 @@ export default function HrDashboard() {
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
-      tenant_id: localStorage.getItem("tenant_id"),
+      tenant_id: localStorage.getItem('tenant_id'),
       ticket_id: ticket_id,
       ticket_task_id: ticket_task_id,
-      user_id: localStorage.getItem("id"),
+      user_id: localStorage.getItem('id'),
       status: status,
-      time: time.getDateTime(),
+      time: time.getDateTime()
     };
     await postTimerData(data).then((res) => {
       if (res.status === 200) {
@@ -133,13 +131,9 @@ export default function HrDashboard() {
 
             setNotifications(res.data.data.result);
 
-            setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status === 1)
-            );
+            setApprovedNotifications(res?.data?.data?.result?.filter((d) => d?.status === 1));
 
-            setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status !== 0)
-            );
+            setAllRequest(res?.data?.data?.result?.filter((d) => d?.status !== 0));
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
             }
@@ -169,7 +163,7 @@ export default function HrDashboard() {
 
           if (res.data.data) {
             const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== "PENDING")
+              ?.filter((d) => d?.status_remark !== 'PENDING')
               ?.map((d) => ({
                 id: d.id,
                 created_by_name: d.created_by_name,
@@ -185,7 +179,7 @@ export default function HrDashboard() {
                 actual_time: d.actual_time,
                 task_hours: d.task_hours,
                 scheduled_time: d.scheduled_time,
-                status: d.status_remark,
+                status: d.status_remark
               }));
 
             // Assuming setDataa is a function to set the state
@@ -209,14 +203,13 @@ export default function HrDashboard() {
   const handleRegularizationRequest = (cuurentData) => {
     setIsLoading(null);
     setIsLoading(true);
-    setTicketID(cuurentData.ticketID);
+    setTicketID(cuurentData.ticketID ? cuurentData.ticketID : cuurentData);
     setNotificationId(cuurentData.notificationid);
-    new getRegularizationTime(cuurentData.ticketID).then((res) => {
-      console.log("res", res);
-      if (res.status === 200 && res.data.status === 1) {
+    new getRegularizationTime(ticketID).then((res) => {
+      if (res.status === 200) {
         setIsLoading(false);
         const temp = res?.data?.data
-          ?.filter((d) => d.status_remark === "PENDING")
+          ?.filter((d) => d.status_remark === 'PENDING')
           .map((d) => ({
             id: d.id,
             created_by_name: d.created_by_name,
@@ -232,7 +225,7 @@ export default function HrDashboard() {
             actual_time: d.actual_time,
             task_hours: d.task_hours,
             scheduled_time: d.scheduled_time,
-            status: d.status_remark,
+            status: d.status_remark
           }));
 
         setRegularizationRequest(temp);
@@ -246,9 +239,9 @@ export default function HrDashboard() {
   }, []);
 
   useEffect(() => {
-    const account_for = localStorage.getItem("account_for");
+    const account_for = localStorage.getItem('account_for');
 
-    if (account_for === "CUSTOMER") {
+    if (account_for === 'CUSTOMER') {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
     }
   }, []);
@@ -266,19 +259,12 @@ export default function HrDashboard() {
                 loadNotifcation();
               }}
             >
-              <Dropdown.Toggle
-                as="a"
-                className="nav-link dropdown-toggle pulse"
-              >
+              <Dropdown.Toggle as="a" className="nav-link dropdown-toggle pulse">
                 <div className="me-3 regularization-toggle">
                   <div>
-                    <button class=" badge bg-primary p-2">
-                      Regularization
-                    </button>
+                    <button class=" badge bg-primary p-2">Regularization</button>
                     {approvedNotifications?.length > 0 && (
-                      <div className="notification-circle">
-                        {approvedNotifications.length}
-                      </div>
+                      <div className="notification-circle">{approvedNotifications.length}</div>
                     )}
                   </div>
                 </div>
@@ -289,7 +275,7 @@ export default function HrDashboard() {
                   <div className="card-header border-0 p-3">
                     <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                       <span>
-                        Regularization Request :{" "}
+                        Regularization Request :{' '}
                         {showApprovedOnly === true ? (
                           <span>Approved Only By Me</span>
                         ) : (
@@ -308,9 +294,7 @@ export default function HrDashboard() {
                           </button>
                         )}
                       </div>
-                      {!notifications && (
-                        <span className="badge text-white">0</span>
-                      )}
+                      {!notifications && <span className="badge text-white">0</span>}
                     </h5>
                   </div>
                   <div className="tab-content card-body custom-card-body">
@@ -323,25 +307,22 @@ export default function HrDashboard() {
                           {approvedNotifications &&
                             approvedNotifications.length > 0 &&
                             approvedNotifications.map((ele, index) => {
-                              const date = ele.created_at.split(" ")[0];
-                              const time = ele.created_at.split(" ")[1];
+                              const date = ele.created_at.split(' ')[0];
+                              const time = ele.created_at.split(' ')[1];
 
-                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const parts = ele.url.split('/'); // Split the string by '/'
                               const ticketID = parts[parts.length - 1]; // Get the last part of the array
                               const notificationid = ele.id;
                               return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
-                                >
+                                <li className="py-2 mb-1 border-bottom" key={index}>
                                   <div
                                     className="flex-fill ms-2"
-                                    style={{ cursor: "pointer" }}
+                                    style={{ cursor: 'pointer' }}
                                     onClick={(e) => {
                                       handleShowApproveRequestModal();
                                       handleRegularizationRequest({
                                         ticketID,
-                                        notificationid,
+                                        notificationid
                                       });
                                     }}
                                   >
@@ -349,14 +330,14 @@ export default function HrDashboard() {
                                       <p className="d-flex justify-content-between mb-0">
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
-                                            {" "}
+                                            {' '}
                                             {`Date : ${date}`}
                                           </span>
                                           <span
                                             className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: "10px" }}
+                                            style={{ marginLeft: '10px' }}
                                           >
-                                            {" "}
+                                            {' '}
                                             {`Time : ${time}`}
                                           </span>
                                           <br />
@@ -388,21 +369,17 @@ export default function HrDashboard() {
                           {allRequest &&
                             allRequest.length > 0 &&
                             allRequest.map((ele, index) => {
-                              const date = ele.created_at.split(" ")[0];
-                              const time = ele.created_at.split(" ")[1];
+                              const date = ele.created_at.split(' ')[0];
+                              const time = ele.created_at.split(' ')[1];
 
-                              const parts1 = ele?.url?.split("/"); // Split the string by '/'
-                              const ticketID1 =
-                                parts1 && parts1[parts1?.length - 1];
+                              const parts1 = ele?.url?.split('/'); // Split the string by '/'
+                              const ticketID1 = parts1 && parts1[parts1?.length - 1];
 
                               return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
-                                >
+                                <li className="py-2 mb-1 border-bottom" key={index}>
                                   <div
                                     className="flex-fill ms-2"
-                                    style={{ cursor: "pointer" }}
+                                    style={{ cursor: 'pointer' }}
                                     onClick={(e) => {
                                       handleShowApproveRequestModal();
                                       handleRegularizationRequest(ticketID1);
@@ -412,11 +389,11 @@ export default function HrDashboard() {
                                       <p className="d-flex justify-content-between mb-0">
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
-                                            {" "}
+                                            {' '}
                                             {`Date : ${date}`}
                                           </span>
                                           <span className="fw-bold badge bg-danger p-2 mx-3">
-                                            {" "}
+                                            {' '}
                                             {`Time : ${time}`}
                                           </span>
                                           <br />
@@ -445,9 +422,9 @@ export default function HrDashboard() {
                   <div className="row m-0 custom-footer">
                     <div
                       className={`col-4 card-footer text-center border-top-0  ${
-                        !showApprovedOnly ? "bg-info" : "white"
+                        !showApprovedOnly ? 'bg-info' : 'white'
                       }`}
-                      style={{ width: "50%", height: "50px" }}
+                      style={{ width: '50%', height: '50px' }}
                       onClick={() => setShowApprovedOnly(false)}
                     >
                       <div className="btn-group h-100">
@@ -457,15 +434,13 @@ export default function HrDashboard() {
 
                     <div
                       className={`col-4 card-footer text-center border-top-0 ${
-                        showApprovedOnly ? "bg-info" : "white"
+                        showApprovedOnly ? 'bg-info' : 'white'
                       }`}
-                      style={{ width: "50%", height: "50px" }}
+                      style={{ width: '50%', height: '50px' }}
                       onClick={() => setShowApprovedOnly(true)}
                     >
                       <div className="btn-group h-100">
-                        <Link to={`/${_base}/Dashboard`}>
-                          Approved Only By Me
-                        </Link>
+                        <Link to={`/${_base}/Dashboard`}>Approved Only By Me</Link>
                       </div>
                     </div>
                   </div>
@@ -511,14 +486,9 @@ export default function HrDashboard() {
                   <div className="">
                     <strong>Pending Task</strong>
                   </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
-                  </div>
+                  <div>{count && <h5 className="mb-0 ">{count.pendingTask}</h5>}</div>
                 </div>
-                <a
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
+                <a title="view-members" className="btn btn-link text-decoration-none  rounded-1">
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
                 </a>
               </div>
@@ -537,14 +507,9 @@ export default function HrDashboard() {
                   <div className="">
                     <strong>Working Task</strong>
                   </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
-                  </div>
+                  <div>{count && <h5 className="mb-0 ">{count.workingTask}</h5>}</div>
                 </div>
-                <a
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
+                <a title="view-members" className="btn btn-link text-decoration-none  rounded-1">
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
                 </a>
               </div>
@@ -563,14 +528,9 @@ export default function HrDashboard() {
                   <div className="">
                     <strong>Completed Task</strong>
                   </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
-                  </div>
+                  <div>{count && <h5 className="mb-0 ">{count.completedTask}</h5>}</div>
                 </div>
-                <a
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
+                <a title="view-members" className="btn btn-link text-decoration-none  rounded-1">
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
                 </a>
               </div>
@@ -589,21 +549,16 @@ export default function HrDashboard() {
                   <div className="">
                     <strong>Total Task</strong>
                   </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
-                  </div>
+                  <div>{count && <h5 className="mb-0 ">{count.totalTask}</h5>}</div>
                 </div>
-                <a
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
+                <a title="view-members" className="btn btn-link text-decoration-none  rounded-1">
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
                 </a>
               </div>
             </div>
           </div>
         </div>
-      </div>{" "}
+      </div>{' '}
       <div className="row g-3 mb-3 row-deck mt-2">
         <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
           <div className="card">
@@ -615,37 +570,30 @@ export default function HrDashboard() {
                 {dailyTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status == 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                                <h6 className="fw-bold mb-0 small-14" title={ele.task_name}>
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status !== "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-button"
                               title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'STOP')}
                             >
                               <i className="icofont-ui-pause task-icon-stop"></i>
                             </button>
@@ -658,41 +606,33 @@ export default function HrDashboard() {
                           )}
 
                           {ele && ele.task_hours && (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.task_hours}
-                            </span>
+                            <span className="badge bg-danger p-2 task-badge">{ele.task_hours}</span>
                           )}
 
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-badge">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-badge">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-badge">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-badge">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-badge">{ele.status}</span>
                           )}
                           <div className="time-block text-truncate ">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span className="badge bg-danger p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span className="badge bg-warning p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span className="badge bg-info p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span className="badge bg-success p-2 task-priority">
                                 {ele.priority}
                               </span>
@@ -706,76 +646,63 @@ export default function HrDashboard() {
                 {previousTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status == 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 {ele.task_name ? (
-                                  <h6
-                                    className="fw-bold mb-0 small-14"
-                                    title={ele.task_name}
-                                  >
+                                  <h6 className="fw-bold mb-0 small-14" title={ele.task_name}>
                                     {index + 1}. {ele.main_ticket_id}-
                                     {ele.task_name.length < 20
                                       ? ele.task_name
-                                      : ele.task_name.substring(0, 20) + "...."}
+                                      : ele.task_name.substring(0, 20) + '....'}
                                   </h6>
                                 ) : (
-                                  "NO DATA"
+                                  'NO DATA'
                                 )}
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status != 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-butto"
                               title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'START')}
                             >
                               <i className="icofont-ui-play task-icon-start"></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-badge ">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-badge ">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-badge ">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-badge ">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-badge ">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-badge ">{ele.status}</span>
                           )}
 
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span className="badge bg-danger p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span className="badge bg-danger p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span className="badge bg-info p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span className="badge bg-success p-2 task-priority">
                                 {ele.priority}
                               </span>
@@ -803,7 +730,7 @@ export default function HrDashboard() {
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status == 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap task-item-stop"
@@ -811,30 +738,23 @@ export default function HrDashboard() {
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                                <h6 className="fw-bold mb-0 small-14" title={ele.task_name}>
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
 
-                          {ele.status != "COMPLETED" && (
+                          {ele.status != 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-button"
                               title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'STOP')}
                             >
                               <i className="icofont-ui-pause task-icon-stop"></i>
                             </button>
@@ -847,46 +767,34 @@ export default function HrDashboard() {
                           )}
 
                           {ele && ele.task_hours && (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.task_hours}
-                            </span>
+                            <span className="badge bg-danger p-2 task-badge">{ele.task_hours}</span>
                           )}
 
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-badge">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-badge">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-badge">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-badge">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-badge">{ele.status}</span>
                           )}
-                          <span className="badge bg-primary p-2 task-badge">
-                            {ele.end_date}
-                          </span>
+                          <span className="badge bg-primary p-2 task-badge">{ele.end_date}</span>
 
                           <div className="time-block text-truncate  ">
-                            {ele.priority === "Very High" && (
-                              <span className="badge bg-danger task-priority">
-                                {ele.priority}
-                              </span>
+                            {ele.priority === 'Very High' && (
+                              <span className="badge bg-danger task-priority">{ele.priority}</span>
                             )}
 
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span className="badge bg-danger p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span className="badge bg-info p-2 task-priority">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span className="badge bg-success p-2 task-priority">
                                 {ele.priority}
                               </span>
@@ -900,84 +808,57 @@ export default function HrDashboard() {
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status == 'START') {
                       return (
                         <div className="py-2 text-white d-flex align-items-center border-bottom flex-wrap task-item-start">
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                                <h6 className="fw-bold mb-0 small-14" title={ele.task_name}>
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status != 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-button"
                               title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'START')}
                             >
                               <i className="icofont-ui-play task-icon-start"></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-status">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-status">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-status">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-status">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-status">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-status">{ele.status}</span>
                           )}
-                          <span className="badge bg-primary p-2 task-status">
-                            {ele.end_date}
-                          </span>
+                          <span className="badge bg-primary p-2 task-status">{ele.end_date}</span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
-                              <span
-                                className="badge bg-danger p-2 "
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Very High' && (
+                              <span className="badge bg-danger p-2 " style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'High' && (
+                              <span className="badge bg-danger p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Medium' && (
+                              <span className="badge bg-info p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Low' && (
+                              <span className="badge bg-success p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
@@ -1021,74 +902,54 @@ export default function HrDashboard() {
               <div className="flex-grow-1 task-list">
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status == 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
                                 <h6 className="fw-bold mb-0 small-14">
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status != 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-button"
                               title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'STOP')}
                             >
                               <i className="icofont-ui-pause task-icon-stop"></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-badge">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-badge">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-badge">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-badge">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-badge">{ele.status}</span>
                           )}
-                          <span className="badge bg-primary p-2 task-badge">
-                            {ele.end_date}
-                          </span>
+                          <span className="badge bg-primary p-2 task-badge">{ele.end_date}</span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
-                              <span className="badge bg-danger p-2">
-                                {ele.priority}
-                              </span>
+                            {ele.priority === 'Very High' && (
+                              <span className="badge bg-danger p-2">{ele.priority}</span>
                             )}
-                            {ele.priority === "High" && (
-                              <span className="badge bg-danger p-2">
-                                {ele.priority}
-                              </span>
+                            {ele.priority === 'High' && (
+                              <span className="badge bg-danger p-2">{ele.priority}</span>
                             )}
-                            {ele.priority === "Medium" && (
-                              <span className="badge bg-info p-2">
-                                {ele.priority}
-                              </span>
+                            {ele.priority === 'Medium' && (
+                              <span className="badge bg-info p-2">{ele.priority}</span>
                             )}
-                            {ele.priority === "Low" && (
-                              <span className="badge bg-success p-2">
-                                {ele.priority}
-                              </span>
+                            {ele.priority === 'Low' && (
+                              <span className="badge bg-success p-2">{ele.priority}</span>
                             )}
                           </div>
                         </div>
@@ -1098,87 +959,60 @@ export default function HrDashboard() {
 
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status == 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
+                              <Link to={`/${_base}/Ticket/Task/${ele.ticket_id}`}>
+                                <h6 className="fw-bold mb-0 small-14" title={ele.task_name}>
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status != 'COMPLETED' && (
                             <button
                               type="button"
                               className="task-button"
                               title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
-                              }
+                              onClick={(e) => handleTimer(e, ele.ticket_id, ele.id, 'START')}
                             >
                               <i className="icofont-ui-play task-icon-start"></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
-                            <span className="badge bg-danger p-2 task-badge">
-                              {ele.status}
-                            </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
-                            <span className="badge bg-warning p-2 task-badge">
-                              {ele.status}
-                            </span>
+                          {ele && ele && ele.status == 'TO_DO' ? (
+                            <span className="badge bg-danger p-2 task-badge">{ele.status}</span>
+                          ) : ele.status == 'IN_PROGRESS' ? (
+                            <span className="badge bg-warning p-2 task-badge">{ele.status}</span>
                           ) : (
-                            <span className="badge bg-success p-2 task-badge">
-                              {ele.status}
-                            </span>
+                            <span className="badge bg-success p-2 task-badge">{ele.status}</span>
                           )}
-                          <span className="badge bg-primary p-2 task-badge">
-                            {ele.end_date}
-                          </span>
+                          <span className="badge bg-primary p-2 task-badge">{ele.end_date}</span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Very High' && (
+                              <span className="badge bg-danger p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'High' && (
+                              <span className="badge bg-danger p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Medium' && (
+                              <span className="badge bg-info p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: "80px" }}
-                              >
+                            {ele.priority === 'Low' && (
+                              <span className="badge bg-success p-2" style={{ width: '80px' }}>
                                 {ele.priority}
                               </span>
                             )}
