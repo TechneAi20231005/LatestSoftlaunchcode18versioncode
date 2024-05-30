@@ -66,7 +66,6 @@ export default function MyTicketComponent() {
   const [ticketShowType, setTicketShowType] = useState(null);
 
   const [userDepartment, setUserDepartment] = useState();
-  console.log("userDepartment", userDepartment);
 
   const [exportData, setExportData] = useState(null);
   const dispatch = useDispatch();
@@ -231,8 +230,12 @@ export default function MyTicketComponent() {
     setRemarkModal(data);
   };
 
+  const UserId = localStorage.getItem("id");
+  const loginUserDepartmentId = userDepartment?.[0]?.department_id;
+
+  const loginUserTicketTypeShow = userDepartment?.[0]?.ticket_show_type;
+
   const actionComponent = (data, type) => {
-  
     if (type === "SEARCH_RESULT") {
       if (searchResult && searchResult.length > 0) {
         return (
