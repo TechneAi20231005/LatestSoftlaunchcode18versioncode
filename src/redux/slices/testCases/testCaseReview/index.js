@@ -29,7 +29,7 @@ const testCaseReviewSlice = createSlice({
       .addCase(getTestCaseReviewListThunk.fulfilled, (state, action) => {
         state.isLoading.testCaseReviewList = false;
         state.testCaseReviewList = action?.payload?.data;
-        state.successMsg.testCaseReviewList = action.payload.msg;
+        state.successMsg.testCaseReviewList = action.payload.message;
       })
       .addCase(getTestCaseReviewListThunk.rejected, (state, action) => {
         state.isLoading.testCaseReviewList = false;
@@ -43,12 +43,12 @@ const testCaseReviewSlice = createSlice({
       .addCase(getByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = action?.payload?.data;
-        state.successMsg.testPlanIdData = action.payload.msg;
+        state.successMsg.testPlanIdData = action?.payload?.message;
       })
       .addCase(getByTestPlanIDListThunk.rejected, (state, action) => {
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = [];
-        state.errorMsg.testPlanIdData = action.error.message;
+        state.errorMsg.testPlanIdData = action?.error?.message;
       });
   },
 });
