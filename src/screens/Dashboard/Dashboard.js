@@ -11,6 +11,7 @@ import {
   getRegularizationTimeHistory,
 } from "../../services/TicketService/TaskService";
 import { _base } from "../../settings/constants";
+import "./DashboardStyle.css";
 
 import { getNotification } from "../../services/NotificationService/NotificationService";
 import Dropdown from "react-bootstrap/Dropdown";
