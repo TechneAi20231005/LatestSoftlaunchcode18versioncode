@@ -28,7 +28,7 @@ const ApproveRequestModal = (props) => {
     new getRegularizationTime(ticketId)
 
       .then((res) => {
-        if (res.status == 200) {
+        if (res.status === 200) {
           setShowLoaderModal(false);
 
           if (res.data.data) {

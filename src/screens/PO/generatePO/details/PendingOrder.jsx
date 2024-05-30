@@ -11,8 +11,7 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 import { CustomReactSelect } from '../../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
-  getKnockoffWtRangeListThunk,
-  getSizeRangeListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk,
 } from '../../../../redux/services/po/common';
 import { getPendingOrderListThunk } from '../../../../redux/services/po/generatePo';
 import {
@@ -39,12 +38,12 @@ function PendingOrder() {
   // // redux state
   const {
     itemCategoryList,
-    knockoffWtRangeList,
-    sizeRangeList,
-    isLoading: { getItemCategoryList, getKnockoffWtRangeList, getSizeRangeList },
+    karagirKnockOffWtSizeRangeFilterData: { karagir_wt_range, size_range },
+    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData },
   } = useSelector(state => state?.poCommon);
 
   const {
+    userAddedPoDataList,
     pendingOrderList,
     isLoading: { getPendingOrderList },
   } = useSelector(state => state?.generatePo);
@@ -69,7 +68,15 @@ function PendingOrder() {
     {
       name: 'Pending Quantity',
       selector: (row, index) =>
-        row?.open_qty ? <p className="bg-warning px-1">{row?.open_qty}</p> : '---',
+        row?.open_qty ? (
+          <p className="bg-warning px-1">
+            {Number(row?.open_qty) - Number(row?.total_po_qty) > 0
+              ? Number(row?.open_qty) - Number(row?.total_po_qty)
+              : 0}
+          </p>
+        ) : (
+          '---'
+        ),
       sortable: false,
     },
     {
@@ -93,35 +100,33 @@ function PendingOrder() {
   // // dropdown data
   const categoryData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...itemCategoryList?.map(items => ({
+    ...(itemCategoryList?.map(items => ({
       label: (
-        <>
-          <div className="d-flex">
-            <p className="mb-0">{items?.item}</p>
-            <i className="icofont-caret-right text-warning fs-5" />
-            <p className="mb-0"> {items?.category}</p>
-          </div>
-        </>
+        <div className="d-flex" key={Math.random()}>
+          <p className="mb-0">{items?.item}</p>
+          <i className="icofont-caret-right text-warning fs-5" />
+          <p className="mb-0"> {items?.category}</p>
+        </div>
       ),
-      value: items?.category,
+      value: items?.id,
       searchableItem: `${items?.item} ${items?.category}`,
-    })),
+    })) || []),
   ];
 
   const weightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...knockoffWtRangeList?.map(items => ({
-      label: items?.knockoff_wt_range,
-      value: items?.knockoff_wt_range,
-    })),
+    ...(karagir_wt_range?.map(items => ({
+      label: items?.karagir_wt_range,
+      value: items?.karagir_wt_range,
+    })) || []),
   ];
 
   const sizeRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...sizeRangeList?.map(items => ({
+    ...(size_range?.map(items => ({
       label: items?.size_range,
       value: items?.size_range,
-    })),
+    })) || []),
   ];
 
   const customFilterOption = (option, searchText) => {
@@ -191,6 +196,10 @@ function PendingOrder() {
     }
   };
 
+  const getItemName = categoryId => itemCategoryList?.find(item => item?.id === categoryId)?.item;
+  const geCategoryName = categoryId =>
+    itemCategoryList?.find(item => item?.id === categoryId)?.category;
+
   // // life cycle for category dropdown
   useEffect(() => {
     if (!itemCategoryList?.length) {
@@ -198,49 +207,26 @@ function PendingOrder() {
     }
   }, []);
 
-  // // life cycle for weight range dropdown
+  // // life cycle for weight range and size range dropdown
   useEffect(() => {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
-        getKnockoffWtRangeListThunk({
-          itemName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
+        getKaragirKnockOffWtSizeRangeFilterListThunk({
+          itemName: getItemName(filterFormValue?.selectedItemsCategory),
+          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           type: '',
         }),
       );
     }
   }, [generatePoFilter?.vender_name, filterFormValue?.selectedItemsCategory]);
 
-  // // life cycle for size range dropdown
-  useEffect(() => {
-    if (filterFormValue?.selectedItemsCategory && filterFormValue?.selectedWeightRange) {
-      dispatch(
-        getSizeRangeListThunk({
-          itemName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          categoryName: filterFormValue?.selectedItemsCategory,
-          weightRange: filterFormValue?.selectedWeightRange,
-        }),
-      );
-    }
-  }, [
-    generatePoFilter?.vender_name,
-    filterFormValue?.selectedItemsCategory,
-    filterFormValue?.selectedWeightRange,
-  ]);
-
   // // life cycle for pending order data
   useEffect(() => {
     if (filterFormValue?.selectedItemsCategory) {
       dispatch(
         getPendingOrderListThunk({
-          categoryName: itemCategoryList?.find(
-            item => item?.category === filterFormValue?.selectedItemsCategory,
-          )?.item,
-          itemName: filterFormValue?.selectedItemsCategory,
+          itemName: getItemName(filterFormValue?.selectedItemsCategory),
+          categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           weightRange: filterFormValue?.selectedWeightRange,
           sizeRange: filterFormValue?.selectedSizeRange,
         }),
@@ -292,7 +278,7 @@ function PendingOrder() {
               </div>
 
               <RenderIf render={toggleFilter}>
-                <Row className="align-items-end">
+                <Row className="align-items-end row_gap_3">
                   <Col md={5}>
                     <Field
                       component={CustomReactSelect}
@@ -300,7 +286,9 @@ function PendingOrder() {
                       styleData="w-100"
                       label="Weight:"
                       name="selectedWeightRange"
-                      placeholder={getKnockoffWtRangeList ? 'Loading...' : 'Select'}
+                      placeholder={
+                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                      }
                       isSearchable
                     />
                   </Col>
@@ -311,14 +299,15 @@ function PendingOrder() {
                       styleData="w-100"
                       label="Size:"
                       name="selectedSizeRange"
-                      placeholder={getSizeRangeList ? 'Loading...' : 'Select'}
+                      placeholder={
+                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                      }
                       isSearchable
-                      disabled={!values?.selectedWeightRange}
                     />
                   </Col>
                   <Col md={2}>
                     <button
-                      className="btn btn-info text-white w-100 py-2"
+                      className="btn btn-info text-white w-100 ms-0 py-md-2"
                       type="button"
                       onClick={() => {
                         setFieldValue('selectedWeightRange', '');
@@ -340,7 +329,7 @@ function PendingOrder() {
                   progressComponent={<TableLoadingSkelton />}
                 />
 
-                <div className="d-flex justify-content-end mt-3 gap-2">
+                <div className="d-flex justify-content-end mt-3 gap-2 btn_container">
                   <button
                     className="btn btn-dark"
                     type="button"
@@ -354,6 +343,28 @@ function PendingOrder() {
                     onClick={handelSave}
                   >
                     Save
+                  </button>
+                  <RenderIf render={userAddedPoDataList?.length}>
+                    <button
+                      className="btn btn-info text-white px-5"
+                      type="button"
+                      onClick={() => navigate('preview')}
+                    >
+                      Order Summary
+                    </button>
+                  </RenderIf>
+                </div>
+              </RenderIf>
+              <RenderIf
+                render={!filterFormValue?.selectedItemsCategory && userAddedPoDataList?.length}
+              >
+                <div className="text-end">
+                  <button
+                    className="btn btn-info text-white ms-0 col-12 col-md-2"
+                    type="button"
+                    onClick={() => navigate('preview')}
+                  >
+                    Order Summary
                   </button>
                 </div>
               </RenderIf>

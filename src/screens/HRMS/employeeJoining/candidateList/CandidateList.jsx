@@ -60,7 +60,13 @@ function CandidateList() {
         ) : (
           '--'
         ),
-      width: '220px',
+      width: '150px',
+    },
+    {
+      name: 'Application Id',
+      selector: row => row?.application_id || '--',
+      sortable: true,
+      width: '150px',
     },
     {
       name: 'Applied Position',
