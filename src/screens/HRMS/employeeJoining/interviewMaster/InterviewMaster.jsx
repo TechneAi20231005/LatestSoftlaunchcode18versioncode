@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -55,9 +55,27 @@ function InterviewMaster() {
     },
     {
       name: 'Step Count',
-      selector: row => row?.steps_count || '--',
+      selector: row => row?.steps_count ?? '--',
       sortable: true,
       width: '110px',
+    },
+    {
+      name: 'Department',
+      selector: row => row?.department ?? '--',
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Designation',
+      selector: row => row?.designation ?? '--',
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Experience Level',
+      selector: row => row?.experience_level ?? '--',
+      sortable: true,
+      width: '150px',
     },
     {
       name: 'Status',
@@ -67,26 +85,26 @@ function InterviewMaster() {
     },
     {
       name: 'Created At',
-      selector: row => row?.created_at || '--',
+      selector: row => row?.created_at ?? '--',
       sortable: true,
       width: '190px',
     },
     {
       name: 'Created By',
-      selector: row => row?.created_by || '--',
+      selector: row => row?.created_by ?? '--',
       sortable: true,
       width: '190px',
     },
 
     {
       name: 'Updated At',
-      selector: row => row?.updated_at || '--',
+      selector: row => row?.updated_at ?? '--',
       sortable: true,
       width: '190px',
     },
     {
       name: 'Updated By',
-      selector: row => row?.updated_by || '--',
+      selector: row => row?.updated_by ?? '--',
       sortable: true,
       width: '190px',
     },

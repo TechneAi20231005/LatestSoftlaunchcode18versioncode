@@ -66,6 +66,8 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+  const [selectedDesignationId, setSelectedDesignationId] = useState('');
+  const [employeesName, setEmployeesName] = useState(employeeData);
 
   // // dropdown data
   const departmentType = departmentDataList
@@ -82,12 +84,19 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       value: item?.id,
     }));
 
-  const employeeName = employeeData
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
-      value: item?.id,
-    }));
+  useEffect(() => {
+    const filterData = employeeData
+      ?.filter(
+        item =>
+          item?.is_active === 1 &&
+          (selectedDesignationId ? Number(item?.designation_id) === +selectedDesignationId : true),
+      )
+      ?.map(item => ({
+        label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
+        value: item?.id,
+      }));
+    setEmployeesName(filterData);
+  }, [selectedDesignationId, employeeData]);
 
   // // function
   const handelAddEditInterview = () => {
@@ -134,6 +143,8 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
+    } else {
+      setSelectedDesignationId('');
     }
   }, [show]);
 
@@ -150,7 +161,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           initialValues={addInterviewInitialValue}
           enableReinitialize
           validationSchema={addEditInterviewMaster}
-          onSubmit={(values, errors) => {
+          onSubmit={values => {
             if (type === 'ADD' || type === 'EDIT') {
               setOpenConfirmModal({
                 open: true,
@@ -277,11 +288,12 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                             }
                             requiredField
                             disabled={type === 'VIEW'}
+                            handleChange={e => setSelectedDesignationId(e?.target?.value)}
                           />
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            data={employeeName}
+                            data={employeesName}
                             component={CustomDropdown}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
