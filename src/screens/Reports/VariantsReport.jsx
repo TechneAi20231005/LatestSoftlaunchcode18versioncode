@@ -151,6 +151,7 @@ export default function ResourcePlanningReportComponent() {
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
+            setIsLoading(false);
             // setShowLoaderModal(false);
             if (res.data.status == 1) {
               let sr = 1;
@@ -175,7 +176,7 @@ export default function ResourcePlanningReportComponent() {
                 }
                 setData(null);
                 setData(tempData);
-                setIsLoading(false);
+
                 let count = 1;
                 for (const key in data) {
                   exportTempData.push({
@@ -255,10 +256,6 @@ export default function ResourcePlanningReportComponent() {
                     className="basic-multi-select"
                     classNamePrefix="select"
                     options={userData && userData}
-<<<<<<< HEAD
-                    required
-=======
->>>>>>> 11ca5624840b5f0f7616754d12291789215feac2
                   />
                 )}
               </div>
@@ -327,6 +324,7 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
+              
               {isLoading && <TableLoadingSkelton />}
               {!isLoading && data && (
                 <DataTable
