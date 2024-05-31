@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Avatar from "react-avatar";
 import "./custom-style.css";
+import { Link, useNavigate } from "react-router-dom";
+import { _base } from "../../../../../settings/constants";
+
 const DayWiseCalendar = (props) => {
+  const navigate = useNavigate();
+  // console.log("navigate", navigate());
   const { data: dayWiseData, bgColor, presentDate } = props;
   const [calendarData, setCalendarData] = useState([]);
   const [tooltipContent, setTooltipContent] = useState("");
@@ -31,7 +36,6 @@ const DayWiseCalendar = (props) => {
 
   const handleMouseLeave = () => {
     setTooltipContent("");
-
     // tooltip.style.display = "none";
   };
 
@@ -82,7 +86,7 @@ const DayWiseCalendar = (props) => {
           return (
             <div
               key={data.id}
-              className="px-3 py-4 mt-2 d-flex align-items-center justify-content-between rounded daily_task_data"
+              className={`px-3 py-4 mt-2 d-flex align-items-center justify-content-between rounded daily_task_data`}
               style={{ backgroundColor: filteredBgColor[0]?.color }}
               onMouseEnter={(event) => handleMouseEnter(event, data)}
               onMouseLeave={handleMouseLeave}
@@ -99,7 +103,15 @@ const DayWiseCalendar = (props) => {
                 </h5>
                 <h5 className="col-3 fw-bold">{data.basketName}</h5>
                 <div className="col-6">
-                  <p className="mb-0 fw-bold">{data.taskName}</p>
+                  <Link to={`${_base}/Ticket/Task`}>
+                    <p
+                      className="mb-0 fw-bold"
+                      // onClick={() => navigate(`${_base}`, { replace: true })}
+                    >
+                      {data.taskName}
+                    </p>
+                  </Link>
+
                   <span className="me-3">
                     {data?.actualWorked ? data?.actualWorked : "00:00:00"}
                   </span>
@@ -107,12 +119,9 @@ const DayWiseCalendar = (props) => {
                 </div>
               </div>
               <div className="col-6 d-flex align-items-center justify-content-end text-end ">
-                <div className="col-9 ">
+                <div className="col-9 d-flex gap-2 justify-content-end ">
                   {data?.taskOwners.map((userName, id) => (
-                    <div
-                      key={id}
-                      className="d-flex gap-2 justify-content-end text-end"
-                    >
+                    <div key={id} className="text-end">
                       <Avatar round size="45px" name={userName} />
                     </div>
                   ))}

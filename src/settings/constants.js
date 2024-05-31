@@ -10,29 +10,6 @@ export const _ErrorMsg = 'Try After Some Time !!!';
 
 export var dataFormat = { status: 0, message: null, data: null };
 
-//Development :TechTicketDummy TSDDummy
-//Production : TechTicket TSNewBackend
-
-// export const _pincodeUrl = "https://api.postalpincode.in/pincode/";
-
-// export const _base ='TechTicket';
-// export const _apiUrl = "http://15.207.120.175/TSNewBackend/public/api/";
-// export const _attachmentUrl='http://15.207.120.175/TSNewBackend/';
-
-// export const _base ='TechTicketDummy';
-// export const _apiUrl = "http://15.207.120.175/TechTicketDummyDevelopment/public/api/";
-// export const _attachmentUrl="http://15.207.120.175/TechTicketDummyDevelopment/";
-
-// export const _base = "3_SoftLaunch/TechTicket";
-// export const _apiUrl =
-//   "http://3.108.206.34/3_SoftLaunch/TSNewBackend/public/api/";
-// export const _attachmentUrl = "http://3.108.206.34/3_SoftLaunch/TSNewBackend/";
-
-export const ALPHA_NUMERIC_REGEX =
-  /^(?=.*[a-zA-Z])(?=.*[0-9]?)[a-zA-Z0-9\s!@#$%^&*()_+[\]{};':"\\|,.<>/?-]*$/;
-export const ONLY_CHARACTER_REGEX = /^[a-zA-Z\s]+$/;
-export const EMAIL_REGEX = /^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
-
 export const _base = REACT_APP_ROOT_URL;
 export const _apiUrl = REACT_APP_API_URL;
 export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;

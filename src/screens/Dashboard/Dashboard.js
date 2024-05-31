@@ -207,7 +207,7 @@ export default function HrDashboard(props) {
       "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getEmployeeData());
     dispatch(getNotifications());
-    dispatch(getAllDashboardData());
+    // dispatch(getAllDashboardData());
 
     dispatch(getAllUserById(localStorage.getItem("id")));
   };
@@ -300,11 +300,13 @@ export default function HrDashboard(props) {
   const [notificationId, setNotificationId] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
+    
+    
     setIsLoading(null);
     setIsLoading(true);
-    setTicketID(cuurentData.ticketID);
+    setTicketID(cuurentData.ticketID ? cuurentData.ticketID : cuurentData);
     setNotificationId(cuurentData.notificationid);
-    new getRegularizationTime(cuurentData.ticketID).then((res) => {
+    new getRegularizationTime(ticketID).then((res) => {
       if (res.status === 200) {
         setIsLoading(false);
         const temp = res?.data?.data
@@ -514,6 +516,8 @@ export default function HrDashboard(props) {
                               const parts1 = ele?.url?.split("/"); // Split the string by '/'
                               const ticketID1 =
                                 parts1 && parts1[parts1?.length - 1];
+                          
+                                
 
                               return (
                                 <li
