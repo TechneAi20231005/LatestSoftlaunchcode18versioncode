@@ -47,12 +47,6 @@ export const userRoutes = [
     component: lazy(() => import('../screens/Dashboard/InsightsTasks'))
   },
   {
-    path: '/InsightsTasks',
-    name: 'InsightsTasks',
-    exact: true,
-    component: lazy(() => import('../screens/Dashboard/InsightsTasks'))
-  },
-  {
     path: '/InsightsCompletedTask',
     name: 'InsightsCompletedTask',
     exact: true,
@@ -364,7 +358,6 @@ export const userRoutes = [
       import('../screens/Masters/DynamicFormDropdown/EditDropdownComponent')
     )
   },
-
   // // // master routes end ⬆️
 
   // // // ticket routes start ⬇️
@@ -454,16 +447,7 @@ export const userRoutes = [
       )
     )
   },
-  {
-    path: '/TestBank',
-    name: 'TestBank',
-    exact: true,
-    component: lazy(() =>
-      import(
-        '../screens/TicketManagement/TaskManagement/components/TestBankComponent'
-      )
-    )
-  },
+
   {
     path: '/TestCasesReviewerView/:ticketId/:taskId',
     name: 'TestCasesReviewerView',
@@ -502,7 +486,6 @@ export const userRoutes = [
       )
     )
   },
-
   // // // ticket routes end ⬆️
 
   // // // project mgmt routes start ⬇️
@@ -695,25 +678,6 @@ export const userRoutes = [
   },
   // // // reports routes end ⬆️
 
-  // // // settings routes end ⬇️
-  {
-    path: '/ModuleSetting',
-    name: 'ModuleSetting',
-    exact: true,
-    component: lazy(() =>
-      import('../screens/Settings/ModuleSettings/ModuleSettings')
-    )
-  },
-  {
-    path: '/GeneralSettings',
-    name: 'GeneralSettings',
-    exact: true,
-    component: lazy(() =>
-      import('../screens/Settings/GeneralSettings/GeneralSettingsComponent')
-    )
-  },
-  // // // settings routes start ⬆️
-
   // // // connector routes start ⬇️
   {
     path: '/Connector/Sms',
@@ -761,6 +725,38 @@ export const userRoutes = [
     component: lazy(() => import('../screens/TenantManagement/EditTenant'))
   },
   // // // tenant master routes end ⬆️
+
+  // // // settings routes start ⬇️
+  {
+    path: '/ModuleSetting',
+    name: 'ModuleSetting',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/Settings/ModuleSettings/ModuleSettings')
+    )
+  },
+  {
+    path: '/GeneralSettings',
+    name: 'GeneralSettings',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/Settings/GeneralSettings/GeneralSettingsComponent')
+    )
+  },
+  // // // settings routes end ⬆️
+
+  // // // test plane routes start ⬇️
+  {
+    path: '/TestBank',
+    name: 'TestBank',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/TicketManagement/TaskManagement/components/TestBankComponent'
+      )
+    )
+  },
+  // // // test plane routes end ⬆️
 
   // // // bill checking routes start ⬇️
   {
@@ -847,10 +843,285 @@ export const userRoutes = [
       )
     )
   },
+  {
+    path: '/ViewBillTransaction/:id',
+    name: 'ViewBillTransaction',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/BillChecking/BillCheckingTransactions/ViewBillTransaction'
+      )
+    )
+  },
+  {
+    path: '/PaymentDetails/:id',
+    name: 'PaymentDetails',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/PaymentDetails/PaymentDetails')
+    )
+  },
+  {
+    path: '/BillCheckingHistory/:id',
+    name: 'BillCheckingHistory',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/BillChecking/BillCheckingTransactions/BillCheckingHistory'
+      )
+    )
+  },
+  {
+    path: '/PaymentHistory/:id',
+    name: 'PaymentHistory',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/PaymentDetails/PaymentHistory')
+    )
+  },
+  {
+    path: '/AssignedPerson/:id',
+    name: 'AssignedPerson',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/BillCheckingTransactions/AssignedPerson')
+    )
+  },
+  {
+    path: '/AuthorityMapping',
+    name: 'AuthorityMapping',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/AuthorityMapping/AuthorityMapping')
+    )
+  },
+  {
+    path: '/BillPayments',
+    name: 'BillPayments',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/BillPayments/BillPayments')
+    )
+  },
+  {
+    path: '/ViewVendorDetails/:id',
+    name: 'ViewVendorDetails',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/Masters/ViewVendorDetails')
+    )
+  },
+  {
+    path: '/ViewPaymentTemplateDetails/:id',
+    name: 'ViewPaymentTemplateDetails',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/BillChecking/Masters/ViewVendorDetails')
+    )
+  },
   // // // bill checking routes end ⬆️
 
-  // // // test case routes start ⬇️
+  // // // HRMS routes start ⬇️
+  {
+    path: '/InterviewMaster',
+    name: 'InterviewMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/interviewMaster/InterviewMaster')
+    )
+  },
+  {
+    path: '/CandidateList',
+    name: 'CandidateList',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/candidateList/CandidateList')
+    )
+  },
+  {
+    path: '/CandidateList/:id',
+    name: 'CandidateListDetails',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/HRMS/employeeJoining/candidateList/details/EmployeeJoining'
+      )
+    )
+  },
+  {
+    path: '/BranchMaster',
+    name: 'BranchMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/branchMaster/BranchMaster')
+    )
+  },
+  {
+    path: '/SourceMaster',
+    name: 'SourceMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/sourceMaster/SourceMaster')
+    )
+  },
+  {
+    path: '/RemarkMaster',
+    name: 'RemarkMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/remarkMaster/RemarkMaster')
+    )
+  },
+  {
+    path: '/SalaryMaster',
+    name: 'SalaryMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/HRMS/employeeJoining/salaryMaster/SalaryMaster')
+    )
+  },
+  // // // HRMS routes end ⬆️
 
+  // // // PO routes start ⬇️
+  {
+    path: '/POGenerateRequisition',
+    name: 'POGenerateRequisition',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/PO/generateRequisition/GenerateRequisition')
+    )
+  },
+  {
+    path: '/GeneratePO',
+    name: 'GeneratePO',
+    exact: true,
+    component: lazy(() => import('../screens/PO/generatePO/GeneratePo'))
+  },
+  {
+    path: '/GeneratePO/po`',
+    name: 'GeneratePoPendingOrder`',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/PO/generatePO/details/PendingOrder')
+    )
+  },
+  {
+    path: '/GeneratePO/po/preview',
+    name: 'GeneratePOPreview',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/PO/generatePO/details/preview/PoPreview')
+    )
+  },
+  {
+    path: '/POHistory',
+    name: 'POHistory',
+    exact: true,
+    component: lazy(() => import('../screens/PO/history/PoHistory'))
+  },
+  {
+    path: '/POVendorExportReport',
+    name: 'POVendorExportReport',
+    exact: true,
+    component: lazy(() => import('../screens/PO/vendorExportReport'))
+  },
+  {
+    path: '/POOrderQuanitityReport',
+    name: 'POorderQuantityReport',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/PO/orderQuantityReport/OrderQuantityReport')
+    )
+  },
+  // // // PO routes end ⬆️
+
+  // // // test case routes start ⬇️
+  {
+    path: '/TestDraft',
+    name: 'TestDraft',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestDraft/TestDraftComponent')
+    )
+  },
+  {
+    path: '/ReviewedTestDraftComponent',
+    name: 'ReviewedTestDraftComponent',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestDraft/ReviewedTestDraftComponent')
+    )
+  },
+  {
+    path: '/ReviewedTestDraftDetails',
+    name: 'ReviewedTestDraftDetails',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestDraft/ReviewedTestDraftDetails')
+    )
+  },
+  {
+    path: '/TestCaseReview',
+    name: 'TestCaseReview',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestCaseReview/TestCaseReviewComponent')
+    )
+  },
+  {
+    path: '/TestCaseReviewDetails/:test_plan_id',
+    name: 'TestCaseReviewDetails',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestCaseReview/TestCaseReviewDetails')
+    )
+  },
+  {
+    path: '/ReviewCommentMaster',
+    name: 'ReviewCommentMaster',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/TestCases/ReviewCommentMaster/ReviewCommentMasterComponent'
+      )
+    )
+  },
+  {
+    path: '/TestingTypeMaster',
+    name: 'TestingTypeMaster',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/TestCases/TestingTypeMaster/TestingTypeMasterComponent'
+      )
+    )
+  },
+  {
+    path: '/TestingGroupMaster',
+    name: 'TestingGroupMaster',
+    exact: true,
+    component: lazy(() =>
+      import(
+        '../screens/TestCases/TestingGroupMaster/TestingGroupMasterComponent'
+      )
+    )
+  },
+  {
+    path: '/FunctionMaster',
+    name: 'FunctionMaster',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/FunctionMaster/FunctionMasterComponent')
+    )
+  },
+  {
+    path: '/TestCaseHistoryComponent',
+    name: 'TestCaseHistoryComponent',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestDraft/TestCaseHistoryComponent')
+    )
+  },
   // // // test case routes end ⬆️
 
   {

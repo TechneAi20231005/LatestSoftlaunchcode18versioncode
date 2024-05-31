@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { memo } from 'react';
+import { Outlet } from 'react-router-dom';
 
-function MainLayouts() {
+function MainLayouts({ isAuthenticated }) {
   return (
-    <div>
-      <h1>MainLayouts</h1>
-    </div>
+    <>
+      {isAuthenticated ? (
+        <>
+          <div className="main px-lg-4 px-md-4">
+            <Header />
+            <div className="body d-flex py-lg-3 py-md-2">
+              <Outlet />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <Outlet />
+        </>
+      )}
+    </>
   );
 }
 
-export default MainLayouts;
+export default memo(MainLayouts);

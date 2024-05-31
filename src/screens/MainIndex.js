@@ -713,6 +713,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/AuthorityMapping`}
               element={<AuthorityMapping />}
             />
+            {/* remove in lazy loading */}
             <Route
               exact
               path={`/${_base}/AuthorityMappingviewdetails/:id`}
@@ -734,6 +735,7 @@ class MainIndex extends React.Component {
               element={<ViewPaymentTemplateDetails />}
             />
             {/* HRMS  */} {/* Asmita */}
+            {/* old hrms remove in lazy loading */}
             <Route path={`/${_base}/Source`} element={<SourceComponent />} />
             <Route
               exact
@@ -801,63 +803,6 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/CandidateList/:id`}
               element={<EmployeeJoining />}
-            />
-            <Route
-              exact
-              path={`/${_base}/BranchMaster`}
-              element={<BranchMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SourceMaster`}
-              element={<SourceMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/RemarkMaster`}
-              element={<RemarkMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SalaryMaster`}
-              element={<SalaryMaster />}
-            />
-            {/* <Route
-              exact
-              path={`/${_base}/rotationalShiftMaster`}
-              element={<RoastedComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Shift/Create`}
-              element={<CreateShiftMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/EmployeeMaster`}
-              element={<EmployeeMasterComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/Employee/Create`}
-              element={<CreateEmployeeComponent />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CalendarMaster`}
-              element={<CalenderMaster />}
-            />
-
-            {/* Employee Joining routes */}
-            <Route
-              exact
-              path={`/${_base}/InterviewMaster`}
-              element={<InterviewMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CandidateList`}
-              element={<CandidateList />}
             />
             <Route
               exact
