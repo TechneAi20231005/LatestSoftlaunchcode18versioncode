@@ -4,7 +4,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Dropdown, Button, ButtonGroup } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import { _base } from "../../settings/constants";
 import Alert from "../../components/Common/Alert";
 import ErrorLogService from "../../services/ErrorLogService";
@@ -22,24 +22,22 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import "./custome.css";
 import { Spinner } from "react-bootstrap";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+
 import { ExportAllTicketsToExcel } from "../../components/Utilities/Table/ExportAllTicketsToExcel";
 import { useSelector, useDispatch } from "react-redux";
-import TicketSlices, { hideNotification } from "./Slices/TicketSlices";
+
 import { getRoles } from "../Dashboard/DashboardAction";
 import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 export default function MyTicketComponent() {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const account_for = localStorage.getItem("account_for");
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
-
-  const roleId = sessionStorage.getItem("role_id");
-
   const [userName, setUserName] = useState("");
   const [user, setUser] = useState("");
-
   const [statusData, setStatusData] = useState(null);
   const [userData, setUserData] = useState(null);
   const [departmentData, setDepartmentData] = useState(null);
@@ -49,28 +47,21 @@ export default function MyTicketComponent() {
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
 
-  const [unpassedTicketsExport, setUnpassedTicketsExport] = useState(null);
-
   const [assignedToMe, setAssignedToMe] = useState(null);
   const [assignedToMeExport, setAssignedToMeExport] = useState(null);
 
   const [yourTask, setYourTask] = useState(null);
-  const [yourTaskExport, setYourTaskExport] = useState(null);
 
   const [createdByMe, setCreatedByMe] = useState(null);
-  const [createdByMeExport, setCreatedByMeExport] = useState(null);
 
   const [departmentwiseTicket, setDepartmentwiseTicket] = useState(null);
-  const [departmentwiseTicketExport, setDepartmentwiseTicketExport] =
-    useState(null);
+
   const [ticketShowType, setTicketShowType] = useState(null);
 
   const [userDepartment, setUserDepartment] = useState();
 
-  const [exportData, setExportData] = useState(null);
-  const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 17)
   );
 
   const [modal, setModal] = useState({
@@ -84,12 +75,6 @@ export default function MyTicketComponent() {
     modalHeader: "",
   });
 
-  const [bulkRemarkModal, setBulkRemarkModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
-
   const [confirmationModal, setConfirmationModal] = useState({
     showModals: false,
     modalsData: "",
@@ -97,9 +82,7 @@ export default function MyTicketComponent() {
   });
 
   const [locationState, setLocationState] = useState(null);
-  const location = useLocation();
 
-  const account_for = localStorage.getItem("account_for");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -211,16 +194,6 @@ export default function MyTicketComponent() {
         }
       });
   };
-  const menuStyle = {
-    position: "absolute",
-    bottom: "100%",
-    left: 0,
-    transform: "translateY(-5px)",
-    backgroundColor: "#fff",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-    borderRadius: "4px",
-    padding: "10px",
-  };
 
   const handleModal = (data) => {
     setModal(data);
@@ -262,7 +235,7 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: "100" }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 )}
@@ -273,13 +246,13 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " /> View
                 </Link>{" "}
               </li>
 
-              {((data.created_by != UserId && data.basket_configured === 0) ||
-                (data.assign_to_user_id == UserId &&
-                  data.basket_configured === 0)) &&
+              {((data?.created_by != UserId && data?.basket_configured === 0) ||
+                (data?.assign_to_user_id == UserId &&
+                  data?.basket_configured === 0)) &&
                 localStorage.getItem("account_for") === "SELF" && (
                   <li>
                     <Link
@@ -287,23 +260,24 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-primary text-white"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-bucket2"></i>Basket
+                      <i className="icofont-bucket2" />
+                      Basket
                     </Link>
                   </li>
                 )}
 
-              {((data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0) ||
-                (data.assign_to_user_id == localStorage.getItem("id") &&
-                  data.basket_configured > 0)) &&
-                localStorage.getItem("account_for") === "SELF" && (
+              {((data?.created_by != localStorage.getItem("id") &&
+                data?.basket_configured > 0) ||
+                (data?.assign_to_user_id == localStorage.getItem("id") &&
+                  data?.basket_configured > 0)) &&
+                localStorage?.getItem("account_for") === "SELF" && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
                       className="btn btn-sm btn-outline-primary"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
                 )}
@@ -314,11 +288,11 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
 
-              {data.created_by === Number(UserId) && (
+              {data?.created_by === Number(UserId) && (
                 <li>
                   <button
                     className=" btn btn-sm  btn-secondary text-white"
@@ -335,15 +309,15 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by == sessionStorage.getItem("id") ||
-              (data.assign_to_user_id == sessionStorage.getItem("id") &&
-                data.status_name != "Solved" && (
+            {data?.created_by === sessionStorage.getItem("id") ||
+              (data?.assign_to_user_id === sessionStorage.getItem("id") &&
+                data?.status_name !== "Solved" && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
                     className="btn btn-sm btn-warning text-white"
                     style={{ width: "90px" }}
                   >
-                    <i className="icofont-ui-edit"></i> Edit
+                    <i className="icofont-ui-edit" /> Edit
                   </Link>
                 ))}
 
@@ -352,7 +326,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-info text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
 
             <Link
@@ -360,7 +334,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-primary text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-history"></i> History
+              <i className="icofont-history" /> History
             </Link>
           </div>
         );
@@ -376,7 +350,7 @@ export default function MyTicketComponent() {
               id={`${"dropdown-basic_" + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem("id") ||
@@ -387,7 +361,7 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: "100" }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 ))}
@@ -398,7 +372,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " /> View
                 </Link>{" "}
               </li>
 
@@ -412,7 +386,7 @@ export default function MyTicketComponent() {
                         className="btn btn-sm btn-outline-primary"
                         style={{ width: "100%", zIndex: 100 }}
                       >
-                        <i className="icofont-tasks"></i> Task
+                        <i className="icofont-tasks" /> Task
                       </Link>
                     </li>
                   ))
@@ -430,7 +404,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-warning text-white"
                   style={{ width: "90px" }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               ))}
             <Link
@@ -438,7 +412,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-info text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
 
             {localStorage.getItem("account_for") === "SELF" && (
@@ -447,7 +421,8 @@ export default function MyTicketComponent() {
                 className="btn btn-sm btn-outline-primary"
                 style={{ width: "90px" }}
               >
-                <i className="icofont-tasks"></i> Task
+                <i className="icofont-tasks" />
+                Task
               </Link>
             )}
           </div>
@@ -464,7 +439,7 @@ export default function MyTicketComponent() {
               id={`${"dropdown-basic_" + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               <li>
@@ -473,7 +448,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-warning text-white"
                   style={{ width: "100%", zIndex: "100" }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               </li>
               {/* } */}
@@ -484,7 +459,8 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " />
+                  View
                 </Link>{" "}
               </li>
 
@@ -494,7 +470,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
 
@@ -509,7 +485,8 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-primary text-white"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-bucket2"></i>Basket
+                      <i className="icofont-bucket2" />
+                      Basket
                     </Link>
                   </li>
                 )}
@@ -525,7 +502,7 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-outline-primary"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
                 )}
@@ -540,7 +517,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-warning text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-history"></i> History
+              <i className="icofont-history" /> History
             </Link>
 
             {((data.created_by != localStorage.getItem("id") &&
@@ -553,7 +530,8 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   style={{ width: "90px" }}
                 >
-                  <i className="icofont-bucket2"></i>Basket
+                  <i className="icofont-bucket2" />
+                  Basket
                 </Link>
               )}
 
@@ -562,7 +540,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-warning text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-ui-edit"></i> Edit
+              <i className="icofont-ui-edit" /> Edit
             </Link>
 
             <Link
@@ -570,7 +548,7 @@ export default function MyTicketComponent() {
               className="btn btn-sm btn-info text-white"
               style={{ width: "90px" }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
             {localStorage.getItem("account_for") === "SELF" && (
               <Link
@@ -578,7 +556,7 @@ export default function MyTicketComponent() {
                 className="btn btn-sm btn-outline-primary"
                 style={{ width: "90px" }}
               >
-                <i className="icofont-tasks"></i> Task
+                <i className="icofont-tasks" /> Task
               </Link>
             )}
           </div>
@@ -596,7 +574,7 @@ export default function MyTicketComponent() {
               id={`${"dropdown-basic_" + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1 ">
@@ -607,7 +585,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " /> View
                 </Link>{" "}
               </li>
               {data.created_by != localStorage.getItem("id") &&
@@ -619,7 +597,7 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-outline-primary"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
                 )}
@@ -629,7 +607,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
               <li>
@@ -652,14 +630,15 @@ export default function MyTicketComponent() {
                 to={`/${_base}/TicketHistory/` + data.id}
                 className="btn btn-sm btn-warning text-white"
               >
-                <i className="icofont-ui-history"></i> History
+                <i className="icofont-ui-history" />
+                History
               </Link>
 
               <Link
                 to={`/${_base}/Ticket/View/` + data.id}
                 className="btn btn btn-info text-white"
               >
-                <i className="icofont-external-link "></i> View
+                <i className="icofont-external-link " /> View
               </Link>
 
               <button
@@ -695,7 +674,7 @@ export default function MyTicketComponent() {
                       className="btn btn-sm btn-warning text-white"
                       style={{ width: "100%", zIndex: 100 }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 ))}
@@ -705,7 +684,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " /> View
                 </Link>{" "}
               </li>
 
@@ -722,7 +701,7 @@ export default function MyTicketComponent() {
                     });
                   }}
                 >
-                  <i className="icofont-checked"></i> Pass
+                  <i className="icofont-checked" /> Pass
                 </button>
               </li>
               <li>
@@ -738,7 +717,7 @@ export default function MyTicketComponent() {
                     });
                   }}
                 >
-                  <i className="icofont-close-squared-alt"></i> Reject
+                  <i className="icofont-close-squared-alt" /> Reject
                 </button>
               </li>
             </Dropdown.Menu>
@@ -751,7 +730,7 @@ export default function MyTicketComponent() {
               to={`/${_base}/Ticket/View/` + data.id}
               className="btn btn-sm btn-info text-white"
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
             <button
               className="btn btn-success text-white btn-sm"
@@ -764,7 +743,7 @@ export default function MyTicketComponent() {
                 });
               }}
             >
-              <i className="icofont-checked"></i> Pass
+              <i className="icofont-checked" /> Pass
             </button>
             <button
               className="btn btn-danger btn-sm text-white"
@@ -777,7 +756,8 @@ export default function MyTicketComponent() {
                 });
               }}
             >
-              <i className="icofont-close-squared-alt"></i> Reject
+              <i className="icofont-close-squared-alt" />
+              Reject
             </button>
           </div>
         );
@@ -794,7 +774,7 @@ export default function MyTicketComponent() {
               id={`${"dropdown-basic_" + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               <li>
@@ -803,7 +783,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-warning text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               </li>
               <li>
@@ -812,7 +792,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
+                  <i className="icofont-external-link " /> View
                 </Link>{" "}
               </li>
               <li>
@@ -821,7 +801,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-primary text-white"
                   style={{ width: "100%", zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
             </Dropdown.Menu>
