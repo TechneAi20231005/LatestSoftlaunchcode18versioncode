@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import './custom-style.css';
 import SprintService from '../../../../../services/TicketService/SprintService';
-const WeekwiseCalendar = props => {
+const WeekwiseCalendar = (props) => {
   const { daysOfWeek, data, bgColor, firstDate, lastDate } = props;
   const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const getFormattedDate = dates => {
+  const getFormattedDate = (dates) => {
     const date = new Date(dates);
     return {
       day: date.toLocaleDateString('en-US', { weekday: 'long' }),
       month: date.toLocaleDateString('en-US', { month: 'long' }),
-      date: date.getDate(),
+      date: date.getDate()
     };
   };
 
   const handleMouseEnter = (event, data) => {
+    if (Object.keys(data).length === 0 && data.constructor === Object) {
+      return;
+    }
     const {
       task_name,
       task_scheduled_Hours,
@@ -24,11 +27,16 @@ const WeekwiseCalendar = props => {
       task_start_Date,
       task_end_date,
       task_actual_worked,
+      task_status,
       task_actual_status,
+      actual_task_scheduled_Hours,
+      taskOwners
     } = data;
-    const tooltipText = `Sprint Name: ${sprint_name}\nTask Name: ${task_name}\nBasket Name: ${basket_name}\nStart Date:${task_start_Date}\nEnd Date:${task_end_date}\nScheduled Hours: ${task_scheduled_Hours}\nActual Worked: ${
+    const users = taskOwners.join(',');
+    console.log('user', users);
+    const tooltipText = `Sprint Name: ${sprint_name}\nTask Name: ${task_name}\nBasket Name: ${basket_name}\nStart Date:${task_start_Date}\nEnd Date:${task_end_date}\nTotal Scheduled Hours:${actual_task_scheduled_Hours}\nScheduled Hours: ${task_scheduled_Hours}\nActual Worked: ${
       task_actual_worked ? task_actual_worked : '00:00:00'
-    }\nStatus:${task_actual_status}`;
+    }\nStatus:${task_status}\nActual Status:${task_actual_status}\nTask Owners:${users}`;
     setTooltipContent(tooltipText);
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
@@ -65,17 +73,18 @@ const WeekwiseCalendar = props => {
               {taskDataArray.map((task, idx) => {
                 let actualStatus = task?.task_status;
                 let filteredBgColor = bgColor?.filter(
-                  bgcolor => bgcolor?.statusName === actualStatus,
+                  (bgcolor) => bgcolor?.statusName === actualStatus
                 );
                 const colorChange = Object.keys(task).length > 0 ? filteredBgColor[0]?.color : '';
 
-                const truncateText = text => (text.length > 25 ? `${text.slice(0, 20)}...` : text);
+                const truncateText = (text) =>
+                  text.length > 25 ? `${text.slice(0, 20)}...` : text;
                 return (
                   <div
                     className="calendar-card  border ps-2   py-2"
                     style={{ backgroundColor: colorChange }}
                     key={idx}
-                    onMouseEnter={event => handleMouseEnter(event, task)}
+                    onMouseEnter={(event) => handleMouseEnter(event, task)}
                     onMouseLeave={handleMouseLeave}
                   >
                     {task?.basket_name && (
