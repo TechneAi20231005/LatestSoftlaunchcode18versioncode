@@ -1,41 +1,41 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Container, Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import CustomFilterModal from "../Modal/CustomFilterModal";
+import React, { useEffect, useState, useRef } from 'react';
+import { Container, Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import { Link } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import CustomFilterModal from '../Modal/CustomFilterModal';
 
 function ReviewedTestDraftDetails() {
   const data = [
     {
       id: 1,
-      name: "John Doe",
+      name: 'John Doe',
       age: 30,
-      email: "john@example.com",
-      result: "pass",
+      email: 'john@example.com',
+      result: 'pass'
     },
     {
       id: 2,
-      name: "Jane Smith",
+      name: 'Jane Smith',
       age: 25,
-      email: "jane@example.com",
-      result: "fail",
+      email: 'jane@example.com',
+      result: 'fail'
     },
     {
       id: 3,
-      name: "Jane desoza",
+      name: 'Jane desoza',
       age: 25,
-      email: "jane@example.com",
-      result: "pass",
+      email: 'jane@example.com',
+      result: 'pass'
     },
 
     {
       id: 4,
-      name: "Jane sing",
+      name: 'Jane sing',
       age: 25,
-      email: "jane@example.com",
-      result: "fail",
-    },
+      email: 'jane@example.com',
+      result: 'fail'
+    }
     // Add more objects as needed
   ];
 
@@ -44,8 +44,8 @@ function ReviewedTestDraftDetails() {
       name: <div className="d-flex">Sr. No.</div>,
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "80px",
-      cell: (row) => <div className="d-flex">{row.id}</div>,
+      width: '80px',
+      cell: (row) => <div className="d-flex">{row.id}</div>
     },
     {
       name: (
@@ -53,61 +53,52 @@ function ReviewedTestDraftDetails() {
           <input type="checkbox" />
         </div>
       ),
-      selector: "selectAll",
-      width: "5rem",
+      selector: 'selectAll',
+      width: '5rem',
       center: true,
       cell: (row) => (
         <div>
           <input type="checkbox" />
         </div>
-      ),
+      )
     },
     {
       name: (
         <div className="d-flex">
           Module
-          <i
-            className="icofont-filter mx-5"
-            onClick={(e) => handleFilterClick(e, "name")}
-          ></i>
+          <i className="icofont-filter mx-5" onClick={(e) => handleFilterClick(e, 'name')}></i>
         </div>
       ),
       selector: (row) => row.name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
       name: (
         <div className="d-flex ">
           Submodule
-          <i
-            class="icofont-filter"
-            onClick={(e) => handleFilterClick(e, "result")}
-          ></i>
+          <i class="icofont-filter pointer" onClick={(e) => handleFilterClick(e, 'result')}></i>
         </div>
       ),
       selector: (row) => row.result,
       sortable: false,
-      width: "150px",
+      width: '150px'
     },
 
     {
       name: <div className="d-flex">Test Plan Id</div>,
-      selector: "selectAll",
-      width: "10rem",
+      selector: 'selectAll',
+      width: '10rem',
       center: true,
       cell: (row) => (
         <div>
-          <Link
-            className="link_underline_primary"
-            to={`/${_base}/ReviewedTestDraftComponent`}
-          >
+          <Link className="link_underline_primary" to={`/${_base}/ReviewedTestDraftComponent`}>
             {row.name}
           </Link>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -115,7 +106,7 @@ function ReviewedTestDraftDetails() {
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [filteredData, setFilteredData] = useState(data);
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef();
   // // const iconRef = useRef(null);
 
@@ -134,9 +125,7 @@ function ReviewedTestDraftDetails() {
   const handleApplyFilter = () => {
     let newData = data;
     if (selectedFilters.length > 0 && filterColumn) {
-      newData = data.filter((row) =>
-        selectedFilters.includes(row[filterColumn])
-      );
+      newData = data.filter((row) => selectedFilters.includes(row[filterColumn]));
     }
     setFilteredData(newData);
     closeModal();
@@ -161,8 +150,8 @@ function ReviewedTestDraftDetails() {
   // // Function to filter rquestData based on search terms
 
   const filteredUniqueValues = filterColumn
-    ? Array.from(new Set(data.map((row) => row[filterColumn]))).filter(
-        (value) => value.toLowerCase().includes(searchTerm.toLowerCase())
+    ? Array.from(new Set(data.map((row) => row[filterColumn]))).filter((value) =>
+        value.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 

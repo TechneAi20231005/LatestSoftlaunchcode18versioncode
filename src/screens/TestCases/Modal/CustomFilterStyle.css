@@ -1,0 +1,86 @@
+.custom-container {
+  position: absolute;
+
+  z-index: 1050;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 14px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+}
+
+.underline-gray {
+  border-bottom: 2px solid #dad0d0;
+  display: inline-block;
+  width: 100%;
+  margin: 0px;
+}
+
+.text-custom {
+  color: #484c7f;
+}
+.Sort {
+  font-size: 15px;
+  color: gray;
+}
+.pointer {
+  cursor: pointer;
+}
+
+.filter-text {
+  font-size: 19px;
+  margin-left: 17px;
+  margin-bottom: 20px;
+}
+.bg-custom-color {
+  background-color: #484c7f;
+}
+.rounded-right-icon-left {
+  margin-left: 100px;
+}
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  margin-left: 230px;
+  bottom: 6px;
+}
+.check-box-size {
+  font-size: 25px;
+}
+
+.custom-toolkit {
+  position: absolute;
+  background-color: white;
+  padding: 2px 10px;
+  color: black;
+  margin-left: 10px;
+  border: 1px solid #ced4da;
+  width: 200px;
+  height: auto;
+  margin-top: 103px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+/* Custom class to override Bootstrap modal-footer */
+.modal-footer.custom-modal-footer {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-shrink: 0 !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding: 0.75rem !important;
+  border-top: none !important; /* Remove the border */
+  border-bottom-right-radius: 0 !important; /* Remove border-radius */
+  border-bottom-left-radius: 0 !important; /* Remove border-radius */
+}
+
+/* Override Bootstrap's styles using !important */
+.custom-modal .modal-content {
+  background-color: white !important; /* Or your custom background color */
+}
