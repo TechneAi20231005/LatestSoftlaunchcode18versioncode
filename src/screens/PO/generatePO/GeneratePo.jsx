@@ -5,7 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
-import { CustomInput, CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
+import {
+  CustomInput,
+  CustomReactSelect
+} from '../../../components/custom/inputs/CustomInputs';
 import { generatePoFilterValidation } from '../validation/generatePoFilter';
 import { getVenderListThunk } from '../../../redux/services/po/common';
 import { resetUserAddedOrderList } from '../../../redux/slices/po/generatePo';
@@ -22,38 +25,38 @@ function GeneratePo() {
   // // redux state
   const {
     venderList,
-    isLoading: { getVenderList },
-  } = useSelector(state => state?.poCommon);
+    isLoading: { getVenderList }
+  } = useSelector((state) => state?.poCommon);
   const {
     requisitionHistoryList,
-    isLoading: { getRequisitionHistoryList },
-  } = useSelector(state => state?.requisitionHistory);
+    isLoading: { getRequisitionHistoryList }
+  } = useSelector((state) => state?.requisitionHistory);
 
   // // dropdown data
   const venderData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...venderList?.map(item => ({
+    ...venderList?.map((item) => ({
       label: item?.vendor,
-      value: item?.vendor,
-    })),
+      value: item?.vendor
+    }))
   ];
 
   // // function
-  const transformDataForExport = data => {
+  const transformDataForExport = (data) => {
     return data?.map((row, index) => ({
       'Delivery Date': row?.delivery_date ?? '--',
       'Order Date': row?.order_date ?? '--',
-      Karagir: row?.karagir ?? '--',
+      'Karagir 1': row?.karagir ?? '--',
       Item: row?.item ?? '--',
       Category: row?.category ?? '--',
-      'Size Range': row?.size_range ?? '--',
+      'Exact Wt': row?.exact_wt ?? '--',
       'Weight Range': row?.weight_range ?? '--',
-      'Exact Weight': row?.exact_wt ?? '--',
+      'Size Range': row?.size_range ?? '--',
       'Purity Range': row?.purity_range ?? '--',
       'New Order': row?.new_qty ?? '--',
       'Karagir Wt Range': row?.karagir_wt_range ?? '--',
-      'Knock Off Wt Range': row?.knockoff_wt_range ?? '--',
-      'Karagir Size Range': row?.karagir_size_range ?? '--',
+      'Knockoff Wt Range': row?.knockoff_wt_range ?? '--',
+      'Karagir Size Range': row?.karagir_size_range ?? '--'
     }));
   };
 
@@ -61,9 +64,11 @@ function GeneratePo() {
     dispatch(
       poBulkUploadFileExportBeCheckThunk({
         onSuccessHandler: () => {
-          dispatch(getRequisitionHistoryThunk({ filterData: { type: 'export' } }));
-        },
-      }),
+          dispatch(
+            getRequisitionHistoryThunk({ filterData: { type: 'export' } })
+          );
+        }
+      })
     );
   };
 
@@ -82,14 +87,16 @@ function GeneratePo() {
           buttonTitle="PO Bulk Upload File"
           apiData={transformDataForExport(requisitionHistoryList?.data)}
           fileName="PO Bulk Upload File Records"
-          disabled={!requisitionHistoryList?.data?.length || getRequisitionHistoryList}
+          disabled={
+            !requisitionHistoryList?.data?.length || getRequisitionHistoryList
+          }
           onClickHandler={handelBeExportCheck}
         />
         <Formik
           initialValues={{ vender_name: '', delivery_date: '' }}
           enableReinitialize
           validationSchema={generatePoFilterValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             navigate(`po`, { state: { generatePoFilter: values } });
             dispatch(resetUserAddedOrderList());
           }}
