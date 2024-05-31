@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../utils/regexPool';
 
 const addEditInterviewMaster = Yup.object().shape({
   department_id: Yup.string().required('Department is required'),

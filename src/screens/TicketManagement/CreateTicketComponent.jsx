@@ -323,6 +323,7 @@ export default function CreateTicketComponent() {
     setIsSubmitted(true);
 
     const formData = new FormData(e.target);
+
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
         formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
@@ -809,13 +810,13 @@ export default function CreateTicketComponent() {
           const mappingId = x
             .filter((item) =>
               accountFor === "SELF"
-                ? !item.customer_type_id
+                ? !item.customer_type_id || item.customer_type_id === "0"
                 : item.customer_type_id
             )
             .map((item) => item.id);
           setData((prev) => {
             const newPrev = { ...prev };
-            newPrev["customer_mapping_id"] = mappingId;
+            newPrev["customer_mapping_id"] = mappingId[0];
             newPrev["confirmation_required"] = x[0].confirmation_required;
             newPrev["priority"] = x[0].priority;
             return newPrev;
