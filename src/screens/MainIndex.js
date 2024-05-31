@@ -1,191 +1,191 @@
-import React from "react";
+import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
-  Routes,
-} from "react-router-dom";
-import { _apiUrl, _base } from "../settings/constants";
-import Header from "../components/Common/Header";
-import Dashboard from "./Dashboard/Dashboard";
-import Profile from "./Dashboard/Profile";
+  Routes
+} from 'react-router-dom';
+import { _apiUrl, _base } from '../settings/constants';
+import Header from '../components/Common/Header';
+import Dashboard from './Dashboard/Dashboard';
+import Profile from './Dashboard/Profile';
 
-import NotificationComponent from "./Notification/NotificationComponent";
-import ApprovedNotificationComponent from "./Notification/ApprovedNotificationComponent";
+import NotificationComponent from './Notification/NotificationComponent';
+import ApprovedNotificationComponent from './Notification/ApprovedNotificationComponent';
 
-import TenantForm from "./Masters/TenantMaster/EditForm";
+import TenantForm from './Masters/TenantMaster/EditForm';
 
-import { CustomerComponent } from "./Masters/CustomerMaster/CustomerComponent";
-import EditCustomer from "./Masters/CustomerMaster/EditCustomer";
-import CreateCustomer from "./Masters/CustomerMaster/CreateCustomer";
-import ForgetPassword from "../components/Auth/ForgetPassword";
+import { CustomerComponent } from './Masters/CustomerMaster/CustomerComponent';
+import EditCustomer from './Masters/CustomerMaster/EditCustomer';
+import CreateCustomer from './Masters/CustomerMaster/CreateCustomer';
+import ForgetPassword from '../components/Auth/ForgetPassword';
 
-import { UserComponent } from "./Masters/UserMaster/UserComponent";
-import CreateUserComponent from "./Masters/UserMaster/CreateUserComponent";
-import EditUserComponent from "./Masters/UserMaster/EditUserComponent";
+import { UserComponent } from './Masters/UserMaster/UserComponent';
+import CreateUserComponent from './Masters/UserMaster/CreateUserComponent';
+import EditUserComponent from './Masters/UserMaster/EditUserComponent';
 
-import { CountryComponent } from "./Masters/CountryMaster/CountryComponent";
-import { StateComponent } from "./Masters/StateMaster/StateComponent";
-import { CityComponent } from "./Masters/CityMaster/CityComponent";
-import { DesignationComponent } from "./Masters/DesignationMaster/DesignationComponent";
-import { DepartmentComponent } from "./Masters/DepartmentMaster/DepartmentComponent";
-import { RoleComponent } from "./Masters/RoleMaster/RoleComponent";
-import { StatusComponent } from "./Masters/StatusMaster/StatusComponent";
+import { CountryComponent } from './Masters/CountryMaster/CountryComponent';
+import { StateComponent } from './Masters/StateMaster/StateComponent';
+import { CityComponent } from './Masters/CityMaster/CityComponent';
+import { DesignationComponent } from './Masters/DesignationMaster/DesignationComponent';
+import { DepartmentComponent } from './Masters/DepartmentMaster/DepartmentComponent';
+import { RoleComponent } from './Masters/RoleMaster/RoleComponent';
+import { StatusComponent } from './Masters/StatusMaster/StatusComponent';
 
-import DepartmentMappingComponent from "./Masters/DepartmentMapping/DepartmentMappingComponent";
-import CreateDepartmentMappingComponent from "./Masters/DepartmentMapping/CreateDepartmentMappingComponent";
-import EditDepartmentMappingComponent from "./Masters/DepartmentMapping/EditDepartmentMappingComponent";
+import DepartmentMappingComponent from './Masters/DepartmentMapping/DepartmentMappingComponent';
+import CreateDepartmentMappingComponent from './Masters/DepartmentMapping/CreateDepartmentMappingComponent';
+import EditDepartmentMappingComponent from './Masters/DepartmentMapping/EditDepartmentMappingComponent';
 
-import { CustomerTypeComponent } from "./Masters/CustomerTypeMaster/CustomerTypeComponent";
-import { DynamicFormComponent } from "./Masters/DynamicFormMaster/DynamicFormComponent";
-import CreateDynamicForm from "./Masters/DynamicFormMaster/CreateDynamicForm";
-import EditDynamicForm from "./Masters/DynamicFormMaster/EditDynamicForm";
+import { CustomerTypeComponent } from './Masters/CustomerTypeMaster/CustomerTypeComponent';
+import { DynamicFormComponent } from './Masters/DynamicFormMaster/DynamicFormComponent';
+import CreateDynamicForm from './Masters/DynamicFormMaster/CreateDynamicForm';
+import EditDynamicForm from './Masters/DynamicFormMaster/EditDynamicForm';
 
-import DynamicFormDropdownComponent from "./Masters/DynamicFormDropdown/DynamicFormDropdownComponent";
-import CreateDropdownComponent from "./Masters/DynamicFormDropdown/CreateDropdownComponent";
-import EditDropdownComponent from "./Masters/DynamicFormDropdown/EditDropdownComponent";
+import DynamicFormDropdownComponent from './Masters/DynamicFormDropdown/DynamicFormDropdownComponent';
+import CreateDropdownComponent from './Masters/DynamicFormDropdown/CreateDropdownComponent';
+import EditDropdownComponent from './Masters/DynamicFormDropdown/EditDropdownComponent';
 
-import QueryBuilder from "./Masters/QueryBuilder/QueryBuilder"; //Suyash 8-6-22
+import QueryBuilder from './Masters/QueryBuilder/QueryBuilder'; //Suyash 8-6-22
 
-import { QueryTypeComponent } from "./Masters/QueryTypeMaster/QueryTypeComponent";
-import QueryGroupMasterComponent from "./Masters/MainQueryMaster/QueryGroupMasterComponent";
+import { QueryTypeComponent } from './Masters/QueryTypeMaster/QueryTypeComponent';
+import QueryGroupMasterComponent from './Masters/MainQueryMaster/QueryGroupMasterComponent';
 
-import { TemplateComponent } from "./Masters/TemplateMaster/TemplateComponent";
-import CreateTemplateComponent from "./Masters/TemplateMaster/CreateTemplateComponent";
-import EditTemplateComponent from "./Masters/TemplateMaster/EditTemplateComponent";
+import { TemplateComponent } from './Masters/TemplateMaster/TemplateComponent';
+import CreateTemplateComponent from './Masters/TemplateMaster/CreateTemplateComponent';
+import EditTemplateComponent from './Masters/TemplateMaster/EditTemplateComponent';
 
-import { ProjectComponent } from "./ProjectManagement/ProjectMaster/ProjectComponent";
-import CreateProjectComponent from "./ProjectManagement/ProjectMaster/CreateProjectComponent";
-import EditProjectComponent from "./ProjectManagement/ProjectMaster/EditProjectComponent";
+import { ProjectComponent } from './ProjectManagement/ProjectMaster/ProjectComponent';
+import CreateProjectComponent from './ProjectManagement/ProjectMaster/CreateProjectComponent';
+import EditProjectComponent from './ProjectManagement/ProjectMaster/EditProjectComponent';
 
-import { ModuleComponent } from "./ProjectManagement/ModuleMaster/ModuleComponent";
-import CreateModuleComponent from "./ProjectManagement/ModuleMaster/CreateModuleComponent";
-import EditModuleComponent from "./ProjectManagement/ModuleMaster/EditModuleComponent";
+import { ModuleComponent } from './ProjectManagement/ModuleMaster/ModuleComponent';
+import CreateModuleComponent from './ProjectManagement/ModuleMaster/CreateModuleComponent';
+import EditModuleComponent from './ProjectManagement/ModuleMaster/EditModuleComponent';
 
-import { SubModuleComponent } from "./ProjectManagement/SubModuleMaster/SubModuleComponent";
-import CreateSubModuleComponent from "./ProjectManagement/SubModuleMaster/CreateSubModuleComponent";
-import EditSubModuleComponent from "./ProjectManagement/SubModuleMaster/EditSubModuleComponent";
+import { SubModuleComponent } from './ProjectManagement/SubModuleMaster/SubModuleComponent';
+import CreateSubModuleComponent from './ProjectManagement/SubModuleMaster/CreateSubModuleComponent';
+import EditSubModuleComponent from './ProjectManagement/SubModuleMaster/EditSubModuleComponent';
 
-import UserTaskReportComponent from "./Reports/UserTaskReportComponent";
-import TimelineReportComponent from "./Reports/TimelineReportComponent";
-import ResourcePlanningReportComponent from "./Reports/ResourcePlanningReportComponent";
-import VariantsReport from "./Reports/VariantsReport";
+import UserTaskReportComponent from './Reports/UserTaskReportComponent';
+import TimelineReportComponent from './Reports/TimelineReportComponent';
+import ResourcePlanningReportComponent from './Reports/ResourcePlanningReportComponent';
+import VariantsReport from './Reports/VariantsReport';
 
-import MyTicketComponent from "./TicketManagement/MyTicketComponent";
-import CreateTicketComponent from "./TicketManagement/CreateTicketComponent";
-import EditTicketComponent from "./TicketManagement/EditTicketComponent";
+import MyTicketComponent from './TicketManagement/MyTicketComponent';
+import CreateTicketComponent from './TicketManagement/CreateTicketComponent';
+import EditTicketComponent from './TicketManagement/EditTicketComponent';
 
-import BasketComponent from "./TicketManagement/BasketManagement/BasketComponent";
-import TaskComponent from "./TicketManagement/TaskManagement/TaskComponent";
-import TestCases from "./TicketManagement/TaskManagement/components/TestCases";
-import GetAllTestCases from "./TicketManagement/TaskManagement/components/GetAllTestCases";
-import TestCaseHistory from "./TicketManagement/TaskManagement/components/TestCaseHistory";
-import TicketHistory from "./TicketManagement/TicketHistory/TicketHistory";
-import TestSuiteComponent from "./TicketManagement/TaskManagement/components/TestSuiteComponent";
+import BasketComponent from './TicketManagement/BasketManagement/BasketComponent';
+import TaskComponent from './TicketManagement/TaskManagement/TaskComponent';
+import TestCases from './TicketManagement/TaskManagement/components/TestCases';
+import GetAllTestCases from './TicketManagement/TaskManagement/components/GetAllTestCases';
+import TestCaseHistory from './TicketManagement/TaskManagement/components/TestCaseHistory';
+import TicketHistory from './TicketManagement/TicketHistory/TicketHistory';
+import TestSuiteComponent from './TicketManagement/TaskManagement/components/TestSuiteComponent';
 // import TestingTypeComponent from "./Masters/TestingTypeMaster/TestingTypeComponent";
 
-import CustomerMappingComponent from "./Settings/CustomerMapping/CustomerMappingComponent";
-import CreateCustomerMappingComponent from "./Settings/CustomerMapping/CreateCustomerMappingComponent";
-import EditCustomerMappingComponent from "./Settings/CustomerMapping/EditCustomerMappingComponent";
+import CustomerMappingComponent from './Settings/CustomerMapping/CustomerMappingComponent';
+import CreateCustomerMappingComponent from './Settings/CustomerMapping/CreateCustomerMappingComponent';
+import EditCustomerMappingComponent from './Settings/CustomerMapping/EditCustomerMappingComponent';
 
-import CreateMenu from "./Settings/MenuManagement/CreateMenu";
-import ModuleSettings from "./Settings/ModuleSettings/ModuleSettings";
-import GeneralSettings from "./Settings/GeneralSettings/GeneralSettingsComponent";
-import TenantComponent from "./TenantManagement/TenantComponent";
-import EditTenant from "./TenantManagement/EditTenant";
-import CreateTenant from "./TenantManagement/CreateTenant";
+import CreateMenu from './Settings/MenuManagement/CreateMenu';
+import ModuleSettings from './Settings/ModuleSettings/ModuleSettings';
+import GeneralSettings from './Settings/GeneralSettings/GeneralSettingsComponent';
+import TenantComponent from './TenantManagement/TenantComponent';
+import EditTenant from './TenantManagement/EditTenant';
+import CreateTenant from './TenantManagement/CreateTenant';
 
-import SmsComponent from "./Connector/SmsComponent/SmsComponent";
-import EmailComponent from "./Connector/EmailComponent/EmailComponent";
-import WhatsappComponent from "./Connector/WhatsappComponent/WhatsappComponent";
-import ConsolidatedView from "./ConsolidatedView/ConsolidatedView";
-import ProjectwiseModule from "./ConsolidatedView/ProjectwiseModule";
-import PendingTickets from "./ConsolidatedView/ProjectwiseModules/PendingTickets";
-import CompletedTickets from "./ConsolidatedView/ProjectwiseModules/CompletedTickets";
-import DelayedTasks from "./ConsolidatedView/ProjectwiseModules/DelayedTasks";
-import PendingTasks from "./ConsolidatedView/ProjectwiseModules/PendingTasks";
-import DelayedTask from "./ConsolidatedView/ModulewiseModule/DelayedTask";
-import PendingTicket from "./ConsolidatedView/ModulewiseModule/PendingTicket";
-import CompletedTicket from "./ConsolidatedView/ModulewiseModule/CompletedTicket";
-import PendingTask from "./ConsolidatedView/ModulewiseModule/PendingTask";
-import MenuManagement from "./MenuManagement/ManageMenu";
-import TestBankComponent from "./TicketManagement/TaskManagement/components/TestBankComponent";
+import SmsComponent from './Connector/SmsComponent/SmsComponent';
+import EmailComponent from './Connector/EmailComponent/EmailComponent';
+import WhatsappComponent from './Connector/WhatsappComponent/WhatsappComponent';
+import ConsolidatedView from './ConsolidatedView/ConsolidatedView';
+import ProjectwiseModule from './ConsolidatedView/ProjectwiseModule';
+import PendingTickets from './ConsolidatedView/ProjectwiseModules/PendingTickets';
+import CompletedTickets from './ConsolidatedView/ProjectwiseModules/CompletedTickets';
+import DelayedTasks from './ConsolidatedView/ProjectwiseModules/DelayedTasks';
+import PendingTasks from './ConsolidatedView/ProjectwiseModules/PendingTasks';
+import DelayedTask from './ConsolidatedView/ModulewiseModule/DelayedTask';
+import PendingTicket from './ConsolidatedView/ModulewiseModule/PendingTicket';
+import CompletedTicket from './ConsolidatedView/ModulewiseModule/CompletedTicket';
+import PendingTask from './ConsolidatedView/ModulewiseModule/PendingTask';
+import MenuManagement from './MenuManagement/ManageMenu';
+import TestBankComponent from './TicketManagement/TaskManagement/components/TestBankComponent';
 
-import { VendorMaster } from "./BillChecking/Masters/VendorMaster";
-import PaymentTemplateMaster from "./BillChecking/Masters/PaymentTemplateMaster";
-import BillTypeMaster from "./BillChecking/Masters/BillTypeMaster";
-import BillCheckingTransaction from "./BillChecking/BillCheckingTransactions/BillCheckingTransaction";
-import CreateBillCheckingTransaction from "./BillChecking/BillCheckingTransactions/CreateBillCheckingTransaction";
-import EditBillCheckingTransaction from "./BillChecking/BillCheckingTransactions/EditBillCheckingTransaction";
-import ViewBillTransaction from "./BillChecking/BillCheckingTransactions/ViewBillTransaction";
-import PaymentDetails from "./BillChecking/PaymentDetails/PaymentDetails";
-import BillCheckingHistory from "./BillChecking/BillCheckingTransactions/BillCheckingHistory";
-import PaymentHistory from "./BillChecking/PaymentDetails/PaymentHistory";
-import AssignedPerson from "./BillChecking/BillCheckingTransactions/AssignedPerson";
-import AuthorityMapping from "./BillChecking/AuthorityMapping/AuthorityMapping";
-import BillPayments from "./BillChecking/BillPayments/BillPayments";
-import ViewVendorDetails from "./BillChecking/Masters/ViewVendorDetails";
-import ViewPaymentTemplateDetails from "./BillChecking/Masters/ViewPaymentTemplateDetails";
-import SourceComponent from "./HRMS/SourceMaster/SourceComponent";
-import TestCasesReviewerViewComponent from "./TicketManagement/TaskManagement/components/TestCasesReviewerViewComponent";
-import { TestingTypeComponent } from "./Masters/TestingTypeMaster/TestingTypeComponent";
-import CreateSourceMaster from "./HRMS/SourceMaster/CreateSourceMaster";
-import CreateBillTypeComponent from "./BillChecking/Masters/BillTypeMaster/CreateBillTypeComponent";
-import ShiftComponent from "./HRMS/ShiftMaster/ShiftComponent";
-import CreateShiftMaster from "./HRMS/ShiftMaster/CreateShiftMaster";
-import CreateRoastedShiftMaster from "./HRMS/RoastedMaster/CreateRoastedShiftMaster";
+import { VendorMaster } from './BillChecking/Masters/VendorMaster';
+import PaymentTemplateMaster from './BillChecking/Masters/PaymentTemplateMaster';
+import BillTypeMaster from './BillChecking/Masters/BillTypeMaster';
+import BillCheckingTransaction from './BillChecking/BillCheckingTransactions/BillCheckingTransaction';
+import CreateBillCheckingTransaction from './BillChecking/BillCheckingTransactions/CreateBillCheckingTransaction';
+import EditBillCheckingTransaction from './BillChecking/BillCheckingTransactions/EditBillCheckingTransaction';
+import ViewBillTransaction from './BillChecking/BillCheckingTransactions/ViewBillTransaction';
+import PaymentDetails from './BillChecking/PaymentDetails/PaymentDetails';
+import BillCheckingHistory from './BillChecking/BillCheckingTransactions/BillCheckingHistory';
+import PaymentHistory from './BillChecking/PaymentDetails/PaymentHistory';
+import AssignedPerson from './BillChecking/BillCheckingTransactions/AssignedPerson';
+import AuthorityMapping from './BillChecking/AuthorityMapping/AuthorityMapping';
+import BillPayments from './BillChecking/BillPayments/BillPayments';
+import ViewVendorDetails from './BillChecking/Masters/ViewVendorDetails';
+import ViewPaymentTemplateDetails from './BillChecking/Masters/ViewPaymentTemplateDetails';
+import SourceComponent from './HRMS/SourceMaster/SourceComponent';
+import TestCasesReviewerViewComponent from './TicketManagement/TaskManagement/components/TestCasesReviewerViewComponent';
+import { TestingTypeComponent } from './Masters/TestingTypeMaster/TestingTypeComponent';
+import CreateSourceMaster from './HRMS/SourceMaster/CreateSourceMaster';
+import CreateBillTypeComponent from './BillChecking/Masters/BillTypeMaster/CreateBillTypeComponent';
+import ShiftComponent from './HRMS/ShiftMaster/ShiftComponent';
+import CreateShiftMaster from './HRMS/ShiftMaster/CreateShiftMaster';
+import CreateRoastedShiftMaster from './HRMS/RoastedMaster/CreateRoastedShiftMaster';
 
-import InsightsTasks from "./Dashboard/InsightsTasks";
-import AuthorityMappingViewDetails from "./BillChecking/AuthorityMapping/AuthorityMappingViewDetails";
-import SalarySlipComponent from "./HRMS/SalarySlipMaster/SalarySlipComponent";
-import InsightsCompletedTask from "./Dashboard/InsightsCompletedTask";
-import RoastedComponent from "./HRMS/RoastedMaster/RoastedComponent";
-import CreateSpecailDayMaster from "./HRMS/CreateSpecailDayMaster";
-import EmployeeMasterComponent from "./HRMS/EmployeeMaster/EmployeeMasterComponent";
+import InsightsTasks from './Dashboard/InsightsTasks';
+import AuthorityMappingViewDetails from './BillChecking/AuthorityMapping/AuthorityMappingViewDetails';
+import SalarySlipComponent from './HRMS/SalarySlipMaster/SalarySlipComponent';
+import InsightsCompletedTask from './Dashboard/InsightsCompletedTask';
+import RoastedComponent from './HRMS/RoastedMaster/RoastedComponent';
+import CreateSpecailDayMaster from './HRMS/CreateSpecailDayMaster';
+import EmployeeMasterComponent from './HRMS/EmployeeMaster/EmployeeMasterComponent';
 
-import CreateEmployeeComponent from "./HRMS/EmployeeMaster/CreateEmployeeComponent";
+import CreateEmployeeComponent from './HRMS/EmployeeMaster/CreateEmployeeComponent';
 
-import SpecialDayMasterComponent from "./HRMS/SpecailDayMaster/SpecialDayMasterComponent";
-import CalenderMaster from "./HRMS/CalenderMaster";
-import EditBillTypeComponent from "./BillChecking/Masters/BillTypeMaster/EditBillTypeComponent";
-import ViewBillTypeComponent from "./BillChecking/Masters/BillTypeMaster/ViewBillTypeComponent";
-import TaskAndTicketTypeMaster from "./Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster";
-import ViewTicketComponent from "./TicketManagement/ViewTicketComponent";
-import ResetPassword from "../components/Auth/ResetPassword";
-import StepAuthentication from "../components/Auth/StepAuthentication";
+import SpecialDayMasterComponent from './HRMS/SpecailDayMaster/SpecialDayMasterComponent';
+import CalenderMaster from './HRMS/CalenderMaster';
+import EditBillTypeComponent from './BillChecking/Masters/BillTypeMaster/EditBillTypeComponent';
+import ViewBillTypeComponent from './BillChecking/Masters/BillTypeMaster/ViewBillTypeComponent';
+import TaskAndTicketTypeMaster from './Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster';
+import ViewTicketComponent from './TicketManagement/ViewTicketComponent';
+import ResetPassword from '../components/Auth/ResetPassword';
+import StepAuthentication from '../components/Auth/StepAuthentication';
 
 // Sprint Planning
-import SprintCalendar from "./TicketManagement/TaskManagement/Calendar-Graph/SprintCalendar";
-import GraphWeekWise from "./TicketManagement/TaskManagement/Calendar-Graph/Custom-Day-Month-Year/GraphWeekWise";
+import SprintCalendar from './TicketManagement/TaskManagement/Calendar-Graph/SprintCalendar';
+import GraphWeekWise from './TicketManagement/TaskManagement/Calendar-Graph/Custom-Day-Month-Year/GraphWeekWise';
 
 // // // employeeJoining
-import InterviewMaster from "./HRMS/employeeJoining/interviewMaster/InterviewMaster";
-import CandidateList from "./HRMS/employeeJoining/candidateList/CandidateList";
-import BranchMaster from "./HRMS/employeeJoining/branchMaster/BranchMaster";
-import SourceMaster from "./HRMS/employeeJoining/sourceMaster/SourceMaster";
-import RemarkMaster from "./HRMS/employeeJoining/remarkMaster/RemarkMaster";
-import SalaryMaster from "./HRMS/employeeJoining/salaryMaster/SalaryMaster";
-import EmployeeJoining from "./HRMS/employeeJoining/candidateList/details/EmployeeJoining";
+import InterviewMaster from './HRMS/employeeJoining/interviewMaster/InterviewMaster';
+import CandidateList from './HRMS/employeeJoining/candidateList/CandidateList';
+import BranchMaster from './HRMS/employeeJoining/branchMaster/BranchMaster';
+import SourceMaster from './HRMS/employeeJoining/sourceMaster/SourceMaster';
+import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
+import SalaryMaster from './HRMS/employeeJoining/salaryMaster/SalaryMaster';
+import EmployeeJoining from './HRMS/employeeJoining/candidateList/details/EmployeeJoining';
 
 // // // PO
-import GenerateRequisition from "./PO/generateRequisition/GenerateRequisition";
-import GeneratePo from "./PO/generatePO/GeneratePo";
-import PendingOrder from "./PO/generatePO/details/PendingOrder";
-import PoPreview from "./PO/generatePO/details/preview/PoPreview";
-import PoHistory from "./PO/history/PoHistory";
-import VendorExportReport from "./PO/vendorExportReport/VendorExportReport";
-import OrderQuantityReport from "./PO/orderQuantityReport/OrderQuantityReport";
-import ReviewedTestDraftComponent from "./TestCases/TestDraft/ReviewedTestDraftComponent";
-import ReviewedTestDraftDetails from "./TestCases/TestDraft/ReviewedTestDraftDetails";
-import TestCaseReviewComponent from "./TestCases/TestCaseReview/TestCaseReviewComponent";
-import TestCaseReviewDetails from "./TestCases/TestCaseReview/TestCaseReviewDetails";
-import ReviewCommentMasterComponent from "./TestCases/ReviewCommentMaster/ReviewCommentMasterComponent";
-import TestingTypeMasterComponent from "./TestCases/TestingTypeMaster/TestingTypeMasterComponent";
-import TestingGroupMasterComponent from "./TestCases/TestingGroupMaster/TestingGroupMasterComponent";
-import FunctionMasterComponent from "./TestCases/FunctionMaster/FunctionMasterComponent";
-import TestCaseHistoryComponent from "./TestCases/TestDraft/TestCaseHistoryComponent";
-import TestDraftComponent from "./TestCases/TestDraft/TestDraftComponent";
+import GenerateRequisition from './PO/generateRequisition/GenerateRequisition';
+import GeneratePo from './PO/generatePO/GeneratePo';
+import PendingOrder from './PO/generatePO/details/PendingOrder';
+import PoPreview from './PO/generatePO/details/preview/PoPreview';
+import PoHistory from './PO/history/PoHistory';
+import VendorExportReport from './PO/vendorExportReport/VendorExportReport';
+import OrderQuantityReport from './PO/orderQuantityReport/OrderQuantityReport';
+import ReviewedTestDraftComponent from './TestCases/TestDraft/ReviewedTestDraftComponent';
+import ReviewedTestDraftDetails from './TestCases/TestDraft/ReviewedTestDraftDetails';
+import TestCaseReviewComponent from './TestCases/TestCaseReview/TestCaseReviewComponent';
+import TestCaseReviewDetails from './TestCases/TestCaseReview/TestCaseReviewDetails';
+import ReviewCommentMasterComponent from './TestCases/ReviewCommentMaster/ReviewCommentMasterComponent';
+import TestingTypeMasterComponent from './TestCases/TestingTypeMaster/TestingTypeMasterComponent';
+import TestingGroupMasterComponent from './TestCases/TestingGroupMaster/TestingGroupMasterComponent';
+import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterComponent';
+import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
+import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 
 class MainIndex extends React.Component {
   constructor(props) {
@@ -237,11 +237,12 @@ class MainIndex extends React.Component {
               element={<ApprovedNotificationComponent />}
             />
             <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
+            {/*removed in lazy loading} */}
             <Route
               exact
               path={`/${_base}/Tenant/Edit/:id`}
               element={<TenantForm />}
-            />
+            />{' '}
             <Route
               exact
               path={`/${_base}/Customer`}
@@ -515,6 +516,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CustomerMapping/Edit/:id`}
               element={<EditCustomerMappingComponent />}
             />
+            {/* remove in lazy loading */}
             <Route path={`/${_base}/Menu/Create`} element={<CreateMenu />} />
             <Route
               exact
@@ -564,6 +566,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/TenantMaster/Edit/:id`}
               element={<EditTenant />}
             />
+            {/* remove in lazy loading */}
             <Route
               exact
               path={`/${_base}/QueryBuilder`}
