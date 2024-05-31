@@ -211,9 +211,7 @@ function UserTaskReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label>
-                  <b>
-                    Select User :<Astrick color="red" size="13px" />
-                  </b>
+                  <b>Select User :</b>
                 </label>
                 <Select
                   isMulti
@@ -222,7 +220,10 @@ function UserTaskReportComponent() {
                   className="basic-multi-select"
                   classNamePrefix="select"
                   options={userData}
+<<<<<<< HEAD
                   required
+=======
+>>>>>>> 11ca5624840b5f0f7616754d12291789215feac2
                 />
               </div>
               <div className="col-md-3">

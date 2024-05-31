@@ -245,9 +245,7 @@ export default function ResourcePlanningReportComponent() {
             <div className="row">
               <div className="col-md-3">
                 <label htmlFor="" className="">
-                  <b>
-                    Select User :<Astrick color="red" size="13px" />
-                  </b>
+                  <b>Select User :</b>
                 </label>
                 {userData && (
                   <Select
@@ -257,7 +255,10 @@ export default function ResourcePlanningReportComponent() {
                     className="basic-multi-select"
                     classNamePrefix="select"
                     options={userData && userData}
+<<<<<<< HEAD
                     required
+=======
+>>>>>>> 11ca5624840b5f0f7616754d12291789215feac2
                   />
                 )}
               </div>

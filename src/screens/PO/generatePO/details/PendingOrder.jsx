@@ -350,9 +350,22 @@ function PendingOrder() {
                       type="button"
                       onClick={() => navigate('preview')}
                     >
-                      Preview
+                      Order Summary
                     </button>
                   </RenderIf>
+                </div>
+              </RenderIf>
+              <RenderIf
+                render={!filterFormValue?.selectedItemsCategory && userAddedPoDataList?.length}
+              >
+                <div className="text-end">
+                  <button
+                    className="btn btn-info text-white ms-0 col-12 col-md-2"
+                    type="button"
+                    onClick={() => navigate('preview')}
+                  >
+                    Order Summary
+                  </button>
                 </div>
               </RenderIf>
             </Stack>

@@ -5,33 +5,32 @@ import SprintService from '../../../../../services/TicketService/SprintService';
 import './custom-style.css';
 import Select from 'react-select';
 import PageHeader from '../../../../../components/Common/PageHeader';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Alert from '../../../../../components/Common/Alert';
 const GraphWeekWise = () => {
   const params = useParams();
-  const location = useLocation();
 
   const { id: ticketId, date: sprintRange } = params;
   const [notify, setNotify] = useState({});
   const [selectedOption, setSelectedOption] = useState('week');
-  const [sprintFirstDate, setSprintFirstDate] = useState('');
-  const [sprintLastDate, setSprintLastDate] = useState('');
+  // const [sprintFirstDate, setSprintFirstDate] = useState('');
+  // const [sprintLastDate, setSprintLastDate] = useState('');
   const [dropDownData, setDropDownData] = useState([]);
-  const [weekRange, setWeekRange] = useState([]);
+  // const [weekRange, setWeekRange] = useState([]);
   // const [selectedDropDown, setSelectedDropdown] = useEffect("");
 
   const [chartData, setChartData] = useState({
     series: [
       {
         name: '',
-        data: [],
-      },
+        data: []
+      }
     ],
     options: {
       chart: {
         height: 450,
         type: 'rangeBar',
-        group: 'timestamp',
+        group: 'timestamp'
       },
       plotOptions: {
         bar: {
@@ -40,24 +39,24 @@ const GraphWeekWise = () => {
           barHeight: '100%',
           distributed: false,
           barWidth: '50%',
-          rangeBarOverlap: false,
+          rangeBarOverlap: false
           // rangeBarGroupRows: true,
-        },
+        }
       },
       stroke: {
         show: true,
         width: 6,
-        colors: ['transparent'],
+        colors: ['transparent']
       },
       xaxis: {
         type: 'datetime',
         min: new Date('2024-04-11').getTime(),
-        max: new Date('2024-04-29').getTime(),
+        max: new Date('2024-04-29').getTime()
       },
       legend: {
         show: true,
         position: 'top',
-        horizontalAlign: 'left',
+        horizontalAlign: 'left'
       },
       // grid: {
       //   show: true,
@@ -66,7 +65,7 @@ const GraphWeekWise = () => {
       // },
       fill: {
         type: 'solid',
-        opacity: 0.8,
+        opacity: 0.8
       },
       colors: ['#C3F5FF', '#FF8888', '#FFC075', '#DB0101', '#9EFFB9'],
       annotations: {
@@ -86,17 +85,17 @@ const GraphWeekWise = () => {
                 background: '#484C7F',
                 fontSize: '12px',
                 fontWeight: 400,
-                opacity: 0.6,
+                opacity: 0.6
               },
               cssClass: 'apexcharts-point-annotation-label',
               padding: {
                 left: 5,
                 right: 5,
                 top: 0,
-                bottom: 2,
+                bottom: 2
               },
-              text: 'Sprint Start Date',
-            },
+              text: 'Sprint Start Date'
+            }
           },
           {
             x: new Date('').getTime(),
@@ -111,50 +110,41 @@ const GraphWeekWise = () => {
                 background: '#484C7F',
                 fontSize: '12px',
                 fontWeight: 400,
-                opacity: 0.6,
+                opacity: 0.6
               },
               cssClass: 'apexcharts-point-annotation-label',
               padding: {
                 left: 5,
                 right: 5,
                 top: 0,
-                bottom: 0,
+                bottom: 0
               },
               margin: {
                 top: 0,
-                bottom: 0,
+                bottom: 0
               },
-              text: 'Sprint End Date',
-            },
-          },
-        ],
+              text: 'Sprint End Date'
+            }
+          }
+        ]
       },
       yaxis: {
         show: true,
-        showForNullSeries: false,
-      },
-    },
+        showForNullSeries: false
+      }
+    }
   });
 
   function convertToDate(dateString) {
     return new Date(dateString).getTime();
   }
   function getWeekRange(startDate, endDate) {
-    const daysOfWeek = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
     const start = new Date(startDate);
     const end = new Date(endDate);
 
     const prevMonday = new Date(start);
     prevMonday.setDate(
-      prevMonday.getDate() - prevMonday.getDay() + (prevMonday.getDay() === 0 ? -6 : 1),
+      prevMonday.getDate() - prevMonday.getDay() + (prevMonday.getDay() === 0 ? -6 : 1)
     );
 
     const prevSunday = new Date(prevMonday);
@@ -162,7 +152,7 @@ const GraphWeekWise = () => {
 
     const startOfWeek = new Date(start);
     startOfWeek.setDate(
-      startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1),
+      startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1)
     );
 
     const endOfWeek = new Date(end);
@@ -174,7 +164,7 @@ const GraphWeekWise = () => {
     if (prevMonday.getTime() !== startOfWeek.getTime()) {
       weekRange.push({
         Monday: prevMonday.toLocaleDateString(),
-        Sunday: prevSunday.toLocaleDateString(),
+        Sunday: prevSunday.toLocaleDateString()
       });
     }
     while (currentMonday <= endOfWeek) {
@@ -183,15 +173,16 @@ const GraphWeekWise = () => {
 
       weekRange.push({
         Monday: currentMonday.toLocaleDateString(),
-        Sunday: currentSunday.toLocaleDateString(),
+        Sunday: currentSunday.toLocaleDateString()
       });
 
       currentMonday.setDate(currentMonday.getDate() + 7);
     }
+
     return weekRange;
   }
 
-  const formatDate = dates => {
+  const formatDate = (dates) => {
     const date = new Date(dates);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -204,14 +195,15 @@ const GraphWeekWise = () => {
       const splitedSprintRange = sprintRange.split('to');
       let weeksplitDate = [];
       if (shouldCallWeekRange) {
-        let weekRange = getWeekRange(splitedSprintRange[1], splitedSprintRange[0])?.map(
+        let weekRange = getWeekRange(splitedSprintRange[0], splitedSprintRange[1])?.map(
           (weekRange, index) => {
             return {
               value: index,
-              label: `${weekRange?.Sunday}-${weekRange?.Monday}`,
+              label: `${weekRange?.Sunday}-${weekRange?.Monday}`
             };
-          },
+          }
         );
+
         setDropDownData(weekRange);
         weeksplitDate = weekRange[0]?.label?.split('-');
       }
@@ -219,7 +211,7 @@ const GraphWeekWise = () => {
       const res = await new SprintService().getGraphDataForSprint(
         ticketId,
         formatDate(firstDate || weeksplitDate[1]),
-        formatDate(endDate || weeksplitDate[0]),
+        formatDate(endDate || weeksplitDate[0])
       );
 
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
@@ -228,43 +220,44 @@ const GraphWeekWise = () => {
         series: [
           {
             name: 'TODO',
-            data: data?.TO_DO?.map(task => ({
+            data: data?.TO_DO?.map((task) => ({
               x: task.basket_name,
               y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
-            })),
+              taskDetail: task
+            }))
           },
           {
             name: 'Delay',
-            data: data?.DELAY?.map(task => ({
+            data: data?.DELAY?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
-            })),
+              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+            }))
           },
           {
             name: 'Highly Delay',
-            data: data?.HIGHLY_DELAY?.map(task => ({
+            data: data?.HIGHLY_DELAY?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
-            })),
+              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+            }))
           },
           {
             name: 'Completed',
-            data: data?.COMPLETED?.map(task => ({
+            data: data?.COMPLETED?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
-            })),
+              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+            }))
           },
           {
             name: 'In Progress',
-            data: data?.IN_PROGRESS?.map(task => ({
+            data: data?.IN_PROGRESS?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
-            })),
-          },
-        ],
+              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+            }))
+          }
+        ]
       };
 
-      setChartData(prevChartData => ({
+      setChartData((prevChartData) => ({
         ...prevChartData,
         series: transformedData.series,
         options: {
@@ -272,7 +265,7 @@ const GraphWeekWise = () => {
           xaxis: {
             ...prevChartData.options.xaxis,
             min: new Date(firstDate || weeksplitDate[1]).getTime(),
-            max: new Date(endDate || weeksplitDate[0]).getTime(),
+            max: new Date(endDate || weeksplitDate[0]).getTime()
           },
           annotations: {
             ...prevChartData.options.annotations,
@@ -283,40 +276,51 @@ const GraphWeekWise = () => {
                 x: new Date(first_sprint_date).getTime(),
                 label: {
                   ...prevChartData.options.annotations.xaxis[0].label,
-                  text: 'Sprint Start Date',
-                },
+                  text: 'Sprint Start Date'
+                }
               },
               {
                 ...prevChartData.options.annotations.xaxis[1],
                 x: new Date(last_sprint_date).getTime(),
                 label: {
                   ...prevChartData.options.annotations.xaxis[1].label,
-                  text: 'Sprint End Date',
-                },
-              },
-            ],
+                  text: 'Sprint End Date'
+                }
+              }
+            ]
           },
-        },
+          tooltip: {
+            custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+              const s = w?.config?.series;
+              return `
+              <div>
+                <p>Name:</p>
+                <p>${w.globals.labels[dataPointIndex]}</p>
+              </div>
+            `;
+            }
+          }
+        }
       }));
     } catch (error) {
       // const { status } = error?.response;
       setNotify({
-        type: 'danger',
+        type: 'danger'
         // message: `Status:${status ? status : ''}'\n'Message:Error while fetching data`,
       });
       console.error('Error fetching graph data:', error.message);
     }
   };
-  const handleRadioChange = async event => {
+  const handleRadioChange = async (event) => {
     setSelectedOption(event.target.value);
-    setChartData(prevData => ({
+    setChartData((prevData) => ({
       ...prevData,
       series: [
         {
           name: '',
-          data: [],
-        },
-      ],
+          data: []
+        }
+      ]
     }));
     setDropDownData([]);
     const { value } = event.target;
@@ -329,7 +333,6 @@ const GraphWeekWise = () => {
         return { value: index, label: month };
       });
       setDropDownData(monthsOfYear);
-
       const month = new Date(splitRange[0]).getMonth();
       const firstDayOfMonth = new Date(new Date().getFullYear(), month, 1);
       const lastDayOfMonth = new Date(new Date().getFullYear(), month + 1, 0);
@@ -344,19 +347,49 @@ const GraphWeekWise = () => {
       getGraphData(true);
     }
   };
-  const dropDownHandler = async event => {
+
+  function getFirstAndLastDayOfMonth(label) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    const monthIndex = months.indexOf(label);
+
+    if (monthIndex === -1) {
+      throw new Error('Invalid month name');
+    }
+
+    const year = new Date().getFullYear();
+    const firstDayOfMonth = new Date(year, monthIndex, 1);
+    const lastDayOfMonth = new Date(year, monthIndex + 1, 0);
+
+    return { firstDayOfMonth, lastDayOfMonth };
+  }
+
+  const dropDownHandler = async (event) => {
     const { label } = event;
+
     if (selectedOption === 'week') {
       const currentWeek = event.label.split('-');
       getGraphData(false, currentWeek[0], currentWeek[1]);
     } else if (selectedOption === 'month') {
-      const firstDayOfMonth = new Date(new Date().getFullYear(), label, 1);
-      const lastDayOfMonth = new Date(new Date().getFullYear(), label + 1, 0);
+      const { firstDayOfMonth, lastDayOfMonth } = getFirstAndLastDayOfMonth(label);
+
       await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
     }
   };
   useEffect(() => {
-    getGraphData();
+    getGraphData(true);
   }, []);
 
   return (
