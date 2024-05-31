@@ -532,6 +532,7 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
+    const status=1
     console.log('id', localStorage.getItem('id'));
 
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
@@ -582,7 +583,7 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new QueryTypeService().getAllQueryGroup().then((res) => {
+    await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
