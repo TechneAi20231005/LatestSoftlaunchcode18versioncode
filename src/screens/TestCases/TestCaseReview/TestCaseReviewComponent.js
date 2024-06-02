@@ -1,101 +1,85 @@
-import React, { useEffect } from "react";
-import { Container } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import PageHeader from "../../../components/Common/PageHeader";
-import { getTestCaseReviewListThunk } from "../../../redux/services/testCases/testCaseReview";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react';
+import { Container } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import { Link } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import PageHeader from '../../../components/Common/PageHeader';
+import { getTestCaseReviewListThunk } from '../../../redux/services/testCases/testCaseReview';
+import { useDispatch, useSelector } from 'react-redux';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function TestCaseReviewComponent() {
   // // initial state
   const dispatch = useDispatch();
 
-  const { testCaseReviewList } = useSelector((state) => state?.testCaseReview);
-
-  const data = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 30,
-      email: "john@example.com",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 25,
-      email: "jane@example.com",
-    },
-    // Add more objects as needed
-  ];
+  const { testCaseReviewList, isLoading } = useSelector((state) => state?.testCaseReview);
 
   const columns = [
     {
-      name: "Sr. No.",
+      name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
+      width: '70px'
     },
     {
       name: <div className="d-flex">Test Plan Id</div>,
-      selector: "Test Plan ID",
-      width: "10rem",
+      selector: 'Test Plan ID',
+      width: '10rem',
       center: true,
       cell: (row) => (
         <div>
           <Link
-            to={`/${_base + "/TestCaseReviewDetails/" + row.test_plan_id}`}
+            to={`/${_base + '/TestCaseReviewDetails/' + row.id}`}
             className="link_underline_primary"
           >
             {row.test_plan_id}
-            {console.log("row", row.test_plan_id)}
           </Link>
         </div>
-      ),
+      )
     },
     {
-      name: "Tester Name",
+      name: 'Tester Name',
       selector: (row) => row.tester_name,
       sortable: false,
-      width: "10rem",
+      width: '10rem'
     },
     {
-      name: "Total Testcase",
+      name: 'Total Testcase',
       selector: (row) => row.total_testcases,
       sortable: false,
-      width: "7rem",
+      width: '7rem'
     },
     {
-      name: "Reviewed Testcase",
+      name: 'Reviewed Testcase',
       selector: (row) => row.reviewed_testcases,
       sortable: false,
-      width: "10rem",
+      width: '10rem'
     },
     {
-      name: "Rejected Testcase",
+      name: 'Rejected Testcase',
       selector: (row) => row.total_rejected,
       sortable: false,
-      width: "10rem",
+      width: '10rem'
     },
     {
-      name: "Approved Testcse",
+      name: 'Approved Testcse',
       selector: (row) => row.total_approved,
       sortable: false,
-      width: "10rem",
+      width: '10rem'
     },
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
       sortable: false,
-      width: "7rem",
+      width: '7rem'
     },
 
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
       sortable: false,
-      width: "7rem",
-    },
+      width: '7rem'
+    }
   ];
 
   useEffect(() => {
@@ -114,8 +98,8 @@ function TestCaseReviewComponent() {
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
-          //   progressPending={isLoading?.getInterviewMasterList}
-          //   progressComponent={<TableLoadingSkelton />}
+          progressPending={isLoading?.testCaseReviewList}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
     </>

@@ -1,29 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import CustomModal from "../../../components/custom/modal/CustomModal";
-import {
-  CustomDropdown,
-  CustomReactSelect,
-} from "../../../components/custom/inputs/CustomInputs";
-import { downloadFormatFile } from "./Validation/DownloadFormatFile";
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import CustomModal from '../../../components/custom/modal/CustomModal';
+import { CustomDropdown, CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
+import { downloadFormatFile } from './Validation/DownloadFormatFile';
 
 import {
   downloadFormatFileThunk,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
-  getSubModuleMasterThunk,
-} from "../../../redux/services/testCases/downloadFormatFile";
+  getSubModuleMasterThunk
+} from '../../../redux/services/testCases/downloadFormatFile';
 
 function DownloadFormatFileModal({ show, close }) {
-  const {
-    getProjectModuleList,
-    getMouleList,
-    getSubMouleList,
-    getModuleData,
-    getSubModuleData,
-  } = useSelector((state) => state?.downloadFormat);
+  const { getProjectModuleList, getModuleList, getSubModuleList, getModuleData, getSubModuleData } =
+    useSelector((state) => state?.downloadFormat);
 
   // // initial state
   const dispatch = useDispatch();
@@ -35,10 +27,16 @@ function DownloadFormatFileModal({ show, close }) {
   const moduleIdRef = useRef();
   const subModuleIdRef = useRef();
 
+  const downloadFormatInitialValue = {
+    project_id: '',
+    module_id: '',
+    submodule_id: []
+  };
+
   const handleProjectChange = async (e, setFieldValue) => {
-    setFieldValue("project_id", e.target.value);
-    setFieldValue("module_id", ""); // Clear module_name when project_name changes
-    setFieldValue("submodule_id", "");
+    setFieldValue('project_id', e.target.value);
+    setFieldValue('module_id', ''); // Clear module_name when project_name changes
+    setFieldValue('submodule_id', '');
     setModuleDropdown(null); // Clear the current module dropdown options
     const filteredModules = getModuleData
       .filter((d) => d.project_id === parseInt(e.target.value))
@@ -48,20 +46,14 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleModuleChange = (e, setFieldValue) => {
-    setFieldValue("module_id", e.target.value);
-    setFieldValue("submodule_id", ""); // Clear submodule_name when module_name changes
+    setFieldValue('module_id', e.target.value);
+    setFieldValue('submodule_id', ''); // Clear submodule_name when module_name changes
 
     const data = getSubModuleData
       ?.filter((d) => d.module_id === parseInt(e.target.value)) // Ensure correct data type
       .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
     setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
-  };
-
-  const downloadFormatInitialValue = {
-    project_id: "",
-    module_id: "",
-    submodule_id: [],
   };
 
   const handleDownloadFormatFile = (formData) => {
@@ -76,7 +68,7 @@ function DownloadFormatFileModal({ show, close }) {
         onSuccessHandler: () => {
           close();
         },
-        onErrorHandler: () => {},
+        onErrorHandler: () => {}
       })
     );
   };
@@ -85,10 +77,10 @@ function DownloadFormatFileModal({ show, close }) {
     if (!getProjectModuleList) {
       dispatch(getProjectModuleMasterThunk());
     }
-    if (!getMouleList) {
+    if (!getModuleList) {
       dispatch(getModuleMasterThunk());
     }
-    if (!getSubMouleList) {
+    if (!getSubModuleList) {
       dispatch(getSubModuleMasterThunk());
     }
   }, []);
@@ -112,9 +104,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
-                    handleChange={(event) =>
-                      handleProjectChange(event, setFieldValue)
-                    }
+                    handleChange={(event) => handleProjectChange(event, setFieldValue)}
                   />
                 </Col>
                 <Col md={4} lg={4}>
@@ -123,9 +113,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
-                    handleChange={(event) =>
-                      handleModuleChange(event, setFieldValue)
-                    }
+                    handleChange={(event) => handleModuleChange(event, setFieldValue)}
                     ref={moduleIdRef}
                   />
                 </Col>
@@ -144,9 +132,9 @@ function DownloadFormatFileModal({ show, close }) {
               </Row>
 
               <div className="d-flex justify-content-end gap-2 mt-3">
-                <button type="submit" className="btn btn bg-success text-white">
+                <a type="submit" href="" className="btn btn bg-success text-white">
                   Download CSV
-                </button>
+                </a>
                 <button
                   type="button"
                   className="btn btn bg-white shadow p-2 text-black"

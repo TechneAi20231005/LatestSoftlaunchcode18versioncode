@@ -1,44 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { Container, Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
-import { Field, Form, Formik } from "formik";
-import { Astrick } from "../../../components/Utilities/Style";
-import { useDispatch, useSelector } from "react-redux";
-import { getEmployeeData } from "../../Dashboard/DashboardAction";
+import React, { useEffect, useReducer, useState } from 'react';
+import { Container, Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
+import { Field, Form, Formik } from 'formik';
+import { Astrick } from '../../../components/Utilities/Style';
+import { useDispatch, useSelector } from 'react-redux';
+import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import {
+  getDraftTestCaseList,
   importTestDraftThunk,
-  sendTestCaseReviewerThunk,
-} from "../../../redux/services/testCases/downloadFormatFile";
-import EditTestCaseModal from "./EditTestCaseModal";
+  sendTestCaseReviewerThunk
+} from '../../../redux/services/testCases/downloadFormatFile';
+import EditTestCaseModal from './EditTestCaseModal';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function TestDraftDetails(props) {
   const data = props.data;
 
-  console.log("getTestDraftDataNew", data);
   // // initial state
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
-    type: "",
-    data: "",
-    open: false,
+    type: '',
+    data: '',
+    open: false
   });
-  const dispatch = useDispatch();
-  const testerData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
+  const [sendToReviewerModal, setSendToReviewerModal] = useState({
+    showModal: false,
+    modalData: '',
+    modalHeader: ''
+  });
+
+  const { getDraftTestListData, isLoading } = useSelector((state) => state?.downloadFormat);
+
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
+
+  const dispatch = useDispatch();
+  const testerData = useSelector((dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList);
   // State to track selected rows
   const [selectAllNames, setSelectAllNames] = useState(false);
-  const [selectedRowss, setSelectedRowss] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [reviewerId, setReviewerID] = useState();
 
   // Check if all rows are selected
@@ -47,15 +54,18 @@ function TestDraftDetails(props) {
     const newSelectAllNames = !selectAllNames;
     setSelectAllNames(newSelectAllNames);
     if (newSelectAllNames) {
-      setSelectedRowss(data.map((row) => row.id));
+      const draftRowIds = getDraftTestListData
+        .filter((row) => row.status === 'DRAFT')
+        .map((row) => row.id);
+      setSelectedRows(draftRowIds);
     } else {
-      setSelectedRowss([]);
+      setSelectedRows([]);
     }
   };
 
   // Handles individual checkbox change
-  const handleCheckboxChangee = (row) => {
-    setSelectedRowss((prevSelectedRows) => {
+  const handleCheckboxChange = (row) => {
+    setSelectedRows((prevSelectedRows) => {
       if (prevSelectedRows.includes(row.id)) {
         return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
       } else {
@@ -70,224 +80,404 @@ function TestDraftDetails(props) {
       ...prevData,
       [id]: {
         ...prevData[id],
-        [field]: value,
-      },
+        [field]: value
+      }
     }));
   };
 
   const [updatedData, setUpdatedData] = useState({});
 
   const columns = [
-    // {
-    //   name: "Action",
-    //   selector: (row) => (
-    //     // <>
-    //       <i
-    //         onClick={() =>
-    //           setAddEditTestCasesModal({
-    //             type: "EDIT",
-    //             data: row,
-    //             open: true,
-    //           })
-    //         }
-    //         className="icofont-edit cp icon-large"
-    //       />
-    //       // <i className="icofont-history text-dark w-10 cp bg-warning rounded-circle ml-2 icon-large mx-2" />
-    //     // </>
-    //   ),
-    //   sortable: false,
-    //   width: "100px",
-    // },
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => (
-        <i
-          className="icofont-edit text-primary cp"
-          onClick={() =>
-            setAddEditTestCasesModal({
-              type: "EDIT",
-              data: row,
-              open: true,
-            })
-          }
-        />
+        <>
+          <i
+            disabled={row.status != 'DRAFT'}
+            // className="icofont-edit text-primary cp me-3"
+            className={`icofont-edit text-primary cp me-3 ${
+              row.status !== 'DRAFT' ? 'disabled-icon' : ''
+            }`}
+            onClick={() =>
+              setAddEditTestCasesModal({
+                type: 'EDIT',
+                data: row,
+                open: true
+              })
+            }
+          />
 
-        // <i className="icofont-history text-dark w-10 cp bg-warning rounded-circle ml-2 icon-large mx-2" />
+          <i class="icofont-history cp bg-warning rounded-circle" />
+        </>
       ),
       sortable: false,
-      width: "70px",
+      width: '90px'
     },
     {
       name: (
-        <div
-          style={{ display: "flex", alignItems: "center" }}
-          onClick={handleSelectAllNamesChange}
-        >
-          <input
-            type="checkbox"
-            checked={selectAllNames}
-            onChange={handleSelectAllNamesChange}
-            style={{ marginRight: "5px" }}
-          />
-          Select All
+        <div onClick={handleSelectAllNamesChange}>
+          <input type="checkbox" checked={selectAllNames} onChange={handleSelectAllNamesChange} />
         </div>
       ),
-      selector: "selectAll",
-      width: "7rem",
+      selector: 'selectAll',
       center: true,
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div>
           <input
             type="checkbox"
-            checked={selectedRowss.includes(row.id)}
-            onChange={() => handleCheckboxChangee(row)}
-            style={{ marginRight: "5px" }}
+            checked={selectedRows.includes(row.id)}
+            onChange={() => handleCheckboxChange(row)}
+            disabled={row.status != 'DRAFT'}
           />
         </div>
-      ),
+      )
     },
+
     {
-      name: "Module",
+      name: 'Module',
       selector: (row) => row.module_name,
-      sortable: false,
-      width: "100px",
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.module_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.module_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.module_name && row.module_name.length < 20
+                    ? row.module_name
+                    : row.module_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
-      name: "Submodule",
+      name: 'Submodule',
       selector: (row) => row.sub_module_name,
-      sortable: false,
-      width: "100px",
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.sub_module_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.sub_module_name && row.sub_module_name.length < 20
+                    ? row.sub_module_name
+                    : row.sub_module_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Platform",
+      name: 'Platform',
       selector: (row) => row.platform,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.platform && (
+            <OverlayTrigger overlay={<Tooltip>{row.platform} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.platform && row.platform.length < 20
+                    ? row.platform
+                    : row.platform.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
-      name: "Function",
+      name: 'Function',
       selector: (row) => row.function_name,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.function_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.function_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.function_name && row.function_name.length < 20
+                    ? row.function_name
+                    : row.function_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
-      name: "Field",
+      name: 'Field',
       selector: (row) => row.field,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.field && (
+            <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.field && row.field.length < 20
+                    ? row.field
+                    : row.field.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Testing Type",
+      name: 'Testing Type',
       selector: (row) => row.type_name,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.type_name && row.type_name.length < 20
+                    ? row.type_name
+                    : row.type_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Testing Group",
+      name: 'Testing Group',
       selector: (row) => row.group_name,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.group_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.group_name && row.type_name.length < 20
+                    ? row.group_name
+                    : row.group_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Steps",
+      name: 'Steps',
       selector: (row) => row.steps,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.steps && (
+            <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.steps && row.type_name.length < 20
+                    ? row.steps
+                    : row.steps.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Expected Result",
+      name: 'Expected Result',
       selector: (row) => row.expected_result,
-      sortable: false,
-      width: "100px",
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.expected_result && (
+            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.expected_result && row.expected_result.length < 20
+                    ? row.expected_result
+                    : row.expected_result.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.status,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.status && (
+            <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.status && row.status.length < 20
+                    ? row.status
+                    : row.status.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Project",
+      name: 'Project',
       selector: (row) => row.project_name,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.project_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.project_name && row.project_name.length < 20
+                    ? row.project_name
+                    : row.project_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
-      sortable: false,
-      width: "100px",
-    },
-    {
-      name: "Created By",
-      selector: (row) => row.created_by,
-      sortable: false,
-      width: "100px",
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_at && row.created_at.length < 20
+                    ? row.created_at
+                    : row.created_at.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
-      name: "Updated At",
-      selector: (row) => row.updated_at,
-      sortable: false,
-      width: "100px",
+      name: 'Created By',
+      selector: (row) => row.created_by,
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.created_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_by && row.created_by.length < 20
+                    ? row.created_by
+                    : row.created_by.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
-      name: "Updated By",
-      selector: (row) => row.updated_by,
-      sortable: false,
-      width: "100px",
+      name: 'Updated At',
+      selector: (row) => row.updated_at,
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.updated_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.updated_at && row.updated_at.length < 20
+                    ? row.updated_at
+                    : row.updated_at.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
-    // {
-    //   name: "Reviewr comment",
-    //   selector: (row) => row.name,
-    //   sortable: true,
-    //   width: "250px",
-    //   cell: (row) => (
-    //     <select
-    //       className="form-select"
-    //       aria-label="Default select example"
-    //       onChange={(e) =>
-    //         handleInputChange(row.id, "reviewerComment", e.target.value)
-    //       }
-    //     >
-    //       <option value="" selected>
-    //         Open this select menu
-    //       </option>
-    //       <option value="1">One</option>
-    //       <option value="2">Two</option>
-    //       <option value="3">Three</option>
-    //     </select>
-    //   ),
-    // },
-    // {
-    //   name: "Remark",
-    //   selector: (row) => row.name,
-    //   sortable: true,
-    //   width: "400px",
-    //   cell: (row) => (
-    //     <input
-    //       className="form-control"
-    //       type="text"
-    //       placeholder="Default input"
-    //       aria-label="default input example"
-    //       onChange={(e) => handleInputChange(row.id, "remark", e.target.value)}
-    //     />
-    //   ),
-    // },
+
+    {
+      name: 'Updated By',
+      selector: (row) => row.updated_by,
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
+          {row.updated_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.updated_by && row.updated_by.length < 20
+                    ? row.updated_by
+                    : row.updated_by.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
+    }
   ];
-  const [sendToReviewerModal, setSendToReviewerModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
 
   const handleSendToReviewerModal = (currentData) => {
     setSendToReviewerModal(currentData);
@@ -295,32 +485,45 @@ function TestDraftDetails(props) {
 
   const handleSubmit = () => {
     const testCasesData =
-      selectedRowss.length > 0
-        ? selectedRowss.map((id) => id)
-        : data.map((row) => row.id);
+      selectedRows.length > 0
+        ? selectedRows?.map((id) => id)
+        : getDraftTestListData?.filter((row) => row.status === 'DRAFT')?.map((row) => row.id);
 
     const formData = {
       testcase_id: testCasesData,
-      reviewer_id: reviewerId,
+      reviewer_id: reviewerId
     };
-    console.log("finalData", formData);
 
     dispatch(
       sendTestCaseReviewerThunk({
         formData,
         onSuccessHandler: () => {
           setSendToReviewerModal({ showModal: false });
+          setSelectedRows([]);
+          setSelectAllNames(false);
+          dispatch(
+            getDraftTestCaseList({
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
         },
         onErrorHandler: () => {
           // setOpenConfirmModal({ open: false });
-        },
+        }
       })
     );
   };
   useEffect(() => {
     dispatch(getEmployeeData());
     dispatch(importTestDraftThunk());
-  }, []);
+    dispatch(
+      getDraftTestCaseList({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -328,12 +531,23 @@ function TestDraftDetails(props) {
         <hr className="primary_divider mt-1" />
         <DataTable
           columns={columns}
-          data={data}
+          data={getDraftTestListData}
           defaultSortField="role_id"
           pagination
+          paginationServer
+          paginationTotalRows={getDraftTestListData?.total?.total_count}
+          paginationDefaultPage={paginationData.currentPage}
+          onChangePage={(page) => setPaginationData({ currentPage: page })}
+          onChangeRowsPerPage={(newPageSize) => {
+            setPaginationData({ rowPerPage: newPageSize });
+            setPaginationData({ currentPage: 1 });
+          }}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+          progressPending={isLoading?.getDraftTestListData}
+          progressComponent={<TableLoadingSkelton />}
         />
       </Container>
 
@@ -344,12 +558,13 @@ function TestDraftDetails(props) {
           onClick={() => {
             handleSendToReviewerModal({
               showModal: true,
-              modalData: "",
-              modalHeader: "Send To Reviewer Modal",
+              modalData: '',
+              modalHeader: 'Send To Reviewer Modal'
             });
           }}
+          disabled={!selectAllNames || selectedRows.length === 0}
         >
-          <i class="icofont-paper-plane fs-0.8"></i> {""}
+          <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer
         </button>
       </div>
@@ -361,12 +576,12 @@ function TestDraftDetails(props) {
         onHide={(e) => {
           handleSendToReviewerModal({
             showModal: true,
-            modalData: "",
-            modalHeader: "Send To Reviewer Modal",
+            modalData: '',
+            modalHeader: 'Send To Reviewer Modal'
           });
         }}
       >
-        {" "}
+        {' '}
         <Modal.Body>
           <label>
             <b>
@@ -382,7 +597,6 @@ function TestDraftDetails(props) {
             onChange={(e) => {
               const selectedId = e?.value;
               setReviewerID(selectedId);
-              console.log("Selected ID:", e.value);
             }}
             placeholder="select..."
           />
@@ -393,7 +607,7 @@ function TestDraftDetails(props) {
             className="btn btn-sm btn bg-success text-white"
             onClick={() => handleSubmit()}
           >
-            <i class="icofont-paper-plane "></i> {""}
+            <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer
           </button>
 
@@ -403,8 +617,8 @@ function TestDraftDetails(props) {
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,
-                modalData: "",
-                modalHeader: "Send To Reviewer Modal",
+                modalData: '',
+                modalHeader: 'Send To Reviewer Modal'
               });
             }}
           >
@@ -419,6 +633,7 @@ function TestDraftDetails(props) {
           type={addEditTestCasesModal?.type}
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
+          paginationData={paginationData}
         />
       )}
     </>

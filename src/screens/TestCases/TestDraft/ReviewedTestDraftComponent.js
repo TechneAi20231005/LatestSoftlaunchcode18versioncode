@@ -1,20 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import { Astrick } from "../../../components/Utilities/Style";
-import PageHeader from "../../../components/Common/PageHeader";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import EditTestCaseModal from "./EditTestCaseModal";
-import DownloadFormatFileModal from "./DownloadFormatFileModal";
+import React, { useEffect, useReducer, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import { Astrick } from '../../../components/Utilities/Style';
+import PageHeader from '../../../components/Common/PageHeader';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import EditTestCaseModal from './EditTestCaseModal';
+import DownloadFormatFileModal from './DownloadFormatFileModal';
+import { getByTestPlanIDReviewedListThunk } from '../../../redux/services/testCases/downloadFormatFile';
+import { useDispatch, useSelector } from 'react-redux';
 
 function ReviewedTestDraftComponent() {
-  const [currentTab, setCurrentTab] = useState("review_test_draft");
+  const { id } = useParams();
+
+  const dispatch = useDispatch();
+
+  const { allReviewDraftTestListDataByID } = useSelector((state) => state?.downloadFormat);
+
+  const [rowData, setRowData] = useState(allReviewDraftTestListDataByID);
+
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  );
+
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const handleModal = (data) => {
@@ -23,8 +39,8 @@ function ReviewedTestDraftComponent() {
 
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const handleDownloadModal = (data) => {
@@ -34,22 +50,22 @@ function ReviewedTestDraftComponent() {
   const data = [
     {
       id: 1,
-      name: "John Doe",
+      name: 'John Doe',
       age: 30,
-      email: "john@example.com",
+      email: 'john@example.com'
     },
     {
       id: 2,
-      name: "Jane Smith",
+      name: 'Jane Smith',
       age: 25,
-      email: "jane@example.com",
-    },
+      email: 'jane@example.com'
+    }
     // Add more objects as needed
   ];
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => (
         <>
           <i
@@ -57,8 +73,8 @@ function ReviewedTestDraftComponent() {
             onClick={(e) => {
               handleModal({
                 showModal: true,
-                modalData: "", // You can add relevant data here
-                modalHeader: "Edit Test Case",
+                modalData: '', // You can add relevant data here
+                modalHeader: 'Edit Test Case'
               });
             }}
           />
@@ -68,7 +84,7 @@ function ReviewedTestDraftComponent() {
         </>
       ),
       sortable: false,
-      width: "90px",
+      width: '90px'
     },
 
     {
@@ -77,27 +93,27 @@ function ReviewedTestDraftComponent() {
           <input type="checkbox" />
         </div>
       ),
-      selector: "selectAll",
-      width: "5rem",
+      selector: 'selectAll',
+      width: '5rem',
       center: true,
       cell: (row) => (
         <div>
           <input type="checkbox" />
         </div>
-      ),
+      )
     },
 
     {
-      name: "Module",
+      name: 'Module',
       selector: (row) => row.name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Reviewr coment",
+      name: 'Reviewr coment',
       selector: (row) => row?.name,
       sortable: true,
-      width: "250px",
+      width: '250px',
       cell: (row) => (
         <select class="form-select" aria-label="Default select example">
           <option selected className>
@@ -107,13 +123,13 @@ function ReviewedTestDraftComponent() {
           <option value="2">Two</option>
           <option value="3">Three</option>
         </select>
-      ),
+      )
     },
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row?.name,
       sortable: true,
-      width: "400px",
+      width: '400px',
       cell: (row) => (
         <input
           class="form-control"
@@ -121,9 +137,20 @@ function ReviewedTestDraftComponent() {
           placeholder="Default input"
           aria-label="default input example"
         ></input>
-      ),
-    },
+      )
+    }
   ];
+
+  useEffect(() => {
+    dispatch(
+      getByTestPlanIDReviewedListThunk({
+        id: id,
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -139,8 +166,8 @@ function ReviewedTestDraftComponent() {
                 onClick={(e) => {
                   handleDownloadModal({
                     showModal: true,
-                    modalData: "", // You can add relevant data here
-                    modalHeader: "Edit Test Case ",
+                    modalData: '', // You can add relevant data here
+                    modalHeader: 'Edit Test Case '
                   });
                 }}
               >
@@ -164,10 +191,19 @@ function ReviewedTestDraftComponent() {
         <hr className="primary_divider mt-1" />
         <DataTable
           columns={columns}
-          data={data}
+          data={rowData}
           defaultSortField="role_id"
           pagination
           selectableRows={false}
+          paginationServer
+          paginationTotalRows={rowData?.total?.total_count}
+          paginationDefaultPage={paginationData.currentPage}
+          onChangePage={(page) => setPaginationData({ currentPage: page })}
+          onChangeRowsPerPage={(newPageSize) => {
+            setPaginationData({ rowPerPage: newPageSize });
+            setPaginationData({ currentPage: 1 });
+          }}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />
@@ -176,7 +212,7 @@ function ReviewedTestDraftComponent() {
       <div className="row mt-4">
         <div className="col-md-3">
           <label className="form-label font-weight-bold">
-            Content Type :<Astrick color="red" size="13px" />{" "}
+            Content Type :<Astrick color="red" size="13px" />{' '}
           </label>
 
           <select class="form-select" aria-label="Default select example">
@@ -198,25 +234,21 @@ function ReviewedTestDraftComponent() {
         <Link
           to={{
             pathname: `/${_base}/TestDraft`,
-            state: "review_test_draft", // Pass currentTab as state
+            state: 'review_test_draft' // Pass currentTab as state
           }}
           className="btn btn-primary text-white"
         >
           Back
         </Link>
+
         <button type="submit" className="btn btn-sm btn bg-success text-white">
-          <i class="icofont-paper-plane"></i> {""}
+          <i class="icofont-paper-plane"></i> {''}
           Send To Reviewer
         </button>
       </div>
-      {modal.showModal === true && (
-        <EditTestCaseModal show={modal} close={() => setModal(false)} />
-      )}
+      {modal.showModal === true && <EditTestCaseModal show={modal} close={() => setModal(false)} />}
       {downloadmodal.showModal === true && (
-        <DownloadFormatFileModal
-          show={downloadmodal}
-          close={() => setDownloadModal(false)}
-        />
+        <DownloadFormatFileModal show={downloadmodal} close={() => setDownloadModal(false)} />
       )}
     </div>
   );
