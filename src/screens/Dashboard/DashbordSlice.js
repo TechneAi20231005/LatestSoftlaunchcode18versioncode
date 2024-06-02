@@ -70,6 +70,8 @@ const initialState = {
   exportCustomerData: [],
   customerByIdData: [],
   updateCustomer: [],
+  customerTypeId: '',
+  getEmployeeDataById: [],
   modal: {
     showModal: false,
     modalData: '',
@@ -512,7 +514,8 @@ export const DashbordSlice = createSlice({
           const firstName = employeeData[i].first_name || '';
           const middleName = employeeData[i].middle_name || '';
           const lastName = employeeData[i].last_name || '';
-          employeeData[i].name = `${firstName} ${middleName} ${lastName}`.trim();
+          employeeData[i].name =
+            `${firstName} ${middleName} ${lastName}`.trim();
         }
 
         state.employeeData = [...employeeData];
@@ -544,7 +547,9 @@ export const DashbordSlice = createSlice({
             Department: employeeData[i].department,
             Ticket_Show_Type: employeeData[i].ticket_show_type,
             all_department: employeeData[i].all_department,
-            Ticket_Passing_Authority: employeeData[i].ticket_passing_authority ? 'Yes' : 'No',
+            Ticket_Passing_Authority: employeeData[i].ticket_passing_authority
+              ? 'Yes'
+              : 'No',
             Make_Default: employeeData[i].is_default ? 'yes' : 'No',
             Status: employeeData[i].is_active ? 'Active' : 'Deactive',
             created_at: employeeData[i].created_at,
@@ -892,6 +897,10 @@ export const DashbordSlice = createSlice({
   }
 });
 
-export const { handleModalInStore, handleModalClose, loaderModal, hideNotification } =
-  DashbordSlice.actions;
+export const {
+  handleModalInStore,
+  handleModalClose,
+  loaderModal,
+  hideNotification
+} = DashbordSlice.actions;
 export default DashbordSlice.reducer;
