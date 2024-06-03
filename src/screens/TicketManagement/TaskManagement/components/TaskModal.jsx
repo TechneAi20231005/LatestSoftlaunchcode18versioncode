@@ -2,23 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
 import { _attachmentUrl } from '../../../../settings/constants';
-import { UserDropdown } from '../../../../screens/Masters/UserMaster/UserComponent';
+
 import Select from 'react-select';
-import { postTask, updateTask, getTaskUser } from '../../../../services/TicketService/TaskService';
-import {
-  getAttachment,
-  deleteAttachment
-} from '../../../../services/OtherService/AttachmentService';
+import { postTask, updateTask } from '../../../../services/TicketService/TaskService';
+
 import Alert from '../../../../components/Common/Alert';
-import * as Validation from '../../../../components/Utilities/Validation';
+
 import UserService from '../../../../services/MastersService/UserService';
 import TaskTicketTypeService from '../../../../services/MastersService/TaskTicketTypeService';
-import TestCasesService from '../../../../services/TicketService/TestCaseService';
+
 import { Astrick } from '../../../../components/Utilities/Style';
 
 export default function TaskModal(props) {
-  const [notify, setNotify] = useState();
+  const fileInputRef = useRef(null);
   const typeRef = useRef();
+  const [notify, setNotify] = useState();
+
   const [parent, setParent] = useState();
   const priority = ['High', 'Medium', 'Low'];
   const [allTask, setAllTask] = useState();
@@ -26,7 +25,7 @@ export default function TaskModal(props) {
   const [defaultUserData, setDefaultUserData] = useState();
   const [attachment, setAttachment] = useState([]);
   const [selectedFile, setSelectedFile] = useState([]);
-  const fileInputRef = useRef(null);
+
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -38,7 +37,8 @@ export default function TaskModal(props) {
 
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
-  // const [taskDropdown, setTaskDropdown] = useState();
+
+
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
   };
@@ -49,7 +49,8 @@ export default function TaskModal(props) {
     setIsMenuOpen(!isMenuOpen);
     setParentTaskName('');
 
-    // closeAllDropdowns();
+
+
   };
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -255,16 +256,7 @@ export default function TaskModal(props) {
     const tempUserData = [];
     const tempDefaultUserData = [];
 
-    // await new TestCasesService().getTaskBytTicket(props.data.ticket_id).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data;
-    //       setTaskDropdown(
-    //         temp.map((d) => ({ value: d.id, label: d.task_name }))
-    //       );
-    //     }
-    //   }
-    // });
+
 
     setFilteredOptions(props?.taskDropdown?.filter((d) => d.value != props.data.id));
     const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -295,20 +287,8 @@ export default function TaskModal(props) {
     });
     const allTask = props.allTaskList.filter((task) => task.value != props.data.id);
     setAllTask(allTask);
-    // loadAttachment();
 
-    // await new TaskTicketTypeService().getAllType().then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const temp = res.data.data;
-    //       setTasktypeDropdown(
-    //         temp
-    //           .filter((d) => d.type === "TASK" && d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.type_name }))
-    //       );
-    //     }
-    //   }
-    // });
+
 
     await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
@@ -320,7 +300,8 @@ export default function TaskModal(props) {
             }));
 
             setParent(mappedData);
-            // parentName(mappedData);
+
+
           } else {
           }
         }
@@ -334,58 +315,14 @@ export default function TaskModal(props) {
     });
   };
 
-  // const loadAttachment = async () => {
-  //   setNotify(null);
-  //   if (props.data.id) {
-  //     await getAttachment(props.data.id, "TASK").then((res) => {
-  //       if (res.status === 200) {
-  //         setAttachment(null);
-  //         setAttachment(res.data.data);
-  //       }
-  //     });
-  //   } else {
-  //     setAttachment(null);
-  //   }
-  // };
 
-  // function transformData(taskData, hasPrimaryLabel = false) {
-  //   // const primaryLabel = "Primary";
-  //   const options = [];
 
-  //   // Push the primary label if it hasn't been pushed before
-  //   if (!hasPrimaryLabel) {
-  //     options.push({
-  //       ID: null,
-  //       label: primaryLabel,
-  //       isStatic: true,
-  //       options: [],
-  //     });
-  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-  //   }
-
-  //   // Process the taskData
-  //   taskData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children
-  //           ? transformData(item.children, hasPrimaryLabel)
-  //           : [],
-  //       });
-  //     }
-  //   });
-
-  //   return options;
-  // }
 
   function transformData(taskData) {
     const options = [];
 
-    // Process the taskData
+
+
     taskData?.forEach((item) => {
       const label = item.type_name;
 
@@ -459,11 +396,8 @@ export default function TaskModal(props) {
       alert('Invalid Option');
     }
   };
-  // const handleDeleteAttachment = (e, id) => {
-  //   deleteAttachment(id).then((res) => {
-  //     loadAttachment();
-  //   });
-  // };
+
+
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
@@ -477,7 +411,8 @@ export default function TaskModal(props) {
       setParentTaskName(''); // Clear the error message if present
 
       setNotify(null);
-      //Appeding File in selected State
+
+
       formData.delete('attachment[]');
       formData.delete('show_to_customer[]');
       formData.delete('show_to_project_owner[]');
@@ -815,10 +750,10 @@ export default function TaskModal(props) {
               <div className="col-md-4">
                 <label className="form-label">
                   <b>
-                    Startss Date :<Astrick color="red" size="13px" />
+                    Start Date :<Astrick color="red" size="13px" />
                   </b>
                 </label>
-                {console.log('props', props.ticketStartDate)}
+
                 {props.data.start_date == null ? (
                   <input
                     type="date"
@@ -1084,8 +1019,8 @@ export default function TaskModal(props) {
                     isSearchable={true}
                     name="dependent_task[]"
                     options={filteredOptions && filteredOptions ? filteredOptions : ''}
-                    // readOnly={props.data.status ==="COMPLETED" ? true :false}
-                    // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
+
+                    
 
                     defaultValue={
                       props.data &&
