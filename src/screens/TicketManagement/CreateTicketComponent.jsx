@@ -371,11 +371,13 @@ export default function CreateTicketComponent() {
           } else {
             setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
-            console.log(res);
+
+
           }
         })
         .catch((res) => {
-          console.log(res);
+
+
           setNotify({ type: 'danger', message: res.message });
         });
     }
@@ -777,7 +779,8 @@ export default function CreateTicketComponent() {
   // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketsData);
 
-  console.log('transformedOptionsTicket', transformedOptionsTicket);
+
+  
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
       var value = type == 'Select2' ? e && e.value : e.target.value;
@@ -842,7 +845,8 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
-      {console.log('data', data)}
+
+
 
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
