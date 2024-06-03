@@ -26,7 +26,9 @@ import DepartmentMappingService from '../../services/MastersService/DepartmentMa
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
-import { getRoles } from '../Dashboard/DashboardAction';
+import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
+
+
 
 export default function CreateTicketComponent() {
   const history = useNavigate();
@@ -531,11 +533,9 @@ export default function CreateTicketComponent() {
 
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
-
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
-
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -568,7 +568,6 @@ export default function CreateTicketComponent() {
       }
     });
 
-
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
@@ -577,7 +576,6 @@ export default function CreateTicketComponent() {
     });
 
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
-
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
@@ -680,13 +678,11 @@ export default function CreateTicketComponent() {
   };
 
   const handleQueryGroupDropDown = async (e) => {
-
     try {
       setQueryGroupTypeData([]);
       setNotify({});
       if (queryTypeRef?.current) {
         queryTypeRef?.current.clearValue();
-
       }
 
       const res = await new QueryTypeService().getQueryTypeMapped(e.value);
@@ -762,7 +758,6 @@ export default function CreateTicketComponent() {
         const accountFor = localStorage.getItem('account_for');
 
         if (x?.length > 0) {
-
           const filteredItems = x.filter((item) =>
             accountFor === 'SELF'
               ? !item.customer_type_id || item.customer_type_id === '0'
@@ -774,7 +769,6 @@ export default function CreateTicketComponent() {
           const confirmationRequiredID = filteredItems
             .map((item) => item.confirmation_required)
             .join(',');
-
 
           setData((prev) => {
             const newPrev = { ...prev };
