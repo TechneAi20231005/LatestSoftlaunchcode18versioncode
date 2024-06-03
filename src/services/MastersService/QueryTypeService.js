@@ -188,14 +188,16 @@ import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.queryType;
 
-const _getAllQueryType = _URL + "/getAllQueryType1";
-const _getAllQueryGroup = _URL + "/getAllQueryGroup";
-const _postQueryType = _URL + "/createQueryType1";
-const _postQueryGroup = _URL + "/createQueryGroup";
-const _getQueryTypeById = _URL + "/getQueryTypeById/";
-const _updateQueryType = _URL + "/updateQueryType1/";
-const _getQueryTypeForm = _URL + "/getQueryTypeForm";
-const _updateQueryGroup = _URL + "/updateQueryGroup/";
+
+const _getAllQueryType = _URL + '/getAllQueryType1';
+const _getAllQueryGroup = _URL + '/getAllQueryGroup';
+const _postQueryType = _URL + '/createQueryType1';
+const _postQueryGroup = _URL + '/createQueryGroup';
+const _getQueryTypeById = _URL + '/getQueryTypeById/';
+const _updateQueryType = _URL + '/updateQueryType1/';
+const _getQueryTypeForm = _URL + '/getQueryTypeForm';
+const _updateQueryGroup = _URL + '/updateQueryGroup/';
+
 
 export function getDateTime() {
     var now = new Date();
@@ -212,141 +214,141 @@ export function getDateTime() {
 
 export default class QueryTypeService {
 
-    getQueryType() {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+  getQueryType() {
+    const token = localStorage.getItem('jwt_token');
 
-        
-        return axios.get(_getAllQueryType,config);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getAllQueryType, config);
+  }
+
+  getAllQueryGroup(status) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    if (status) {
+      return axios.get(_getAllQueryGroup + '/' + status, config);
+    } else {
+      return axios.get(_getAllQueryGroup, config);
     }
+  }
 
-    getAllQueryGroup() {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+  getQueryTypeMapped(id) {
+    const token = localStorage.getItem('jwt_token');
 
-        return axios.get(_getAllQueryGroup,config);
-    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
-    getQueryTypeMapped(id) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+    return axios.get(_URL + '/getQueryTypeMappedData/' + id, config);
+  }
 
-        return axios.get(_URL +"/getQueryTypeMappedData/"+id,config);
-    }
+  postQueryType(payload) {
+    const token = localStorage.getItem('jwt_token');
 
-    postQueryType(payload) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', getDateTime());
+    return axios.post(_postQueryType, payload, config);
+  }
 
-        payload.append('tenant_id', userSessionData.tenantId);
-        payload.append('created_by', userSessionData.userId);
-        payload.append('created_at', getDateTime());
-        return axios.post(_postQueryType, payload,config)
-    }
+  postQueryGroup(payload) {
+    const token = localStorage.getItem('jwt_token');
 
-    postQueryGroup(payload) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        payload.append('tenant_id', userSessionData.tenantId);
-        payload.append('created_by', userSessionData.userId);
-        payload.append('created_at', getDateTime());
-        return axios.post(_postQueryGroup, payload,config)
-    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', getDateTime());
+    return axios.post(_postQueryGroup, payload, config);
+  }
 
-    getQueryTypeById(id) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+  getQueryTypeById(id) {
+    const token = localStorage.getItem('jwt_token');
 
-        return axios.get(_getQueryTypeById + id,config);
-    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
-    updateQueryType(id, payload) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+    return axios.get(_getQueryTypeById + id, config);
+  }
 
-        payload.append('updated_by', userSessionData.userId);
-        payload.append('updated_at', getDateTime());
-        return axios.post(_updateQueryType + id, payload,config)
-    }
+  updateQueryType(id, payload) {
+    const token = localStorage.getItem('jwt_token');
 
-    updateQueryGroup(id, payload) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
-        payload.append('updated_by', userSessionData.userId);
-        payload.append('updated_at', getDateTime());
-        return axios.post(_updateQueryGroup + id, payload,config)
-    }
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
+    return axios.post(_updateQueryType + id, payload, config);
+  }
 
-    getQueryTypeForm(id) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+  updateQueryGroup(id, payload) {
+    const token = localStorage.getItem('jwt_token');
 
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
-        return axios.get(_getQueryTypeForm + "/" + id,config)
-    }
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
+    return axios.post(_updateQueryGroup + id, payload, config);
+  }
+
+  getQueryTypeForm(id) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getQueryTypeForm + '/' + id, config);
+  }
 }
