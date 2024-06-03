@@ -1,22 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
 import ErrorLogService from '../../services/ErrorLogService';
-
+import DynamicFormService from '../../services/MastersService/DynamicFormService';
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import { _attachmentUrl } from '../../settings/constants';
-
+import ReportService from '../../services/ReportService/ReportService';
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
 import DatePicker from 'react-date-picker';
 import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
-
+import * as Validation from '../../components/Utilities/Validation';
 import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
-
+import { getCurrentDate } from '../../components/Utilities/Functions';
+import { userSessionData as user } from '../../settings/constants';
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
 import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
@@ -25,10 +26,10 @@ import DepartmentMappingService from '../../services/MastersService/DepartmentMa
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
-import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
-import { getUserForMyTicketsData } from './MyTicketComponentAction';
+import { getRoles } from '../Dashboard/DashboardAction';
 
 export default function CreateTicketComponent() {
+  const history = useNavigate();
   const navigate = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -38,6 +39,7 @@ export default function CreateTicketComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
   );
 
+  const departmentDropdownRef = useRef();
   const current = new Date();
   const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
@@ -71,11 +73,14 @@ export default function CreateTicketComponent() {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
+
+    // closeAllDropdowns();
   };
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [defaults, setDefaults] = useState(null);
 
   const [department, setDepartment] = useState(null);
   const [rows, setRows] = useState();
@@ -84,6 +89,7 @@ export default function CreateTicketComponent() {
 
   const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
+  const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
   const [alldepartmentData, setAllDepartmentData] = useState();
@@ -92,8 +98,10 @@ export default function CreateTicketComponent() {
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
+  const [inputDataSourceData, setInputDataSourceData] = useState();
+  const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-
+  // const [checkRole, setCheckRole] = useState(null);
   const [parent, setParent] = useState();
   const [parentName, setParentName] = useState();
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -295,8 +303,12 @@ export default function CreateTicketComponent() {
     }
   };
 
+  const roleId = sessionStorage.getItem('role_id');
   const ticketTypeRefs = useRef();
-
+  const customerMappingData = useSelector(
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.customerMappingData
+  );
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
@@ -311,6 +323,7 @@ export default function CreateTicketComponent() {
     setIsSubmitted(true);
 
     const formData = new FormData(e.target);
+
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
         formData.append('bulk_images[' + i + ']', selectedFiles[i].file.file);
@@ -513,13 +526,16 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
+
     const status = 1;
 
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
+
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
+
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -552,6 +568,7 @@ export default function CreateTicketComponent() {
       }
     });
 
+
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
@@ -560,6 +577,7 @@ export default function CreateTicketComponent() {
     });
 
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
+
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
@@ -662,11 +680,13 @@ export default function CreateTicketComponent() {
   };
 
   const handleQueryGroupDropDown = async (e) => {
+
     try {
       setQueryGroupTypeData([]);
       setNotify({});
       if (queryTypeRef?.current) {
         queryTypeRef?.current.clearValue();
+
       }
 
       const res = await new QueryTypeService().getQueryTypeMapped(e.value);
@@ -742,6 +762,7 @@ export default function CreateTicketComponent() {
         const accountFor = localStorage.getItem('account_for');
 
         if (x?.length > 0) {
+
           const filteredItems = x.filter((item) =>
             accountFor === 'SELF'
               ? !item.customer_type_id || item.customer_type_id === '0'
@@ -754,12 +775,11 @@ export default function CreateTicketComponent() {
             .map((item) => item.confirmation_required)
             .join(',');
 
+
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-
-            newPrev['confirmation_required'] = confirmationRequiredID;
-
+            newPrev['confirmation_required'] = x[0].confirmation_required;
             newPrev['priority'] = x[0].priority;
             return newPrev;
           });
@@ -1193,8 +1213,6 @@ export default function CreateTicketComponent() {
                         checked={
                           data.confirmation_required == '1' ||
                           data.confirmation_required == 1
-                            ? 1
-                            : 1
                         }
                         onChange={(e) =>
                           handleAutoChanges(e, 'Radio', 'confirmation_required')

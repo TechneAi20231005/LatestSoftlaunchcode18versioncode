@@ -1,4 +1,4 @@
-//
+// 
 
 // import axios from "axios";
 // import {userSessionData} from '../../settings/constants';
@@ -6,14 +6,14 @@
 
 // const _URL=masterURL.queryType;
 
-// const _getAllQueryType=_URL+"/getAllQueryType/"+userSessionData.tenantId;
-// const _postQueryType=_URL+"/createQueryType";
-// const _getQueryTypeById=_URL+"/getQueryTypeById/";
-// const _updateQueryType=_URL+"/updateQueryType/";
-// const _getQueryTypeForm=_URL+"/getQueryTypeForm/"+userSessionData.tenantId;
+// const _getAllQueryType=_URL+"/getAllQueryType/"+userSessionData.tenantId;    
+// const _postQueryType=_URL+"/createQueryType";    
+// const _getQueryTypeById=_URL+"/getQueryTypeById/";    
+// const _updateQueryType=_URL+"/updateQueryType/";    
+// const _getQueryTypeForm=_URL+"/getQueryTypeForm/"+userSessionData.tenantId; 
 
 // export function getDateTime(){
-//     var now = new Date();
+//     var now = new Date(); 
 //     let year=now.getFullYear();
 //     let month=now.getMonth()+1;
 //         month= month  >= 10 ?  month : `0${month}`
@@ -30,18 +30,18 @@
 //     getQueryType(){
 //         return axios.get(_getAllQueryType);
 //     }
-
+    
 //      postQueryType(payload){
 //         payload.append('tenant_id',userSessionData.tenantId);
 //         payload.append('created_by',userSessionData.userId);
-//         payload.append('created_at',getDateTime());
+//         payload.append('created_at',getDateTime());  
 //         return axios.post(_postQueryType,payload)
 //     }
-
+    
 //     getQueryTypeById(id){
 //         return axios.get(_getQueryTypeById+id);
 //     }
-
+    
 //     updateQueryType(id,payload){
 //         payload.append('updated_by',userSessionData.userId);
 //         payload.append('updated_at',getDateTime());
@@ -126,20 +126,23 @@
 //     }
 // }
 
+
+
+
 // import axios from "axios";
 // import {userSessionData} from '../../settings/constants';
 // import {masterURL} from '../../settings/constants';
 
 // const _URL=masterURL.queryType;
 
-// const _getAllQueryType=_URL+"/getAllQueryType/"+userSessionData.tenantId;
-// const _postQueryType=_URL+"/createQueryType";
-// const _getQueryTypeById=_URL+"/getQueryTypeById/";
-// const _updateQueryType=_URL+"/updateQueryType/";
-// const _getQueryTypeForm=_URL+"/getQueryTypeForm/"+userSessionData.tenantId;
+// const _getAllQueryType=_URL+"/getAllQueryType/"+userSessionData.tenantId;    
+// const _postQueryType=_URL+"/createQueryType";    
+// const _getQueryTypeById=_URL+"/getQueryTypeById/";    
+// const _updateQueryType=_URL+"/updateQueryType/";    
+// const _getQueryTypeForm=_URL+"/getQueryTypeForm/"+userSessionData.tenantId; 
 
 // export function getDateTime(){
-//     var now = new Date();
+//     var now = new Date(); 
 //     let year=now.getFullYear();
 //     let month=now.getMonth()+1;
 //         month= month  >= 10 ?  month : `0${month}`
@@ -156,18 +159,18 @@
 //     getQueryType(){
 //         return axios.get(_getAllQueryType);
 //     }
-
+    
 //      postQueryType(payload){
 //         payload.append('tenant_id',userSessionData.tenantId);
 //         payload.append('created_by',userSessionData.userId);
-//         payload.append('created_at',getDateTime());
+//         payload.append('created_at',getDateTime());  
 //         return axios.post(_postQueryType,payload)
 //     }
-
+    
 //     getQueryTypeById(id){
 //         return axios.get(_getQueryTypeById+id);
 //     }
-
+    
 //     updateQueryType(id,payload){
 //         payload.append('updated_by',userSessionData.userId);
 //         payload.append('updated_at',getDateTime());
@@ -179,11 +182,12 @@
 //     }
 // }
 
-import axios from 'axios';
+import axios from "axios";
 import { userSessionData } from '../../settings/constants';
 import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.queryType;
+
 
 const _getAllQueryType = _URL + '/getAllQueryType1';
 const _getAllQueryGroup = _URL + '/getAllQueryGroup';
@@ -194,21 +198,22 @@ const _updateQueryType = _URL + '/updateQueryType1/';
 const _getQueryTypeForm = _URL + '/getQueryTypeForm';
 const _updateQueryGroup = _URL + '/updateQueryGroup/';
 
+
 export function getDateTime() {
-  var now = new Date();
-  let year = now.getFullYear();
-  let month = now.getMonth() + 1;
-  month = month >= 10 ? month : `0${month}`;
-  let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
-  let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
-  let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
-  let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
-  var datetime =
-    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
-  return datetime;
+    var now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1;
+    month = month >= 10 ? month : `0${month}`
+    let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`
+    let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`
+    let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`
+    let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`
+    var datetime = year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+    return datetime;
 }
 
 export default class QueryTypeService {
+
   getQueryType() {
     const token = localStorage.getItem('jwt_token');
 
