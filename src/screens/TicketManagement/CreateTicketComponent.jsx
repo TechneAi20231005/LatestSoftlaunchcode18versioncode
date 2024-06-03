@@ -114,7 +114,7 @@ export default function CreateTicketComponent() {
   const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState([]);
   const fileInputRef = useRef(null);
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -384,34 +384,15 @@ export default function CreateTicketComponent() {
           } else {
             setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
-
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              res.message
-            );
           }
         })
-        .catch((error) => {
-          if (error.response) {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setIsSubmitted(false);
-            setNotify({ type: 'danger', message: 'Request Error !!!' });
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              errorObject.data.message
-            );
-          } else {
-          }
+        .catch((res) => {
+          setNotify({ type: 'danger', message: res.message });
         });
     }
   };
 
-  const queryTypeRef = useRef();
+  const queryTypeRef = useRef(null);
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
@@ -546,11 +527,15 @@ export default function CreateTicketComponent() {
     const query_type_id = '';
     const queryTypeTemp = [];
 
+    const status = 1;
+
+    dispatch(getEmployeeDataById(localStorage.getItem('id')));
+
+
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
-        const queryType = [];
-        const department = [];
+
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -583,7 +568,16 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new QueryTypeService().getAllQueryGroup().then((res) => {
+
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
+    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      if (res.payload.status == 200) {
+      }
+    });
+
+    await new QueryTypeService().getAllQueryGroup(status).then((res) => {
+
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
@@ -686,36 +680,31 @@ export default function CreateTicketComponent() {
   };
 
   const handleQueryGroupDropDown = async (e) => {
-    if (queryTypeRef.current) {
-      queryTypeRef.current.clearValue();
-    }
-    await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
-      if (res.data.status == 1) {
-        setQueryGroupTypeData(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.query_type_name }))
-        );
-      }
-    });
-  };
 
-  const handleParentchange = async (e) => {
-    if (ticketTypeRefs.current) {
-      ticketTypeRefs.current.clearValue();
-    }
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setGetAllType(
-            temp
-              .filter((d) => d.type === 'TICKET' && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
+    try {
+      setQueryGroupTypeData([]);
+      setNotify({});
+      if (queryTypeRef?.current) {
+        queryTypeRef?.current.clearValue();
+
       }
-    });
+
+      const res = await new QueryTypeService().getQueryTypeMapped(e.value);
+
+      if (res.data.status === 1) {
+        const activeData = res.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }));
+        setQueryGroupTypeData(activeData);
+      } else {
+        setNotify({
+          type: 'danger',
+          message: 'No Query type mapped for this Query group'
+        });
+      }
+    } catch (res) {
+      setNotify({ type: 'danger', message: res.message });
+    }
   };
 
   const handleGetDepartmentUsers = async (e) => {
@@ -743,40 +732,6 @@ export default function CreateTicketComponent() {
       }
     });
   };
-
-  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
-  //   const primaryLabel = "Primary";
-  //   const options = [];
-
-  //   // Push the primary label if it hasn't been pushed before
-  //   if (!hasPrimaryLabel) {
-  //     options.push({
-  //       ID: null,
-  //       label: primaryLabel,
-  //       isStatic: true,
-  //       options: [],
-  //     });
-  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-  //   }
-
-  //   // Process the ticketData
-  //   ticketsData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children
-  //           ? transformDataTicket(item.children, hasPrimaryLabel)
-  //           : [],
-  //       });
-  //     }
-  //   });
-
-  //   return options;
-  // }
 
   function transformDataTicket(ticketsData) {
     const options = [];
@@ -807,13 +762,20 @@ export default function CreateTicketComponent() {
         const accountFor = localStorage.getItem('account_for');
 
         if (x?.length > 0) {
-          const mappingId = x
-            .filter((item) =>
-              accountFor === 'SELF'
-                ? !item.customer_type_id || item.customer_type_id === '0'
-                : item.customer_type_id
-            )
-            .map((item) => item.id);
+
+          const filteredItems = x.filter((item) =>
+            accountFor === 'SELF'
+              ? !item.customer_type_id || item.customer_type_id === '0'
+              : item.customer_type_id
+          );
+
+          const mappingId = filteredItems.map((item) => item.id);
+
+          const confirmationRequiredID = filteredItems
+            .map((item) => item.confirmation_required)
+            .join(',');
+
+
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
@@ -856,6 +818,7 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
+
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
           type="hidden"
@@ -965,7 +928,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData && (
+                {queryGroupTypeData.length > 0 && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
