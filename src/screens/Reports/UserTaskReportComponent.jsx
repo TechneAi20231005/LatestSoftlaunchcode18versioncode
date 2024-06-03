@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, } from 'react';
 import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
 import ReportService from '../../services/ReportService/ReportService';
 import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
-import { Spinner, Modal } from 'react-bootstrap';
+
 import * as Validation from '../../components/Utilities/Validation';
 import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
-import { Astrick } from '../../components/Utilities/Style';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 
 function UserTaskReportComponent() {
   const dispatch = useDispatch();
@@ -213,14 +213,17 @@ function UserTaskReportComponent() {
                 <label>
                   <b>Select User :</b>
                 </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                />
+                {showLoaderModal && <DropdownLoadingSkeleton />}
+                {!showLoaderModal && userData && (
+                  <Select
+                    isMulti
+                    isSearchable={true}
+                    name="user_id[]"
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    options={userData}
+                  />
+                )}
               </div>
               <div className="col-md-3">
                 <label>
@@ -292,13 +295,13 @@ function UserTaskReportComponent() {
         </div>
       </div>
 
-      {isLoading && <TableLoadingSkelton />}
-
-      {!isLoading && data && data.length > 0 && (
-        <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
+      <div className="card mt-2">
+        <div className="card-body">
+          <div className="row clearfix g-3">
+            <div className="col-sm-12">
+              {isLoading ? (
+                <TableLoadingSkelton />
+              ) : data && data.length > 0 ? (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -308,22 +311,13 @@ function UserTaskReportComponent() {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
-              </div>
+              ) : (
+                <div className="text-center">No data found</div>
+              )}
             </div>
           </div>
         </div>
-      )}
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+      </div>
     </div>
   );
 }

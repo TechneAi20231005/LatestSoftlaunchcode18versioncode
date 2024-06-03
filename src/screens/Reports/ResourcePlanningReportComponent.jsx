@@ -15,6 +15,7 @@ import { _base, userSessionData } from '../../settings/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -265,15 +266,18 @@ export default function ResourcePlanningReportComponent() {
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                  required
-                />
+                {showLoaderModal && <DropdownLoadingSkeleton />}
+                {!showLoaderModal && userData && (
+                  <Select
+                    isMulti
+                    isSearchable={true}
+                    name="user_id[]"
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    options={userData}
+                    required
+                  />
+                )}
               </div>
 
               <div className="col-md-3">
@@ -338,8 +342,9 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {isLoading && <TableLoadingSkelton />}
-              {!isLoading && data && (
+              {isLoading ? (
+                <TableLoadingSkelton />
+              ) : data && data.length > 0 ? (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -351,6 +356,8 @@ export default function ResourcePlanningReportComponent() {
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
                 />
+              ) : (
+                <div className="text-center">No data found</div>
               )}
             </div>
           </div>

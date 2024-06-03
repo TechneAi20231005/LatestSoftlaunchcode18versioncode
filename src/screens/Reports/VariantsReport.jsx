@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import { Modal, Spinner, Table } from "react-bootstrap";
-import { Astrick } from "../../components/Utilities/Style";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
 
-import { getRoles } from "../Dashboard/DashboardAction";
-import { useDispatch, useSelector } from "react-redux";
-import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
+import { Astrick } from '../../components/Utilities/Style';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+
+import { getRoles } from '../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
+import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
+import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -28,56 +29,56 @@ export default function ResourcePlanningReportComponent() {
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
 
   const columns = [
-    { name: "Sr", selector: (row) => row.sr, sortable: true, width: "75px" },
-    { name: "Ticket Id", selector: (row) => row.ticket_id, sortable: true },
+    { name: 'Sr', selector: (row) => row.sr, sortable: true, width: '75px' },
+    { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
-      name: "Task Owner",
+      name: 'Task Owner',
       selector: (row) => row.task_owner,
       sortable: true,
-      width: "175px",
+      width: '175px'
     },
     {
-      name: "Task Name",
+      name: 'Task Name',
       selector: (row) => row.task_name,
       sortable: true,
-      width: "175px",
+      width: '175px'
     },
     {
-      name: "Start Date",
+      name: 'Start Date',
       selector: (row) => row.task_start_Date,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Task Scheduled Hours",
+      name: 'Task Scheduled Hours',
       selector: (row) => row.task_scheduled_Hours,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Actual Worked",
+      name: 'Actual Worked',
       selector: (row) => row.task_actual_worked,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Delivery Scheduled",
+      name: 'Delivery Scheduled',
       selector: (row) => row.task_delivery_scheduled,
-      sortable: true,
+      sortable: true
     },
-    { name: "Status", selector: (row) => row.task_status, sortable: true },
+    { name: 'Status', selector: (row) => row.task_status, sortable: true },
     {
-      name: "Actual Status",
+      name: 'Actual Status',
       selector: (row) => row.task_actual_status,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Completed At",
+      name: 'Completed At',
       selector: (row) => row.task_completed_at,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
 
   const loadData = async () => {
@@ -85,22 +86,22 @@ export default function ResourcePlanningReportComponent() {
     const tempUserData = [];
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         const data = res.data.data.filter(
-          (d) => d.is_active === 1 && d.account_for === "SELF"
+          (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -116,23 +117,23 @@ export default function ResourcePlanningReportComponent() {
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
     setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
+      setfromyear + '' + setfrommonth + '' + setfromdate;
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
@@ -145,15 +146,15 @@ export default function ResourcePlanningReportComponent() {
     const exportTempData = [];
 
     if (todateformat > fromdateformat) {
-      alert("Please select Date After From date");
+      alert('Please select Date After From date');
     } else {
       await new ReportService()
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
             setIsLoading(false);
-            // setShowLoaderModal(false);
-            if (res.data.status == 1) {
+            setShowLoaderModal(false);
+            if (res.data.status === 1) {
               let sr = 1;
               const data = res.data.data;
               if (data && data.length > 0) {
@@ -171,7 +172,7 @@ export default function ResourcePlanningReportComponent() {
                     task_status: data[key].task_status,
                     task_actual_status: data[key].task_actual_status,
                     task_updated_at: data[key].updated_at,
-                    task_completed_at: data[key].task_completed_at,
+                    task_completed_at: data[key].task_completed_at
                   });
                 }
                 setData(null);
@@ -192,7 +193,7 @@ export default function ResourcePlanningReportComponent() {
                     task_status: data[key].task_status,
                     task_actual_status: data[key].task_actual_status,
                     task_updated_at: data[key].updated_at,
-                    task_completed_at: data[key].task_completed_at,
+                    task_completed_at: data[key].task_completed_at
                   });
                 }
 
@@ -206,9 +207,9 @@ export default function ResourcePlanningReportComponent() {
             }
           } else {
             new ErrorLogService().sendErrorLog(
-              "VariantsReport",
-              "Get_VariantsReport",
-              "INSERT",
+              'VariantsReport',
+              'Get_VariantsReport',
+              'INSERT',
               res.message
             );
           }
@@ -217,9 +218,9 @@ export default function ResourcePlanningReportComponent() {
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
-            "VariantsReport",
-            "Get_VariantsReport",
-            "INSERT",
+            'VariantsReport',
+            'Get_VariantsReport',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -248,7 +249,8 @@ export default function ResourcePlanningReportComponent() {
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
-                {userData && (
+                {showLoaderModal && <DropdownLoadingSkeleton />}
+                {!showLoaderModal && userData && (
                   <Select
                     isMulti
                     isSearchable={true}
@@ -324,9 +326,9 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              
-              {isLoading && <TableLoadingSkelton />}
-              {!isLoading && data && (
+              {isLoading ? (
+                <TableLoadingSkelton />
+              ) : data && data.length > 0 ? (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -336,23 +338,13 @@ export default function ResourcePlanningReportComponent() {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
+              ) : (
+                <div className="text-center">No data found</div>
               )}
             </div>
           </div>
         </div>
       </div>
-
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
