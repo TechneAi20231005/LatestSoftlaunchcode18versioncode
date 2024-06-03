@@ -186,7 +186,7 @@ import { masterURL } from '../../settings/constants';
 const _URL = masterURL.queryType;
 
 const _getAllQueryType = _URL + '/getAllQueryType1';
-const _getAllQueryGroup = _URL + '/getAllQueryGroup/';
+const _getAllQueryGroup = _URL + '/getAllQueryGroup';
 const _postQueryType = _URL + '/createQueryType1';
 const _postQueryGroup = _URL + '/createQueryGroup';
 const _getQueryTypeById = _URL + '/getQueryTypeById/';
@@ -233,8 +233,11 @@ export default class QueryTypeService {
         'Content-Type': 'application/json'
       }
     };
-
-    return axios.get(_getAllQueryGroup + status, config);
+    if (status) {
+      return axios.get(_getAllQueryGroup + '/' + status, config);
+    } else {
+      return axios.get(_getAllQueryGroup, config);
+    }
   }
 
   getQueryTypeMapped(id) {

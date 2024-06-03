@@ -532,17 +532,13 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
-    const status=1
-    console.log('id', localStorage.getItem('id'));
+    const status = 1;
 
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
-        console.log(res);
-        const queryType = [];
-        const department = [];
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -579,7 +575,6 @@ export default function CreateTicketComponent() {
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
-        console.log('dataNew', res.payload.data);
       }
     });
 
@@ -690,7 +685,6 @@ export default function CreateTicketComponent() {
       queryTypeRef.current.clearValue();
     }
     await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
-      console.log('res', res);
       if (res.data.status == 1) {
         setQueryGroupTypeData(
           res.data.data
@@ -815,6 +809,7 @@ export default function CreateTicketComponent() {
           );
 
           const mappingId = filteredItems.map((item) => item.id);
+
           const confirmationRequiredID = filteredItems
             .map((item) => item.confirmation_required)
             .join(',');
@@ -863,17 +858,15 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
-      {console.log('data', data)}
 
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
-        {console.log(data)}
-        {/* <input
+        <input
           type="hidden"
           className="form-control form-control-sm"
           id="customer_mapping_id"
           name="customer_mapping_id"
           value={data && data.customer_mapping_id}
-        /> */}
+        />
 
         <div className="card mt-2">
           <div className="card-body">
@@ -974,12 +967,6 @@ export default function CreateTicketComponent() {
                     />
                   )}
                 </div>
-                {console.log(
-                  'queryGroupTypeData',
-                  queryGroupTypeData?.filter(
-                    (d) => d.value === data.query_type_id
-                  )
-                )}
 
                 {queryGroupTypeData && (
                   <div className="col-sm-3">
@@ -1247,8 +1234,6 @@ export default function CreateTicketComponent() {
                   </div>
                 )} */}
               </div>
-
-              {console.log('data', data)}
 
               {data.ticket_uploading == 'REGULAR' && (
                 <div className="form-group row mt-3">
