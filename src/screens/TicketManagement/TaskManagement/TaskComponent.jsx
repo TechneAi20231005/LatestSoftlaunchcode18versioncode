@@ -186,7 +186,9 @@ export default function TaskComponent({ match }) {
             res.data.data.map((tasks, index) => {
               setBasketStartDate(tasks.start_date);
               tasks.taskData.forEach((d, i) => {
-                let taskOwnerNames = d.taskOwners.map((owner) => owner.taskOwnerName).join(', ');
+                let taskOwnerNames = d.taskOwners
+                  .map((owner) => owner.taskOwnerName)
+                  .join(', ');
                 tasksDataa.push({
                   ticket_id_name: d.ticket_id_name,
                   Task_Names: d.task_name,
@@ -363,7 +365,9 @@ export default function TaskComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-          setTaskDropdown(temp.map((d) => ({ value: d.id, label: d.task_name })));
+          setTaskDropdown(
+            temp.map((d) => ({ value: d.id, label: d.task_name }))
+          );
         }
       }
     });
@@ -451,7 +455,9 @@ export default function TaskComponent({ match }) {
           endDate: ''
         });
 
-        const sprintRes = await new SprintService().getSprintByTicketId(ticketId);
+        const sprintRes = await new SprintService().getSprintByTicketId(
+          ticketId
+        );
         if (sprintRes?.data?.status) {
           setSprintdata(sprintRes?.data?.data);
           const temp = sprintRes?.data?.data?.map((data) => ({
@@ -484,7 +490,9 @@ export default function TaskComponent({ match }) {
         return null;
       }
       setSprintCardData((prevState) => {
-        let filteredArray = prevState?.filter((sprint) => sprint.id === selectedOption?.value);
+        let filteredArray = prevState?.filter(
+          (sprint) => sprint.id === selectedOption?.value
+        );
         return filteredArray;
       });
 
@@ -497,7 +505,9 @@ export default function TaskComponent({ match }) {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex((sprint) => sprint.id === currentSprintCard[0].id);
+    let currentIndex = sprintData.findIndex(
+      (sprint) => sprint.id === currentSprintCard[0].id
+    );
 
     setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
@@ -512,7 +522,9 @@ export default function TaskComponent({ match }) {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex((sprint) => sprint.id === currentSprintCard[0].id);
+    let currentIndex = sprintData.findIndex(
+      (sprint) => sprint.id === currentSprintCard[0].id
+    );
     setCurrentSprintIndex(currentIndex);
 
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
@@ -524,35 +536,37 @@ export default function TaskComponent({ match }) {
   };
 
   const getSprintReport = async (sprintId) => {
-    await new SprintService().getSprintReportById(ticketId, sprintId).then((res) => {
-      if (res?.data?.status) {
-        let temp = res?.data?.data;
-        setSprintReport(temp);
-        setShowSprintReport(true);
-        let exportSprintReport = [];
-        let count = 0;
-        for (let i = 0; i < temp.length; i++) {
-          count++;
-          temp[i].counter = count;
-          exportSprintReport.push({
-            'Sr no': count,
-            'sprint Name': temp[i]?.sprint_name,
-            'Sprint Start date': temp[i]?.sprint_start_date,
-            'Sprint End Date': temp[i]?.sprint_end_date,
-            'Task Name': temp[i]?.task_name,
-            'Task Users': temp[i]?.task_owner,
-            'Task Start Date': temp[i]?.task_start_Date,
-            'Task End Date': temp[i]?.task_delivery_scheduled,
-            'Task actual completed date': temp[i]?.task_completed_at,
-            'Task scheduled hours': temp[i]?.task_scheduled_Hours,
-            'Task actual hours played': temp[i]?.task_actual_worked,
-            'Task status': temp[i]?.task_status,
-            'Actual status': temp[i]?.task_actual_status
-          });
+    await new SprintService()
+      .getSprintReportById(ticketId, sprintId)
+      .then((res) => {
+        if (res?.data?.status) {
+          let temp = res?.data?.data;
+          setSprintReport(temp);
+          setShowSprintReport(true);
+          let exportSprintReport = [];
+          let count = 0;
+          for (let i = 0; i < temp.length; i++) {
+            count++;
+            temp[i].counter = count;
+            exportSprintReport.push({
+              'Sr no': count,
+              'sprint Name': temp[i]?.sprint_name,
+              'Sprint Start date': temp[i]?.sprint_start_date,
+              'Sprint End Date': temp[i]?.sprint_end_date,
+              'Task Name': temp[i]?.task_name,
+              'Task Users': temp[i]?.task_owner,
+              'Task Start Date': temp[i]?.task_start_Date,
+              'Task End Date': temp[i]?.task_delivery_scheduled,
+              'Task actual completed date': temp[i]?.task_completed_at,
+              'Task scheduled hours': temp[i]?.task_scheduled_Hours,
+              'Task actual hours played': temp[i]?.task_actual_worked,
+              'Task status': temp[i]?.task_status,
+              'Actual status': temp[i]?.task_actual_status
+            });
+          }
+          setExportSprintData([...exportSprintReport]);
         }
-        setExportSprintData([...exportSprintReport]);
-      }
-    });
+      });
   };
 
   const viewSprint = (sprintCard) => {
@@ -594,36 +608,42 @@ export default function TaskComponent({ match }) {
       end_date: sprintInput?.endDate
     };
 
-    await new SprintService().updateSprintDetail(payload, sprint_id).then(async (res) => {
-      if (res?.data?.status === 1) {
-        setNotify({ type: 'success', message: res?.data?.message });
-        setSprintModal({
-          showModal: false,
-          modalData: '',
-          modalHeader: ''
-        });
-        setSprintInput({
-          sprintName: '',
-          sprintDescription: '',
-          startDate: '',
-          endDate: ''
-        });
-        await new SprintService().getSprintByTicketId(ticketId).then((res) => {
-          if (res?.data?.status) {
-            setSprintdata(res?.data?.data);
-            let temp = res?.data?.data?.map((data) => ({
-              label: data.name,
-              value: data.id
-            }));
-            setSprintDropDown(temp);
-            let showUpdatedData = res?.data?.data?.filter((sprint) => sprint.id === sprint_id);
-            setSprintCardData(showUpdatedData);
-          }
-        });
-      } else {
-        setNotify({ type: 'danger', message: res?.data?.message });
-      }
-    });
+    await new SprintService()
+      .updateSprintDetail(payload, sprint_id)
+      .then(async (res) => {
+        if (res?.data?.status === 1) {
+          setNotify({ type: 'success', message: res?.data?.message });
+          setSprintModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+          setSprintInput({
+            sprintName: '',
+            sprintDescription: '',
+            startDate: '',
+            endDate: ''
+          });
+          await new SprintService()
+            .getSprintByTicketId(ticketId)
+            .then((res) => {
+              if (res?.data?.status) {
+                setSprintdata(res?.data?.data);
+                let temp = res?.data?.data?.map((data) => ({
+                  label: data.name,
+                  value: data.id
+                }));
+                setSprintDropDown(temp);
+                let showUpdatedData = res?.data?.data?.filter(
+                  (sprint) => sprint.id === sprint_id
+                );
+                setSprintCardData(showUpdatedData);
+              }
+            });
+        } else {
+          setNotify({ type: 'danger', message: res?.data?.message });
+        }
+      });
   };
 
   const column = [
@@ -754,7 +774,11 @@ export default function TaskComponent({ match }) {
   let currentDate = `${day}-${month}-${year}`;
 
   useEffect(() => {
-    getBasketData(sprintData[currentSprintIndex]?.id ? sprintData[currentSprintIndex]?.id : 0);
+    getBasketData(
+      sprintData[currentSprintIndex]?.id
+        ? sprintData[currentSprintIndex]?.id
+        : 0
+    );
     loadData();
     getTicketData();
   }, []);
@@ -779,7 +803,9 @@ export default function TaskComponent({ match }) {
           <span className="visually-hidden">Loading...</span>
         </Spinner>
         {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>Loading...</div>
+        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
+          Loading...
+        </div>
       </div>
     );
   }
@@ -795,15 +821,30 @@ export default function TaskComponent({ match }) {
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
                 <strong>
-                  Ticket - {tasksData && tasksData?.length > 0 && tasksData[0].ticket_id_name}
+                  Ticket -{' '}
+                  {tasksData &&
+                    tasksData?.length > 0 &&
+                    tasksData[0].ticket_id_name}
                   <i onClick={detailsHandler} style={{ cursor: 'pointer' }}>
                     {showDetails ? (
-                      <OverlayTrigger placement="right" overlay={<Tooltip>Hide Details</Tooltip>}>
-                        <i className="icofont-eye" style={{ fontSize: '27px' }}></i>
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={<Tooltip>Hide Details</Tooltip>}
+                      >
+                        <i
+                          className="icofont-eye"
+                          style={{ fontSize: '27px' }}
+                        ></i>
                       </OverlayTrigger>
                     ) : (
-                      <OverlayTrigger placement="right" overlay={<Tooltip>Show Details</Tooltip>}>
-                        <i className="icofont-eye-blocked" style={{ fontSize: '27px' }}></i>
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={<Tooltip>Show Details</Tooltip>}
+                      >
+                        <i
+                          className="icofont-eye-blocked"
+                          style={{ fontSize: '27px' }}
+                        ></i>
                       </OverlayTrigger>
                     )}
                   </i>
@@ -826,10 +867,17 @@ export default function TaskComponent({ match }) {
                 {/* Hamburger Menu for manage task */}
                 <div className="col-2 text-end">
                   <Dropdown onClick={handleRegularizationRequest}>
-                    <Dropdown.Toggle as="button" variant="" className="btn btn-outline-primary p-1">
+                    <Dropdown.Toggle
+                      as="button"
+                      variant=""
+                      className="btn btn-outline-primary p-1"
+                    >
                       <i className="icofont-navigation-menu"></i>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu as="ul" className="border-0 shadow p-2 dropdown-menu-columns">
+                    <Dropdown.Menu
+                      as="ul"
+                      className="border-0 shadow p-2 dropdown-menu-columns"
+                    >
                       <li>
                         <ExportToExcel
                           className="btn btn-sm btn-danger btn-custom  w-100"
@@ -839,16 +887,18 @@ export default function TaskComponent({ match }) {
                         />
                       </li>
                       <li>
-                        {ownership && (ownership === 'TICKET' || ownership === 'PROJECT') && (
-                          <button
-                            className="btn btn-sm btn-primary text-white btn-custom w-100"
-                            onClick={(e) => {
-                              handleShowBasketModal(null);
-                            }}
-                          >
-                            Create Basket
-                          </button>
-                        )}
+                        {ownership &&
+                          (ownership === 'TICKET' ||
+                            ownership === 'PROJECT') && (
+                            <button
+                              className="btn btn-sm btn-primary text-white btn-custom w-100"
+                              onClick={(e) => {
+                                handleShowBasketModal(null);
+                              }}
+                            >
+                              Create Basket
+                            </button>
+                          )}
                       </li>
                       {/* Add Sprint Button  in hamburger*/}
 
@@ -862,7 +912,9 @@ export default function TaskComponent({ match }) {
                               modalHeader: 'Add'
                             });
                           }}
-                          disabled={ownership !== 'TICKET' && ownership !== 'PROJECT'}
+                          disabled={
+                            ownership !== 'TICKET' && ownership !== 'PROJECT'
+                          }
                         >
                           + Sprint
                         </button>
@@ -942,7 +994,10 @@ export default function TaskComponent({ match }) {
                               maxWidth: '250px'
                             }}
                           >
-                            <div className="card" style={{ backgroundColor: '#EBF5FB' }}>
+                            <div
+                              className="card"
+                              style={{ backgroundColor: '#EBF5FB' }}
+                            >
                               <div className="card-header">
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
@@ -981,7 +1036,14 @@ export default function TaskComponent({ match }) {
                   role="button"
                   onClick={showPrevious}
                 >
-                  <rect x="0.75" y="0.25" width="23.5" height="23.5" rx="11.75" fill="#F9FBFD" />
+                  <rect
+                    x="0.75"
+                    y="0.25"
+                    width="23.5"
+                    height="23.5"
+                    rx="11.75"
+                    fill="#F9FBFD"
+                  />
                   <rect
                     x="0.75"
                     y="0.25"
@@ -1002,7 +1064,9 @@ export default function TaskComponent({ match }) {
               </div>
 
               <div className="col-8 text-center">
-                <span className=" fs-4 text-primary fw-bold">{sprintCardData[0]?.name}</span>
+                <span className=" fs-4 text-primary fw-bold">
+                  {sprintCardData[0]?.name}
+                </span>
               </div>
               <div
                 className={'col-2 text-start'}
@@ -1017,7 +1081,14 @@ export default function TaskComponent({ match }) {
                   fill="none"
                   role="button"
                 >
-                  <rect x="0.75" y="0.25" width="23.5" height="23.5" rx="11.75" fill="#F9FBFD" />
+                  <rect
+                    x="0.75"
+                    y="0.25"
+                    width="23.5"
+                    height="23.5"
+                    rx="11.75"
+                    fill="#F9FBFD"
+                  />
                   <rect
                     x="0.75"
                     y="0.25"
@@ -1052,12 +1123,6 @@ export default function TaskComponent({ match }) {
                 </span>
               </div>
               <div className="fs-5">
-                {/* <Link
-                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-calendar`}
-                  className="ms-1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                > */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
@@ -1075,11 +1140,7 @@ export default function TaskComponent({ match }) {
                     fill="white"
                   />
                 </svg>
-                {/* </Link> */}
-                {/* <Link
-                  to={`/${_base}/Ticket/Task/${ticketId}/sprint-graph/${sprintFirstDate}to${sprintLastDate}`}
-                  className="ms-1"
-                > */}
+
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1100,8 +1161,11 @@ export default function TaskComponent({ match }) {
                     />
                   </svg>
                 </span>
-                {/* </Link> */}
-                <button className="border-0 p-0 ms-1" disabled={ownership !== 'PROJECT'}>
+
+                <button
+                  className="border-0 p-0 ms-1"
+                  disabled={ownership !== 'PROJECT'}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
@@ -1228,7 +1292,10 @@ export default function TaskComponent({ match }) {
                             handleRequestSubmit(item.id, item.ticket_task_id);
                           }}
                         >
-                          <i className="icofont-ui-check" style={{ fontSize: '12px' }}></i>
+                          <i
+                            className="icofont-ui-check"
+                            style={{ fontSize: '12px' }}
+                          ></i>
                         </button>
                       </div>
                     </div>
@@ -1276,7 +1343,8 @@ export default function TaskComponent({ match }) {
                             className="badge bg-success text-end mt-2 p-1 px-3"
                             style={{ fontSize: '14px' }}
                           >
-                            {ele.total_worked ? ele.total_worked : 0}/{ele?.total_hours}
+                            {ele.total_worked ? ele.total_worked : 0}/
+                            {ele?.total_hours}
                           </span>
                         </div>
 
@@ -1292,7 +1360,11 @@ export default function TaskComponent({ match }) {
                                 style={{ padding: '10px 10px' }}
                                 name="newTaskButton"
                                 onClick={(e) => {
-                                  handleShowTaskModal(ele.ticket_id, ele.id, null);
+                                  handleShowTaskModal(
+                                    ele.ticket_id,
+                                    ele.id,
+                                    null
+                                  );
                                 }}
                               >
                                 <i
@@ -1314,7 +1386,12 @@ export default function TaskComponent({ match }) {
                             encType="multipart/form-data"
                           >
                             <div>
-                              <input type="hidden" id="basket_id" name="basket_id" value={ele.id} />
+                              <input
+                                type="hidden"
+                                id="basket_id"
+                                name="basket_id"
+                                value={ele.id}
+                              />
                               <input
                                 type="hidden"
                                 id="basket_id_array"
@@ -1377,7 +1454,9 @@ export default function TaskComponent({ match }) {
                     data={taskModalData}
                     show={showTaskModal}
                     ownership={ownership}
-                    loadBasket={() => getBasketData(sprintCardData[currentSprintIndex]?.id || 0)}
+                    loadBasket={() =>
+                      getBasketData(sprintCardData[currentSprintIndex]?.id || 0)
+                    }
                     allTaskList={allTaskList}
                     taskDropdown={taskDropdown}
                     close={handleCloseTaskModal}
@@ -1436,7 +1515,10 @@ export default function TaskComponent({ match }) {
                   <Modal.Body>
                     <form className="">
                       <div className="mb-3">
-                        <label for="exampleFormControlInput1" className="form-label">
+                        <label
+                          for="exampleFormControlInput1"
+                          className="form-label"
+                        >
                           <b>Sprint Name</b>
                           <span>
                             <Astrick color="red" /> :
@@ -1456,7 +1538,10 @@ export default function TaskComponent({ match }) {
                         />
                       </div>
                       <div>
-                        <label for="exampleFormControlInput1" className="form-label">
+                        <label
+                          for="exampleFormControlInput1"
+                          className="form-label"
+                        >
                           <b>Sprint Description </b>
                           <span>
                             <Astrick color="red" /> :
@@ -1535,7 +1620,9 @@ export default function TaskComponent({ match }) {
                       }
                       style={{ backgroundColor: '#484C7F' }}
                       onClick={
-                        sprintModal.modalHeader === 'Update' ? updateSprint : sprintFormHandle
+                        sprintModal.modalHeader === 'Update'
+                          ? updateSprint
+                          : sprintFormHandle
                       }
                     >
                       {sprintModal.modalHeader === 'Update' ? 'Update' : 'Save'}

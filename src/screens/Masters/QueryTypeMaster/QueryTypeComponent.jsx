@@ -453,6 +453,7 @@ function QueryTypeComponent() {
 
   const loadDataEditPopup = async () => {
     const data = [];
+    // const status = 1;
     const exportTempQueryGroupData = [];
     await new QueryTypeService()
       .getAllQueryGroup()
@@ -889,7 +890,6 @@ function QueryTypeComponent() {
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {console.log('data', data)}
                 {!isLoading && data && (
                   <DataTable
                     columns={columns}
@@ -1429,7 +1429,6 @@ function QueryTypeComponent() {
               <div className="card-body">
                 <div className="row clearfix g-3">
                   <div className="col-sm-12">
-                    {console.log('queryGroupData', queryGroupData)}
                     {data && (
                       <DataTable
                         columns={columnsEditPopup}
