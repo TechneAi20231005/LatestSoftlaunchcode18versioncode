@@ -664,6 +664,7 @@ export default function CreateTicketComponent() {
   const handleQueryGroupDropDown = async (e) => {
     try {
       setQueryGroupTypeData([]);
+      setNotify({});
       if (queryTypeRef?.current) {
         queryTypeRef?.current.clearValue();
       }
@@ -676,7 +677,10 @@ export default function CreateTicketComponent() {
           .map((d) => ({ value: d.id, label: d.query_type_name }));
         setQueryGroupTypeData(activeData);
       } else {
-        setNotify({ type: 'danger', message: res.data.message });
+        setNotify({
+          type: 'danger',
+          message: 'No Query type mapped for this Query group'
+        });
       }
     } catch (res) {
       setNotify({ type: 'danger', message: res.message });
@@ -904,7 +908,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData && (
+                {queryGroupTypeData.length > 0 && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
