@@ -12,7 +12,7 @@ import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 import { Link } from 'react-router-dom';
 import { _base,
-  
+
  } from '../../settings/constants';
 
 import { useDispatch, useSelector } from 'react-redux';
