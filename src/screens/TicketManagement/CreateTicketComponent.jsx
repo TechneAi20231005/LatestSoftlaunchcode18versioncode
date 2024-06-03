@@ -106,7 +106,7 @@ export default function CreateTicketComponent() {
   const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState([]);
   const fileInputRef = useRef(null);
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -371,19 +371,15 @@ export default function CreateTicketComponent() {
           } else {
             setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
-
-
           }
         })
         .catch((res) => {
-
-
           setNotify({ type: 'danger', message: res.message });
         });
     }
   };
 
-  const queryTypeRef = useRef();
+  const queryTypeRef = useRef(null);
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
@@ -666,36 +662,29 @@ export default function CreateTicketComponent() {
   };
 
   const handleQueryGroupDropDown = async (e) => {
-    if (queryTypeRef.current) {
-      queryTypeRef.current.clearValue();
-    }
-    await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
-      if (res.data.status == 1) {
-        setQueryGroupTypeData(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.query_type_name }))
-        );
+    try {
+      setQueryGroupTypeData([]);
+      setNotify({});
+      if (queryTypeRef?.current) {
+        queryTypeRef?.current.clearValue();
       }
-    });
-  };
 
-  const handleParentchange = async (e) => {
-    if (ticketTypeRefs.current) {
-      ticketTypeRefs.current.clearValue();
-    }
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setGetAllType(
-            temp
-              .filter((d) => d.type === 'TICKET' && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
+      const res = await new QueryTypeService().getQueryTypeMapped(e.value);
+
+      if (res.data.status === 1) {
+        const activeData = res.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }));
+        setQueryGroupTypeData(activeData);
+      } else {
+        setNotify({
+          type: 'danger',
+          message: 'No Query type mapped for this Query group'
+        });
       }
-    });
+    } catch (res) {
+      setNotify({ type: 'danger', message: res.message });
+    }
   };
 
   const handleGetDepartmentUsers = async (e) => {
@@ -724,40 +713,6 @@ export default function CreateTicketComponent() {
     });
   };
 
-  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
-  //   const primaryLabel = "Primary";
-  //   const options = [];
-
-  //   // Push the primary label if it hasn't been pushed before
-  //   if (!hasPrimaryLabel) {
-  //     options.push({
-  //       ID: null,
-  //       label: primaryLabel,
-  //       isStatic: true,
-  //       options: [],
-  //     });
-  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-  //   }
-
-  //   // Process the ticketData
-  //   ticketsData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children
-  //           ? transformDataTicket(item.children, hasPrimaryLabel)
-  //           : [],
-  //       });
-  //     }
-  //   });
-
-  //   return options;
-  // }
-
   function transformDataTicket(ticketsData) {
     const options = [];
 
@@ -779,8 +734,6 @@ export default function CreateTicketComponent() {
   // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketsData);
 
-
-  
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
       var value = type == 'Select2' ? e && e.value : e.target.value;
@@ -845,8 +798,6 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
-
-
 
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
@@ -957,7 +908,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData && (
+                {queryGroupTypeData.length > 0 && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
