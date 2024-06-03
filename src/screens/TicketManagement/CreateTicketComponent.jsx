@@ -317,7 +317,7 @@ export default function CreateTicketComponent() {
       }
     }
 
-    formData.append('r', selectedOptionId);
+    formData.append('parent_id', selectedOptionId);
 
     var flag = 1;
 
@@ -372,28 +372,13 @@ export default function CreateTicketComponent() {
             setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
 
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              res.message
-            );
+
           }
         })
-        .catch((error) => {
-          if (error.response) {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setIsSubmitted(false);
-            setNotify({ type: 'danger', message: 'Request Error !!!' });
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              errorObject.data.message
-            );
-          } else {
-          }
+        .catch((res) => {
+
+
+          setNotify({ type: 'danger', message: res.message });
         });
     }
   };
@@ -794,6 +779,8 @@ export default function CreateTicketComponent() {
   // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketsData);
 
+
+  
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
       var value = type == 'Select2' ? e && e.value : e.target.value;
@@ -858,6 +845,8 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
+
+
 
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
