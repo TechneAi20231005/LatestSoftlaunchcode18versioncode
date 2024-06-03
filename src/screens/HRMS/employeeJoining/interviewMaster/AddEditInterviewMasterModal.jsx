@@ -8,95 +8,111 @@ import CustomModal from '../../../../components/custom/modal/CustomModal';
 import {
   CustomDropdown,
   CustomInput,
-  CustomRadioButton,
+  CustomRadioButton
 } from '../../../../components/custom/inputs/CustomInputs';
 import { RenderIf } from '../../../../utils';
 import addEditInterviewMaster from './validation/addEditInterviewMaster';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { departmentData } from '../../../Masters/DepartmentMaster/DepartmentMasterAction';
-import { getDesignationData, getEmployeeData } from '../../../Dashboard/DashboardAction';
+import {
+  getDesignationData,
+  getEmployeeData
+} from '../../../Dashboard/DashboardAction';
 import {
   addInterviewMasterThunk,
   editInterviewMasterThunk,
-  getInterviewMasterListThunk,
+  getInterviewMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
 import { experienceLevel } from '../../../../settings/constants';
 
-function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }) {
+function AddEditInterviewMasterModal({
+  show,
+  close,
+  type,
+  currentInterviewData
+}) {
   // // initial state
   const dispatch = useDispatch();
   const addInterviewInitialValue = {
     department_id:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.department_id?.toString() : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.department_id?.toString()
+        : '',
     designation_id:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.designation_id?.toString() : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.designation_id?.toString()
+        : '',
     experience_level:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.experience_level : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.experience_level
+        : '',
     step_details:
       type === 'EDIT' || type === 'VIEW'
-        ? currentInterviewData?.details?.map(detail => ({
+        ? currentInterviewData?.details?.map((detail) => ({
             step_title: detail.step_title || '',
             designation_id: detail.designation_id?.toString() || '',
             employee_id: detail.employee_id?.toString() || '',
-            employee_email: detail.employee_email || '',
+            employee_email: detail.employee_email || ''
           }))
         : [
             {
               step_title: '',
               designation_id: '',
               employee_id: '',
-              employee_email: '',
-            },
+              employee_email: ''
+            }
           ],
-    remark: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.remark || '' : '',
+    remark:
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.remark || ''
+        : '',
     is_active:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.is_active?.toString() : '1',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.is_active?.toString()
+        : '1'
   };
 
   // // redux state
-  const { departmentData: departmentDataList, status: isDepartmentDataListLoading } = useSelector(
-    state => state?.department,
-  );
-  const { getDesignationData: designationMasterList, status: isDesignationMasterList } =
-    useSelector(DesignationSlice => DesignationSlice.designationMaster);
+  const {
+    departmentData: departmentDataList,
+    status: isDepartmentDataListLoading
+  } = useSelector((state) => state?.department);
+  const {
+    getDesignationData: designationMasterList,
+    status: isDesignationMasterList
+  } = useSelector((DesignationSlice) => DesignationSlice.designationMaster);
   const { employeeData, status: isEmployeeMasterList } = useSelector(
-    dashboardSlice => dashboardSlice.dashboard,
+    (dashboardSlice) => dashboardSlice.dashboard
   );
-  const { isLoading } = useSelector(state => state?.interviewMaster);
+  const { isLoading } = useSelector((state) => state?.interviewMaster);
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
-  const [selectedDesignationId, setSelectedDesignationId] = useState('');
-  const [employeesName, setEmployeesName] = useState(employeeData);
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: ''
+  });
 
   // // dropdown data
   const departmentType = departmentDataList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.department,
-      value: item?.id,
+      value: item?.id
     }));
 
   const designationType = designationMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
       label: item?.designation,
-      value: item?.id,
+      value: item?.id
     }));
 
-  useEffect(() => {
-    const filterData = employeeData
-      ?.filter(
-        item =>
-          item?.is_active === 1 &&
-          (selectedDesignationId ? Number(item?.designation_id) === +selectedDesignationId : true),
-      )
-      ?.map(item => ({
-        label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
-        value: item?.id,
-      }));
-    setEmployeesName(filterData);
-  }, [selectedDesignationId, employeeData]);
+  const employeeName = employeeData
+    ?.filter((item) => item?.is_active === 1)
+    ?.map((item) => ({
+      label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
+      value: item?.id
+    }));
 
   // // function
   const handelAddEditInterview = () => {
@@ -111,8 +127,8 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     } else if (type === 'EDIT') {
       dispatch(
@@ -126,8 +142,8 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     }
   };
@@ -143,8 +159,6 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
-    } else {
-      setSelectedDesignationId('');
     }
   }, [show]);
 
@@ -152,7 +166,9 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
     <>
       <CustomModal
         show={show}
-        title={`${type === 'ADD' ? 'Add' : type === 'VIEW' ? 'View' : 'Edit'} Interview Steps`}
+        title={`${
+          type === 'ADD' ? 'Add' : type === 'VIEW' ? 'View' : 'Edit'
+        } Interview Steps`}
         width="xl"
       >
         <h6 className="text_primary fs-6 mb-0">Opening Details:</h6>
@@ -161,11 +177,14 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           initialValues={addInterviewInitialValue}
           enableReinitialize
           validationSchema={addEditInterviewMaster}
-          onSubmit={values => {
+          onSubmit={(values, errors) => {
             if (type === 'ADD' || type === 'EDIT') {
               setOpenConfirmModal({
                 open: true,
-                formData: { ...values, steps_count: values?.step_details?.length },
+                formData: {
+                  ...values,
+                  steps_count: values?.step_details?.length
+                }
               });
             }
           }}
@@ -180,7 +199,9 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     name="department_id"
                     label="Department"
                     placeholder={
-                      isDepartmentDataListLoading === 'loading' ? 'Loading...' : 'Select'
+                      isDepartmentDataListLoading === 'loading'
+                        ? 'Loading...'
+                        : 'Select'
                     }
                     requiredField
                     disabled={type === 'VIEW'}
@@ -192,7 +213,11 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     component={CustomDropdown}
                     name="designation_id"
                     label="Designation"
-                    placeholder={isDesignationMasterList === 'loading' ? 'Loading...' : 'Select'}
+                    placeholder={
+                      isDesignationMasterList === 'loading'
+                        ? 'Loading...'
+                        : 'Select'
+                    }
                     requiredField
                     disabled={type === 'VIEW'}
                   />
@@ -217,9 +242,15 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     <>
                       <Row key={index}>
                         <div className="d-flex justify-content-between align-items-center mb-1">
-                          <p className="text_primary mb-0">Step {index + 1}. Interviewer Details</p>
+                          <p className="text_primary mb-0">
+                            Step {index + 1}. Interviewer Details
+                          </p>
                           <RenderIf render={type !== 'VIEW'}>
-                            <RenderIf render={values.step_details.length === 1 && index === 0}>
+                            <RenderIf
+                              render={
+                                values.step_details.length === 1 && index === 0
+                              }
+                            >
                               <div className="d-flex justify-content-end">
                                 <button
                                   type="button"
@@ -229,7 +260,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                       step_title: '',
                                       designation_id: '',
                                       employee_id: '',
-                                      employee_email: '',
+                                      employee_email: ''
                                     })
                                   }
                                 >
@@ -246,7 +277,11 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                 >
                                   <i class="icofont-ui-remove" />
                                 </button>
-                                <RenderIf render={index === values.step_details.length - 1}>
+                                <RenderIf
+                                  render={
+                                    index === values.step_details.length - 1
+                                  }
+                                >
                                   <button
                                     type="button"
                                     className="btn btn-sm btn-dark"
@@ -256,7 +291,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                         step_title: '',
                                         designation_id: '',
                                         employee_id: '',
-                                        employee_email: '',
+                                        employee_email: ''
                                       })
                                     }
                                   >
@@ -284,33 +319,39 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                             name={`step_details[${index}].designation_id`}
                             label="Designation"
                             placeholder={
-                              isDesignationMasterList === 'loading' ? 'Loading...' : 'Select'
+                              isDesignationMasterList === 'loading'
+                                ? 'Loading...'
+                                : 'Select'
                             }
                             requiredField
                             disabled={type === 'VIEW'}
-                            handleChange={e => setSelectedDesignationId(e?.target?.value)}
                           />
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            data={employeesName}
+                            data={employeeName}
                             component={CustomDropdown}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
                             placeholder={
-                              isEmployeeMasterList === 'loading' ? 'Loading...' : 'Select'
+                              isEmployeeMasterList === 'loading'
+                                ? 'Loading...'
+                                : 'Select'
                             }
                             requiredField
                             disabled={type === 'VIEW'}
-                            handleChange={selectedOption => {
+                            handleChange={(selectedOption) => {
                               const selectedEmployee = employeeData.find(
-                                employee =>
-                                  Number(employee.id) === Number(selectedOption?.target?.value),
+                                (employee) =>
+                                  Number(employee.id) ===
+                                  Number(selectedOption?.target?.value)
                               );
                               const emailFieldName = `step_details[${index}].employee_email`;
                               setFieldValue(
                                 emailFieldName,
-                                selectedEmployee ? selectedEmployee.email_id : '',
+                                selectedEmployee
+                                  ? selectedEmployee.email_id
+                                  : ''
                               );
                             }}
                           />
@@ -368,15 +409,27 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
               </RenderIf>
               <div className="d-flex justify-content-end mt-3 gap-2">
                 {type === 'VIEW' ? (
-                  <button onClick={close} className="btn btn-dark px-4" type="button">
+                  <button
+                    onClick={close}
+                    className="btn btn-dark px-4"
+                    type="button"
+                  >
                     Ok
                   </button>
                 ) : (
                   <>
-                    <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
+                    <button
+                      className="btn btn-dark px-4"
+                      type="submit"
+                      disabled={!dirty}
+                    >
                       {type === 'ADD' ? 'Save' : 'Update'}
                     </button>
-                    <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                    <button
+                      onClick={close}
+                      className="btn btn-shadow-light px-3"
+                      type="button"
+                    >
                       Cancel
                     </button>
                   </>
@@ -390,11 +443,15 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       {/* Add edit interview steps confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
-        message={`Do you want to ${type === 'ADD' ? 'Add' : 'update'} this record?`}
+        message={`Do you want to ${
+          type === 'ADD' ? 'Add' : 'update'
+        } this record?`}
         type="success"
         onSuccess={handelAddEditInterview}
         onClose={() => setOpenConfirmModal({ open: false })}
-        isLoading={isLoading?.addInterviewMaster || isLoading?.editInterviewMaster}
+        isLoading={
+          isLoading?.addInterviewMaster || isLoading?.editInterviewMaster
+        }
       />
     </>
   );
