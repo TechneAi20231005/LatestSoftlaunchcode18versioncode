@@ -14,7 +14,10 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import { handleModalInStore, handleModalClose } from '../../Dashboard/DashbordSlice';
+import {
+  handleModalInStore,
+  handleModalClose
+} from '../../Dashboard/DashbordSlice';
 
 import { Spinner } from 'react-bootstrap';
 
@@ -24,7 +27,7 @@ import {
   getCountryDataSort,
   getStateDataSort,
   postCityData,
-  updateCityData,
+  updateCityData
 } from '../../Dashboard/DashboardAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
@@ -40,35 +43,50 @@ function CityComponent() {
 
   const [dependent, setDependent] = useState({
     country_id: null,
-    state_id: null,
+    state_id: null
   });
 
   const searchRef = useRef();
 
   const dispatch = useDispatch();
-  const cityData = useSelector(dashboardSlice => dashboardSlice.dashboard.cityData);
-
-  const isLoading = useSelector(
-    dashboardSlice => dashboardSlice.dashboard.isLoading.getCityDataList,
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
 
-  const Notify = useSelector(dashboardSlice => dashboardSlice.dashboard.notify);
-  const modal = useSelector(dashboardSlice => dashboardSlice.dashboard.modal);
-  const StateData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredStateData);
-  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard?.filteredCountryData);
-  const stateDropdown = useSelector(DashbordSlice => DashbordSlice.dashboard.activeState);
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
+  );
 
-  const ExportData = useSelector(dashboardSlice => dashboardSlice.dashboard.exportCityData);
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const StateData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredStateData
+  );
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard?.filteredCountryData
+  );
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
 
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 7),
+  const ExportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportCityData
+  );
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7)
   );
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -79,66 +97,66 @@ function CityComponent() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const roleId = sessionStorage.getItem('role_id');
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalInStore({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit City',
-                }),
+                  modalHeader: 'Edit City'
+                })
               );
             }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'City',
-      selector: row => row.city,
+      selector: (row) => row.city,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'State',
-      selector: row => row.state,
+      selector: (row) => row.state,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'Country',
-      selector: row => row.country,
+      selector: (row) => row.country,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -151,35 +169,35 @@ function CityComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '150px',
-    },
+      width: '150px'
+    }
   ];
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     var flag = 1;
@@ -196,14 +214,14 @@ function CityComponent() {
     }
     if (flag === 1) {
       if (!id) {
-        dispatch(postCityData(form)).then(res => {
+        dispatch(postCityData(form)).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getCityData());
           } else {
           }
         });
       } else {
-        dispatch(updateCityData({ id: id, payload: form })).then(res => {
+        dispatch(updateCityData({ id: id, payload: form })).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getCityData());
           } else {
@@ -213,19 +231,19 @@ function CityComponent() {
     }
   };
 
-  const handleCountryChange = e => {
+  const handleCountryChange = (e) => {
     setStateDropdownData(
       stateDropdown &&
         stateDropdown
-          ?.filter(filterState => filterState.country_id === e.value)
-          ?.map(d => ({ value: d.id, label: d.state })),
+          ?.filter((filterState) => filterState.country_id === e.value)
+          ?.map((d) => ({ value: d.id, label: d.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -238,37 +256,43 @@ function CityComponent() {
     dispatch(getStateDataSort());
     dispatch(getCountryDataSort());
 
-    if (!cityData.length || !checkRole.length || !StateData.length || !CountryData.length) {
+    if (
+      !cityData.length ||
+      !checkRole.length ||
+      !StateData.length ||
+      !CountryData.length
+    ) {
     }
   }, []);
 
   useEffect(() => {
     setFilteredData(
-      cityData.filter(customer => {
+      cityData.filter((customer) => {
         if (typeof searchTerm === 'string') {
           if (typeof customer === 'string') {
             return customer.toLowerCase().includes(searchTerm.toLowerCase());
           } else if (typeof customer === 'object') {
             return Object.values(customer).some(
-              value =>
-                typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase()),
+              (value) =>
+                typeof value === 'string' &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
             );
           }
         }
         return false;
-      }),
+      })
     );
   }, [searchTerm, cityData]);
 
   useEffect(() => {
     if (dependent.country_id !== null) {
       const newStates = [...copyState];
-      const filterNewState = newStates.filter(state => {
+      const filterNewState = newStates.filter((state) => {
         if (state.country_id === dependent.country_id) {
           return {
             value: state.id,
             label: state.state,
-            country_id: state.country_id,
+            country_id: state.country_id
           };
         }
       });
@@ -283,7 +307,9 @@ function CityComponent() {
 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
-        setStateName(stateDropdown?.filter(d => modal.modalData.state_id == d.value));
+        setStateName(
+          stateDropdown?.filter((d) => modal.modalData.state_id == d.value)
+        );
       }
     }
   }, [modal.showModal, checkRole]);
@@ -310,8 +336,8 @@ function CityComponent() {
                       handleModalInStore({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add City',
-                      }),
+                        modalHeader: 'Add City'
+                      })
                     );
                   }}
                 >
@@ -332,7 +358,7 @@ function CityComponent() {
               className="form-control"
               placeholder="Search by City name...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -369,15 +395,19 @@ function CityComponent() {
               {cityData && (
                 <DataTable
                   columns={columns}
-                  data={cityData.filter(customer => {
+                  data={cityData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -398,7 +428,10 @@ function CityComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -406,8 +439,8 @@ function CityComponent() {
                 handleModalClose({
                   showModal: false,
                   modalData: null,
-                  modalHeader: 'Add City',
-                }),
+                  modalHeader: 'Add City'
+                })
               );
             }}
           >
@@ -427,7 +460,9 @@ function CityComponent() {
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? CountryData?.filter(d => modal?.modalData?.country_id == d.value)
+                        ? CountryData?.filter(
+                            (d) => modal?.modalData?.country_id == d.value
+                          )
                         : ''
                     }
                     required={true}
@@ -445,7 +480,9 @@ function CityComponent() {
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? StateData.filter(d => modal.modalData.state_id == d.value)
+                        ? StateData.filter(
+                            (d) => modal.modalData.state_id == d.value
+                          )
                         : ''
                     }
                     required={true}
@@ -463,21 +500,23 @@ function CityComponent() {
                     maxLength={25}
                     required
                     defaultValue={modal.modalData ? modal.modalData.city : ''}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -509,7 +548,10 @@ function CityComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -524,10 +566,15 @@ function CityComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -546,7 +593,7 @@ function CityComponent() {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -571,8 +618,8 @@ function CityComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: null,
-                    modalHeader: 'Add City',
-                  }),
+                    modalHeader: 'Add City'
+                  })
                 );
               }}
             >
@@ -584,11 +631,13 @@ function CityComponent() {
     </div>
   );
 }
-function CityDropdown(props) {
+export default CityComponent;
+
+export function CityDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CityService().getCity().then(res => {
+    new CityService().getCity().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -597,7 +646,7 @@ function CityDropdown(props) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
-              city: data[key].city,
+              city: data[key].city
             });
           }
         }
@@ -643,5 +692,3 @@ function CityDropdown(props) {
     </>
   );
 }
-
-export { CityComponent, CityDropdown };

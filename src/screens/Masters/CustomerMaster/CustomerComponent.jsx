@@ -25,23 +25,30 @@ function CustomerComponent() {
   const location = useLocation();
 
   const dispatch = useDispatch();
-  const getallCustomer = useSelector(dashboardSlice => dashboardSlice.dashboard.getAllCustomerData);
-
-  const isLoading = useSelector(
-    dashboardSlice => dashboardSlice.dashboard.isLoading.getCustomerList,
+  const getallCustomer = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllCustomerData
   );
 
-  const exportData = useSelector(dashboardSlice => dashboardSlice.dashboard.exportCustomerData);
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 4),
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCustomerList
+  );
+
+  const exportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportCustomerData
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
   );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -53,39 +60,42 @@ function CustomerComponent() {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
-          <Link to={`/${_base}/Customer/Edit/` + row.id} className="btn btn-outline-secondary">
+          <Link
+            to={`/${_base}/Customer/Edit/` + row.id}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'Name',
-      selector: row => row.name,
+      selector: (row) => row.name,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
-    { name: 'Type', selector: row => row.type_name, sortable: true },
+    { name: 'Type', selector: (row) => row.type_name, sortable: true },
     {
       name: 'Status',
-      selector: row => row.is_active,
-      cell: row => (
+      selector: (row) => row.is_active,
+      cell: (row) => (
         <div>
           {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -99,36 +109,36 @@ function CustomerComponent() {
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
   const tableData = {
     columns,
-    data,
+    data
   };
   const loadData = async () => {};
 
@@ -149,19 +159,20 @@ function CustomerComponent() {
 
   useEffect(() => {
     setFilteredData(
-      getallCustomer.filter(customer => {
+      getallCustomer.filter((customer) => {
         if (typeof searchTerm === 'string') {
           if (typeof customer === 'string') {
             return customer.toLowerCase().includes(searchTerm.toLowerCase());
           } else if (typeof customer === 'object') {
             return Object.values(customer).some(
-              value =>
-                typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase()),
+              (value) =>
+                typeof value === 'string' &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
             );
           }
         }
         return false;
-      }),
+      })
     );
   }, [searchTerm, getallCustomer]);
 
@@ -202,7 +213,7 @@ function CustomerComponent() {
               className="form-control"
               placeholder="Search by customer Name...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -239,15 +250,19 @@ function CustomerComponent() {
               {getallCustomer && (
                 <DataTable
                   columns={columns}
-                  data={getallCustomer.filter(customer => {
+                  data={getallCustomer.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -271,18 +286,18 @@ function CustomerComponent() {
   );
 }
 
-function CustomerDropdown(props) {
+export function CustomerDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CustomerService().getCustomer().then(res => {
+    new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
         var data = res.data.data;
-        var data = data.filter(d => d.is_active == 1);
+        var data = data.filter((d) => d.is_active == 1);
         for (const key in data) {
           tempData.push({
             id: data[key].id,
-            name: data[key].name,
+            name: data[key].name
           });
         }
       }
@@ -322,4 +337,4 @@ function CustomerDropdown(props) {
   );
 }
 
-export { CustomerComponent, CustomerDropdown };
+export default CustomerComponent;

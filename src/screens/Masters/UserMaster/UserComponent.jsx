@@ -25,23 +25,25 @@ function UserComponent() {
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   });
 
   const [exportData, setExportData] = useState(null);
 
   const roleId = sessionStorage.getItem('role_id');
 
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 3),
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
 
-  const employeeData = useSelector(dashboardSlice => dashboardSlice.dashboard.employeeData);
+  const employeeData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.employeeData
+  );
   const isLoding = useSelector(
-    dashboardSlice => dashboardSlice.dashboard.isLoading.employeeDataList,
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.employeeDataList
   );
 
-  const handleModal = data => {
+  const handleModal = (data) => {
     setModal(data);
   };
 
@@ -50,9 +52,12 @@ function UserComponent() {
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -64,63 +69,66 @@ function UserComponent() {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
-          <Link to={`/${_base}/User/Edit/` + row.id} className="btn btn-outline-secondary">
+          <Link
+            to={`/${_base}/User/Edit/` + row.id}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
-    { name: 'Account For', selector: row => row.account_for, sortable: true },
+    { name: 'Account For', selector: (row) => row.account_for, sortable: true },
     {
       name: 'Customer',
-      selector: row => row.customer,
+      selector: (row) => row.customer,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Name',
-      selector: row => row.name,
+      selector: (row) => row.name,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Email',
-      selector: row => row.email_id,
+      selector: (row) => row.email_id,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Contact No',
-      selector: row => row.contact_no,
+      selector: (row) => row.contact_no,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Username',
-      selector: row => row.user_name,
+      selector: (row) => row.user_name,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -133,38 +141,38 @@ function UserComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {
     const exportTempData = [];
 
-    await new UserService().getExportTicket().then(res => {
+    await new UserService().getExportTicket().then((res) => {
       if (res.status == 200) {
         const temp = res.data.data;
 
@@ -174,7 +182,12 @@ function UserComponent() {
 
             Account_for: temp[i].account_for,
             customer_name: temp[i].customer,
-            Name: temp[i].first_name + ' ' + temp[i].middle_name + ' ' + temp[i].last_name,
+            Name:
+              temp[i].first_name +
+              ' ' +
+              temp[i].middle_name +
+              ' ' +
+              temp[i].last_name,
             Email: temp[i].email_id,
             ContactNo: temp[i].contact_no,
             WhatsappNo: temp[i].whats_app_contact_no,
@@ -188,16 +201,20 @@ function UserComponent() {
             City: temp[i].city,
             Department: temp[i].department,
             Ticket_Show_Type:
-              temp[i].ticket_show_type === 'MY_TICKETS' ? 'My Tickets' : 'Department Tickets',
+              temp[i].ticket_show_type === 'MY_TICKETS'
+                ? 'My Tickets'
+                : 'Department Tickets',
             // all_department: temp[i].all_department,
-            Ticket_Passing_Authority: temp[i].ticket_passing_authority ? 'Yes' : 'No',
+            Ticket_Passing_Authority: temp[i].ticket_passing_authority
+              ? 'Yes'
+              : 'No',
             Make_Default: temp[i].is_default ? 'yes' : 'No',
             Status: temp[i].is_active ? 'Active' : 'Deactive',
             created_at: temp[i].created_at,
             created_by: temp[i].created_by,
             updated_at: temp[i].updated_at,
 
-            updated_by: temp[i].updated_by,
+            updated_by: temp[i].updated_by
           });
         }
 
@@ -207,14 +224,14 @@ function UserComponent() {
     });
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
   const tableData = {
     columns,
-    data,
+    data
   };
   var flag = 1;
   useEffect(() => {
@@ -241,19 +258,20 @@ function UserComponent() {
 
   useEffect(() => {
     setFilteredData(
-      employeeData.filter(customer => {
+      employeeData.filter((customer) => {
         if (typeof searchTerm === 'string') {
           if (typeof customer === 'string') {
             return customer.toLowerCase().includes(searchTerm.toLowerCase());
           } else if (typeof customer === 'object') {
             return Object.values(customer).some(
-              value =>
-                typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase()),
+              (value) =>
+                typeof value === 'string' &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
             );
           }
         }
         return false;
-      }),
+      })
     );
   }, [searchTerm, employeeData]);
 
@@ -288,7 +306,7 @@ function UserComponent() {
               placeholder="Search by User Name...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -325,15 +343,19 @@ function UserComponent() {
               {employeeData && (
                 <DataTable
                   columns={columns}
-                  data={employeeData.filter(customer => {
+                  data={employeeData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -356,11 +378,13 @@ function UserComponent() {
   );
 }
 
-function UserDropdown(props) {
+export default UserComponent;
+
+export function UserDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new UserService().getUser().then(res => {
+    new UserService().getUser().then((res) => {
       if (res.status == 200) {
         const data = res.data.data;
         let counter = 1;
@@ -375,7 +399,7 @@ function UserDropdown(props) {
               data[key].last_name +
               ' (' +
               data[key].id +
-              ')',
+              ')'
           });
         }
         setData(tempData);
@@ -421,4 +445,3 @@ function UserDropdown(props) {
     </>
   );
 }
-export { UserComponent, UserDropdown };

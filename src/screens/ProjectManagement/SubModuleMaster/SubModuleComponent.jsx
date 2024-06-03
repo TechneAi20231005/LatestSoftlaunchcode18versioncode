@@ -1,19 +1,17 @@
-
-
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
-import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Modal } from "react-bootstrap";
-import { Spinner } from "react-bootstrap";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
+import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import { Modal } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 function SubModuleComponent() {
   const location = useLocation();
@@ -21,11 +19,11 @@ function SubModuleComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22)
   );
   const [exportData, setExportData] = useState(null);
 
@@ -38,7 +36,7 @@ function SubModuleComponent() {
     return data.filter((d) => {
       for (const key in d) {
         if (
-          typeof d[key] === "string" &&
+          typeof d[key] === 'string' &&
           d[key].toLowerCase().includes(lowercaseSearch)
         ) {
           return true;
@@ -55,14 +53,14 @@ function SubModuleComponent() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -74,22 +72,22 @@ function SubModuleComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
     {
-      name: "Sub Module Name",
+      name: 'Sub Module Name',
       selector: (row) => row.sub_module_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Module Name", selector: (row) => row.module_name, sortable: true },
+    { name: 'Module Name', selector: (row) => row.module_name, sortable: true },
     {
-      name: "Project Name",
+      name: 'Project Name',
       selector: (row) => row.project_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -101,28 +99,24 @@ function SubModuleComponent() {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
-    { name: "Remark", selector: (row) => row.remark, sortable: true },
+    { name: 'Remark', selector: (row) => row.remark, sortable: true },
     {
-      name: "Created At",
-      width: "10%",
+      name: 'Created At',
+      width: '10%',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created By",
-      width: "10%",
+      name: 'Created By',
+      width: '10%',
       selector: (row) => row.created_by,
-      sortable: true,
+      sortable: true
     },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
 
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
-    
-    
-
-
+    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = async () => {
@@ -151,7 +145,7 @@ function SubModuleComponent() {
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
           setData(null);
@@ -164,21 +158,21 @@ function SubModuleComponent() {
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active==1?"Active":"Deactive",
+              is_active: temp[key].is_active == 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
 
           setExportData(exportTempData);
         } else {
           new ErrorLogService().sendErrorLog(
-            "SubModule Master",
-            "Get_SubModule",
-            "INSERT",
+            'SubModule Master',
+            'Get_SubModule',
+            'INSERT',
             res.message
           );
         }
@@ -187,13 +181,13 @@ function SubModuleComponent() {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "SubModule Master",
-          "Get_SubModule",
-          "INSERT",
+          'SubModule Master',
+          'Get_SubModule',
+          'INSERT',
           errorObject.data.message
         );
       });
-      dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -209,14 +203,10 @@ function SubModuleComponent() {
 
   useEffect(() => {
     loadData();
-   
   }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-     
-      
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
@@ -239,7 +229,7 @@ function SubModuleComponent() {
                   Sub-Module
                 </Link>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -262,7 +252,7 @@ function SubModuleComponent() {
               className="btn btn-sm btn-warning text-white"
               type="button"
               onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -270,7 +260,7 @@ function SubModuleComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -312,14 +302,14 @@ function SubModuleComponent() {
     </div>
   );
 }
+export default SubModuleComponent;
 
-function SubModuleDropdown(props) {
+export function SubModuleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(
-     () => {
+  useEffect(() => {
     const tempData = [];
-    
-     new SubModuleService().getSubModule().then((res) => {
+
+    new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -327,7 +317,7 @@ function SubModuleDropdown(props) {
           tempData.push({
             counter: counter++,
             id: data[key].id,
-            sub_module_name: data[key].sub_module_name,
+            sub_module_name: data[key].sub_module_name
           });
         }
         setData(null);
@@ -375,5 +365,3 @@ function SubModuleDropdown(props) {
     </>
   );
 }
-
-export { SubModuleComponent, SubModuleDropdown };

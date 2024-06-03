@@ -25,16 +25,26 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 
 function RoleComponent({ location }) {
   const dispatch = useDispatch();
-  const RoleMasterData = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.getRoleData);
-  const isLoading = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.isLoading.RoleList);
-
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 10),
+  const RoleMasterData = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
+  );
+  const isLoading = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.isLoading.RoleList
   );
 
-  const Notify = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.notify);
-  const modal = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.modal);
-  const exportData = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.exportRoleData);
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+  );
+
+  const Notify = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify
+  );
+  const modal = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.modal
+  );
+  const exportData = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
+  );
 
   const [notify, setNotify] = useState();
 
@@ -45,9 +55,12 @@ function RoleComponent({ location }) {
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -59,15 +72,15 @@ function RoleComponent({ location }) {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '15%',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group-sm" role="group">
           {checkRole && checkRole[0]?.can_update == 1 ? (
             <button
@@ -75,13 +88,13 @@ function RoleComponent({ location }) {
               className="btn btn-outline-secondary"
               data-bs-toggle="modal"
               data-bs-target="#edit"
-              onClick={e => {
+              onClick={(e) => {
                 dispatch(
                   handleModalOpen({
                     showModal: true,
                     modalData: row,
-                    modalHeader: 'Edit Role',
-                  }),
+                    modalHeader: 'Edit Role'
+                  })
                 );
               }}
             >
@@ -97,7 +110,7 @@ function RoleComponent({ location }) {
               style={{
                 maxWidth: '100%',
                 fontSize: '0.75rem',
-                borderRadius: '1rem',
+                borderRadius: '1rem'
               }}
             >
               Add Access
@@ -106,33 +119,37 @@ function RoleComponent({ location }) {
             ''
           )}
         </div>
-      ),
+      )
     },
 
-    { name: 'Sr', selector: row => row.counter, sortable: true },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
     {
       name: 'Role',
       id: 'role_id',
       sortable: true,
-      selector: row => {},
-      cell: row => (
+      selector: (row) => {},
+      cell: (row) => (
         <div>
           <OverlayTrigger overlay={<Tooltip>{row.role} </Tooltip>}>
             <div>
               {/* <span className="ms-1"> {row.role}</span> */}
-              <span>{row.role.length > 12 ? row.role.substring(0, 12) + '...' : row.role}</span>
+              <span>
+                {row.role.length > 12
+                  ? row.role.substring(0, 12) + '...'
+                  : row.role}
+              </span>
             </div>
           </OverlayTrigger>
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
       width: '150px',
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -145,32 +162,32 @@ function RoleComponent({ location }) {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {
@@ -232,13 +249,13 @@ function RoleComponent({ location }) {
     // });
   };
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
 
     if (!id) {
-      dispatch(postRole(form)).then(res => {
+      dispatch(postRole(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getRoleData());
         } else {
@@ -278,7 +295,7 @@ function RoleComponent({ location }) {
       //     );
       //   });
     } else {
-      dispatch(updatedRole({ id: id, payload: form })).then(res => {
+      dispatch(updatedRole({ id: id, payload: form })).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getRoleData());
         } else {
@@ -333,7 +350,7 @@ function RoleComponent({ location }) {
   //     };
   // }, [data]);
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -378,8 +395,8 @@ function RoleComponent({ location }) {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add Role',
-                      }),
+                        modalHeader: 'Add Role'
+                      })
                     );
                   }}
                 >
@@ -402,7 +419,7 @@ function RoleComponent({ location }) {
               placeholder="Search by Role Name...."
               ref={searchRef}
               // onKeyDown={handleKeyDown}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -438,15 +455,19 @@ function RoleComponent({ location }) {
               {RoleMasterData && (
                 <DataTable
                   columns={columns}
-                  data={RoleMasterData.filter(customer => {
+                  data={RoleMasterData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -477,7 +498,10 @@ function RoleComponent({ location }) {
         //   });
         // }}
       >
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -485,8 +509,8 @@ function RoleComponent({ location }) {
                 handleModalClose({
                   showModal: false,
                   modalData: '',
-                  modalHeader: '',
-                }),
+                  modalHeader: ''
+                })
               );
             }}
           >
@@ -507,21 +531,23 @@ function RoleComponent({ location }) {
                     maxLength={25}
                     required
                     defaultValue={modal.modalData ? modal.modalData.role : ''}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       Validation.CharactersNumbersOnly(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -553,7 +579,10 @@ function RoleComponent({ location }) {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -568,10 +597,15 @@ function RoleComponent({ location }) {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -590,7 +624,7 @@ function RoleComponent({ location }) {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -615,8 +649,8 @@ function RoleComponent({ location }) {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >
@@ -628,12 +662,13 @@ function RoleComponent({ location }) {
     </div>
   );
 }
+export default RoleComponent;
 
-function RoleDropdown(props) {
+export function RoleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new RoleService().getRole().then(res => {
+    new RoleService().getRole().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
@@ -641,7 +676,7 @@ function RoleDropdown(props) {
           tempData.push({
             counter: counter++,
             id: data[key].id,
-            role: data[key].role,
+            role: data[key].role
           });
         }
         setData(tempData);
@@ -687,5 +722,3 @@ function RoleDropdown(props) {
     </>
   );
 }
-
-export { RoleComponent, RoleDropdown };

@@ -13,13 +13,17 @@ import Alert from '../../../components/Common/Alert';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { Spinner } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { dashboardSlice, handleModalClose, hideNotification } from '../../Dashboard/DashbordSlice';
+import {
+  dashboardSlice,
+  handleModalClose,
+  hideNotification
+} from '../../Dashboard/DashbordSlice';
 import {
   getCountryDataSort,
   getRoles,
   getStateData,
   postStateData,
-  updateStateData,
+  updateStateData
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
@@ -39,25 +43,38 @@ function StateComponent() {
 
   const dispatch = useDispatch();
 
-  const stateData = useSelector(dashboardSlice => dashboardSlice.dashboard.stateData);
-  const isLoading = useSelector(dashboardSlice => dashboardSlice.dashboard.isLoading.stateDataList);
-
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 6),
+  const stateData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.stateData
+  );
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.stateDataList
   );
 
-  const modal = useSelector(dashboardSlice => dashboardSlice.dashboard.modal);
-  const Notify = useSelector(dashboardSlice => dashboardSlice.dashboard.notify);
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
+  );
 
-  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredCountryData);
-  const ExportData = useSelector(dashboardSlice => dashboardSlice.dashboard.exportData);
+  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const ExportData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.exportData
+  );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -69,27 +86,27 @@ function StateComponent() {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalInStore({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit State',
-                }),
+                  modalHeader: 'Edit State'
+                })
               );
             }}
           >
@@ -97,31 +114,31 @@ function StateComponent() {
           </button>
         </div>
       ),
-      width: '80px',
+      width: '80px'
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'State',
-      selector: row => row.state,
+      selector: (row) => row.state,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'Country',
-      selector: row => row.country,
+      selector: (row) => row.country,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -135,32 +152,32 @@ function StateComponent() {
           )}
         </div>
       ),
-      width: '100px',
+      width: '100px'
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {
@@ -246,7 +263,7 @@ function StateComponent() {
     // });
   };
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
@@ -262,7 +279,7 @@ function StateComponent() {
 
     if (flag === 1) {
       if (!id) {
-        dispatch(postStateData(form)).then(res => {
+        dispatch(postStateData(form)).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getStateData());
           } else {
@@ -303,7 +320,7 @@ function StateComponent() {
         //     );
         //   });
       } else {
-        dispatch(updateStateData({ id: id, payload: form })).then(res => {
+        dispatch(updateStateData({ id: id, payload: form })).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getStateData());
           } else {
@@ -347,7 +364,7 @@ function StateComponent() {
     }
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -396,8 +413,8 @@ function StateComponent() {
                       handleModalInStore({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add State',
-                      }),
+                        modalHeader: 'Add State'
+                      })
                     );
                     // handleModal({
                     //   showModal: true,
@@ -425,7 +442,7 @@ function StateComponent() {
               placeholder="Search by State Name...."
               ref={searchRef}
               // onKeyDown={handleKeyDown}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -462,15 +479,19 @@ function StateComponent() {
               {stateData && (
                 <DataTable
                   columns={columns}
-                  data={stateData.filter(customer => {
+                  data={stateData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -491,7 +512,10 @@ function StateComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -499,8 +523,8 @@ function StateComponent() {
                 handleModalClose({
                   showModal: false,
                   modalData: null,
-                  modalHeader: 'Add State',
-                }),
+                  modalHeader: 'Add State'
+                })
               );
             }}
           >
@@ -520,7 +544,9 @@ function StateComponent() {
                     name="country_id"
                     defaultValue={
                       modal.modalData
-                        ? CountryData.filter(d => modal.modalData.country_id == d.value)
+                        ? CountryData.filter(
+                            (d) => modal.modalData.country_id == d.value
+                          )
                         : ''
                     }
                     required={true}
@@ -538,21 +564,23 @@ function StateComponent() {
                     maxLength={25}
                     required
                     defaultValue={modal.modalData ? modal.modalData.state : ''}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -585,7 +613,10 @@ function StateComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -600,10 +631,15 @@ function StateComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -622,7 +658,7 @@ function StateComponent() {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -647,8 +683,8 @@ function StateComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
               // onClick={() => {
@@ -669,11 +705,13 @@ function StateComponent() {
   );
 }
 
-function StateDropdown(props) {
+export default StateComponent;
+
+export function StateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(async () => {
     const tempData = [];
-    await new StateService().getState().then(res => {
+    await new StateService().getState().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
@@ -682,7 +720,7 @@ function StateDropdown(props) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
-              state: data[key].state,
+              state: data[key].state
             });
           }
         }
@@ -734,5 +772,3 @@ function StateDropdown(props) {
     </>
   );
 }
-
-export { StateComponent, StateDropdown };

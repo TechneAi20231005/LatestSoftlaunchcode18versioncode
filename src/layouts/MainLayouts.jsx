@@ -1,22 +1,36 @@
-import React, { memo } from 'react';
+import React, { Suspense, memo } from 'react';
 import { Outlet } from 'react-router-dom';
+
+// // static import
+import Sidebar from '../components/Common/Sidebar';
+import Header from '../components/Common/Header';
+import LeftSide from '../components/Auth/LeftSide';
+import { SuspenseLoader } from '../components/custom/loader';
 
 function MainLayouts({ isAuthenticated }) {
   return (
     <>
       {isAuthenticated ? (
         <>
+          <Sidebar />
           <div className="main px-lg-4 px-md-4">
             <Header />
-            <div className="body d-flex py-lg-3 py-md-2">
-              <Outlet />
-            </div>
+            <Suspense fallback={<SuspenseLoader />}>
+              <div className="py-lg-3 py-md-2">
+                <Outlet />
+                {/* <SuspenseLoader /> */}
+              </div>
+            </Suspense>
           </div>
         </>
       ) : (
-        <>
-          <Outlet />
-        </>
+        <Suspense fallback={<SuspenseLoader />}>
+          <div className="main d-flex justify-content-around align-items-center">
+            {/* <SuspenseLoader /> */}
+            <LeftSide />
+            <Outlet />
+          </div>
+        </Suspense>
       )}
     </>
   );

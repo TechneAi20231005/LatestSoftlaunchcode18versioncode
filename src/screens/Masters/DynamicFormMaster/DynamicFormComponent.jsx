@@ -30,28 +30,32 @@ function DynamicFormComponent() {
   const searchRef = useRef();
   const dispatch = useDispatch();
 
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 13),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 13)
   );
 
   const data = useSelector(
-    DynamicFormDropDownSlice =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData,
+    (DynamicFormDropDownSlice) =>
+      DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData
   );
   const exportData = useSelector(
-    DynamicFormDropDownSlice => DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData,
+    (DynamicFormDropDownSlice) =>
+      DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData
   );
   const isLoading = useSelector(
-    DynamicFormDropDownSlice =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.isLoading.dyanamicFormList,
+    (DynamicFormDropDownSlice) =>
+      DynamicFormDropDownSlice.dynamicFormDropDown.isLoading.dyanamicFormList
   );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -61,35 +65,42 @@ function DynamicFormComponent() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
-          <Link to={`/${_base}/DynamicForm/Edit/` + row.id} className="btn btn-outline-secondary">
+          <Link
+            to={`/${_base}/DynamicForm/Edit/` + row.id}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
 
     {
       name: 'Form Name',
-      selector: row => row.template_name,
+      selector: (row) => row.template_name,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.template_name && (
             <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
               <div>
@@ -103,14 +114,14 @@ function DynamicFormComponent() {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -123,32 +134,32 @@ function DynamicFormComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {
@@ -156,7 +167,7 @@ function DynamicFormComponent() {
   };
 
   useEffect(() => {
-    const listener = event => {
+    const listener = (event) => {
       if (event.code === 'Enter') {
         handleSearch();
       }
@@ -219,7 +230,7 @@ function DynamicFormComponent() {
               className="form-control"
               placeholder="Search by Form Name...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -256,15 +267,19 @@ function DynamicFormComponent() {
               {data && (
                 <DataTable
                   columns={columns}
-                  data={data.filter(customer => {
+                  data={data.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -286,12 +301,13 @@ function DynamicFormComponent() {
     </div>
   );
 }
+export default DynamicFormComponent;
 
-function DynamicFormDropdown(props) {
+export function DynamicFormDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new DynamicFormService().getDynamicForm().then(res => {
+    new DynamicFormService().getDynamicForm().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -299,7 +315,7 @@ function DynamicFormDropdown(props) {
           tempData.push({
             counter: counter++,
             id: data[key].id,
-            template_name: data[key].template_name,
+            template_name: data[key].template_name
           });
         }
         setData(tempData);
@@ -340,4 +356,3 @@ function DynamicFormDropdown(props) {
     </>
   );
 }
-export { DynamicFormComponent, DynamicFormDropdown };

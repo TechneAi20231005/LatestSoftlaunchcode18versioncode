@@ -15,33 +15,42 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getCustomerTypeData,
   postCustomerData,
-  updateCustomerData,
+  updateCustomerData
 } from './CustomerTypeComponentAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import { handleModalClose, handleModalOpen } from './CustomerTypeComponentSlice';
+import {
+  handleModalClose,
+  handleModalOpen
+} from './CustomerTypeComponentSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
   const dispatch = useDispatch();
   const customerData = useSelector(
-    CustomerTypeComponentSlice => CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData,
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
   );
 
   const isLoading = useSelector(
-    CustomerTypeComponentSlice =>
-      CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList,
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
   );
 
   const exportData = useSelector(
-    CustomerTypeComponentSlice => CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData,
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
   );
 
-  const modal = useSelector(customerMasterSlice => customerMasterSlice.customerTypeMaster.modal);
-  const notify = useSelector(customerMasterSlice => customerMasterSlice.customerTypeMaster.notify);
+  const modal = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
+  );
+  const notify = useSelector(
+    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
+  );
 
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 12),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
   );
 
   const isActive0Ref = useRef();
@@ -56,9 +65,12 @@ function CustomerTypeComponent() {
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -68,54 +80,54 @@ function CustomerTypeComponent() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Customer Type',
-                }),
+                  modalHeader: 'Edit Customer Type'
+                })
               );
             }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'Customer Type Name',
-      selector: row => row.type_name,
+      selector: (row) => row.type_name,
       sortable: true,
-      width: '200px',
+      width: '200px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
       width: '125px',
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -128,38 +140,38 @@ function CustomerTypeComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {
     setShowLoaderModal(null);
   };
-  const handleIsActive = e => {
+  const handleIsActive = (e) => {
     const value = e.target.value;
 
     if (value == 1) {
@@ -168,19 +180,19 @@ function CustomerTypeComponent() {
       setIsActive(0);
     }
   };
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
 
     const form = new FormData(e.target);
     if (!id) {
-      dispatch(postCustomerData(form)).then(res => {
+      dispatch(postCustomerData(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getCustomerTypeData());
         } else {
         }
       });
     } else {
-      dispatch(updateCustomerData({ id: id, payload: form })).then(res => {
+      dispatch(updateCustomerData({ id: id, payload: form })).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getCustomerTypeData());
         } else {
@@ -189,7 +201,7 @@ function CustomerTypeComponent() {
     }
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -226,12 +238,13 @@ function CustomerTypeComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add Customer Type',
-                      }),
+                        modalHeader: 'Add Customer Type'
+                      })
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Customer Type
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Customer
+                  Type
                 </button>
               ) : (
                 ''
@@ -249,7 +262,7 @@ function CustomerTypeComponent() {
               className="form-control"
               placeholder="Search by Customer Name...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-3">
@@ -286,15 +299,19 @@ function CustomerTypeComponent() {
               {customerData && (
                 <DataTable
                   columns={columns}
-                  data={customerData.filter(customer => {
+                  data={customerData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -315,7 +332,10 @@ function CustomerTypeComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -323,8 +343,8 @@ function CustomerTypeComponent() {
                 handleModalClose({
                   showModal: false,
                   modalData: '',
-                  modalHeader: '',
-                }),
+                  modalHeader: ''
+                })
               );
             }}
           >
@@ -344,22 +364,26 @@ function CustomerTypeComponent() {
                     name="type_name"
                     required
                     maxLength={30}
-                    defaultValue={modal.modalData ? modal.modalData.type_name : ''}
-                    onKeyPress={e => {
+                    defaultValue={
+                      modal.modalData ? modal.modalData.type_name : ''
+                    }
+                    onKeyPress={(e) => {
                       Validation.CharactersNumbersOnly(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -382,7 +406,7 @@ function CustomerTypeComponent() {
                             className="form-check-input"
                             type="radio"
                             name="is_active"
-                            onClick={e => {
+                            onClick={(e) => {
                               handleIsActive(e);
                             }}
                             id="is_active_1"
@@ -396,7 +420,10 @@ function CustomerTypeComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -408,17 +435,22 @@ function CustomerTypeComponent() {
                             type="radio"
                             name="is_active"
                             id="is_active_0"
-                            onClick={e => {
+                            onClick={(e) => {
                               handleIsActive(e);
                             }}
                             ref={isActive0Ref}
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -437,7 +469,7 @@ function CustomerTypeComponent() {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -462,8 +494,8 @@ function CustomerTypeComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >
@@ -475,12 +507,13 @@ function CustomerTypeComponent() {
     </div>
   );
 }
+export default CustomerTypeComponent;
 
-function CustomerTypeDropdown(props) {
+export function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CustomerType().getCustomerType().then(res => {
+    new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -489,7 +522,7 @@ function CustomerTypeDropdown(props) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
-              type_name: data[key].type_name,
+              type_name: data[key].type_name
             });
           }
         }
@@ -508,8 +541,12 @@ function CustomerTypeDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && <option selected>Select Customer Type</option>}
-          {props.defaultValue != 0 && <option selected>Select Customer Type</option>}
+          {props.defaultValue == 0 && (
+            <option selected>Select Customer Type</option>
+          )}
+          {props.defaultValue != 0 && (
+            <option selected>Select Customer Type</option>
+          )}
           {data.map(function (item, i) {
             if (props.defaultValue && props.defaultValue == item.id) {
               return (
@@ -531,5 +568,3 @@ function CustomerTypeDropdown(props) {
     </>
   );
 }
-
-export { CustomerTypeComponent, CustomerTypeDropdown };

@@ -67,14 +67,6 @@ export const userRoutes = [
     )
   },
   {
-    path: '/Notification',
-    name: 'Notification',
-    exact: true,
-    component: lazy(() =>
-      import('../screens/Notification/NotificationComponent')
-    )
-  },
-  {
     path: '/ApprovedNotification',
     name: 'ApprovedNotification',
     exact: true,
@@ -1023,7 +1015,9 @@ export const userRoutes = [
     path: '/POVendorExportReport',
     name: 'POVendorExportReport',
     exact: true,
-    component: lazy(() => import('../screens/PO/vendorExportReport'))
+    component: lazy(() =>
+      import('../screens/PO/vendorExportReport/VendorExportReport')
+    )
   },
   {
     path: '/POOrderQuanitityReport',
