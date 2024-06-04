@@ -1,32 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Spinner, Modal } from "react-bootstrap";
-import Alert from "../../components/Common/Alert";
-import { _base, userSessionData } from "../../settings/constants";
-import ErrorLogService from "../../services/ErrorLogService";
-import DynamicFormService from "../../services/MastersService/DynamicFormService";
-import MyTicketService from "../../services/TicketService/MyTicketService";
-import { _attachmentUrl } from "../../settings/constants";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import UserService from "../../services/MastersService/UserService";
-import DatePicker from "react-date-picker";
-import Select from "react-select";
-import { Astrick } from "../../components/Utilities/Style";
-import * as Validation from "../../components/Utilities/Validation";
-import DynamicFormDropdownMasterService from "../../services/MastersService/DynamicFormDropdownMasterService";
-import { getCurrentDate } from "../../components/Utilities/Functions";
-import { userSessionData as user } from "../../settings/constants";
-import DepartmentService from "../../services/MastersService/DepartmentService";
-import QueryTypeService from "../../services/MastersService/QueryTypeService";
-import CustomerMappingService from "../../services/SettingService/CustomerMappingService";
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Spinner, Modal } from 'react-bootstrap';
+import Alert from '../../components/Common/Alert';
+import { _base, userSessionData } from '../../settings/constants';
+import ErrorLogService from '../../services/ErrorLogService';
+import DynamicFormService from '../../services/MastersService/DynamicFormService';
+import MyTicketService from '../../services/TicketService/MyTicketService';
+import { _attachmentUrl } from '../../settings/constants';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import UserService from '../../services/MastersService/UserService';
+import DatePicker from 'react-date-picker';
+import Select from 'react-select';
+import { Astrick } from '../../components/Utilities/Style';
+import * as Validation from '../../components/Utilities/Validation';
+import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
+import { getCurrentDate } from '../../components/Utilities/Functions';
+import { userSessionData as user } from '../../settings/constants';
+import DepartmentService from '../../services/MastersService/DepartmentService';
+import QueryTypeService from '../../services/MastersService/QueryTypeService';
+import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
 
-import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
-import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
-import { useDispatch, useSelector } from "react-redux";
-import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import { getRoles } from "../Dashboard/DashboardAction";
+import DepartmentMappingService from '../../services/MastersService/DepartmentMappingService';
+import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
+import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
+import { getUserForMyTicketsData } from './MyTicketComponentAction';
 
 export default function CreateTicketComponent() {
   const history = useNavigate();
@@ -45,15 +46,15 @@ export default function CreateTicketComponent() {
 
   const todayDate = `${current.getFullYear()}-${
     current.getMonth() + 1 < 10
-      ? "0" + current.getMonth() + 1
+      ? '0' + current.getMonth() + 1
       : current.getMonth() + 1
   }-${current.getDate()}`;
 
   const ticketData = {
     department_id: null,
     customer_mapping_id: null,
-    ticket_uploading: "REGULAR",
-    confirmation_required: "0",
+    ticket_uploading: 'REGULAR',
+    confirmation_required: '0',
     query_type_id: null,
     ticket_date: todayDate,
     expected_solve_date: null,
@@ -66,7 +67,7 @@ export default function CreateTicketComponent() {
     assign_to_user_id: null,
     project_id: null,
     module_id: null,
-    submodule_id: null,
+    submodule_id: null
   };
 
   const handleSelect = (label, ID) => {
@@ -76,7 +77,7 @@ export default function CreateTicketComponent() {
 
     // closeAllDropdowns();
   };
-  var today = new Date().toISOString().split("T")[0];
+  var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -109,26 +110,26 @@ export default function CreateTicketComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState([]);
   const fileInputRef = useRef(null);
 
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
 
   const CustomMenuListTicket = ({ options, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
     const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         setOpenOptions(true);
       }
     };
@@ -174,14 +175,14 @@ export default function CreateTicketComponent() {
         <React.Fragment key={option.label}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.4rem",
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.4rem',
               backgroundColor:
                 hoveredIndex === option.label
-                  ? "rgba(79, 184, 201, 0.5)"
-                  : "white",
-              transition: "background-color 0.3s",
+                  ? 'rgba(79, 184, 201, 0.5)'
+                  : 'white',
+              transition: 'background-color 0.3s'
             }}
             onMouseEnter={() => handleMouseEnter(option.label)}
             onMouseLeave={handleMouseLeave}
@@ -189,12 +190,12 @@ export default function CreateTicketComponent() {
             <i
               className={
                 openOptions.includes(option.label) && option.options.length > 0
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
+                  ? 'icofont-rounded-down'
+                  : 'icofont-rounded-right'
               }
               style={{
-                marginRight: "5px",
-                cursor: "pointer",
+                marginRight: '5px',
+                cursor: 'pointer'
               }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -202,8 +203,8 @@ export default function CreateTicketComponent() {
             <div
               onClick={() => handleSelect(option.label, option.ID)}
               style={{
-                cursor: "pointer",
-                transition: "color 0.3s",
+                cursor: 'pointer',
+                transition: 'color 0.3s'
               }}
             >
               {option.label}
@@ -214,8 +215,8 @@ export default function CreateTicketComponent() {
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "1rem" }}>
-                <div style={{ marginLeft: "1rem" }}>
+              <div style={{ marginLeft: '1rem' }}>
+                <div style={{ marginLeft: '1rem' }}>
                   {renderOptions(option.options)}
                 </div>
               </div>
@@ -230,17 +231,17 @@ export default function CreateTicketComponent() {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "relative",
-              width: "100%",
+              position: 'relative',
+              width: '100%',
               zIndex: 1000,
-              maxHeight: "300px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderWidth: "2px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderBottomRightRadius: "4px",
-              borderBottomLeftRadius: "4px",
+              maxHeight: '300px',
+              overflowY: 'auto',
+              border: '1px solid #ccc',
+              borderWidth: '2px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'white',
+              borderBottomRightRadius: '4px',
+              borderBottomLeftRadius: '4px'
             }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -249,14 +250,14 @@ export default function CreateTicketComponent() {
               type="text"
               placeholder="Search..."
               style={{
-                padding: "8px",
-                border: "none",
-                width: "100%",
-                boxSizing: "border-box",
+                padding: '8px',
+                border: 'none',
+                width: '100%',
+                boxSizing: 'border-box'
               }}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <div style={{ overflowY: "auto" }}>
+            <div style={{ overflowY: 'auto' }}>
               {renderOptions(filteredOptions)}
             </div>
           </div>
@@ -266,7 +267,7 @@ export default function CreateTicketComponent() {
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       const files = e.target.files;
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
@@ -275,7 +276,7 @@ export default function CreateTicketComponent() {
         // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
         if (file.size > 5 * 1024 * 1024) {
           alert(
-            "File size exceeds 5MB. Please upload a file smaller than 5MB."
+            'File size exceeds 5MB. Please upload a file smaller than 5MB.'
           );
           continue; // Skip this file and move to the next one
         }
@@ -286,7 +287,7 @@ export default function CreateTicketComponent() {
             uploadedFiles.push({
               file: file,
               fileName: file.name,
-              tempUrl: event.target.result,
+              tempUrl: event.target.result
             });
             if (uploadedFiles.length === files.length) {
               setSelectedFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
@@ -296,14 +297,14 @@ export default function CreateTicketComponent() {
 
         reader.readAsDataURL(file);
       }
-    } else if (type === "DELETE") {
-      fileInputRef.current.value = "";
+    } else if (type === 'DELETE') {
+      fileInputRef.current.value = '';
       const filteredFiles = selectedFiles.filter((_, index) => id !== index);
       setSelectedFiles(filteredFiles);
     }
   };
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   const ticketTypeRefs = useRef();
   const customerMappingData = useSelector(
     (CustomerMappingSlice) =>
@@ -311,9 +312,9 @@ export default function CreateTicketComponent() {
   );
   const handleForm = async (e) => {
     e.preventDefault();
-    if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
+    if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
       // Here you can proceed with form submission
-      alert("At least one checkbox must be selected");
+      alert('At least one checkbox must be selected');
       return false;
     }
 
@@ -326,25 +327,25 @@ export default function CreateTicketComponent() {
 
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles?.length; i++) {
-        formData.append("bulk_images[" + i + "]", selectedFiles[i].file.file);
+        formData.append('bulk_images[' + i + ']', selectedFiles[i].file.file);
       }
     }
 
-    formData.append("parent_id", selectedOptionId);
+    formData.append('parent_id', selectedOptionId);
 
     var flag = 1;
 
     if (selectQueryGroup && selectQueryGroup.length > 0) {
-      formData.append("dynamicForm", JSON.stringify(rows));
-      var selectCountry = formData.getAll("customer_id");
-      var selectQueryGroup = formData.getAll("query_group_id");
-      var selectgetAll = formData.get("ticket_type_id");
+      formData.append('dynamicForm', JSON.stringify(rows));
+      var selectCountry = formData.getAll('customer_id');
+      var selectQueryGroup = formData.getAll('query_group_id');
+      var selectgetAll = formData.get('ticket_type_id');
 
-      if (selectCountry == "") {
+      if (selectCountry == '') {
         flag = 0;
       }
-      if (selectQueryGroup == "") {
-        alert("Please select query group");
+      if (selectQueryGroup == '') {
+        alert('Please select query group');
         e.preventDefault();
         flag = 0;
       } else {
@@ -359,59 +360,40 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
+              setNotify({ type: 'success', message: res.data.message });
               setTimeout(() => {
                 navigate(`/${_base}/Ticket`);
               }, 2000);
 
               setIsSubmitted(false);
             } else {
-              if (formData.getAll("ticket_uploading") == "REGULAR") {
-                setNotify({ type: "danger", message: res.data.message });
+              if (formData.getAll('ticket_uploading') == 'REGULAR') {
+                setNotify({ type: 'danger', message: res.data.message });
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
-                  setNotify({ type: "danger", message: res.data.message });
+                  setNotify({ type: 'danger', message: res.data.message });
                   setIsSubmitted(false);
                   return;
                 }
-                setNotify({ type: "danger", message: res.data.message });
+                setNotify({ type: 'danger', message: res.data.message });
                 let url = `${_attachmentUrl}` + res.data.data;
-                window.open(url, "_blank").focus();
+                window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
-
-            new ErrorLogService().sendErrorLog(
-              "Ticket",
-              "Create_Ticket",
-              "INSERT",
-              res.message
-            );
           }
         })
-        .catch((error) => {
-          if (error.response) {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setIsSubmitted(false);
-            setNotify({ type: "danger", message: "Request Error !!!" });
-            new ErrorLogService().sendErrorLog(
-              "Ticket",
-              "Create_Ticket",
-              "INSERT",
-              errorObject.data.message
-            );
-          } else {
-          }
+        .catch((res) => {
+          setNotify({ type: 'danger', message: res.message });
         });
     }
   };
 
-  const queryTypeRef = useRef();
+  const queryTypeRef = useRef(null);
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
@@ -434,7 +416,7 @@ export default function CreateTicketComponent() {
       setRows(null);
       if (data && data?.length == 0) {
         alert(
-          "Dynamic Form is not mapped against this Query Type, Please Map Form first"
+          'Dynamic Form is not mapped against this Query Type, Please Map Form first'
         );
         setQueryGroupTypeData(null);
       } else {
@@ -442,7 +424,7 @@ export default function CreateTicketComponent() {
         const returnedData = [];
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
-            formInstance.inputType === "select" &&
+            formInstance.inputType === 'select' &&
             formInstance.inputAddOn.inputDataSource
         );
 
@@ -461,8 +443,8 @@ export default function CreateTicketComponent() {
                 if (res.data.status == 1) {
                   var temp = [];
                   temp = res.data.data.dropdown.map((d) => ({
-                    value: d.id + "|" + d.label,
-                    label: d.label,
+                    value: d.id + '|' + d.label,
+                    label: d.label
                   }));
                   tempResponse.push(temp);
                 }
@@ -471,7 +453,7 @@ export default function CreateTicketComponent() {
 
             //Remove from array
             dynamicForm.forEach((d, i) => {
-              if (d.inputType === "select") {
+              if (d.inputType === 'select') {
                 if (tempResponse?.length > 0) {
                   dynamicForm[i].inputAddOn.inputDataSourceData =
                     tempResponse[0];
@@ -495,11 +477,11 @@ export default function CreateTicketComponent() {
     );
     if (dependanceDropdownName) {
       var formdata = new FormData();
-      formdata.append("key", key);
-      formdata.append("value", e.value);
-      formdata.append("dropdownName", dependanceDropdownName);
+      formdata.append('key', key);
+      formdata.append('value', e.value);
+      formdata.append('dropdownName', dependanceDropdownName);
       formdata.append(
-        "dropdownId",
+        'dropdownId',
         currentData[0]?.inputAddOn?.inputDataSource
       );
 
@@ -511,8 +493,8 @@ export default function CreateTicketComponent() {
             if (res.data.status == 1) {
               var temp = [];
               dropdown = res.data.data.dropdown.map((d) => ({
-                value: d.id + "|" + d.label,
-                label: d.label,
+                value: d.id + '|' + d.label,
+                label: d.label
               }));
             }
           }
@@ -543,14 +525,16 @@ export default function CreateTicketComponent() {
   };
 
   const loadData = async () => {
-    const query_type_id = "";
+    const query_type_id = '';
     const queryTypeTemp = [];
+
+    const status = 1;
+
+    dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
-        const queryType = [];
-        const department = [];
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -583,7 +567,14 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new QueryTypeService().getAllQueryGroup().then((res) => {
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
+    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      if (res.payload.status == 200) {
+      }
+    });
+
+    await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
@@ -598,7 +589,7 @@ export default function CreateTicketComponent() {
       if (res.status == 200) {
         if (res.data.status == 1) {
           setDepartment(res.data.data.filter((d) => d.is_active == 1));
-          var defaultValue = [{ value: 0, label: "Select Department" }];
+          var defaultValue = [{ value: 0, label: 'Select Department' }];
           var dropwdown = res.data.data
             .filter((d) => d.is_active == 1)
             .map((d) => ({ value: d.id, label: d.department }));
@@ -614,7 +605,7 @@ export default function CreateTicketComponent() {
           if (res.status === 200) {
             const mappedData = res.data.data.map((d) => ({
               value: d.id,
-              label: d.type_name,
+              label: d.type_name
             }));
 
             setParent(mappedData);
@@ -651,13 +642,13 @@ export default function CreateTicketComponent() {
           setUserDepartments(
             resp.data.data.map((d) => ({
               value: d.department_id,
-              label: d.department,
+              label: d.department
             }))
           );
           if (resp?.data?.data?.length > 0) {
             setData((prev) => {
               const newPrev = { ...prev };
-              newPrev["from_department_id"] = resp.data.data[0].department_id;
+              newPrev['from_department_id'] = resp.data.data[0].department_id;
               return newPrev;
             });
           }
@@ -674,48 +665,41 @@ export default function CreateTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           let url = `${_attachmentUrl}` + res.data.data;
-          window.open(url, "_blank")?.focus();
+          window.open(url, '_blank')?.focus();
           setIsFileGenerated(res.data.data);
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
-        setNotify({ type: "danger", message: res.message });
+        setNotify({ type: 'danger', message: res.message });
       }
     });
   };
 
   const handleQueryGroupDropDown = async (e) => {
-    if (queryTypeRef.current) {
-      queryTypeRef.current.clearValue();
-    }
-    await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
-      if (res.data.status == 1) {
-        setQueryGroupTypeData(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.query_type_name }))
-        );
+    try {
+      setQueryGroupTypeData([]);
+      setNotify({});
+      if (queryTypeRef?.current) {
+        queryTypeRef?.current.clearValue();
       }
-    });
-  };
 
-  const handleParentchange = async (e) => {
-    if (ticketTypeRefs.current) {
-      ticketTypeRefs.current.clearValue();
-    }
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setGetAllType(
-            temp
-              .filter((d) => d.type === "TICKET" && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
+      const res = await new QueryTypeService().getQueryTypeMapped(e.value);
+
+      if (res.data.status === 1) {
+        const activeData = res.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }));
+        setQueryGroupTypeData(activeData);
+      } else {
+        setNotify({
+          type: 'danger',
+          message: 'No Query type mapped for this Query group'
+        });
       }
-    });
+    } catch (res) {
+      setNotify({ type: 'danger', message: res.message });
+    }
   };
 
   const handleGetDepartmentUsers = async (e) => {
@@ -723,17 +707,17 @@ export default function CreateTicketComponent() {
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: "", label: "Select User" }];
+          var defaultValue = [{ value: '', label: 'Select User' }];
 
           const dropdown = res.data.data
             .filter((d) => d.is_active == 1)
             .filter((d) => d.multiple_department_id.includes(e.value))
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
 
-          if (data.approach == "RW") {
+          if (data.approach == 'RW') {
             defaultValue = dropdown;
           } else {
             defaultValue = [...defaultValue, ...dropdown];
@@ -743,40 +727,6 @@ export default function CreateTicketComponent() {
       }
     });
   };
-
-  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
-  //   const primaryLabel = "Primary";
-  //   const options = [];
-
-  //   // Push the primary label if it hasn't been pushed before
-  //   if (!hasPrimaryLabel) {
-  //     options.push({
-  //       ID: null,
-  //       label: primaryLabel,
-  //       isStatic: true,
-  //       options: [],
-  //     });
-  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-  //   }
-
-  //   // Process the ticketData
-  //   ticketsData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children
-  //           ? transformDataTicket(item.children, hasPrimaryLabel)
-  //           : [],
-  //       });
-  //     }
-  //   });
-
-  //   return options;
-  // }
 
   function transformDataTicket(ticketsData) {
     const options = [];
@@ -789,7 +739,7 @@ export default function CreateTicketComponent() {
       options.push({
         ID: item.parent_id,
         label: label,
-        options: item.children ? transformDataTicket(item.children) : [],
+        options: item.children ? transformDataTicket(item.children) : []
       });
     });
 
@@ -801,24 +751,29 @@ export default function CreateTicketComponent() {
 
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
-      var value = type == "Select2" ? e && e.value : e.target.value;
-      if (nameField == "query_type_id") {
+      var value = type == 'Select2' ? e && e.value : e.target.value;
+      if (nameField == 'query_type_id') {
         const x = customerMapping.filter((d) => d.query_type_id == value);
-        const accountFor = localStorage.getItem("account_for");
+        const accountFor = localStorage.getItem('account_for');
 
         if (x?.length > 0) {
-          const mappingId = x
-            .filter((item) =>
-              accountFor === "SELF"
-                ? !item.customer_type_id || item.customer_type_id === "0"
-                : item.customer_type_id
-            )
-            .map((item) => item.id);
+          const filteredItems = x.filter((item) =>
+            accountFor === 'SELF'
+              ? !item.customer_type_id || item.customer_type_id === '0'
+              : item.customer_type_id
+          );
+
+          const mappingId = filteredItems.map((item) => item.id);
+
+          const confirmationRequiredID = filteredItems
+            .map((item) => item.confirmation_required)
+            .join(',');
+
           setData((prev) => {
             const newPrev = { ...prev };
-            newPrev["customer_mapping_id"] = mappingId[0];
-            newPrev["confirmation_required"] = x[0].confirmation_required;
-            newPrev["priority"] = x[0].priority;
+            newPrev['customer_mapping_id'] = mappingId[0];
+            newPrev['confirmation_required'] = x[0].confirmation_required;
+            newPrev['priority'] = x[0].priority;
             return newPrev;
           });
         }
@@ -831,8 +786,8 @@ export default function CreateTicketComponent() {
     });
   };
 
-  const [selectedValue, setSelectedValue] = useState("");
-  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -856,6 +811,7 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
+
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
           type="hidden"
@@ -867,11 +823,11 @@ export default function CreateTicketComponent() {
 
         <div className="card mt-2">
           <div className="card-body">
-            <div className="row" style={{ fontSize: "18px" }}>
+            <div className="row" style={{ fontSize: '18px' }}>
               <div className="col-sm-2">
                 <label className="col-form-label">
                   <b>
-                    Create Ticket <Astrick color="red" /> :{" "}
+                    Create Ticket <Astrick color="red" /> :{' '}
                   </b>
                 </label>
               </div>
@@ -884,9 +840,9 @@ export default function CreateTicketComponent() {
                   id="ticket_uploading_regular"
                   name="ticket_uploading"
                   value="REGULAR"
-                  checked={data.ticket_uploading === "REGULAR"}
+                  checked={data.ticket_uploading === 'REGULAR'}
                   onChange={(e) =>
-                    handleAutoChanges(e, "Radio", "ticket_uploading")
+                    handleAutoChanges(e, 'Radio', 'ticket_uploading')
                   }
                 />
                 <span class="px-2">Manual</span>
@@ -898,9 +854,9 @@ export default function CreateTicketComponent() {
                   id="ticket_uploading_bulk_uploading"
                   name="ticket_uploading"
                   value="BULK_UPLOADING"
-                  checked={data.ticket_uploading === "BULK_UPLOADING"}
+                  checked={data.ticket_uploading === 'BULK_UPLOADING'}
                   onChange={(e) =>
-                    handleAutoChanges(e, "Radio", "ticket_uploading")
+                    handleAutoChanges(e, 'Radio', 'ticket_uploading')
                   }
                 />
                 <span class="px-2">Bulk Upload</span>
@@ -909,7 +865,7 @@ export default function CreateTicketComponent() {
           </div>
         </div>
 
-        {data && data.ticket_uploading === "REGULAR" && (
+        {data && data.ticket_uploading === 'REGULAR' && (
           <div className="card mt-2">
             <div className="card-body">
               <div className="form-group row ">
@@ -917,7 +873,7 @@ export default function CreateTicketComponent() {
                   <label className="col-form-label">
                     <b>
                       Your Department
-                      <Astrick color="red" /> :{" "}
+                      <Astrick color="red" /> :{' '}
                     </b>
                   </label>
                   {userDepartments && (
@@ -929,7 +885,7 @@ export default function CreateTicketComponent() {
                               if (department?.is_default) {
                                 return {
                                   value: department?.department_id,
-                                  label: department?.department,
+                                  label: department?.department
                                 };
                               }
                             })
@@ -940,7 +896,7 @@ export default function CreateTicketComponent() {
                       ref={departmentRef}
                       required={true}
                       onChange={(e) =>
-                        handleAutoChanges(e, "Select2", "from_department_id")
+                        handleAutoChanges(e, 'Select2', 'from_department_id')
                       }
                     />
                   )}
@@ -965,7 +921,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData && (
+                {queryGroupTypeData.length > 0 && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -980,13 +936,13 @@ export default function CreateTicketComponent() {
                       required
                       options={queryGroupTypeData}
                       onChange={(e) => {
-                        handleAutoChanges(e, "Select2", "query_type_id");
+                        handleAutoChanges(e, 'Select2', 'query_type_id');
                         handleGetQueryTypeForm(e);
                       }}
                     />
                   </div>
                 )}
-                {departmentDropdown && approch && approch === "AU" && (
+                {departmentDropdown && approch && approch === 'AU' && (
                   <>
                     <div className="col-sm-3">
                       <label className="col-form-label">
@@ -1005,8 +961,8 @@ export default function CreateTicketComponent() {
                           onChange={(e) => {
                             handleAutoChanges(
                               e,
-                              "Select2",
-                              "assign_to_department_id"
+                              'Select2',
+                              'assign_to_department_id'
                             );
                             handleGetDepartmentUsers(e);
                           }}
@@ -1030,8 +986,8 @@ export default function CreateTicketComponent() {
                           onChange={(e) => {
                             handleAutoChanges(
                               e,
-                              "Select2",
-                              "assign_to_user_id"
+                              'Select2',
+                              'assign_to_user_id'
                             );
                           }}
                         />
@@ -1136,9 +1092,9 @@ export default function CreateTicketComponent() {
                   <div>
                     <div
                       style={{
-                        position: "relative",
-                        display: "inline-block",
-                        width: "100%",
+                        position: 'relative',
+                        display: 'inline-block',
+                        width: '100%'
                       }}
                     >
                       <div
@@ -1173,17 +1129,17 @@ export default function CreateTicketComponent() {
                           //   },
                           // }}
                           style={{
-                            position: "absolute",
-                            width: "100%", // Set the width to 100% to match the parent's width
-                            top: "100%", // Position the menu at the top of the parent element
-                            zIndex: "1", // Ensure the menu is on top of other elements
-                            maxHeight: "150px", // Adjust the maxHeight here as needed
+                            position: 'absolute',
+                            width: '100%', // Set the width to 100% to match the parent's width
+                            top: '100%', // Position the menu at the top of the parent element
+                            zIndex: '1', // Ensure the menu is on top of other elements
+                            maxHeight: '150px', // Adjust the maxHeight here as needed
                             // overflowY: "auto", // Enable vertical scrolling
                             // scrollbarWidth: "none", // Hide scrollbar in Firefox
-                            msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                            "&::-webkit-scrollbar": {
-                              display: "none", // Hide scrollbar in Webkit browsers
-                            },
+                            msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
+                            '&::-webkit-scrollbar': {
+                              display: 'none' // Hide scrollbar in Webkit browsers
+                            }
                           }}
                         >
                           <CustomMenuListTicket
@@ -1232,7 +1188,7 @@ export default function CreateTicketComponent() {
                 )} */}
               </div>
 
-              {data.ticket_uploading == "REGULAR" && (
+              {data.ticket_uploading == 'REGULAR' && (
                 <div className="form-group row mt-3">
                   <div className="col-sm-3">
                     <label className="col-form-label">
@@ -1248,11 +1204,11 @@ export default function CreateTicketComponent() {
                         name="confirmation_required"
                         value="1"
                         checked={
-                          data.confirmation_required == "1" ||
+                          data.confirmation_required == '1' ||
                           data.confirmation_required == 1
                         }
                         onChange={(e) =>
-                          handleAutoChanges(e, "Radio", "confirmation_required")
+                          handleAutoChanges(e, 'Radio', 'confirmation_required')
                         }
                       />
                       <span class="px-2">YES</span>
@@ -1266,11 +1222,11 @@ export default function CreateTicketComponent() {
                         name="confirmation_required"
                         value="0"
                         checked={
-                          data.confirmation_required == "0" ||
+                          data.confirmation_required == '0' ||
                           data.confirmation_required == 0
                         }
                         onChange={(e) =>
-                          handleAutoChanges(e, "Radio", "confirmation_required")
+                          handleAutoChanges(e, 'Radio', 'confirmation_required')
                         }
                       />
                       <span class="px-2">NO</span>
@@ -1285,7 +1241,7 @@ export default function CreateTicketComponent() {
                       className="form-control form-control-sm"
                       id="cuid"
                       name="cuid"
-                      onInput={(e) => handleAutoChanges(e, "Text", "cuid")}
+                      onInput={(e) => handleAutoChanges(e, 'Text', 'cuid')}
                     />
                   </div>
                   <div className="col-sm-3">
@@ -1301,7 +1257,7 @@ export default function CreateTicketComponent() {
                       required={true}
                       value={data.priority}
                       onChange={(e) =>
-                        handleAutoChanges(e, "Select", "priority")
+                        handleAutoChanges(e, 'Select', 'priority')
                       }
                     >
                       <option value="Low">Low</option>
@@ -1332,13 +1288,13 @@ export default function CreateTicketComponent() {
           </div>
         )}
 
-        {data.ticket_uploading === "BULK_UPLOADING" && (
+        {data.ticket_uploading === 'BULK_UPLOADING' && (
           <>
             <div className="col-sm-3">
               <button
                 type="button"
                 className="btn btn-danger text-white"
-                style={{ marginTop: "30px" }}
+                style={{ marginTop: '30px' }}
                 onClick={(e) => {
                   handleDownloadFormat(e);
                 }}
@@ -1349,32 +1305,32 @@ export default function CreateTicketComponent() {
           </>
         )}
 
-        {data.ticket_uploading === "REGULAR" && rows && rows?.length > 0 && (
+        {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">
               <div className="row">
                 {rows.map((data, index) => {
-                  var range = "";
+                  var range = '';
                   return (
                     <div className={`${data.inputWidth} mt-2`}>
                       <label>
                         <b>
-                          {data.inputLabel}{" "}
+                          {data.inputLabel}{' '}
                           {data.inputMandatory == true ? (
                             <Astrick color="red" size="13px" />
                           ) : (
-                            ""
+                            ''
                           )}
                           :
                         </b>
                       </label>
-                      {data.inputType === "text" && (
+                      {data.inputType === 'text' && (
                         <input
                           type={data.inputType}
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           name={data.inputName}
                           defaultValue={data.inputDefaultValue}
@@ -1383,19 +1339,19 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {data.inputType === "textarea" && (
+                      {data.inputType === 'textarea' && (
                         <textarea
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           name={data.inputName}
                           className="form-control form-control-sm"
                           defaultValue={
                             selectedDropdown
                               ? selectedDropdown[data.inputName]
-                              : ""
+                              : ''
                           }
                           onChange={dynamicChangeHandle}
                           required={data.inputMandatory == true ? true : false}
@@ -1404,7 +1360,7 @@ export default function CreateTicketComponent() {
                         </textarea>
                       )}
 
-                      {data.inputType === "date" && (
+                      {data.inputType === 'date' && (
                         <div className="form-control">
                           <input
                             type="date"
@@ -1413,11 +1369,11 @@ export default function CreateTicketComponent() {
                               data && data.inputMandatory == true ? true : false
                             }
                             defaultValue={data.inputDefaultValue}
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                           />
                         </div>
                       )}
-                      {data.inputType === "datetime-local" && (
+                      {data.inputType === 'datetime-local' && (
                         <div className="form-control">
                           <input
                             type="datetime-local"
@@ -1427,18 +1383,18 @@ export default function CreateTicketComponent() {
                             }
                             onChange={dynamicChangeHandle}
                             defaultValue={data.inputDefaultValue}
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                           />
                         </div>
                       )}
 
-                      {data.inputType === "time" && (
+                      {data.inputType === 'time' && (
                         <input
                           type={data.inputType}
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           name={data.inputName}
                           defaultValue={
@@ -1453,7 +1409,7 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {data.inputType == "radio" && data.inputAddOn.inputRadio
+                      {data.inputType == 'radio' && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                             return (
                               <div>
@@ -1476,9 +1432,9 @@ export default function CreateTicketComponent() {
                               </div>
                             );
                           })
-                        : ""}
+                        : ''}
 
-                      {data.inputType == "checkbox" &&
+                      {data.inputType == 'checkbox' &&
                       data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                             return (
@@ -1509,15 +1465,15 @@ export default function CreateTicketComponent() {
                               </div>
                             );
                           })
-                        : ""}
+                        : ''}
 
-                      {data.inputType === "number" && (
+                      {data.inputType === 'number' && (
                         <input
                           type={data.inputType}
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           name={data.inputName}
                           defaultValue={data.inputDefaultValue}
@@ -1530,13 +1486,13 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {data.inputType === "decimal" && (
+                      {data.inputType === 'decimal' && (
                         <input
                           type="number"
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory == true ? true : false}
@@ -1573,12 +1529,12 @@ export default function CreateTicketComponent() {
                         />
                       )} */}
 
-                      {data.inputType === "select" && (
+                      {data.inputType === 'select' && (
                         <select
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           name={data.inputName}
                           className="form-control form-control-sm"
@@ -1602,12 +1558,12 @@ export default function CreateTicketComponent() {
                         </select>
                       )}
 
-                      {data.inputType === "select-master" && (
+                      {data.inputType === 'select-master' && (
                         <select
                           id={
                             data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
+                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                              : ''
                           }
                           defaultValue={data.inputAddOn.inputDataSource}
                           name={data.inputName}
@@ -1642,7 +1598,7 @@ export default function CreateTicketComponent() {
           </div>
         )}
 
-        {data.ticket_uploading === "REGULAR" && (
+        {data.ticket_uploading === 'REGULAR' && (
           <span>
             <div className="card mt-2">
               <div className="card-body">
@@ -1662,7 +1618,7 @@ export default function CreateTicketComponent() {
                     />
                   </div>
                 </div>
-              </div>{" "}
+              </div>{' '}
               {/* CARD */}
             </div>
 
@@ -1680,7 +1636,7 @@ export default function CreateTicketComponent() {
                       name="attachment[]"
                       multiple
                       required={
-                        data.ticket_uploading === "REGULAR" ? false : true
+                        data.ticket_uploading === 'REGULAR' ? false : true
                       }
                     />
                   </div>
@@ -1690,7 +1646,7 @@ export default function CreateTicketComponent() {
           </span>
         )}
 
-        {data.ticket_uploading === "BULK_UPLOADING" && isFileGenerated && (
+        {data.ticket_uploading === 'BULK_UPLOADING' && isFileGenerated && (
           <div className="card mt-2">
             <div className="card-body">
               <div className="form-group row mt-3">
@@ -1717,7 +1673,7 @@ export default function CreateTicketComponent() {
                   id="bulk_upload_file"
                   name="bulk_upload_file"
                   onChange={(e) => {
-                    uploadAttachmentHandler(e, "UPLOAD", "");
+                    uploadAttachmentHandler(e, 'UPLOAD', '');
                   }}
                   required
                 />
@@ -1735,15 +1691,15 @@ export default function CreateTicketComponent() {
                   multiple
                   // required
                   onChange={(e) => {
-                    uploadAttachmentHandler(e, "UPLOAD", "");
+                    uploadAttachmentHandler(e, 'UPLOAD', '');
                   }}
                 />
               </div>
             </div>
           </div>
         )}
-        <div className="mt-3" style={{ textAlign: "right" }}>
-          {data.ticket_uploading == "REGULAR" && (
+        <div className="mt-3" style={{ textAlign: 'right' }}>
+          {data.ticket_uploading == 'REGULAR' && (
             <button
               type="submit"
               className="btn btn-sm btn-primary"
@@ -1753,7 +1709,7 @@ export default function CreateTicketComponent() {
             </button>
           )}
 
-          {data.ticket_uploading == "BULK_UPLOADING" && (
+          {data.ticket_uploading == 'BULK_UPLOADING' && (
             <button
               type="submit"
               className="btn btn-sm btn-primary"

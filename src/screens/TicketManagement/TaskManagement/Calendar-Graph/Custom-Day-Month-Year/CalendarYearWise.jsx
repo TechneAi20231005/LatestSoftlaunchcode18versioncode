@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import SprintService from "../../../../../services/TicketService/SprintService";
-import { useParams } from "react-router-dom";
-import CustomTooltip from "./CustomTooltip";
+import React, { useEffect, useState } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import SprintService from '../../../../../services/TicketService/SprintService';
+import { useParams } from 'react-router-dom';
+import CustomTooltip from './CustomTooltip';
 
 export const CalendarYearWise = (props) => {
   const { yearData } = props;
-  console.log("data", yearData);
   const params = useParams();
   const { id: ticketId } = params;
   const [calendarEvent, setCalendarEvent] = useState([]);
   const [notify, setNotify] = useState({});
   const localizer = momentLocalizer(moment);
   const taskStatus = [
-    { id: 1, statusName: "TO_DO", color: "#C3F5FF" },
-    { id: 2, statusName: "IN_PROGRESS", color: "#FFECB3" },
-    { id: 3, statusName: "COMPLETED", color: "#9EFFB9" },
-    { id: 4, statusName: "Delay", color: "#C3F5FF" },
-    { id: 5, statusName: "Min_Delay", color: "#FFC581" },
-    { id: 6, statusName: "Max_Delay", color: "#484C7F" },
+    { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
+    { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
+    { id: 3, statusName: 'COMPLETED', color: '#9EFFB9' },
+    { id: 4, statusName: 'Delay', color: '#C3F5FF' },
+    { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
+    { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
   ];
   const frameStructureForCalendar = () => {
     setCalendarEvent([]);
@@ -41,6 +40,7 @@ export const CalendarYearWise = (props) => {
               actualWorked: taskDataItem?.task_actual_worked,
               priority: taskDataItem?.task_priority,
               actualStatus: taskDataItem?.task_status,
+              taskOwners: taskDataItem?.taskOwners
             };
             newCalendarEvents.push(newEvent);
           }
@@ -52,20 +52,20 @@ export const CalendarYearWise = (props) => {
 
   const eventPropGetter = (event) => {
     const statusColors = {
-      TO_DO: "#C3F5FF",
-      IN_PROGRESS: "#FFECB3",
-      COMPLETED: "#9EFFB9",
-      Delay: "#C3F5FF",
-      Min_Delay: "#FFC581",
-      Max_Delay: "#484C7F",
+      TO_DO: '#C3F5FF',
+      IN_PROGRESS: '#FFECB3',
+      COMPLETED: '#9EFFB9',
+      Delay: '#C3F5FF',
+      Min_Delay: '#FFC581',
+      Max_Delay: '#484C7F'
     };
 
-    const backgroundColor = statusColors[event?.actualStatus] || "";
+    const backgroundColor = statusColors[event?.actualStatus] || '';
 
     return {
       style: {
-        backgroundColor,
-      },
+        backgroundColor
+      }
     };
   };
 
@@ -78,35 +78,32 @@ export const CalendarYearWise = (props) => {
       end,
       actualWorked,
       actualStatus,
+      taskOwners
     } = event;
+    const users = taskOwners.join(',');
     const tooltipText = `Sprint Name: ${
       event.title
     }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${start}\nEnd Date:${end}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
-      actualWorked ? actualWorked : "00:00:00"
-    }\nStatus:${actualStatus}`;
+      actualWorked ? actualWorked : '00:00:00'
+    }\nStatus:${actualStatus}\nTask Owners:${users}`;
     return tooltipText;
   };
 
   const CustomToolbar = (toolbar) => {
     const goToBack = () => {
       toolbar.date.setMonth(toolbar.date.getMonth() - 1);
-      toolbar.onNavigate("prev");
+      toolbar.onNavigate('prev');
     };
 
     const goToNext = () => {
       toolbar.date.setMonth(toolbar.date.getMonth() + 1);
-      toolbar.onNavigate("next");
+      toolbar.onNavigate('next');
     };
 
     return (
       <div className="custom-toolbar my-1 col-12 col-md-6 d-flex align-items-center">
         <button onClick={goToBack} className="btn col-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="23"
-            viewBox="0 0 23 23"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23">
             <rect
               width="22.9927"
               height="22.9927"
@@ -122,12 +119,7 @@ export const CalendarYearWise = (props) => {
         </button>
         <span className="col-6 text-center">{toolbar.label}</span>
         <button onClick={goToNext} className="col-3 btn">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="23"
-            viewBox="0 0 23 23"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23">
             <rect
               width="22.9927"
               height="22.9927"
@@ -160,10 +152,10 @@ export const CalendarYearWise = (props) => {
         // showAllEvents={true}
         eventPropGetter={(event) => eventPropGetter(event)}
         tooltipAccessor={(event) => tooltipAccessor(event)}
-        views={["month"]}
+        views={['month']}
         components={{
           // eventWrapper: CustomTooltip,
-          toolbar: CustomToolbar,
+          toolbar: CustomToolbar
         }}
       />
     </div>
