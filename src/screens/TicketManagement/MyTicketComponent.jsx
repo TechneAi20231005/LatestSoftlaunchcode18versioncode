@@ -30,8 +30,11 @@ import { getRoles } from "../Dashboard/DashboardAction";
 import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
 
 export default function MyTicketComponent() {
+  const account_for = localStorage.getItem('account_for');
+  const location = useLocation();
+  const dispatch = useDispatch();
+
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
 
@@ -47,8 +50,6 @@ export default function MyTicketComponent() {
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
 
-  const [unpassedTicketsExport, setUnpassedTicketsExport] = useState(null);
-
   const [assignedToMe, setAssignedToMe] = useState(null);
   const [assignedToMeExport, setAssignedToMeExport] = useState(null);
 
@@ -62,32 +63,29 @@ export default function MyTicketComponent() {
 
   const [userDepartment, setUserDepartment] = useState();
 
-  const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 17)
   );
 
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
   const [remarkModal, setRemarkModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [confirmationModal, setConfirmationModal] = useState({
     showModals: false,
-    modalsData: "",
-    modalsHeader: "",
+    modalsData: '',
+    modalsHeader: ''
   });
 
   const [locationState, setLocationState] = useState(null);
-  const location = useLocation();
 
-  const account_for = localStorage.getItem("account_for");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -103,16 +101,16 @@ export default function MyTicketComponent() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowss, setSelectedRowss] = useState([]);
-  const [statusValue, setStatusValue] = useState("");
-  const [assignedUser, setAssignedUser] = useState("");
-  const [entryUser, setEntryUser] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [ticket, setTicket] = useState("");
+  const [statusValue, setStatusValue] = useState('');
+  const [assignedUser, setAssignedUser] = useState('');
+  const [entryUser, setEntryUser] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [ticket, setTicket] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [assignedDepartmentValue, setAssignedDepartment] = useState("");
+  const [assignedDepartmentValue, setAssignedDepartment] = useState('');
   const [entryDepartment, setEntryDepartment] = useState();
-  const [key, setKey] = useState("Assigned_To_Me");
+  const [key, setKey] = useState('Assigned_To_Me');
   const selectInputRef = useRef();
   const selectAssignUserRef = useRef();
   const selectEntryDeptRef = useRef();
@@ -122,18 +120,13 @@ export default function MyTicketComponent() {
   const selectToDateRef = useRef();
   const selectTicketRef = useRef();
   const currentDate = new Date();
-  const formattedDate = `${currentDate.getFullYear()}-${(
-    currentDate.getMonth() + 1
-  )
+  const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
     .toString()
-    .padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`;
-  const timeString = `${currentDate
-    .getHours()
-    .toString()
-    .padStart(2, "0")}${currentDate
+    .padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+  const timeString = `${currentDate.getHours().toString().padStart(2, '0')}${currentDate
     .getMinutes()
     .toString()
-    .padStart(2, "0")}${currentDate.getSeconds().toString().padStart(2, "0")}`;
+    .padStart(2, '0')}${currentDate.getSeconds().toString().padStart(2, '0')}`;
   const formattedTimeString = `${timeString.slice(0, 2)}:${timeString.slice(
     2,
     4
@@ -143,7 +136,7 @@ export default function MyTicketComponent() {
     for (var i = 0; i < e.length; i++) {
       const select = user
         .filter((d) => d.department_id == e[i].value)
-        .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name }));
+        .map((d) => ({ value: d.id, label: d.first_name + ' ' + d.last_name }));
       for (var j = 0; j < select.length; j++) {
         deptUser.push(select[j]);
       }
@@ -156,20 +149,16 @@ export default function MyTicketComponent() {
 
   const handleSelectAllNamesChange = () => {
     setSelectAllNames(!selectAllNames);
-    setSelectedRowss(
-      selectAllNames
-        ? []
-        : unpassedTickets && unpassedTickets.map((row) => row.id)
-    );
+    setSelectedRowss(selectAllNames ? [] : unpassedTickets && unpassedTickets.map((row) => row.id));
   };
 
   const handleConfirmationModal = (e, data) => {
     var d = {};
     setConfirmationModal(null);
     if (data) {
-      d = { showModals: true, modalsData: data, modalsHeader: "Solve Ticket" };
+      d = { showModals: true, modalsData: data, modalsHeader: 'Solve Ticket' };
     } else {
-      d = { showModals: false, modalsData: "", modalsHeader: "Solve Ticket" };
+      d = { showModals: false, modalsData: '', modalsHeader: 'Solve Ticket' };
     }
     setConfirmationModal(d);
   };
@@ -179,25 +168,23 @@ export default function MyTicketComponent() {
     const form = new FormData(e.target);
     setNotify(null);
 
-    var id = form.get("id");
+    var id = form.get('id');
 
-    await new MyTicketService()
-      .verifyTicketConfirmationOtp(id, form)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
-            setConfirmationModal({
-              showModal: false,
-              modalData: "",
-              modalHeader: "",
-            });
-            loadData();
-          } else {
-            setNotify({ type: "danger", message: res.data.message });
-          }
+    await new MyTicketService().verifyTicketConfirmationOtp(id, form).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setNotify({ type: 'success', message: res.data.message });
+          setConfirmationModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+          loadData();
+        } else {
+          setNotify({ type: 'danger', message: res.data.message });
         }
-      });
+      }
+    });
   };
 
   const handleModal = (data) => {
@@ -208,178 +195,186 @@ export default function MyTicketComponent() {
     setRemarkModal(data);
   };
 
+  const UserId = localStorage.getItem('id');
+  const loginUserDepartmentId = userDepartment?.[0]?.department_id;
+
+  const loginUserTicketTypeShow = userDepartment?.[0]?.ticket_show_type;
+
   const actionComponent = (data, type) => {
-    if (type === "SEARCH_RESULT") {
+    if (type === 'SEARCH_RESULT') {
       if (searchResult && searchResult.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
-                data.assign_to_user_id == localStorage.getItem("id") ||
-                (data.status_name !== "Solved" &&
-                  data.passed_status !== "REJECT" &&
-                  localStorage.getItem("account_for" === "SELF")) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem("id")
-                ) && (
+              {data &&
+                data?.assign_to_user_id === Number(UserId) &&
+                data &&
+                data?.assign_to_department_id === loginUserDepartmentId &&
+                data &&
+                data?.assign_to_ticket_show_type === loginUserTicketTypeShow && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
                       className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: "100" }}
+                      style={{ width: '100%', zIndex: '100' }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
-                    </Link>
-                  </li>
-                ))}
-
-              <li>
-                {" "}
-                <Link
-                  to={`/${_base}/Ticket/View/` + data.id}
-                  className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
-                >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
-              </li>
-
-              {data.created_by != localStorage.getItem("id") &&
-                data.basket_configured === 0 &&
-                localStorage.getItem("account_for") === "SELF" &&
-                data.status_name != "Solved" &&
-                data.passed_status !== "REJECT" &&
-                data.passed_status !== "UNPASS" && (
-                  <li>
-                    <Link
-                      to={`/${_base}/Ticket/Basket/` + data.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-bucket2"></i>Basket
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 )}
 
-              {(data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0 &&
-                data.status_name != "Solved" &&
-                localStorage.getItem("account_for" === "SELF")) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem("id")
-                ) && (
+              <li>
+                <Link
+                  to={`/${_base}/Ticket/View/` + data.id}
+                  className="btn btn-sm btn-info text-white"
+                  style={{ width: '100%', zIndex: 100 }}
+                >
+                  <i className="icofont-external-link " /> View
+                </Link>{' '}
+              </li>
+
+              {((data?.created_by != Number(UserId) && data?.basket_configured === 0) ||
+                (data?.assign_to_user_id === Number(UserId) && data?.basket_configured === 0)) &&
+                localStorage.getItem('account_for') === 'SELF' && (
+                  <li>
+                    <Link
+                      to={`/${_base}/Ticket/Basket/` + data.id}
+                      className="btn btn-sm btn-primary text-white"
+                      style={{ width: '100%', zIndex: 100 }}
+                    >
+                      <i className="icofont-bucket2" />
+                      Basket
+                    </Link>
+                  </li>
+                )}
+
+              {((data?.created_by != Number(UserId) && data?.basket_configured > 0) ||
+                (data?.assign_to_user_id === Number(UserId) && data?.basket_configured > 0)) &&
+                localStorage?.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
                       className="btn btn-sm btn-outline-primary"
-                      style={{ width: "100%", zIndex: 100 }}
+                      style={{ width: '100%', zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
-                ))}
+                )}
 
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
+
+              {data?.created_by === Number(UserId) && (
+                <li>
+                  <button
+                    className=" btn btn-sm  btn-secondary text-white"
+                    style={{ width: '100%', zIndex: 100 }}
+                    onClick={(e) => handleConfirmationModal(e, data)}
+                  >
+                    Confirm
+                  </button>
+                </li>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by == sessionStorage.getItem("id") ||
-              (data.assign_to_user_id == sessionStorage.getItem("id") &&
-                data.status_name != "Solved" && (
+            {data?.created_by === sessionStorage.getItem('id') ||
+              (data?.assign_to_user_id === sessionStorage.getItem('id') &&
+                data?.status_name !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
                     className="btn btn-sm btn-warning text-white"
-                    style={{ width: "90px" }}
+                    style={{ width: '90px' }}
                   >
-                    <i className="icofont-ui-edit"></i> Edit
+                    <i className="icofont-ui-edit" /> Edit
                   </Link>
                 ))}
 
             <Link
               to={`/${_base}/Ticket/View/` + data.id}
               className="btn btn-sm btn-info text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
 
             <Link
               to={`/${_base}/TicketHistory/` + data.id}
               className="btn btn-sm btn-primary text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-history"></i> History
+              <i className="icofont-history" /> History
             </Link>
           </div>
         );
       }
     }
-    if (type === "YOUR_TASK") {
+    if (type === 'YOUR_TASK') {
       if (yourTask && yourTask.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
-                (data.assign_to_user_id == localStorage.getItem("id") && (
+              {data.created_by == localStorage.getItem('id') ||
+                (data.assign_to_user_id == localStorage.getItem('id') && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
                       className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: "100" }}
+                      style={{ width: '100%', zIndex: '100' }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 ))}
               <li>
-                {" "}
+                {' '}
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
+                  <i className="icofont-external-link " /> View
+                </Link>{' '}
               </li>
 
               {
-                (data.created_by = localStorage.getItem("id") &&
-                  localStorage.getItem("account_for") === "SELF" &&
+                (data.created_by = localStorage.getItem('id') &&
+                  localStorage.getItem('account_for') === 'SELF' &&
                   data.basket_configured > 0 && (
                     <li>
                       <Link
                         to={`/${_base}/Ticket/Task/` + data.id}
                         className="btn btn-sm btn-outline-primary"
-                        style={{ width: "100%", zIndex: 100 }}
+                        style={{ width: '100%', zIndex: 100 }}
                       >
-                        <i className="icofont-tasks"></i> Task
+                        <i className="icofont-tasks" /> Task
                       </Link>
                     </li>
                   ))
@@ -390,109 +385,110 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by == localStorage.getItem("id") ||
-              (data.assign_to_user_id == localStorage.getItem("id") && (
+            {data.created_by == localStorage.getItem('id') ||
+              (data.assign_to_user_id == localStorage.getItem('id') && (
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
                   className="btn btn-sm btn-warning text-white"
-                  style={{ width: "90px" }}
+                  style={{ width: '90px' }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               ))}
             <Link
               to={`/${_base}/Ticket/View/` + data.id}
               className="btn btn-sm btn-info text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
 
-            {localStorage.getItem("account_for") === "SELF" && (
+            {localStorage.getItem('account_for') === 'SELF' && (
               <Link
                 to={`/${_base}/Ticket/Task/` + data.id}
                 className="btn btn-sm btn-outline-primary"
-                style={{ width: "90px" }}
+                style={{ width: '90px' }}
               >
-                <i className="icofont-tasks"></i> Task
+                <i className="icofont-tasks" />
+                Task
               </Link>
             )}
           </div>
         );
       }
     }
-    if (type === "ASSIGNED_TO_ME") {
+    if (type === 'ASSIGNED_TO_ME') {
       if (assignedToMe && assignedToMe.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1" align>
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               <li>
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
                   className="btn btn-sm btn-warning text-white"
-                  style={{ width: "100%", zIndex: "100" }}
+                  style={{ width: '100%', zIndex: '100' }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               </li>
               {/* } */}
               <li>
-                {" "}
+                {' '}
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
+                  <i className="icofont-external-link " />
+                  View
+                </Link>{' '}
               </li>
 
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
 
-              {((data.created_by != localStorage.getItem("id") &&
-                data.basket_configured === 0) ||
-                (data.assign_to_user_id == localStorage.getItem("id") &&
+              {((data.created_by != localStorage.getItem('id') && data.basket_configured === 0) ||
+                (data.assign_to_user_id == localStorage.getItem('id') &&
                   data.basket_configured === 0)) &&
-                localStorage.getItem("account_for") === "SELF" && (
+                localStorage.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}
                       className="btn btn-sm btn-primary text-white"
-                      style={{ width: "100%", zIndex: 100 }}
+                      style={{ width: '100%', zIndex: 100 }}
                     >
-                      <i className="icofont-bucket2"></i>Basket
+                      <i className="icofont-bucket2" />
+                      Basket
                     </Link>
                   </li>
                 )}
 
-              {((data.created_by != localStorage.getItem("id") &&
-                data.basket_configured > 0) ||
-                (data.assign_to_user_id == localStorage.getItem("id") &&
+              {((data.created_by != localStorage.getItem('id') && data.basket_configured > 0) ||
+                (data.assign_to_user_id == localStorage.getItem('id') &&
                   data.basket_configured > 0)) &&
-                localStorage.getItem("account_for") === "SELF" && (
+                localStorage.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
                       className="btn btn-sm btn-outline-primary"
-                      style={{ width: "100%", zIndex: 100 }}
+                      style={{ width: '100%', zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
                 )}
@@ -505,54 +501,54 @@ export default function MyTicketComponent() {
             <Link
               to={`/${_base}/TicketHistory/` + data.id}
               className="btn btn-sm btn-warning text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-history"></i> History
+              <i className="icofont-history" /> History
             </Link>
 
-            {((data.created_by != localStorage.getItem("id") &&
-              data.basket_configured === 0) ||
-              (data.assign_to_user_id == localStorage.getItem("id") &&
+            {((data.created_by != localStorage.getItem('id') && data.basket_configured === 0) ||
+              (data.assign_to_user_id == localStorage.getItem('id') &&
                 data.basket_configured === 0)) &&
-              localStorage.getItem("account_for") === "SELF" && (
+              localStorage.getItem('account_for') === 'SELF' && (
                 <Link
                   to={`/${_base}/Ticket/Basket/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: "90px" }}
+                  style={{ width: '90px' }}
                 >
-                  <i className="icofont-bucket2"></i>Basket
+                  <i className="icofont-bucket2" />
+                  Basket
                 </Link>
               )}
 
             <Link
               to={`/${_base}/Ticket/Edit/` + data.id}
               className="btn btn-sm btn-warning text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-ui-edit"></i> Edit
+              <i className="icofont-ui-edit" /> Edit
             </Link>
 
             <Link
               to={`/${_base}/Ticket/View/` + data.id}
               className="btn btn-sm btn-info text-white"
-              style={{ width: "90px" }}
+              style={{ width: '90px' }}
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
-            {localStorage.getItem("account_for") === "SELF" && (
+            {localStorage.getItem('account_for') === 'SELF' && (
               <Link
                 to={`/${_base}/Ticket/Task/` + data.id}
                 className="btn btn-sm btn-outline-primary"
-                style={{ width: "90px" }}
+                style={{ width: '90px' }}
               >
-                <i className="icofont-tasks"></i> Task
+                <i className="icofont-tasks" /> Task
               </Link>
             )}
           </div>
         );
       }
     }
-    if (type === "ADDED_BY_ME") {
+    if (type === 'ADDED_BY_ME') {
       if (createdByMe && createdByMe.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
@@ -560,33 +556,33 @@ export default function MyTicketComponent() {
               drop="side"
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1 ">
               <li>
-                {" "}
+                {' '}
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
+                  <i className="icofont-external-link " /> View
+                </Link>{' '}
               </li>
-              {data.created_by != localStorage.getItem("id") &&
+              {data.created_by != localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                localStorage.getItem("account_for") === "SELF" && (
+                localStorage.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
                       className="btn btn-sm btn-outline-primary"
-                      style={{ width: "100%", zIndex: 100 }}
+                      style={{ width: '100%', zIndex: 100 }}
                     >
-                      <i className="icofont-tasks"></i> Task
+                      <i className="icofont-tasks" /> Task
                     </Link>
                   </li>
                 )}
@@ -594,15 +590,15 @@ export default function MyTicketComponent() {
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
               <li>
                 <button
                   className=" btn btn-sm  btn-secondary text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                   onClick={(e) => handleConfirmationModal(e, data)}
                 >
                   Confirm
@@ -619,14 +615,12 @@ export default function MyTicketComponent() {
                 to={`/${_base}/TicketHistory/` + data.id}
                 className="btn btn-sm btn-warning text-white"
               >
-                <i className="icofont-ui-history"></i> History
+                <i className="icofont-ui-history" />
+                History
               </Link>
 
-              <Link
-                to={`/${_base}/Ticket/View/` + data.id}
-                className="btn btn btn-info text-white"
-              >
-                <i className="icofont-external-link "></i> View
+              <Link to={`/${_base}/Ticket/View/` + data.id} className="btn btn btn-info text-white">
+                <i className="icofont-external-link " /> View
               </Link>
 
               <button
@@ -641,28 +635,28 @@ export default function MyTicketComponent() {
       }
     }
 
-    if (type === "UNPASSED_TICKET") {
+    if (type === 'UNPASSED_TICKET') {
       if (unpassedTickets && unpassedTickets.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem("id") ||
-                (data.assign_to_user_id == localStorage.getItem("id") && (
+              {data.created_by == localStorage.getItem('id') ||
+                (data.assign_to_user_id == localStorage.getItem('id') && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
                       className="btn btn-sm btn-warning text-white"
-                      style={{ width: "100%", zIndex: 100 }}
+                      style={{ width: '100%', zIndex: 100 }}
                     >
-                      <i className="icofont-ui-edit"></i> Edit
+                      <i className="icofont-ui-edit" /> Edit
                     </Link>
                   </li>
                 ))}
@@ -670,42 +664,42 @@ export default function MyTicketComponent() {
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
+                  <i className="icofont-external-link " /> View
+                </Link>{' '}
               </li>
 
               <li>
                 <button
                   className="btn btn-success text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                   onClick={(e) => {
                     handleRemarkModal({
                       showModal: true,
                       modalData: data,
-                      modalHeader: "Enter Remark",
-                      status: "PASS",
+                      modalHeader: 'Enter Remark',
+                      status: 'PASS'
                     });
                   }}
                 >
-                  <i className="icofont-checked"></i> Pass
+                  <i className="icofont-checked" /> Pass
                 </button>
               </li>
               <li>
                 <button
                   className="btn btn-danger  text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                   onClick={(e) => {
                     handleRemarkModal({
                       showModal: true,
                       modalData: data,
-                      modalHeader: "Enter Remark",
-                      status: "REJECT",
+                      modalHeader: 'Enter Remark',
+                      status: 'REJECT'
                     });
                   }}
                 >
-                  <i className="icofont-close-squared-alt"></i> Reject
+                  <i className="icofont-close-squared-alt" /> Reject
                 </button>
               </li>
             </Dropdown.Menu>
@@ -718,7 +712,7 @@ export default function MyTicketComponent() {
               to={`/${_base}/Ticket/View/` + data.id}
               className="btn btn-sm btn-info text-white"
             >
-              <i className="icofont-external-link "></i> View
+              <i className="icofont-external-link " /> View
             </Link>
             <button
               className="btn btn-success text-white btn-sm"
@@ -726,12 +720,12 @@ export default function MyTicketComponent() {
                 handleRemarkModal({
                   showModal: true,
                   modalData: data,
-                  modalHeader: "Enter Remark",
-                  status: "PASS",
+                  modalHeader: 'Enter Remark',
+                  status: 'PASS'
                 });
               }}
             >
-              <i className="icofont-checked"></i> Pass
+              <i className="icofont-checked" /> Pass
             </button>
             <button
               className="btn btn-danger btn-sm text-white"
@@ -739,56 +733,57 @@ export default function MyTicketComponent() {
                 handleRemarkModal({
                   showModal: true,
                   modalData: data,
-                  modalHeader: "Enter Remark",
-                  status: "REJECT",
+                  modalHeader: 'Enter Remark',
+                  status: 'REJECT'
                 });
               }}
             >
-              <i className="icofont-close-squared-alt"></i> Reject
+              <i className="icofont-close-squared-alt" />
+              Reject
             </button>
           </div>
         );
       }
     }
 
-    if (type === "DEPARTMENTWISE_TICKET") {
+    if (type === 'DEPARTMENTWISE_TICKET') {
       if (departmentwiseTicket && departmentwiseTicket.length > 0) {
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${"dropdown-basic_" + data.id}`}
+              id={`${'dropdown-basic_' + data.id}`}
               className="btn btn-primary text-white"
             >
-              <i className="icofont-listine-dots"></i>
+              <i className="icofont-listine-dots" />
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               <li>
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
                   className="btn btn-sm btn-warning text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-ui-edit"></i> Edit
+                  <i className="icofont-ui-edit" /> Edit
                 </Link>
               </li>
               <li>
                 <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{" "}
+                  <i className="icofont-external-link " /> View
+                </Link>{' '}
               </li>
               <li>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: "100%", zIndex: 100 }}
+                  style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
+                  <i className="icofont-history" /> History
                 </Link>
               </li>
             </Dropdown.Menu>
@@ -800,166 +795,154 @@ export default function MyTicketComponent() {
 
   const searchResultColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        searchResult ? (searchResult.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
-      cell: (row) => actionComponent(row, "SEARCH_RESULT"),
+      width: `${searchResult ? (searchResult.length > 0 ? '4rem' : '20.625rem') : 'auto'}`,
+      cell: (row) => actionComponent(row, 'SEARCH_RESULT')
     },
 
-    { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
+    { name: 'Sr', width: '4rem', cell: (row, index) => index + 1 },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
-              handleModal({ showModal: true, modalData: row, modalHeader: "" });
+              handleModal({ showModal: true, modalData: row, modalHeader: '' });
             }}
           >
             {row.description && (
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
-      maxWidth: "auto",
+      name: 'Expected Solve Date',
+      maxWidth: 'auto',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+          {row.priority === 'Very High' && (
+            <span style={{ width: '60px' }} className="badge bg-danger">
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span style={{ width: "60px" }} className="badge bg-info">
+          {row.priority === 'Medium' && (
+            <span style={{ width: '60px' }} className="badge bg-info">
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Passed Status", cell: (row) => row.passed_status, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
     {
-      name: "Solved Date",
-      maxWidth: "auto",
+      name: 'Solved Date',
+      maxWidth: 'auto',
       selector: (row) => row.ticket_solved_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Solved By",
-      maxWidth: "auto",
+      name: 'Solved By',
+      maxWidth: 'auto',
       selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
   const yourTaskColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        yourTask ? (yourTask.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
-      cell: (row) => actionComponent(row, "YOUR_TASK"),
+      width: `${yourTask ? (yourTask.length > 0 ? '4rem' : '20.625rem') : 'auto'}`,
+      cell: (row) => actionComponent(row, 'YOUR_TASK')
     },
     {
-      name: "Sr",
-      width: "4rem",
+      name: 'Sr',
+      width: '4rem',
       center: true,
-      cell: (row, index) => index + 1,
+      cell: (row, index) => index + 1
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Description",
+                modalHeader: 'Description'
               });
             }}
           >
@@ -967,106 +950,100 @@ export default function MyTicketComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
+      name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+          {row.priority === 'Very High' && (
+            <span style={{ width: '60px' }} className="badge bg-danger">
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span style={{ width: "60px" }} className="badge bg-info">
+          {row.priority === 'Medium' && (
+            <span style={{ width: '60px' }} className="badge bg-info">
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
   const assignedToMeColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
 
-      width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? "4rem" : "30rem") : "auto"
-      }`,
-      cell: (row) => actionComponent(row, "ASSIGNED_TO_ME"),
+      width: `${assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '30rem') : 'auto'}`,
+      cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
     },
-    { name: "Sr", width: "4rem", cell: (row, index) => index + 1 },
+    { name: 'Sr', width: '4rem', cell: (row, index) => index + 1 },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Country",
+                modalHeader: 'Edit Country'
               });
             }}
           >
@@ -1074,112 +1051,106 @@ export default function MyTicketComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
+      name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+          {row.priority === 'Very High' && (
+            <span style={{ width: '60px' }} className="badge bg-danger">
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span style={{ width: "60px" }} className="badge bg-info">
+          {row.priority === 'Medium' && (
+            <span style={{ width: '60px' }} className="badge bg-info">
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
   const createdByMeColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
       ignoreRowClick: true,
-      width: `${
-        createdByMe ? (createdByMe.length > 0 ? "4rem" : "20.625rem") : "auto"
-      }`,
-      cell: (row) => actionComponent(row, "ADDED_BY_ME"),
+      width: `${createdByMe ? (createdByMe.length > 0 ? '4rem' : '20.625rem') : 'auto'}`,
+      cell: (row) => actionComponent(row, 'ADDED_BY_ME')
     },
 
     {
-      name: "Sr",
-      width: "4rem",
+      name: 'Sr',
+      width: '4rem',
       center: true,
-      cell: (row, index) => index + 1,
+      cell: (row, index) => index + 1
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Country",
+                modalHeader: 'Edit Country'
               });
             }}
           >
@@ -1187,67 +1158,67 @@ export default function MyTicketComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
+      name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span className="badge bg-danger" style={{ width: "60px" }}>
+          {row.priority === 'Very High' && (
+            <span className="badge bg-danger" style={{ width: '60px' }}>
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span className="badge bg-info" style={{ width: "60px" }}>
+          {row.priority === 'Medium' && (
+            <span className="badge bg-info" style={{ width: '60px' }}>
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Passed Status", cell: (row) => row.passed_status, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
   const handleCheckboxChangee = (row) => {
@@ -1262,83 +1233,73 @@ export default function MyTicketComponent() {
 
   const unpassedColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
-      width: `${
-        unpassedTickets
-          ? unpassedTickets.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
-      }`,
-      cell: (row) => actionComponent(row, "UNPASSED_TICKET"),
+      width: `${unpassedTickets ? (unpassedTickets.length > 0 ? '4rem' : '20.625rem') : 'auto'}`,
+      cell: (row) => actionComponent(row, 'UNPASSED_TICKET')
     },
 
     {
       name: (
         <div
-          style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           onClick={handleSelectAllNamesChange}
         >
           <input
             type="checkbox"
             checked={selectAllNames}
             onChange={() => setSelectAllNames(!selectAllNames)}
-            style={{ marginRight: "5px" }}
+            style={{ marginRight: '5px' }}
           />
           Select All
         </div>
       ),
-      selector: "selectAll",
-      width: "7rem",
+      selector: 'selectAll',
+      width: '7rem',
       center: true,
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <input
             type="checkbox"
             checked={selectedRowss.includes(row.id)}
             onChange={() => handleCheckboxChangee(row)}
-            style={{ marginRight: "5px" }}
+            style={{ marginRight: '5px' }}
           />
         </div>
-      ),
+      )
     },
 
     {
-      name: "Sr",
-      width: "4rem",
+      name: 'Sr',
+      width: '4rem',
       center: true,
-      cell: (row, index) => index + 1,
+      cell: (row, index) => index + 1
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Country",
+                modalHeader: 'Edit Country'
               });
             }}
           >
@@ -1346,129 +1307,121 @@ export default function MyTicketComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
+      name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+          {row.priority === 'Very High' && (
+            <span style={{ width: '60px' }} className="badge bg-danger">
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span style={{ width: "60px" }} className="badge bg-info">
+          {row.priority === 'Medium' && (
+            <span style={{ width: '60px' }} className="badge bg-info">
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
     {
-      name: "Solved Date",
-      maxWidth: "auto",
+      name: 'Solved Date',
+      maxWidth: 'auto',
       selector: (row) => row.ticket_solved_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Solved By",
-      maxWidth: "auto",
+      name: 'Solved By',
+      maxWidth: 'auto',
       selector: (row) => row.ticket_solved_by,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
 
   const departmentwisetTicketColumns = [
     {
-      name: "Action",
+      name: 'Action',
       button: true,
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
-        departmentwiseTicket
-          ? departmentwiseTicket.length > 0
-            ? "4rem"
-            : "20.625rem"
-          : "auto"
+        departmentwiseTicket ? (departmentwiseTicket.length > 0 ? '4rem' : '20.625rem') : 'auto'
       }`,
-      cell: (row) => actionComponent(row, "DEPARTMENTWISE_TICKET"),
+      cell: (row) => actionComponent(row, 'DEPARTMENTWISE_TICKET')
     },
     {
-      name: "Sr",
-      width: "4rem",
+      name: 'Sr',
+      width: '4rem',
       center: true,
-      cell: (row, index) => index + 1,
+      cell: (row, index) => index + 1
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
         </Link>
       ),
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Description",
-      width: "18.75rem",
+      name: 'Description',
+      width: '18.75rem',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <div className="btn-group" role="group" aria-label="Basic outlined example">
           <a
             href="#"
             onClick={(e) => {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Country",
+                modalHeader: 'Edit Country'
               });
             }}
           >
@@ -1476,72 +1429,71 @@ export default function MyTicketComponent() {
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
                   <span className="ms-1">
-                    {" "}
+                    {' '}
                     {row.description && row.description.length < 123
                       ? row.description
-                      : row.description.substring(0, 123) + "...."}
+                      : row.description.substring(0, 123) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
             )}
           </a>
         </div>
-      ),
+      )
     },
     {
-      name: "Ticket Date",
+      name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: "120px",
+      width: '120px'
     },
     {
-      name: "Expected Solve Date",
+      name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Priority",
+      name: 'Priority',
       cell: (row) => (
         <div>
-          {row.priority === "Very High" && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+          {row.priority === 'Very High' && (
+            <span style={{ width: '60px' }} className="badge bg-danger">
               {row.priority}
             </span>
           )}
-          {row.priority === "High" && (
-            <span style={{ width: "60px" }} className="badge bg-warning">
+          {row.priority === 'High' && (
+            <span style={{ width: '60px' }} className="badge bg-warning">
               {row.priority}
             </span>
           )}
-          {row.priority === "Medium" && (
-            <span style={{ width: "60px" }} className="badge bg-info">
+          {row.priority === 'Medium' && (
+            <span style={{ width: '60px' }} className="badge bg-info">
               {row.priority}
             </span>
           )}
-          {row.priority === "Low" && (
-            <span style={{ width: "60px" }} className="badge bg-success">
+          {row.priority === 'Low' && (
+            <span style={{ width: '60px' }} className="badge bg-success">
               {row.priority}
             </span>
           )}
         </div>
       ),
-      sortable: true,
+      sortable: true
     },
-    { name: "Type", cell: (row) => row.query_type_name, sortable: true },
-    { name: "Status", cell: (row) => row.status_name, sortable: true },
+    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: "Assign To Dept",
+      name: 'Assign To Dept',
       cell: (row) => row.assign_to_department,
-      sortable: true,
+      sortable: true
     },
-    { name: "Assinged To", cell: (row) => row.assign_to_user, sortable: true },
-    { name: "Created By", cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
   const loadData = async () => {
     setIsLoading(true);
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
 
     await new UserService()
       .getUserForMyTickets(inputRequired)
@@ -1550,36 +1502,34 @@ export default function MyTicketComponent() {
           const tempData = [];
           const temp = res.data.data.filter((d) => d.is_active == 1);
           if (res.data.status == 1) {
-            const data = res.data.data.filter(
-              (d) => d.is_active == 1 && d.account_for === "SELF"
-            );
+            const data = res.data.data.filter((d) => d.is_active == 1 && d.account_for === 'SELF');
             setUser(temp);
           }
           for (const key in temp) {
             tempData.push({
               value: temp[key].id,
-              label: temp[key].first_name + " " + temp[key].last_name,
+              label: temp[key].first_name + ' ' + temp[key].last_name
             });
           }
           const select = res.data.data
-            .filter((d) => d.is_active == 1 && d.account_for === "SELF")
+            .filter((d) => d.is_active == 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }));
 
           const select1 = res.data.data
             .filter((d) => d.is_active == 1)
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }));
 
           const select2 = res.data.data
-            .filter((d) => d.is_active == 1 && d.account_for === "CUSTOMER")
+            .filter((d) => d.is_active == 1 && d.account_for === 'CUSTOMER')
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }));
 
           setUserData(null);
@@ -1596,9 +1546,9 @@ export default function MyTicketComponent() {
         const { response } = error;
         const { ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
+          'Status',
+          'Get_Status',
+          'INSERT',
           errorObject.data.message
         );
       });
@@ -1611,7 +1561,7 @@ export default function MyTicketComponent() {
           if (temp[key].department) {
             tempData.push({
               value: temp[key].id,
-              label: temp[key].department,
+              label: temp[key].department
             });
           }
         }
@@ -1631,7 +1581,7 @@ export default function MyTicketComponent() {
               value: temp[key].id,
               label: temp[key].status,
               ticket_solved_date: temp[key].ticket_solved_date,
-              ticket_solved_by: temp[key].ticket_solved_by,
+              ticket_solved_by: temp[key].ticket_solved_by
             });
           }
         }
@@ -1641,7 +1591,7 @@ export default function MyTicketComponent() {
     });
 
     await new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(localStorage.getItem("id"))
+      .getDepartmentMappingByEmployeeId(localStorage.getItem('id'))
       .then((res) => {
         if (res.status === 200) {
           setIsLoading(false);
@@ -1673,9 +1623,7 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setAssignedToMeData(res.data.data);
-          setAssignedToMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
-          );
+          setAssignedToMe(res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT'));
           const dataAssignToMe = res.data.data.data;
 
           var counter = 1;
@@ -1695,19 +1643,15 @@ export default function MyTicketComponent() {
               CREATED_BY: dataAssignToMe[key].created_by_name,
 
               Basket_Configured: dataAssignToMe[key].basket_configured,
-              Confirmation_Required: dataAssignToMe[key].confirmation_required
-                ? "YES"
-                : "NO",
+              Confirmation_Required: dataAssignToMe[key].confirmation_required ? 'YES' : 'NO',
               Ref_id: dataAssignToMe[key].cuid,
               from_department_name: dataAssignToMe[key].from_department_name,
               id: dataAssignToMe[key].id,
-              Status: dataAssignToMe[key].is_active ? "Active" : "Deactive",
+              Status: dataAssignToMe[key].is_active ? 'Active' : 'Deactive',
               module_name: dataAssignToMe[key].module_name,
               Passed_Status: dataAssignToMe[key].passed_status,
-              Passed_Status_Changed_At:
-                dataAssignToMe[key].passed_status_changed_at,
-              Passed_Status_Changed_By_Name:
-                dataAssignToMe[key].passed_status_changed_by_name,
+              Passed_Status_Changed_At: dataAssignToMe[key].passed_status_changed_at,
+              Passed_Status_Changed_By_Name: dataAssignToMe[key].passed_status_changed_by_name,
               Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
               project_name: dataAssignToMe[key].project_name,
               Status_name: dataAssignToMe[key].status_name,
@@ -1715,7 +1659,7 @@ export default function MyTicketComponent() {
               Template_id: dataAssignToMe[key].template_id,
               Tenant_id: dataAssignToMe[key].tenant_id,
               ticket_solved_date: dataAssignToMe[key].ticket_solved_date,
-              ticket_solved_by: dataAssignToMe[key].ticket_solved_by,
+              ticket_solved_by: dataAssignToMe[key].ticket_solved_by
             });
           }
 
@@ -1751,7 +1695,7 @@ export default function MyTicketComponent() {
           formData.append(`id[${index}]`, id);
         });
       } else {
-        formData.append("id[]", remarkModal.modalData.id);
+        formData.append('id[]', remarkModal.modalData.id);
       }
 
       const response = await new MyTicketService().passTicket(formData);
@@ -1760,7 +1704,7 @@ export default function MyTicketComponent() {
         const { status, message } = response.data;
 
         if (status === 1) {
-          setRemarkModal({ showModal: false, modalData: "", modalHeader: "" });
+          setRemarkModal({ showModal: false, modalData: '', modalHeader: '' });
           loadData();
           setSelectedRows([]);
           setSelectedRowss([]);
@@ -1768,10 +1712,10 @@ export default function MyTicketComponent() {
           setSelectAllNames(false);
           const forms = {
             limit: 10,
-            typeOf: "UnPassed",
-            page: 1,
+            typeOf: 'UnPassed',
+            page: 1
           };
-          setNotify({ type: "success", message });
+          setNotify({ type: 'success', message });
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
               if (res.data.status == 1) {
@@ -1782,13 +1726,13 @@ export default function MyTicketComponent() {
             }
           });
         } else {
-          setNotify({ type: "danger", message });
+          setNotify({ type: 'danger', message });
         }
       } else {
-        setNotify({ type: "danger", message: "Request Error !!!" });
+        setNotify({ type: 'danger', message: 'Request Error !!!' });
       }
     } catch (error) {
-      setNotify({ type: "danger", message: "An error occurred." });
+      setNotify({ type: 'danger', message: 'An error occurred.' });
     }
   };
   const searchThroughEnter = () => {};
@@ -1797,7 +1741,7 @@ export default function MyTicketComponent() {
     try {
       if (e) {
         e.preventDefault();
-        const form = document.getElementById("your_form_id");
+        const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
 
         // Check if any form field is filled
@@ -1811,7 +1755,7 @@ export default function MyTicketComponent() {
 
         // If no field is filled, show an alert
         if (!isAnyFieldFilled) {
-          alert("Please fill at least one field.");
+          alert('Please fill at least one field.');
           return; // Exit the function early
         }
 
@@ -1822,7 +1766,7 @@ export default function MyTicketComponent() {
       if (e) {
         e.preventDefault();
 
-        const form = document.getElementById("your_form_id");
+        const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
 
         var flag = 1;
@@ -1855,19 +1799,15 @@ export default function MyTicketComponent() {
                     CREATED_BY: temp[key].created_by_name,
 
                     Basket_Configured: temp[key].basket_configured,
-                    Confirmation_Required: temp[key].confirmation_required
-                      ? "YES"
-                      : "NO",
+                    Confirmation_Required: temp[key].confirmation_required ? 'YES' : 'NO',
                     Ref_id: temp[key].cuid,
                     from_department_name: temp[key].from_department_name,
                     id: temp[key].id,
-                    Status: temp[key].is_active ? "Active" : "Deactive",
+                    Status: temp[key].is_active ? 'Active' : 'Deactive',
                     module_name: temp[key].module_name,
                     Passed_Status: temp[key].passed_status,
-                    Passed_Status_Changed_At:
-                      temp[key].passed_status_changed_at,
-                    Passed_Status_Changed_By_Name:
-                      temp[key].passed_status_changed_by_name,
+                    Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                    Passed_Status_Changed_By_Name: temp[key].passed_status_changed_by_name,
                     Passed_Status_Remark: temp[key].passed_status_remark,
                     project_name: temp[key].project_name,
                     Status_name: temp[key].status_name,
@@ -1875,30 +1815,25 @@ export default function MyTicketComponent() {
                     Template_id: temp[key].template_id,
                     Tenant_id: temp[key].tenant_id,
                     ticket_solved_date: temp[key].ticket_solved_date,
-                    ticket_solved_by: temp[key].ticket_solved_by,
+                    ticket_solved_by: temp[key].ticket_solved_by
                   });
                 }
-                setKey("Search_Result");
+                setKey('Search_Result');
                 setSearchResultExport(searchResultExport);
               } else {
-                alert("No Data Found");
+                alert('No Data Found');
               }
             } else {
-              new ErrorLogService().sendErrorLog(
-                "UserTask",
-                "Get_UserTask",
-                "INSERT",
-                res.message
-              );
+              new ErrorLogService().sendErrorLog('UserTask', 'Get_UserTask', 'INSERT', res.message);
             }
           })
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
             new ErrorLogService().sendErrorLog(
-              "UserTask",
-              "Get_UserTask",
-              "INSERT",
+              'UserTask',
+              'Get_UserTask',
+              'INSERT',
               errorObject.data.message
             );
             setIsLoading(false);
@@ -1931,13 +1866,13 @@ export default function MyTicketComponent() {
     selectEntryDeptRef.current.clearValue();
     selectStatusRef.current.clearValue();
     if (selectFromDateRef.current.value != null) {
-      document.getElementById("from_date").value = "";
+      document.getElementById('from_date').value = '';
     }
     if (selectToDateRef.current.value != null) {
-      document.getElementById("to_date").value = "";
+      document.getElementById('to_date').value = '';
     }
     if (selectTicketRef.current.value != null) {
-      document.getElementById("ticket_id").value = "";
+      document.getElementById('ticket_id').value = '';
     }
   };
 
@@ -1976,14 +1911,14 @@ export default function MyTicketComponent() {
 
     // If no field is filled, show an alert
     if (!isAnyFieldFilled) {
-      alert("Please fill at least one field.");
+      alert('Please fill at least one field.');
       return; // Exit the function early
     }
 
     var filterExport = [];
 
     if (toDate < startDate) {
-      alert("Please select Date After From date");
+      alert('Please select Date After From date');
     } else {
       onClosePopup();
       await new ReportService()
@@ -2011,10 +1946,10 @@ export default function MyTicketComponent() {
                   DESCRIPTION: temp[key].description,
                   CREATED_BY: temp[key].created_by_name,
                   ticket_solved_date: temp[key].ticket_solved_date,
-                  ticket_solved_by: temp[key].ticket_solved_by,
+                  ticket_solved_by: temp[key].ticket_solved_by
                 });
               }
-              setKey("Search_Result");
+              setKey('Search_Result');
               setSearchResultExport(searchResultExport);
               setIsLoading(false);
 
@@ -2033,18 +1968,15 @@ export default function MyTicketComponent() {
                   CREATED_BY: temp[key].created_by_name,
 
                   Basket_Configured: temp[key].basket_configured,
-                  Confirmation_Required: temp[key].confirmation_required
-                    ? "YES"
-                    : "NO",
+                  Confirmation_Required: temp[key].confirmation_required ? 'YES' : 'NO',
                   Ref_id: temp[key].cuid,
                   from_department_name: temp[key].from_department_name,
                   id: temp[key].id,
-                  Status: temp[key].is_active ? "Active" : "Deactive",
+                  Status: temp[key].is_active ? 'Active' : 'Deactive',
                   module_name: temp[key].module_name,
                   Passed_Status: temp[key].passed_status,
                   Passed_Status_Changed_At: temp[key].passed_status_changed_at,
-                  Passed_Status_Changed_By_Name:
-                    temp[key].passed_status_changed_by_name,
+                  Passed_Status_Changed_By_Name: temp[key].passed_status_changed_by_name,
                   Passed_Status_Remark: temp[key].passed_status_remark,
                   project_name: temp[key].project_name,
                   Status_name: temp[key].status_name,
@@ -2052,28 +1984,23 @@ export default function MyTicketComponent() {
                   Template_id: temp[key].template_id,
                   ticket_solved_date: temp[key].ticket_solved_date,
                   ticket_solved_by: temp[key].ticket_solved_by,
-                  Tenant_id: temp[key].tenant_id,
+                  Tenant_id: temp[key].tenant_id
                 });
               }
-              setKey("Search_Result");
+              setKey('Search_Result');
               setSearchResultExport(filterExport);
             }
           } else {
-            new ErrorLogService().sendErrorLog(
-              "UserTask",
-              "Get_UserTask",
-              "INSERT",
-              res.message
-            );
+            new ErrorLogService().sendErrorLog('UserTask', 'Get_UserTask', 'INSERT', res.message);
           }
         })
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
-            "UserTask",
-            "Get_UserTask",
-            "INSERT",
+            'UserTask',
+            'Get_UserTask',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -2085,7 +2012,7 @@ export default function MyTicketComponent() {
     for (var i = 0; i < e.length; i++) {
       const select = user
         .filter((d) => d.department_id == e[i].value)
-        .map((d) => ({ value: d.id, label: d.first_name + " " + d.last_name }));
+        .map((d) => ({ value: d.id, label: d.first_name + ' ' + d.last_name }));
 
       for (var j = 0; j < select.length; j++) {
         deptAssignedUser.push(select[j]);
@@ -2100,44 +2027,40 @@ export default function MyTicketComponent() {
     setIsLoading(true);
     e.preventDefault();
     var form;
-    if (k == "Assigned_To_Me") {
+    if (k == 'Assigned_To_Me') {
       form = {
         limit: 10,
-        typeOf: "Assigned_To_Me",
+        typeOf: 'Assigned_To_Me',
         page: 1,
-        filter: "",
+        filter: ''
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setAssignedToMe(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
-            );
+            setAssignedToMe(res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT'));
           }
         }
         setIsLoading(false);
       });
-    } else if (k == "created_by_me") {
+    } else if (k == 'created_by_me') {
       const forms = {
         limit: 10,
-        typeOf: "CreatedByMe",
-        page: 1,
+        typeOf: 'CreatedByMe',
+        page: 1
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
           setCreatedByMeData(res.data.data);
 
-          setCreatedByMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
-          );
+          setCreatedByMe(res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT'));
         }
         setIsLoading(false);
       });
-    } else if (k == "departmenyourTaskt") {
+    } else if (k == 'departmenyourTaskt') {
       const forms = {
         limit: 10,
-        typeOf: "DepartmentWise",
-        page: 1,
+        typeOf: 'DepartmentWise',
+        page: 1
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
@@ -2145,17 +2068,17 @@ export default function MyTicketComponent() {
             setDepartmentWiseData(res.data.data);
 
             setDepartmentwiseTicket(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
+              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
             );
           }
         }
         setIsLoading(false);
       });
-    } else if (k == "your_task") {
+    } else if (k == 'your_task') {
       const forms = {
         limit: 10,
-        typeOf: "YouTask",
-        page: 1,
+        typeOf: 'YouTask',
+        page: 1
       };
 
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
@@ -2171,11 +2094,11 @@ export default function MyTicketComponent() {
         }
         setIsLoading(false);
       });
-    } else if (k == "unpassed_columns") {
+    } else if (k == 'unpassed_columns') {
       const forms = {
         limit: 10,
-        typeOf: "UnPassed",
-        page: 1,
+        typeOf: 'UnPassed',
+        page: 1
       };
 
       await new MyTicketService()
@@ -2199,22 +2122,22 @@ export default function MyTicketComponent() {
   const handleAssignedToMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == "LIMIT") {
+    if (type == 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
-        typeOf: "AssignToMe",
-        page: 1, // Resetting to the first page when limit changes
+        typeOf: 'AssignToMe',
+        page: 1 // Resetting to the first page when limit changes
       };
-    } else if (type == "MINUS") {
+    } else if (type == 'MINUS') {
       form = {
-        typeOf: "AssignToMe",
-        page: assignedToMeData.current_page - 1,
+        typeOf: 'AssignToMe',
+        page: assignedToMeData.current_page - 1
       };
-    } else if (type == "PLUS") {
+    } else if (type == 'PLUS') {
       form = {
-        typeOf: "AssignToMe",
-        page: assignedToMeData.current_page + 1,
+        typeOf: 'AssignToMe',
+        page: assignedToMeData.current_page + 1
       };
     }
 
@@ -2245,22 +2168,22 @@ export default function MyTicketComponent() {
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == "LIMIT") {
+    if (type == 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
-        typeOf: "CreatedByMe",
-        page: createdByMeData.current_page,
+        typeOf: 'CreatedByMe',
+        page: createdByMeData.current_page
       };
-    } else if (type == "MINUS") {
+    } else if (type == 'MINUS') {
       form = {
-        typeOf: "CreatedByMe",
-        page: createdByMeData.current_page - 1,
+        typeOf: 'CreatedByMe',
+        page: createdByMeData.current_page - 1
       };
-    } else if (type == "PLUS") {
+    } else if (type == 'PLUS') {
       form = {
-        typeOf: "CreatedByMe",
-        page: createdByMeData.current_page + 1,
+        typeOf: 'CreatedByMe',
+        page: createdByMeData.current_page + 1
       };
     }
 
@@ -2291,22 +2214,22 @@ export default function MyTicketComponent() {
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == "LIMIT") {
+    if (type == 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
-        typeOf: "DepartmentWise",
-        page: departmentWiseData.current_page,
+        typeOf: 'DepartmentWise',
+        page: departmentWiseData.current_page
       };
-    } else if (type == "MINUS") {
+    } else if (type == 'MINUS') {
       form = {
-        typeOf: "DepartmentWise",
-        page: departmentWiseData.current_page - 1,
+        typeOf: 'DepartmentWise',
+        page: departmentWiseData.current_page - 1
       };
-    } else if (type == "PLUS") {
+    } else if (type == 'PLUS') {
       form = {
-        typeOf: "DepartmentWise",
-        page: departmentWiseData.current_page + 1,
+        typeOf: 'DepartmentWise',
+        page: departmentWiseData.current_page + 1
       };
     }
 
@@ -2337,22 +2260,22 @@ export default function MyTicketComponent() {
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == "LIMIT") {
+    if (type == 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
-        typeOf: "YouTask",
-        page: yourTaskData.current_page,
+        typeOf: 'YouTask',
+        page: yourTaskData.current_page
       };
-    } else if (type == "MINUS") {
+    } else if (type == 'MINUS') {
       form = {
-        typeOf: "YouTask",
-        page: yourTaskData.current_page - 1,
+        typeOf: 'YouTask',
+        page: yourTaskData.current_page - 1
       };
-    } else if (type == "PLUS") {
+    } else if (type == 'PLUS') {
       form = {
-        typeOf: "YouTask",
-        page: yourTaskData.current_page + 1,
+        typeOf: 'YouTask',
+        page: yourTaskData.current_page + 1
       };
     }
 
@@ -2384,22 +2307,22 @@ export default function MyTicketComponent() {
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == "LIMIT") {
+    if (type == 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
-        typeOf: "UnPassed",
-        page: unpassedData.current_page,
+        typeOf: 'UnPassed',
+        page: unpassedData.current_page
       };
-    } else if (type == "MINUS") {
+    } else if (type == 'MINUS') {
       form = {
-        typeOf: "UnPassed",
-        page: unpassedData.current_page - 1,
+        typeOf: 'UnPassed',
+        page: unpassedData.current_page - 1
       };
-    } else if (type == "PLUS") {
+    } else if (type == 'PLUS') {
       form = {
-        typeOf: "UnPassed",
-        page: unpassedData.current_page + 1,
+        typeOf: 'UnPassed',
+        page: unpassedData.current_page + 1
       };
     } else {
       return;
@@ -2430,9 +2353,9 @@ export default function MyTicketComponent() {
   const customStyles = {
     rows: {
       style: {
-        minHeight: "120px",
-      },
-    },
+        minHeight: '120px'
+      }
+    }
   };
 
   useEffect(() => {
@@ -2446,16 +2369,16 @@ export default function MyTicketComponent() {
 
   useEffect(() => {
     const listener = (e) => {
-      if (e && e.code === "Enter") {
+      if (e && e.code === 'Enter') {
         e.preventDefault();
         // handleForm(e);
       }
     };
 
-    document.addEventListener("keydown", listener);
+    document.addEventListener('keydown', listener);
 
     return () => {
-      document.removeEventListener("keydown", listener);
+      document.removeEventListener('keydown', listener);
     };
   }, [handleForm]);
 
@@ -2510,7 +2433,7 @@ export default function MyTicketComponent() {
                   />
                 )}
               </div>
-              {localStorage.getItem("account_for") === "SELF" && (
+              {localStorage.getItem('account_for') === 'SELF' && (
                 <>
                   <div className="col-md-3">
                     <label className="">
@@ -2533,12 +2456,7 @@ export default function MyTicketComponent() {
                   <b>Select Status :</b>
                 </label>
                 {statusData && (
-                  <Select
-                    options={statusData}
-                    isMulti={true}
-                    id="status_id[]"
-                    name="status_id[]"
-                  />
+                  <Select options={statusData} isMulti={true} id="status_id[]" name="status_id[]" />
                 )}
               </div>
 
@@ -2546,7 +2464,7 @@ export default function MyTicketComponent() {
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-search-1 "></i> Search
                 </button>
@@ -2554,7 +2472,7 @@ export default function MyTicketComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
@@ -2563,14 +2481,12 @@ export default function MyTicketComponent() {
                   type="button"
                   id="openFilter"
                   styleName={
-                    account_for === "CUSTOMER"
-                      ? { display: "none" }
-                      : { display: "block" }
+                    account_for === 'CUSTOMER' ? { display: 'none' } : { display: 'block' }
                   }
                   onClick={handleShow}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
-                  {" "}
+                  {' '}
                   Filter <i className="icofont-filter" />
                 </button>
               </div>
@@ -2690,7 +2606,7 @@ export default function MyTicketComponent() {
                       <Select
                         // options={ userDropdown}
                         options={
-                          localStorage.getItem("account_for") === "SELF"
+                          localStorage.getItem('account_for') === 'SELF'
                             ? userDropdown
                             : customerUserDropdown
                         }
@@ -2755,7 +2671,7 @@ export default function MyTicketComponent() {
               <button
                 className="btn btn-sm btn-warning text-white"
                 type="submit"
-                style={{ marginTop: "20px", fontWeight: "600" }}
+                style={{ marginTop: '20px', fontWeight: '600' }}
               >
                 <i className="icofont-search-1 "></i> Search
               </button>
@@ -2763,7 +2679,7 @@ export default function MyTicketComponent() {
                 className="btn btn-sm btn-info text-white"
                 type="button"
                 onClick={handleClearData}
-                style={{ marginTop: "20px", fontWeight: "600" }}
+                style={{ marginTop: '20px', fontWeight: '600' }}
               >
                 <i className="icofont-refresh text-white"></i> Reset
               </button>
@@ -2777,9 +2693,7 @@ export default function MyTicketComponent() {
           <div className="row  g-3">
             <div className="col-sm-12">
               <Tabs
-                defaultActiveKey={
-                  !searchResult ? "Assigned_To_Me" : "Search_Result"
-                }
+                defaultActiveKey={!searchResult ? 'Assigned_To_Me' : 'Search_Result'}
                 transition={false}
                 id="noanim-tab-example1"
                 activeKey={key}
@@ -2790,11 +2704,7 @@ export default function MyTicketComponent() {
                 className=" tab-body-header rounded d-inline-flex"
               >
                 {searchResult && (
-                  <Tab
-                    eventKey="Search_Result"
-                    title="Search Result"
-                    activeKey={"Search_Result"}
-                  >
+                  <Tab eventKey="Search_Result" title="Search Result" activeKey={'Search_Result'}>
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
                         {searchResultExport && (
@@ -2828,7 +2738,7 @@ export default function MyTicketComponent() {
                     </div>
                   </Tab>
                 )}
-                {localStorage.getItem("account_for") === "SELF" && (
+                {localStorage.getItem('account_for') === 'SELF' && (
                   <Tab eventKey="Assigned_To_Me" title="Assigned To me">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
@@ -2863,7 +2773,7 @@ export default function MyTicketComponent() {
                           <label className="mx-2">rows per page</label>
                           <select
                             onChange={(e) => {
-                              handleAssignedToMeRowChanged(e, "LIMIT");
+                              handleAssignedToMeRowChanged(e, 'LIMIT');
                             }}
                             className="mx-2"
                           >
@@ -2874,13 +2784,13 @@ export default function MyTicketComponent() {
                           </select>
                           {assignedToMeData && (
                             <small>
-                              {assignedToMeData.from}-{assignedToMeData.to} of{" "}
+                              {assignedToMeData.from}-{assignedToMeData.to} of{' '}
                               {assignedToMeData.total}
                             </small>
                           )}
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, "MINUS");
+                              handleAssignedToMeRowChanged(e, 'MINUS');
                             }}
                             className="mx-2"
                           >
@@ -2888,7 +2798,7 @@ export default function MyTicketComponent() {
                           </button>
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, "PLUS");
+                              handleAssignedToMeRowChanged(e, 'PLUS');
                             }}
                           >
                             <i className="icofont-arrow-right"></i>
@@ -2934,7 +2844,7 @@ export default function MyTicketComponent() {
                         <label className="mx-2">rows per page</label>
                         <select
                           onChange={(e) => {
-                            handleCreatedByMeRowChanged(e, "LIMIT");
+                            handleCreatedByMeRowChanged(e, 'LIMIT');
                           }}
                           className="mx-2"
                         >
@@ -2945,13 +2855,12 @@ export default function MyTicketComponent() {
                         </select>
                         {createdByMeData && (
                           <small>
-                            {createdByMeData.from}-{createdByMeData.to} of{" "}
-                            {createdByMeData.total}
+                            {createdByMeData.from}-{createdByMeData.to} of {createdByMeData.total}
                           </small>
                         )}
                         <button
                           onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, "MINUS");
+                            handleCreatedByMeRowChanged(e, 'MINUS');
                           }}
                           className="mx-2"
                         >
@@ -2959,7 +2868,7 @@ export default function MyTicketComponent() {
                         </button>
                         <button
                           onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, "PLUS");
+                            handleCreatedByMeRowChanged(e, 'PLUS');
                           }}
                         >
                           <i className="icofont-arrow-right"></i>
@@ -2968,11 +2877,8 @@ export default function MyTicketComponent() {
                     </div>
                   </div>
                 </Tab>
-                {localStorage.getItem("account_for") === "SELF" && (
-                  <Tab
-                    eventKey="departmenyourTaskt"
-                    title="Departmentwise Tickets"
-                  >
+                {localStorage.getItem('account_for') === 'SELF' && (
+                  <Tab eventKey="departmenyourTaskt" title="Departmentwise Tickets">
                     <div className="card mb-3 ">
                       <div className="card-body">
                         {departmentwiseTicket && (
@@ -3007,7 +2913,7 @@ export default function MyTicketComponent() {
                           <label className="mx-2">rows per page</label>
                           <select
                             onChange={(e) => {
-                              handleDepartmentWiseRowChanged(e, "LIMIT");
+                              handleDepartmentWiseRowChanged(e, 'LIMIT');
                             }}
                             className="mx-2"
                           >
@@ -3018,13 +2924,13 @@ export default function MyTicketComponent() {
                           </select>
                           {departmentWiseData && (
                             <small>
-                              {departmentWiseData.from}-{departmentWiseData.to}{" "}
-                              of {departmentWiseData.total}
+                              {departmentWiseData.from}-{departmentWiseData.to} of{' '}
+                              {departmentWiseData.total}
                             </small>
                           )}
                           <button
                             onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "MINUS");
+                              handleDepartmentWiseRowChanged(e, 'MINUS');
                             }}
                             className="mx-2"
                           >
@@ -3032,7 +2938,7 @@ export default function MyTicketComponent() {
                           </button>
                           <button
                             onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, "PLUS");
+                              handleDepartmentWiseRowChanged(e, 'PLUS');
                             }}
                           >
                             <i className="icofont-arrow-right"></i>
@@ -3043,7 +2949,7 @@ export default function MyTicketComponent() {
                   </Tab>
                 )}
 
-                {localStorage.getItem("account_for") === "SELF" && (
+                {localStorage.getItem('account_for') === 'SELF' && (
                   <Tab eventKey="your_task" title="Your Task">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
@@ -3077,7 +2983,7 @@ export default function MyTicketComponent() {
                           <label className="mx-2">rows per page</label>
                           <select
                             onChange={(e) => {
-                              handleYourTaskRowChanged(e, "LIMIT");
+                              handleYourTaskRowChanged(e, 'LIMIT');
                             }}
                             className="mx-2"
                           >
@@ -3088,13 +2994,12 @@ export default function MyTicketComponent() {
                           </select>
                           {yourTaskData && (
                             <small>
-                              {yourTaskData.from}-{yourTaskData.to} of{" "}
-                              {yourTaskData.total}
+                              {yourTaskData.from}-{yourTaskData.to} of {yourTaskData.total}
                             </small>
                           )}
                           <button
                             onClick={(e) => {
-                              handleYourTaskRowChanged(e, "MINUS");
+                              handleYourTaskRowChanged(e, 'MINUS');
                             }}
                             className="mx-2"
                           >
@@ -3102,7 +3007,7 @@ export default function MyTicketComponent() {
                           </button>
                           <button
                             onClick={(e) => {
-                              handleYourTaskRowChanged(e, "PLUS");
+                              handleYourTaskRowChanged(e, 'PLUS');
                             }}
                           >
                             <i className="icofont-arrow-right"></i>
@@ -3133,21 +3038,18 @@ export default function MyTicketComponent() {
                                   className="btn btn-success btn-block text-white"
                                   onClick={(e) => {
                                     passTicketHandler();
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                    const selectedData = unpassedTickets.filter((row) =>
+                                      selectedRowss.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
                                       modalData: selectedData,
-                                      modalHeader: "Enter Remark",
-                                      status: "PASS",
+                                      modalHeader: 'Enter Remark',
+                                      status: 'PASS'
                                     });
                                   }}
                                   disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
+                                    !selectAllNames && selectedRowss?.length <= 0 ? true : false
                                   }
                                 >
                                   <i className="icofont-checked"></i> Pass
@@ -3155,25 +3057,21 @@ export default function MyTicketComponent() {
                                 <button
                                   className="btn btn-danger btn-block text-white"
                                   onClick={(e) => {
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
+                                    const selectedData = unpassedTickets.filter((row) =>
+                                      selectedRowss.includes(row.id)
                                     );
                                     handleRemarkModal({
                                       showModal: true,
                                       modalData: selectedData,
-                                      modalHeader: "Enter Remark",
-                                      status: "REJECT",
+                                      modalHeader: 'Enter Remark',
+                                      status: 'REJECT'
                                     });
                                   }}
                                   disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
+                                    !selectAllNames && selectedRowss?.length <= 0 ? true : false
                                   }
                                 >
-                                  <i className="icofont-close-squared-alt"></i>{" "}
-                                  Reject
+                                  <i className="icofont-close-squared-alt"></i> Reject
                                 </button>
                               </>
                             )}
@@ -3203,7 +3101,7 @@ export default function MyTicketComponent() {
                         <label className="mx-2">rows per page</label>
                         <select
                           onChange={(e) => {
-                            handleUnpassedRowChanged(e, "LIMIT");
+                            handleUnpassedRowChanged(e, 'LIMIT');
                           }}
                           className="mx-2"
                         >
@@ -3214,13 +3112,12 @@ export default function MyTicketComponent() {
                         </select>
                         {unpassedData && (
                           <small>
-                            {unpassedData.from}-{unpassedData.to} of{" "}
-                            {unpassedData.total}
+                            {unpassedData.from}-{unpassedData.to} of {unpassedData.total}
                           </small>
                         )}
                         <button
                           onClick={(e) => {
-                            handleUnpassedRowChanged(e, "MINUS");
+                            handleUnpassedRowChanged(e, 'MINUS');
                           }}
                           className="mx-2"
                         >
@@ -3228,7 +3125,7 @@ export default function MyTicketComponent() {
                         </button>
                         <button
                           onClick={(e) => {
-                            handleUnpassedRowChanged(e, "PLUS");
+                            handleUnpassedRowChanged(e, 'PLUS');
                           }}
                         >
                           <i className="icofont-arrow-right"></i>
@@ -3256,67 +3153,60 @@ export default function MyTicketComponent() {
       </Modal>
 
       {confirmationModal && (
-        <Modal
-          centered
-          show={confirmationModal && confirmationModal.showModals}
-        >
+        <Modal centered show={confirmationModal && confirmationModal.showModals}>
           <Modal.Header>
             <Modal.Title className="fw-bold">Solve Ticket - </Modal.Title>
           </Modal.Header>
 
-          {confirmationModal &&
-            confirmationModal &&
-            confirmationModal.modalsData && (
-              <form onSubmit={handleSolveTicketModal} method="POST">
-                <Modal.Body>
-                  <input
-                    type="hidden"
-                    name="id"
-                    id="id"
-                    defaultValue={confirmationModal.modalsData.id}
-                  />
-                  <h5
-                    className="text-nowrap bd-highlight"
-                    style={{ fontFamily: "sans-serif", fontWeight: "bold" }}
-                  >
-                    Are You Really Want To Solve This Ticket ?
-                  </h5>
-                  <label className="form-label font-weight-bold mt-3">
-                    Remark :*
-                  </label>
-                  <textarea
-                    type="text"
-                    name="remark"
-                    id="remark"
-                    rows="4"
-                    className="form-control form-control-sm"
-                    required
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersSpeicalOnly(e);
-                    }}
-                  />
-                </Modal.Body>
-                <Modal.Footer>
-                  <button
-                    type="button"
-                    className="btn btn-danger text-white"
-                    onClick={(e) =>
-                      handleConfirmationModal({
-                        e,
-                        showModal: false,
-                        modalData: "",
-                        modalHeader: "",
-                      })
-                    }
-                  >
-                    NO
-                  </button>
-                  <button type="submit" className="btn btn-info text-white">
-                    YES
-                  </button>
-                </Modal.Footer>
-              </form>
-            )}
+          {confirmationModal && confirmationModal && confirmationModal.modalsData && (
+            <form onSubmit={handleSolveTicketModal} method="POST">
+              <Modal.Body>
+                <input
+                  type="hidden"
+                  name="id"
+                  id="id"
+                  defaultValue={confirmationModal.modalsData.id}
+                />
+                <h5
+                  className="text-nowrap bd-highlight"
+                  style={{ fontFamily: 'sans-serif', fontWeight: 'bold' }}
+                >
+                  Are You Really Want To Solve This Ticket ?
+                </h5>
+                <label className="form-label font-weight-bold mt-3">Remark :*</label>
+                <textarea
+                  type="text"
+                  name="remark"
+                  id="remark"
+                  rows="4"
+                  className="form-control form-control-sm"
+                  required
+                  onKeyPress={(e) => {
+                    Validation.CharactersNumbersSpeicalOnly(e);
+                  }}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={(e) =>
+                    handleConfirmationModal({
+                      e,
+                      showModal: false,
+                      modalData: '',
+                      modalHeader: ''
+                    })
+                  }
+                >
+                  NO
+                </button>
+                <button type="submit" className="btn btn-info text-white">
+                  YES
+                </button>
+              </Modal.Footer>
+            </form>
+          )}
         </Modal>
       )}
 
@@ -3324,21 +3214,19 @@ export default function MyTicketComponent() {
         centered
         show={modal.showModal}
         style={{
-          height: "60%",
+          height: '60%'
         }}
         scrollable={true}
         onHide={(e) => {
           handleModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title className="fw-bold">
-            Description-{modal.modalData.ticket_id}
-          </Modal.Title>
+          <Modal.Title className="fw-bold">Description-{modal.modalData.ticket_id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>{modal.modalData.description}</Modal.Body>
         <Modal.Footer>
@@ -3346,7 +3234,7 @@ export default function MyTicketComponent() {
             type="button"
             className="btn btn-danger text-white"
             onClick={() => {
-              handleModal({ showModal: false, modalData: "", modalHeader: "" });
+              handleModal({ showModal: false, modalData: '', modalHeader: '' });
             }}
           >
             Close
@@ -3360,15 +3248,15 @@ export default function MyTicketComponent() {
         onHide={(e) => {
           handleRemarkModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
-            status: remarkModal.status,
+            modalData: '',
+            modalHeader: '',
+            status: remarkModal.status
           });
         }}
       >
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
-            {remarkModal.status == "PASS" ? "PASS TICKET " : "REJECT TICKET"}
+            {remarkModal.status == 'PASS' ? 'PASS TICKET ' : 'REJECT TICKET'}
           </Modal.Title>
         </Modal.Header>
         <form onSubmit={handlePassTicketForm} method="post">
@@ -3395,9 +3283,7 @@ export default function MyTicketComponent() {
                 )}
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Ticket Id :
-                  </label>
+                  <label className="form-label font-weight-bold">Ticket Id :</label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -3406,16 +3292,12 @@ export default function MyTicketComponent() {
                         ? remarkModal.modalData.map((i) => i.ticket_id)
                         : remarkModal.modalData.ticket_id
                     }
-                    readOnly={
-                      remarkModal?.modalData?.length <= 0 ? false : true
-                    }
+                    readOnly={remarkModal?.modalData?.length <= 0 ? false : true}
                     required
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :*
-                  </label>
+                  <label className="form-label font-weight-bold">Remark :*</label>
                   <input
                     type="text"
                     name="remark"
@@ -3441,8 +3323,8 @@ export default function MyTicketComponent() {
               onClick={() => {
                 handleRemarkModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >
