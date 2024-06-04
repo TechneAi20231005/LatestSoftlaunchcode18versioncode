@@ -84,8 +84,18 @@
 }
 
 .suspense_loader_container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  @media only screen and (max-width: 356px) {
+    width: 55%;
+  }
+  @media only screen and (max-width: 300px) {
+    width: 100%;
+  }
+  transform: translate(-50%, -50%);
   .loading {
-    font-size: 50px;
+    font-size: 30px;
     font-weight: 800;
     text-align: center;
     position: relative;

@@ -18,7 +18,6 @@ function MainLayouts({ isAuthenticated }) {
             <Suspense fallback={<SuspenseLoader />}>
               <div className="py-lg-3 py-md-2">
                 <Outlet />
-                {/* <SuspenseLoader /> */}
               </div>
             </Suspense>
           </div>
@@ -26,7 +25,6 @@ function MainLayouts({ isAuthenticated }) {
       ) : (
         <Suspense fallback={<SuspenseLoader />}>
           <div className="main d-flex justify-content-around align-items-center">
-            {/* <SuspenseLoader /> */}
             <LeftSide />
             <Outlet />
           </div>

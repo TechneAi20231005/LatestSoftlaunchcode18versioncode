@@ -2,9 +2,9 @@ import React from 'react';
 import { BRAND_LOGO_TOP } from '../../../assets/images/logo';
 function SuspenseLoader() {
   return (
-    <div className="suspense_loader_container col-3 mx-auto">
+    <div className="suspense_loader_container">
       <img src={BRAND_LOGO_TOP} alt="techneAi" className="img-fluid" />
-      <div class="loading">
+      <div className="loading">
         <span>T</span>
         <span>E</span>
         <span>C</span>
