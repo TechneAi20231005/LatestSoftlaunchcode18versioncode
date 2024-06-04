@@ -120,6 +120,7 @@ export const store = configureStore({
     functionMaster: functionMasterSlice,
     downloadFormat: downloadFormatSlice,
     testCaseReview: testCaseReviewSlice,
+    //Planner
   },
 
   middleware: (getDefaultMiddleware) =>
