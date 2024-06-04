@@ -15,7 +15,6 @@ import EditTestCaseModal from './EditTestCaseModal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-
 function TestDraftDetails(props) {
   const data = props.data;
 
@@ -32,7 +31,9 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  const { getDraftTestListData, isLoading } = useSelector((state) => state?.downloadFormat);
+  const { getDraftTestListData, isLoading } = useSelector(
+    (state) => state?.downloadFormat
+  );
 
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
@@ -42,7 +43,9 @@ function TestDraftDetails(props) {
   );
 
   const dispatch = useDispatch();
-  const testerData = useSelector((dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList);
+  const testerData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
+  );
   // State to track selected rows
   const [selectAllNames, setSelectAllNames] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -116,7 +119,11 @@ function TestDraftDetails(props) {
     {
       name: (
         <div onClick={handleSelectAllNamesChange}>
-          <input type="checkbox" checked={selectAllNames} onChange={handleSelectAllNamesChange} />
+          <input
+            type="checkbox"
+            checked={selectAllNames}
+            onChange={handleSelectAllNamesChange}
+          />
         </div>
       ),
       selector: 'selectAll',
@@ -139,7 +146,11 @@ function TestDraftDetails(props) {
       width: '10rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.module_name} </Tooltip>}>
               <div>
@@ -162,7 +173,11 @@ function TestDraftDetails(props) {
       width: '10rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.sub_module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
               <div>
@@ -185,7 +200,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.platform && (
             <OverlayTrigger overlay={<Tooltip>{row.platform} </Tooltip>}>
               <div>
@@ -208,7 +227,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.function_name && (
             <OverlayTrigger overlay={<Tooltip>{row.function_name} </Tooltip>}>
               <div>
@@ -231,7 +254,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.field && (
             <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
               <div>
@@ -254,7 +281,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
               <div>
@@ -277,7 +308,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.group_name && (
             <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
               <div>
@@ -300,7 +335,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
@@ -323,7 +362,11 @@ function TestDraftDetails(props) {
       width: '10rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
@@ -346,7 +389,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.status && (
             <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
               <div>
@@ -369,7 +416,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.project_name && (
             <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
               <div>
@@ -392,7 +443,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.created_at && (
             <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
               <div>
@@ -415,7 +470,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
@@ -438,7 +497,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.updated_at && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
               <div>
@@ -461,7 +524,11 @@ function TestDraftDetails(props) {
       width: '7rem',
       sortable: true,
       cell: (row) => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.updated_by && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
               <div>
@@ -487,7 +554,9 @@ function TestDraftDetails(props) {
     const testCasesData =
       selectedRows.length > 0
         ? selectedRows?.map((id) => id)
-        : getDraftTestListData?.filter((row) => row.status === 'DRAFT')?.map((row) => row.id);
+        : getDraftTestListData
+            ?.filter((row) => row.status === 'DRAFT')
+            ?.map((row) => row.id);
 
     const formData = {
       testcase_id: testCasesData,
@@ -562,7 +631,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          disabled={!selectAllNames || selectedRows.length === 0}
+          // disabled={!selectAllNames || selectedRows.length === 0}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer

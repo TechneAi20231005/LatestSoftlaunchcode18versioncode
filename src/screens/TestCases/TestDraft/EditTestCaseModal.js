@@ -19,10 +19,17 @@ import {
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
+import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
 
-function EditTestCaseModal({ show, close, type, currentTestCasesData, paginationData }) {
+function EditTestCaseModal({
+  show,
+  close,
+  type,
+  currentTestCasesData,
+  paginationData,
+  id
+}) {
   // // initial state
-
   const severityData = [
     {
       value: 'High',
@@ -39,33 +46,39 @@ function EditTestCaseModal({ show, close, type, currentTestCasesData, pagination
   ];
   const dispatch = useDispatch();
 
-  const { filterFunctionMasterList } = useSelector((state) => state?.functionMaster);
+  const { filterFunctionMasterList } = useSelector(
+    (state) => state?.functionMaster
+  );
 
-  const { filterTestingGroupMasterList } = useSelector((state) => state?.testingGroupMaster);
-  const { filterTestingTypeMasterList } = useSelector((state) => state?.testingTypeMaster);
-
-  console.log('filterFunctionMasterList', filterFunctionMasterList);
-  console.log('filterTestingGroupMasterList', filterTestingGroupMasterList);
-
-  console.log('filterTestingTypeMasterList', filterTestingTypeMasterList);
+  const { filterTestingGroupMasterList } = useSelector(
+    (state) => state?.testingGroupMaster
+  );
+  const { filterTestingTypeMasterList } = useSelector(
+    (state) => state?.testingTypeMaster
+  );
 
   const { getProjectModuleList, getModuleList, getSubModuleList } = useSelector(
     (state) => state?.downloadFormat
   );
 
-  console.log('currentTestCasesData', currentTestCasesData);
   const testCaseInitialValue = {
-    project_id: type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
-    module_id: type === 'EDIT' ? currentTestCasesData?.module_id?.toString() : '',
-    submodule_id: type === 'EDIT' ? currentTestCasesData?.submodule_id?.toString() : '',
-    function_id: type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
+    project_id:
+      type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
+    module_id:
+      type === 'EDIT' ? currentTestCasesData?.module_id?.toString() : '',
+    submodule_id:
+      type === 'EDIT' ? currentTestCasesData?.submodule_id?.toString() : '',
+    function_id:
+      type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
     field: type === 'EDIT' ? currentTestCasesData?.field : '',
     type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
     group_id: type === 'EDIT' ? currentTestCasesData?.group_id?.toString() : '',
     severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
     steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
-    test_description: type === 'EDIT' ? currentTestCasesData?.test_description : '',
-    expected_result: type === 'EDIT' ? currentTestCasesData?.expected_result : ''
+    test_description:
+      type === 'EDIT' ? currentTestCasesData?.test_description : '',
+    expected_result:
+      type === 'EDIT' ? currentTestCasesData?.expected_result : ''
   };
 
   const handleEditTestCase = ({ formData }) => {
@@ -81,6 +94,13 @@ function EditTestCaseModal({ show, close, type, currentTestCasesData, pagination
               page: paginationData.currentPage
             })
           );
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
         },
         onErrorHandler: () => {}
       })
@@ -88,19 +108,28 @@ function EditTestCaseModal({ show, close, type, currentTestCasesData, pagination
   };
 
   useEffect(() => {
-    if (!getProjectModuleList) {
+    if (getProjectModuleList?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
     }
-    if (!getModuleList) {
+    if (getModuleList.length <= 0) {
       dispatch(getModuleMasterThunk());
     }
-    if (!getSubModuleList) {
+    if (getSubModuleList?.length <= 0) {
       dispatch(getSubModuleMasterThunk());
     }
+    dispatch(
+      getByTestPlanIDListThunk({
+        id: id,
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
     dispatch(getFunctionMasterListThunk());
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
   }, []);
+  {
+  }
   return (
     <>
       <CustomModal show={show} title="Edit Test Case" width="lg">
@@ -225,7 +254,11 @@ function EditTestCaseModal({ show, close, type, currentTestCasesData, pagination
                 <button className="btn btn-dark px-4" type="submit">
                   Update
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                <button
+                  onClick={close}
+                  className="btn btn-shadow-light px-3"
+                  type="button"
+                >
                   Close
                 </button>
               </div>

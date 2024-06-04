@@ -14,8 +14,16 @@ const initialState = {
     testCaseReviewList: false,
     testPlanIdData: false
   },
-  errorMsg: { testCaseReviewList: '', testPlanIdData: '', approveRejectData: '' },
-  successMsg: { testCaseReviewList: '', testPlanIdData: '', approveRejectData: '' }
+  errorMsg: {
+    testCaseReviewList: '',
+    testPlanIdData: '',
+    approveRejectData: ''
+  },
+  successMsg: {
+    testCaseReviewList: '',
+    testPlanIdData: '',
+    approveRejectData: ''
+  }
 };
 const testCaseReviewSlice = createSlice({
   name: 'Test Case Review',
@@ -45,6 +53,7 @@ const testCaseReviewSlice = createSlice({
       .addCase(getByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = action?.payload?.data?.data;
+
         state.successMsg.testPlanIdData = action?.payload?.message;
       })
       .addCase(getByTestPlanIDListThunk.rejected, (state, action) => {
@@ -57,11 +66,14 @@ const testCaseReviewSlice = createSlice({
       .addCase(approveRejectByReviewerMasterThunk.pending, (state, action) => {
         state.isLoading.approveRejectData = true;
       })
-      .addCase(approveRejectByReviewerMasterThunk.fulfilled, (state, action) => {
-        state.isLoading.approveRejectData = false;
-        state.approveRejectData = action?.payload?.data;
-        state.successMsg.approveRejectData = action?.payload?.message;
-      })
+      .addCase(
+        approveRejectByReviewerMasterThunk.fulfilled,
+        (state, action) => {
+          state.isLoading.approveRejectData = false;
+          state.approveRejectData = action?.payload?.data;
+          state.successMsg.approveRejectData = action?.payload?.message;
+        }
+      )
       .addCase(approveRejectByReviewerMasterThunk.rejected, (state, action) => {
         state.isLoading.approveRejectData = false;
         state.approveRejectData = [];

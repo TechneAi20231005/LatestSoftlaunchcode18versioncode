@@ -13,7 +13,7 @@ import {
   getByTestPlanIDListThunk
 } from '../../../redux/services/testCases/testCaseReview';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
-
+import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 function TestCaseReviewDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -29,7 +29,10 @@ function TestCaseReviewDetails() {
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
   const { testPlanIdData } = useSelector((state) => state?.testCaseReview);
-  const { getFilterReviewCommentMasterList } = useSelector((state) => state?.reviewCommentMaster);
+
+  const { getFilterReviewCommentMasterList } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
 
   const generateOptions = (options) => {
     return options.map((option) => (
@@ -39,15 +42,26 @@ function TestCaseReviewDetails() {
     ));
   };
 
-  const [rowData, setRowData] = useState(testPlanIdData);
+  const [rowData, setRowData] = useState([]);
   const [commonComment, setCommonComment] = useState('');
   const [commonRemark, setCommonRemark] = useState('');
 
   const handleRowChange = (id, field, value) => {
-    setRowData((prevData) =>
-      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    const testPlanIdList = testPlanIdData;
+    const testD = testPlanIdList?.map((row) =>
+      row.id === id ? { ...row, [field]: value } : row
     );
+    // setRowData((prevData) =>
+    //   prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    // );
+    // setRowData(testD);
   };
+
+  const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
+    type: '',
+    data: '',
+    open: false
+  });
 
   const handleSubmit = async (status) => {
     const updatedRows = rowData.map((row) => ({
@@ -84,15 +98,22 @@ function TestCaseReviewDetails() {
       selector: (row) => (
         <>
           <i
-            className="icofont-edit text-primary cp"
-            // onClick={(e) => {
-            //   handleModal({
-            //     showModal: true,
-            //     modalData: '', // You can add relevant data here
-            //     modalHeader: 'Edit Test Case Review'
-            //   });
-            // }}
+            // disabled={row.status != 'DRAFT'}
+            // className="icofont-edit text-primary cp me-3"
+            // className={`icofont-edit text-primary cp me-3 ${
+            //   row.status !== 'DRAFT' ? 'disabled-icon' : ''
+            // }`}
+            className="icofont-edit text-primary cp me-3"
+            onClick={() =>
+              setAddEditTestCasesModal({
+                type: 'EDIT',
+                data: row,
+                open: true
+              })
+            }
           />
+
+          <i class="icofont-history cp bg-warning rounded-circle" />
         </>
       ),
       sortable: false,
@@ -194,10 +215,32 @@ function TestCaseReviewDetails() {
       width: '100px'
     },
 
+    // {
+    //   name: 'Reviewer comment',
+    //   selector: (row) => row?.name,
+    //   sortable: true,
+    //   width: '250px',
+    //   cell: (row) => (
+    //     <select
+    //       className="form-select"
+    //       aria-label="Default select example"
+    //       value={row.comment_id || ''}
+    //       id="comment_id"
+    //       name="comment_id"
+    //       onChange={(e) =>
+    //         handleRowChange(row.id, 'comment_id', e.target.value)
+    //       }
+    //     >
+    //       {generateOptions(getFilterReviewCommentMasterList)}
+    //     </select>
+    //   )
+    // },
+
     {
       name: 'Reviewer comment',
-      selector: (row) => row?.name,
+      selector: (row) => row?.comment_id,
       sortable: true,
+
       width: '250px',
       cell: (row) => (
         <select
@@ -206,7 +249,9 @@ function TestCaseReviewDetails() {
           value={row.comment_id || ''}
           id="comment_id"
           name="comment_id"
-          onChange={(e) => handleRowChange(row.id, 'comment_id', e.target.value)}
+          onChange={(e) =>
+            handleRowChange(row.id, 'comment_id', e.target.value)
+          }
         >
           {generateOptions(getFilterReviewCommentMasterList)}
         </select>
@@ -225,8 +270,10 @@ function TestCaseReviewDetails() {
           name="other_remark"
           placeholder="Enter Remark"
           aria-label="default input example"
-          value={row.other_remark || ''}
-          onChange={(e) => handleRowChange(row.id, 'other_remark', e.target.value)}
+          // value={row.other_remark || ''}
+          onChange={(e) =>
+            handleRowChange(row.id, 'other_remark', e.target.value)
+          }
         />
       )
     },
@@ -292,7 +339,10 @@ function TestCaseReviewDetails() {
                 Filter <i className="icofont-filter" />
               </button>
 
-              <ExportToExcel className="btn btn-sm btn-danger " fileName="State master Records" />
+              <ExportToExcel
+                className="btn btn-sm btn-danger "
+                fileName="State master Records"
+              />
             </div>
           );
         }}
@@ -302,12 +352,13 @@ function TestCaseReviewDetails() {
         <hr className="primary_divider " />
         <DataTable
           columns={columns}
-          data={rowData}
+          // data={rowData.length >= 0 && rowData}
+          data={testPlanIdData}
           defaultSortField="role_id"
           pagination
           paginationServer
           paginationTotalRows={rowData?.total?.total_count}
-          paginationDefaultPage={paginationData?.currentPage}
+          paginationDefaultPage={rowData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
@@ -373,6 +424,16 @@ function TestCaseReviewDetails() {
           Approve
         </button>
       </div>
+      {addEditTestCasesModal.open === true && (
+        <EditTestCaseModal
+          show={addEditTestCasesModal?.open}
+          type={addEditTestCasesModal?.type}
+          currentTestCasesData={addEditTestCasesModal?.data}
+          close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
+          paginationData={paginationData}
+          id={id}
+        />
+      )}
     </div>
   );
 }

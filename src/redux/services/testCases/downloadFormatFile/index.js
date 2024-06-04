@@ -2,7 +2,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import { _apiUrl, _attachmentUrl, attachmentUrl } from '../../../../settings/constants';
+import {
+  _apiUrl,
+  _attachmentUrl,
+  attachmentUrl
+} from '../../../../settings/constants';
 
 export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
@@ -62,7 +66,10 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async ({ project_id, module_id, submodule_id }, { onSuccessHandler, onErrorHandler }) => {
+  async (
+    { project_id, module_id, submodule_id },
+    { onSuccessHandler, onErrorHandler }
+  ) => {
     try {
       const submoduleParam = JSON.stringify(submodule_id);
 
@@ -170,7 +177,10 @@ export const sendTestCaseReviewerThunk = createAsyncThunk(
   'sendTestCaseReviewer',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`testCases/send/sendTestCasesReviewer`, formData);
+      const response = await customAxios.post(
+        `testCases/send/sendTestCasesReviewer`,
+        formData
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();

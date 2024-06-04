@@ -27,7 +27,7 @@ export const getByTestPlanIDListThunk = createAsyncThunk(
   async ({ id, limit, page }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getTestCase/reviewerTestCases/${id}?limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases/${id}?limit=${limit}&page=${page}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
