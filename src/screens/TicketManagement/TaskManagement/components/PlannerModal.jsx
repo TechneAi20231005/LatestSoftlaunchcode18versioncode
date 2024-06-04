@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 
-import {
-  getTaskUser,
-  updateTaskPlanner
-} from '../../../../services/TicketService/TaskService';
-
 import Alert from '../../../../components/Common/Alert';
 import Select from 'react-select';
-import { useDispatch } from 'react-redux';
-import { getUserTaskData } from './PlannerModalAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
+
 function PlannerModal(props) {
-  const dispatch =useDispatch()
-  const [notify, setNotify] = useState();
+  const dispatch = useDispatch();
+  const userTaskData = useSelector(
+    (PlannerModalSlices) => PlannerModalSlices.plannerModal.userData
+  );
+  const notify = useSelector(
+    (PlannerModalSlices) => PlannerModalSlices.plannerModal.notify
+  );
+
   const [plannerData, setPlannerData] = useState([]);
-  const [taskUsers, setTaskUsers] = useState(null);
+
   const [totalHours, setTotalHours] = useState(0.0);
 
   const [times, setTimes] = useState({ label: '00', value: '00' });
@@ -36,17 +38,7 @@ function PlannerModal(props) {
 
     setTimes(times);
 
-    await getTaskUser(props.plannerData.taskId).then((res) => {
-      if (res.status === 200) {
-        setTaskUsers(null);
-
-        setTaskUsers(res.data.data);
-      }
-    });
-    dispatch(getUserTaskData())
-
-
-
+    dispatch(getUserTaskData(props.plannerData.taskId));
 
     setPlannerData(props.plannerData);
 
@@ -101,16 +93,9 @@ function PlannerModal(props) {
     e.preventDefault();
     const data = new FormData(e.target);
 
-    setNotify(null);
-    await updateTaskPlanner(plannerData.taskId, data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setNotify({ type: 'success', message: res.data.message });
-        } else {
-          setNotify({ type: 'danger', message: res.data.message });
-        }
-      }
-    });
+    dispatch(
+      updateTaskPlannerData({ taskId: plannerData.taskId, payload: data })
+    );
   };
 
   useEffect(() => {
@@ -188,8 +173,8 @@ function PlannerModal(props) {
                                 className="form-control form-control-sm"
                                 name="user_id[]"
                               >
-                                {taskUsers &&
-                                  taskUsers.map((user) => {
+                                {userTaskData &&
+                                  userTaskData.map((user) => {
                                     if (user.userId === ele.user_id) {
                                       return (
                                         <option value={user.userId} selected>

@@ -1,22 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { getUserTaskData } from './PlannerModalAction';
+import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
 
 const initialState = {
   status: '',
   err: '',
 
-  postCity: [],
-
-  isLoading: {
-    getCityDataList: false,
-    getCustomerList: false,
-    CountyDataList: false,
-    employeeDataList: false,
-    stateDataList: false
-  },
-  customerTypeData: [],
-  getUserById: []
+  userData: []
 };
 
 export const PlannerModalSlices = createSlice({
@@ -37,6 +27,7 @@ export const PlannerModalSlices = createSlice({
     }
   },
   extraReducers: (builder) => {
+    //getUserTaskData
     builder.addCase(getUserTaskData.pending, (state) => {
       state.status = 'loading';
       state.notify = null;
@@ -44,14 +35,40 @@ export const PlannerModalSlices = createSlice({
 
     builder.addCase(getUserTaskData.fulfilled, (state, action) => {
       const { payload } = action;
-      console.log('payload', payload);
-      state.notify = null;
+
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let postCity = payload.data.data;
+        let userData = payload.data.data;
         state.status = 'succeeded';
 
         state.showLoaderModal = false;
-        state.postCity = postCity;
+        state.userData = userData;
+      } else {
+        // let notify = { type: 'danger', message: payload.data.message };
+        // state.notify = null;
+        // state.notify = notify;
+      }
+    });
+    builder.addCase(getUserTaskData.rejected, (state) => {
+      state.status = 'rejected';
+    });
+    //updateTaskPlanner
+
+    builder.addCase(updateTaskPlannerData.pending, (state) => {
+      state.status = 'loading';
+      state.notify = null;
+    });
+
+    builder.addCase(updateTaskPlannerData.fulfilled, (state, action) => {
+      state.notify = null;
+      const { payload } = action;
+
+      state.notify = null;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        let updateTaskPlanner = payload.data.data;
+        state.status = 'succeeded';
+
+        state.showLoaderModal = false;
+        state.updateTaskPlanner = updateTaskPlanner;
         state.notify = null;
         state.notify = { type: 'success', message: payload.data.message };
         let modal = { showModal: false, modalData: '', modalHeader: '' };
@@ -62,11 +79,9 @@ export const PlannerModalSlices = createSlice({
         state.notify = notify;
       }
     });
-    builder.addCase(getUserTaskData.rejected, (state) => {
+    builder.addCase(updateTaskPlannerData.rejected, (state) => {
       state.status = 'rejected';
     });
-
-    // Update city
   }
 });
 
