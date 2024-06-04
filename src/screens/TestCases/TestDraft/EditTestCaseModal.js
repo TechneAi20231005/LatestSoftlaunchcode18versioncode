@@ -11,6 +11,7 @@ import {
 import { editTestCaseValidation } from './Validation/EditTestCase';
 import {
   editTestCaseThunk,
+  getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
@@ -96,6 +97,13 @@ function EditTestCaseModal({
           );
           dispatch(
             getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
+          dispatch(
+            getByTestPlanIDReviewedListThunk({
               id: id,
               limit: paginationData.rowPerPage,
               page: paginationData.currentPage

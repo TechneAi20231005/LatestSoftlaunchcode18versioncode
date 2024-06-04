@@ -3,7 +3,10 @@ import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomModal from '../../../components/custom/modal/CustomModal';
-import { CustomDropdown, CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
+import {
+  CustomDropdown,
+  CustomReactSelect
+} from '../../../components/custom/inputs/CustomInputs';
 import { downloadFormatFile } from './Validation/DownloadFormatFile';
 
 import {
@@ -14,8 +17,13 @@ import {
 } from '../../../redux/services/testCases/downloadFormatFile';
 
 function DownloadFormatFileModal({ show, close }) {
-  const { getProjectModuleList, getModuleList, getSubModuleList, getModuleData, getSubModuleData } =
-    useSelector((state) => state?.downloadFormat);
+  const {
+    getProjectModuleList,
+    getModuleList,
+    getSubModuleList,
+    getModuleData,
+    getSubModuleData
+  } = useSelector((state) => state?.downloadFormat);
 
   // // initial state
   const dispatch = useDispatch();
@@ -56,9 +64,9 @@ function DownloadFormatFileModal({ show, close }) {
     setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
   };
 
+  console.log('jehkjh');
   const handleDownloadFormatFile = (formData) => {
     const { project_id, module_id, submodule_id } = formData.formData;
-
     dispatch(
       downloadFormatFileThunk({
         project_id,
@@ -66,7 +74,7 @@ function DownloadFormatFileModal({ show, close }) {
         submodule_id,
 
         onSuccessHandler: () => {
-          close();
+          // close();
         },
         onErrorHandler: () => {}
       })
@@ -93,6 +101,7 @@ function DownloadFormatFileModal({ show, close }) {
           validationSchema={downloadFormatFile}
           onSubmit={(values) => {
             handleDownloadFormatFile({ formData: values });
+            console.log('formData', values);
           }}
         >
           {({ setFieldValue }) => (
@@ -104,7 +113,9 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
-                    handleChange={(event) => handleProjectChange(event, setFieldValue)}
+                    handleChange={(event) =>
+                      handleProjectChange(event, setFieldValue)
+                    }
                   />
                 </Col>
                 <Col md={4} lg={4}>
@@ -113,7 +124,9 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
-                    handleChange={(event) => handleModuleChange(event, setFieldValue)}
+                    handleChange={(event) =>
+                      handleModuleChange(event, setFieldValue)
+                    }
                     ref={moduleIdRef}
                   />
                 </Col>
@@ -132,9 +145,9 @@ function DownloadFormatFileModal({ show, close }) {
               </Row>
 
               <div className="d-flex justify-content-end gap-2 mt-3">
-                <a type="submit" href="" className="btn btn bg-success text-white">
+                <button type="submit" className="btn btn bg-success text-white">
                   Download CSV
-                </a>
+                </button>
                 <button
                   type="button"
                   className="btn btn bg-white shadow p-2 text-black"

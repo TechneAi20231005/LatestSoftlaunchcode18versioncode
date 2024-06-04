@@ -91,7 +91,9 @@ const downloadFormatSlice = createSlice({
       })
       .addCase(getModuleMasterThunk.fulfilled, (state, action) => {
         state.isLoading.getModuleList = false;
-        state.getModuleData = action.payload?.data.filter((d) => d.is_active === 1);
+        state.getModuleData = action.payload?.data.filter(
+          (d) => d.is_active === 1
+        );
         state.getModuleList = action?.payload?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.module_name }));
@@ -110,9 +112,8 @@ const downloadFormatSlice = createSlice({
       })
       .addCase(getSubModuleMasterThunk.fulfilled, (state, action) => {
         state.isLoading.getSubModuleList = false;
-        state.getSubModuleData = state.getSubModuleList = action?.payload?.data.filter(
-          (d) => d.is_active === 1
-        );
+        state.getSubModuleData = state.getSubModuleList =
+          action?.payload?.data.filter((d) => d.is_active === 1);
         state.getSubModuleList = action?.payload?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.sub_module_name }));
@@ -227,7 +228,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getByTestPlanIDReviewedListThunk.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;
         state.successMsg.allReviewDraftTestListDataByID = action?.payload;
-        state.allReviewDraftTestListDataByID = action?.payload?.data;
+        state.allReviewDraftTestListDataByID = action?.payload?.data?.data;
       })
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;

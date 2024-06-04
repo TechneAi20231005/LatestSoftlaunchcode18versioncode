@@ -11,7 +11,9 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 function ReviewedTestDraftDetails() {
   const dispatch = useDispatch();
 
-  const { allReviewDraftTestListData, isLoading } = useSelector((state) => state?.downloadFormat);
+  const { allReviewDraftTestListData, isLoading } = useSelector(
+    (state) => state?.downloadFormat
+  );
 
   // const columns = (handleFilterClick) => [
   //   {

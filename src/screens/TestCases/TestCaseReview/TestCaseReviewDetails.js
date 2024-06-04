@@ -46,15 +46,26 @@ function TestCaseReviewDetails() {
   const [commonComment, setCommonComment] = useState('');
   const [commonRemark, setCommonRemark] = useState('');
 
+  // const handleRowChange = (id, field, value) => {
+  //   // const testPlanIdList = testPlanIdData;
+  //   // const testD = testPlanIdList?.map((row) =>
+  //   //   row.id === id ? { ...row, [field]: value } : row
+  //   // );
+  //   setRowData((prevData) =>
+  //     prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+  //   );
+  // };
+
+  useEffect(() => {
+    if (testPlanIdData) {
+      setRowData(testPlanIdData);
+    }
+  }, [testPlanIdData]);
+
   const handleRowChange = (id, field, value) => {
-    const testPlanIdList = testPlanIdData;
-    const testD = testPlanIdList?.map((row) =>
-      row.id === id ? { ...row, [field]: value } : row
+    setRowData((prevData) =>
+      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
-    // setRowData((prevData) =>
-    //   prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
-    // );
-    // setRowData(testD);
   };
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
@@ -353,7 +364,7 @@ function TestCaseReviewDetails() {
         <DataTable
           columns={columns}
           // data={rowData.length >= 0 && rowData}
-          data={testPlanIdData}
+          data={rowData}
           defaultSortField="role_id"
           pagination
           paginationServer

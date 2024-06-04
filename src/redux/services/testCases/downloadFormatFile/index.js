@@ -77,10 +77,10 @@ export const downloadFormatFileThunk = createAsyncThunk(
         submoduleParam
       )}`;
       const response = await customAxios.get(endpoint);
+      console.log('response==>', response);
 
       if (response?.status === 200 || response?.status === 201) {
         URL = `${_apiUrl}` + endpoint;
-
         window.open(URL, '_blank').focus();
         if (response?.data?.status === 1) {
           onSuccessHandler();
