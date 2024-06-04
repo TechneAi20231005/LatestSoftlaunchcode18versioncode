@@ -180,8 +180,7 @@ export const getEmployeeDataById = createAsyncThunk(
   async (id, thunkapi) => {
     try {
       const service = new UserService();
-      const response = await service.getUserById(id);
-      console.log("response", response);
+      const response = await service.getUsers(id);
 
       return response;
     } catch (error) {

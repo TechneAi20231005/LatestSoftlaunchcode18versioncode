@@ -70,8 +70,6 @@ const initialState = {
   exportCustomerData: [],
   customerByIdData: [],
   updateCustomer: [],
-  customerTypeId: '',
-  getEmployeeDataById: [],
   modal: {
     showModal: false,
     modalData: '',
@@ -505,6 +503,7 @@ export const DashbordSlice = createSlice({
             label: i.first_name + ' ' + i.last_name
           }));
 
+        console.log('employee', state.getAllTesterDataList);
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;

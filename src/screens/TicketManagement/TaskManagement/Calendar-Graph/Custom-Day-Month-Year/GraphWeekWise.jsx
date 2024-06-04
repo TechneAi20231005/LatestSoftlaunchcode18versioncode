@@ -144,7 +144,9 @@ const GraphWeekWise = () => {
 
     const prevMonday = new Date(start);
     prevMonday.setDate(
-      prevMonday.getDate() - prevMonday.getDay() + (prevMonday.getDay() === 0 ? -6 : 1)
+      prevMonday.getDate() -
+        prevMonday.getDay() +
+        (prevMonday.getDay() === 0 ? -6 : 1)
     );
 
     const prevSunday = new Date(prevMonday);
@@ -152,7 +154,9 @@ const GraphWeekWise = () => {
 
     const startOfWeek = new Date(start);
     startOfWeek.setDate(
-      startOfWeek.getDate() - startOfWeek.getDay() + (startOfWeek.getDay() === 0 ? -6 : 1)
+      startOfWeek.getDate() -
+        startOfWeek.getDay() +
+        (startOfWeek.getDay() === 0 ? -6 : 1)
     );
 
     const endOfWeek = new Date(end);
@@ -190,19 +194,24 @@ const GraphWeekWise = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const getGraphData = async (shouldCallWeekRange = true, endDate, firstDate) => {
+  const getGraphData = async (
+    shouldCallWeekRange = true,
+    endDate,
+    firstDate
+  ) => {
     try {
       const splitedSprintRange = sprintRange.split('to');
       let weeksplitDate = [];
       if (shouldCallWeekRange) {
-        let weekRange = getWeekRange(splitedSprintRange[0], splitedSprintRange[1])?.map(
-          (weekRange, index) => {
-            return {
-              value: index,
-              label: `${weekRange?.Sunday}-${weekRange?.Monday}`
-            };
-          }
-        );
+        let weekRange = getWeekRange(
+          splitedSprintRange[0],
+          splitedSprintRange[1]
+        )?.map((weekRange, index) => {
+          return {
+            value: index,
+            label: `${weekRange?.Sunday}-${weekRange?.Monday}`
+          };
+        });
 
         setDropDownData(weekRange);
         weeksplitDate = weekRange[0]?.label?.split('-');
@@ -222,7 +231,10 @@ const GraphWeekWise = () => {
             name: 'TODO',
             data: data?.TO_DO?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)],
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date)
+              ],
               taskDetail: task
             }))
           },
@@ -230,28 +242,40 @@ const GraphWeekWise = () => {
             name: 'Delay',
             data: data?.DELAY?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date)
+              ]
             }))
           },
           {
             name: 'Highly Delay',
             data: data?.HIGHLY_DELAY?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date)
+              ]
             }))
           },
           {
             name: 'Completed',
             data: data?.COMPLETED?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date)
+              ]
             }))
           },
           {
             name: 'In Progress',
             data: data?.IN_PROGRESS?.map((task) => ({
               x: task.basket_name,
-              y: [convertToDate(task.task_start_Date), convertToDate(task.task_end_date)]
+              y: [
+                convertToDate(task.task_start_Date),
+                convertToDate(task.task_end_date)
+              ]
             }))
           }
         ]
@@ -305,8 +329,8 @@ const GraphWeekWise = () => {
     } catch (error) {
       // const { status } = error?.response;
       setNotify({
-        type: 'danger'
-        // message: `Status:${status ? status : ''}'\n'Message:Error while fetching data`,
+        type: 'danger',
+        message: `Message:Error while fetching data`
       });
       console.error('Error fetching graph data:', error.message);
     }
@@ -383,7 +407,8 @@ const GraphWeekWise = () => {
       const currentWeek = event.label.split('-');
       getGraphData(false, currentWeek[0], currentWeek[1]);
     } else if (selectedOption === 'month') {
-      const { firstDayOfMonth, lastDayOfMonth } = getFirstAndLastDayOfMonth(label);
+      const { firstDayOfMonth, lastDayOfMonth } =
+        getFirstAndLastDayOfMonth(label);
 
       await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
     }
@@ -402,7 +427,10 @@ const GraphWeekWise = () => {
             <div className="d-flex ">
               <h4 className="col-md-3">
                 <strong className="text-primary">Ticket - TT3711 </strong>
-                <i className="icofont-eye" style={{ fontSize: '27px' }}></i>{' '}
+                <i
+                  className="icofont-eye"
+                  style={{ fontSize: '27px' }}
+                ></i>{' '}
               </h4>
             </div>
           </div>
