@@ -375,14 +375,16 @@ export default function TaskComponent({ match }) {
     await new SprintService().getSprintByTicketId(ticketId).then((res) => {
       if (res?.data?.status === 1) {
         const { data } = res?.data;
+        const { first_sprint_start_date, last_sprint_end_date } =
+          res?.data?.sprint_date;
         setSprintdata(data);
         let temp = res?.data?.data?.map((data) => ({
           label: data.name,
           value: data.id
         }));
         setSprintDropDown(temp);
-        setSprintFirstDate(data[data.length - 1]?.start_date);
-        setSprintLastDate(data[0]?.end_date);
+        setSprintFirstDate(first_sprint_start_date);
+        setSprintLastDate(last_sprint_end_date);
       }
     });
   };

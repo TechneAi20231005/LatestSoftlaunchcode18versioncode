@@ -33,7 +33,7 @@ const WeekwiseCalendar = (props) => {
       taskOwners
     } = data;
     const users = taskOwners.join(',');
-    console.log('user', users);
+
     const tooltipText = `Sprint Name: ${sprint_name}\nTask Name: ${task_name}\nBasket Name: ${basket_name}\nStart Date:${task_start_Date}\nEnd Date:${task_end_date}\nTotal Scheduled Hours:${actual_task_scheduled_Hours}\nScheduled Hours: ${task_scheduled_Hours}\nActual Worked: ${
       task_actual_worked ? task_actual_worked : '00:00:00'
     }\nStatus:${task_status}\nActual Status:${task_actual_status}\nTask Owners:${users}`;
@@ -75,7 +75,8 @@ const WeekwiseCalendar = (props) => {
                 let filteredBgColor = bgColor?.filter(
                   (bgcolor) => bgcolor?.statusName === actualStatus
                 );
-                const colorChange = Object.keys(task).length > 0 ? filteredBgColor[0]?.color : '';
+                const colorChange =
+                  Object.keys(task).length > 0 ? filteredBgColor[0]?.color : '';
 
                 const truncateText = (text) =>
                   text.length > 25 ? `${text.slice(0, 20)}...` : text;
@@ -88,9 +89,13 @@ const WeekwiseCalendar = (props) => {
                     onMouseLeave={handleMouseLeave}
                   >
                     {task?.basket_name && (
-                      <p className="mb-0 fw-bold">{truncateText(task?.basket_name)}</p>
+                      <p className="mb-0 fw-bold">
+                        {truncateText(task?.basket_name)}
+                      </p>
                     )}
-                    {task?.task_name && <p className="mb-0">{truncateText(task?.task_name)}</p>}
+                    {task?.task_name && (
+                      <p className="mb-0">{truncateText(task?.task_name)}</p>
+                    )}
                   </div>
                 );
               })}
