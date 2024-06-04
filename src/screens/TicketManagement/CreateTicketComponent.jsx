@@ -1546,7 +1546,7 @@ export default function CreateTicketComponent() {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              disabled={isSubmitted == true ? true : false}
+              disabled={isSubmitted}
             >
               Submit
             </button>
