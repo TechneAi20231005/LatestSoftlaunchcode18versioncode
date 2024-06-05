@@ -1,35 +1,34 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Spinner, Modal } from "react-bootstrap";
-import Alert from "../../components/Common/Alert";
-import { _base, userSessionData } from "../../settings/constants";
-import ErrorLogService from "../../services/ErrorLogService";
-import DynamicFormService from "../../services/MastersService/DynamicFormService";
-import MyTicketService from "../../services/TicketService/MyTicketService";
-import { _attachmentUrl } from "../../settings/constants";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import UserService from "../../services/MastersService/UserService";
-import DatePicker from "react-date-picker";
-import Select from "react-select";
-import { Astrick } from "../../components/Utilities/Style";
-import * as Validation from "../../components/Utilities/Validation";
-import DynamicFormDropdownMasterService from "../../services/MastersService/DynamicFormDropdownMasterService";
-import { getCurrentDate } from "../../components/Utilities/Functions";
-import { userSessionData as user } from "../../settings/constants";
-import DepartmentService from "../../services/MastersService/DepartmentService";
-import QueryTypeService from "../../services/MastersService/QueryTypeService";
-import CustomerMappingService from "../../services/SettingService/CustomerMappingService";
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import DepartmentMappingService from "../../services/MastersService/DepartmentMappingService";
-import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
-import { useDispatch, useSelector } from "react-redux";
-import { getCustomerMappingData } from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import { getRoles } from "../Dashboard/DashboardAction";
+import { Spinner, Modal } from 'react-bootstrap';
+import Alert from '../../components/Common/Alert';
+import { _base, userSessionData } from '../../settings/constants';
+
+import MyTicketService from '../../services/TicketService/MyTicketService';
+import { _attachmentUrl } from '../../settings/constants';
+
+import PageHeader from '../../components/Common/PageHeader';
+import UserService from '../../services/MastersService/UserService';
+import DatePicker from 'react-date-picker';
+import Select from 'react-select';
+import { Astrick } from '../../components/Utilities/Style';
+
+import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
+
+import DepartmentService from '../../services/MastersService/DepartmentService';
+import QueryTypeService from '../../services/MastersService/QueryTypeService';
+import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
+
+import DepartmentMappingService from '../../services/MastersService/DepartmentMappingService';
+import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
+import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
+import { getUserForMyTicketsData } from './MyTicketComponentAction';
+
 
 export default function CreateTicketComponent() {
-  const history = useNavigate();
   const navigate = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -39,7 +38,6 @@ export default function CreateTicketComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
   );
 
-  const departmentDropdownRef = useRef();
   const current = new Date();
   const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
@@ -80,7 +78,6 @@ export default function CreateTicketComponent() {
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [defaults, setDefaults] = useState(null);
 
   const [department, setDepartment] = useState(null);
   const [rows, setRows] = useState();
@@ -89,24 +86,21 @@ export default function CreateTicketComponent() {
 
   const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
-  const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
   const [alldepartmentData, setAllDepartmentData] = useState();
-  const [getAllType, setGetAllType] = useState();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
-  const [inputDataSourceData, setInputDataSourceData] = useState();
-  const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-  // const [checkRole, setCheckRole] = useState(null);
+
   const [parent, setParent] = useState();
   const [parentName, setParentName] = useState();
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
   const [user, setUser] = useState("");
@@ -303,12 +297,7 @@ export default function CreateTicketComponent() {
     }
   };
 
-  const roleId = sessionStorage.getItem("role_id");
-  const ticketTypeRefs = useRef();
-  const customerMappingData = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.customerMappingData
-  );
+
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === "CHECKBOX" && selectedCheckBoxValue?.length <= 0) {
@@ -545,12 +534,13 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = "";
     const queryTypeTemp = [];
+    const status = 1;
+    dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
     await new CustomerMappingService()
       .getCustomerMappingSettings(query_type_id)
       .then((res) => {
-        const queryType = [];
-        const department = [];
+
         if (res.data.status === 1) {
           if (res.data.data) {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
@@ -583,7 +573,15 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new QueryTypeService().getAllQueryGroup().then((res) => {
+
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
+    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
+      if (res.payload.status == 200) {
+      }
+    });
+    await new QueryTypeService().getAllQueryGroup(status).then((res) => {
+
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
         setQueryGroupDropdown(
@@ -686,16 +684,12 @@ export default function CreateTicketComponent() {
   };
 
   const handleQueryGroupDropDown = async (e) => {
-    if (queryTypeRef.current) {
-      queryTypeRef.current.clearValue();
-    }
-    await new QueryTypeService().getQueryTypeMapped(e.value).then((res) => {
-      if (res.data.status == 1) {
-        setQueryGroupTypeData(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.query_type_name }))
-        );
+    try {
+      setQueryGroupTypeData([]);
+      setNotify({});
+      if (queryTypeRef?.current) {
+        queryTypeRef?.current.clearValue();
+
       }
     });
   };
@@ -807,13 +801,18 @@ export default function CreateTicketComponent() {
         const accountFor = localStorage.getItem("account_for");
 
         if (x?.length > 0) {
-          const mappingId = x
-            .filter((item) =>
-              accountFor === "SELF"
-                ? !item.customer_type_id || item.customer_type_id === "0"
-                : item.customer_type_id
-            )
-            .map((item) => item.id);
+          const filteredItems = x.filter((item) =>
+            accountFor === 'SELF'
+              ? !item.customer_type_id || item.customer_type_id === '0'
+              : item.customer_type_id
+          );
+
+          const mappingId = filteredItems.map((item) => item.id);
+
+          const confirmationRequiredID = filteredItems
+            .map((item) => item.confirmation_required)
+            .join(',');
+
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev["customer_mapping_id"] = mappingId[0];
@@ -1040,91 +1039,6 @@ export default function CreateTicketComponent() {
                   </>
                 )}
 
-                {/* <div className="col-sm-3">
-                  <label
-                    // className="form-label font-weight-bold"
-                    className="col-form-label"
-                    readOnly={true}
-                  >
-                    Parent ticket Type: <Astrick color="red" size="13px" />
-                  </label>
-
-                  <div>
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        width: "100%",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "8px",
-                          border: "1px solid #ccc",
-                          cursor: "pointer",
-                          width: "100%",
-                        }}
-                        onClick={(e) => handleSelectOptionClick(e)}
-                      >
-                        {selectedOption ? selectedOption : "Select an option"}
-                      </div>
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: "100%", // Set the width to 100% to match the parent's width
-                            top: "100%",
-                          }}
-                        >
-                          <CustomMenuListTicket
-                            options={transformedOptionsTicket}
-                            onSelect={(label, ID) => handleSelect(label, ID)}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label" readOnly={true}>
-                    Ticket Type Name: <Astrick color="red" size="13px" />
-                  </label>
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-block",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: "8px",
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                        width: "100%",
-                      }}
-                      onClick={(e) => handleSelectOptionClick(e)}
-                    >
-                      {selectedOption ? selectedOption : "Select an option"}
-                    </div>
-                    {isMenuOpen && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: "100%", // Set the width to 100% to match the parent's width
-                          top: "100%",
-                          zIndex: 999, // Adjust the z-index as needed
-                        }}
-                      >
-                        <CustomMenuListTicket
-                          options={transformedOptionsTicket}
-                          onSelect={(label, ID) => handleSelect(label, ID)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div> */}
                 <div className="col-sm-3 mt-2">
                   <label
                     className="form-label font-weight-bold"
@@ -1142,36 +1056,13 @@ export default function CreateTicketComponent() {
                       }}
                     >
                       <div
-                        // style={{
-                        //   padding: "8px",
-                        //   border: "1px solid #ccc",
-                        //   cursor: "pointer",
-                        //   width: "100%",
-                        //   borderRadius: "1px",
-                        // }}
                         className="form-control form-control-sm"
                         onClick={(e) => handleSelectOptionClick(e)}
                       >
-                        {/* {selectedOption
-                              ? selectedOption
-                              : modal?.modalData?.parent_name} */}
                         {selectedOption}
                       </div>
                       {isMenuOpen && (
                         <div
-                          // style={{
-                          //   position: "absolute",
-                          //   width: "100%", // Set the width to 100% to match the parent's width
-                          //   top: "100%",
-
-                          //   maxHeight: "150px", // Adjust the maxHeight here as needed
-                          //   overflowY: "auto", // Enable vertical scrolling
-                          //   scrollbarWidth: "none", // Hide scrollbar in Firefox
-                          //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                          //   "&::-webkit-scrollbar": {
-                          //     display: "none", // Hide scrollbar in Webkit browsers
-                          //   },
-                          // }}
                           style={{
                             position: "absolute",
                             width: "100%", // Set the width to 100% to match the parent's width
@@ -1195,41 +1086,6 @@ export default function CreateTicketComponent() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label">
-                    <b>Parent Ticket Type</b>
-                  </label>
-
-                  {parent && (
-                    <Select
-                      id="parent_id"
-                      name="parent_id"
-                      onChange={(e) => handleParentchange(e)}
-                      options={parent}
-                    />
-                  )}
-                </div>
-
-                {getAllType && (
-                  <div className="col-sm-3">
-                    <label className="col-form-label">
-                      <b>Ticket Type</b>
-                    </label>
-
-                    {getAllType && (
-                      <Select
-                        id="ticket_type_id"
-                        name="ticket_type_id"
-                        onChange={(e) => {
-                          handleAutoChanges(e, "Select2", "ticket_type");
-                        }}
-                        ref={ticketTypeRefs}
-                        options={getAllType}
-                      />
-                    )}
-                  </div>
-                )} */}
               </div>
 
               {data.ticket_uploading == "REGULAR" && (
@@ -1747,7 +1603,7 @@ export default function CreateTicketComponent() {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              disabled={isSubmitted == true ? true : false}
+              disabled={isSubmitted}
             >
               Submit
             </button>
