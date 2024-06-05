@@ -3,92 +3,57 @@ import { createSlice } from '@reduxjs/toolkit';
 import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
 
 const initialState = {
-  status: '',
-  err: '',
-
-  userData: []
+  userData: [],
+  isLoading: {
+    userData: false,
+    updateTask: false
+  },
+  errorMsg: {
+    userData: '',
+    updateTask: ''
+  },
+  successMsg: {
+    userData: '',
+    updateTask: ''
+  }
 };
 
 export const PlannerModalSlices = createSlice({
   name: 'PlannerModalSlices',
   initialState,
-  reducers: {
-    loaderModal: (state, action) => {
-      state.showLoaderModal = action.payload;
-    },
-    handleModalInStore: (state, action) => {
-      state.modal = action.payload;
-    },
-    handleModalClose: (state, action) => {
-      state.modal = action.payload;
-    },
-    hideNotification(state) {
-      state.notify = false;
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    //getUserTaskData
-    builder.addCase(getUserTaskData.pending, (state) => {
-      state.status = 'loading';
-      state.notify = null;
-    });
+    builder
+      .addCase(getUserTaskData.pending, (state, action) => {
+        state.isLoading.userData = true;
+      })
+      .addCase(getUserTaskData.fulfilled, (state, action) => {
+        state.isLoading.userData = false;
+        state.userData = action?.payload?.data;
 
-    builder.addCase(getUserTaskData.fulfilled, (state, action) => {
-      const { payload } = action;
+        state.successMsg.userData = action.payload.msg;
+      })
+      .addCase(getUserTaskData.rejected, (state, action) => {
+        state.isLoading.userData = false;
+        state.userData = [];
+        state.errorMsg.userData = action.error.message;
+      })
 
-      if (payload?.status === 200 && payload?.data?.status === 1) {
-        let userData = payload.data.data;
-        state.status = 'succeeded';
+      .addCase(updateTaskPlannerData.pending, (state, action) => {
+        state.isLoading.updateTask = true;
+      })
+      .addCase(updateTaskPlannerData.fulfilled, (state, action) => {
+        state.isLoading.updateTask = false;
+        state.updateTask = action?.payload?.data;
 
-        state.showLoaderModal = false;
-        state.userData = userData;
-      } else {
-        // let notify = { type: 'danger', message: payload.data.message };
-        // state.notify = null;
-        // state.notify = notify;
-      }
-    });
-    builder.addCase(getUserTaskData.rejected, (state) => {
-      state.status = 'rejected';
-    });
-    //updateTaskPlanner
-
-    builder.addCase(updateTaskPlannerData.pending, (state) => {
-      state.status = 'loading';
-      state.notify = null;
-    });
-
-    builder.addCase(updateTaskPlannerData.fulfilled, (state, action) => {
-      state.notify = null;
-      const { payload } = action;
-
-      state.notify = null;
-      if (payload?.status === 200 && payload?.data?.status === 1) {
-        let updateTaskPlanner = payload.data.data;
-        state.status = 'succeeded';
-
-        state.showLoaderModal = false;
-        state.updateTaskPlanner = updateTaskPlanner;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
-        let modal = { showModal: false, modalData: '', modalHeader: '' };
-        state.modal = modal;
-      } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
-      }
-    });
-    builder.addCase(updateTaskPlannerData.rejected, (state) => {
-      state.status = 'rejected';
-    });
+        state.successMsg.updateTask = action.payload.msg;
+      })
+      .addCase(updateTaskPlannerData.rejected, (state, action) => {
+        state.isLoading.updateTask = false;
+        state.updateTask = '';
+        state.errorMsg.updateTask = action.error.msg;
+      });
   }
 });
 
-export const {
-  handleModalInStore,
-  handleModalClose,
-  loaderModal,
-  hideNotification
-} = PlannerModalSlices.actions;
 export default PlannerModalSlices.reducer;

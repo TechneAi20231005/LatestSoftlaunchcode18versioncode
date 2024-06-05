@@ -5,21 +5,23 @@ import Alert from '../../../../components/Common/Alert';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
+import { getDateTime } from '../../../../components/Utilities/Functions';
 
 function PlannerModal(props) {
   const dispatch = useDispatch();
-  const userTaskData = useSelector(
-    (PlannerModalSlices) => PlannerModalSlices.plannerModal.userData
-  );
-  const notify = useSelector(
-    (PlannerModalSlices) => PlannerModalSlices.plannerModal.notify
-  );
 
   const [plannerData, setPlannerData] = useState([]);
 
   const [totalHours, setTotalHours] = useState(0.0);
 
   const [times, setTimes] = useState({ label: '00', value: '00' });
+  const userTaskData = useSelector(
+    (PlannerModalSlices) => PlannerModalSlices.plannerModal.userData
+  );
+
+  const notify = useSelector(
+    (PlannerModalSlices) => PlannerModalSlices.plannerModal.notify
+  );
 
   const loadData = async () => {
     var hours = 0;
@@ -38,7 +40,7 @@ function PlannerModal(props) {
 
     setTimes(times);
 
-    dispatch(getUserTaskData(props.plannerData.taskId));
+    dispatch(getUserTaskData({ taskId: props.plannerData.taskId }));
 
     setPlannerData(props.plannerData);
 
@@ -92,7 +94,8 @@ function PlannerModal(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
-
+    data.append('updated_by', localStorage.getItem('id'));
+    data.append('updated_at', getDateTime());
     dispatch(
       updateTaskPlannerData({ taskId: plannerData.taskId, payload: data })
     );
