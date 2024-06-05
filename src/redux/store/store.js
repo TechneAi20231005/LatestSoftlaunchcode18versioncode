@@ -61,7 +61,8 @@ import testingGroupMasterSlice from '../slices/testCases/testingGroup';
 import functionMasterSlice from '../slices/testCases/functionMaster';
 import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
 import testCaseReviewSlice from '../slices/testCases/testCaseReview';
-import PlannerModalSlices from '../../screens/TicketManagement/TaskManagement/components/PlannerModalSlices';
+import PlannerModalSlices from '../slices/ManageTask/Task/Planner';
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,

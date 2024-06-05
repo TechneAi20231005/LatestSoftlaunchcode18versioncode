@@ -4,7 +4,11 @@ import { Modal, Table } from 'react-bootstrap';
 import Alert from '../../../../components/Common/Alert';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
+import {
+  getUserTaskData,
+  updateTaskPlannerData
+} from '../../../../redux/services/ManageTask/Task/Planner';
+
 import { getDateTime } from '../../../../components/Utilities/Functions';
 
 function PlannerModal(props) {
@@ -15,6 +19,7 @@ function PlannerModal(props) {
   const [totalHours, setTotalHours] = useState(0.0);
 
   const [times, setTimes] = useState({ label: '00', value: '00' });
+
   const userTaskData = useSelector(
     (PlannerModalSlices) => PlannerModalSlices.plannerModal.userData
   );

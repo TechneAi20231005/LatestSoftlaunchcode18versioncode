@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { getUserTaskData, updateTaskPlannerData } from './PlannerModalAction';
+import {
+  getUserTaskData,
+  updateTaskPlannerData
+} from '../../../../services/ManageTask/Task/Planner';
 
 const initialState = {
   userData: [],

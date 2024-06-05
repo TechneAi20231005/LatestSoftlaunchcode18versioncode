@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import customAxios from '../../../../http/axios';
+import customAxios from '../../../../../http/axios';
 import { toast } from 'react-toastify';
-import { errorHandler } from '../../../../utils';
+
+import { errorHandler } from '../../../../../utils';
 
 export const getUserTaskData = createAsyncThunk(
   'getUserTaskData',
