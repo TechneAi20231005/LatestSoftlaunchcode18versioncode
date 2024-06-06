@@ -10,7 +10,7 @@ import { _attachmentUrl } from '../../settings/constants';
 
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
-import DatePicker from 'react-date-picker';
+
 import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
 
@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
+import { toast } from 'react-toastify';
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ export default function CreateTicketComponent() {
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
 
   const [parent, setParent] = useState();
-  const [parentName, setParentName] = useState();
+
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
 
@@ -325,7 +326,6 @@ export default function CreateTicketComponent() {
       formData.append('dynamicForm', JSON.stringify(rows));
       var selectCountry = formData.getAll('customer_id');
       var selectQueryGroup = formData.getAll('query_group_id');
-      var selectgetAll = formData.get('ticket_type_id');
 
       if (selectCountry == '') {
         flag = 0;
@@ -346,47 +346,36 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setTimeout(() => {
-                navigate(`/${_base}/Ticket`);
-              }, 2000);
+              toast.success(res?.data?.message);
+              navigate(`/${_base}/Ticket`);
 
               setIsSubmitted(false);
             } else {
               if (formData.getAll('ticket_uploading') == 'REGULAR') {
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.error(res?.data?.message);
+
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
-                  setNotify({ type: 'danger', message: res.data.message });
+                  toast.error(res?.data?.message);
+
                   setIsSubmitted(false);
                   return;
                 }
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.success(res?.data?.message);
+
                 let url = `${_attachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.success(res?.data?.message);
             setIsSubmitted(false);
           }
         })
-        .catch((error) => {
-          if (error.response) {
-            const { response } = error;
-            const { request, ...errorObject } = response;
-            setIsSubmitted(false);
-            setNotify({ type: 'danger', message: 'Request Error !!!' });
-            // new ErrorLogService().sendErrorLog(
-            //   'Ticket',
-            //   'Create_Ticket',
-            //   'INSERT',
-            //   errorObject.data.message
-            // );
-          } else {
-          }
+        .catch((res) => {
+          toast.success(res?.data?.message);
         });
     }
   };
@@ -419,7 +408,7 @@ export default function CreateTicketComponent() {
         setQueryGroupTypeData(null);
       } else {
         var dynamicForm = data[0].dynamic_form;
-        const returnedData = [];
+
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
             formInstance.inputType === 'select' &&
@@ -1317,13 +1306,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
@@ -1343,14 +1325,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
-
                                   value={d.value}
                                   onChange={handleCheckBoxChange}
                                   defaultChecked={
@@ -1384,8 +1358,6 @@ export default function CreateTicketComponent() {
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
                           max={data.inputAddOn.inputRangeMax}
-                          // min={data.inputAddOn.inputRange ? range[0] : ""}
-                          // max={data.inputAddOn.inputRange ? range[1] : ""}
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1406,31 +1378,6 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {/* {data.inputType === "select" && (
-                        <Select
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
-                          }
-                          options={data.inputAddOn.inputRadio}
-                          id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
-                          }
-                          name={data.inputName}
-                          onChange={(e) => {
-                            dynamicDependancyHandle(
-                              data.inputName,
-                              e,
-                              data.inputAddOn.inputOnChangeSource
-                            );
-                          }}
-                          className="form-control form-control-sm"
-                          required={data.inputMandatory ? true : false}
-                        />
-                      )} */}
 
                       {data.inputType === 'select' && (
                         <select
