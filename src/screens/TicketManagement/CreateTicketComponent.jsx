@@ -371,13 +371,6 @@ export default function CreateTicketComponent() {
           } else {
             setNotify({ type: 'danger', message: res.message });
             setIsSubmitted(false);
-
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              res.message
-            );
           }
         })
         .catch((error) => {
@@ -386,12 +379,12 @@ export default function CreateTicketComponent() {
             const { request, ...errorObject } = response;
             setIsSubmitted(false);
             setNotify({ type: 'danger', message: 'Request Error !!!' });
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Create_Ticket',
-              'INSERT',
-              errorObject.data.message
-            );
+            // new ErrorLogService().sendErrorLog(
+            //   'Ticket',
+            //   'Create_Ticket',
+            //   'INSERT',
+            //   errorObject.data.message
+            // );
           } else {
           }
         });
@@ -704,23 +697,23 @@ export default function CreateTicketComponent() {
     }
   };
 
-  const handleParentchange = async (e) => {
-    if (ticketTypeRefs.current) {
-      ticketTypeRefs.current.clearValue();
-    }
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setGetAllType(
-            temp
-              .filter((d) => d.type === 'TICKET' && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
-      }
-    });
-  };
+  // const handleParentchange = async (e) => {
+  //   if (ticketTypeRefs.current) {
+  //     ticketTypeRefs.current.clearValue();
+  //   }
+  //   await new TaskTicketTypeService().getAllType().then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status === 1) {
+  //         const temp = res.data.data;
+  //         setGetAllType(
+  //           temp
+  //             .filter((d) => d.type === 'TICKET' && d.is_active == 1)
+  //             .map((d) => ({ value: d.id, label: d.type_name }))
+  //         );
+  //       }
+  //     }
+  //   });
+  // };
 
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
