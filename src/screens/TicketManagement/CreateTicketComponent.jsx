@@ -4,20 +4,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
-import ErrorLogService from '../../services/ErrorLogService';
-import DynamicFormService from '../../services/MastersService/DynamicFormService';
+
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import { _attachmentUrl } from '../../settings/constants';
-import ReportService from '../../services/ReportService/ReportService';
+
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
-import DatePicker from 'react-date-picker';
+
 import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
-import * as Validation from '../../components/Utilities/Validation';
+
 import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
-import { getCurrentDate } from '../../components/Utilities/Functions';
-import { userSessionData as user } from '../../settings/constants';
+
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
 import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
@@ -28,9 +26,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
+import { toast } from 'react-toastify';
 
 export default function CreateTicketComponent() {
-  const history = useNavigate();
   const navigate = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -40,7 +38,6 @@ export default function CreateTicketComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
   );
 
-  const departmentDropdownRef = useRef();
   const current = new Date();
   const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
@@ -81,7 +78,6 @@ export default function CreateTicketComponent() {
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [defaults, setDefaults] = useState(null);
 
   const [department, setDepartment] = useState(null);
   const [rows, setRows] = useState();
@@ -90,24 +86,21 @@ export default function CreateTicketComponent() {
 
   const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
-  const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
   const [alldepartmentData, setAllDepartmentData] = useState();
-  const [getAllType, setGetAllType] = useState();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
-  const [inputDataSourceData, setInputDataSourceData] = useState();
-  const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-  // const [checkRole, setCheckRole] = useState(null);
+
   const [parent, setParent] = useState();
-  const [parentName, setParentName] = useState();
+
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
   const [user, setUser] = useState('');
@@ -304,12 +297,6 @@ export default function CreateTicketComponent() {
     }
   };
 
-  const roleId = sessionStorage.getItem('role_id');
-  const ticketTypeRefs = useRef();
-  const customerMappingData = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.customerMappingData
-  );
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
@@ -339,7 +326,6 @@ export default function CreateTicketComponent() {
       formData.append('dynamicForm', JSON.stringify(rows));
       var selectCountry = formData.getAll('customer_id');
       var selectQueryGroup = formData.getAll('query_group_id');
-      var selectgetAll = formData.get('ticket_type_id');
 
       if (selectCountry == '') {
         flag = 0;
@@ -360,35 +346,36 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setTimeout(() => {
-                navigate(`/${_base}/Ticket`);
-              }, 2000);
+              toast.success(res?.data?.message);
+              navigate(`/${_base}/Ticket`);
 
               setIsSubmitted(false);
             } else {
               if (formData.getAll('ticket_uploading') == 'REGULAR') {
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.success(res?.data?.message);
+
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
-                  setNotify({ type: 'danger', message: res.data.message });
+                  toast.success(res?.data?.message);
+
                   setIsSubmitted(false);
                   return;
                 }
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.success(res?.data?.message);
+
                 let url = `${_attachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.success(res?.data?.message);
             setIsSubmitted(false);
           }
         })
         .catch((res) => {
-          setNotify({ type: 'danger', message: res.message });
+          toast.success(res?.data?.message);
         });
     }
   };
@@ -421,7 +408,7 @@ export default function CreateTicketComponent() {
         setQueryGroupTypeData(null);
       } else {
         var dynamicForm = data[0].dynamic_form;
-        const returnedData = [];
+
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
             formInstance.inputType === 'select' &&
@@ -996,91 +983,6 @@ export default function CreateTicketComponent() {
                   </>
                 )}
 
-                {/* <div className="col-sm-3">
-                  <label
-                    // className="form-label font-weight-bold"
-                    className="col-form-label"
-                    readOnly={true}
-                  >
-                    Parent ticket Type: <Astrick color="red" size="13px" />
-                  </label>
-
-                  <div>
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        width: "100%",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "8px",
-                          border: "1px solid #ccc",
-                          cursor: "pointer",
-                          width: "100%",
-                        }}
-                        onClick={(e) => handleSelectOptionClick(e)}
-                      >
-                        {selectedOption ? selectedOption : "Select an option"}
-                      </div>
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: "100%", // Set the width to 100% to match the parent's width
-                            top: "100%",
-                          }}
-                        >
-                          <CustomMenuListTicket
-                            options={transformedOptionsTicket}
-                            onSelect={(label, ID) => handleSelect(label, ID)}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label" readOnly={true}>
-                    Ticket Type Name: <Astrick color="red" size="13px" />
-                  </label>
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-block",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: "8px",
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                        width: "100%",
-                      }}
-                      onClick={(e) => handleSelectOptionClick(e)}
-                    >
-                      {selectedOption ? selectedOption : "Select an option"}
-                    </div>
-                    {isMenuOpen && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: "100%", // Set the width to 100% to match the parent's width
-                          top: "100%",
-                          zIndex: 999, // Adjust the z-index as needed
-                        }}
-                      >
-                        <CustomMenuListTicket
-                          options={transformedOptionsTicket}
-                          onSelect={(label, ID) => handleSelect(label, ID)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div> */}
                 <div className="col-sm-3 mt-2">
                   <label
                     className="form-label font-weight-bold"
@@ -1115,19 +1017,6 @@ export default function CreateTicketComponent() {
                       </div>
                       {isMenuOpen && (
                         <div
-                          // style={{
-                          //   position: "absolute",
-                          //   width: "100%", // Set the width to 100% to match the parent's width
-                          //   top: "100%",
-
-                          //   maxHeight: "150px", // Adjust the maxHeight here as needed
-                          //   overflowY: "auto", // Enable vertical scrolling
-                          //   scrollbarWidth: "none", // Hide scrollbar in Firefox
-                          //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                          //   "&::-webkit-scrollbar": {
-                          //     display: "none", // Hide scrollbar in Webkit browsers
-                          //   },
-                          // }}
                           style={{
                             position: 'absolute',
                             width: '100%', // Set the width to 100% to match the parent's width
@@ -1151,41 +1040,6 @@ export default function CreateTicketComponent() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label">
-                    <b>Parent Ticket Type</b>
-                  </label>
-
-                  {parent && (
-                    <Select
-                      id="parent_id"
-                      name="parent_id"
-                      onChange={(e) => handleParentchange(e)}
-                      options={parent}
-                    />
-                  )}
-                </div>
-
-                {getAllType && (
-                  <div className="col-sm-3">
-                    <label className="col-form-label">
-                      <b>Ticket Type</b>
-                    </label>
-
-                    {getAllType && (
-                      <Select
-                        id="ticket_type_id"
-                        name="ticket_type_id"
-                        onChange={(e) => {
-                          handleAutoChanges(e, "Select2", "ticket_type");
-                        }}
-                        ref={ticketTypeRefs}
-                        options={getAllType}
-                      />
-                    )}
-                  </div>
-                )} */}
               </div>
 
               {data.ticket_uploading == 'REGULAR' && (
@@ -1414,13 +1268,8 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
+
+
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
@@ -1440,13 +1289,7 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
+
 
                                   value={d.value}
                                   onChange={handleCheckBoxChange}
@@ -1481,8 +1324,8 @@ export default function CreateTicketComponent() {
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
                           max={data.inputAddOn.inputRangeMax}
-                          // min={data.inputAddOn.inputRange ? range[0] : ""}
-                          // max={data.inputAddOn.inputRange ? range[1] : ""}
+
+
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1503,31 +1346,8 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {/* {data.inputType === "select" && (
-                        <Select
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
-                          }
-                          options={data.inputAddOn.inputRadio}
-                          id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
-                          }
-                          name={data.inputName}
-                          onChange={(e) => {
-                            dynamicDependancyHandle(
-                              data.inputName,
-                              e,
-                              data.inputAddOn.inputOnChangeSource
-                            );
-                          }}
-                          className="form-control form-control-sm"
-                          required={data.inputMandatory ? true : false}
-                        />
-                      )} */}
+
+                   
 
                       {data.inputType === 'select' && (
                         <select
