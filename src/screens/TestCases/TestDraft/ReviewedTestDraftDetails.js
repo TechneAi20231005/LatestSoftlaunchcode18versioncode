@@ -30,10 +30,10 @@ function ReviewedTestDraftDetails() {
       cell: (row) => (
         <div>
           <Link
-            to={`/${_base + '/ReviewedTestDraftComponent/' + row.id}`}
+            to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
             className="link_underline_primary"
           >
-            {row.test_plan_id}
+            {row?.test_plan_id}
           </Link>
         </div>
       )

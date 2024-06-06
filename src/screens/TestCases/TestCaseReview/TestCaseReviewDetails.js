@@ -137,12 +137,6 @@ function TestCaseReviewDetails() {
     });
   };
 
-  useEffect(() => {
-    if (testPlanIdData) {
-      setRowData(testPlanIdData);
-    }
-  }, [testPlanIdData]);
-
   const handleRowChange = (id, field, value) => {
     setRowData((prevData) =>
       prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
@@ -219,7 +213,6 @@ function TestCaseReviewDetails() {
         formData,
 
         onSuccessHandler: () => {
-          setRowData(testPlanIdData);
           dispatch(
             getByTestPlanIDListThunk({
               id: id,
@@ -227,6 +220,7 @@ function TestCaseReviewDetails() {
               page: paginationData.currentPage
             })
           );
+          setRowData(testPlanIdData);
         },
         onErrorHandler: () => {}
       })
@@ -236,6 +230,12 @@ function TestCaseReviewDetails() {
   const handleModal = (data) => {
     setModal(data);
   };
+
+  useEffect(() => {
+    if (testPlanIdData) {
+      setRowData(testPlanIdData);
+    }
+  }, [testPlanIdData]);
 
   const columns = [
     {
@@ -535,6 +535,7 @@ function TestCaseReviewDetails() {
           );
         }}
       />
+      {console.log('rowData', rowData)}
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider " />
