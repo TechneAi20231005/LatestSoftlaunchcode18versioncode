@@ -2,6 +2,23 @@ import React, { useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import { useDispatch } from 'react-redux';
+import { resetRequisitionHistoryExportDataList } from '../../../redux/slices/po/history';
+
+// Function to transform data before exporting
+export const ExportData = (data, columns) => {
+  return data?.map((row, index) => {
+    const transformedRow = {
+      'Sr No.': index + 1
+    };
+
+    columns?.forEach((column) => {
+      transformedRow[column.title] = row[column.field] || column.defaultValue || '--';
+    });
+
+    return transformedRow;
+  });
+};
 
 export const ExportToExcel = ({
   apiData,
@@ -13,9 +30,10 @@ export const ExportToExcel = ({
   onClickHandler,
   isLoading,
   onApiClick,
-  onSuccessHandler
+  columns
 }) => {
-  // // initial state
+  const dispatch = useDispatch();
+
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
@@ -25,7 +43,8 @@ export const ExportToExcel = ({
       await onApiClick();
       onClickHandler && onClickHandler();
     } else {
-      const ws = XLSX.utils.json_to_sheet(apiData);
+      const transformedData = ExportData(apiData, columns);
+      const ws = XLSX.utils.json_to_sheet(transformedData);
       const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: fileType });
@@ -36,12 +55,13 @@ export const ExportToExcel = ({
 
   useEffect(() => {
     if (onApiClick && apiData?.length) {
-      const ws = XLSX?.utils?.json_to_sheet(apiData);
+      const transformedData = ExportData(apiData, columns);
+      const ws = XLSX?.utils?.json_to_sheet(transformedData);
       const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: fileType });
       FileSaver.saveAs(data, fileName + fileExtension);
-      onSuccessHandler && onSuccessHandler();
+      dispatch(resetRequisitionHistoryExportDataList());
     }
   }, [apiData?.length]);
 
@@ -56,8 +76,7 @@ export const ExportToExcel = ({
         <Spinner animation="border" size="sm" />
       ) : (
         <>
-          <i className="icofont-download" />
-          {buttonTitle ? buttonTitle : 'Export'}
+          <i className="icofont-download" /> {buttonTitle ? buttonTitle : 'Export'}
         </>
       )}
     </button>

@@ -108,7 +108,7 @@ export default function CreateTicketComponent() {
   const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState([]);
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -380,7 +380,7 @@ export default function CreateTicketComponent() {
     }
   };
 
-  const queryTypeRef = useRef(null);
+  const queryTypeRef = useRef();
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
@@ -514,9 +514,7 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
-
     const status = 1;
-
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
     await new CustomerMappingService()
@@ -560,7 +558,6 @@ export default function CreateTicketComponent() {
       if (res.payload.status == 200) {
       }
     });
-
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
@@ -689,6 +686,24 @@ export default function CreateTicketComponent() {
     }
   };
 
+  // const handleParentchange = async (e) => {
+  //   if (ticketTypeRefs.current) {
+  //     ticketTypeRefs.current.clearValue();
+  //   }
+  //   await new TaskTicketTypeService().getAllType().then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status === 1) {
+  //         const temp = res.data.data;
+  //         setGetAllType(
+  //           temp
+  //             .filter((d) => d.type === 'TICKET' && d.is_active == 1)
+  //             .map((d) => ({ value: d.id, label: d.type_name }))
+  //         );
+  //       }
+  //     }
+  //   });
+  // };
+
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -714,6 +729,40 @@ export default function CreateTicketComponent() {
       }
     });
   };
+
+  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
+  //   const primaryLabel = "Primary";
+  //   const options = [];
+
+  //   // Push the primary label if it hasn't been pushed before
+  //   if (!hasPrimaryLabel) {
+  //     options.push({
+  //       ID: null,
+  //       label: primaryLabel,
+  //       isStatic: true,
+  //       options: [],
+  //     });
+  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+  //   }
+
+  //   // Process the ticketData
+  //   ticketsData?.forEach((item) => {
+  //     const label = item.type_name;
+
+  //     if (label !== primaryLabel) {
+  //       // Push API labels directly into options array
+  //       options.push({
+  //         ID: item.parent_id,
+  //         label: label,
+  //         options: item.children
+  //           ? transformDataTicket(item.children, hasPrimaryLabel)
+  //           : [],
+  //       });
+  //     }
+  //   });
+
+  //   return options;
+  // }
 
   function transformDataTicket(ticketsData) {
     const options = [];
@@ -798,7 +847,6 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
-
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
           type="hidden"
@@ -908,7 +956,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData.length > 0 && (
+                {queryGroupTypeData && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -1000,19 +1048,9 @@ export default function CreateTicketComponent() {
                       }}
                     >
                       <div
-                        // style={{
-                        //   padding: "8px",
-                        //   border: "1px solid #ccc",
-                        //   cursor: "pointer",
-                        //   width: "100%",
-                        //   borderRadius: "1px",
-                        // }}
                         className="form-control form-control-sm"
                         onClick={(e) => handleSelectOptionClick(e)}
                       >
-                        {/* {selectedOption
-                              ? selectedOption
-                              : modal?.modalData?.parent_name} */}
                         {selectedOption}
                       </div>
                       {isMenuOpen && (
@@ -1347,7 +1385,7 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                   
+
 
                       {data.inputType === 'select' && (
                         <select
