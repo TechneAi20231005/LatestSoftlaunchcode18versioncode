@@ -1,133 +1,120 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import PageHeader from "../../../components/Common/PageHeader";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import ReviewCommentMasterModal from "./Validation/ReviewCommentMasterModal";
-import { useDispatch, useSelector } from "react-redux";
-import { getReviewCommentMasterListThunk } from "../../../redux/services/testCases/reviewCommentMaster";
-import { customSearchHandler } from "../../../utils/customFunction";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
-import { Col, Row } from "react-bootstrap";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import PageHeader from '../../../components/Common/PageHeader';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
+import ReviewCommentMasterModal from './Validation/ReviewCommentMasterModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
+import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { Col, Row } from 'react-bootstrap';
 
 function ReviewCommentMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { reviewCommentMasterList, isLoading } = useSelector(
-    (state) => state?.reviewCommentMaster
-  );
+  const { reviewCommentMasterList, isLoading } = useSelector((state) => state?.reviewCommentMaster);
 
-  const [searchValue, setSearchValue] = useState("");
-  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] =
-    useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] = useState([]);
 
   const [addEditReviewCommentModal, setAddEditReviewCommentModal] = useState({
-    type: "",
-    data: "",
-    open: false,
+    type: '',
+    data: '',
+    open: false
   });
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(
-      reviewCommentMasterList,
-      searchValue
-    );
+    const filteredList = customSearchHandler(reviewCommentMasterList, searchValue);
     setFilteredReviewCommentMasterList(filteredList);
   };
 
   // Function to handle reset button click
   const handleReset = () => {
-    setSearchValue("");
+    setSearchValue('');
     setFilteredReviewCommentMasterList(reviewCommentMasterList);
   };
 
   const columns = [
     {
-      name: "Sr. No.",
+      name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "70px",
+      width: '70px'
     },
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => (
         <i
           className="icofont-edit text-primary cp"
           onClick={() =>
             setAddEditReviewCommentModal({
-              type: "EDIT",
+              type: 'EDIT',
               data: row,
-              open: true,
+              open: true
             })
           }
         />
       ),
       sortable: false,
-      width: "70px",
+      width: '70px'
     },
 
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger">DeActive</span>
-          )}
+          {row.is_active == 1 && <span className="badge bg-primary">Active</span>}
+          {row.is_active == 0 && <span className="badge bg-danger">DeActive</span>}
         </div>
       ),
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Reviewer Comment Title",
+      name: 'Reviewer Comment Title',
       selector: (row) => row.reviewer_comment,
       sortable: false,
-      width: "200px",
+      width: '200px'
     },
 
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
       sortable: false,
-      width: "175px",
+      width: '175px'
     },
 
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => row.created_by,
       sortable: false,
-      width: "175px",
+      width: '175px'
     },
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
       sortable: false,
-      width: "175px",
+      width: '175px'
     },
 
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => row.updated_by,
       sortable: false,
-      width: "175px",
-    },
+      width: '175px'
+    }
   ];
 
-  const transformDataForExport = (data) => {
-    return data?.map((row, index) => ({
-      "Sr No.": index + 1,
-      "Reviewer Comment Title": row?.reviewer_comment || "--",
-      "Created At": row?.created_at || "--",
-      "Created By": row?.created_by || "--",
-      "Updated At": row?.updated_at || "--",
-      "Updated By": row?.updated_by || "--",
-    }));
-  };
+  const exportColumns = [
+    { title: 'Reviewer Comment Title', field: 'reviewer_comment' },
+    { title: 'Created At', field: 'created_at' },
+    { title: 'Created By', field: 'created_by' },
+    { title: 'Updated At', field: 'updated_at' },
+    { title: 'Updated By', field: 'updated_by' }
+  ];
 
   useEffect(() => {
     dispatch(getReviewCommentMasterListThunk());
@@ -146,14 +133,14 @@ function ReviewCommentMasterComponent() {
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
         <PageHeader headerTitle="Review Comment Master" />
-        <div style={{ marginTop: "-30px" }}>
+        <div style={{ marginTop: '-30px' }}>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
               setAddEditReviewCommentModal({
-                type: "ADD",
-                data: "",
-                open: true,
+                type: 'ADD',
+                data: '',
+                open: true
               })
             }
           >
@@ -174,30 +161,18 @@ function ReviewCommentMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col
-          xs={12}
-          md={5}
-          xxl={4}
-          className="d-flex justify-content-sm-end btn_container"
-        >
-          <button
-            className="btn btn-warning text-white"
-            type="button"
-            onClick={handleSearch}
-          >
+        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
+          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
             <i className="icofont-search-1 " /> Search
           </button>
-          <button
-            className="btn btn-info text-white"
-            type="button"
-            onClick={handleReset}
-          >
+          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={transformDataForExport(filteredReviewCommentMasterList)}
-            fileName="Review Comment Records"
+            apiData={filteredReviewCommentMasterList}
+            columns={exportColumns}
+            fileName="Review Comment Master Records"
             disabled={!filteredReviewCommentMasterList?.length}
           />
         </Col>
