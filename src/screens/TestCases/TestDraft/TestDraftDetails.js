@@ -23,7 +23,8 @@ function TestDraftDetails(props) {
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
     data: '',
-    open: false
+    open: false,
+    id: null
   });
   const [sendToReviewerModal, setSendToReviewerModal] = useState({
     showModal: false,
@@ -105,7 +106,8 @@ function TestDraftDetails(props) {
               setAddEditTestCasesModal({
                 type: 'EDIT',
                 data: row,
-                open: true
+                open: true,
+                id: row.id
               })
             }
           />
@@ -548,6 +550,7 @@ function TestDraftDetails(props) {
 
   const handleSendToReviewerModal = (currentData) => {
     setSendToReviewerModal(currentData);
+    dispatch(getEmployeeData());
   };
 
   const handleSubmit = () => {
@@ -594,8 +597,6 @@ function TestDraftDetails(props) {
     );
   };
   useEffect(() => {
-    dispatch(getEmployeeData());
-    // dispatch(importTestDraftThunk());
     dispatch(
       getDraftTestCaseList({
         limit: paginationData.rowPerPage,
@@ -713,6 +714,7 @@ function TestDraftDetails(props) {
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
+          id={addEditTestCasesModal.id}
           payloadType={'DRAFT'}
         />
       )}

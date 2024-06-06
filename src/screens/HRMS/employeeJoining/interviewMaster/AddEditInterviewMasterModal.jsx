@@ -92,6 +92,13 @@ function AddEditInterviewMasterModal({
     formData: ''
   });
 
+  const [selectedDesignationData, setSelectedDesignationData] = useState({
+    id: '',
+    designationFor: ''
+  });
+  const [employeesName, setEmployeesName] = useState({});
+
+
   // // dropdown data
   const departmentType = departmentDataList
     ?.filter((item) => item?.is_active === 1)
@@ -107,12 +114,28 @@ function AddEditInterviewMasterModal({
       value: item?.id
     }));
 
-  const employeeName = employeeData
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
-      value: item?.id
-    }));
+
+  useEffect(() => {
+    const filterData = employeeData
+      ?.filter(
+        (item) =>
+          item?.is_active === 1 &&
+          (selectedDesignationData?.id
+            ? Number(item?.designation_id) === +selectedDesignationData?.id
+            : true)
+      )
+      ?.map((item) => ({
+        label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
+        value: item?.id
+      }));
+    if (selectedDesignationData?.id) {
+      setEmployeesName({
+        ...employeesName,
+        [selectedDesignationData?.designationFor]: filterData
+      });
+    }
+  }, [selectedDesignationData?.id, employeeData]);
+
 
   // // function
   const handelAddEditInterview = () => {
@@ -159,6 +182,9 @@ function AddEditInterviewMasterModal({
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
+
+    } else {
+      setSelectedDesignationData({ id: '', designationFor: '' });
     }
   }, [show]);
 
@@ -177,7 +203,8 @@ function AddEditInterviewMasterModal({
           initialValues={addInterviewInitialValue}
           enableReinitialize
           validationSchema={addEditInterviewMaster}
-          onSubmit={(values, errors) => {
+
+          onSubmit={(values) => {
             if (type === 'ADD' || type === 'EDIT') {
               setOpenConfirmModal({
                 open: true,
@@ -264,7 +291,7 @@ function AddEditInterviewMasterModal({
                                     })
                                   }
                                 >
-                                  <i class="icofont-plus" />
+                                  <i className="icofont-plus" />
                                 </button>
                               </div>
                             </RenderIf>
@@ -275,7 +302,7 @@ function AddEditInterviewMasterModal({
                                   className="btn btn-sm btn-danger text-white"
                                   onClick={() => remove(index)}
                                 >
-                                  <i class="icofont-ui-remove" />
+                                  <i className="icofont-ui-remove" />
                                 </button>
                                 <RenderIf
                                   render={
@@ -295,7 +322,7 @@ function AddEditInterviewMasterModal({
                                       })
                                     }
                                   >
-                                    <i class="icofont-plus" />
+                                    <i className="icofont-plus" />
                                   </button>
                                 </RenderIf>
                               </div>
@@ -325,11 +352,18 @@ function AddEditInterviewMasterModal({
                             }
                             requiredField
                             disabled={type === 'VIEW'}
+                            handleChange={(e) =>
+                              setSelectedDesignationData({
+                                id: e?.target?.value,
+                                designationFor: e?.target?.name?.split('.')?.[0]
+                              })
+                            }
+
                           />
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            data={employeeName}
+                            data={employeesName?.[`step_details[${index}]`]}
                             component={CustomDropdown}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
@@ -339,7 +373,11 @@ function AddEditInterviewMasterModal({
                                 : 'Select'
                             }
                             requiredField
-                            disabled={type === 'VIEW'}
+                            disabled={
+                              type === 'VIEW' ||
+                              !values?.step_details[index].designation_id
+                            }
+
                             handleChange={(selectedOption) => {
                               const selectedEmployee = employeeData.find(
                                 (employee) =>

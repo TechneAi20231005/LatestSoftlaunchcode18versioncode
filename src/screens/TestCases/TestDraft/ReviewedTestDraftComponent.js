@@ -78,6 +78,7 @@ function ReviewedTestDraftComponent() {
 
   const handleSendToReviewerModal = (currentData) => {
     setSendToReviewerModal(currentData);
+    dispatch(getEmployeeData());
   };
 
   const handleSelectAllNamesChange = () => {
@@ -338,7 +339,6 @@ function ReviewedTestDraftComponent() {
   };
 
   useEffect(() => {
-    dispatch(getEmployeeData());
     dispatch(getReviewCommentMasterListThunk());
 
     dispatch(
@@ -450,6 +450,7 @@ function ReviewedTestDraftComponent() {
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
           id={id}
+          payloadType={'ReviewTestDraft'}
         />
       )}
 

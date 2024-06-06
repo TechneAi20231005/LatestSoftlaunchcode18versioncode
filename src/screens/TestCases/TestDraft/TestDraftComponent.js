@@ -172,13 +172,7 @@ export default function TestDraftComponent({ close }) {
     { title: 'Updated At', field: 'updated_at' }
   ];
 
-  useEffect(() => {
-    dispatch(getProjectModuleMasterThunk());
-    dispatch(getModuleMasterThunk());
-    dispatch(getSubModuleMasterThunk());
-    dispatch(importTestDraftThunk());
-    dispatch(getAllReviewTestDraftList());
-
+  const handleExportData = () => {
     dispatch(
       getAllDraftTestCaseList({
         type: 'ALL',
@@ -186,6 +180,14 @@ export default function TestDraftComponent({ close }) {
         page: paginationData.currentPage
       })
     );
+  };
+
+  useEffect(() => {
+    dispatch(getProjectModuleMasterThunk());
+    dispatch(getModuleMasterThunk());
+    dispatch(getSubModuleMasterThunk());
+    dispatch(importTestDraftThunk());
+    dispatch(getAllReviewTestDraftList());
   }, []);
   return (
     <div className="container-xxl">
@@ -220,6 +222,7 @@ export default function TestDraftComponent({ close }) {
               </button>
               <ExportToExcel
                 className="btn btn-danger"
+                onClick={handleExportData}
                 apiData={
                   currentTab === 'test_summary'
                     ? allDraftTestListData
