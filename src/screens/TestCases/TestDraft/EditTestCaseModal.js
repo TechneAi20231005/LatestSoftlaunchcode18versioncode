@@ -28,8 +28,10 @@ function EditTestCaseModal({
   type,
   currentTestCasesData,
   paginationData,
-  id
+  id,
+  payloadType
 }) {
+  console.log('id==>', payloadType);
   // // initial state
   const severityData = [
     {
@@ -88,26 +90,36 @@ function EditTestCaseModal({
         formData: formData,
         onSuccessHandler: () => {
           close();
-          dispatch(
-            getDraftTestCaseList({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-          dispatch(
-            getByTestPlanIDListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-          dispatch(
-            getByTestPlanIDReviewedListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
+          {
+            payloadType === 'DRAFT' &&
+              dispatch(
+                getDraftTestCaseList({
+                  limit: paginationData.rowPerPage,
+                  page: paginationData.currentPage
+                })
+              );
+          }
+          {
+            payloadType === 'TestCaseReview' &&
+              dispatch(
+                getByTestPlanIDListThunk({
+                  id: id,
+                  limit: paginationData.rowPerPage,
+                  page: paginationData.currentPage
+                })
+              );
+          }
+
+          {
+            payloadType === 'ReviewTestDraft' &&
+              dispatch(
+                getByTestPlanIDReviewedListThunk({
+                  id: id,
+                  limit: paginationData.rowPerPage,
+                  page: paginationData.currentPage
+                })
+              );
+          }
         },
         onErrorHandler: () => {}
       })
