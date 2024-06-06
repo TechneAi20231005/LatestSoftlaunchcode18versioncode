@@ -20,76 +20,87 @@ function CandidateList() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { candidatesMasterList, isLoading } = useSelector(state => state?.candidatesMaster);
+  const { candidatesMasterList, isLoading } = useSelector(
+    (state) => state?.candidatesMaster
+  );
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [addCandidateModal, setAddCandidateModal] = useState(false);
-  const [filteredCandidatesMasterList, setFilteredCandidatesMasterList] = useState([]);
+  const [filteredCandidatesMasterList, setFilteredCandidatesMasterList] =
+    useState([]);
 
   // // static data
   const columns = [
     {
       name: 'Action',
-      selector: row => (
+      selector: (row) => (
         <i
           className="icofont-external-link text-primary cp"
-          onClick={() => navigate(`${row?.id}`, { state: { currentCandidateId: row?.id } })}
+          onClick={() =>
+            navigate(`${row?.id}`, { state: { currentCandidateId: row?.id } })
+          }
         />
       ),
       sortable: false,
-      width: '70px',
+      width: '70px'
     },
     {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      width: '70px',
+      width: '70px'
     },
     {
       name: 'Candidate Name',
       sortable: true,
-      selector: row =>
+      selector: (row) =>
         row?.full_name ? (
           <OverlayTrigger
             placement="top"
-            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.full_name}</Tooltip>}
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.full_name}</Tooltip>
+            }
           >
             <span>{row?.full_name || '--'}</span>
           </OverlayTrigger>
         ) : (
           '--'
         ),
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Application Id',
-      selector: row => row?.application_id || '--',
+      selector: (row) => row?.application_id || '--',
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Applied Position',
-      selector: row => row?.designation || '--',
+      selector: (row) => row?.designation || '--',
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Phone Number',
-      selector: row =>
-        row?.mobile_no ? <a href={`tel:${row?.mobile_no}`}>{row?.mobile_no}</a> : '--',
+      selector: (row) =>
+        row?.mobile_no ? (
+          <a href={`tel:${row?.mobile_no}`}>{row?.mobile_no}</a>
+        ) : (
+          '--'
+        ),
       sortable: true,
-      width: '130px',
+      width: '130px'
     },
     {
       name: 'Source',
-      selector: row => row?.source_name || '--',
+      selector: (row) => row?.source_name || '--',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Status',
-      selector: row => (
+      selector: (row) => (
         <ApplicationStatusBadge
           type={
             row?.application_status_name === 'REJECTED'
@@ -101,7 +112,7 @@ function CandidateList() {
                     case 2:
                       return 'warning';
                     case 3:
-                      return 'warning';
+                      return 'info';
                     case 4:
                       return 'success';
                     default:
@@ -113,14 +124,14 @@ function CandidateList() {
         />
       ),
       sortable: true,
-      minWidth: '100px',
+      minWidth: '100px'
     },
     {
       name: 'Date of Application',
-      selector: row => row?.application_date || '--',
+      selector: (row) => row?.application_date || '--',
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   // Function to handle search button click
@@ -135,7 +146,7 @@ function CandidateList() {
     setFilteredCandidatesMasterList(candidatesMasterList);
   };
 
-  const transformDataForExport = data => {
+  const transformDataForExport = (data) => {
     return data?.map((row, index) => ({
       'Sr No.': index + 1,
       'Candidates Name': row?.full_name || '--',
@@ -143,7 +154,7 @@ function CandidateList() {
       'Phone Number': row?.mobile_no || '--',
       'Date of Application': row?.application_date || '--',
       Status: row?.application_status_name || '--',
-      Source: row?.source_name || '--',
+      Source: row?.source_name || '--'
     }));
   };
 
@@ -169,7 +180,10 @@ function CandidateList() {
           headerTitle="Candidate List"
           renderRight={() => {
             return (
-              <button className="btn btn-dark px-5" onClick={() => setAddCandidateModal(true)}>
+              <button
+                className="btn btn-dark px-5"
+                onClick={() => setAddCandidateModal(true)}
+              >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Data
               </button>
@@ -182,16 +196,29 @@ function CandidateList() {
               type="search"
               name="interview_search"
               value={searchValue}
-              onChange={e => setSearchValue(e?.target?.value)}
+              onChange={(e) => setSearchValue(e?.target?.value)}
               placeholder="Enter candidate name..."
               className="form-control"
             />
           </Col>
-          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+          <Col
+            xs={12}
+            md={5}
+            xxl={4}
+            className="d-flex justify-content-sm-end btn_container"
+          >
+            <button
+              className="btn btn-warning text-white"
+              type="button"
+              onClick={handleSearch}
+            >
               <i className="icofont-search-1 " /> Search
             </button>
-            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+            <button
+              className="btn btn-info text-white"
+              type="button"
+              onClick={handleReset}
+            >
               <i className="icofont-refresh text-white" /> Reset
             </button>
             <ExportToExcel
@@ -215,7 +242,10 @@ function CandidateList() {
         />
       </Container>
 
-      <AddCandidatesModal show={addCandidateModal} close={() => setAddCandidateModal(false)} />
+      <AddCandidatesModal
+        show={addCandidateModal}
+        close={() => setAddCandidateModal(false)}
+      />
     </>
   );
 }
