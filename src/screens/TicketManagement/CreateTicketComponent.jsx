@@ -352,12 +352,12 @@ export default function CreateTicketComponent() {
               setIsSubmitted(false);
             } else {
               if (formData.getAll('ticket_uploading') == 'REGULAR') {
-                toast.success(res?.data?.message);
+                toast.error(res?.data?.message);
 
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
-                  toast.success(res?.data?.message);
+                  toast.error(res?.data?.message);
 
                   setIsSubmitted(false);
                   return;
@@ -1306,8 +1306,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-
-
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
@@ -1327,8 +1325,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-
-
                                   value={d.value}
                                   onChange={handleCheckBoxChange}
                                   defaultChecked={
@@ -1362,8 +1358,6 @@ export default function CreateTicketComponent() {
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
                           max={data.inputAddOn.inputRangeMax}
-
-
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1384,8 +1378,6 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-
-
 
                       {data.inputType === 'select' && (
                         <select
