@@ -40,12 +40,12 @@ const subTaskComponentSlices = createSlice({
         state.isLoading.getSubTaskList = false;
         state.subTaskList = action?.payload?.data;
 
-        state.successMsg.getSubTaskList = action.payload.message;
+        state.successMsg.getSubTaskList = action?.payload?.message;
       })
       .addCase(getSubTaskListThunk.rejected, (state, action) => {
         state.isLoading.getSubTaskList = false;
 
-        state.errorMsg.getSubTaskList = action.error.message;
+        state.errorMsg.getSubTaskList = action?.error?.message;
       })
 
       // addSubTaskModule
