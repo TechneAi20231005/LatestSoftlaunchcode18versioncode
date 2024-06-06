@@ -1,78 +1,63 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal, Table } from "react-bootstrap";
-import SubtaskService from "../../../../services/TicketService/SubtaskService";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import Alert from "../../../../components/Common/Alert";
+import React, { useEffect, useRef } from 'react';
+import { Modal, Table } from 'react-bootstrap';
+
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addSubTaskModuleThunk,
+  completedTaskListThunk,
+  deleteSubTaskModuleThunk,
+  getSubTaskListThunk
+} from '../../../../redux/services/SubTask';
+import { getDateTime } from '../../../../components/Utilities/Functions';
 
 export default function SubtaskModal(props) {
   const formRef = useRef();
+  const dispatch = useDispatch();
 
-  const [notify, setNotify] = useState();
+  const data = useSelector(
+    (subTaskComponentSlices) => subTaskComponentSlices.subTask.subTaskList
+  );
 
-  const [data, setData] = useState();
   const resetForm = () => {
     formRef.current.reset();
   };
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    formData.append('tenant_id', localStorage.getItem('tenant_id'));
+    formData.append('created_by', localStorage.getItem('id'));
+    formData.append('created_at', getDateTime());
 
-    await new SubtaskService().postSubtask(formData).then((res) => {
-      setNotify(null);
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          loadSubtask();
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
-        }
-      }
-    });
+    dispatch(addSubTaskModuleThunk({ formData: formData }));
+    loadSubtask();
     resetForm();
   };
 
   const loadSubtask = async () => {
-    setData(null);
-    setNotify(null);
-    await new SubtaskService().getSubtask(props.taskId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setData(res.data.data);
-        }
-      }
-    });
+    dispatch(getSubTaskListThunk({ taskId: props.taskId }));
   };
 
   const completeSubtask = async (e, subtaskId) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("is_completed", 1);
-    await new SubtaskService()
-      .completeSubtask(subtaskId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            loadSubtask();
-          }
-        }
-      });
+    formData.append('is_completed', 1);
+    dispatch(
+      completedTaskListThunk({ subtaskId: subtaskId, formData: formData })
+    );
+
+    loadSubtask();
   };
 
   const deleteSubtask = async (e, subtaskId) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("ticket_id", props.ticketId);
-    formData.append("ticket_task_id", props.taskId);
+    formData.append('ticket_id', props.ticketId);
+    formData.append('ticket_task_id', props.taskId);
 
-    await new SubtaskService()
-      .deleteSubtask(subtaskId, formData)
-      .then(async (res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            await loadSubtask();
-            alert(`${res.data.message}`);
-          }
-        }
-      });
+    dispatch(
+      deleteSubTaskModuleThunk({ subtaskId: subtaskId, formData: formData })
+    );
+    loadSubtask();
   };
 
   useEffect(() => {
@@ -81,7 +66,7 @@ export default function SubtaskModal(props) {
 
   return (
     <>
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
       <Modal
         show={props.show}
         scrollable={true}
@@ -100,7 +85,7 @@ export default function SubtaskModal(props) {
             <thead>
               <tr>
                 <th className="text-center"> Sr No </th>
-                <th style={{ width: "200px" }}>Subtask </th>
+                <th style={{ width: '200px' }}>Subtask </th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -120,21 +105,22 @@ export default function SubtaskModal(props) {
                         </td>
                       )}
                       <td className="">
-                        {props.data.status === "COMPLETED" ? (
-                          ""
+                        {props.data.status === 'COMPLETED' ? (
+                          ''
                         ) : (
                           <>
                             {ele.is_completed === 0 && (
                               <button
+                                className="btn-small-icon"
                                 type="button"
                                 style={{
-                                  border: "none",
-                                  borderRadius: "25%",
-                                  height: "25px",
-                                  width: "35px",
-                                  textAlign: "center",
-                                  margin: "0px",
-                                  padding: "0px",
+                                  border: 'none',
+                                  borderRadius: '25%',
+                                  height: '25px',
+                                  width: '35px',
+                                  textAlign: 'center',
+                                  margin: '0px',
+                                  padding: '0px'
                                 }}
                                 onClick={(e) => {
                                   deleteSubtask(e, ele.id);
@@ -143,17 +129,17 @@ export default function SubtaskModal(props) {
                                 <i
                                   class="icofont-delete-alt"
                                   style={{
-                                    fontSize: "15px",
-                                    color: "#EC7063",
-                                    margin: "auto",
+                                    fontSize: '15px',
+                                    color: '#EC7063',
+                                    margin: 'auto'
                                   }}
                                 ></i>
                               </button>
                             )}
                           </>
                         )}
-                        {props.data.status === "COMPLETED" ? (
-                          ""
+                        {props.data.status === 'COMPLETED' ? (
+                          ''
                         ) : (
                           <>
                             {ele.is_completed === 0 && (
@@ -161,15 +147,15 @@ export default function SubtaskModal(props) {
                                 type="button"
                                 className="mr-1 text-white"
                                 style={{
-                                  border: "none",
-                                  borderRadius: "10px",
-                                  height: "25px",
-                                  width: "50px",
-                                  textAlign: "center",
-                                  margin: "0px",
-                                  padding: "0px",
-                                  backgroundColor: "#3498DB",
-                                  fontSize: "12px",
+                                  border: 'none',
+                                  borderRadius: '10px',
+                                  height: '25px',
+                                  width: '50px',
+                                  textAlign: 'center',
+                                  margin: '0px',
+                                  padding: '0px',
+                                  backgroundColor: '#3498DB',
+                                  fontSize: '12px'
                                 }}
                                 onClick={(e) => {
                                   completeSubtask(e, ele.id);
@@ -212,7 +198,7 @@ export default function SubtaskModal(props) {
                   class="form-control form-control-sm"
                   id="subtask"
                   name="subtask"
-                  disabled={props.data.status === "COMPLETED" ? true : false}
+                  disabled={props.data.status === 'COMPLETED' ? true : false}
                   maxLength={100}
                   required
                 />
@@ -220,23 +206,23 @@ export default function SubtaskModal(props) {
               <div className="col-md-2">
                 <button
                   type="submit"
-                  disabled={props.data.status === "COMPLETED" ? true : false}
+                  disabled={props.data.status === 'COMPLETED' ? true : false}
                   style={{
-                    border: "none",
-                    borderRadius: "25%",
-                    height: "35px",
-                    width: "35px",
-                    textAlign: "center",
-                    margin: "0px",
-                    padding: "0px",
+                    border: 'none',
+                    borderRadius: '25%',
+                    height: '35px',
+                    width: '35px',
+                    textAlign: 'center',
+                    margin: '0px',
+                    padding: '0px'
                   }}
                 >
                   <i
                     class="icofont-ui-add"
                     style={{
-                      fontSize: "20px",
-                      color: "#3498DB",
-                      margin: "auto",
+                      fontSize: '20px',
+                      color: '#3498DB',
+                      margin: 'auto'
                     }}
                   ></i>
                 </button>
