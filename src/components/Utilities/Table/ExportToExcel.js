@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
-import { useDispatch } from 'react-redux';
-import { resetRequisitionHistoryExportDataList } from '../../../redux/slices/po/history';
 
 export const ExportToExcel = ({
   apiData,
@@ -15,10 +13,9 @@ export const ExportToExcel = ({
   onClickHandler,
   isLoading,
   onApiClick,
+  onSuccessHandler
 }) => {
   // // initial state
-  const dispatch = useDispatch();
-
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
@@ -44,14 +41,14 @@ export const ExportToExcel = ({
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: fileType });
       FileSaver.saveAs(data, fileName + fileExtension);
-      dispatch(resetRequisitionHistoryExportDataList());
+      onSuccessHandler && onSuccessHandler();
     }
   }, [apiData?.length]);
 
   return (
     <button
       className={` ${className} ${isLoading && 'px-4'} text-white`}
-      onClick={e => exportToCSV(apiData, fileName)}
+      onClick={(e) => exportToCSV(apiData, fileName)}
       disabled={disabled}
       type={btnType}
     >
@@ -59,7 +56,8 @@ export const ExportToExcel = ({
         <Spinner animation="border" size="sm" />
       ) : (
         <>
-          <i className="icofont-download" /> {buttonTitle ? buttonTitle : 'Export'}
+          <i className="icofont-download" />
+          {buttonTitle ? buttonTitle : 'Export'}
         </>
       )}
     </button>

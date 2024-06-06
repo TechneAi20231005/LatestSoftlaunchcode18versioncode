@@ -11,7 +11,7 @@ import { interviewScheduleRescheduleValidation } from './validation/interviewPro
 import { RenderIf } from '../../../../../../../../../utils';
 import {
   getInterviewProcessDataThunk,
-  scheduleRescheduleInterviewThunk,
+  scheduleRescheduleInterviewThunk
 } from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
 import { useCurrentInterviewStep } from '../../../../../../../../../hooks/hrms/employeeJoining';
 
@@ -25,35 +25,44 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
   const currentInterviewStepData = useCurrentInterviewStep();
 
   // // redux state
-  const { candidateDetailsData } = useSelector(state => state?.candidatesMaster);
+  const { candidateDetailsData } = useSelector(
+    (state) => state?.candidatesMaster
+  );
   const { details } = candidateDetailsData;
-  const { isLoading } = useSelector(state => state?.interViewProcess);
+  const { isLoading } = useSelector((state) => state?.interViewProcess);
 
   // // function
-  const handelScheduleReschedule = interviewData => {
+  const handelScheduleReschedule = (interviewData) => {
     const apiData = {
       ...interviewData,
       interview_id: currentCandidateId,
-      step_details_id: currentInterviewStepData?.step_details_id,
+      step_details_id: currentInterviewStepData?.step_details_id
     };
     dispatch(
       scheduleRescheduleInterviewThunk({
         formData: apiData,
         onSuccessHandler: () => {
-          dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
+          dispatch(
+            getInterviewProcessDataThunk({ currentId: currentCandidateId })
+          );
           onClose();
-        },
-      }),
+        }
+      })
     );
   };
 
   return (
-    <CustomModal show={open} title="Select Interview Slot" width="sm" onClose={onClose}>
+    <CustomModal
+      show={open}
+      title="Select Interview Slot"
+      width="sm"
+      onClose={onClose}
+    >
       <Formik
         initialValues={{ date: '', time: '' }}
         enableReinitialize
         validationSchema={interviewScheduleRescheduleValidation}
-        onSubmit={values => {
+        onSubmit={(values) => {
           handelScheduleReschedule(values);
         }}
       >
@@ -83,12 +92,13 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
               <Row className="mt-4">
                 <Col sm={12}>
                   <p>
-                    {console.log(values)}
-                    Interview for {details?.full_name} candidates has been schedule on{' '}
-                    <b>{values?.date}</b> at <b> {values?.time}</b>
+                    Interview for {details?.full_name} candidates has been
+                    schedule on <b>{values?.date}</b> at <b> {values?.time}</b>
                   </p>
 
-                  <p className="fw-bold text-center">Do you want to send an invitation?</p>
+                  <p className="fw-bold text-center">
+                    Do you want to send an invitation?
+                  </p>
 
                   <div className="d-flex justify-content-center mt-3 gap-2">
                     <button
@@ -102,7 +112,11 @@ function InterviewScheduleRescheduleModal({ open, onClose }) {
                         'Yes'
                       )}
                     </button>
-                    <button onClick={onClose} className="btn btn-shadow-light px-3" type="button">
+                    <button
+                      onClick={onClose}
+                      className="btn btn-shadow-light px-3"
+                      type="button"
+                    >
                       Cancel
                     </button>
                   </div>
