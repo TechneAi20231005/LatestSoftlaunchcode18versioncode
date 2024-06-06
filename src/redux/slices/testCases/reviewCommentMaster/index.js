@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 import {
   addReviewCommentMasterThunk,
   editReviewCommentMasterThunk,
-  getReviewCommentMasterListThunk,
-} from "../../../services/testCases/reviewCommentMaster";
+  getReviewCommentMasterListThunk
+} from '../../../services/testCases/reviewCommentMaster';
 
 const initialState = {
   reviewCommentMasterList: [],
@@ -14,21 +14,21 @@ const initialState = {
     getReviewCommentMasterList: false,
     getFilterReviewCommentMasterList: false,
     addReviewCommentMaster: false,
-    editReviewCommentMaster: false,
+    editReviewCommentMaster: false
   },
   errorMsg: {
-    getReviewCommentMasterList: "",
-    getFilterReviewCommentMasterList: "",
-    editReviewCommentMaster: "",
+    getReviewCommentMasterList: '',
+    getFilterReviewCommentMasterList: '',
+    editReviewCommentMaster: ''
   },
   successMsg: {
-    getReviewCommentMasterList: "",
-    getFilterReviewCommentMasterList: "",
-    editReviewCommentMaster: "",
-  },
+    getReviewCommentMasterList: '',
+    getFilterReviewCommentMasterList: '',
+    editReviewCommentMaster: ''
+  }
 };
 const reviewCommentMasterSlice = createSlice({
-  name: "Review Comment master",
+  name: 'Review Comment master',
   initialState,
   reducers: {
     // ==> normal reducer functions go here
@@ -77,7 +77,7 @@ const reviewCommentMasterSlice = createSlice({
         state.isLoading.editReviewCommentMaster = false;
         state.errorMsg.editReviewCommentMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default reviewCommentMasterSlice.reducer;

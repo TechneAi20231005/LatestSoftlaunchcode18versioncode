@@ -7,7 +7,7 @@ import SettingSlice from '../../screens/Settings/SettingSlice';
 import PaymentDetailsSilce from '../../screens/BillChecking/PaymentDetails/PaymentDetailsSlice';
 
 import BillpaymentSlice from '../../screens/BillChecking/BillPayments/BillPaymentsSlice';
-import SubTaskSlice from '../../screens/TicketManagement/BasketManagement/Slices/SubtaskSlice';
+
 import TaskHistorySlice from '../../screens/TicketManagement/BasketManagement/Slices/TaskHistorySlice';
 import PlannerSlice from '../../screens/TicketManagement/BasketManagement/Slices/PlannerSlice';
 import TimeRegularizationSlice from '../../screens/TicketManagement/BasketManagement/Slices/TimeRegularizationSlice';
@@ -61,7 +61,9 @@ import testingGroupMasterSlice from '../slices/testCases/testingGroup';
 import functionMasterSlice from '../slices/testCases/functionMaster';
 import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
 import testCaseReviewSlice from '../slices/testCases/testCaseReview';
-import testBankSlice from '../slices/testCases/testBank';
+import PlannerModalSlices from '../../screens/TicketManagement/TaskManagement/components/PlannerModalSlices';
+import subTaskComponentSlices from '../slices/SubTask';
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -71,7 +73,7 @@ export const store = configureStore({
     generalSetting: SettingSlice,
     paymentDetails: PaymentDetailsSilce,
     Billpayment: BillpaymentSlice,
-    subTask: SubTaskSlice,
+
     taskHistory: TaskHistorySlice,
     timeRegularization: TimeRegularizationSlice,
     planner: PlannerSlice,
@@ -121,7 +123,9 @@ export const store = configureStore({
     functionMaster: functionMasterSlice,
     downloadFormat: downloadFormatSlice,
     testCaseReview: testCaseReviewSlice,
-    testBank: testBankSlice
+    //Planner
+    plannerModal: PlannerModalSlices,
+    subTask: subTaskComponentSlices
   },
 
   middleware: (getDefaultMiddleware) =>
