@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
@@ -1703,7 +1703,7 @@ export default function CreateTicketComponent() {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              disabled={isSubmitted == true ? true : false}
+              disabled={isSubmitted}
             >
               Submit
             </button>
