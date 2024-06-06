@@ -620,6 +620,7 @@ function TestCaseReviewDetails() {
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
           id={planID}
+          payloadType={'TestCaseReview'}
         />
       )}
     </div>
