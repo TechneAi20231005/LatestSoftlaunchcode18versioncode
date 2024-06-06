@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal, Table } from "react-bootstrap";
-import SubtaskService from "../../../../services/TicketService/SubtaskService";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import Alert from "../../../../components/Common/Alert";
-import DataTable from "react-data-table-component";
-import Tooltip from "react-bootstrap/Tooltip";
-import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
-import { Spinner } from "react-bootstrap";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
 
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import { getTaskHistory } from "../../../../services/TicketService/TaskService";
+import Alert from '../../../../components/Common/Alert';
+import DataTable from 'react-data-table-component';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
+import { Spinner } from 'react-bootstrap';
+
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { getTaskHistory } from '../../../../services/TicketService/TaskService';
+import { useDispatch } from 'react-redux';
+import { getTaskHistoryListThunk } from '../../../../redux/services/TaskHistory';
 export default function TaskHistoryModal(props) {
-  const formRef = useRef();
-
+  const dispatch = useDispatch();
   const [notify, setNotify] = useState();
 
   const [data, setData] = useState();
@@ -20,12 +20,12 @@ export default function TaskHistoryModal(props) {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const columns = [
-    { name: "Sr", selector: (row) => row.Sr_No, sortable: true },
-    { name: "Task Id", selector: (row) => row.Task_Id, sortable: true },
-    { name: "Task Type", selector: (row) => row.parent_name, sortable: true },
+    { name: 'Sr', selector: (row) => row.Sr_No, sortable: true },
+    { name: 'Task Id', selector: (row) => row.Task_Id, sortable: true },
+    { name: 'Task Type', selector: (row) => row.parent_name, sortable: true },
 
     {
-      name: "Task Name",
+      name: 'Task Name',
       selector: (row) => (
         <div
           className="btn-group"
@@ -37,18 +37,18 @@ export default function TaskHistoryModal(props) {
               <input
                 type="text"
                 defaultValue={row.task_name}
-                style={{ border: "none" }}
+                style={{ border: 'none' }}
                 readOnly
-                title={row && row.task_name ? row.task_name : ""}
+                title={row && row.task_name ? row.task_name : ''}
               />
             </div>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Basket Name",
+      name: 'Basket Name',
       selector: (row) => (
         <div
           className="btn-group"
@@ -60,24 +60,24 @@ export default function TaskHistoryModal(props) {
               <input
                 type="text"
                 defaultValue={row.basket_name}
-                style={{ border: "none" }}
+                style={{ border: 'none' }}
                 readOnly
-                title={row && row.basket_name ? row.basket_name : ""}
+                title={row && row.basket_name ? row.basket_name : ''}
               />
             </div>
           )}
         </div>
-      ),
+      )
     },
-    { name: "Start Date", selector: (row) => row.start_date, sortable: true },
-    { name: "End Date", selector: (row) => row.end_date, sortable: true },
+    { name: 'Start Date', selector: (row) => row.start_date, sortable: true },
+    { name: 'End Date', selector: (row) => row.end_date, sortable: true },
 
-    { name: "Priority", selector: (row) => row.priority, sortable: true },
+    { name: 'Priority', selector: (row) => row.priority, sortable: true },
 
-    { name: "Status", selector: (row) => row.status, sortable: true },
+    { name: 'Status', selector: (row) => row.status, sortable: true },
 
     {
-      name: "Description",
+      name: 'Description',
       selector: (row) => (
         <div
           className="btn-group"
@@ -89,19 +89,19 @@ export default function TaskHistoryModal(props) {
               <input
                 type="text"
                 defaultValue={row.task_desc}
-                style={{ border: "none" }}
+                style={{ border: 'none' }}
                 readOnly
-                title={row && row.task_desc ? row.task_desc : ""}
+                title={row && row.task_desc ? row.task_desc : ''}
               />
             </div>
           )}
         </div>
-      ),
+      )
     },
 
-    { name: "Task Hours", selector: (row) => row.task_hours, sortable: true },
+    { name: 'Task Hours', selector: (row) => row.task_hours, sortable: true },
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => (
         <div
           className="btn-group"
@@ -111,15 +111,15 @@ export default function TaskHistoryModal(props) {
           {row.created_at && (
             <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
               <div>
-                <span className="ms-1"> {row.created_at.split(" ")[0]}</span>
+                <span className="ms-1"> {row.created_at.split(' ')[0]}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => (
         <div
           className="btn-group"
@@ -129,15 +129,15 @@ export default function TaskHistoryModal(props) {
           {row.updated_at && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
               <div>
-                <span className="ms-1"> {row.updated_at.split(" ")[0]}</span>
+                <span className="ms-1"> {row.updated_at.split(' ')[0]}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => (
         <div
           className="btn-group"
@@ -148,18 +148,18 @@ export default function TaskHistoryModal(props) {
             <div>
               <input
                 type="text"
-                style={{ border: "none" }}
+                style={{ border: 'none' }}
                 defaultValue={row.created_by_name}
                 readOnly
-                title={row && row.basket_name ? row.created_by_name : ""}
+                title={row && row.basket_name ? row.created_by_name : ''}
               />
             </div>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => (
         <div
           className="btn-group"
@@ -172,56 +172,59 @@ export default function TaskHistoryModal(props) {
                 type="text"
                 defaultValue={row.updated_by_name}
                 readOnly
-                style={{ border: "none" }}
-                title={row && row.updated_by_name ? row.updated_by_name : ""}
+                style={{ border: 'none' }}
+                title={row && row.updated_by_name ? row.updated_by_name : ''}
               />
             </div>
           )}
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
-    await new getTaskHistory(props.taskId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
-        if (res.data.status === 1) {
-          let counter = 1;
-          var temp = [];
-          setData(null);
-          res.data.data.forEach((d) => {
-            temp.push({
-              Sr_No: counter++,
-              Task_Id: d.ticket_id,
+    dispatch(getTaskHistoryListThunk({ taskId: props.taskId }));
 
-              task_name: d.task_name,
-              basket_name: d.basket_name,
-              start_date: d.start_date,
-              end_date: d.end_date,
-              // id: d.id,
-              priority: d.priority,
-              status: d.status,
-              type_name: d.type_name,
+    // await new getTaskHistory(props.taskId).then((res) => {
+    //   console.log('res==>', res);
+    //   if (res.status === 200) {
+    //     setShowLoaderModal(false);
+    //     if (res.data.status === 1) {
+    //       let counter = 1;
+    //       var temp = [];
+    //       setData(null);
+    //       res.data.data.forEach((d) => {
+    //         temp.push({
+    //           Sr_No: counter++,
+    //           Task_Id: d.ticket_id,
 
-              task_desc: d.task_desc,
-              task_hours: d.task_hours,
-              created_at: d.created_at,
-              updated_at: d.updated_at,
+    //           task_name: d.task_name,
+    //           basket_name: d.basket_name,
+    //           start_date: d.start_date,
+    //           end_date: d.end_date,
+    //           // id: d.id,
+    //           priority: d.priority,
+    //           status: d.status,
+    //           type_name: d.type_name,
 
-              created_by_name: d.created_by_name,
-              updated_by_name: d.updated_by_name,
-              // ticket_basket_id: d.ticket_basket_id,
-              // total_worked_in_min: d.total_worked_in_min,
-            });
-            setExportData(temp);
-          });
-          setData(temp);
-        }
-      }
-    });
+    //           task_desc: d.task_desc,
+    //           task_hours: d.task_hours,
+    //           created_at: d.created_at,
+    //           updated_at: d.updated_at,
+
+    //           created_by_name: d.created_by_name,
+    //           updated_by_name: d.updated_by_name
+    //           // ticket_basket_id: d.ticket_basket_id,
+    //           // total_worked_in_min: d.total_worked_in_min,
+    //         });
+    //         setExportData(temp);
+    //       });
+    //       setData(temp);
+    //     }
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -244,7 +247,7 @@ export default function TaskHistoryModal(props) {
             <div
               className="col-md-10"
               style={{
-                fontWeight: "600",
+                fontWeight: '600'
               }}
             >
               <ExportToExcel
@@ -260,11 +263,11 @@ export default function TaskHistoryModal(props) {
           {showLoaderModal ? (
             <div
               style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                minHeight: "calc(100% - 1rem)",
-                margin: "0",
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                minHeight: 'calc(100% - 1rem)',
+                margin: '0'
               }}
             >
               <div className="text-center">
