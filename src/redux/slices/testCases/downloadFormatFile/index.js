@@ -139,7 +139,7 @@ const downloadFormatSlice = createSlice({
 
       // // import test draft
       .addCase(importTestDraftThunk.pending, (state, action) => {
-        state.isLoading.downloadFormatFile = true;
+        state.isLoading.importTestDraftFile = true;
       })
       .addCase(importTestDraftThunk.fulfilled, (state, action) => {
         state.isLoading.importTestDraftFile = false;

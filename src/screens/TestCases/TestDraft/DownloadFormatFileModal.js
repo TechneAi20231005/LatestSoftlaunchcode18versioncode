@@ -64,7 +64,6 @@ function DownloadFormatFileModal({ show, close }) {
     setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
   };
 
-  console.log('jehkjh');
   const handleDownloadFormatFile = (formData) => {
     const { project_id, module_id, submodule_id } = formData.formData;
     dispatch(
@@ -101,7 +100,6 @@ function DownloadFormatFileModal({ show, close }) {
           validationSchema={downloadFormatFile}
           onSubmit={(values) => {
             handleDownloadFormatFile({ formData: values });
-            console.log('formData', values);
           }}
         >
           {({ setFieldValue }) => (

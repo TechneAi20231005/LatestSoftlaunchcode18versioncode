@@ -1,13 +1,13 @@
 import React, { useEffect, useReducer, useState } from 'react';
-
-import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
-import CustomTab from '../../../components/custom/tabs/CustomTab';
-import { RenderIf } from '../../../utils';
-import TestDraftDetails from './TestDraftDetails';
-import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
-import DownloadFormatFileModal from './DownloadFormatFileModal';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import DownloadFormatFileModal from './DownloadFormatFileModal';
+import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
+import CustomTab from '../../../components/custom/tabs/CustomTab';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
+import { RenderIf } from '../../../utils';
+import PageHeader from '../../../components/Common/PageHeader';
+import TestDraftDetails from './TestDraftDetails';
 import {
   getAllDraftTestCaseList,
   getAllReviewTestDraftList,
@@ -20,13 +20,65 @@ import {
 import { Modal } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 export default function TestDraftComponent({ close }) {
-  // local state
+  //// initial state
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  ////redux state
+
   const { allDraftTestListData, allReviewDraftTestListData } = useSelector(
     (state) => state?.downloadFormat
   );
 
-  const [currentTab, setCurrentTab] = useState('test_summary');
+  //// local state
+  const [currentTab, setCurrentTab] = useState(
+    location.state ?? 'test_summary'
+  );
+  const [state, setState] = useState(location.state);
+
+  const handleResetLocationState = () => {
+    setState(null);
+    sessionStorage.removeItem('locationState');
+  };
+
+  // useEffect(() => {
+  //   window.addEventListener('beforeunload', handleResetLocationState);
+
+  //   return window.removeEventListener('beforeunload', handleResetLocationState);
+  // }, [location.state]);
+
+  useEffect(() => {
+    // Save the initial state to sessionStorage
+    if (location.state) {
+      sessionStorage.setItem('locationState', JSON.stringify(location.state));
+    }
+
+    const handleBeforeUnload = (event) => {
+      handleResetLocationState();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [location.state]);
+
+  useEffect(() => {
+    // Check if there is saved state in sessionStorage on mount
+    const savedState = sessionStorage.getItem('locationState');
+    if (savedState) {
+      setState(JSON.parse(savedState));
+      sessionStorage.removeItem('locationState');
+      // Reset the location state using history.replaceState
+      window.history.replaceState(
+        null,
+        '',
+        location.pathname + location.search
+      );
+    }
+  }, [location]);
 
   const tabsLabel = [
     {
@@ -142,10 +194,6 @@ export default function TestDraftComponent({ close }) {
         renderRight={() => {
           return (
             <div className="d-flex justify-content-sm-end btn_container">
-              <button className="btn btn-primary text-white me-2 ">
-                Filter <i className="icofont-filter" />
-              </button>
-
               <button
                 className="btn btn-success text-white me-2 "
                 onClick={(e) => {
@@ -173,15 +221,24 @@ export default function TestDraftComponent({ close }) {
               <ExportToExcel
                 className="btn btn-danger"
                 apiData={
-                  currentTab === 'test_summary' ? allDraftTestListData : allReviewDraftTestListData
+                  currentTab === 'test_summary'
+                    ? allDraftTestListData
+                    : allReviewDraftTestListData
                 }
-                columns={currentTab === 'test_summary' ? exportColumns : exportReviewedColumns}
+                columns={
+                  currentTab === 'test_summary'
+                    ? exportColumns
+                    : exportReviewedColumns
+                }
                 fileName={
                   currentTab === 'test_summary'
                     ? 'Test Summary Records'
                     : 'Review Test Draft Records'
                 }
-                disabled={!allDraftTestListData?.length || !allReviewDraftTestListData.length}
+                disabled={
+                  !allDraftTestListData?.length ||
+                  !allReviewDraftTestListData?.length
+                }
               />
             </div>
           );
@@ -189,7 +246,11 @@ export default function TestDraftComponent({ close }) {
       />
 
       <div className="mt-3">
-        <CustomTab tabsData={tabsLabel} currentTab={currentTab} setCurrentTab={setCurrentTab} />
+        <CustomTab
+          tabsData={tabsLabel}
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+        />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
         <TestDraftDetails />
@@ -199,7 +260,10 @@ export default function TestDraftComponent({ close }) {
       </RenderIf>
 
       {downloadmodal.showModal === true && (
-        <DownloadFormatFileModal show={downloadmodal} close={() => setDownloadModal(false)} />
+        <DownloadFormatFileModal
+          show={downloadmodal}
+          close={() => setDownloadModal(false)}
+        />
       )}
 
       <Modal
@@ -216,7 +280,9 @@ export default function TestDraftComponent({ close }) {
       >
         {' '}
         <Modal.Header>
-          <Modal.Title className="fw-bold">{/* {bulkModal.modalHeader} */}</Modal.Title>
+          <Modal.Title className="fw-bold">
+            {/* {bulkModal.modalHeader} */}
+          </Modal.Title>
         </Modal.Header>
         <form method="post" onSubmit={handleBulkUpload}>
           <Modal.Body>

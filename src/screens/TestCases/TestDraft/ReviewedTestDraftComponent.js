@@ -27,8 +27,7 @@ function ReviewedTestDraftComponent() {
     (state) => state?.downloadFormat
   );
 
-  console.log('allReviewDraftTestListDataByID', allReviewDraftTestListDataByID);
-  const [rowData, setRowData] = useState(allReviewDraftTestListDataByID);
+  const navigate = useNavigate();
 
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
@@ -36,16 +35,6 @@ function ReviewedTestDraftComponent() {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
-
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
 
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
@@ -95,7 +84,7 @@ function ReviewedTestDraftComponent() {
     const newSelectAllNames = !selectAllNames;
     setSelectAllNames(newSelectAllNames);
     if (newSelectAllNames) {
-      const draftRowIds = rowData.map((row) => row.id);
+      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
       setSelectedRows(draftRowIds);
     } else {
       setSelectedRows([]);
@@ -113,33 +102,12 @@ function ReviewedTestDraftComponent() {
     });
   };
 
-  const data = [
-    {
-      id: 1,
-      name: 'John Doe',
-      age: 30,
-      email: 'john@example.com'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      age: 25,
-      email: 'jane@example.com'
-    }
-    // Add more objects as needed
-  ];
-
   const columns = [
     {
       name: 'Action',
       selector: (row) => (
         <>
           <i
-            // disabled={row.status != 'DRAFT'}
-            // className="icofont-edit text-primary cp me-3"
-            // className={`icofont-edit text-primary cp me-3 ${
-            //   row.status !== 'DRAFT' ? 'disabled-icon' : ''
-            // }`}
             className="icofont-edit text-primary cp me-3"
             onClick={() =>
               setAddEditTestCasesModal({
@@ -175,7 +143,6 @@ function ReviewedTestDraftComponent() {
             type="checkbox"
             checked={selectedRows.includes(row.id)}
             onChange={() => handleCheckboxChange(row)}
-            // disabled={row.status != 'DRAFT'}
           />
         </div>
       )
@@ -260,27 +227,6 @@ function ReviewedTestDraftComponent() {
       width: '100px'
     },
 
-    // {
-    //   name: 'Reviewer comment',
-    //   selector: (row) => row?.name,
-    //   sortable: true,
-    //   width: '250px',
-    //   cell: (row) => (
-    //     <select
-    //       className="form-select"
-    //       aria-label="Default select example"
-    //       value={row.comment_id || ''}
-    //       id="comment_id"
-    //       name="comment_id"
-    //       onChange={(e) =>
-    //         handleRowChange(row.id, 'comment_id', e.target.value)
-    //       }
-    //     >
-    //       {generateOptions(getFilterReviewCommentMasterList)}
-    //     </select>
-    //   )
-    // },
-
     {
       name: 'Reviewer comment',
       selector: (row) => row?.comment_id,
@@ -295,10 +241,6 @@ function ReviewedTestDraftComponent() {
           id="comment_id"
           name="comment_id"
           disabled
-          // defaultValue={}
-          // onChange={(e) =>
-          //   handleRowChange(row.id, 'comment_id', e.target.value)
-          // }
         >
           {generateOptions(getFilterReviewCommentMasterList)}
         </select>
@@ -319,10 +261,6 @@ function ReviewedTestDraftComponent() {
           aria-label="default input example"
           defaultValue={row.other_remark}
           disabled
-          // value={row.other_remark || ''}
-          // onChange={(e) =>
-          //   handleRowChange(row.id, 'other_remark', e.target.value)
-          // }
         />
       )
     },
@@ -348,100 +286,24 @@ function ReviewedTestDraftComponent() {
     }
   ];
 
-  // const columns = [
-  //   {
-  //     name: 'Action',
-  //     selector: (row) => (
-  //       <>
-  //         <i
-  //           className="icofont-edit text-primary cp"
-  //           // onClick={(e) => {
-  //           //   handleModal({
-  //           //     showModal: true,
-  //           //     modalData: '', // You can add relevant data here
-  //           //     modalHeader: 'Edit Test Case'
-  //           //   });
-  //           // }}
-  //           onClick={() =>
-  //             setAddEditTestCasesModal({
-  //               type: 'EDIT',
-  //               data: row,
-  //               open: true
-  //             })
-  //           }
-  //         />
-  //         <Link to={`/${_base}/TestCaseHistoryComponent`}>
-  //           <i className="icofont-history text-dark w-10  cp bg-warning rounded-circle  ml-2 icon-large mx-2 " />
-  //         </Link>
-  //       </>
-  //     ),
-  //     sortable: false,
-  //     width: '90px'
-  //   },
-
-  //   {
-  //     name: (
-  //       <div className="d-flex">
-  //         <input type="checkbox" />
-  //       </div>
-  //     ),
-  //     selector: 'selectAll',
-  //     width: '5rem',
-  //     center: true,
-  //     cell: (row) => (
-  //       <div>
-  //         <input type="checkbox" />
-  //       </div>
-  //     )
-  //   },
-
-  //   {
-  //     name: 'Module',
-  //     selector: (row) => row.name,
-  //     sortable: false,
-  //     width: '100px'
-  //   },
-  //   {
-  //     name: 'Reviewr coment',
-  //     selector: (row) => row?.name,
-  //     sortable: true,
-  //     width: '250px',
-  //     cell: (row) => (
-  //       <select class="form-select" aria-label="Default select example">
-  //         <option selected className>
-  //           Open this select menu
-  //         </option>
-  //         <option value="1">One</option>
-  //         <option value="2">Two</option>
-  //         <option value="3">Three</option>
-  //       </select>
-  //     )
-  //   },
-  //   {
-  //     name: 'Remark',
-  //     selector: (row) => row?.name,
-  //     sortable: true,
-  //     width: '400px',
-  //     cell: (row) => (
-  //       <input
-  //         class="form-control"
-  //         type="text"
-  //         placeholder="Default input"
-  //         aria-label="default input example"
-  //       ></input>
-  //     )
-  //   }
-  // ];
-
+  const exportColumns = [
+    { title: 'Module', field: 'module_name' },
+    { title: 'Submodule', field: 'sub_module_name' },
+    { title: 'Function', field: 'function_name' },
+    { title: 'Field', field: 'field' },
+    { title: 'Testing Type', field: 'type_name' },
+    { title: 'Testing Group', field: 'group_name' },
+    { title: 'Steps', field: 'steps' },
+    { title: 'Severity', field: 'severity' },
+    { title: 'Expected Result', field: 'expected_result' },
+    { title: 'Status', field: 'status' },
+    { title: 'Project', field: 'project_name' },
+    { title: 'Created At', field: 'created_at' },
+    { title: 'Created By', field: 'created_by' },
+    { title: 'Updated At', field: 'updated_at' },
+    { title: 'Updated By', field: 'updated_by' }
+  ];
   const handleSubmit = () => {
-    // const testCasesData = selectedRows.length > 0;
-    // selectedRows?.map((i) => i.id);
-    // // : getDraftTestListData
-    // //     ?.filter((row) => row.status === 'DRAFT')
-    // //     ?.map((row) => row.id);
-    // console.log('testCasesData', testCasesData);
-    // console.log('selectedRows', selectedRows);
-
     const formData = {
       testcase_id: selectedRows,
       reviewer_id: reviewerId
@@ -450,6 +312,8 @@ function ReviewedTestDraftComponent() {
     dispatch(
       sendTestCaseReviewerThunk({
         formData,
+        type: 'RESEND',
+        id: id,
         onSuccessHandler: () => {
           setSendToReviewerModal({ showModal: false });
           setSelectedRows([]);
@@ -468,9 +332,7 @@ function ReviewedTestDraftComponent() {
             })
           );
         },
-        onErrorHandler: () => {
-          // setOpenConfirmModal({ open: false });
-        }
+        onErrorHandler: () => {}
       })
     );
   };
@@ -515,9 +377,9 @@ function ReviewedTestDraftComponent() {
               </button>
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                //   apiData={ExportData}
-
-                fileName="State master Records"
+                apiData={allReviewDraftTestListDataByID}
+                columns={exportColumns}
+                fileName="Reviewed Test Draft List"
               />
             </div>
           );
@@ -548,37 +410,15 @@ function ReviewedTestDraftComponent() {
         />
       </Container>
 
-      {/* <div className="row mt-4">
-        <div className="col-md-3">
-          <label className="form-label font-weight-bold">
-            Content Type :<Astrick color="red" size="13px" />{' '}
-          </label>
-
-          <select class="form-select" aria-label="Default select example">
-            <option selected className>
-              Open this select menu
-            </option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-          </select>
-        </div>
-        <div className="col-md-3">
-          <label className="form-label font-weight-bold">Remark :</label>
-          <input className="form-control"></input>
-        </div>
-      </div> */}
-
-      <div className="d-flex justify-content-end">
-        <Link
-          to={{
-            pathname: `/${_base}/TestDraft`,
-            state: 'review_test_draft' // Pass currentTab as state
-          }}
+      <div className="d-flex justify-content-end mt-3">
+        <button
+          onClick={() =>
+            navigate(`/${_base}/TestDraft`, { state: 'review_test_draft' })
+          }
           className="btn btn-primary text-white"
         >
           Back
-        </Link>
+        </button>
 
         <button
           onClick={() => {
@@ -595,7 +435,6 @@ function ReviewedTestDraftComponent() {
           Send To Reviewer
         </button>
       </div>
-      {/* {modal.showModal === true && <EditTestCaseModal show={modal} close={() => setModal(false)} />} */}
       {downloadmodal.showModal === true && (
         <DownloadFormatFileModal
           show={downloadmodal}

@@ -1,6 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Field, Form, Formik } from 'formik';
-import { Col, Row, Stack, Spinner } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomModal from '../../../components/custom/modal/CustomModal';
 import {
@@ -61,7 +61,6 @@ function EditTestCaseModal({
   const { getProjectModuleList, getModuleList, getSubModuleList } = useSelector(
     (state) => state?.downloadFormat
   );
-
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
@@ -114,7 +113,6 @@ function EditTestCaseModal({
       })
     );
   };
-
   useEffect(() => {
     if (getProjectModuleList?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
@@ -136,8 +134,7 @@ function EditTestCaseModal({
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
   }, []);
-  {
-  }
+
   return (
     <>
       <CustomModal show={show} title="Edit Test Case" width="lg">

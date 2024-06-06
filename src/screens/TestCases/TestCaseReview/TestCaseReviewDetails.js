@@ -4,9 +4,8 @@ import DataTable from 'react-data-table-component';
 import { Astrick } from '../../../components/Utilities/Style';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Modal, Form } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
 import {
   approveRejectByReviewerMasterThunk,
@@ -16,6 +15,8 @@ import { getReviewCommentMasterListThunk } from '../../../redux/services/testCas
 import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 function TestCaseReviewDetails() {
   const { id } = useParams();
+
+  const planID = id;
   const dispatch = useDispatch();
   const [modal, setModal] = useState({
     showModal: false,
@@ -42,6 +43,20 @@ function TestCaseReviewDetails() {
     ));
   };
 
+  const [selectAllNames, setSelectAllNames] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const draftRowIds = rowData.map((row) => row.id);
+  //     setSelectedRows(draftRowIds);
+  //   } else {
+  //     setSelectedRows([]);
+  //   }
+  // };
+
   const [rowData, setRowData] = useState([]);
   const [commonComment, setCommonComment] = useState('');
   const [commonRemark, setCommonRemark] = useState('');
@@ -55,6 +70,72 @@ function TestCaseReviewDetails() {
   //     prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
   //   );
   // };
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const allRowIds = rowData.map((row) => row.id);
+  //     setCheckedIds(allRowIds);
+  //   } else {
+  //     setCheckedIds([]);
+  //   }
+  // };
+
+  // const handleCheckboxChange = (id) => {
+  //   setCheckedIds((prevCheckedIds) => {
+  //     if (prevCheckedIds.includes(id)) {
+  //       // Remove ID if it's already checked
+  //       return prevCheckedIds.filter((checkedId) => checkedId !== id);
+  //     } else {
+  //       // Add ID if it's not checked
+  //       return [...prevCheckedIds, id];
+  //     }
+  //   });
+  // };
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const draftRowIds = testPlanIdData.map((row) => row.id);
+  //     setSelectedRows(draftRowIds);
+  //   } else {
+  //     setSelectedRows([]);
+  //   }
+  // };
+
+  // Handles individual checkbox change
+  // const handleCheckboxChange = (row) => {
+  //   setSelectedRows((prevSelectedRows) => {
+  //     if (prevSelectedRows.includes(row.id)) {
+  //       return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
+  //     } else {
+  //       return [...prevSelectedRows, row.id];
+  //     }
+  //   });
+  // };
+
+  const handleSelectAllNamesChange = () => {
+    const newSelectAllNames = !selectAllNames;
+    setSelectAllNames(newSelectAllNames);
+    if (newSelectAllNames) {
+      const allRowIds = rowData.map((row) => row.id);
+      setSelectedRows(allRowIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleCheckboxChange = (row) => {
+    setSelectedRows((prevSelectedRows) => {
+      if (prevSelectedRows.includes(row.id)) {
+        return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
+      } else {
+        return [...prevSelectedRows, row.id];
+      }
+    });
+  };
 
   useEffect(() => {
     if (testPlanIdData) {
@@ -74,26 +155,79 @@ function TestCaseReviewDetails() {
     open: false
   });
 
+  const [checkedIds, setCheckedIds] = useState([]);
+
+  // Handle checkbox change
+  // const handleCheckboxChange = (id) => {
+  //   setCheckedIds((prevCheckedIds) => {
+  //     if (prevCheckedIds.includes(id)) {
+  //       // Remove ID if it's already checked
+  //       return prevCheckedIds.filter((checkedId) => checkedId !== id);
+  //     } else {
+  //       // Add ID if it's not checked
+  //       return [...prevCheckedIds, id];
+  //     }
+  //   });
+  // };
+
   const handleSubmit = async (status) => {
-    const updatedRows = rowData.map((row) => ({
-      id: row.id,
-      comment_id: row.comment_id !== '' ? row.comment_id : '',
-      other_remark: row.other_remark !== '' ? row.other_remark : ''
-    }));
+    // const updatedRows = rowData.map((row) => ({
+    //   id: row.id,
+    //   comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //   other_remark: row.other_remark !== '' ? row.other_remark : ''
+    // }));
+
+    // const updatedRows = rowData
+    //   .filter((row) => checkedIds.includes(row.id))
+    //   .map((row) => ({
+    //     id: row.id,
+    //     comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //     other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //   }));
+
+    // const updatedRows = selectAllNames
+    //   ? rowData.map((row) => ({
+    //       id: row.id,
+    //       comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //       other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //     }))
+    //   : rowData
+    //       .filter((row) => checkedIds.includes(row.id))
+    //       .map((row) => ({
+    //         id: row.id,
+    //         comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //         other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //       }));
 
     // Create the payload
+
+    const updatedRows = rowData
+      .filter((row) => selectedRows.includes(row.id))
+      .map((row) => ({
+        id: row.id,
+        comment_id: row.comment_id !== '' ? row.comment_id : '',
+        other_remark: row.other_remark !== '' ? row.other_remark : ''
+      }));
     const formData = {
       review_testcase_data: updatedRows,
       status: status, // Adjust as necessary
       common_comment_id: commonComment,
       common_remark: commonRemark
     };
-
     dispatch(
       approveRejectByReviewerMasterThunk({
         formData,
 
-        onSuccessHandler: () => {},
+        onSuccessHandler: () => {
+          setRowData(testPlanIdData);
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
+        },
         onErrorHandler: () => {}
       })
     );
@@ -131,18 +265,59 @@ function TestCaseReviewDetails() {
       width: '90px'
     },
 
+    // {
+    //   name: (
+    //     <div onClick={handleSelectAllNamesChange}>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectAllNames}
+    //         onChange={handleSelectAllNamesChange}
+    //       />
+    //     </div>
+    //   ),
+    //   selector: 'selectAll',
+    //   width: '5rem',
+    //   center: true,
+    //   // cell: (row) => (
+    //   //   <div>
+    //   //     <input
+    //   //       type="checkbox"
+    //   //       checked={checkedIds.includes(row.id)}
+    //   //       onChange={() => handleCheckboxChange(row.id)}
+    //   //     />
+    //   //   </div>
+    //   // )
+
+    //   cell: (row) => (
+    //     <div>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectedRows.includes(row.id)}
+    //         onChange={() => handleCheckboxChange(row)}
+    //       />
+    //     </div>
+    //   )
+    // },
+
     {
       name: (
-        <div className="d-flex">
-          <input type="checkbox" />
+        <div onClick={handleSelectAllNamesChange}>
+          <input
+            type="checkbox"
+            checked={selectAllNames}
+            onChange={handleSelectAllNamesChange}
+          />
         </div>
       ),
       selector: 'selectAll',
-      width: '5rem',
       center: true,
       cell: (row) => (
         <div>
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            checked={selectedRows.includes(row.id)}
+            onChange={() => handleCheckboxChange(row)}
+          />
         </div>
       )
     },
@@ -310,23 +485,23 @@ function TestCaseReviewDetails() {
     }
   ];
 
-  // const exportColumns = [
-  //   { title: 'Module', field: 'module_name' },
-  //   { title: 'Submodule', field: 'sub_module_name' },
-  //   { title: 'Function', field: 'function_name' },
-  //   { title: 'Field', field: 'field' },
-  //   { title: 'Testing Type', field: 'type_name' },
-  //   { title: 'Testing Group', field: 'group_name' },
-  //   { title: 'Steps', field: 'steps' },
-  //   { title: 'Severity', field: 'severity' },
-  //   { title: 'Expected Result', field: 'expected_result' },
-  //   { title: 'Status', field: 'status' },
-  //   { title: 'Project', field: 'project_name' },
-  //   { title: 'Created At', field: 'created_at' },
-  //   { title: 'Created By', field: 'created_by' },
-  //   { title: 'Updated At', field: 'updated_at' },
-  //   { title: 'Updated By', field: 'updated_by' }
-  // ];
+  const exportColumns = [
+    { title: 'Module', field: 'module_name' },
+    { title: 'Submodule', field: 'sub_module_name' },
+    { title: 'Function', field: 'function_name' },
+    { title: 'Field', field: 'field' },
+    { title: 'Testing Type', field: 'type_name' },
+    { title: 'Testing Group', field: 'group_name' },
+    { title: 'Steps', field: 'steps' },
+    { title: 'Severity', field: 'severity' },
+    { title: 'Expected Result', field: 'expected_result' },
+    { title: 'Status', field: 'status' },
+    { title: 'Project', field: 'project_name' },
+    { title: 'Created At', field: 'created_at' },
+    { title: 'Created By', field: 'created_by' },
+    { title: 'Updated At', field: 'updated_at' },
+    { title: 'Updated By', field: 'updated_by' }
+  ];
 
   useEffect(() => {
     dispatch(
@@ -346,13 +521,15 @@ function TestCaseReviewDetails() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button className="btn btn-primary text-white c">
+              {/* <button className="btn btn-primary text-white c">
                 Filter <i className="icofont-filter" />
-              </button>
+              </button> */}
 
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                fileName="State master Records"
+                fileName="Test Case Review List"
+                apiData={testPlanIdData}
+                columns={exportColumns}
               />
             </div>
           );
@@ -442,7 +619,7 @@ function TestCaseReviewDetails() {
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
-          id={id}
+          id={planID}
         />
       )}
     </div>

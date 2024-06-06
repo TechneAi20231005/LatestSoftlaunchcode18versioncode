@@ -96,7 +96,7 @@ function TestDraftDetails(props) {
       selector: (row) => (
         <>
           <i
-            disabled={row.status != 'DRAFT'}
+            disabled={row.status !== 'DRAFT'}
             // className="icofont-edit text-primary cp me-3"
             className={`icofont-edit text-primary cp me-3 ${
               row.status !== 'DRAFT' ? 'disabled-icon' : ''
@@ -134,7 +134,7 @@ function TestDraftDetails(props) {
             type="checkbox"
             checked={selectedRows.includes(row.id)}
             onChange={() => handleCheckboxChange(row)}
-            disabled={row.status != 'DRAFT'}
+            disabled={row.status !== 'DRAFT'}
           />
         </div>
       )
@@ -558,14 +558,24 @@ function TestDraftDetails(props) {
             ?.filter((row) => row.status === 'DRAFT')
             ?.map((row) => row.id);
 
-    const formData = {
-      testcase_id: testCasesData,
-      reviewer_id: reviewerId
-    };
+    let formData;
+
+    if (selectedRows?.length <= 0) {
+      formData = {
+        reviewer_id: reviewerId
+      };
+    } else {
+      formData = {
+        testcase_id: testCasesData,
+        reviewer_id: reviewerId
+      };
+    }
 
     dispatch(
       sendTestCaseReviewerThunk({
         formData,
+        type: 'DRAFT',
+        id: null,
         onSuccessHandler: () => {
           setSendToReviewerModal({ showModal: false });
           setSelectedRows([]);
@@ -585,7 +595,7 @@ function TestDraftDetails(props) {
   };
   useEffect(() => {
     dispatch(getEmployeeData());
-    dispatch(importTestDraftThunk());
+    // dispatch(importTestDraftThunk());
     dispatch(
       getDraftTestCaseList({
         limit: paginationData.rowPerPage,
@@ -703,6 +713,7 @@ function TestDraftDetails(props) {
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
+          payloadType={'DRAFT'}
         />
       )}
     </>
