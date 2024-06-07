@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
@@ -17,21 +15,23 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoles } from "../../Dashboard/DashboardAction";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function ProjectComponent() {
   const location = useLocation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef();
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashboardSlice) =>
-  DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
-);
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
+  );
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   function SearchInputData(data, search) {
@@ -309,6 +309,7 @@ function ProjectComponent() {
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
+    setIsLoading(true);
     const data = [];
     await new ProjectService()
       .getProject()
@@ -335,6 +336,7 @@ function ProjectComponent() {
           }
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           let exportData = [];
           let count = 1;
@@ -344,7 +346,7 @@ function ProjectComponent() {
               // id: data[key].id,
               "Project Name": data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              is_active: data[key].is_active ==1 ?"Active":"Deactive",
+              is_active: data[key].is_active == 1 ? "Active" : "Deactive",
               description: data[key].description,
               remark: data[key].remark,
               created_at: data[key].created_at,
@@ -367,7 +369,7 @@ function ProjectComponent() {
         );
       });
 
-      dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -460,8 +462,9 @@ function ProjectComponent() {
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
+            {isLoading && <TableLoadingSkelton />}
             <div className="col-sm-12">
-              {data && (
+              {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -499,10 +502,9 @@ function ProjectDropdown(props) {
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        var data = res.data.data.filter((d)=>d.is_active==1)
-       
-        
-        data.filter((d) => d.is_active==1);
+        var data = res.data.data.filter((d) => d.is_active == 1);
+
+        data.filter((d) => d.is_active == 1);
         for (const key in data) {
           tempData.push({
             counter: counter++,

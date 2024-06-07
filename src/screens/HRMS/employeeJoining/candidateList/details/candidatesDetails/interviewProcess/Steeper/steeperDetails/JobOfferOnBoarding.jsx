@@ -49,46 +49,33 @@ function JobOfferOnBoarding() {
     (state) => state?.remarkMaster
   );
   const { salaryMasterList } = useSelector((state) => state?.salaryMaster);
-  const { isLoading, salaryOfferedByHrAndSrHrData, interviewProcessData } = useSelector(
-    (state) => state?.interViewProcess
-  );
+  const { isLoading, salaryOfferedByHrAndSrHrData, interviewProcessData } =
+    useSelector((state) => state?.interViewProcess);
 
   // //  local state
   const [formValue, setFormValue] = useState('');
   const [clickFor, setClickFor] = useState('');
 
-  // // fom initial state
+  const offerData = salaryOfferedByHrAndSrHrData?.[0];
+  const isApplicationAccepted =
+    currentInterviewStep?.application_status_id === 3;
   const jobOfferInitialValue = {
-    designation_id: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.designation_id || ''
-      : '',
-    location_id: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.location_id || ''
-      : '',
-    relevant_experience: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.relevant_experience ?? ''
-      : '',
-    experience_level: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.experience_level || ''
-      : '',
-    current_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.current_salary ?? ''
-      : '',
-    max_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.max_salary ?? ''
-      : '',
-    preferred_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.preferred_salary ?? ''
-      : '',
+    designation_id: offerData?.designation_id || '',
+    location_id: offerData?.location_id || '',
+    relevant_experience: offerData?.relevant_experience ?? '',
+    experience_level: offerData?.experience_level || '',
+    current_salary: offerData?.current_salary ?? '',
+    max_salary: offerData?.max_salary ?? '',
+    preferred_salary: offerData?.preferred_salary ?? '',
     hr_negotiable_salary:
-      !isSeniorHr && salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary
+      !isSeniorHr &&
+      offerData?.sr_hr_negotiable_salary &&
+      Number(offerData.preferred_salary) >
+        Number(offerData.sr_hr_negotiable_salary) &&
+      isApplicationAccepted
         ? ''
-        : salaryOfferedByHrAndSrHrData.length
-        ? salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary ?? ''
-        : '',
-    sr_hr_negotiable_salary: salaryOfferedByHrAndSrHrData.length
-      ? salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ?? ''
-      : '',
+        : offerData?.hr_negotiable_salary ?? '',
+    sr_hr_negotiable_salary: offerData?.sr_hr_negotiable_salary ?? '',
     remark_id: '',
     other_remark: ''
   };
@@ -133,7 +120,8 @@ function JobOfferOnBoarding() {
     const maxSalary = salaryFiltered?.max_salary || '';
     setterFunction('max_salary', maxSalary);
 
-    const hrNegotiableSalary = salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary;
+    const hrNegotiableSalary =
+      salaryOfferedByHrAndSrHrData?.[0]?.hr_negotiable_salary;
     if (!hrNegotiableSalary) {
       setterFunction('hr_negotiable_salary', maxSalary);
     }
@@ -165,9 +153,17 @@ function JobOfferOnBoarding() {
           currentId: currentCandidateId,
           reviseAndBackQuery: 'REVISED',
           onSuccessHandler: () => {
-            dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
-            dispatch(getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId }));
-            dispatch(getSalaryNegotiatingActivityDataThunk({ currentId: currentCandidateId }));
+            dispatch(
+              getInterviewProcessDataThunk({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryNegotiatingActivityDataThunk({
+                currentId: currentCandidateId
+              })
+            );
             resetFunc();
           }
         })
@@ -183,8 +179,12 @@ function JobOfferOnBoarding() {
           },
           currentId: currentCandidateId,
           onSuccessHandler: () => {
-            dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
-            dispatch(getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId }));
+            dispatch(
+              getInterviewProcessDataThunk({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId })
+            );
             resetFunc();
           }
         })
@@ -200,8 +200,12 @@ function JobOfferOnBoarding() {
           },
           currentId: currentCandidateId,
           onSuccessHandler: () => {
-            dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
-            dispatch(getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId }));
+            dispatch(
+              getInterviewProcessDataThunk({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId })
+            );
             resetFunc();
           }
         })
@@ -212,9 +216,17 @@ function JobOfferOnBoarding() {
           formData: apiData,
           currentId: currentCandidateId,
           onSuccessHandler: () => {
-            dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
-            dispatch(getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId }));
-            dispatch(getSalaryNegotiatingActivityDataThunk({ currentId: currentCandidateId }));
+            dispatch(
+              getInterviewProcessDataThunk({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryOfferedByHrAndSrHr({ currentId: currentCandidateId })
+            );
+            dispatch(
+              getSalaryNegotiatingActivityDataThunk({
+                currentId: currentCandidateId
+              })
+            );
             resetFunc();
           }
         })
@@ -260,7 +272,8 @@ function JobOfferOnBoarding() {
       <RenderIf
         render={
           currentInterviewStep?.application_status_id === 4 ||
-          (currentInterviewStep?.application_status_id === 3 && currentInterviewStep?.status !== 2)
+          (currentInterviewStep?.application_status_id === 3 &&
+            currentInterviewStep?.status !== 2)
         }
       >
         <Formik
@@ -271,7 +284,10 @@ function JobOfferOnBoarding() {
             isOnlyReject: clickFor === 'reject'
           })}
           onSubmit={(values, { resetForm }) => {
-            handleJobOfferAndOnBoardingProcess({ formData: values, resetFunc: resetForm });
+            handleJobOfferAndOnBoardingProcess({
+              formData: values,
+              resetFunc: resetForm
+            });
           }}
         >
           {({ values, errors, setFieldValue }) => {
@@ -288,7 +304,9 @@ function JobOfferOnBoarding() {
                         component={CustomDropdown}
                         name="designation_id"
                         label="Designation"
-                        placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                        placeholder={
+                          status === 'loading' ? 'Loading...' : 'Select'
+                        }
                         requiredField
                         onBlur={() => handelSetMaxSalaryValue(setFieldValue)}
                         disabled={fieldDisableCase_1}
@@ -302,7 +320,9 @@ function JobOfferOnBoarding() {
                         name="location_id"
                         label="Location"
                         placeholder={
-                          branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                          branchMasterLoading?.getBranchMasterList
+                            ? 'Loading...'
+                            : 'Select'
                         }
                         requiredField
                         onBlur={() => handelSetMaxSalaryValue(setFieldValue)}
@@ -381,7 +401,9 @@ function JobOfferOnBoarding() {
                       <Field
                         component={CustomCurrencyInput}
                         name="hr_negotiable_salary"
-                        label={isSeniorHr ? 'Negotiated Salary' : 'Negotiable Salary'}
+                        label={
+                          isSeniorHr ? 'Negotiated Salary' : 'Negotiable Salary'
+                        }
                         placeholder="Enter negotiable salary"
                         type="number"
                         requiredField
@@ -391,7 +413,8 @@ function JobOfferOnBoarding() {
                     <RenderIf
                       render={
                         isSeniorHr ||
-                        salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ||
+                        salaryOfferedByHrAndSrHrData?.[0]
+                          ?.sr_hr_negotiable_salary ||
                         currentInterviewStep?.application_status_id === 4
                       }
                     >
@@ -401,7 +424,8 @@ function JobOfferOnBoarding() {
                           name="sr_hr_negotiable_salary"
                           label={
                             !isSeniorHr &&
-                            (salaryOfferedByHrAndSrHrData?.[0]?.sr_hr_negotiable_salary ||
+                            (salaryOfferedByHrAndSrHrData?.[0]
+                              ?.sr_hr_negotiable_salary ||
                               currentInterviewStep?.application_status_id === 4)
                               ? 'Negotiated Salary From Super Admin'
                               : 'Negotiable Salary From Super Admin'
@@ -425,13 +449,17 @@ function JobOfferOnBoarding() {
                           name="remark_id"
                           label="Remark Title"
                           placeholder={
-                            remarkMasterLoading?.getRemarkMasterList ? 'Loading...' : 'Select'
+                            remarkMasterLoading?.getRemarkMasterList
+                              ? 'Loading...'
+                              : 'Select'
                           }
                           requiredField
                           disabled={
-                            (currentInterviewStep?.application_status_id === 4 &&
+                            (currentInterviewStep?.application_status_id ===
+                              4 &&
                               currentInterviewStep?.status === 1) ||
-                            (currentInterviewStep?.application_status_id === 4 &&
+                            (currentInterviewStep?.application_status_id ===
+                              4 &&
                               currentInterviewStep?.status === 2)
                           }
                         />
@@ -467,10 +495,12 @@ function JobOfferOnBoarding() {
                           type="submit"
                           onClick={() => setClickFor('onBoardingReviseOffer')}
                           disabled={
-                            isLoading?.onBoardingProcess && clickFor === 'onBoardingReviseOffer'
+                            isLoading?.onBoardingProcess &&
+                            clickFor === 'onBoardingReviseOffer'
                           }
                         >
-                          {isLoading?.onBoardingProcess && clickFor === 'onBoardingReviseOffer' ? (
+                          {isLoading?.onBoardingProcess &&
+                          clickFor === 'onBoardingReviseOffer' ? (
                             <Spinner animation="border" size="sm" />
                           ) : (
                             'Revise Offer'
@@ -479,7 +509,9 @@ function JobOfferOnBoarding() {
                       ) : (
                         <RenderIf
                           render={
-                            !isSeniorHr && values?.hr_negotiable_salary < values?.preferred_salary
+                            !isSeniorHr &&
+                            values?.hr_negotiable_salary <
+                              values?.preferred_salary
                           }
                         >
                           <button
@@ -487,12 +519,17 @@ function JobOfferOnBoarding() {
                             type="submit"
                             onClick={() => setClickFor('submitForApproval')}
                             disabled={
-                              (Number(interviewProcessData?.is_onboarding_revised) !== 1 &&
-                                salaryOfferedByHrAndSrHrData?.[0]?.offer_status === 0) ||
-                              (isLoading?.jobOfferProcess && clickFor === 'submitForApproval')
+                              (Number(
+                                interviewProcessData?.is_onboarding_revised
+                              ) !== 1 &&
+                                salaryOfferedByHrAndSrHrData?.[0]
+                                  ?.offer_status === 0) ||
+                              (isLoading?.jobOfferProcess &&
+                                clickFor === 'submitForApproval')
                             }
                           >
-                            {isLoading?.jobOfferProcess && clickFor === 'submitForApproval' ? (
+                            {isLoading?.jobOfferProcess &&
+                            clickFor === 'submitForApproval' ? (
                               <Spinner animation="border" size="sm" />
                             ) : salaryOfferedByHrAndSrHrData?.length ? (
                               'Revise Offer'
@@ -513,9 +550,13 @@ function JobOfferOnBoarding() {
                           className="btn btn-dark px-4"
                           type="submit"
                           onClick={() => setClickFor('submittedBySrHr')}
-                          disabled={isLoading?.jobOfferProcess && clickFor === 'submittedBySrHr'}
+                          disabled={
+                            isLoading?.jobOfferProcess &&
+                            clickFor === 'submittedBySrHr'
+                          }
                         >
-                          {isLoading?.jobOfferProcess && clickFor === 'submittedBySrHr' ? (
+                          {isLoading?.jobOfferProcess &&
+                          clickFor === 'submittedBySrHr' ? (
                             <Spinner animation="border" size="sm" />
                           ) : (
                             'Submit'
@@ -528,10 +569,12 @@ function JobOfferOnBoarding() {
                           type="submit"
                           onClick={() => setClickFor('completeOnboarding')}
                           disabled={
-                            isLoading?.onBoardingProcess && clickFor === 'completeOnboarding'
+                            isLoading?.onBoardingProcess &&
+                            clickFor === 'completeOnboarding'
                           }
                         >
-                          {isLoading?.onBoardingProcess && clickFor === 'completeOnboarding' ? (
+                          {isLoading?.onBoardingProcess &&
+                          clickFor === 'completeOnboarding' ? (
                             <Spinner animation="border" size="sm" />
                           ) : (
                             'Complete Onboarding'
@@ -542,9 +585,13 @@ function JobOfferOnBoarding() {
                           className="btn btn-dark px-4"
                           type="submit"
                           onClick={() => setClickFor('sendJoiningForm')}
-                          disabled={isLoading?.jobOfferProcess && clickFor === 'sendJoiningForm'}
+                          disabled={
+                            isLoading?.jobOfferProcess &&
+                            clickFor === 'sendJoiningForm'
+                          }
                         >
-                          {isLoading?.jobOfferProcess && clickFor === 'sendJoiningForm' ? (
+                          {isLoading?.jobOfferProcess &&
+                          clickFor === 'sendJoiningForm' ? (
                             <Spinner animation="border" size="sm" />
                           ) : (
                             'Send Joining Form'
@@ -563,12 +610,16 @@ function JobOfferOnBoarding() {
                           )
                         }
                         disabled={
-                          (isLoading?.jobOfferProcess && clickFor === 'reject') ||
-                          (isLoading?.onBoardingProcess && clickFor === 'rejectForOnBoarding')
+                          (isLoading?.jobOfferProcess &&
+                            clickFor === 'reject') ||
+                          (isLoading?.onBoardingProcess &&
+                            clickFor === 'rejectForOnBoarding')
                         }
                       >
-                        {(isLoading?.jobOfferProcess && clickFor === 'reject') ||
-                        (isLoading?.onBoardingProcess && clickFor === 'rejectForOnBoarding') ? (
+                        {(isLoading?.jobOfferProcess &&
+                          clickFor === 'reject') ||
+                        (isLoading?.onBoardingProcess &&
+                          clickFor === 'rejectForOnBoarding') ? (
                           <Spinner animation="border" size="sm" />
                         ) : (
                           'Reject'

@@ -11,12 +11,12 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 import { CustomReactSelect } from '../../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
-  getKaragirKnockOffWtSizeRangeFilterListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk
 } from '../../../../redux/services/po/common';
 import { getPendingOrderListThunk } from '../../../../redux/services/po/generatePo';
 import {
   resetPendingOrderListData,
-  addUserPendingOrderRequest,
+  addUserPendingOrderRequest
 } from '../../../../redux/slices/po/generatePo';
 import { RenderIf } from '../../../../utils';
 import { NumbersOnly } from '../../../../components/Utilities/Validation';
@@ -26,7 +26,7 @@ function PendingOrder() {
   // // initial state
   const navigate = useNavigate();
   const {
-    state: { generatePoFilter },
+    state: { generatePoFilter }
   } = useLocation();
   const dispatch = useDispatch();
 
@@ -39,31 +39,31 @@ function PendingOrder() {
   const {
     itemCategoryList,
     karagirKnockOffWtSizeRangeFilterData: { karagir_wt_range, size_range },
-    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData },
-  } = useSelector(state => state?.poCommon);
+    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData }
+  } = useSelector((state) => state?.poCommon);
 
   const {
     userAddedPoDataList,
     pendingOrderList,
-    isLoading: { getPendingOrderList },
-  } = useSelector(state => state?.generatePo);
+    isLoading: { getPendingOrderList }
+  } = useSelector((state) => state?.generatePo);
 
   //  table column data
   const columns = [
     {
       name: 'Knockoff Wt Range',
       selector: (row, index) => row?.knockoff_wt_range || '---',
-      sortable: false,
+      sortable: false
     },
     {
       name: 'Karagir Size Range',
       selector: (row, index) => row?.karagir_size_range || '---',
-      sortable: false,
+      sortable: false
     },
     {
       name: 'Exact Wt',
       selector: (row, index) => row?.exact_wt || '---',
-      sortable: false,
+      sortable: false
     },
     {
       name: 'Pending Quantity',
@@ -77,30 +77,30 @@ function PendingOrder() {
         ) : (
           '---'
         ),
-      sortable: false,
+      sortable: false
     },
     {
       name: 'Order Quantity',
       selector: 'order_quantity',
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <Col>
           <input
             type="number"
             value={orderQuantityValues[row.id] || ''}
-            onChange={e => handleOrderQuantityChange(row.id, e.target.value)}
+            onChange={(e) => handleOrderQuantityChange(row.id, e.target.value)}
             className="form-control w-100"
             onKeyPress={NumbersOnly}
           />
         </Col>
-      ),
-    },
+      )
+    }
   ];
 
   // // dropdown data
   const categoryData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(itemCategoryList?.map(items => ({
+    ...(itemCategoryList?.map((items) => ({
       label: (
         <div className="d-flex" key={Math.random()}>
           <p className="mb-0">{items?.item}</p>
@@ -109,24 +109,24 @@ function PendingOrder() {
         </div>
       ),
       value: items?.id,
-      searchableItem: `${items?.item} ${items?.category}`,
-    })) || []),
+      searchableItem: `${items?.item} ${items?.category}`
+    })) || [])
   ];
 
   const weightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(karagir_wt_range?.map(items => ({
+    ...(karagir_wt_range?.map((items) => ({
       label: items?.karagir_wt_range,
-      value: items?.karagir_wt_range,
-    })) || []),
+      value: items?.karagir_wt_range
+    })) || [])
   ];
 
   const sizeRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(size_range?.map(items => ({
+    ...(size_range?.map((items) => ({
       label: items?.size_range,
-      value: items?.size_range,
-    })) || []),
+      value: items?.size_range
+    })) || [])
   ];
 
   const customFilterOption = (option, searchText) => {
@@ -146,27 +146,32 @@ function PendingOrder() {
 
   // Function to handle input change for order quantity
   const handleOrderQuantityChange = (id, value) => {
-    setOrderQuantityValues(prevState => ({
+    setOrderQuantityValues((prevState) => ({
       ...prevState,
-      [id]: value,
+      [id]: value
     }));
   };
 
+  // // this constant for orderQuantityValues
+  const nonEmptyValues = Object.values(orderQuantityValues)?.filter(
+    (element) => element !== ''
+  );
+  const allValuesGreaterThanZero = nonEmptyValues.every((value) => +value > 0);
+
   const handelSave = () => {
-    if (Object.keys(orderQuantityValues).length > 0) {
-      const allValuesGreaterThanZero = Object.values(orderQuantityValues).every(value => value > 0);
+    if (nonEmptyValues?.length > 0) {
       if (allValuesGreaterThanZero) {
         dispatch(
           addUserPendingOrderRequest({
             orderQtyData: orderQuantityValues,
             vender_name: generatePoFilter?.vender_name,
-            delivery_date: generatePoFilter?.delivery_date,
-          }),
+            delivery_date: generatePoFilter?.delivery_date
+          })
         );
         navigate('preview');
         setOrderQuantityValues({});
       } else {
-        toast.error('Each order quantity should be greater than 0');
+        toast.error('Order quantity should be greater than 0');
       }
     } else {
       toast.error('Please enter order quantity');
@@ -174,31 +179,31 @@ function PendingOrder() {
   };
 
   const handelSaveAndAddMore = ({ resetFunc }) => {
-    if (Object.keys(orderQuantityValues).length > 0) {
-      const allValuesGreaterThanZero = Object.values(orderQuantityValues).every(value => value > 0);
+    if (nonEmptyValues?.length > 0) {
       if (allValuesGreaterThanZero) {
         dispatch(
           addUserPendingOrderRequest({
             orderQtyData: orderQuantityValues,
             vender_name: generatePoFilter?.vender_name,
-            delivery_date: generatePoFilter?.delivery_date,
-          }),
+            delivery_date: generatePoFilter?.delivery_date
+          })
         );
         dispatch(resetPendingOrderListData());
         resetFunc();
         setToggleFilter(false);
         setOrderQuantityValues({});
       } else {
-        toast.error('Each order quantity should be greater than 0');
+        toast.error('Order quantity should be greater than 0');
       }
     } else {
       toast.error('Please enter order quantity');
     }
   };
 
-  const getItemName = categoryId => itemCategoryList?.find(item => item?.id === categoryId)?.item;
-  const geCategoryName = categoryId =>
-    itemCategoryList?.find(item => item?.id === categoryId)?.category;
+  const getItemName = (categoryId) =>
+    itemCategoryList?.find((item) => item?.id === categoryId)?.item;
+  const geCategoryName = (categoryId) =>
+    itemCategoryList?.find((item) => item?.id === categoryId)?.category;
 
   // // life cycle for category dropdown
   useEffect(() => {
@@ -214,8 +219,8 @@ function PendingOrder() {
         getKaragirKnockOffWtSizeRangeFilterListThunk({
           itemName: getItemName(filterFormValue?.selectedItemsCategory),
           categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
-          type: '',
-        }),
+          type: ''
+        })
       );
     }
   }, [generatePoFilter?.vender_name, filterFormValue?.selectedItemsCategory]);
@@ -228,14 +233,14 @@ function PendingOrder() {
           itemName: getItemName(filterFormValue?.selectedItemsCategory),
           categoryName: geCategoryName(filterFormValue?.selectedItemsCategory),
           weightRange: filterFormValue?.selectedWeightRange,
-          sizeRange: filterFormValue?.selectedSizeRange,
-        }),
+          sizeRange: filterFormValue?.selectedSizeRange
+        })
       );
     }
   }, [
     filterFormValue?.selectedItemsCategory,
     filterFormValue?.selectedWeightRange,
-    filterFormValue?.selectedSizeRange,
+    filterFormValue?.selectedSizeRange
   ]);
 
   return (
@@ -250,7 +255,7 @@ function PendingOrder() {
         initialValues={{
           selectedItemsCategory: '',
           selectedSizeRange: '',
-          selectedWeightRange: '',
+          selectedWeightRange: ''
         }}
       >
         {({ values, resetForm, setFieldValue, dirty }) => {
@@ -287,7 +292,9 @@ function PendingOrder() {
                       label="Weight:"
                       name="selectedWeightRange"
                       placeholder={
-                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                        getKaragirKnockOffWtSizeRangeFilterData
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       isSearchable
                     />
@@ -300,7 +307,9 @@ function PendingOrder() {
                       label="Size:"
                       name="selectedSizeRange"
                       placeholder={
-                        getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'
+                        getKaragirKnockOffWtSizeRangeFilterData
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       isSearchable
                     />
@@ -333,7 +342,9 @@ function PendingOrder() {
                   <button
                     className="btn btn-dark"
                     type="button"
-                    onClick={() => handelSaveAndAddMore({ resetFunc: resetForm })}
+                    onClick={() =>
+                      handelSaveAndAddMore({ resetFunc: resetForm })
+                    }
                   >
                     Save & Add More
                   </button>
@@ -356,7 +367,10 @@ function PendingOrder() {
                 </div>
               </RenderIf>
               <RenderIf
-                render={!filterFormValue?.selectedItemsCategory && userAddedPoDataList?.length}
+                render={
+                  !filterFormValue?.selectedItemsCategory &&
+                  userAddedPoDataList?.length
+                }
               >
                 <div className="text-end">
                   <button

@@ -34,4 +34,13 @@
       height: 31px;
     }
   }
+  .generate_requisition_btn_container {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 8px;
+    button {
+      width: 47%;
+      margin-left: 0;
+    }
+  }
 }

@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import CustomerMappingService from "../../../services/SettingService/CustomerMappingService";
-import { _base, userSessionData } from "../../../settings/constants";
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
+import { _base, userSessionData } from '../../../settings/constants';
 
-import ErrorLogService from "../../../services/ErrorLogService";
-import { toast } from "react-toastify";
+import ErrorLogService from '../../../services/ErrorLogService';
+import { toast } from 'react-toastify';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
 
-import DepartmentService from "../../../services/MastersService/DepartmentService";
-import CustomerTypeService from "../../../services/MastersService/CustomerTypeService";
-import QueryTypeService from "../../../services/MastersService/QueryTypeService";
-import TemplateService from "../../../services/MastersService/TemplateService";
-import DynamicFormService from "../../../services/MastersService/DynamicFormService";
-import UserService from "../../../services/MastersService/UserService";
+import DepartmentService from '../../../services/MastersService/DepartmentService';
+import CustomerTypeService from '../../../services/MastersService/CustomerTypeService';
+import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import TemplateService from '../../../services/MastersService/TemplateService';
+import DynamicFormService from '../../../services/MastersService/DynamicFormService';
+import UserService from '../../../services/MastersService/UserService';
 
-import Table from "react-bootstrap/Table";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import Table from 'react-bootstrap/Table';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 export function getDateTime() {
   var now = new Date();
@@ -32,7 +32,7 @@ export function getDateTime() {
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
   var datetime =
-    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
   return datetime;
 }
 
@@ -52,7 +52,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const departmentDropdownRef = useRef();
 
-  const useridDetail = useRef();
+  const useridDetail = useRef(null);
 
   const { id } = useParams();
   const mappingId = id;
@@ -76,7 +76,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [departmentDropdown, setDepartmentDropdown] = useState();
 
   const [user, setUser] = useState();
-  const [userDropdown, setUserDropdown] = useState();
+  const [userDropdown, setUserDropdown] = useState([]);
 
   const [ratiowiseData, setRatiowiseData] = useState([]);
   const [ratiowiseReplica, setRatiowiseReplica] = useState([]);
@@ -110,17 +110,18 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     updated_at: null,
     updated_by: null,
     user_policy: [],
-    user_policy_label: [],
+    user_policy_label: []
   });
 
   const [userData, setUserData] = useState([]);
 
-  const [confirmationRequired, setConfirmationRequired] = useState("");
-  const [statusData, setstatusData] = useState("");
+  const [confirmationRequired, setConfirmationRequired] = useState(null);
+
+  const [statusData, setstatusData] = useState('');
   const [ratioData, setRatioData] = useState([]);
 
   const handleConfirmationChange = (e) => {
-    setConfirmationRequired(e?.target?.value);
+    setConfirmationRequired(Number(e?.target?.value));
   };
 
   const handleStatusChange = (e) => {
@@ -128,7 +129,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const loadData = async () => {
-    var tempData = "";
+    var tempData = '';
     await new CustomerMappingService()
       .getCustomerMappingById(mappingId)
       .then((res) => {
@@ -138,7 +139,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             setRatioData(
               tempData?.user_policy2?.map((d) => ({
                 user_id: d.user_id,
-                ratio: d.ratio,
+                ratio: d.ratio
               }))
             );
             setData({
@@ -167,16 +168,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
               user_policy: tempData.user_policy,
               user_policy2: tempData.user_policy2,
 
-              user_policy_label: tempData.user_policy_label,
+              user_policy_label: tempData.user_policy_label
             });
-            setConfirmationRequired(
-              res?.data?.data?.confirmation_required == 1 ? 1 : 0
-            );
-            setstatusData(res?.data?.data?.is_active == 1 ? 1 : 0);
+            setConfirmationRequired(res?.data?.data?.confirmation_required);
+
+            setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
           }
         }
       });
-
     dispatch(getRoles());
 
     await new CustomerTypeService().getCustomerType().then((res) => {
@@ -208,7 +207,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           const data = res.data.data.filter((d) => d.is_active == 1);
           const select = res.data.data.map((d) => ({
             value: d.id,
-            label: d.query_type_name,
+            label: d.query_type_name
           }));
           setQueryType(data);
           setQueryTypeDropdown(
@@ -228,7 +227,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           const data = res.data.data.filter((d) => d.is_active == 1);
           const select = res.data.data.map((d) => ({
             value: d.id,
-            label: d.template_name,
+            label: d.template_name
           }));
           setTemplate(data);
           setTemplateDropdown(select);
@@ -239,9 +238,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     setUserDropdown(null);
 
-    if (tempData.approach == "RW" && tempData.user_policy) {
+    if (tempData.approach == 'RW' && tempData.user_policy) {
       tempData.user_policy.forEach((d, i) => {
-        var x = d.split(":");
+        var x = d.split(':');
         if (x.length > 1) {
           ratiowiseData[i] = parseInt(x[1]);
         }
@@ -252,7 +251,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var defaultValue = [{ value: "", label: "Select User" }];
+          var defaultValue = [{ value: '', label: 'Select User' }];
 
           const dropdown = res.data.data
             .filter((d) => d.is_active == 1)
@@ -261,10 +260,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             )
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
 
-          if (tempData.approach == "RW") {
+          if (tempData.approach == 'RW') {
             defaultValue = dropdown;
           } else {
             defaultValue = [...defaultValue, ...dropdown];
@@ -282,7 +281,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           const data = res.data.data.filter((d) => d.is_active === 1);
           const select = res.data.data.map((d) => ({
             value: d.id,
-            label: d.template_name,
+            label: d.template_name
           }));
           setDynamicForm(data);
           setDynamicFormDropdown(select);
@@ -307,14 +306,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     if (dynamicFormDropdownTemp.length > 0) {
       setData((prev) => {
         const newPrev = { ...prev };
-        newPrev["dynamic_form_id"] = queryTypeTemp[0].form_id;
+        newPrev['dynamic_form_id'] = queryTypeTemp[0].form_id;
         return newPrev;
       });
       setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
       setNotify({
-        type: "warning",
-        message: "No Form is mapped but still you can map new form",
+        type: 'warning',
+        message: 'No Form is mapped but still you can map new form'
       });
     }
   };
@@ -324,7 +323,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setDepartment(res.data.data.filter((d) => d.is_active === 1));
-          var defaultValue = [{ value: 0, label: "Select Department" }];
+          var defaultValue = [{ value: 0, label: 'Select Department' }];
           var dropwdown = res.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
@@ -341,12 +340,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         if (res.data.status === 1) {
           const data = res.data.data.filter((d) => d.is_active === 1);
           setUser(data);
-          var defaultValue = [{ value: 0, label: "Select User" }];
+          var defaultValue = [{ value: 0, label: 'Select User' }];
           var dropwdown = res.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
 
           setUserDropdown(dropwdown);
@@ -357,37 +356,39 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-  
-    
-    setUserDropdown(null);
-    if (type === "Select2" && nameField === "customer_type_id") {
+    // setUserDropdown(null);
+    if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
     const value =
-      type === "Select2" && nameField === "customer_type_id"
+      type === 'Select2' && nameField === 'customer_type_id'
         ? e?.map((i) => i.value)
         : e?.value
         ? e?.value
         : e?.target?.value;
-    if (nameField == "approach" && value != data.approach) {
+    if (nameField == 'approach' && value != data.approach) {
       setRatiowiseData([]);
       setDepartmentDropdown(null);
       setUserDropdown(null);
       setData((prev) => {
         const newPrev = { ...prev };
-        newPrev["department_id"] = null;
-        newPrev["user_policy"] = null;
-        newPrev["user_policy_label"] = null;
+        newPrev['department_id'] = null;
+        newPrev['user_policy'] = null;
+        newPrev['user_policy_label'] = null;
         return newPrev;
       });
       handleGetDepartmentUsers(e);
       await getDepartment();
     }
 
-    if (nameField === "department_id" && data.department_id !== value) {
+    if (nameField === 'department_id' && data.department_id !== value) {
+      setUserDropdown(null);
+
       setData((prev) => {
         const newPrev = { ...prev };
-        newPrev["user_policy_label"] = null;
+        newPrev['user_policy'] = null;
+        newPrev['user_policy_label'] = null;
+        newPrev['user_id'] = [];
         return newPrev;
       });
     }
@@ -399,12 +400,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleGetDepartmentUsers = async (e, additional_id = null) => {
-    if (
-      useridDetail?.current &&
-      typeof useridDetail?.current?.clearValue === "function"
-    ) {
-      useridDetail?.current?.clearValue();
-    }
+    setUserDropdown(null);
 
     await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status == 200) {
@@ -425,7 +421,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " (" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
 
           setUserDropdown(dropdown);
@@ -441,18 +437,18 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     if (value > 100) {
       e.target.value = 0;
       ratiowiseData[index] = 0;
-      toast.error("Cannot Enter More than 100 !!!");
+      toast.error('Cannot Enter More than 100 !!!');
     } else {
       ratiowiseData[index] = value;
       const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       if (sum > 100) {
         e.target.value = 0;
         ratiowiseData[index] = 0;
-        toast.error("Ratio Total Must Be 100 !!!");
+        toast.error('Ratio Total Must Be 100 !!!');
       } else {
         const newData = ratiowiseData?.map((ratio, idx) => ({
           user_id: userDropdown[idx]?.value || null,
-          ratio: ratio,
+          ratio: ratio
         }));
         setUserData(newData);
         setRatioTotal(sum); // Update ratio total after changing the value
@@ -512,7 +508,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.confirmation_required = confirmationId;
     form.approach = approachId;
     form.department_id = departmentId;
-    if (data.approach === "RW") {
+    if (data.approach === 'RW') {
       form.user_id = RwuserID;
       // form.ratio = ratiosToSend;
       form.userData = userData?.length > 0 ? userData : ratioData;
@@ -522,15 +518,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     form.status = statusID;
 
-    form.tenant_id = sessionStorage.getItem("tenant_id");
+    form.tenant_id = sessionStorage.getItem('tenant_id');
     form.updated_by = userSessionData.userId;
     form.updated_at = getDateTime();
 
     // const form = new FormData(e.target);
     var flag = 1;
-    if (data.approach === "RW") {
+    if (data.approach === 'RW') {
       if (ratioTotal !== 100) {
-        alert("Sum Must Be 100");
+        alert('Sum Must Be 100');
         flag = 0;
       }
     }
@@ -543,23 +539,23 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             if (res.data.status === 1) {
               history(
                 {
-                  pathname: `/${_base}/CustomerMapping`,
+                  pathname: `/${_base}/CustomerMapping`
                 },
                 {
                   state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
+                    alert: { type: 'success', message: res.data.message }
+                  }
                 }
               );
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "Customer",
-              "Create_Customer",
-              "INSERT",
+              'Customer',
+              'Create_Customer',
+              'INSERT',
               res.message
             );
           }
@@ -610,7 +606,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             )
                           }
                           onChange={(e) =>
-                            handleAutoChanges(e, "Select2", "customer_type_id")
+                            handleAutoChanges(e, 'Select2', 'customer_type_id')
                           }
                         />
                       )}
@@ -634,7 +630,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             (d) => data.query_type_id === d.value
                           )}
                           onChange={(e) => {
-                            handleAutoChanges(e, "Select2", "query_type_id");
+                            handleAutoChanges(e, 'Select2', 'query_type_id');
                             handleQueryType(e);
                           }}
                         />
@@ -657,21 +653,21 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             (d) => data?.dynamic_form_id === d.value
                           )}
                           onChange={(e) =>
-                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                            handleAutoChanges(e, 'Select2', 'dynamic_form_id')
                           }
                         />
                       )}
-                      {selectedDynamicForm && dynamicFormDropdown && "H" && (
+                      {selectedDynamicForm && dynamicFormDropdown && 'H' && (
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
                           ref={dynamicDetail}
                           defaultValue={selectedDynamicForm}
                           options={
-                            dynamicFormDropdown ? dynamicFormDropdown : ""
+                            dynamicFormDropdown ? dynamicFormDropdown : ''
                           }
                           onChange={(e) =>
-                            handleAutoChanges(e, "Select2", "dynamic_form_id")
+                            handleAutoChanges(e, 'Select2', 'dynamic_form_id')
                           }
                         />
                       )}
@@ -693,7 +689,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             (d) => data.template_id == d.value
                           )}
                           onChange={(e) =>
-                            handleAutoChanges(e, "Select2", "template_id")
+                            handleAutoChanges(e, 'Select2', 'template_id')
                           }
                         />
                       )}
@@ -714,7 +710,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         ref={priorityDetail}
                         required={true}
                         onChange={(e) =>
-                          handleAutoChanges(e, "Select", "priority")
+                          handleAutoChanges(e, 'Select', 'priority')
                         }
                         value={data.priority}
                       >
@@ -750,7 +746,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               className="form-check-label"
                               htmlFor="is_active_1"
                             >
-                              Active{" "}
+                              Active{' '}
                             </label>
                           </div>
                         </div>
@@ -788,10 +784,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       </label>
                     </div>
 
-                    <div className="col-sm-1" style={{ textAlign: "left" }}>
+                    <div className="col-sm-1" style={{ textAlign: 'left' }}>
                       <div
                         className="form-group mt-2 text-left d-flex justify-content-between"
-                        style={{ textAlign: "left" }}
+                        style={{ textAlign: 'left' }}
                       >
                         <div className="form-check">
                           <input
@@ -800,8 +796,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_yes"
                             value="1"
-                            ref={confirmationRequiredDetail}
-                            defaultChecked={confirmationRequired == 1}
+                            // ref={confirmationRequiredDetail}
+                            // defaultChecked={confirmationRequired == 1}
+                            checked={confirmationRequired === 1}
                             onChange={handleConfirmationChange}
                           />
                           <label
@@ -819,8 +816,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_no"
                             value="0"
-                            ref={confirmationRequiredDetail}
-                            defaultChecked={confirmationRequired == 0}
+                            // ref={confirmationRequiredDetail}
+                            checked={confirmationRequired === 0}
                             onChange={handleConfirmationChange}
                           />
                           <label
@@ -848,7 +845,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         ref={approachDetail}
                         required={true}
                         onChange={(e) => {
-                          handleAutoChanges(e, "Select", "approach");
+                          handleAutoChanges(e, 'Select', 'approach');
                         }}
                         value={data.approach}
                       >
@@ -864,7 +861,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       </select>
                     </div>
                   </div>
-                  {data.approach !== "SELF" && data.approach !== "AU" && (
+                  {data.approach !== 'SELF' && data.approach !== 'AU' && (
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>
@@ -882,7 +879,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             options={departmentDropdown}
                             ref={departmentDropdownRef}
                             onChange={(e) => {
-                              handleAutoChanges(e, "Select2", "department_id");
+                              handleAutoChanges(e, 'Select2', 'department_id');
                               handleGetDepartmentUsers(e);
                             }}
                           />
@@ -891,9 +888,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                     </div>
                   )}
 
-              
-          
-                  {data.approach !== "SELF" && data.approach !== "AU" && (
+                  {data.approach !== 'SELF' && data.approach !== 'AU' && (
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>
@@ -903,36 +898,36 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       {data &&
                         userDropdown &&
                         userDropdown.length > 0 &&
-                        data.approach !== "RW" &&
+                        data.approach !== 'RW' &&
                         data.approach && (
                           <div className="col-sm-4">
                             <Select
-                              isMulti={data.approach != "SP"}
+                              isMulti={data.approach != 'SP'}
                               isSearchable={true}
                               name="user_id[]"
                               className="basic-multi-select"
                               classNamePrefix="select"
                               ref={useridDetail}
                               defaultValue={
-                                data && data.approach == "SP"
+                                data && data.approach == 'SP'
                                   ? userDropdown.filter(
                                       (d) =>
                                         d.value === data.user_policy?.user_id
                                     )
                                   : data.user_policy?.map((d) => ({
                                       value: d.user_id,
-                                      label: d.user_name,
+                                      label: d.user_name
                                     }))
                               }
                               options={userDropdown}
                               required
-                              style={{ zIndex: "100" }}
+                              style={{ zIndex: '100' }}
                             />
                           </div>
                         )}
 
                       {userDropdown &&
-                        data.approach == "RW" &&
+                        data.approach == 'RW' &&
                         data.department_id && (
                           <div className="col-sm-6">
                             <Table bordered className="mt-2" id="table">
@@ -952,7 +947,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   );
                                   // Extract the ratio value from the user policy
                                   const defaultRatio = userPolicy
-                                    ? parseInt(userPolicy.split(":")[1])
+                                    ? parseInt(userPolicy.split(':')[1])
                                     : 0;
                                   return (
                                     <tr key={ele.value}>
@@ -1012,7 +1007,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                     </div>
                   )}
 
-                  <div className="mt-3" style={{ textAlign: "right" }}>
+                  <div className="mt-3" style={{ textAlign: 'right' }}>
                     <button type="submit" className="btn btn-primary btn-sm">
                       Update
                     </button>

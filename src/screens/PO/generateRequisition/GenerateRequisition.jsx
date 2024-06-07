@@ -7,10 +7,12 @@ import DataTable from 'react-data-table-component';
 import { REACT_APP_ATTACHMENT_URL } from '../../../config/envConfig';
 import {
   getGenerateRequisitionListThunk,
-  uploadFileGenerateRequisitionThunk,
+  uploadFileGenerateRequisitionThunk
 } from '../../../redux/services/po/generateRequisition';
+import { resetGenerateRequisitionExportDataList } from '../../../redux/slices/po/generateRequisition';
 import GenerateRequisitionFilterModal from './GenerateRequisitionFilterModal';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import './style.scss';
 
 function GenerateRequisition() {
@@ -22,19 +24,26 @@ function GenerateRequisition() {
   // // redux state
   const {
     generateRequisitionListData,
-    isLoading: { uploadFileGenerateRequisition, generateRequisitionList },
-  } = useSelector(state => state?.generateRequisition);
+    generateRequisitionExportDataList,
+    isLoading: {
+      uploadFileGenerateRequisition,
+      generateRequisitionList,
+      getGenerateRequisitionExportDataList
+    }
+  } = useSelector((state) => state?.generateRequisition);
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [filterModalData, setFilterModalData] = useState({});
-  const [openGenerateRequisitionFilterModal, setOpenGenerateRequisitionFilterModal] =
-    useState(false);
+  const [
+    openGenerateRequisitionFilterModal,
+    setOpenGenerateRequisitionFilterModal
+  ] = useState(false);
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
     },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
 
   //  table column data
@@ -42,66 +51,72 @@ function GenerateRequisition() {
     {
       name: 'Sr No.',
       selector: (row, index) =>
-        (paginationData.currentPage - 1) * paginationData.rowPerPage + index + 1,
+        (paginationData.currentPage - 1) * paginationData.rowPerPage +
+        index +
+        1,
       sortable: false,
-      width: '70px',
+      width: '70px'
     },
     {
       name: 'Item',
-      selector: row => row?.item ?? '---',
+      selector: (row) => row?.item ?? '---',
       sortable: false,
-      width: '120px',
+      width: '120px'
     },
     {
       name: 'Category',
-      selector: row => row?.category ?? '---',
+      selector: (row) => row?.category ?? '---',
       sortable: false,
-      width: '200px',
+      width: '200px'
     },
 
     {
       name: 'Karagir Size Range',
-      selector: row => row?.size_range ?? '---',
+      selector: (row) => row?.size_range ?? '---',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
 
     {
-      name: filterModalData?.knockoff_karagir === 1 ? 'Karagir Wt Range' : 'Knock Off Wt Range',
-      selector: row =>
+      name:
+        filterModalData?.knockoff_karagir === 1
+          ? 'Karagir Wt Range'
+          : 'Knock Off Wt Range',
+      selector: (row) =>
         filterModalData?.knockoff_karagir === 1
           ? row?.karagir_wt_range ?? '---'
           : row?.knockoff_wt_range ?? '---',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Exact Weight',
-      selector: row => row?.exact_wt ?? '---',
+      selector: (row) => row?.exact_wt ?? '---',
       sortable: true,
-      width: '120px',
+      width: '120px'
     },
     {
       name: 'Open Pieces ',
-      selector: row => row?.open_qty ?? '---',
+      selector: (row) => row?.open_qty ?? '---',
       sortable: true,
-      width: '120px',
+      width: '120px'
     },
     {
       name: 'Purity Range',
-      selector: row => row?.purity_range ?? '---',
+      selector: (row) => row?.purity_range ?? '---',
       sortable: true,
-      width: '140px',
+      width: '140px'
     },
     {
       name: 'Total Weight',
-      selector: row => row?.total_wt ?? '---',
+      selector: (row) => row?.total_wt ?? '---',
       sortable: true,
-      width: '140px',
-    },
+      width: '140px'
+    }
   ];
 
-  const handelBulkUpload = e => {
+  // // function
+  const handelBulkUpload = (e) => {
     const file = e.target.files[0];
     const bulkUploadData = new FormData();
     if (file) {
@@ -115,17 +130,44 @@ function GenerateRequisition() {
                 limit: paginationData.rowPerPage,
                 page: paginationData.currentPage,
                 search: '',
-                filterValue: {},
-              }),
+                filterValue: {}
+              })
             );
           },
-          onErrorHandler: file => {
+          onErrorHandler: (file) => {
             window.open(`${REACT_APP_ATTACHMENT_URL}${file}`)?.focus();
-          },
-        }),
+          }
+        })
       );
       fileRef.current.value = null;
     }
+  };
+
+  const exportDataHandler = () => {
+    dispatch(
+      getGenerateRequisitionListThunk({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage,
+        search: searchValue,
+        filterValue: filterModalData,
+        datatype: 'ALL'
+      })
+    );
+  };
+
+  const transformDataForExport = (data) => {
+    return data?.map((row, index) => ({
+      'Sr No.': index + 1,
+      Item: row?.item ?? '--',
+      Category: row?.category ?? '--',
+      'Karagir Size Range': row?.size_range ?? '--',
+      'Karagir Wt Range': row?.karagir_wt_range ?? '--',
+      'Knockoff Wt Range': row?.knockoff_wt_range ?? '--',
+      'Exact Wt': row?.exact_wt ?? '--',
+      'Open Pieces': row?.open_qty ?? '--',
+      'Purity Range': row?.purity_range ?? '--',
+      'Total Weight': row?.total_wt ?? '--'
+    }));
   };
 
   const handelFetchData = () => {
@@ -134,8 +176,8 @@ function GenerateRequisition() {
         limit: paginationData.rowPerPage,
         page: paginationData.currentPage,
         search: searchValue,
-        filterValue: filterModalData,
-      }),
+        filterValue: filterModalData
+      })
     );
   };
 
@@ -166,7 +208,12 @@ function GenerateRequisition() {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, [searchValue, filterModalData, paginationData.rowPerPage, paginationData.currentPage]);
+  }, [
+    searchValue,
+    filterModalData,
+    paginationData.rowPerPage,
+    paginationData.currentPage
+  ]);
 
   return (
     <>
@@ -190,7 +237,7 @@ function GenerateRequisition() {
               type="file"
               id="fileUpload"
               className="d-none"
-              onChange={e => handelBulkUpload(e)}
+              onChange={(e) => handelBulkUpload(e)}
               accept=".csv, .xlsx"
             />
             <a
@@ -206,18 +253,28 @@ function GenerateRequisition() {
 
         <Stack gap={3}>
           <Row className="row_gap_3">
-            <Col xs={12} md={7} xxl={8}>
+            <Col xs={12} md={6} lg={7} xxl={8}>
               <input
                 type="search"
                 name="search_value"
                 value={searchValue}
-                onChange={e => setSearchValue(e?.target?.value)}
+                onChange={(e) => setSearchValue(e?.target?.value)}
                 placeholder="Search..."
                 className="form-control"
               />
             </Col>
-            <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-              <button className="btn btn-warning text-white" type="button" disabled={!searchValue}>
+            <Col
+              xs={12}
+              md={6}
+              lg={5}
+              xxl={4}
+              className="d-flex justify-content-sm-end generate_requisition_btn_container"
+            >
+              <button
+                className="btn btn-warning text-white"
+                type="button"
+                disabled={!searchValue}
+              >
                 <i className="icofont-search-1 " /> Search
               </button>
               <button
@@ -234,19 +291,43 @@ function GenerateRequisition() {
               >
                 <i className="icofont-filter" /> Filter
               </button>
+              <ExportToExcel
+                className="btn btn-danger"
+                apiData={transformDataForExport(
+                  generateRequisitionExportDataList?.data || []
+                )}
+                fileName="Generate Requisition Data"
+                disabled={
+                  !generateRequisitionListData?.data?.length ||
+                  getGenerateRequisitionExportDataList
+                }
+                isLoading={getGenerateRequisitionExportDataList}
+                onApiClick={exportDataHandler}
+                onSuccessHandler={() =>
+                  dispatch(resetGenerateRequisitionExportDataList())
+                }
+              />
             </Col>
           </Row>
           <div className="text-end">
             <b className="me-2">
               Total Weight:{' '}
               {generateRequisitionListData?.total?.total_open_wt
-                ? parseFloat(Number(generateRequisitionListData?.total?.total_open_wt).toFixed(2))
+                ? parseFloat(
+                    Number(
+                      generateRequisitionListData?.total?.total_open_wt
+                    ).toFixed(2)
+                  )
                 : 'N/A'}
             </b>
             <b>
               Open Pieces:{' '}
               {generateRequisitionListData?.total?.total_open > 0
-                ? parseFloat(Number(generateRequisitionListData?.total?.total_open).toFixed(2))
+                ? parseFloat(
+                    Number(
+                      generateRequisitionListData?.total?.total_open
+                    ).toFixed(2)
+                  )
                 : '0'}
             </b>
           </div>
@@ -257,10 +338,12 @@ function GenerateRequisition() {
             progressComponent={<TableLoadingSkelton />}
             pagination
             paginationServer
-            paginationTotalRows={generateRequisitionListData?.total?.total_count}
+            paginationTotalRows={
+              generateRequisitionListData?.total?.total_count
+            }
             paginationDefaultPage={paginationData.currentPage}
-            onChangePage={page => setPaginationData({ currentPage: page })}
-            onChangeRowsPerPage={newPageSize => {
+            onChangePage={(page) => setPaginationData({ currentPage: page })}
+            onChangeRowsPerPage={(newPageSize) => {
               setPaginationData({ rowPerPage: newPageSize });
               setPaginationData({ currentPage: 1 });
             }}

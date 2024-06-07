@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import DataTable from "react-data-table-component";
@@ -14,18 +12,20 @@ import { Spinner } from "react-bootstrap";
 import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
 import { getRoles } from "../../Dashboard/DashboardAction";
 import { useDispatch, useSelector } from "react-redux";
+import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
 
 function SubModuleComponent() {
   const location = useLocation();
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const roleId = sessionStorage.getItem("role_id");
   // const [checkRole, setCheckRole] = useState(null);
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22)
   );
   const [exportData, setExportData] = useState(null);
 
@@ -119,15 +119,12 @@ function SubModuleComponent() {
     { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
 
     { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
-    
-    
-
-
   ];
 
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
+    setIsLoading(true);
     const data = [];
     const exportTempData = [];
     await new SubModuleService()
@@ -156,6 +153,7 @@ function SubModuleComponent() {
           }
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           for (const key in temp) {
             exportTempData.push({
@@ -164,7 +162,7 @@ function SubModuleComponent() {
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active==1?"Active":"Deactive",
+              is_active: temp[key].is_active == 1 ? "Active" : "Deactive",
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
@@ -193,7 +191,7 @@ function SubModuleComponent() {
           errorObject.data.message
         );
       });
-      dispatch(getRoles())
+    dispatch(getRoles());
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -209,14 +207,10 @@ function SubModuleComponent() {
 
   useEffect(() => {
     loadData();
-   
   }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-     
-      
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
@@ -285,7 +279,8 @@ function SubModuleComponent() {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
             <DataTable
               columns={columns}
               data={data}
@@ -297,17 +292,8 @@ function SubModuleComponent() {
             />
           )}
         </div>
-        <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal>
+       
+       
       </div>
     </div>
   );
@@ -315,11 +301,10 @@ function SubModuleComponent() {
 
 function SubModuleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(
-     () => {
+  useEffect(() => {
     const tempData = [];
-    
-     new SubModuleService().getSubModule().then((res) => {
+
+    new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

@@ -1,13 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import customAxios from "../../../../http/axios";
-import { errorHandler } from "../../../../utils";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import customAxios from '../../../../http/axios';
+import { errorHandler } from '../../../../utils';
 
 export const getTestBankMasterListThunk = createAsyncThunk(
-  "testBankMaster/getTestBankMasterListThunk",
-  async () => {
+  'testBankMaster/getTestBankMasterListThunk',
+  async ({ limit, page }) => {
     try {
       const response = await customAxios.get(
-        `testCases/approved/getApprovedTestCases`
+        `testCases/approved/getApprovedTestCases?limit=${limit}&page=${page}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

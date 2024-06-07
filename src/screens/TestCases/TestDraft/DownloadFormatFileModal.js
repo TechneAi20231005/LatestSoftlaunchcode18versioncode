@@ -1,28 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import CustomModal from "../../../components/custom/modal/CustomModal";
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import CustomModal from '../../../components/custom/modal/CustomModal';
 import {
   CustomDropdown,
-  CustomReactSelect,
-} from "../../../components/custom/inputs/CustomInputs";
-import { downloadFormatFile } from "./Validation/DownloadFormatFile";
+  CustomReactSelect
+} from '../../../components/custom/inputs/CustomInputs';
+import { downloadFormatFile } from './Validation/DownloadFormatFile';
 
 import {
   downloadFormatFileThunk,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
-  getSubModuleMasterThunk,
-} from "../../../redux/services/testCases/downloadFormatFile";
+  getSubModuleMasterThunk
+} from '../../../redux/services/testCases/downloadFormatFile';
 
 function DownloadFormatFileModal({ show, close }) {
   const {
     getProjectModuleList,
-    getMouleList,
-    getSubMouleList,
+    getModuleList,
+    getSubModuleList,
     getModuleData,
-    getSubModuleData,
+    getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
 
   // // initial state
@@ -35,10 +35,16 @@ function DownloadFormatFileModal({ show, close }) {
   const moduleIdRef = useRef();
   const subModuleIdRef = useRef();
 
+  const downloadFormatInitialValue = {
+    project_id: '',
+    module_id: '',
+    submodule_id: []
+  };
+
   const handleProjectChange = async (e, setFieldValue) => {
-    setFieldValue("project_id", e.target.value);
-    setFieldValue("module_id", ""); // Clear module_name when project_name changes
-    setFieldValue("submodule_id", "");
+    setFieldValue('project_id', e.target.value);
+    setFieldValue('module_id', ''); // Clear module_name when project_name changes
+    setFieldValue('submodule_id', '');
     setModuleDropdown(null); // Clear the current module dropdown options
     const filteredModules = getModuleData
       .filter((d) => d.project_id === parseInt(e.target.value))
@@ -48,8 +54,8 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleModuleChange = (e, setFieldValue) => {
-    setFieldValue("module_id", e.target.value);
-    setFieldValue("submodule_id", ""); // Clear submodule_name when module_name changes
+    setFieldValue('module_id', e.target.value);
+    setFieldValue('submodule_id', ''); // Clear submodule_name when module_name changes
 
     const data = getSubModuleData
       ?.filter((d) => d.module_id === parseInt(e.target.value)) // Ensure correct data type
@@ -58,15 +64,8 @@ function DownloadFormatFileModal({ show, close }) {
     setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
   };
 
-  const downloadFormatInitialValue = {
-    project_id: "",
-    module_id: "",
-    submodule_id: [],
-  };
-
   const handleDownloadFormatFile = (formData) => {
     const { project_id, module_id, submodule_id } = formData.formData;
-
     dispatch(
       downloadFormatFileThunk({
         project_id,
@@ -74,9 +73,9 @@ function DownloadFormatFileModal({ show, close }) {
         submodule_id,
 
         onSuccessHandler: () => {
-          close();
+          // close();
         },
-        onErrorHandler: () => {},
+        onErrorHandler: () => {}
       })
     );
   };
@@ -85,10 +84,10 @@ function DownloadFormatFileModal({ show, close }) {
     if (!getProjectModuleList) {
       dispatch(getProjectModuleMasterThunk());
     }
-    if (!getMouleList) {
+    if (!getModuleList) {
       dispatch(getModuleMasterThunk());
     }
-    if (!getSubMouleList) {
+    if (!getSubModuleList) {
       dispatch(getSubModuleMasterThunk());
     }
   }, []);
