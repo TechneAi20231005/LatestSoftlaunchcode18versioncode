@@ -11,6 +11,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { getTaskHistory } from '../../../../services/TicketService/TaskService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTaskHistoryListThunk } from '../../../../redux/services/TaskHistory';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 
 export default function TaskHistoryModal(props) {
   const dispatch = useDispatch();
@@ -296,6 +297,8 @@ export default function TaskHistoryModal(props) {
                     defaultSortField="title"
                     pagination
                     selectableRows={false}
+                    progressPending={isLoading?.getTaskHistoryList}
+                    progressComponent={<TableLoadingSkelton />}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                     highlightOnHover={true}
                   />
