@@ -43,6 +43,7 @@ export function getDateTime() {
 export default function CreateCustomerMappingComponent() {
   const history = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const departmentDropdownRef = useRef();
   const [notify, setNotify] = useState();
 
@@ -255,7 +256,6 @@ export default function CreateCustomerMappingComponent() {
   const handleRatioInput = (index) => (e) => {
     e.preventDefault();
 
-
     const newValue = parseInt(e.target.value) || 0;
 
     if (newValue > 100) {
@@ -267,7 +267,6 @@ export default function CreateCustomerMappingComponent() {
         user_id: userDropdown[index]?.value,
         ratio: newValue || 0
       };
-
 
       const sum = newData.reduce(
         (result, item) => result + (item ? item.ratio : 0),
@@ -385,38 +384,18 @@ export default function CreateCustomerMappingComponent() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/CustomerMapping`
-                },
-                {
-                  state: {
-                    alert: { type: 'success', message: res.data.message }
-                  }
-                }
-              );
+              toast.success(res?.data?.message);
+
+              navigate(`/${_base}/CustomerMapping`);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res?.data?.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Customer',
-              'Create_Customer',
-              'INSERT',
-              res?.message
-            );
+            toast.error(res?.data?.message);
           }
         })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            'Status',
-            'Create_Status',
-            'INSERT',
-            errorObject?.data?.message
-          );
+        .catch((res) => {
+          toast.error(res?.data?.message);
         });
     } else {
     }
@@ -725,8 +704,6 @@ export default function CreateCustomerMappingComponent() {
                             </tr>
                           </thead>
                           <tbody>
-
-
                             {userDropdown.map((ele, i) => {
                               return (
                                 <tr>
@@ -750,7 +727,6 @@ export default function CreateCustomerMappingComponent() {
                                     />
                                   </td>
 
-                              
                                   <td>
                                     <input
                                       type="text"
