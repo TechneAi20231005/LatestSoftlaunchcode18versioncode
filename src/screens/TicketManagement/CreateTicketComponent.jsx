@@ -799,16 +799,18 @@ export default function CreateTicketComponent() {
               : item.customer_type_id
           );
 
+          
+
           const mappingId = filteredItems.map((item) => item.id);
 
-          const confirmationRequiredID = filteredItems
-            .map((item) => item.confirmation_required)
-            .join(',');
+          const confirmationRequiredID = filteredItems.map(
+            (item) => item.confirmation_required
+          );
 
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-            newPrev['confirmation_required'] = x[0].confirmation_required;
+            newPrev['confirmation_required'] = confirmationRequiredID[0];
             newPrev['priority'] = x[0].priority;
             return newPrev;
           });
