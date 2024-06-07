@@ -13,9 +13,10 @@ export const getTaskHistoryListThunk = createAsyncThunk(
       const response = await customAxios.get(
         `/ticketTask/getTaskHistory/${taskId}`
       );
-      console.log('getTaskHistoryListThunk', response);
+      // console.log('getTaskHistoryListThunk', response);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
+          console.log('getTaskHistoryListThunk', response);
           return { data: response?.data?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);

@@ -9,11 +9,17 @@ import { Spinner } from 'react-bootstrap';
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { getTaskHistory } from '../../../../services/TicketService/TaskService';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getTaskHistoryListThunk } from '../../../../redux/services/TaskHistory';
+
 export default function TaskHistoryModal(props) {
   const dispatch = useDispatch();
   const [notify, setNotify] = useState();
+
+  const { taskHistoryList, filterTaskData, isLoading } = useSelector(
+    (state) => state?.taskHistory
+  );
+  console.log('filterTaskData', filterTaskData);
 
   const [data, setData] = useState();
   const [exportData, setExportData] = useState(null);
@@ -183,9 +189,9 @@ export default function TaskHistoryModal(props) {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
     dispatch(getTaskHistoryListThunk({ taskId: props.taskId }));
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
 
     // await new getTaskHistory(props.taskId).then((res) => {
     //   console.log('res==>', res);
@@ -283,10 +289,10 @@ export default function TaskHistoryModal(props) {
           ) : (
             <div className="row clearfix g-3">
               <div className="col-sm-12">
-                {data && (
+                {filterTaskData && (
                   <DataTable
                     columns={columns}
-                    data={data}
+                    data={filterTaskData}
                     defaultSortField="title"
                     pagination
                     selectableRows={false}

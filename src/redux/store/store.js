@@ -122,10 +122,10 @@ export const store = configureStore({
     functionMaster: functionMasterSlice,
     downloadFormat: downloadFormatSlice,
     testCaseReview: testCaseReviewSlice,
-    testBank: testBankSlice
+    testBank: testBankSlice,
+    taskHistory: taskHistorySlice
   },
   //
-  taskHistory: taskHistorySlice,
 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
