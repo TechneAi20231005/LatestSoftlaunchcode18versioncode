@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, createRoutesFromChildren, useNavigate } from 'react-router-dom';
 
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
@@ -93,6 +93,7 @@ export default function CreateTicketComponent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
+  const [customerID, setCustomerId] = useState();
 
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
 
@@ -537,6 +538,19 @@ export default function CreateTicketComponent() {
         }
       });
 
+    await new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        const { data } = res?.data;
+
+        
+        if (res?.data?.status === 1 && data) {
+          setCustomerId(data?.customer_type_id);
+
+
+        }
+      });
+
     var queryType = [];
     await new QueryTypeService().getQueryType().then((resp) => {
       if (resp.data.status === 1) {
@@ -799,16 +813,20 @@ export default function CreateTicketComponent() {
               : item.customer_type_id
           );
 
-          const mappingId = filteredItems.map((item) => item.id);
+          //  const mappingId = filteredItems.map((item) => item.id);
 
-          const confirmationRequiredID = filteredItems
-            .map((item) => item.confirmation_required)
-            .join(',');
+          const customerMapping = filteredItems.filter(
+            (item) => Number(item.customer_type_id) === Number(customerID)
+          );
+          const mappingId = filteredItems.map((item) =>
+            accountFor === 'SELF' ? item.id : customerMapping[0].id
+          );
 
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-            newPrev['confirmation_required'] = x[0].confirmation_required;
+            newPrev['confirmation_required'] =
+              customerMapping[0]?.confirmation_required;
             newPrev['priority'] = x[0].priority;
             return newPrev;
           });
