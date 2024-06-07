@@ -12,12 +12,14 @@ import { Spinner } from 'react-bootstrap';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function SubModuleComponent() {
   const location = useLocation();
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
@@ -122,6 +124,7 @@ function SubModuleComponent() {
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
+    setIsLoading(true);
     const data = [];
     const exportTempData = [];
     await new SubModuleService()
@@ -150,6 +153,7 @@ function SubModuleComponent() {
           }
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           for (const key in temp) {
             exportTempData.push({
@@ -275,7 +279,8 @@ function SubModuleComponent() {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
             <DataTable
               columns={columns}
               data={data}
@@ -287,17 +292,6 @@ function SubModuleComponent() {
             />
           )}
         </div>
-        <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal>
       </div>
     </div>
   );

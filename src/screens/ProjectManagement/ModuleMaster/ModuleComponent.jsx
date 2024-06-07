@@ -11,12 +11,14 @@ import Select from 'react-select';
 import { Spinner } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 function ModuleComponent() {
   const location = useLocation();
 
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const roleId = sessionStorage.getItem('role_id');
@@ -139,6 +141,7 @@ function ModuleComponent() {
 
   const loadData = async () => {
     setShowLoaderModal(null);
+    setIsLoading(true);
     setShowLoaderModal(true);
     const data = [];
     await new ModuleService()
@@ -168,6 +171,7 @@ function ModuleComponent() {
 
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           let exportData = [];
           for (const key in data) {
@@ -290,7 +294,8 @@ function ModuleComponent() {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
             <DataTable
               columns={columns}
               data={data}
@@ -302,17 +307,6 @@ function ModuleComponent() {
             />
           )}
         </div>
-        <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal>
       </div>
     </div>
   );

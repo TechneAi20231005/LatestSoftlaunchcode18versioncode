@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function ProjectComponent() {
   const location = useLocation();
@@ -23,6 +24,7 @@ function ProjectComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef();
 
   const roleId = sessionStorage.getItem('role_id');
@@ -307,6 +309,7 @@ function ProjectComponent() {
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
+    setIsLoading(true);
     const data = [];
     await new ProjectService()
       .getProject()
@@ -333,6 +336,7 @@ function ProjectComponent() {
           }
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           let exportData = [];
           let count = 1;
@@ -458,8 +462,9 @@ function ProjectComponent() {
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
+            {isLoading && <TableLoadingSkelton />}
             <div className="col-sm-12">
-              {data && (
+              {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={data}

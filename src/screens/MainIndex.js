@@ -110,7 +110,7 @@ import PendingTicket from './ConsolidatedView/ModulewiseModule/PendingTicket';
 import CompletedTicket from './ConsolidatedView/ModulewiseModule/CompletedTicket';
 import PendingTask from './ConsolidatedView/ModulewiseModule/PendingTask';
 import MenuManagement from './MenuManagement/ManageMenu';
-import TestBankComponent from './TicketManagement/TaskManagement/components/TestBankComponent';
+// import TestBankComponent from './TicketManagement/TaskManagement/components/TestBankComponent';
 
 import { VendorMaster } from './BillChecking/Masters/VendorMaster';
 import PaymentTemplateMaster from './BillChecking/Masters/PaymentTemplateMaster';
@@ -186,6 +186,7 @@ import TestingGroupMasterComponent from './TestCases/TestingGroupMaster/TestingG
 import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterComponent';
 import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
+import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 
 class MainIndex extends React.Component {
   constructor(props) {
@@ -237,12 +238,11 @@ class MainIndex extends React.Component {
               element={<ApprovedNotificationComponent />}
             />
             <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
-            {/*removed in lazy loading} */}
             <Route
               exact
               path={`/${_base}/Tenant/Edit/:id`}
               element={<TenantForm />}
-            />{' '}
+            />
             <Route
               exact
               path={`/${_base}/Customer`}
@@ -471,11 +471,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/GetAllTestCases/:id`}
               element={<GetAllTestCases />}
             />
-            <Route
-              exact
-              path={`/${_base}/TestBank`}
-              element={<TestBankComponent />}
-            />
+            {/* <Route exact path={`/${_base}/TestBank`} element={<TestBankComponent />} /> */}
             <Route
               exact
               path={`/${_base}/TestCasesReviewerView/:ticketId/:taskId`}
@@ -566,7 +562,6 @@ class MainIndex extends React.Component {
               path={`/${_base}/TenantMaster/Edit/:id`}
               element={<EditTenant />}
             />
-            {/* remove in lazy loading */}
             <Route
               exact
               path={`/${_base}/QueryBuilder`}
@@ -713,7 +708,6 @@ class MainIndex extends React.Component {
               path={`/${_base}/AuthorityMapping`}
               element={<AuthorityMapping />}
             />
-            {/* remove in lazy loading */}
             <Route
               exact
               path={`/${_base}/AuthorityMappingviewdetails/:id`}
@@ -824,6 +818,63 @@ class MainIndex extends React.Component {
               path={`/${_base}/SalaryMaster`}
               element={<SalaryMaster />}
             />
+            {/* <Route
+              exact
+              path={`/${_base}/rotationalShiftMaster`}
+              element={<RoastedComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Shift/Create`}
+              element={<CreateShiftMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/EmployeeMaster`}
+              element={<EmployeeMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Employee/Create`}
+              element={<CreateEmployeeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CalendarMaster`}
+              element={<CalenderMaster />}
+            />
+
+            {/* Employee Joining routes */}
+            <Route
+              exact
+              path={`/${_base}/InterviewMaster`}
+              element={<InterviewMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CandidateList`}
+              element={<CandidateList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/BranchMaster`}
+              element={<BranchMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SourceMaster`}
+              element={<SourceMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/RemarkMaster`}
+              element={<RemarkMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SalaryMaster`}
+              element={<SalaryMaster />}
+            />
             {/* PO */}
             <Route
               exact
@@ -863,7 +914,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/ReviewedTestDraftComponent`}
+              path={`/${_base}/ReviewedTestDraftComponent/:id`}
               element={<ReviewedTestDraftComponent />}
             />
             <Route
@@ -878,7 +929,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/TestCaseReviewDetails/:test_plan_id`}
+              path={`/${_base}/TestCaseReviewDetails/:id`}
               element={<TestCaseReviewDetails />}
             />
             <Route
@@ -905,6 +956,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/TestCaseHistoryComponent`}
               element={<TestCaseHistoryComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestBank`}
+              element={<TestBankComponent />}
             />
           </Routes>
         </div>
