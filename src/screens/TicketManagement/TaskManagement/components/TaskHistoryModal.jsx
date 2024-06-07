@@ -5,10 +5,9 @@ import Alert from '../../../../components/Common/Alert';
 import DataTable from 'react-data-table-component';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
-import { Spinner } from 'react-bootstrap';
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { getTaskHistory } from '../../../../services/TicketService/TaskService';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getTaskHistoryListThunk } from '../../../../redux/services/TaskHistory';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
@@ -17,13 +16,10 @@ export default function TaskHistoryModal(props) {
   const dispatch = useDispatch();
   const [notify, setNotify] = useState();
 
-  const { taskHistoryList, filterTaskData, isLoading } = useSelector(
+  const { filterTaskData, isLoading } = useSelector(
     (state) => state?.taskHistory
   );
-  console.log('filterTaskData', filterTaskData);
 
-  const [data, setData] = useState();
-  const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const columns = [
@@ -191,47 +187,6 @@ export default function TaskHistoryModal(props) {
 
   const loadData = async () => {
     dispatch(getTaskHistoryListThunk({ taskId: props.taskId }));
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-
-    // await new getTaskHistory(props.taskId).then((res) => {
-    //   console.log('res==>', res);
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status === 1) {
-    //       let counter = 1;
-    //       var temp = [];
-    //       setData(null);
-    //       res.data.data.forEach((d) => {
-    //         temp.push({
-    //           Sr_No: counter++,
-    //           Task_Id: d.ticket_id,
-
-    //           task_name: d.task_name,
-    //           basket_name: d.basket_name,
-    //           start_date: d.start_date,
-    //           end_date: d.end_date,
-    //           // id: d.id,
-    //           priority: d.priority,
-    //           status: d.status,
-    //           type_name: d.type_name,
-
-    //           task_desc: d.task_desc,
-    //           task_hours: d.task_hours,
-    //           created_at: d.created_at,
-    //           updated_at: d.updated_at,
-
-    //           created_by_name: d.created_by_name,
-    //           updated_by_name: d.updated_by_name
-    //           // ticket_basket_id: d.ticket_basket_id,
-    //           // total_worked_in_min: d.total_worked_in_min,
-    //         });
-    //         setExportData(temp);
-    //       });
-    //       setData(temp);
-    //     }
-    //   }
-    // });
   };
 
   useEffect(() => {
@@ -259,7 +214,7 @@ export default function TaskHistoryModal(props) {
             >
               <ExportToExcel
                 className="btn btn-sm btn-danger"
-                apiData={exportData}
+                apiData={filterTaskData}
                 fileName="Task History Report"
               />
             </div>
@@ -276,17 +231,7 @@ export default function TaskHistoryModal(props) {
                 minHeight: 'calc(100% - 1rem)',
                 margin: '0'
               }}
-            >
-              <div className="text-center">
-                <Spinner animation="grow" variant="primary" />
-                <Spinner animation="grow" variant="secondary" />
-                <Spinner animation="grow" variant="success" />
-                <Spinner animation="grow" variant="danger" />
-                <Spinner animation="grow" variant="warning" />
-                <Spinner animation="grow" variant="info" />
-                <Spinner animation="grow" variant="dark" />
-              </div>
-            </div>
+            ></div>
           ) : (
             <div className="row clearfix g-3">
               <div className="col-sm-12">
@@ -311,5 +256,3 @@ export default function TaskHistoryModal(props) {
     </>
   );
 }
-
-// created by Asmita Margaje
