@@ -187,7 +187,7 @@ export default function TestDraftComponent({ close }) {
     dispatch(getModuleMasterThunk());
     dispatch(getSubModuleMasterThunk());
     dispatch(importTestDraftThunk());
-    dispatch(getAllReviewTestDraftList());
+    // dispatch(getAllReviewTestDraftList());
   }, []);
   return (
     <div className="container-xxl">
@@ -259,7 +259,7 @@ export default function TestDraftComponent({ close }) {
         <TestDraftDetails />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
-        <ReviewedTestDraftDetails />
+        {currentTab === 'review_test_draft' && <ReviewedTestDraftDetails />}
       </RenderIf>
 
       {downloadmodal.showModal === true && (

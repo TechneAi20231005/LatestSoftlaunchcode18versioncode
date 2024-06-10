@@ -66,10 +66,13 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async (
-    { project_id, module_id, submodule_id },
-    { onSuccessHandler, onErrorHandler }
-  ) => {
+  async ({
+    project_id,
+    module_id,
+    submodule_id,
+    onSuccessHandler
+    // onErrorHandler
+  }) => {
     try {
       const submoduleParam = JSON.stringify(submodule_id);
 
@@ -77,21 +80,19 @@ export const downloadFormatFileThunk = createAsyncThunk(
         submoduleParam
       )}`;
       const response = await customAxios.get(endpoint);
-
       if (response?.status === 200 || response?.status === 201) {
-        URL = `${_apiUrl}` + endpoint;
-        window.open(URL, '_blank').focus();
+        window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
         if (response?.data?.status === 1) {
           onSuccessHandler();
           toast.success(response?.data?.message);
           return response?.data?.message;
         } else {
-          onErrorHandler();
+          // onErrorHandler();
           errorHandler(response);
         }
       }
     } catch (error) {
-      onErrorHandler();
+      // onErrorHandler();
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
@@ -158,9 +159,9 @@ export const importTestDraftThunk = createAsyncThunk(
           // return response?.data?.message;
         } else {
           onErrorHandler();
-          URL = `${_attachmentUrl}` + response.data.data.error_file;
+          const url = `${_attachmentUrl}` + response.data.data.error_file;
 
-          window.open(URL, '_blank')?.focus();
+          window.open(url, '_blank');
           errorHandler(response);
         }
       }

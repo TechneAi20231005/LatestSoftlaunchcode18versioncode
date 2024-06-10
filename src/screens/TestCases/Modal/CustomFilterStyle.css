@@ -1,0 +1,136 @@
+.custom-container {
+  position: absolute;
+  z-index: 1050;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 14px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-width: 230px; /* Ensure it doesn't exceed a certain width */
+  min-width: 200px; /* Ensure it doesn't go below a certain width */
+  max-height: 90%;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .custom-container {
+    width: 90%; /* Make it more responsive on smaller screens */
+    left: 5%; /* Center it on smaller screens */
+    right: 5%;
+  }
+}
+
+.underline-gray {
+  border-bottom: 2px solid #dad0d0;
+  display: inline-block;
+  margin: 0px;
+}
+
+.text-custom {
+  color: #484c7f;
+}
+.Sort {
+  font-size: 15px;
+  color: gray;
+}
+.pointer {
+  cursor: pointer;
+}
+
+.filter-text {
+  font-size: 19px;
+}
+.bg-custom-color {
+  background-color: #484c7f;
+}
+.text-filters-container {
+  display: flex;
+  align-items: center;
+}
+.icon-spacing {
+  margin-left: auto; /* Pushes the icon to the far right */
+}
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  margin-left: 230px;
+  bottom: 6px;
+}
+.check-box-size {
+  font-size: 25px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Adjust as needed for spacing */
+}
+
+.check-box-size {
+  font-size: 25px; /* Adjust the size as needed */
+}
+
+.mx-3 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.fs-6 {
+  font-size: 1rem; /* Adjust the size as needed */
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+.custom-toolkit {
+  position: absolute;
+  background-color: white;
+  padding: 2px 10px;
+  color: black;
+  margin-left: 15px;
+  margin-top: 120px;
+  border: 1px solid #ced4da;
+  height: auto;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  z-index: 1051; /* Higher than the modal */
+}
+
+/* Custom class to override Bootstrap modal-footer */
+.modal-footer.custom-modal-footer {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-shrink: 0 !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding: 0.75rem !important;
+  border-top: none !important; /* Remove the border */
+  border-bottom-right-radius: 0 !important; /* Remove border-radius */
+  border-bottom-left-radius: 0 !important; /* Remove border-radius */
+}
+
+/* Override Bootstrap's styles using !important */
+.custom-modal .modal-content {
+  background-color: white !important; /* Or your custom background color */
+}
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px; /* Optional: Adjust the margin as needed */
+}
+
+.btn-small {
+  padding: 4px 8px; /* Decrease padding */
+  font-size: 0.875rem; /* Decrease font size */
+  height: auto; /* Ensure height adjusts to content */
+}
+
+.mt-3 {
+  margin-top: 0; /* Reset margin-top for button within the container */
+}

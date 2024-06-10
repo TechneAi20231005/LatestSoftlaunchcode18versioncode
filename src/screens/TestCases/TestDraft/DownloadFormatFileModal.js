@@ -64,18 +64,17 @@ function DownloadFormatFileModal({ show, close }) {
     setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
   };
 
-  const handleDownloadFormatFile = (formData) => {
-    const { project_id, module_id, submodule_id } = formData.formData;
+  const handleDownloadFormatFile = ({ formData }) => {
+    const { project_id, module_id, submodule_id } = formData;
     dispatch(
       downloadFormatFileThunk({
         project_id,
         module_id,
         submodule_id,
-
         onSuccessHandler: () => {
-          // close();
-        },
-        onErrorHandler: () => {}
+          close();
+        }
+        // onErrorHandler: () => {}
       })
     );
   };
