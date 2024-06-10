@@ -41,11 +41,11 @@ export function getDateTime() {
 }
 
 export default function CreateCustomerMappingComponent() {
+  const history = useNavigate();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const departmentDropdownRef = useRef();
   const [notify, setNotify] = useState();
-  const [userDropDownFilterData, setUserDropDownFilterData] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
@@ -225,52 +225,32 @@ export default function CreateCustomerMappingComponent() {
 
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
-
-    try {
-      const res = await new UserService().getUserWithMultipleDepartment();
-
+    await new UserService().getUserWithMultipleDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const dropdown = res.data.data
-
             .filter(
               (d) =>
                 d.is_active === 1 && d.multiple_department_id.includes(e.value)
             )
+
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
-
-          setUserDropDownFilterData(dropdown);
-
           let defaultValue;
-          if (data.approach === 'RW') {
+          if (data.approach == 'RW') {
             defaultValue = dropdown;
-            setRatioTotal(0);
-            setUserData(
-              dropdown.length > 0
-                ? dropdown.map((d) => ({ user_id: d.id, ratio: 0 }))
-                : []
-            );
           } else {
             defaultValue = [...dropdown];
-            setUserData([]);
           }
-
           setUserDropdown(defaultValue.filter((option) => option.value !== ''));
-
           if (dropdown.length === 0) {
-            setUserDropdown([]);
-            if (data.approach === 'RW') {
-              setUserData([]);
-            }
+            setUserDropdown([{ value: '', label: 'No data found' }]);
           }
         }
       }
-    } catch (res) {
-      toast.error(res?.data?.message);
-    }
+    });
   };
 
   const handleRatioInput = (index) => (e) => {
@@ -377,15 +357,10 @@ export default function CreateCustomerMappingComponent() {
     var flag = 1;
 
     if (data.approach === 'RW') {
-      const completeUserData =
-        userDropdown.length > 0
-          ? userDropdown.map((user) => {
-              const existingUser = userData.find(
-                (u) => u.user_id === user.value
-              );
-              return existingUser || { user_id: user.value, ratio: 0 };
-            })
-          : [];
+      const completeUserData = userDropdown.map((user) => {
+        const existingUser = userData.find((u) => u?.user_id === user.value);
+        return existingUser || { user_id: user.value, ratio: 0 };
+      });
 
       form.user_id = RwuserID;
       form.userData = completeUserData;
@@ -692,101 +667,99 @@ export default function CreateCustomerMappingComponent() {
                   </div>
                 )}
 
-                {data.approach !== 'SELF' &&
-                  data.approach !== 'AU' &&
-                  userDropDownFilterData?.length > 0 && (
-                    <div className="form-group row mt-3">
-                      <label className="col-sm-2 col-form-label">
-                        <b>
-                          Select User :<Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-                      {showUserSelect && (
-                        <>
-                          {userDropdown && data.approach !== 'RW' && (
-                            <div className="col-sm-4">
-                              <Select
-                                isMulti={data.approach !== 'SP'}
-                                isSearchable={true}
-                                ref={useridDetail}
-                                name="user_id[]"
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                                options={userDropdown}
-                                required
-                              />
-                            </div>
-                          )}
-                        </>
-                      )}
+                {data.approach !== 'SELF' && data.approach !== 'AU' && (
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>
+                        Select User :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    {showUserSelect && (
+                      <>
+                        {userDropdown && data.approach !== 'RW' && (
+                          <div className="col-sm-4">
+                            <Select
+                              isMulti={data.approach !== 'SP'}
+                              isSearchable={true}
+                              ref={useridDetail}
+                              name="user_id[]"
+                              className="basic-multi-select"
+                              classNamePrefix="select"
+                              options={userDropdown}
+                              required
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
 
-                      {userDropdown && data.approach === 'RW' && (
-                        <div className="col-sm-6">
-                          <Table bordered className="mt-2" id="table">
-                            <thead>
-                              <tr className="text-center">
-                                <th>#</th>
-                                <th>Selected User</th>
-                                <th>Enter Ratio</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {userDropdown.map((ele, i) => {
-                                return (
-                                  <tr>
-                                    <td>{i + 1}</td>
-                                    <td>
-                                      <input
-                                        type="hidden"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_id[]"
-                                        value={ele.value}
-                                        readOnly
-                                      />
-                                      <input
-                                        type="text"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_name[]"
-                                        value={ele.label}
-                                        readOnly
-                                      />
-                                    </td>
+                    {userDropdown && data.approach === 'RW' && (
+                      <div className="col-sm-6">
+                        <Table bordered className="mt-2" id="table">
+                          <thead>
+                            <tr className="text-center">
+                              <th>#</th>
+                              <th>Selected User</th>
+                              <th>Enter Ratio</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {userDropdown.map((ele, i) => {
+                              return (
+                                <tr>
+                                  <td>{i + 1}</td>
+                                  <td>
+                                    <input
+                                      type="hidden"
+                                      className="form-control form-control-sm"
+                                      id={`index_` + Math.random()}
+                                      name="user_id[]"
+                                      value={ele.value}
+                                      readOnly
+                                    />
+                                    <input
+                                      type="text"
+                                      className="form-control form-control-sm"
+                                      id={`index_` + Math.random()}
+                                      name="user_name[]"
+                                      value={ele.label}
+                                      readOnly
+                                    />
+                                  </td>
 
-                                    <td>
-                                      <input
-                                        type="text"
-                                        className="form-control col-sm-2"
-                                        name="ratio[]"
-                                        defaultValue={userData[i]?.ratio || 0}
-                                        ref={userRatioDetail}
-                                        onInput={handleRatioInput(i)}
-                                      />
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                              <tr>
-                                <td colSpan={2} className="text-right">
-                                  <b>TOTAL</b>
-                                </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control col-sm-2"
+                                      name="ratio[]"
+                                      defaultValue={userData[i]?.ratio || 0}
+                                      ref={userRatioDetail}
+                                      onInput={handleRatioInput(i)}
+                                    />
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            <tr>
+                              <td colSpan={2} className="text-right">
+                                <b>TOTAL</b>
+                              </td>
 
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control col-sm-2"
-                                    id={`index_` + Math.random()}
-                                    value={ratioTotal}
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                              <td>
+                                <input
+                                  type="text"
+                                  className="form-control col-sm-2"
+                                  id={`index_` + Math.random()}
+                                  value={ratioTotal}
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </Table>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-3 d-flex justify-content-end">
                   <button type="submit" className="btn btn-primary btn-sm">
