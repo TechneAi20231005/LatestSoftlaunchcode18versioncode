@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, startTransition } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Dropdown, Modal } from 'react-bootstrap';
+import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
 import { _attachmentUrl, userSessionData } from '../../../settings/constants';
@@ -46,6 +46,7 @@ export default function TaskComponent({ match }) {
   const [attachment, setAttachment] = useState();
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
+  const [currentTaskStatus, setCurrentTaskStatus] = useState('PENDING');
 
   //Basket Modal Related
   const [basketModal, setBasketModal] = useState(false);
@@ -158,7 +159,7 @@ export default function TaskComponent({ match }) {
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  const getBasketData = async (sprint_id) => {
+  const getBasketData = async (sprint_id, task_status) => {
     const tempAllTaskList = [];
     const taskDataa = [];
     const tasksDataa = [];
@@ -174,10 +175,9 @@ export default function TaskComponent({ match }) {
       });
     }, 1000);
     // setIsLoading(true);
-
     try {
       await new BasketService()
-        .getBasketTaskData(ticketId, sprintId)
+        .getBasketTaskData(ticketId, sprintId, task_status)
         .then((res) => {
           if (res.status === 200) {
             setShowLoaderModal(false);
@@ -520,7 +520,7 @@ export default function TaskComponent({ match }) {
     setSelectedOption((prevStateOption) => {
       if (selectedOption === prevStateOption) {
         setSprintCardData([]);
-        getBasketData(0);
+        getBasketData(0, currentTaskStatus);
         return null;
       }
       setSprintCardData((prevState) => {
@@ -530,7 +530,7 @@ export default function TaskComponent({ match }) {
         return filteredArray;
       });
 
-      getBasketData(selectedOption?.value);
+      getBasketData(selectedOption?.value, currentTaskStatus);
       return selectedOption;
     });
   };
@@ -807,11 +807,22 @@ export default function TaskComponent({ match }) {
   // This arrangement can be altered based on how we want the date's format to appear.
   let currentDate = `${day}-${month}-${year}`;
 
+  const handleTaskStatusFilter = (e) => {
+    setCurrentTaskStatus(e.target.value);
+    getBasketData(
+      sprintData[currentSprintIndex]?.id
+        ? sprintData[currentSprintIndex]?.id
+        : 0,
+      e.target.value
+    );
+  };
+
   useEffect(() => {
     getBasketData(
       sprintData[currentSprintIndex]?.id
         ? sprintData[currentSprintIndex]?.id
-        : 0
+        : 0,
+      currentTaskStatus
     );
     loadData();
     getTicketData();
@@ -1375,6 +1386,60 @@ export default function TaskComponent({ match }) {
         </div>
       ) : (
         <div>
+          <Card>
+            <CardBody className="text-end">
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input cp"
+                  type="radio"
+                  name="task_status"
+                  id="task_status_inprogress"
+                  value="PENDING"
+                  onChange={handleTaskStatusFilter}
+                  checked={currentTaskStatus === 'PENDING'}
+                />
+                <label
+                  cp
+                  className="form-check-label cp"
+                  for="task_status_inprogress"
+                >
+                  In Progress
+                </label>
+              </div>
+
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input cp"
+                  type="radio"
+                  name="task_status"
+                  id="task_status_completed"
+                  value="COMPLETED"
+                  onChange={handleTaskStatusFilter}
+                  checked={currentTaskStatus === 'COMPLETED'}
+                />
+                <label
+                  className="form-check-label cp"
+                  for="task_status_completed"
+                >
+                  Completed
+                </label>
+              </div>
+              <div className="form-check form-check-inline">
+                <input
+                  className="form-check-input cp"
+                  type="radio"
+                  name="task_status"
+                  id="task_status_all"
+                  value="all"
+                  onChange={handleTaskStatusFilter}
+                  checked={currentTaskStatus === 'all'}
+                />
+                <label className="form-check-label cp" for="task_status_all">
+                  All
+                </label>
+              </div>
+            </CardBody>
+          </Card>
           {isLoading == true ? (
             <CardLoadingSkeleton />
           ) : (
