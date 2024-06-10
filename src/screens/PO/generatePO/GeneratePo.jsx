@@ -43,7 +43,7 @@ function GeneratePo() {
 
   // // function
   const transformDataForExport = (data) => {
-    return data?.map((row, index) => ({
+    return data?.map((row) => ({
       'Delivery Date': row?.delivery_date ?? '--',
       'Order Date': row?.order_date ?? '--',
       'Karagir 1': row?.karagir ?? '--',
@@ -122,6 +122,7 @@ function GeneratePo() {
                     name="delivery_date"
                     label="Delivery Date :"
                     requiredField
+                    min={new Date().toISOString().split('T')[0]}
                   />
                 </Col>
               </Row>
