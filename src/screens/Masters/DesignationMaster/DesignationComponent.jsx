@@ -47,7 +47,7 @@ function DesignationComponent() {
     (DesignationSlice) => DesignationSlice.designationMaster.notify
   );
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const searchRef = useRef();
 

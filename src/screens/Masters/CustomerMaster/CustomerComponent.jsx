@@ -19,7 +19,7 @@ function CustomerComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const searchRef = useRef();
   const location = useLocation();

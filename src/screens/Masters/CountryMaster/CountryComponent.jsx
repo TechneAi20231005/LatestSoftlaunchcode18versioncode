@@ -31,7 +31,7 @@ function CountryComponent() {
 
   const [notify, setNotify] = useState();
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const searchRef = useRef();
   const dispatch = useDispatch();

@@ -1,6 +1,11 @@
 //Rushikesh Harkare //
 import React, { useEffect, useState, useRef } from 'react';
-import { _base, _attachmentUrl, _apiUrl, userSessionData } from '../../../../settings/constants';
+import {
+  _base,
+  _attachmentUrl,
+  _apiUrl,
+  userSessionData
+} from '../../../../settings/constants';
 import { Modal, Spinner } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import TestCasesService from '../../../../services/TicketService/TestCaseService';
@@ -152,62 +157,62 @@ const TestCases = ({ match }) => {
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false, // Flag indicating whether the modal should be shown
     modalData: '', // Data to be displayed in the modal
-    modalHeader: '', // Header/title for the modal
+    modalHeader: '' // Header/title for the modal
   });
 
   // State for the general 'modal'
   const [modal, setModal] = useState({
     showModal: false, // Flag indicating whether the modal should be shown
     modalData: '', // Data to be displayed in the modal
-    modalHeader: '', // Header/title for the modal
+    modalHeader: '' // Header/title for the modal
   });
 
   // State for the 'import Modal'
   const [importModal, setImportModal] = useState({
     ishowModal: false, // Flag indicating whether the modal should be shown
     imodalData: '', // Data to be displayed in the modal
-    imodalHeader: '', // Header/title for the modal
+    imodalHeader: '' // Header/title for the modal
   });
 
   // State for the 'add to Existing Suite' modal
   const [addToExistingSuiteModal, setaddToExistingSuiteModal] = useState({
     showModal: false, // Flag indicating whether the modal should be shown
     modalData: '', // Data to be displayed in the modal
-    modalHeader: '', // Header/title for the modal
+    modalHeader: '' // Header/title for the modal
   });
 
   // State for the 'create New Test Suite' modal
   const [createNewTestSuiteModal, setcreateNewTestSuiteModal] = useState({
     showModal: false, // Flag indicating whether the modal should be shown
     modalData: '', // Data to be displayed in the modal
-    modalHeader: '', // Header/title for the modal
+    modalHeader: '' // Header/title for the modal
   });
 
   // State for the 'send to Test Suite' modal
   const [sendtoTestSuiteModal, setsendtoTestSuiteModal] = useState({
     showModal: false, // Flag indicating whether the modal should be shown
     modalData: '', // Data to be displayed in the modal
-    modalHeader: '', // Header/title for the modal
+    modalHeader: '' // Header/title for the modal
   });
 
   // Initializing state using the useState hook with default data.
   const [defaultData, setDefaultData] = useState({
-    script_path: null, // Initializing the script_path property with a null value.
+    script_path: null // Initializing the script_path property with a null value.
   });
   // STATES ENDS
 
   // This function is used to handle sending data to the 'send to Test Suite' modal.
-  const handleSendtoTestSuiteModal = suiteData => {
+  const handleSendtoTestSuiteModal = (suiteData) => {
     setsendtoTestSuiteModal(suiteData); // Set the data for the 'send to Test Suite' modal.
   };
 
   // This function is used to handle adding data to the 'add to Existing Suite' modal.
-  const handleAddToExistingSuiteModal = existingSuiteData => {
+  const handleAddToExistingSuiteModal = (existingSuiteData) => {
     setaddToExistingSuiteModal(existingSuiteData); // Set the data for the 'add to Existing Suite' modal.
   };
 
   // This function is used to handle creating a new suite in the 'create Suite' modal.
-  const handleCreateSuiteModal = createSuiteData => {
+  const handleCreateSuiteModal = (createSuiteData) => {
     setcreateNewTestSuiteModal(createSuiteData); // Set the data for the 'create Suite' modal.
   };
 
@@ -224,35 +229,35 @@ const TestCases = ({ match }) => {
   const testingRef = useRef();
 
   // Function to handle showing the 'send to Modal' with specified data
-  const handleSendtoModal = data => {
+  const handleSendtoModal = (data) => {
     setSendtoModal(data); // Set the 'send to Modal' data to the provided data
   };
 
-  // Object to store session-related data retrieved from sessionStorage
+  // Object to store session-related data retrieved from localStorage
   const useSessionData = {
-    userId: sessionStorage.getItem('id'), // Get the 'id' value from sessionStorage and store it in userId
+    userId: localStorage.getItem('id') // Get the 'id' value from localStorage and store it in userId
   };
 
   // Function to handle showing the general 'modal' for edit forms with specified data
-  const handleModal = data => {
+  const handleModal = (data) => {
     setModal(data); // Set the 'modal' data to the provided data
   };
 
   // Function to handle showing the 'import Modal' with specified data
-  const handleImportModal = data => {
+  const handleImportModal = (data) => {
     setImportModal(data); // Set the 'import Modal' data to the provided data
   };
 
   // Function to handle updating the default data with a new value based on input event
-  const defaultDataHandle = e => {
-    setDefaultData(prev => ({
+  const defaultDataHandle = (e) => {
+    setDefaultData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value, // Update the specific property in 'defaultData' with the new value
+      [e.target.name]: e.target.value // Update the specific property in 'defaultData' with the new value
     }));
   };
 
   // Function to handle selecting a platform
-  const handlePlatform = e => {
+  const handlePlatform = (e) => {
     setPlatform(e.target.value); // Update the selected platform based on the event's target value
   };
 
@@ -260,19 +265,19 @@ const TestCases = ({ match }) => {
   const handleCopiedData = (e, buttonType, index) => {
     if (e) {
       // Check if the event is provided
-      setData(prev => null); // Clear the current data (setting it to null)
+      setData((prev) => null); // Clear the current data (setting it to null)
       setData(data); // Set the data back to its original value (effectively a no-op)
 
       // Set the copied data and its type based on the provided index
-      setCopiedData(prev => ({
+      setCopiedData((prev) => ({
         type: buttonType,
-        data: data[index],
+        data: data[index]
       }));
     }
   };
 
   // Function to handle selecting a tester status
-  const handleTesterStatus = e => {
+  const handleTesterStatus = (e) => {
     if (testerRef.current.value === 'FAIL') {
       setTesterStatus(false); // Set the tester status to false if the value is 'FAIL'
     } else {
@@ -305,7 +310,10 @@ const TestCases = ({ match }) => {
                       target="_blank"
                       className="btn btn-primary btn-sm p-1"
                     >
-                      <i class="icofont-eye" style={{ fontSize: '15px', height: '15px' }}></i>
+                      <i
+                        class="icofont-eye"
+                        style={{ fontSize: '15px', height: '15px' }}
+                      ></i>
                     </a>
                   </td>
                 </tr>
@@ -337,7 +345,7 @@ const TestCases = ({ match }) => {
     form.append('is_enabled', value); // Add the updated 'is_enabled' value to the form
 
     // Iterate through each key in tempData and append its value to the form
-    Object.keys(tempData).map(key => {
+    Object.keys(tempData).map((key) => {
       if (
         // Skip certain keys while appending to the form
         key !== 'counter' &&
@@ -361,7 +369,7 @@ const TestCases = ({ match }) => {
     // Update the test case using the updated form data
     await new TestCasesService()
       .updateTestCases(tempData.id, form)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             loadData(); // Reload data on success
@@ -372,10 +380,15 @@ const TestCases = ({ match }) => {
           setNotify({ type: 'danger', message: res.data.message });
 
           // Log an error if the update fails
-          new ErrorLogService().sendErrorLog('TestCase', 'Create_TestCases', 'INSERT', res.message);
+          new ErrorLogService().sendErrorLog(
+            'TestCase',
+            'Create_TestCases',
+            'INSERT',
+            res.message
+          );
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         setNotify({ type: 'danger', message: 'Request Error !!!' });
@@ -385,13 +398,13 @@ const TestCases = ({ match }) => {
           'TestCase',
           'Create_TestCases',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       });
   };
 
   // Function to reset form fields based on the provided event
-  const resetForm = e => {
+  const resetForm = (e) => {
     if (e) {
       // Check if the testingRef is available
       if (testingRef.current) {
@@ -438,7 +451,7 @@ const TestCases = ({ match }) => {
     // Fetch test cases using TestCasesService
     await new TestCasesService()
       .getTestCases(useSessionData.userId, ticket_id, task_id)
-      .then(res => {
+      .then((res) => {
         setData(null); // Clear existing data
         setUserTypeData(null); // Clear existing user type data
         console.log(res.data);
@@ -479,11 +492,11 @@ const TestCases = ({ match }) => {
             attachments: temp[key].attachments,
             is_enabled: temp[key].is_enabled,
             script_path: temp[key].script_path,
-            approved_status: temp[key].approved_status,
+            approved_status: temp[key].approved_status
           });
         }
 
-        setData(prev => null); // Clear the current data
+        setData((prev) => null); // Clear the current data
         setData(tempData); // Set the new test case data
 
         const a = tempData.map((d, i) => {
@@ -513,44 +526,48 @@ const TestCases = ({ match }) => {
             tester_comments: temp[key].tester_comments,
             reviewer_comments: temp[key].reviewer_comments,
             module_name: temp[key].module_name,
-            submodule: temp[key].submodule,
+            submodule: temp[key].submodule
           });
         }
         setExportData(ExportTempData);
       });
 
     // Fetch all testing types data
-    await new TestingTypeServices().getAlltestingType().then(res => {
+    await new TestingTypeServices().getAlltestingType().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          var temp = res.data.data.filter(d => d.is_active == 1);
+          var temp = res.data.data.filter((d) => d.is_active == 1);
           setTestingTypeDropdown(
-            temp.map(d => ({
+            temp.map((d) => ({
               value: d.id,
-              label: d.testing_type,
-            })), // Create testing type dropdown options
+              label: d.testing_type
+            })) // Create testing type dropdown options
           );
         }
       }
     });
 
     // Fetch designated dropdown data based on ticket ID
-    await new TestCasesService().getdesignatedDropdown(ticket_id).then(res => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setShowLoaderModal(false);
-          const deta = res.data.data.ALL;
-          setBa(
-            deta
-              .filter(d => d.is_active == 1 && d.id != userSessionData.userId)
-              .map(d => ({
-                value: d.id,
-                label: d.first_name + '-' + d.last_name,
-              })), // Create designated dropdown options
-          );
+    await new TestCasesService()
+      .getdesignatedDropdown(ticket_id)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setShowLoaderModal(false);
+            const deta = res.data.data.ALL;
+            setBa(
+              deta
+                .filter(
+                  (d) => d.is_active == 1 && d.id != userSessionData.userId
+                )
+                .map((d) => ({
+                  value: d.id,
+                  label: d.first_name + '-' + d.last_name
+                })) // Create designated dropdown options
+            );
+          }
         }
-      }
-    });
+      });
   };
 
   // Columns for DataTable
@@ -559,7 +576,7 @@ const TestCases = ({ match }) => {
       ? [
           {
             name: ' Enable/Disable',
-            cell: row => (
+            cell: (row) => (
               <div
                 class="form-check form-switch"
                 //  onClick={() => handleEnabledChange(row.id)}
@@ -574,24 +591,24 @@ const TestCases = ({ match }) => {
                     // key={Math.random}
                     // onBlur={e=>updateEnable(e, row.index)}
                     defaultChecked={row.is_enabled == 1 ? true : false} // Check if row is in selectedRows state
-                    onChange={e => {
+                    onChange={(e) => {
                       toggleRowSelection(e, row.id, row);
                       updateEnable(e, row.index);
                     }}
                   />
                 )}
               </div>
-            ),
-          },
+            )
+          }
         ]
       : []),
 
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '100px',
-      cell: row => (
+      cell: (row) => (
         // row.is_disabled == false &&
         <div className="btn-group " role="group">
           {executable == 0 && (
@@ -601,10 +618,10 @@ const TestCases = ({ match }) => {
                 style={{
                   borderRadius: '10px',
                   marginRight: '5px',
-                  marginTop: '3px',
+                  marginTop: '3px'
                 }}
                 disabled={row.is_enabled == 0}
-                onClick={e => {
+                onClick={(e) => {
                   handleCopiedData(e, 'ADD', row.index);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
@@ -619,7 +636,7 @@ const TestCases = ({ match }) => {
               style={{ borderRadius: '20px', marginRight: '5px' }}
               className="btn btn-sm btn-info "
               disabled={row.is_enabled == 0}
-              onClick={e => {
+              onClick={(e) => {
                 handleCopiedData(e, 'EDIT', row.index);
                 // getData(e, row.index)
               }}
@@ -630,7 +647,7 @@ const TestCases = ({ match }) => {
           <Link
             to={`/${_base}/TestCaseHistory/` + row.id}
             className="btn btn-sm btn-danger text-white"
-            onClick={e => {
+            onClick={(e) => {
               if (row.is_enabled == 0) {
                 e.preventDefault(); // Prevents link from navigating
               }
@@ -640,21 +657,25 @@ const TestCases = ({ match }) => {
             <i class="icofont-history"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Test Case Id',
-      selector: row => row.test_case_id,
-      sortable: true,
+      selector: (row) => row.test_case_id,
+      sortable: true
     },
 
     {
       name: 'Function',
-      selector: row => row.function,
+      selector: (row) => row.function,
       sortable: true,
       width: '100px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.function && (
             <OverlayTrigger overlay={<Tooltip>{row.function} </Tooltip>}>
               <div>
@@ -668,15 +689,19 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Field',
-      selector: row => row.field,
+      selector: (row) => row.field,
       sortable: true,
       width: '150px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.field && (
             <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
               <div>
@@ -690,41 +715,51 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Testing Type',
-      selector: row => row.testing_type_name,
+      selector: (row) => row.testing_type_name,
       sortable: true,
-      width: '120px',
+      width: '120px'
     },
 
     {
       name: 'Description',
-      selector: row => row.test_description,
+      selector: (row) => row.test_description,
       sortable: true,
       width: '300px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.test_description && (
-            <OverlayTrigger overlay={<Tooltip>{row.test_description} </Tooltip>}>
+            <OverlayTrigger
+              overlay={<Tooltip>{row.test_description} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">{row.test_description}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Expected Result',
-      selector: row => row.expected_result,
+      selector: (row) => row.expected_result,
       sortable: true,
       width: '300px',
 
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
@@ -733,17 +768,21 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Actual Result',
-      selector: row => row.actual_result,
+      selector: (row) => row.actual_result,
       sortable: true,
       width: '200px',
 
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.actual_result && (
             <OverlayTrigger overlay={<Tooltip>{row.actual_result} </Tooltip>}>
               <div>
@@ -752,16 +791,20 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Tester status',
-      selector: row => row.tester_status,
+      selector: (row) => row.tester_status,
       sortable: true,
 
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.tester_status && (
             <OverlayTrigger overlay={<Tooltip>{row.tester_status} </Tooltip>}>
               <div>
@@ -775,16 +818,20 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Severity',
-      selector: row => row.severity,
+      selector: (row) => row.severity,
       sortable: true,
 
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.severity && (
             <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
               <div>
@@ -798,17 +845,21 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Tester Comments',
-      selector: row => row.tester_comments,
+      selector: (row) => row.tester_comments,
       sortable: true,
       width: '200px',
 
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.tester_comments && (
             <OverlayTrigger overlay={<Tooltip>{row.tester_comments} </Tooltip>}>
               <div>
@@ -817,32 +868,42 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Reviewer Comments',
-      selector: row => row.reviewer_comments,
+      selector: (row) => row.reviewer_comments,
       sortable: true,
       width: '200px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.reviewer_comments && (
-            <OverlayTrigger overlay={<Tooltip>{row.reviewer_comments} </Tooltip>}>
+            <OverlayTrigger
+              overlay={<Tooltip>{row.reviewer_comments} </Tooltip>}
+            >
               <div>
                 <span className="ms-1"> {row.reviewer_comments}</span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Script Path',
-      selector: row => row.script_path,
+      selector: (row) => row.script_path,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.script_path && (
             <OverlayTrigger overlay={<Tooltip>{row.script_path} </Tooltip>}>
               <div>
@@ -856,14 +917,18 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Platform',
-      selector: row => row.platform,
+      selector: (row) => row.platform,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.platform && (
             <OverlayTrigger overlay={<Tooltip>{row.platform} </Tooltip>}>
               <div>
@@ -877,64 +942,78 @@ const TestCases = ({ match }) => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'APK Version',
-      selector: row => row.apk_version,
+      selector: (row) => row.apk_version,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.apk_version && (
             <OverlayTrigger overlay={<Tooltip>{row.apk_version} </Tooltip>}>
               <div>
-                <span className="ms-1"> {row.apk_version ? row.apk_version : ''}</span>
+                <span className="ms-1">
+                  {' '}
+                  {row.apk_version ? row.apk_version : ''}
+                </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Os Version',
-      selector: row => row.os_version,
+      selector: (row) => row.os_version,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.os_version && (
             <OverlayTrigger overlay={<Tooltip>{row.os_version} </Tooltip>}>
               <div>
-                <span className="ms-1"> {row.os_version ? row.os_version : ''}</span>
+                <span className="ms-1">
+                  {' '}
+                  {row.os_version ? row.os_version : ''}
+                </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const conditionalRowStyles = [
     // Apply styles to rows where is_enabled is 0
     {
-      when: row => row.is_enabled == 0,
+      when: (row) => row.is_enabled == 0,
       style: {
         backgroundColor: '#D3D3D3', // Set background color for disabled rows
-        fontWeight: 'bold', // Make text bold for disabled rows
-      },
-    },
+        fontWeight: 'bold' // Make text bold for disabled rows
+      }
+    }
   ];
 
   // Define Data of Table Data
   const tableData = {
     columns,
-    data,
+    data
   };
 
   // Function to fetch and set the last TestCase Id
   const getLastId = async () => {
     // Call TestCasesService to fetch the last TestCase Id
-    await new TestCasesService().getLastId(ticket_id, task_id).then(res => {
+    await new TestCasesService().getLastId(ticket_id, task_id).then((res) => {
       if (res.status === 200) {
         setTId(res.data); // Set the fetched last TestCase Id
       }
@@ -942,13 +1021,13 @@ const TestCases = ({ match }) => {
   };
 
   // Function to send selected test cases for review
-  const sendTestCasesForReview = async e => {
+  const sendTestCasesForReview = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     setNotify(null); // Clear any existing notifications
     const form = new FormData(e.target); // Create a new FormData object from the form
 
     form.append('test_case_id', selectedRowsData); // Append selected test case data to the form
-    await new TestCasesService().getReviewTestCases(form).then(res => {
+    await new TestCasesService().getReviewTestCases(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setSentReview(true); // Set flag to indicate successful submission for review
@@ -961,7 +1040,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to check the maximum length of uploaded attachments
-  const maxLengthCheck = e => {
+  const maxLengthCheck = (e) => {
     if (e.target.files.length > 5) {
       // Check if the number of uploaded files exceeds 5
       alert('You Can Upload Only 5 Attachments'); // Display an alert
@@ -970,7 +1049,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle form submission
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     var flag = 1;
     setNotify(null); // Clear any existing notifications
@@ -987,11 +1066,14 @@ const TestCases = ({ match }) => {
     // Continue if all conditions are met
     if (flag == 1) {
       if (button_type == 'UPDATE') {
-        response = new TestCasesService().updateTestCases(form.getAll('id'), form); // Update test cases if button type is 'UPDATE'
+        response = new TestCasesService().updateTestCases(
+          form.getAll('id'),
+          form
+        ); // Update test cases if button type is 'UPDATE'
       } else {
         response = new TestCasesService().postTestCases(form); // Post new test cases if button type is not 'UPDATE'
       }
-      await response.then(res => {
+      await response.then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             // document.getElementById("function").value = "";
@@ -1042,7 +1124,7 @@ const TestCases = ({ match }) => {
             'TestCase',
             button_type == 'UPDATE' ? 'UPDATE_TEST_CASE' : 'CREATE_TEST_CASE',
             button_type == 'UPDATE' ? 'UPDATE' : 'INSERT',
-            res.message,
+            res.message
           );
         }
       });
@@ -1050,7 +1132,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle importing Test Case from Excel
-  const handleimportTestCase = async e => {
+  const handleimportTestCase = async (e) => {
     setShowLoaderModal(null); // Clear existing loader modal status
     setShowLoaderModal(true); // Show loader modal
     e.preventDefault(); // Prevent the default form submission behavior
@@ -1058,7 +1140,7 @@ const TestCases = ({ match }) => {
     setNotify(null); // Clear any existing notifications
 
     // Call TestCasesService to upload Test Case from Excel
-    await new TestCasesService().uploadTestCase(form).then(res => {
+    await new TestCasesService().uploadTestCase(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setShowLoaderModal(false); // Hide loader modal
@@ -1066,7 +1148,7 @@ const TestCases = ({ match }) => {
           setImportModal({
             ishowModal: false,
             imodalData: '',
-            imodalHeader: '',
+            imodalHeader: ''
           }); // Close the import modal
           loadData(); // Reload the data
         } else {
@@ -1089,7 +1171,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle test case filtering
-  const handleFilter = async e => {
+  const handleFilter = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     const formData = new FormData(e.target); // Create a new FormData object from the form
     const tempData = []; // Initialize an array to store filtered data
@@ -1097,7 +1179,7 @@ const TestCases = ({ match }) => {
     // Call TestCasesService to get filtered test cases
     await new TestCasesService()
       .getTestCases(useSessionData.userId, ticket_id, task_id, formData)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             let counter = 1;
@@ -1129,7 +1211,7 @@ const TestCases = ({ match }) => {
                 attachments: temp[key].attachments,
                 is_enabled: temp[key].is_enabled,
                 userId: temp[key].userId,
-                script_path: temp[key].script_path,
+                script_path: temp[key].script_path
               });
             }
 
@@ -1156,7 +1238,7 @@ const TestCases = ({ match }) => {
                 module_name: temp[key].module_name,
                 script_path: temp[key].script_path,
                 reviewer_comments: temp[key].reviewer_comments,
-                actual_result: temp[key].actual_result,
+                actual_result: temp[key].actual_result
               });
             }
 
@@ -1168,9 +1250,9 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle changes in selected rows
-  const handleSelectedRowsChange = e => {
+  const handleSelectedRowsChange = (e) => {
     // Extract IDs from the selected rows
-    var idArray = e.selectedRows.map(d => d.id);
+    var idArray = e.selectedRows.map((d) => d.id);
 
     // Update state with the array of selected row IDs
     setSelectingRows(idArray);
@@ -1183,7 +1265,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle form reset
-  const handleReset = e => {
+  const handleReset = (e) => {
     // Clear selected testing types using the ref
     if (testingTypesRef.current) {
       testingTypesRef.current.clearValue();
@@ -1202,7 +1284,7 @@ const TestCases = ({ match }) => {
   };
 
   // Function to handle sending notifications to multiple recipients
-  const handleSendNotificationToMulti = async e => {
+  const handleSendNotificationToMulti = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
     setNotify(null); // Clear any existing notifications
     const form = new FormData(e.target); // Create a new FormData object from the form
@@ -1210,7 +1292,7 @@ const TestCases = ({ match }) => {
     form.append('test_case_id', selectedRowsData); // Append selected test case IDs
 
     // Call TestCasesService to send notifications to multiple recipients
-    await new TestCasesService().sendNotificationToMulti(form).then(res => {
+    await new TestCasesService().sendNotificationToMulti(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setSendtoModal({ showModal: false, modalData: '', modalHeader: '' }); // Close the send-to modal
@@ -1227,66 +1309,68 @@ const TestCases = ({ match }) => {
     // Check if the row is disabled (is_enabled == 0)
     if (row.is_enabled == 0) {
       // If the row is disabled, remove its ID from the selectingRows state
-      setSelectingRows(selectingRows.filter(d => d != rowId));
+      setSelectingRows(selectingRows.filter((d) => d != rowId));
     } else {
       // If the row is enabled, toggle its ID in the selectingRows state
       // This adds the ID if it's not present, or removes it if it's already present
-      setSelectingRows(prev => [...prev, rowId]);
+      setSelectingRows((prev) => [...prev, rowId]);
     }
   };
   // get test suite data
-  const getTestSuite = async e => {
+  const getTestSuite = async (e) => {
     // Fetch all test suites data
-    await new TestCasesService().getAllTestSuites().then(res => {
+    await new TestCasesService().getAllTestSuites().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const temp = res.data.data;
           setTestSuiteDropdown(
-            temp.map(d => ({ value: d.id, label: d.testsuit_name })), // Create test suite dropdown options
+            temp.map((d) => ({ value: d.id, label: d.testsuit_name })) // Create test suite dropdown options
           );
         }
       }
     });
   };
   // Function to add selected test cases to an existing test suite
-  const addToExistingTestSuite = async e => {
+  const addToExistingTestSuite = async (e) => {
     setNotify(null); // Clear any existing notifications
     e.preventDefault(); // Prevent the default form submission behavior
     const form = new FormData(e.target); // Create a new FormData object from the form
     form.append('test_case_id', selectedRowsData); // Append selected test case IDs
 
     // Call TestCasesService to add test cases to an existing test suite from reviewer
-    await new TestCasesService().addToExistingTestSuiteFromReviewer(form).then(res => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          // Set success notification and close relevant modals
-          setNotify({ type: 'success', message: res.data.message });
-          setsendtoTestSuiteModal({
-            showModal: false,
-            modalData: '',
-            modalHeader: '',
-          });
-          setaddToExistingSuiteModal({
-            showModal: false,
-            modalData: '',
-            modalHeader: '',
-          });
-        } else {
-          // Set error notification
-          setNotify({ type: 'danger', message: res.data.message });
+    await new TestCasesService()
+      .addToExistingTestSuiteFromReviewer(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            // Set success notification and close relevant modals
+            setNotify({ type: 'success', message: res.data.message });
+            setsendtoTestSuiteModal({
+              showModal: false,
+              modalData: '',
+              modalHeader: ''
+            });
+            setaddToExistingSuiteModal({
+              showModal: false,
+              modalData: '',
+              modalHeader: ''
+            });
+          } else {
+            // Set error notification
+            setNotify({ type: 'danger', message: res.data.message });
+          }
         }
-      }
-    });
+      });
   };
 
   // Function to create a new test suite
-  const createNewTestSuite = async e => {
+  const createNewTestSuite = async (e) => {
     setNotify(null); // Clear any existing notifications
     e.preventDefault(); // Prevent the default form submission behavior
     const form = new FormData(e.target); // Create a new FormData object from the form
 
     // Call TestCasesService to create a new test suite
-    await new TestCasesService().createTestSuite(form).then(res => {
+    await new TestCasesService().createTestSuite(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           // Set success notification and close the modal
@@ -1294,7 +1378,7 @@ const TestCases = ({ match }) => {
           setcreateNewTestSuiteModal({
             showModal: false,
             modalData: '',
-            modalHeader: '',
+            modalHeader: ''
           });
           loadData(); // Reload data to update the view
         } else {
@@ -1311,7 +1395,7 @@ const TestCases = ({ match }) => {
   }, []);
   const paginationComponentOptions = {
     selectAllRowsItem: true, // Enable the "Select All" option
-    selectAllRowsItemText: 'All', // Text for the "Select All" option
+    selectAllRowsItemText: 'All' // Text for the "Select All" option
   };
   return (
     <>
@@ -1321,7 +1405,11 @@ const TestCases = ({ match }) => {
       <div>
         <form onSubmit={handleForm} method="post" encType="multipart/form-data">
           <div className="container-xxl" id="Top">
-            <PageHeader headerTitle={executable == 1 ? 'Test Case Execution' : 'Test Cases'} />
+            <PageHeader
+              headerTitle={
+                executable == 1 ? 'Test Case Execution' : 'Test Cases'
+              }
+            />
             <div className="card mt-2">
               <div className="card-body">
                 <div className="form-group row">
@@ -1335,10 +1423,12 @@ const TestCases = ({ match }) => {
                         className="form-control"
                         id="script_path"
                         name="script_path"
-                        onChange={e => defaultDataHandle(e)}
+                        onChange={(e) => defaultDataHandle(e)}
                         readOnly={executable == 1 ? true : false}
                         defaultValue={
-                          data && data[0] && data[0].script_path ? data && data[0].script_path : ''
+                          data && data[0] && data[0].script_path
+                            ? data && data[0].script_path
+                            : ''
                         }
                       />
                     )}
@@ -1350,7 +1440,7 @@ const TestCases = ({ match }) => {
                         id="script_path"
                         name="script_path"
                         readOnly={executable == 1 ? true : false}
-                        onChange={e => defaultDataHandle(e)}
+                        onChange={(e) => defaultDataHandle(e)}
                       />
                     )}
                   </div>
@@ -1389,13 +1479,13 @@ const TestCases = ({ match }) => {
                         className="form-control"
                         id="apk_version"
                         name="apk_version"
-                        onKeyPress={e => Validation.NumbersSpeicalOnlyDot(e)}
+                        onKeyPress={(e) => Validation.NumbersSpeicalOnlyDot(e)}
                         readOnly={executable == 1 ? true : false}
-                        onPaste={e => {
+                        onPaste={(e) => {
                           e.preventDefault();
                           return false;
                         }}
-                        onCopy={e => {
+                        onCopy={(e) => {
                           e.preventDefault();
                           return false;
                         }}
@@ -1413,16 +1503,16 @@ const TestCases = ({ match }) => {
                         id="os_version"
                         name="os_version"
                         q
-                        onPaste={e => {
+                        onPaste={(e) => {
                           e.preventDefault();
                           return false;
                         }}
-                        onCopy={e => {
+                        onCopy={(e) => {
                           e.preventDefault();
                           return false;
                         }}
                         readOnly={executable == 1 ? true : false}
-                        onKeyPress={e => Validation.NumbersSpeicalOnlyDot(e)}
+                        onKeyPress={(e) => Validation.NumbersSpeicalOnlyDot(e)}
                       ></input>
                     </div>
                   )}
@@ -1463,7 +1553,9 @@ const TestCases = ({ match }) => {
                         id="id"
                         name="id"
                         defaultValue={
-                          copiedData.data && copiedData.type == 'EDIT' ? copiedData.data.id : ''
+                          copiedData.data && copiedData.type == 'EDIT'
+                            ? copiedData.data.id
+                            : ''
                         }
                       />
                     )}
@@ -1508,7 +1600,9 @@ const TestCases = ({ match }) => {
                         ref={testingRef}
                         defaultValue={
                           copiedData.data &&
-                          testingTypeDropdown.filter(d => d.value == copiedData.data.testing_type)
+                          testingTypeDropdown.filter(
+                            (d) => d.value == copiedData.data.testing_type
+                          )
                         }
                         isDisabled={executable == 1 ? true : false}
                       />
@@ -1543,7 +1637,9 @@ const TestCases = ({ match }) => {
                       required={true}
                       readOnly={executable == 1 ? true : false}
                       defaultValue={
-                        copiedData.data && copiedData.data.function ? copiedData.data.function : ''
+                        copiedData.data && copiedData.data.function
+                          ? copiedData.data.function
+                          : ''
                       }
                     />
                   </div>
@@ -1559,7 +1655,9 @@ const TestCases = ({ match }) => {
                       name="field"
                       readOnly={executable == 1 ? true : false}
                       defaultValue={
-                        copiedData.data && copiedData.data.field ? copiedData.data.field : ''
+                        copiedData.data && copiedData.data.field
+                          ? copiedData.data.field
+                          : ''
                       }
                     ></input>
                   </div>
@@ -1576,7 +1674,9 @@ const TestCases = ({ match }) => {
                       id="test_description"
                       name="test_description"
                       required={true}
-                      defaultValue={copiedData.data && copiedData.data.test_description}
+                      defaultValue={
+                        copiedData.data && copiedData.data.test_description
+                      }
                       readOnly={executable == 1 ? true : false}
                     ></textarea>
                   </div>
@@ -1594,7 +1694,9 @@ const TestCases = ({ match }) => {
                       id="expected_result"
                       name="expected_result"
                       required={true}
-                      defaultValue={copiedData.data && copiedData.data.expected_result}
+                      defaultValue={
+                        copiedData.data && copiedData.data.expected_result
+                      }
                       readOnly={executable == 1 ? true : false}
                     ></textarea>
                   </div>
@@ -1673,8 +1775,10 @@ const TestCases = ({ match }) => {
                         key={Math.random()}
                         ref={testerRef}
                         required
-                        defaultValue={copiedData.data && copiedData.data.tester_status}
-                        onSelect={e => {
+                        defaultValue={
+                          copiedData.data && copiedData.data.tester_status
+                        }
+                        onSelect={(e) => {
                           handleTesterStatus(e);
                         }}
                       >
@@ -1683,7 +1787,8 @@ const TestCases = ({ match }) => {
                         <option
                           value="PASS"
                           selected={
-                            copiedData?.data && copiedData?.data.tester_status == 'PASS'
+                            copiedData?.data &&
+                            copiedData?.data.tester_status == 'PASS'
                               ? true
                               : false
                           }
@@ -1694,7 +1799,8 @@ const TestCases = ({ match }) => {
                         <option
                           value="FAIL"
                           selected={
-                            copiedData?.data && copiedData?.data.tester_status == 'FAIL'
+                            copiedData?.data &&
+                            copiedData?.data.tester_status == 'FAIL'
                               ? true
                               : false
                           }
@@ -1706,7 +1812,8 @@ const TestCases = ({ match }) => {
                           value="UNDER_DEVELOPMENT"
                           selected={
                             copiedData?.data &&
-                            copiedData?.data.tester_status == 'UNDER_DEVELOPMENT'
+                            copiedData?.data.tester_status ==
+                              'UNDER_DEVELOPMENT'
                               ? true
                               : false
                           }
@@ -1717,7 +1824,8 @@ const TestCases = ({ match }) => {
                         <option
                           value="SUGGESTION"
                           selected={
-                            copiedData?.data && copiedData?.data.tester_status == 'SUGGESTION'
+                            copiedData?.data &&
+                            copiedData?.data.tester_status == 'SUGGESTION'
                               ? true
                               : false
                           }
@@ -1728,7 +1836,8 @@ const TestCases = ({ match }) => {
                         <option
                           value="REOPEN"
                           selected={
-                            copiedData?.data && copiedData?.data.tester_status == 'REOPEN'
+                            copiedData?.data &&
+                            copiedData?.data.tester_status == 'REOPEN'
                               ? true
                               : false
                           }
@@ -1761,7 +1870,9 @@ const TestCases = ({ match }) => {
                       <option
                         value="HIGH"
                         selected={
-                          copiedData.data && copiedData.data.severity == 'HIGH' ? true : false
+                          copiedData.data && copiedData.data.severity == 'HIGH'
+                            ? true
+                            : false
                         }
                       >
                         High
@@ -1769,7 +1880,10 @@ const TestCases = ({ match }) => {
                       <option
                         value="MEDIUM"
                         selected={
-                          copiedData.data && copiedData.data.severity == 'MEDIUM' ? true : false
+                          copiedData.data &&
+                          copiedData.data.severity == 'MEDIUM'
+                            ? true
+                            : false
                         }
                       >
                         Medium
@@ -1778,7 +1892,9 @@ const TestCases = ({ match }) => {
                       <option
                         value="LOW"
                         selected={
-                          copiedData.data && copiedData.data.severity == 'LOW' ? true : false
+                          copiedData.data && copiedData.data.severity == 'LOW'
+                            ? true
+                            : false
                         }
                       >
                         Low
@@ -1810,7 +1926,7 @@ const TestCases = ({ match }) => {
                     <button
                       className=" p-2 btn btn-primary"
                       type="button"
-                      onClick={e => resetForm(e)}
+                      onClick={(e) => resetForm(e)}
                     >
                       Cancel
                     </button>
@@ -1854,8 +1970,12 @@ const TestCases = ({ match }) => {
                           type="button"
                           id="minus1"
                           className="btn btn-primary text-white"
-                          onClick={e => {
-                            handleCopiedData(e, 'EDIT', copiedData.data.index - 1);
+                          onClick={(e) => {
+                            handleCopiedData(
+                              e,
+                              'EDIT',
+                              copiedData.data.index - 1
+                            );
                           }}
                         >
                           <i className="icofont-arrow-left"></i>
@@ -1870,8 +1990,12 @@ const TestCases = ({ match }) => {
                           type="button"
                           id="plus1"
                           className="btn btn-primary text-white"
-                          onClick={e => {
-                            handleCopiedData(e, 'EDIT', copiedData.data.index + 1);
+                          onClick={(e) => {
+                            handleCopiedData(
+                              e,
+                              'EDIT',
+                              copiedData.data.index + 1
+                            );
                           }}
                         >
                           <i className="icofont-arrow-right"></i>
@@ -1888,7 +2012,7 @@ const TestCases = ({ match }) => {
 
       {/* Filter search */}
       <div className="container-xxl">
-        <form onSubmit={e => handleFilter(e)} method="post">
+        <form onSubmit={(e) => handleFilter(e)} method="post">
           <div className="card mt-2" style={{ zIndex: 10 }}>
             <div className="card-body">
               <div className="form-group row">
@@ -1966,7 +2090,9 @@ const TestCases = ({ match }) => {
 
                       <option value="PASS">Pass</option>
                       <option value="FAIL">Fail</option>
-                      <option value="UNDER_DEVELOPMENT">Under Development</option>
+                      <option value="UNDER_DEVELOPMENT">
+                        Under Development
+                      </option>
                       <option value="SUGGESTION">Suggestion</option>
                       <option value="REOPEN">Reopen</option>
                     </select>
@@ -2005,7 +2131,7 @@ const TestCases = ({ match }) => {
                     style={{
                       color: 'red',
                       fontWeight: 'bold',
-                      fontStyle: 'italic',
+                      fontStyle: 'italic'
                     }}
                   >
                     Note: User Can Send TestCases For Review only once{' '}
@@ -2025,11 +2151,11 @@ const TestCases = ({ match }) => {
                       <button
                         className="btn btn-primary"
                         type="button"
-                        onClick={e => {
+                        onClick={(e) => {
                           handleImportModal({
                             ishowModal: true,
                             imodalData: '',
-                            imodalHeader: 'Import Test Case',
+                            imodalHeader: 'Import Test Case'
                           });
                         }}
                       >
@@ -2053,7 +2179,7 @@ const TestCases = ({ match }) => {
                           handleSendtoModal({
                             showModal: true,
                             modalData: '',
-                            modalHeader: 'Assign Test Cases To',
+                            modalHeader: 'Assign Test Cases To'
                           });
                         }}
                       >
@@ -2076,10 +2202,20 @@ const TestCases = ({ match }) => {
                       </div>
 
                       <div>
-                        <input type="hidden" id="ticket_id" name="ticket_id" value={ticket_id} />
+                        <input
+                          type="hidden"
+                          id="ticket_id"
+                          name="ticket_id"
+                          value={ticket_id}
+                        />
                       </div>
                       <div>
-                        <input type="hidden" id="task_id" name="task_id" value={task_id} />
+                        <input
+                          type="hidden"
+                          id="task_id"
+                          name="task_id"
+                          value={task_id}
+                        />
                       </div>
                     </form>
                     {executable == 0 && showreviewBtn == 0 && (
@@ -2090,7 +2226,7 @@ const TestCases = ({ match }) => {
                           handleSendtoTestSuiteModal({
                             showModal: true,
                             modalData: '',
-                            modalHeader: 'Test Suite ',
+                            modalHeader: 'Test Suite '
                           });
                           getTestSuite();
                         }}
@@ -2126,11 +2262,11 @@ const TestCases = ({ match }) => {
                   centered
                   show={importModal.ishowModal}
                   size="sm"
-                  onHide={e => {
+                  onHide={(e) => {
                     handleImportModal({
                       ishowModal: false,
                       imodalData: '',
-                      imodalHeader: '',
+                      imodalHeader: ''
                     });
                   }}
                 >
@@ -2141,7 +2277,9 @@ const TestCases = ({ match }) => {
                     ref={formRef}
                   >
                     <Modal.Header closeButton>
-                      <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
+                      <Modal.Title className="fw-bold">
+                        {modal.modalHeader}
+                      </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       <div className="">
@@ -2152,7 +2290,7 @@ const TestCases = ({ match }) => {
                           name="test_case_id"
                           value={
                             data &&
-                            data.map(e => {
+                            data.map((e) => {
                               return e.test_case_id;
                             })
                           }
@@ -2220,17 +2358,19 @@ const TestCases = ({ match }) => {
                   size="md"
                   centered
                   show={sendtoModal.showModal}
-                  onHide={e => {
+                  onHide={(e) => {
                     handleSendtoModal({
                       showModal: false,
                       modalData: '',
-                      modalHeader: '',
+                      modalHeader: ''
                     });
                   }}
                 >
                   <form method="post" onSubmit={handleSendNotificationToMulti}>
                     <Modal.Header closeButton>
-                      <Modal.Title className="fw-bold">{sendtoModal.modalHeader}</Modal.Title>
+                      <Modal.Title className="fw-bold">
+                        {sendtoModal.modalHeader}
+                      </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       <div className="container">
@@ -2259,7 +2399,7 @@ const TestCases = ({ match }) => {
                             {/* <div className="col-sm-8">
                               <label className="col-form-label"><b>Developer:</b></label>
                               {dev &&
-                              <Select 
+                              <Select
                               className="form-control"
                               name="developer_id"
                               id="developer_id"
@@ -2284,11 +2424,11 @@ const TestCases = ({ match }) => {
                       <button
                         type="button"
                         className="btn btn-danger text-white"
-                        onClick={e => {
+                        onClick={(e) => {
                           handleSendtoModal({
                             showModal: false,
                             modalData: '',
-                            modalHeader: '',
+                            modalHeader: ''
                           });
                         }}
                       >
@@ -2304,11 +2444,11 @@ const TestCases = ({ match }) => {
                   size="md"
                   centered
                   show={sendtoTestSuiteModal.showModal}
-                  onHide={e => {
+                  onHide={(e) => {
                     handleSendtoTestSuiteModal({
                       showModal: false,
                       modalData: '',
-                      modalHeader: '',
+                      modalHeader: ''
                     });
                   }}
                 >
@@ -2336,11 +2476,13 @@ const TestCases = ({ match }) => {
                                   handleAddToExistingSuiteModal({
                                     showModal: true,
                                     modalData: '',
-                                    modalHeader: 'Add to Existing Test Suite',
+                                    modalHeader: 'Add to Existing Test Suite'
                                   });
                                 }}
                               />
-                              <span class="px-2">Add To Existing Test Suite</span>
+                              <span class="px-2">
+                                Add To Existing Test Suite
+                              </span>
                               <label class="fancy-checkbox parsley-error" />
                               <input
                                 type="radio"
@@ -2353,7 +2495,7 @@ const TestCases = ({ match }) => {
                                   handleCreateSuiteModal({
                                     showModal: true,
                                     modalData: '',
-                                    modalHeader: 'Create Test Suite',
+                                    modalHeader: 'Create Test Suite'
                                   });
                                 }}
                               />
@@ -2372,11 +2514,11 @@ const TestCases = ({ match }) => {
                   size="md"
                   centered
                   show={addToExistingSuiteModal.showModal}
-                  onHide={e => {
+                  onHide={(e) => {
                     handleAddToExistingSuiteModal({
                       showModal: false,
                       modalData: '',
-                      modalHeader: '',
+                      modalHeader: ''
                     });
                   }}
                 >
@@ -2419,16 +2561,16 @@ const TestCases = ({ match }) => {
                       <button
                         type="button"
                         className="btn btn-danger text-white"
-                        onClick={e => {
+                        onClick={(e) => {
                           handleAddToExistingSuiteModal({
                             showModal: false,
                             modalData: '',
-                            modalHeader: '',
+                            modalHeader: ''
                           });
                           handleSendtoTestSuiteModal({
                             showModal: true,
                             modalData: '',
-                            modalHeader: '',
+                            modalHeader: ''
                           });
                         }}
                       >
@@ -2444,15 +2586,19 @@ const TestCases = ({ match }) => {
                   size="md"
                   centered
                   show={createNewTestSuiteModal.showModal}
-                  onHide={e => {
+                  onHide={(e) => {
                     handleCreateSuiteModal({
                       showModal: false,
                       modalData: '',
-                      modalHeader: '',
+                      modalHeader: ''
                     });
                   }}
                 >
-                  <form method="post" onSubmit={createNewTestSuite} encType="multipart/form-data">
+                  <form
+                    method="post"
+                    onSubmit={createNewTestSuite}
+                    encType="multipart/form-data"
+                  >
                     <Modal.Header closeButton>
                       <Modal.Title className="fw-bold">
                         {createNewTestSuiteModal.modalHeader}
@@ -2490,16 +2636,16 @@ const TestCases = ({ match }) => {
                       <button
                         type="button"
                         className="btn btn-danger text-white"
-                        onClick={e => {
+                        onClick={(e) => {
                           handleCreateSuiteModal({
                             showModal: false,
                             modalData: '',
-                            modalHeader: '',
+                            modalHeader: ''
                           });
                           handleSendtoTestSuiteModal({
                             showModal: true,
                             modalData: '',
-                            modalHeader: '',
+                            modalHeader: ''
                           });
                         }}
                       >

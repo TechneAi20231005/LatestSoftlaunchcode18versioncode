@@ -8,6 +8,7 @@ import { guestRoutes, userRoutes } from './routes';
 import MainLayouts from './layouts/MainLayouts';
 import { REACT_APP_ROOT_URL } from './config/envConfig';
 import './App.css';
+import { SuspenseLoader } from './components/custom/loader';
 
 const App = () => {
   // // Initial state
@@ -19,6 +20,7 @@ const App = () => {
 
   // // local state
   const [appRoutes, setAppRoutes] = useState([]);
+  // const [screenLoading, setScreenLoading] = useState(false);
 
   // useEffect hook for set routes on component mount
   useEffect(() => {
@@ -39,7 +41,7 @@ const App = () => {
         Number(currentTime) > Number(tokenExpirationTime)
       ) {
         localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear();
       }
     };
     const interval = setInterval(checkTokenExpiration(), 3600000);
@@ -47,6 +49,13 @@ const App = () => {
       clearInterval(interval);
     };
   }, [window.location.pathname]);
+
+  // useEffect(() => {
+  //   setScreenLoading(true);
+  //   setTimeout(() => {
+  //     setScreenLoading(false);
+  //   }, 3000);
+  // }, []);
 
   const mainContent = appRoutes.map((route) => {
     return route.component ? (
@@ -69,21 +78,22 @@ const App = () => {
   });
 
   return (
-    <>
-      <div id="mytask-layout" className="theme-indigo">
-        <Routes>
-          <Route element={<MainLayouts isAuthenticated={tokenPresent} />}>
-            {mainContent}
-          </Route>
-        </Routes>
-        {tokenPresent && onlineStatus === false && (
-          <h1 className="mt-4">
-            Looks like you're offline 🔴🔴🔴 Please check your internet
-            connection{' '}
-          </h1>
-        )}
-      </div>
-    </>
+    <div id="mytask-layout" className="theme-indigo">
+      {/* {screenLoading ? (
+        <SuspenseLoader />
+      ) : ( */}
+      <Routes>
+        <Route element={<MainLayouts isAuthenticated={tokenPresent} />}>
+          {mainContent}
+        </Route>
+      </Routes>
+      {/* )} */}
+      {tokenPresent && onlineStatus === false && (
+        <h1 className="mt-4">
+          Looks like you're offline 🔴🔴🔴 Please check your internet connection{' '}
+        </h1>
+      )}
+    </div>
   );
 };
 

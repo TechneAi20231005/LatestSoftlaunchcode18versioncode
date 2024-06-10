@@ -38,7 +38,7 @@ export default function TestDraftComponent({ close }) {
 
   const handleResetLocationState = () => {
     setState(null);
-    sessionStorage.removeItem('locationState');
+    localStorage.removeItem('locationState');
   };
 
   // useEffect(() => {
@@ -48,9 +48,9 @@ export default function TestDraftComponent({ close }) {
   // }, [location.state]);
 
   useEffect(() => {
-    // Save the initial state to sessionStorage
+    // Save the initial state to localStorage
     if (location.state) {
-      sessionStorage.setItem('locationState', JSON.stringify(location.state));
+      localStorage.setItem('locationState', JSON.stringify(location.state));
     }
 
     const handleBeforeUnload = (event) => {
@@ -66,11 +66,11 @@ export default function TestDraftComponent({ close }) {
   }, [location.state]);
 
   useEffect(() => {
-    // Check if there is saved state in sessionStorage on mount
-    const savedState = sessionStorage.getItem('locationState');
+    // Check if there is saved state in localStorage on mount
+    const savedState = localStorage.getItem('locationState');
     if (savedState) {
       setState(JSON.parse(savedState));
-      sessionStorage.removeItem('locationState');
+      localStorage.removeItem('locationState');
       // Reset the location state using history.replaceState
       window.history.replaceState(
         null,

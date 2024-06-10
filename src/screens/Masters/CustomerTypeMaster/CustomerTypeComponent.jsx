@@ -58,7 +58,7 @@ function CustomerTypeComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [isActive, setIsActive] = useState(1);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const searchRef = useRef();
 

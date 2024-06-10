@@ -1,29 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import DataTable from "react-data-table-component";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import BillTypeMasterService from "../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { _base, userSessionData } from "../../../settings/constants";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { Link, useLocation } from "react-router-dom";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import React, { useEffect, useState, useRef } from 'react';
+import DataTable from 'react-data-table-component';
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import BillTypeMasterService from '../../../services/Bill Checking/Masters/BillTypeMasterService';
+import { _base, userSessionData } from '../../../settings/constants';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { Link, useLocation } from 'react-router-dom';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 function BillTypeMaster() {
   const location = useLocation();
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const userId = userSessionData.userId;
 
   const searchRef = useRef();
-  const dispatch =useDispatch()
-  const checkRole = useSelector((DashbordSlice) =>DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 44));
-
-
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 44)
+  );
 
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -31,7 +31,7 @@ function BillTypeMaster() {
     return data.filter((d) => {
       for (const key in d) {
         if (
-          typeof d[key] === "string" &&
+          typeof d[key] === 'string' &&
           d[key].toLowerCase().includes(lowercaseSearch)
         ) {
           return true;
@@ -49,7 +49,7 @@ function BillTypeMaster() {
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -59,25 +59,24 @@ function BillTypeMaster() {
           aria-label="Basic outlined example"
         >
           <Link
-            to={`/${_base + "/EditBillType/" + row.id}`}
+            to={`/${_base + '/EditBillType/' + row.id}`}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
           </Link>
 
           <Link
-            to={`/${_base + "/ViewBillType/" + row.id}`}
+            to={`/${_base + '/ViewBillType/' + row.id}`}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-eye text-info"></i>
           </Link>
         </div>
-      ),
+      )
     },
 
-
     {
-      name: "Bill Type",
+      name: 'Bill Type',
       selector: (row) => row.bill_type,
       sortable: true,
       cell: (row) => (
@@ -90,20 +89,20 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.bill_type} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.bill_type && row.bill_type.length < 10
                     ? row.bill_type
-                    : row.bill_type.substring(0, 10) + "...."}
+                    : row.bill_type.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -115,11 +114,11 @@ function BillTypeMaster() {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row.remark,
       sortable: true,
       cell: (row) => (
@@ -132,21 +131,20 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.remark && row.remark.length < 10
                     ? row.remark
-                    : row.remark.substring(0, 10) + "...."}
+                    : row.remark.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
-
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
       sortable: true,
       cell: (row) => (
@@ -159,20 +157,20 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.created_at && row.created_at.length < 10
                     ? row.created_at
-                    : row.created_at.substring(0, 10) + "...."}
+                    : row.created_at.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => row.created_by,
       sortable: true,
       cell: (row) => (
@@ -185,20 +183,20 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.created_by && row.created_by.length < 10
                     ? row.created_by
-                    : row.created_by.substring(0, 10) + "...."}
+                    : row.created_by.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
       sortable: true,
       cell: (row) => (
@@ -211,20 +209,20 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.updated_at && row.updated_at.length < 10
                     ? row.updated_at
-                    : row.updated_at.substring(0, 10) + "...."}
+                    : row.updated_at.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => row.updated_by,
       sortable: true,
       cell: (row) => (
@@ -237,17 +235,17 @@ function BillTypeMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.updated_by && row.updated_by.length < 10
                     ? row.updated_by
-                    : row.updated_by.substring(0, 10) + "...."}
+                    : row.updated_by.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const loadData = async () => {
@@ -269,7 +267,7 @@ function BillTypeMaster() {
             created_by: temp[key].created_by,
             updated_at: temp[key].updated_at,
             updated_by: temp[key].updated_by,
-            employee: temp[key].employee,
+            employee: temp[key].employee
           });
         }
 
@@ -278,29 +276,25 @@ function BillTypeMaster() {
       }
     });
 
-  
-    
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }
     // });
-  
   };
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
   useEffect(() => {
-    dispatch(getRoles())
-   
-    loadData();
+    dispatch(getRoles());
 
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -319,7 +313,7 @@ function BillTypeMaster() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  console.log("checkRole",checkRole)
+  console.log('checkRole', checkRole);
 
   return (
     <div className="container-xxl">
@@ -330,7 +324,7 @@ function BillTypeMaster() {
           return (
             <div className="col-auto d-flex w-sm-100">
               <Link
-                to={`/${_base + "/CreateBillType"}`}
+                to={`/${_base + '/CreateBillType'}`}
                 className="btn btn-dark btn-set-task w-sm-100"
               >
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add Bill Type
@@ -358,7 +352,7 @@ function BillTypeMaster() {
               onClick={(e) =>
                 searchRef.current.value
                   ? handleSearch(e)
-                  : alert("please enter a search")
+                  : alert('please enter a search')
               }
             >
               <i className="icofont-search-1 "></i> Search

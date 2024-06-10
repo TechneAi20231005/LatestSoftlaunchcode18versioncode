@@ -1,28 +1,28 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
-import ErrorLogService from "../../../services/ErrorLogService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../../components/Common/PageHeader";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { Spinner } from "react-bootstrap";
-import UserService from "../../../services/MastersService/UserService";
-import GeneralSettingService from "../../../services/SettingService/GeneralSettingService";
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
+import ErrorLogService from '../../../services/ErrorLogService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import PageHeader from '../../../components/Common/PageHeader';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { Spinner } from 'react-bootstrap';
+import UserService from '../../../services/MastersService/UserService';
+import GeneralSettingService from '../../../services/SettingService/GeneralSettingService';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   getGeneralSettingData,
   postGeneralSettingData,
-  updateGeneralSettingData,
-} from "../SettingAction";
-import MyTicketComponentSlice from "../../TicketManagement/MyTicketComponentSlice";
-import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-import { handleModalClose, handleGeneralModal } from "../SettingSlice";
+  updateGeneralSettingData
+} from '../SettingAction';
+import MyTicketComponentSlice from '../../TicketManagement/MyTicketComponentSlice';
+import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import { handleModalClose, handleGeneralModal } from '../SettingSlice';
 
 function GeneralSettings() {
   const [data, setData] = useState(null);
@@ -30,7 +30,7 @@ function GeneralSettings() {
   const [user, setUser] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [notify, setNotify] = useState();
-  const [authority, setAuthority] = useState(["Upload ", "Delete", " Restore"]);
+  const [authority, setAuthority] = useState(['Upload ', 'Delete', ' Restore']);
   const [generalSetting, setGeneralSetting] = useState([]);
   const [checkRole, setCheckRole] = useState([]);
 
@@ -51,8 +51,8 @@ function GeneralSettings() {
 
   const [assignedUserModal, setAssignedUserModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const userDetail = useRef();
@@ -68,7 +68,7 @@ function GeneralSettings() {
     return data.filter((d) => {
       for (const key in d) {
         if (
-          typeof d[key] === "string" &&
+          typeof d[key] === 'string' &&
           d[key].toLowerCase().includes(lowercaseSearch)
         ) {
           return true;
@@ -85,13 +85,13 @@ function GeneralSettings() {
   };
 
   const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name";
+    const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
     dispatch(getUserForMyTicketsData(inputRequired));
     setShowLoaderModal(null);
     const data = [];
     const exportTempData = [];
-    const roleId = sessionStorage.getItem("role_id");
+    const roleId = localStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -117,7 +117,7 @@ function GeneralSettings() {
           setUser(
             data.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }))
           );
         }
@@ -171,7 +171,7 @@ function GeneralSettings() {
     // }
 
     if (
-      settingName === "Time Regularization after task complete" &&
+      settingName === 'Time Regularization after task complete' &&
       arrayOfId?.length == 0
     ) {
       form.user_id = array;
@@ -197,17 +197,17 @@ function GeneralSettings() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
-      width: "5%",
+      width: '5%',
       cell: (row) => (
         <div className="btn-group" role="group">
           <button
@@ -220,7 +220,7 @@ function GeneralSettings() {
                 handleGeneralModal({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Settings",
+                  modalHeader: 'Edit Settings'
                 })
               );
             }}
@@ -228,25 +228,25 @@ function GeneralSettings() {
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
-      name: "Sr",
+      name: 'Sr',
       selector: (row) => row.counter,
       sortable: true,
-      width: "5%",
+      width: '5%'
     },
     {
-      name: "Setting Name",
+      name: 'Setting Name',
       selector: (row) => row.setting_name,
       sortable: true,
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Assigned User",
+      name: 'Assigned User',
       // selector: (row) => row.setting_name,
       sortable: true,
-      width: "20%",
+      width: '20%',
       cell: (row) => {
         let arr = [];
         User.filter((el) => {
@@ -257,7 +257,7 @@ function GeneralSettings() {
 
         return (
           <>
-            <OverlayTrigger overlay={<Tooltip>{arr.join(", ")}</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{arr.join(', ')}</Tooltip>}>
               <div>
                 <span className="ms-1">
                   {arr.length > 2 ? `${(arr[0], arr[1])}...` : `${arr}`}
@@ -266,41 +266,41 @@ function GeneralSettings() {
             </OverlayTrigger>
           </>
         );
-      },
+      }
     },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
         </div>
       ),
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row.remark,
       sortable: true,
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Created at",
+      name: 'Created at',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created by",
+      name: 'Created by',
       sortable: true,
       cell: (row) => {
         let userList = User.filter(
@@ -315,17 +315,17 @@ function GeneralSettings() {
         if (userList && userList.length > 0) {
           return <>{userList[0].label}</>;
         } else {
-          return <>{""}</>;
+          return <>{''}</>;
         }
-      },
+      }
     },
     {
-      name: "Updated at",
+      name: 'Updated at',
       selector: (row) => row.updated_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Updated by",
+      name: 'Updated by',
       sortable: true,
       cell: (row) => {
         let userList = User.filter(
@@ -334,10 +334,10 @@ function GeneralSettings() {
         if (userList && userList.length > 0) {
           return <>{userList[0].label}</>;
         } else {
-          return <>{""}</>;
+          return <>{''}</>;
         }
-      },
-    },
+      }
+    }
   ];
 
   const handleKeyPress = (event) => {
@@ -355,8 +355,8 @@ function GeneralSettings() {
     <div className="container-xxl">
       {Notify && (
         <>
-          {" "}
-          <Alert alertData={Notify} />{" "}
+          {' '}
+          <Alert alertData={Notify} />{' '}
         </>
       )}
       <PageHeader
@@ -381,7 +381,7 @@ function GeneralSettings() {
                     handleGeneralModal({
                       showModal: true,
                       modalData: null,
-                      modalHeader: "Add Setting",
+                      modalHeader: 'Add Setting'
                     })
                   );
                 }}
@@ -408,7 +408,7 @@ function GeneralSettings() {
               className="btn btn-sm btn-warning text-white"
               type="button"
               onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -416,7 +416,7 @@ function GeneralSettings() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -473,7 +473,7 @@ function GeneralSettings() {
       >
         <form
           method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
         >
           <Modal.Header
             closeButton
@@ -482,7 +482,7 @@ function GeneralSettings() {
                 handleModalClose({
                   showModal: false,
                   modalData: null,
-                  modalHeader: "Add Setting",
+                  modalHeader: 'Add Setting'
                 })
               );
             }}
@@ -558,7 +558,7 @@ function GeneralSettings() {
                     name="remark"
                     maxLength={50}
                     ref={useRemark}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />
                 </div>
               </div>
@@ -570,9 +570,9 @@ function GeneralSettings() {
                 type="submit"
                 className="btn btn-primary text-white"
                 style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -582,7 +582,7 @@ function GeneralSettings() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
@@ -600,8 +600,8 @@ function GeneralSettings() {
                   dispatch(
                     handleModalClose({
                       showModal: false,
-                      modalData: "",
-                      modalHeader: "",
+                      modalData: '',
+                      modalHeader: ''
                     })
                   );
                 }

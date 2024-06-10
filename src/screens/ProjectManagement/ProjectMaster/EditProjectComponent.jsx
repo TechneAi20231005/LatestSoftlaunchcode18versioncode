@@ -28,32 +28,36 @@ export default function EditProjectComponent({ match }) {
   const [customer, setCustomer] = useState(null);
   const [ba, setBa] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
 
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id === 20),
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
 
   const [users, setUsers] = useState(null);
   const [projectOwners, setProjectOwners] = useState(null);
 
   const loadData = async () => {
-    await new CustomerService().getCustomer().then(res => {
+    await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
           setCustomer(
-            res.data.data.filter(d => d.is_active === 1).map(d => ({ value: d.id, label: d.name })),
+            res.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.name }))
           );
         }
       }
     });
 
-    await new UserService().getUser().then(res => {
+    await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const user = res.data.data.filter(d => d.is_active == 1);
-          const reviewers = res.data.data.filter(d => d.is_active == 1 && d.account_for == 'SELF');
+          const user = res.data.data.filter((d) => d.is_active == 1);
+          const reviewers = res.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for == 'SELF'
+          );
 
           user.sort((a, b) => {
             if (a.first_name && b.first_name) {
@@ -62,30 +66,30 @@ export default function EditProjectComponent({ match }) {
             return 0;
           });
           setUsers(
-            user.map(d => ({
+            user.map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')',
-            })),
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
+            }))
           );
           setBa(
-            reviewers.map(d => ({
+            reviewers.map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')',
-            })),
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
+            }))
           );
         }
       }
     });
     await new ProjectService()
       .getProjectById(projectId)
-      .then(res => {
+      .then((res) => {
         console.log('res', res);
         if (res.status === 200) {
           const data = res.data.data;
           if (data && data.projectOwners) {
-            const a = res.data.data.projectOwners.map(d => ({
+            const a = res.data.data.projectOwners.map((d) => ({
               value: d.user_id,
-              label: d.employee_name,
+              label: d.employee_name
             }));
             setProjectOwners(a);
             if (data) {
@@ -95,7 +99,7 @@ export default function EditProjectComponent({ match }) {
           }
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
           const { response } = error;
           const { request, ...errorObject } = response;
@@ -106,10 +110,13 @@ export default function EditProjectComponent({ match }) {
             'Project',
             'Edit_Project',
             'INSERT',
-            errorObject.data.message,
+            errorObject.data.message
           );
         } else {
-          console.error("Error object does not contain expected 'response' property:", error);
+          console.error(
+            "Error object does not contain expected 'response' property:",
+            error
+          );
 
           // Handle cases where 'response' is not available
           // You may want to log or handle this case accordingly
@@ -119,7 +126,7 @@ export default function EditProjectComponent({ match }) {
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }
@@ -127,30 +134,37 @@ export default function EditProjectComponent({ match }) {
     dispatch(getRoles());
   };
 
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
     await new ProjectService()
       .updateProject(projectId, formData)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             history(
               {
-                pathname: `/${_base}/Project`,
+                pathname: `/${_base}/Project`
               },
-              { state: { alert: { type: 'success', message: res.data.message } } },
+              {
+                state: { alert: { type: 'success', message: res.data.message } }
+              }
             );
           } else {
             setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
           setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog('Project', 'Edit_Project', 'INSERT', res.message);
+          new ErrorLogService().sendErrorLog(
+            'Project',
+            'Edit_Project',
+            'INSERT',
+            res.message
+          );
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         setNotify({ type: 'danger', message: errorObject.data.message });
@@ -158,13 +172,15 @@ export default function EditProjectComponent({ match }) {
           'Project',
           'Edit_Project',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       });
   };
 
-  const handleShowLogo = e => {
-    var URL = 'http://3.108.206.34/TSNewBackend/storage/app/Attachment/project/' + data.logo;
+  const handleShowLogo = (e) => {
+    var URL =
+      'http://3.108.206.34/TSNewBackend/storage/app/Attachment/project/' +
+      data.logo;
     window.open(URL, '_blank');
   };
 
@@ -201,11 +217,20 @@ export default function EditProjectComponent({ match }) {
                         name="customer_id"
                         required={true}
                         options={customer}
-                        defaultValue={data ? customer.filter(d => d.value == data.customer_id) : ''}
+                        defaultValue={
+                          data
+                            ? customer.filter(
+                                (d) => d.value == data.customer_id
+                              )
+                            : ''
+                        }
                       />
                     </div>
 
-                    <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
                       <b>
                         Project Name : <Astrick color="red" size="13px" />
                       </b>
@@ -218,7 +243,7 @@ export default function EditProjectComponent({ match }) {
                         name="project_name"
                         defaultValue={data ? data.project_name : null}
                         required={true}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
                         }}
                       />
@@ -238,15 +263,18 @@ export default function EditProjectComponent({ match }) {
                           name="project_owner[]"
                           isMulti={true}
                           required={true}
-                          defaultValue={data.projectOwners.map(d => ({
+                          defaultValue={data.projectOwners.map((d) => ({
                             value: d.user_id,
-                            label: d.employee_name,
+                            label: d.employee_name
                           }))}
                         />
                       )}
                     </div>
                     {console.log('data', data)}
-                    <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
                       <b>Project Logo : </b>
                     </label>
                     <div className="col-sm-2">
@@ -267,7 +295,7 @@ export default function EditProjectComponent({ match }) {
                             right: '5rem',
                             top: '4.8rem',
                             fontSize: '20px',
-                            cursor: 'pointer',
+                            cursor: 'pointer'
                           }}
                         >
                           <span style={{ fontStyle: 'italic', color: 'blue' }}>
@@ -288,9 +316,9 @@ export default function EditProjectComponent({ match }) {
                           name="project_reviewer[]"
                           options={ba}
                           isMulti={true}
-                          defaultValue={data.projectReviewer.map(d => ({
+                          defaultValue={data.projectReviewer.map((d) => ({
                             value: d.user_id,
-                            label: d.employee_name,
+                            label: d.employee_name
                           }))}
                         />
                       </div>
@@ -311,7 +339,7 @@ export default function EditProjectComponent({ match }) {
                         rows="6"
                         defaultValue={data ? data.description : null}
                         required={true}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.addressFieldOnly(e);
                         }}
                       />
@@ -377,9 +405,14 @@ export default function EditProjectComponent({ match }) {
                               name="is_active"
                               id="is_active_1"
                               value="1"
-                              defaultChecked={data && data.is_active == 1 ? true : false}
+                              defaultChecked={
+                                data && data.is_active == 1 ? true : false
+                              }
                             />
-                            <label className="form-check-label" htmlFor="is_active_1">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
                               Active
                             </label>
                           </div>
@@ -392,9 +425,14 @@ export default function EditProjectComponent({ match }) {
                               name="is_active"
                               id="is_active_0"
                               value="0"
-                              defaultChecked={data && data.is_active == 0 ? true : false}
+                              defaultChecked={
+                                data && data.is_active == 0 ? true : false
+                              }
                             />
-                            <label className="form-check-label" htmlFor="is_active_0">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
                               Deactive
                             </label>
                           </div>
@@ -413,7 +451,10 @@ export default function EditProjectComponent({ match }) {
                 ) : (
                   ''
                 )}
-                <Link to={`/${_base}/Project`} className="btn btn-sm btn-danger text-white">
+                <Link
+                  to={`/${_base}/Project`}
+                  className="btn btn-sm btn-danger text-white"
+                >
                   Cancel
                 </Link>
               </div>

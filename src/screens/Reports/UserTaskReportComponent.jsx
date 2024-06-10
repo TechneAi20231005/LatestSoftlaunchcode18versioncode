@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { Spinner, Modal } from "react-bootstrap";
-import * as Validation from "../../components/Utilities/Validation";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { Astrick } from "../../components/Utilities/Style";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../Dashboard/DashboardAction";
+import React, { useEffect, useState, useRef } from 'react';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Spinner, Modal } from 'react-bootstrap';
+import * as Validation from '../../components/Utilities/Validation';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { Astrick } from '../../components/Utilities/Style';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../Dashboard/DashboardAction';
 
 function UserTaskReportComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -28,9 +28,9 @@ function UserTaskReportComponent() {
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
-  const roleId = sessionStorage.getItem("role_id");
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null)
   // const [datePicker, setDatePicker] = useState({
   //     fromDate: "",
@@ -50,49 +50,49 @@ function UserTaskReportComponent() {
 
   const columns = [
     {
-      name: "Sr No",
+      name: 'Sr No',
       selector: (row) => row.sr,
       sortable: true,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       selector: (row) => row.ticket_id,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
-    { name: "Task Name", selector: (row) => row.task_name, sortable: true },
-    { name: "User Name", selector: (row) => row.user_name, sortable: true },
+    { name: 'Task Name', selector: (row) => row.task_name, sortable: true },
+    { name: 'User Name', selector: (row) => row.user_name, sortable: true },
     {
-      name: "Total Worked",
+      name: 'Total Worked',
       selector: (row) => row.total_worked,
-      sortable: true,
+      sortable: true
     },
-    { name: "Status", selector: (row) => row.status, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: 'Status', selector: (row) => row.status, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true }
   ];
 
   const loadData = async () => {
     setShowLoaderModal(true);
     const tempUserData = [];
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
         const data = res.data.data.filter(
-          (d) => d.is_active === 1 && d.account_for === "SELF"
+          (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -106,7 +106,7 @@ function UserTaskReportComponent() {
     //     if (res.status === 200) {
     //         if (res.data.status == 1) {
     //             setShowLoaderModal(false)
-    //             const getRoleId = sessionStorage.getItem("role_id");
+    //             const getRoleId = localStorage.getItem("role_id");
     //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
     //         }
     //     }
@@ -116,23 +116,23 @@ function UserTaskReportComponent() {
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
     setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
+      setfromyear + '' + setfrommonth + '' + setfromdate;
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
@@ -145,7 +145,7 @@ function UserTaskReportComponent() {
     var a = JSON.stringify(Object.fromEntries(formData));
 
     if (todateformat > fromdateformat) {
-      alert("Please select Date After From date");
+      alert('Please select Date After From date');
     } else {
       var flag = 1;
       await new ReportService()
@@ -167,7 +167,7 @@ function UserTaskReportComponent() {
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
                 status: temp[key].status,
-                updated_at: temp[key].updated_at,
+                updated_at: temp[key].updated_at
               });
             }
             setData(null);
@@ -181,16 +181,16 @@ function UserTaskReportComponent() {
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
                 status: temp[key].status,
-                updated_at: temp[key].updated_at,
+                updated_at: temp[key].updated_at
               });
             }
             setExportData(null);
             setExportData(exportTempData);
           } else {
             new ErrorLogService().sendErrorLog(
-              "UserTask",
-              "Get_UserTask",
-              "INSERT",
+              'UserTask',
+              'Get_UserTask',
+              'INSERT',
               res.message
             );
           }
@@ -199,9 +199,9 @@ function UserTaskReportComponent() {
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
-            "UserTask",
-            "Get_UserTask",
-            "INSERT",
+            'UserTask',
+            'Get_UserTask',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -209,7 +209,7 @@ function UserTaskReportComponent() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleForm();
     }
   };
@@ -290,7 +290,7 @@ function UserTaskReportComponent() {
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-search-1 "></i> Search
                 </button>
@@ -298,7 +298,7 @@ function UserTaskReportComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
@@ -309,9 +309,9 @@ function UserTaskReportComponent() {
             <div
               className="col"
               style={{
-                textAlign: "right",
-                marginTop: "20px",
-                fontWeight: "600",
+                textAlign: 'right',
+                marginTop: '20px',
+                fontWeight: '600'
               }}
             >
               <ExportToExcel

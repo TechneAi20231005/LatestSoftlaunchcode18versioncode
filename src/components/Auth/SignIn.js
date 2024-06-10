@@ -59,18 +59,18 @@ export default function SignIn() {
       // Token has expired, log out the user
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
-      sessionStorage.clear();
+      localStorage.clear();
       // history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
   const loadData = () => {
     if (
-      sessionStorage.getItem('message_type') &&
-      sessionStorage.getItem('message')
+      localStorage.getItem('message_type') &&
+      localStorage.getItem('message')
     ) {
-      sessionStorage.setItem('message_type', null);
-      sessionStorage.setItem('message', null);
+      localStorage.setItem('message_type', null);
+      localStorage.setItem('message', null);
     }
   };
   useEffect(() => {

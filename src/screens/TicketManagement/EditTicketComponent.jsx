@@ -78,7 +78,7 @@ export default function EditTicketComponent({ match }) {
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem("role_id");
 
   const dispatch = useDispatch();
 

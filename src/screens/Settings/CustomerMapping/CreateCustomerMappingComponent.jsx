@@ -350,7 +350,7 @@ export default function CreateCustomerMappingComponent() {
 
     form.status = statusID;
 
-    form.tenant_id = sessionStorage.getItem('tenant_id');
+    form.tenant_id = localStorage.getItem('tenant_id');
     form.created_by = userSessionData.userId;
     form.created_at = getDateTime();
 

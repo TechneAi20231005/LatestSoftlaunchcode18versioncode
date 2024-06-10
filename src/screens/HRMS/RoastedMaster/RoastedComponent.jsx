@@ -1,32 +1,32 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link,useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import PageHeader from "../../../components/Common/PageHeader";
-import ErrorLogService from "../../../services/ErrorLogService";
-import TenantService from "../../../services/MastersService/TenantService";
-import { _base } from "../../../settings/constants";
-import Alert from "../../../components/Common/Alert";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { Spinner } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import BillPaymentServices from "../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import PageHeader from '../../../components/Common/PageHeader';
+import ErrorLogService from '../../../services/ErrorLogService';
+import TenantService from '../../../services/MastersService/TenantService';
+import { _base } from '../../../settings/constants';
+import Alert from '../../../components/Common/Alert';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { Spinner } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
+import BillPaymentServices from '../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices';
 
 function RoastedComponent() {
-  const location = useLocation()
+  const location = useLocation();
 
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
-  const [paymentType, setPaymentType] = useState("Weekly");
+  const [paymentType, setPaymentType] = useState('Weekly');
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const searchRef = useRef();
@@ -36,22 +36,22 @@ function RoastedComponent() {
       return (
         d.company_name
           .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g")) ||
+          .match(new RegExp(search.toLowerCase(), 'g')) ||
         d.company_type
           .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g"))
+          .match(new RegExp(search.toLowerCase(), 'g'))
       );
     });
     setData(temp);
   };
   const handleModal = (data) => {
     // alert(data.modalData.payment_type_name)
-    setPaymentType(data ? data.modalData.payment_type_name : "");
+    setPaymentType(data ? data.modalData.payment_type_name : '');
     setModal(data);
   };
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -69,7 +69,7 @@ function RoastedComponent() {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Payment Template",
+                modalHeader: 'Edit Payment Template'
               });
             }}
           >
@@ -79,16 +79,16 @@ function RoastedComponent() {
           <Link
             to={`/${_base}/ViewPaymentTemplateDetails/` + row.id}
             className="btn btn-sm btn-primary text-white"
-            style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
+            style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
             <i className="icofont-eye-alt"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "Sr", id: "id", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', id: 'id', selector: (row) => row.counter, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -100,35 +100,35 @@ function RoastedComponent() {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Shift Name",
+      name: 'Shift Name',
       selector: (row) => row.template_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Payment Type",
+      name: 'Payment Type',
       selector: (row) => row.payment_type_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Bill Type",
+      name: 'Bill Type',
       selector: (row) => row.bill_type_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Min Days", selector: (row) => row.min_days, sortable: true },
-    { name: "Bill Day", selector: (row) => row.bill_day, sortable: true },
+    { name: 'Min Days', selector: (row) => row.min_days, sortable: true },
+    { name: 'Bill Day', selector: (row) => row.bill_day, sortable: true },
     {
-      name: "Paymemt Weekly",
+      name: 'Paymemt Weekly',
       selector: (row) => row.payment_weekly_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Remark", selector: (row) => row.remark, sortable: true },
-    { name: "Created At", selector: (row) => row.created_at, sortable: true },
-    { name: "Created By", selector: (row) => row.created_by, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    { name: 'Remark', selector: (row) => row.remark, sortable: true },
+    { name: 'Created At', selector: (row) => row.created_at, sortable: true },
+    { name: 'Created By', selector: (row) => row.created_by, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = async () => {
@@ -155,12 +155,12 @@ function RoastedComponent() {
             min_days: temp[key].min_days,
             payment_type_name: temp[key].payment_type_name,
             bill_type_name: temp[key].bill_type_name,
-            payment_weekly_name: temp[key].payment_weekly_name,
+            payment_weekly_name: temp[key].payment_weekly_name
           });
         }
         setData(null);
         setData(data);
-        setPaymentType("Weekly");
+        setPaymentType('Weekly');
       }
     });
 
@@ -182,14 +182,14 @@ function RoastedComponent() {
     await new BillPaymentServices().autoUpdatePayment(formData).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
-          setModal({ showModal: false, modalData: "", modalHeader: "" });
+          setNotify({ type: 'success', message: res.data.message });
+          setModal({ showModal: false, modalData: '', modalHeader: '' });
           loadData();
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
-        setNotify({ type: "danger", message: res.data.message });
+        setNotify({ type: 'danger', message: res.data.message });
       }
     });
   };
@@ -218,8 +218,8 @@ function RoastedComponent() {
                 onClick={(e) => {
                   handleModal({
                     showModal: true,
-                    modalData: "",
-                    modalHeader: "Upload Csv File",
+                    modalData: '',
+                    modalHeader: 'Upload Csv File'
                   });
                 }}
               >
@@ -240,7 +240,7 @@ function RoastedComponent() {
 
               {/* {checkRole && checkRole[32].can_create === 1 ? */}
               <Link
-                to={`/${_base + "/Roasted/Create"}`}
+                to={`/${_base + '/Roasted/Create'}`}
                 className="btn btn-dark btn-set-task w-sm-50"
               >
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add Roasted
@@ -266,7 +266,7 @@ function RoastedComponent() {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -274,7 +274,7 @@ function RoastedComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -309,8 +309,8 @@ function RoastedComponent() {
           onHide={(e) => {
             handleModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: ''
             });
           }}
         >
@@ -340,7 +340,7 @@ function RoastedComponent() {
               <button
                 type="submit"
                 className="btn btn-sm btn-primary"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Upload
               </button>

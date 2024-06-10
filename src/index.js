@@ -29,7 +29,7 @@ const renderApp = () => {
           icon={true}
         />
       </BrowserRouter>
-    </Provider>,
+    </Provider>
   );
 };
 

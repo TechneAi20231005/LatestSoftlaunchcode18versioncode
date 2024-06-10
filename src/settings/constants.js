@@ -3,7 +3,7 @@ import {
   REACT_APP_API_URL,
   REACT_APP_PIN_CODE_API_URL,
   REACT_APP_ATTACHMENT_URL,
-  REACT_APP_ROOT_URL,
+  REACT_APP_ROOT_URL
 } from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
@@ -23,41 +23,48 @@ export const rpURL = _apiUrl + 'reset/resetPassword';
 export const attachmentUrl = _apiUrl + 'attachment';
 
 export const userSessionData = {
-  tenantId: sessionStorage.getItem('tenant_id'),
-  userId: sessionStorage.getItem('id'),
-  account_for: sessionStorage.getItem('account_for'),
-  customer_id: sessionStorage.getItem('customer_id'),
-  department_id: sessionStorage.getItem('department_id'),
-  Allow_Paid_Entry_Change: sessionStorage.getItem('Allow_Paid_Entry_Change'),
-  Paid_Entry_Change: sessionStorage.getItem('Paid_Entry_Change'),
-  Auto_Update_Payment: sessionStorage.getItem('Auto_Update_Payment'),
-  Download_Payment: sessionStorage.getItem('Download_Payment'),
-  Update_Bill: sessionStorage.getItem('Update_Bill'),
-  Received_Date: sessionStorage.getItem('Received_Date'),
-  Internal_Audit: sessionStorage.getItem('Internal_Audit'),
-  External_Audit: sessionStorage.getItem('External_Audit'),
-  Original_Bill_Needed: sessionStorage.getItem('Original_Bill_Needed'),
-  TCS_Applicable: sessionStorage.getItem('TCS_Applicable'),
-  Update_ACME_Account_Name: sessionStorage.getItem('Update_ACME_Account_Name'),
-  Bank_Details: sessionStorage.getItem('Bank_Details'),
-  Payment_Date: sessionStorage.getItem('Payment_Date'),
-  Amount_To_Be_Paid: sessionStorage.getItem('Amount_To_Be_Paid'),
-  Bill_Payment: sessionStorage.getItem('Bill_Payment'),
-  Edit_In_Bill: sessionStorage.getItem('Edit_In_Bill'),
-  Edit_Vendor_Master_Bank_Details: sessionStorage.getItem('Edit_Vendor_Master_Bank_Details'),
-  Past_Financial_Year_Bill_Date: sessionStorage.getItem('Past_Financial_Year_Bill_Date'),
-  Prepone_Payment_Date: sessionStorage.getItem('Prepone_Payment_Date'),
-  Update_ERP_Account_Name: sessionStorage.getItem('Update_ERP_Account_Name'),
-  Allow_Edit_Authorized_By_Management: sessionStorage.getItem(
-    'Allow_Edit_Authorized_By_Management',
+  tenantId: localStorage.getItem('tenant_id'),
+  userId: localStorage.getItem('id'),
+  account_for: localStorage.getItem('account_for'),
+  customer_id: localStorage.getItem('customer_id'),
+  department_id: localStorage.getItem('department_id'),
+  Allow_Paid_Entry_Change: localStorage.getItem('Allow_Paid_Entry_Change'),
+  Paid_Entry_Change: localStorage.getItem('Paid_Entry_Change'),
+  Auto_Update_Payment: localStorage.getItem('Auto_Update_Payment'),
+  Download_Payment: localStorage.getItem('Download_Payment'),
+  Update_Bill: localStorage.getItem('Update_Bill'),
+  Received_Date: localStorage.getItem('Received_Date'),
+  Internal_Audit: localStorage.getItem('Internal_Audit'),
+  External_Audit: localStorage.getItem('External_Audit'),
+  Original_Bill_Needed: localStorage.getItem('Original_Bill_Needed'),
+  TCS_Applicable: localStorage.getItem('TCS_Applicable'),
+  Update_ACME_Account_Name: localStorage.getItem('Update_ACME_Account_Name'),
+  Bank_Details: localStorage.getItem('Bank_Details'),
+  Payment_Date: localStorage.getItem('Payment_Date'),
+  Amount_To_Be_Paid: localStorage.getItem('Amount_To_Be_Paid'),
+  Bill_Payment: localStorage.getItem('Bill_Payment'),
+  Edit_In_Bill: localStorage.getItem('Edit_In_Bill'),
+  Edit_Vendor_Master_Bank_Details: localStorage.getItem(
+    'Edit_Vendor_Master_Bank_Details'
   ),
-  Allow_Edit_Authorized_By_HOD: sessionStorage.getItem('Allow_Edit_Authorized_By_HOD'),
-  Update_Payment_Details: sessionStorage.getItem('Update_Payment_Details'),
-  All_Update_Bill: sessionStorage.getItem('All_Update_Bill'),
-  time: getDateTime(),
+  Past_Financial_Year_Bill_Date: localStorage.getItem(
+    'Past_Financial_Year_Bill_Date'
+  ),
+  Prepone_Payment_Date: localStorage.getItem('Prepone_Payment_Date'),
+  Update_ERP_Account_Name: localStorage.getItem('Update_ERP_Account_Name'),
+  Allow_Edit_Authorized_By_Management: localStorage.getItem(
+    'Allow_Edit_Authorized_By_Management'
+  ),
+  Allow_Edit_Authorized_By_HOD: localStorage.getItem(
+    'Allow_Edit_Authorized_By_HOD'
+  ),
+  Update_Payment_Details: localStorage.getItem('Update_Payment_Details'),
+  All_Update_Bill: localStorage.getItem('All_Update_Bill'),
+  time: getDateTime()
 };
 
-export const menuUrl = _apiUrl + 'getMenuByRoleId/' + sessionStorage.getItem('role_id');
+export const menuUrl =
+  _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
 
 export const masterURL = {
   user: _apiUrl + 'employeeMaster',
@@ -80,7 +87,7 @@ export const masterURL = {
   dynamicFormDropdownMaster: _apiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',
   taskTicketTypeMaster: _apiUrl + 'taskticketTypeMaster',
-  sprintMaster: _apiUrl + 'sprintMaster',
+  sprintMaster: _apiUrl + 'sprintMaster'
 };
 
 export const dynamicURL = {
@@ -102,7 +109,7 @@ export const dynamicURL = {
   departmentMapping: _apiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   dynamicFormDropdownMaster: _apiUrl + 'dynamicFormDropdownMaster',
-  testingTypeMaster: _apiUrl + 'testingTypeMaster',
+  testingTypeMaster: _apiUrl + 'testingTypeMaster'
 };
 
 export const ticketUrl = {
@@ -113,7 +120,7 @@ export const ticketUrl = {
   subtask: _apiUrl + 'ticketSubtask',
   timerData: _apiUrl + 'timerData',
   postTimerDataGroupActivity: _apiUrl + 'postTimerDataGroupActivity',
-  stopTimerDataGroupActivity: _apiUrl + 'stopTimerDataGroupActivity',
+  stopTimerDataGroupActivity: _apiUrl + 'stopTimerDataGroupActivity'
 };
 
 export const reportUrl = {
@@ -121,27 +128,27 @@ export const reportUrl = {
   userTaskReport: _apiUrl + 'report/userTaskReport',
   ticketTimelineReport: _apiUrl + 'report/ticketTimelineReport',
   resourcePlanningReport: _apiUrl + 'report/resourcePlanning',
-  variantsReport: _apiUrl + 'report/variantsReport',
+  variantsReport: _apiUrl + 'report/variantsReport'
   // hoursWiseTaskRecord:_apiUrl + "hoursWiseTaskRecord",  //Asmita - New api for timeline report chart
 };
 
 export const errorLogUrl = {
-  catchError: _apiUrl + 'errorLog/catchError',
+  catchError: _apiUrl + 'errorLog/catchError'
 };
 
 export const consolidateViewUrl = {
-  consolidateViewUrl: _apiUrl + 'consolidatedView',
+  consolidateViewUrl: _apiUrl + 'consolidatedView'
 };
 
 export const projectManagementUrl = {
   projectUrl: _apiUrl + 'projects',
   moduleUrl: _apiUrl + 'module',
   subModuleUrl: _apiUrl + 'submodule',
-  consolidateViewUrl: _apiUrl + 'consolidatedView',
+  consolidateViewUrl: _apiUrl + 'consolidatedView'
 };
 
 export const menuManagementUrl = {
-  menusUrl: _apiUrl + 'menuManagement',
+  menusUrl: _apiUrl + 'menuManagement'
 };
 
 export const dashboardUrl = _apiUrl + 'dashboard';
@@ -152,18 +159,18 @@ export const settingMasterUrl = {
   customerMapping: _apiUrl + 'customerMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   getModuleSetting: _apiUrl + 'module',
-  getGeneralSetting: _apiUrl + 'consolidatedView',
+  getGeneralSetting: _apiUrl + 'consolidatedView'
 };
 
 export const connectorUrl = {
   connector: _apiUrl + 'connector',
   testcaseUrl: _apiUrl + 'testCases',
   testSuiteUrl: _apiUrl + 'testSuitMaster',
-  testcaseUpdateUrl: _apiUrl + 'testCase',
+  testcaseUpdateUrl: _apiUrl + 'testCase'
 };
 
 export const billCheckingMasterUrl = {
-  billChecking: _apiUrl + 'billCheckingMaster',
+  billChecking: _apiUrl + 'billCheckingMaster'
 };
 
 export const experienceLevel = [
@@ -171,5 +178,5 @@ export const experienceLevel = [
   { label: '0-1 years of experience', value: '0-1' },
   { label: '1-3 years of experience', value: '1-3' },
   { label: '3-5 years of experience', value: '3-5' },
-  { label: '5+ years of experience', value: '5+' },
+  { label: '5+ years of experience', value: '5+' }
 ];

@@ -35,7 +35,7 @@ function StateComponent() {
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [exportData, setExportData] = useState(null);
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const [state, setState] = useState(null);
 
@@ -256,7 +256,7 @@ function StateComponent() {
     //   if (res.status === 200) {
     //     setShowLoaderModal(false);
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }

@@ -27,7 +27,7 @@ function ProjectComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef();
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
@@ -376,7 +376,7 @@ function ProjectComponent() {
     //     setShowLoaderModal(false);
 
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }

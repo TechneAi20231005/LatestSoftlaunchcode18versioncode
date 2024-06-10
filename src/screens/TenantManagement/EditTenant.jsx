@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { _base } from "../../settings/constants";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { _base } from '../../settings/constants';
 
-import PageHeader from "../../components/Common/PageHeader";
+import PageHeader from '../../components/Common/PageHeader';
 
-import TenantService from "../../services/MastersService/TenantService";
-import { Astrick } from "../../components/Utilities/Style";
-import * as Validation from "../../components/Utilities/Validation";
-import Select from "react-select";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import CountryService from "../../services/MastersService/CountryService";
-import StateService from "../../services/MastersService/StateService";
-import CityService from "../../services/MastersService/CityService";
-import Alert from "../../components/Common/Alert";
-import { useDispatch, useSelector } from "react-redux";
+import TenantService from '../../services/MastersService/TenantService';
+import { Astrick } from '../../components/Utilities/Style';
+import * as Validation from '../../components/Utilities/Validation';
+import Select from 'react-select';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import CountryService from '../../services/MastersService/CountryService';
+import StateService from '../../services/MastersService/StateService';
+import CityService from '../../services/MastersService/CityService';
+import Alert from '../../components/Common/Alert';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   getCityData,
   getCountryDataSort,
   getStateData,
-  getStateDataSort,
-} from "../Dashboard/DashboardAction";
-import { getRoles } from "../Dashboard/DashboardAction";
-import { getAllTenant, updatetenantData } from "./TenantConponentAction";
-import { handleError } from "./TenantComponentSlice";
+  getStateDataSort
+} from '../Dashboard/DashboardAction';
+import { getRoles } from '../Dashboard/DashboardAction';
+import { getAllTenant, updatetenantData } from './TenantConponentAction';
+import { handleError } from './TenantComponentSlice';
 
 export default function EditTenant({ match }) {
   const navigate = useNavigate();
@@ -60,28 +60,28 @@ export default function EditTenant({ match }) {
   );
   const tenanatId = id;
   const companyType = [
-    { label: "Private Limited Company", value: "Private Limited Company" },
-    { label: "Public limited company", value: "Public limited company" },
+    { label: 'Private Limited Company', value: 'Private Limited Company' },
+    { label: 'Public limited company', value: 'Public limited company' },
     {
-      label: "Limited liability partnership ",
-      value: "Limited liability partnership ",
+      label: 'Limited liability partnership ',
+      value: 'Limited liability partnership '
     },
     {
-      label: "Property management company",
-      value: "Property management company",
+      label: 'Property management company',
+      value: 'Property management company'
     },
     {
-      label: "Community Interest Company",
-      value: "Community Interest Company",
-    },
+      label: 'Community Interest Company',
+      value: 'Community Interest Company'
+    }
   ];
   const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
   const [city, setCity] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
 
   const [inputState, setInputState] = useState({});
 
@@ -94,26 +94,26 @@ export default function EditTenant({ match }) {
     if (contactValidation.length === 0) {
       setInputState({
         ...state,
-        contactNoErr: "",
+        contactNoErr: ''
       });
       return;
     }
     if (
-      contactValidation.charAt(0) == "9" ||
-      contactValidation.charAt(0) == "8" ||
-      contactValidation.charAt(0) == "7" ||
-      contactValidation.charAt(0) == "6"
+      contactValidation.charAt(0) == '9' ||
+      contactValidation.charAt(0) == '8' ||
+      contactValidation.charAt(0) == '7' ||
+      contactValidation.charAt(0) == '6'
     ) {
-      setInputState({ ...state, contactNoErr: "" });
+      setInputState({ ...state, contactNoErr: '' });
       setContactValid(false);
     } else {
       setContactValid(true);
     }
 
-    if (contactValidation.includes("000000000")) {
+    if (contactValidation.includes('000000000')) {
       setInputState({
         ...state,
-        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+        contactNoErr: 'System not accepting 9 Consecutive Zeros here.'
       });
       setContactValid(true);
     }
@@ -122,13 +122,13 @@ export default function EditTenant({ match }) {
       if (contactValidation.length === 0) {
         setInputState({
           ...state,
-          contactNoErr: "please enter Mobile Number",
+          contactNoErr: 'please enter Mobile Number'
         });
         setContactValid(true);
       }
       setInputState({
         ...state,
-        contactNoErr: "Invalid Mobile Number",
+        contactNoErr: 'Invalid Mobile Number'
       });
       setContactValid(true);
     }
@@ -138,7 +138,7 @@ export default function EditTenant({ match }) {
     }
   };
   const handleDependentChange = (e, type) => {
-    if (type == "COUNTRY") {
+    if (type == 'COUNTRY') {
       setClearFlag(true);
       setStateDropdownData(
         stateDropdown
@@ -149,7 +149,7 @@ export default function EditTenant({ match }) {
           .map((d) => ({ value: d.id, label: d.state }))
       );
     }
-    if (type == "STATE") {
+    if (type == 'STATE') {
       setCityDropdownData(
         AllcityDropDownData.filter(
           (filterState) =>
@@ -183,18 +183,18 @@ export default function EditTenant({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("is_active", toggleRadio ? 1 : 0);
+    formData.append('is_active', toggleRadio ? 1 : 0);
     dispatch(updatetenantData({ id: tenanatId, payload: formData })).then(
       (res) => {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
           navigate(`/${_base}/TenantMaster`);
           dispatch(getAllTenant());
           dispatch(
-            handleError({ type: "success", message: res.payload.data.message })
+            handleError({ type: 'success', message: res.payload.data.message })
           );
         } else {
           dispatch(
-            handleError({ type: "danger", message: res.payload.data.message })
+            handleError({ type: 'danger', message: res.payload.data.message })
           );
         }
       }
@@ -203,13 +203,13 @@ export default function EditTenant({ match }) {
 
   const handleKeyPress = (e) => {
     if (Validation.onlyCapitalLetter(e)) {
-      setErrorMessage("");
+      setErrorMessage('');
     } else {
-      setErrorMessage("Only capital letters are allowed");
+      setErrorMessage('Only capital letters are allowed');
     }
   };
   const handleRadios = (e) => {
-    if (e === "active") {
+    if (e === 'active') {
       setToggleRadio(true);
     } else {
       setToggleRadio(false);
@@ -229,7 +229,7 @@ export default function EditTenant({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && notify?.type === "danger" && <Alert alertData={notify} />}
+      {notify && notify?.type === 'danger' && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
         <form onSubmit={handleForm}>
@@ -273,7 +273,7 @@ export default function EditTenant({ match }) {
                   onKeyPress={(e) => handleKeyPress(e)}
                 />
                 {errorMessage && (
-                  <div style={{ color: "red" }}>{errorMessage}</div>
+                  <div style={{ color: 'red' }}>{errorMessage}</div>
                 )}
               </div>
             </div>
@@ -306,13 +306,13 @@ export default function EditTenant({ match }) {
                 </b>
               </label>
               <div className="col-sm-8">
-                {" "}
+                {' '}
                 {/* Use col-sm-10 to make Select take up remaining space */}
                 <div className="row">
-                  {" "}
+                  {' '}
                   {/* Nested row */}
                   <div className="col-sm-6">
-                    {" "}
+                    {' '}
                     {/* Adjust the width of the Select */}
                     <Select
                       name="company_type"
@@ -327,7 +327,7 @@ export default function EditTenant({ match }) {
                     />
                   </div>
                   <div className="col-sm-6">
-                    {" "}
+                    {' '}
                     {/* Use the remaining space for the note */}
                     <div className="form-group">
                       <h5 className="text-danger">
@@ -389,7 +389,7 @@ export default function EditTenant({ match }) {
                 {inputState && (
                   <small
                     style={{
-                      color: "red",
+                      color: 'red'
                     }}
                   >
                     {inputState.contactNoErr}
@@ -439,7 +439,7 @@ export default function EditTenant({ match }) {
 
                 <label
                   className="col-sm-2 col-form-label"
-                  style={{ textAlign: "right" }}
+                  style={{ textAlign: 'right' }}
                 >
                   <b>Country : </b>
                 </label>
@@ -454,7 +454,7 @@ export default function EditTenant({ match }) {
                         CountryData &&
                         CountryData.filter((d) => data?.country_id == d.value)
                       }
-                      onChange={(e) => handleDependentChange(e, "COUNTRY")}
+                      onChange={(e) => handleDependentChange(e, 'COUNTRY')}
                     />
                   )}
                 </div>
@@ -473,24 +473,24 @@ export default function EditTenant({ match }) {
                       name="state_id"
                       defaultValue={
                         clearFlag
-                          ? { label: "" }
+                          ? { label: '' }
                           : data &&
                             stateDropdown &&
                             stateDropdown
                               .filter((d) => d.id === data.state_id)
                               .map((stateName) => ({
                                 value: stateName.id,
-                                label: stateName.state,
+                                label: stateName.state
                               }))
                       }
-                      onChange={(e) => handleDependentChange(e, "STATE")}
+                      onChange={(e) => handleDependentChange(e, 'STATE')}
                     />
                   )}
                 </div>
 
                 <label
                   className="col-sm-2 col-form-label"
-                  style={{ textAlign: "right" }}
+                  style={{ textAlign: 'right' }}
                 >
                   <b>City : </b>
                 </label>
@@ -508,7 +508,7 @@ export default function EditTenant({ match }) {
                           (d) => d.id == data.city_id
                         ).map((city) => ({ value: city.id, label: city.city }))
                       }
-                      onChange={(e) => handleDependentChange(e, "CITY")}
+                      onChange={(e) => handleDependentChange(e, 'CITY')}
                     />
                   )}
                 </div>
@@ -545,13 +545,13 @@ export default function EditTenant({ match }) {
             </div>
             {/* CARD BODY*/}
 
-            <div className="mt-3" style={{ textAlign: "right" }}>
+            <div className="mt-3" style={{ textAlign: 'right' }}>
               {checkRole && checkRole[0]?.can_update === 1 ? (
                 <button type="submit" className="btn btn-primary">
                   Update
                 </button>
               ) : (
-                ""
+                ''
               )}
               <Link
                 to={`/${_base}/TenantMaster`}

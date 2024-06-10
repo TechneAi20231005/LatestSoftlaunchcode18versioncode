@@ -28,36 +28,44 @@ import {
   creteAuthority,
   getModuleSettingData,
   getSubmoduleData,
-  updateAuthority,
+  updateAuthority
 } from '../Slices/BillCheckingTransactionAction';
-import { handleModalClose, handleModalOpen } from '../Slices/BillCheckingTransactionSlice';
+import {
+  handleModalClose,
+  handleModalOpen
+} from '../Slices/BillCheckingTransactionSlice';
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 
 const AuthorityMapping = () => {
   const [data, setData] = useState(null);
   const [statusData, setstatusData] = useState();
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const dispatch = useDispatch();
 
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id === 47),
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
 
   const authorities = useSelector(
-    BillCheckingTransactionSlice => BillCheckingTransactionSlice.billChecking.getModuleSettingData,
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getModuleSettingData
   );
   const userData = useSelector(
-    MyTicketComponentSlice => MyTicketComponentSlice.myTicketComponent.getUserForMyTicket,
+    (MyTicketComponentSlice) =>
+      MyTicketComponentSlice.myTicketComponent.getUserForMyTicket
   );
   const submodulename = useSelector(
-    BillCheckingTransactionSlice => BillCheckingTransactionSlice.billChecking.getSubmoduleData,
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.getSubmoduleData
   );
   const notify = useSelector(
-    BillCheckingTransactionSlice => BillCheckingTransactionSlice.billChecking.notify,
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.notify
   );
   const modal = useSelector(
-    BillCheckingTransactionSlice => BillCheckingTransactionSlice.billChecking.modal,
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.modal
   );
 
   const [error, setError] = useState('');
@@ -68,37 +76,39 @@ const AuthorityMapping = () => {
   const [read, setRead] = useState(true);
 
   const [empty, setEmpty] = useState([
-    { user_id: [], from_date: null, to_date: null, readOnly: false },
+    { user_id: [], from_date: null, to_date: null, readOnly: false }
   ]);
   const [assign, setAssign] = useState([
-    { user_id: [], from_date: null, to_date: null, readOnly: false },
+    { user_id: [], from_date: null, to_date: null, readOnly: false }
   ]);
 
   const [value, setValue] = useState('');
 
-  const [userErrors, setUserErrors] = useState(new Array(assign.length).fill(''));
+  const [userErrors, setUserErrors] = useState(
+    new Array(assign.length).fill('')
+  );
 
   const currentDate = new Date();
 
-  const handleModal = data => {};
+  const handleModal = (data) => {};
   const searchRef = useRef();
 
   const columns = [
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '100px',
+      width: '100px'
     },
 
     {
       name: 'Action',
       className: 'font-weight-bold',
 
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '120px',
-      cell: row => (
+      cell: (row) => (
         <div
           className="btn-group"
           role="group"
@@ -110,14 +120,14 @@ const AuthorityMapping = () => {
             className="btn btn-sm btn-info text-white"
             data-bs-toggle="modal"
             data-bs-target="#depedit"
-            onClick={e => {
+            onClick={(e) => {
               handleData(e, row);
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Assign Authority',
-                }),
+                  modalHeader: 'Assign Authority'
+                })
               );
             }}
             style={{ marginRight: '10px' }}
@@ -128,15 +138,15 @@ const AuthorityMapping = () => {
           <Link
             data-bs-toggle="modal"
             data-bs-target="#depedit"
-            onClick={e => {
+            onClick={(e) => {
               handleData(e, row);
 
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Details',
-                }),
+                  modalHeader: 'Details'
+                })
               );
             }}
             className="btn btn-sm btn-primary text-white"
@@ -145,15 +155,15 @@ const AuthorityMapping = () => {
             <i className="icofont-eye-alt"></i>
           </Link>
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
       width: '130px',
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -167,16 +177,20 @@ const AuthorityMapping = () => {
             </span>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Authority Name',
-      selector: row => row['Authority Name'],
+      selector: (row) => row['Authority Name'],
       sortable: true,
       width: '175px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.setting_name && (
             <OverlayTrigger overlay={<Tooltip>{row.setting_name} </Tooltip>}>
               <div>
@@ -190,29 +204,29 @@ const AuthorityMapping = () => {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Submodule Name',
-      selector: row => row.sub_module_name,
+      selector: (row) => row.sub_module_name,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
 
     {
       name: ' Updated At ',
       width: '200px',
-      selector: row => row.updated_at,
-      sortable: true,
+      selector: (row) => row.updated_at,
+      sortable: true
     },
 
     {
       name: ' Updated By ',
       width: '200px',
-      selector: row => row.updated_by_name,
-      sortable: true,
-    },
+      selector: (row) => row.updated_by_name,
+      sortable: true
+    }
   ];
 
   const handleStatusChange = (e) => {
@@ -222,9 +236,12 @@ const AuthorityMapping = () => {
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -236,9 +253,9 @@ const AuthorityMapping = () => {
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
-  const handleChanges = e => {
+  const handleChanges = (e) => {
     const inputValue = e.target.value;
 
     const specialCharacters = /[!@#$%^&*(),.?":{}|<>]/;
@@ -258,7 +275,7 @@ const AuthorityMapping = () => {
     updatedAssign[index] = {
       ...updatedAssign[index],
       from_date: event.target.value,
-      todayDate,
+      todayDate
     };
 
     setAssign(updatedAssign);
@@ -269,7 +286,7 @@ const AuthorityMapping = () => {
     updatedAssign[index] = {
       ...updatedAssign[index],
       readOnly: false,
-      to_date: event.target.value,
+      to_date: event.target.value
     };
     setAssign(updatedAssign);
   };
@@ -279,7 +296,9 @@ const AuthorityMapping = () => {
   }-${(current.getDate() < 10 ? '0' : '') + current.getDate()}`;
 
   const todaysDate = `${current.getFullYear()}-${
-    current.getMonth() + 1 < 10 ? '0' + current.getMonth() + 1 : current.getMonth() + 1
+    current.getMonth() + 1 < 10
+      ? '0' + current.getMonth() + 1
+      : current.getMonth() + 1
   }-0${current.getDate()}`;
 
   const handleAddRow = (e, index, type) => {
@@ -287,7 +306,7 @@ const AuthorityMapping = () => {
       user_id: null,
       from_date: '',
       to_date: '',
-      readOnly: false,
+      readOnly: false
     };
 
     if (type === 'ASSIGNED') {
@@ -299,46 +318,47 @@ const AuthorityMapping = () => {
     setRead(false);
   };
 
-  const handleRemoveSpecificRow = index => async () => {
+  const handleRemoveSpecificRow = (index) => async () => {
     const id = assign[index].id;
 
     // Delete the item
-    await new BillCheckingTransactionService().deleteModuleSettingUser(id).then(res => {
-      if (res.status === 200) {
-        // Create a new array with the item removed
-        const updatedAssign = [...assign];
-        updatedAssign.splice(index, 1);
+    await new BillCheckingTransactionService()
+      .deleteModuleSettingUser(id)
+      .then((res) => {
+        if (res.status === 200) {
+          // Create a new array with the item removed
+          const updatedAssign = [...assign];
+          updatedAssign.splice(index, 1);
 
-        // Update the state
-        setAssign(updatedAssign);
-      }
-    });
+          // Update the state
+          setAssign(updatedAssign);
+        }
+      });
   };
 
   const mainJson = {
-    updated_by: sessionStorage.getItem('id'),
+    updated_by: localStorage.getItem('id'),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
 
-    setting_value: "Y",
+    setting_value: 'Y',
     is_active: statusData,
 
     user_details: assign.map((item) => ({
-
       user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
       from_date: item.from_date,
-      to_date: item.to_date,
-    })),
+      to_date: item.to_date
+    }))
   };
 
   const handleUserSelect = (selectedOptions, index) => {
-    const selectedUserIds = selectedOptions.map(option => option.value);
+    const selectedUserIds = selectedOptions.map((option) => option.value);
 
     const updatedAssign = [...assign];
 
     updatedAssign[index] = {
       ...updatedAssign[index],
-      user_id: selectedUserIds,
+      user_id: selectedUserIds
     };
 
     setAssign(updatedAssign);
@@ -354,20 +374,20 @@ const AuthorityMapping = () => {
 
         .getModuleAuthorityUserSetting(row.id)
 
-
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              const updatedAssign = res.data.data.map(item => {
+              const updatedAssign = res.data.data.map((item) => {
                 const from_dateReadOnly =
-                  item.from_date && new Date(item.from_date) < new Date(todayDate);
+                  item.from_date &&
+                  new Date(item.from_date) < new Date(todayDate);
                 const to_dateReadOnly =
                   item.to_date && new Date(item.to_date) < new Date(todayDate);
 
                 return {
                   ...item,
                   from_dateReadOnly,
-                  to_dateReadOnly,
+                  to_dateReadOnly
                 };
               });
               setAssign(updatedAssign);
@@ -389,7 +409,8 @@ const AuthorityMapping = () => {
 
     dispatch(getRoles());
 
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     dispatch(getUserForMyTicketsData(inputRequired));
 
     dispatch(updateAuthority());
@@ -403,7 +424,7 @@ const AuthorityMapping = () => {
     return `${year}-${month}-${day}`;
   }
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
     // setNotify(null);
 
@@ -411,9 +432,9 @@ const AuthorityMapping = () => {
 
     // After successful form submission, check and update 'readOnly' for each row
     const currentDate = new Date().toISOString().split('T')[0];
-    const updatedAssign = assign.map(item => ({
+    const updatedAssign = assign.map((item) => ({
       ...item,
-      readOnly: new Date(item.from_date) < new Date(currentDate),
+      readOnly: new Date(item.from_date) < new Date(currentDate)
     }));
     setAssign(updatedAssign);
 
@@ -427,7 +448,9 @@ const AuthorityMapping = () => {
     var button_type = e.target.button_type.value;
 
     if (button_type === 'ASSIGN') {
-      const overlappingUserDetails = findOverlappingUserDetails(mainJson.user_details);
+      const overlappingUserDetails = findOverlappingUserDetails(
+        mainJson.user_details
+      );
 
       if (overlappingUserDetails.length > 0) {
         alert('Overlaping date is detected');
@@ -449,7 +472,7 @@ const AuthorityMapping = () => {
                 userDetails[i].from_date,
                 userDetails[i].to_date,
                 userDetails[j].from_date,
-                userDetails[j].to_date,
+                userDetails[j].to_date
               )
             ) {
               overlappingRanges.push(userDetails[i], userDetails[j]);
@@ -498,7 +521,7 @@ const AuthorityMapping = () => {
               type="text"
               className="form-control"
               placeholder="Search...."
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               id="searchInput"
               ref={searchRef}
             />
@@ -533,15 +556,19 @@ const AuthorityMapping = () => {
                   columns={columns}
                   defaultSortField="title"
                   pagination
-                  data={authorities.filter(customer => {
+                  data={authorities.filter((customer) => {
                     if (typeof searchTerm === 'string') {
                       if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                        return customer
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase());
                       } else if (typeof customer === 'object') {
                         return Object.values(customer).some(
-                          value =>
+                          (value) =>
                             typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
+                            value
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                       }
                     }
@@ -563,7 +590,10 @@ const AuthorityMapping = () => {
         aria-labelledby="contained-modal-title-vcenter"
         size="xl"
       >
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -571,8 +601,8 @@ const AuthorityMapping = () => {
                 handleModalClose({
                   showModal: false,
                   modalData: '',
-                  modalHeader: '',
-                }),
+                  modalHeader: ''
+                })
               );
             }}
           >
@@ -597,7 +627,8 @@ const AuthorityMapping = () => {
                     ref={searchRef}
                     required={true}
                     readOnly={
-                      modal.modalHeader === 'Assign Authority' || modal.modalHeader === 'Details'
+                      modal.modalHeader === 'Assign Authority' ||
+                      modal.modalHeader === 'Details'
                     }
                     maxLength={50}
                     style={{ borderColor: error ? 'red' : '' }}
@@ -639,8 +670,10 @@ const AuthorityMapping = () => {
                         defaultValue={
                           modal.modalData &&
                           submodulename
-                            .filter(d => d.value == modal.modalData.submodule_name)
-                            .map(d => ({ value: d.value, label: d.label }))
+                            .filter(
+                              (d) => d.value == modal.modalData.submodule_name
+                            )
+                            .map((d) => ({ value: d.value, label: d.label }))
                         }
                       />
                     </>
@@ -648,7 +681,10 @@ const AuthorityMapping = () => {
                 </div>
               </div>
 
-              <table className="table table-bordered mt-3 table-responsive mt-5" id="tab_logic">
+              <table
+                className="table table-bordered mt-3 table-responsive mt-5"
+                id="tab_logic"
+              >
                 <thead>
                   <tr>
                     <th className="text-center"> sr </th>
@@ -678,19 +714,28 @@ const AuthorityMapping = () => {
                               className="basic-multi-select"
                               classNamePrefix="select"
                               options={userData}
-                              isDisabled={item.from_dateReadOnly || modal.modalHeader === 'Details'}
-                              value={userData.filter(d =>
+                              isDisabled={
+                                item.from_dateReadOnly ||
+                                modal.modalHeader === 'Details'
+                              }
+                              value={userData.filter((d) =>
                                 Array.isArray(item.user_id)
                                   ? item.user_id.includes(d.value)
-                                  : item.user_id == d.value,
+                                  : item.user_id == d.value
                               )}
                               required
                               style={{ zIndex: '100' }}
-                              onChange={selectedOption => handleUserSelect(selectedOption, idx)}
+                              onChange={(selectedOption) =>
+                                handleUserSelect(selectedOption, idx)
+                              }
                             />
                           )}
 
-                          {userErrors[idx] && <div style={{ color: 'red' }}>{userErrors[idx]}</div>}
+                          {userErrors[idx] && (
+                            <div style={{ color: 'red' }}>
+                              {userErrors[idx]}
+                            </div>
+                          )}
                         </td>
 
                         <td>
@@ -700,9 +745,12 @@ const AuthorityMapping = () => {
                               className="form-control form-control-sm"
                               name="from_date"
                               value={item.from_date || ''}
-                              readOnly={item.from_dateReadOnly || modal.modalHeader === 'Details'}
+                              readOnly={
+                                item.from_dateReadOnly ||
+                                modal.modalHeader === 'Details'
+                              }
                               min={todayDate}
-                              onChange={event => handleFromDate(event, idx)}
+                              onChange={(event) => handleFromDate(event, idx)}
                               required
                             />
                           )}
@@ -714,9 +762,12 @@ const AuthorityMapping = () => {
                             className="form-control form-control-sm"
                             name="to_date"
                             value={item.to_date || ''}
-                            readOnly={item.to_dateReadOnly || modal.modalHeader === 'Details'}
+                            readOnly={
+                              item.to_dateReadOnly ||
+                              modal.modalHeader === 'Details'
+                            }
                             min={item.from_date}
-                            onChange={event => handleToDate(event, idx)}
+                            onChange={(event) => handleToDate(event, idx)}
                             required
                           />
                         </td>
@@ -730,7 +781,7 @@ const AuthorityMapping = () => {
                                     type="button"
                                     className="btn btn-sm btn-outline-primary pull-left"
                                     required
-                                    onClick={e => {
+                                    onClick={(e) => {
                                       handleAddRow(e, idx, 'ASSIGNED');
                                     }}
                                   >
@@ -783,23 +834,31 @@ const AuthorityMapping = () => {
                                 options={userData}
                                 required
                                 style={{ zIndex: '100' }}
-                                onChange={selectedOption => handleUserSelect(selectedOption, idx)}
+                                onChange={(selectedOption) =>
+                                  handleUserSelect(selectedOption, idx)
+                                }
                                 defaultValue={
                                   Array.isArray(item.user_id)
-                                    ? item.user_id.map(id => {
-                                        const user = userData.find(d => d.value === id);
+                                    ? item.user_id.map((id) => {
+                                        const user = userData.find(
+                                          (d) => d.value === id
+                                        );
                                         return {
                                           value: user.value,
-                                          label: user.label,
+                                          label: user.label
                                         };
                                       })
-                                    : userData.filter(d => item.user_id === d.value)
+                                    : userData.filter(
+                                        (d) => item.user_id === d.value
+                                      )
                                 }
                               />
                             )}
 
                             {userErrors[idx] && (
-                              <div style={{ color: 'red' }}>{userErrors[idx]}</div>
+                              <div style={{ color: 'red' }}>
+                                {userErrors[idx]}
+                              </div>
                             )}
                           </td>
 
@@ -810,7 +869,7 @@ const AuthorityMapping = () => {
                               name="from_date"
                               required
                               min={todayDate}
-                              onChange={event => handleFromDate(event, idx)}
+                              onChange={(event) => handleFromDate(event, idx)}
                             />
                           </td>
                           <td>
@@ -860,10 +919,11 @@ const AuthorityMapping = () => {
                 </tbody>
               </table>
 
-
               {modal.modalHeader == 'Add Authority' ? (
                 <div className="col-md-10 mt-4">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <textarea
                     className="form-control form-control-sm"
                     type="text"
@@ -876,7 +936,6 @@ const AuthorityMapping = () => {
                   />
                 </div>
               ) : null}
-
             </div>
 
             {modal.modalData &&
@@ -902,7 +961,10 @@ const AuthorityMapping = () => {
                             modal.modalData && modal.modalData.is_active === 1
                           }
                         />
-                        <label className="form-check-label" htmlFor="is_active_1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_1"
+                        >
                           Yes
                         </label>
                       </div>
@@ -917,12 +979,13 @@ const AuthorityMapping = () => {
                           value="0"
                           onChange={handleStatusChange}
                           defaultChecked={
-
                             modal.modalData && modal.modalData.is_active === 0
-
                           }
                         />
-                        <label className="form-check-label" htmlFor="is_active_0">
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_0"
+                        >
                           No
                         </label>
                       </div>
@@ -975,8 +1038,8 @@ const AuthorityMapping = () => {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >

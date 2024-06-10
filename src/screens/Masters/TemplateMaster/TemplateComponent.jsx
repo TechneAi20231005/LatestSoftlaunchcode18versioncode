@@ -51,7 +51,7 @@ function TemplateComponent() {
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const handleModal = (data) => {
     setModal(data);

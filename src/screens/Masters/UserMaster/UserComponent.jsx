@@ -30,7 +30,7 @@ function UserComponent() {
 
   const [exportData, setExportData] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)

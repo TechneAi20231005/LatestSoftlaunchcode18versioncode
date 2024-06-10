@@ -1,29 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import PageHeader from "../../../components/Common/PageHeader";
-import ErrorLogService from "../../../services/ErrorLogService";
-import TenantService from "../../../services/MastersService/TenantService";
-import { _base } from "../../../settings/constants";
-import Alert from "../../../components/Common/Alert";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { Spinner } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import PageHeader from '../../../components/Common/PageHeader';
+import ErrorLogService from '../../../services/ErrorLogService';
+import TenantService from '../../../services/MastersService/TenantService';
+import { _base } from '../../../settings/constants';
+import Alert from '../../../components/Common/Alert';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { Spinner } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
 
 function SpecialDayMasterComponent({ location }) {
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
-  const [paymentType, setPaymentType] = useState("Weekly");
+  const [paymentType, setPaymentType] = useState('Weekly');
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const searchRef = useRef();
@@ -33,10 +33,10 @@ function SpecialDayMasterComponent({ location }) {
       return (
         d.company_name
           .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g")) ||
+          .match(new RegExp(search.toLowerCase(), 'g')) ||
         d.company_type
           .toLowerCase()
-          .match(new RegExp(search.toLowerCase(), "g"))
+          .match(new RegExp(search.toLowerCase(), 'g'))
       );
     });
     setData(temp);
@@ -44,13 +44,13 @@ function SpecialDayMasterComponent({ location }) {
 
   const handleModal = (data) => {
     // alert(data.modalData.payment_type_name)
-    setPaymentType(data ? data.modalData.payment_type_name : "");
+    setPaymentType(data ? data.modalData.payment_type_name : '');
     setModal(data);
   };
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -68,7 +68,7 @@ function SpecialDayMasterComponent({ location }) {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Payment Template",
+                modalHeader: 'Edit Payment Template'
               });
             }}
           >
@@ -83,11 +83,11 @@ function SpecialDayMasterComponent({ location }) {
             <i className="icofont-eye-alt"></i>
           </Link> */}
         </div>
-      ),
+      )
     },
-    { name: "Sr", id: "id", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', id: 'id', selector: (row) => row.counter, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -99,30 +99,30 @@ function SpecialDayMasterComponent({ location }) {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Date",
+      name: 'Date',
       selector: (row) => row.template_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Month",
+      name: 'Month',
       selector: (row) => row.payment_type_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Weightage",
+      name: 'Weightage',
       selector: (row) => row.bill_type_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Is Active", selector: (row) => row.min_days, sortable: true },
+    { name: 'Is Active', selector: (row) => row.min_days, sortable: true },
 
-    { name: "Remark", selector: (row) => row.updated_by, sortable: true },
-    { name: "Created At", selector: (row) => row.created_at, sortable: true },
-    { name: "Created By", selector: (row) => row.created_by, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    { name: 'Remark', selector: (row) => row.updated_by, sortable: true },
+    { name: 'Created At', selector: (row) => row.created_at, sortable: true },
+    { name: 'Created By', selector: (row) => row.created_by, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = async () => {
@@ -149,12 +149,12 @@ function SpecialDayMasterComponent({ location }) {
             min_days: temp[key].min_days,
             payment_type_name: temp[key].payment_type_name,
             bill_type_name: temp[key].bill_type_name,
-            payment_weekly_name: temp[key].payment_weekly_name,
+            payment_weekly_name: temp[key].payment_weekly_name
           });
         }
         setData(null);
         setData(data);
-        setPaymentType("Weekly");
+        setPaymentType('Weekly');
       }
     });
   };
@@ -172,7 +172,7 @@ function SpecialDayMasterComponent({ location }) {
           return (
             <div className="col-auto d-flex w-sm-100">
               <Link
-                to={`/${_base + "/SpecialDay/Create"}`}
+                to={`/${_base + '/SpecialDay/Create'}`}
                 className="btn btn-dark btn-set-task w-sm-100"
               >
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add Data
@@ -196,7 +196,7 @@ function SpecialDayMasterComponent({ location }) {
             <button
               className="btn btn-sm btn-warning text-white"
               type="button"
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -204,7 +204,7 @@ function SpecialDayMasterComponent({ location }) {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>

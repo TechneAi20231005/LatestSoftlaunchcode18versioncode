@@ -200,15 +200,15 @@ class MainIndex extends React.Component {
 
   render() {
     // Encryption function (same as mentioned before)
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
-      }
-    } else {
-      for (var a in localStorage) {
-        sessionStorage.setItem(a, localStorage[a]);
-      }
-    }
+    // if (Object.keys(localStorage).length < Object.keys(localStorage).length) {
+    //   for (var a in localStorage) {
+    //     localStorage.setItem(a, localStorage[a]);
+    //   }
+    // } else {
+    //   for (var a in localStorage) {
+    //     localStorage.setItem(a, localStorage[a]);
+    //   }
+    // }
     return (
       <div className="main px-lg-4 px-md-4">
         <Header />

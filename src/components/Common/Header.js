@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import {
   getNotification,
   markedReadNotification,
-  getAllmarkAllAsReadNotification,
+  getAllmarkAllAsReadNotification
 } from '../../services/NotificationService/NotificationService';
 import TenantService from '../../services/MastersService/TenantService';
 import Select from 'react-select';
@@ -18,7 +18,7 @@ import Alert from './Alert';
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
 import {
   getRegularizationTime,
-  getRegularizationTimeHistory,
+  getRegularizationTimeHistory
 } from '../../services/TicketService/TaskService';
 import ApproveRequestModal from '../../screens/TicketManagement/TaskManagement/components/ApproveRequestModal';
 import TimeRegularizationHistory from '../../screens/TicketManagement/TaskManagement/components/TimeRegularizationHistory';
@@ -44,7 +44,7 @@ export default function Header() {
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
   const loadNotifcation = () => {
-    getNotification().then(res => {
+    getNotification().then((res) => {
       if (res.status === 200) {
         setNotifications(null);
         setApprovedNotifications(null);
@@ -54,9 +54,13 @@ export default function Header() {
             var height = 0;
             setNotifications(res.data.data.result);
             // setApprovedNotifications(res.data.data.for_me);
-            setApprovedNotifications(res?.data?.data?.result?.filter(d => d?.status == 1));
+            setApprovedNotifications(
+              res?.data?.data?.result?.filter((d) => d?.status == 1)
+            );
 
-            setAllRequest(res?.data?.data?.result?.filter(d => d?.status != 1));
+            setAllRequest(
+              res?.data?.data?.result?.filter((d) => d?.status != 1)
+            );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
               height = 100;
@@ -68,25 +72,25 @@ export default function Header() {
   };
 
   const handleReadNotification = (e, id) => {
-    markedReadNotification(id).then(res => {
+    markedReadNotification(id).then((res) => {
       loadNotifcation();
     });
   };
 
   function handleLogout() {
     localStorage.clear();
-    sessionStorage.clear();
+    localStorage.clear();
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [historyModal, setHistoryModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [regularizationRequest, setRegularizationRequest] = useState([]);
@@ -118,15 +122,15 @@ export default function Header() {
   //   });
   // };
 
-  const handleMarkAllNotification = e => {
-    getAllmarkAllAsReadNotification(userId).then(res => {
+  const handleMarkAllNotification = (e) => {
+    getAllmarkAllAsReadNotification(userId).then((res) => {
       loadNotifcation();
     });
   };
 
   const [showNotificationIcon, setShowNotificationIcon] = useState(true);
   const handleShowNotificationIcon = () => {
-    setShowNotificationIcon(prev => !prev);
+    setShowNotificationIcon((prev) => !prev);
   };
 
   const handleShowApproveRequestModal = () => {
@@ -149,8 +153,8 @@ export default function Header() {
   };
 
   const [data, setData] = useState(null);
-  const loadData = async e => {
-    new UserService().getUserById(localStorage.getItem('id')).then(res => {
+  const loadData = async (e) => {
+    new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setTenantId(res.data.data.tenant_id);
@@ -160,28 +164,32 @@ export default function Header() {
         }
       }
     });
-    new TenantService().getTenant().then(res => {
+    new TenantService().getTenant().then((res) => {
       if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter(d => d.is_active == 1);
-        setTenantDropdown(temp.map(d => ({ value: d.id, label: d.company_name })));
+        const temp = res.data.data.filter((d) => d.is_active == 1);
+        setTenantDropdown(
+          temp.map((d) => ({ value: d.id, label: d.company_name }))
+        );
       }
     });
-    await new ManageMenuService().getRole(sessionStorage.getItem('role_id')).then(res => {
-      if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter(d => d.menu_id === 33);
+    await new ManageMenuService()
+      .getRole(localStorage.getItem('role_id'))
+      .then((res) => {
+        if (res.status === 200 && res.data.status === 1) {
+          const temp = res.data.data.filter((d) => d.menu_id === 33);
 
-        if (temp[0]?.can_read === 1) {
-          setShowDropdown(true);
-        } else {
-          setShowDropdown(false);
+          if (temp[0]?.can_read === 1) {
+            setShowDropdown(true);
+          } else {
+            setShowDropdown(false);
+          }
         }
-      }
-    });
+      });
   };
 
-  const handleTenantLogin = async e => {
+  const handleTenantLogin = async (e) => {
     const form = { tenant_id: e.value };
-    await new TenantService().switchTenant(form).then(res => {
+    await new TenantService().switchTenant(form).then((res) => {
       if (res.status === 200 && res.data.status === 1) {
         setNotify({ type: 'success', message: res.data.message });
         setTimeout(() => {
@@ -528,7 +536,10 @@ export default function Header() {
                   className="nav-link dropdown-toggle pulse"
                   style={{ zIndex: -200 }}
                 >
-                  <i className="icofont-alarm fs-4" style={{ zIndex: -100, color: '#484c7f' }}>
+                  <i
+                    className="icofont-alarm fs-4"
+                    style={{ zIndex: -100, color: '#484c7f' }}
+                  >
                     <span
                       className="notification-count"
                       style={{
@@ -540,7 +551,7 @@ export default function Header() {
                         fontWeight: 'bold',
                         fontSize: '20px',
                         padding: '0.3rem',
-                        color: 'white',
+                        color: 'white'
                       }}
                     >
                       {notifications && notifications.length}
@@ -563,9 +574,13 @@ export default function Header() {
                         )}
                       </span>
                       {notifications && (
-                        <span className="badge text-white">{notifications.length}</span>
+                        <span className="badge text-white">
+                          {notifications.length}
+                        </span>
                       )}
-                      {!notifications && <span className="badge text-white">0</span>}
+                      {!notifications && (
+                        <span className="badge text-white">0</span>
+                      )}
                     </h5>
                   </div>
                   <div className="tab-content card-body">
@@ -651,13 +666,21 @@ export default function Header() {
                             const time = ele.created_at.split(' ')[1];
 
                             return (
-                              <li className="py-2 mb-1 border-bottom" key={index}>
-                                <div className="flex-fill ms-2" style={{ cursor: 'pointer' }}>
+                              <li
+                                className="py-2 mb-1 border-bottom"
+                                key={index}
+                              >
+                                <div
+                                  className="flex-fill ms-2"
+                                  style={{ cursor: 'pointer' }}
+                                >
                                   {ele.url && (
                                     <Link to={`/${_base}/${ele.url}`}>
                                       <p
                                         className="d-flex justify-content-between mb-0"
-                                        onClick={e => handleReadNotification(e, ele.id)}
+                                        onClick={(e) =>
+                                          handleReadNotification(e, ele.id)
+                                        }
                                       >
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
@@ -681,7 +704,9 @@ export default function Header() {
                                   {!ele.url && (
                                     <p
                                       className="d-flex justify-content-between mb-0"
-                                      onClick={e => handleReadNotification(e, ele.id)}
+                                      onClick={(e) =>
+                                        handleReadNotification(e, ele.id)
+                                      }
                                     >
                                       <span className="font-weight-bold">
                                         {ele.message}
@@ -704,7 +729,7 @@ export default function Header() {
                       border: '2px solid #ccc',
                       justifyContent: 'space-between',
                       width: '100%',
-                      height: '100%',
+                      height: '100%'
                     }}
                   >
                     <div
@@ -734,7 +759,7 @@ export default function Header() {
                       <div className="btn-group h-100">
                         <button
                           className="btn btn-light"
-                          onClick={e => {
+                          onClick={(e) => {
                             handleMarkAllNotification(e);
                           }}
                         >
@@ -773,7 +798,8 @@ export default function Header() {
               <div className="u-info me-2">
                 <p className="mb-0 text-end line-height-sm ">
                   <span className="font-weight-bold">
-                    {sessionStorage.getItem('first_name')} {sessionStorage.getItem('last_name')}
+                    {localStorage.getItem('first_name')}{' '}
+                    {localStorage.getItem('last_name')}
                   </span>
                 </p>
               </div>
@@ -796,11 +822,15 @@ export default function Header() {
                   <div className="p-2" style={{ zIndex: 700 }}>
                     {tenantDropdown && tenantId && showDropdown === true && (
                       <Select
-                        placeholder={<span className="fw-bold ">Switch Tenant...</span>}
+                        placeholder={
+                          <span className="fw-bold ">Switch Tenant...</span>
+                        }
                         name="tenant_id"
                         options={tenantDropdown}
                         onChange={handleTenantLogin}
-                        defaultValue={tenantDropdown.filter(d => d.value == tenantId)}
+                        defaultValue={tenantDropdown.filter(
+                          (d) => d.value == tenantId
+                        )}
                       />
                     )}
                   </div>
@@ -819,14 +849,16 @@ export default function Header() {
                               fontSize: '18px',
                               zIndex: '100 !important',
                               position: 'relative',
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
-                            {sessionStorage.getItem('first_name')}{' '}
-                            {sessionStorage.getItem('last_name')}
+                            {localStorage.getItem('first_name')}{' '}
+                            {localStorage.getItem('last_name')}
                           </span>
                         </p>
-                        <small className="">{sessionStorage.getItem('email_id')}</small>
+                        <small className="">
+                          {localStorage.getItem('email_id')}
+                        </small>
 
                         <p className="mb-0">
                           <Link
@@ -838,7 +870,9 @@ export default function Header() {
                             className="mb-0"
                             style={{ cursor: 'default' }}
                           >
-                            <span className="font-weight-bold">Your Profile</span>
+                            <span className="font-weight-bold">
+                              Your Profile
+                            </span>
                           </Link>
                         </p>
                       </div>
@@ -855,7 +889,9 @@ export default function Header() {
                       onClick={handleLogout}
                     >
                       <i className="icofont-sign-out fs-5 me-3"></i>{' '}
-                      <span style={{ fontSize: '18px', fontWeight: '600' }}>Sign Out</span>
+                      <span style={{ fontSize: '18px', fontWeight: '600' }}>
+                        Sign Out
+                      </span>
                     </button>
                   </div>
                 </div>

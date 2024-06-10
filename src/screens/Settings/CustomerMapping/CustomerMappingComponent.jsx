@@ -13,26 +13,31 @@ import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
 import CustomerMappingSlice from './Slices/CustomerMappingSlice';
-import { exportCustomerMappingData, getCustomerMappingData } from './Slices/CustomerMappingAction';
+import {
+  exportCustomerMappingData,
+  getCustomerMappingData
+} from './Slices/CustomerMappingAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import DashbordSlice from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const data = useSelector(
-    CustomerMappingSlice => CustomerMappingSlice.customerMaster.customerMappingData,
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.customerMappingData
   );
 
   const isLoading = useSelector(
-    CustomerMappingSlice => CustomerMappingSlice.customerMaster.isLoading.customerMappingList,
+    (CustomerMappingSlice) =>
+      CustomerMappingSlice.customerMaster.isLoading.customerMappingList
   );
 
   const exportData = useSelector(
-    CustomerMappingSlice => CustomerMappingSlice.customerMaster.exportData,
+    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.exportData
   );
 
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 32),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
 
   const location = useLocation();
@@ -44,16 +49,19 @@ export default function CustomerMappingComponent() {
   // const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null)
 
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -73,15 +81,15 @@ export default function CustomerMappingComponent() {
   // };
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <Link
             to={`/${_base}/CustomerMapping/Edit/` + row.id}
@@ -90,23 +98,27 @@ export default function CustomerMappingComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr.No',
-      selector: row => row.Sro,
+      selector: (row) => row.Sro,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
     {
       name: 'Query',
-      selector: row => row['Query'],
+      selector: (row) => row['Query'],
       sortable: true,
       with: '200px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.query_type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
               <div>
@@ -120,40 +132,40 @@ export default function CustomerMappingComponent() {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Template',
-      selector: row => row.template_name,
+      selector: (row) => row.template_name,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Form',
-      selector: row => row.dynamic_form_name,
+      selector: (row) => row.dynamic_form_name,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
 
     {
       name: 'Department',
-      selector: row => row.department_name,
+      selector: (row) => row.department_name,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
-    { name: 'Priority', selector: row => row.priority, sortable: true },
+    { name: 'Priority', selector: (row) => row.priority, sortable: true },
     {
       name: 'Approach',
-      selector: row => row.approach,
+      selector: (row) => row.approach,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -166,38 +178,38 @@ export default function CustomerMappingComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
-  const makeActive = id => {
+  const makeActive = (id) => {
     // e.preventDefault();
     const data = new FormData();
     data.append('is_default', 1);
-    new CustomerMappingService().updateCustomerMapping(id, data).then(res => {
+    new CustomerMappingService().updateCustomerMapping(id, data).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           loadData();
@@ -266,7 +278,7 @@ export default function CustomerMappingComponent() {
     // })
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
@@ -306,7 +318,8 @@ export default function CustomerMappingComponent() {
                   to={`/${_base}/CustomerMapping/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Create Mapping Setting
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Create
+                  Mapping Setting
                 </Link>
               ) : (
                 ''
@@ -324,7 +337,7 @@ export default function CustomerMappingComponent() {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               // onKeyDown={handleKeyDown}
             />
           </div>
@@ -359,15 +372,17 @@ export default function CustomerMappingComponent() {
           {data && (
             <DataTable
               columns={columns}
-              data={data.filter(customer => {
+              data={data.filter((customer) => {
                 if (typeof searchTerm === 'string') {
                   if (typeof customer === 'string') {
-                    return customer.toLowerCase().includes(searchTerm.toLowerCase());
+                    return customer
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase());
                   } else if (typeof customer === 'object') {
                     return Object.values(customer).some(
-                      value =>
+                      (value) =>
                         typeof value === 'string' &&
-                        value.toLowerCase().includes(searchTerm.toLowerCase()),
+                        value.toLowerCase().includes(searchTerm.toLowerCase())
                     );
                   }
                 }

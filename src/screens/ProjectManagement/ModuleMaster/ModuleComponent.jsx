@@ -21,7 +21,7 @@ function ModuleComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
   const searchRef = useRef();
@@ -209,7 +209,7 @@ function ModuleComponent() {
         setShowLoaderModal(false);
 
         if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
+          const getRoleId = localStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
         }
       }

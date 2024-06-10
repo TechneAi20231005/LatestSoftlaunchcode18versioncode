@@ -99,7 +99,7 @@ function CityComponent() {
   const [filteredData, setFilteredData] = useState([]);
   const handleSearch = (value) => {};
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const columns = [
     {
