@@ -1,23 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link, createRoutesFromChildren, useNavigate } from 'react-router-dom';
+
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
-import ErrorLogService from '../../services/ErrorLogService';
-import DynamicFormService from '../../services/MastersService/DynamicFormService';
+
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import { _attachmentUrl } from '../../settings/constants';
-import ReportService from '../../services/ReportService/ReportService';
+
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
-import DatePicker from 'react-date-picker';
+
 import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
-import * as Validation from '../../components/Utilities/Validation';
+
 import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
-import { getCurrentDate } from '../../components/Utilities/Functions';
-import { userSessionData as user } from '../../settings/constants';
+
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
 import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
@@ -28,9 +26,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/CustomerMappingAction';
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
+import { toast } from 'react-toastify';
 
 export default function CreateTicketComponent() {
-  const history = useNavigate();
   const navigate = useNavigate();
 
   const [notify, setNotify] = useState(null);
@@ -40,7 +38,6 @@ export default function CreateTicketComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
   );
 
-  const departmentDropdownRef = useRef();
   const current = new Date();
   const [isMultipleDepartment, setisMultipleDepartment] = useState([]);
 
@@ -81,7 +78,6 @@ export default function CreateTicketComponent() {
   const [data, setData] = useState(ticketData);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [defaults, setDefaults] = useState(null);
 
   const [department, setDepartment] = useState(null);
   const [rows, setRows] = useState();
@@ -90,24 +86,22 @@ export default function CreateTicketComponent() {
 
   const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
-  const [selectedCustomerMapping, setSelectedCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
   const [alldepartmentData, setAllDepartmentData] = useState();
-  const [getAllType, setGetAllType] = useState();
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
+  const [customerID, setCustomerId] = useState();
 
-  const [inputDataSourceData, setInputDataSourceData] = useState();
-  const [dateValue, setDateValue] = useState(new Date());
   const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-  // const [checkRole, setCheckRole] = useState(null);
+
   const [parent, setParent] = useState();
-  const [parentName, setParentName] = useState();
+
   const [queryGroupData, setQueryGroupData] = useState(null);
   const [queryTypeData, setQueryTypeData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
   const [user, setUser] = useState('');
@@ -115,7 +109,7 @@ export default function CreateTicketComponent() {
   const [ticketsData, setTicketsData] = useState([]);
 
   const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
-  const [queryGroupTypeData, setQueryGroupTypeData] = useState([]);
+  const [queryGroupTypeData, setQueryGroupTypeData] = useState();
   const fileInputRef = useRef(null);
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -304,12 +298,6 @@ export default function CreateTicketComponent() {
     }
   };
 
-  const roleId = sessionStorage.getItem('role_id');
-  const ticketTypeRefs = useRef();
-  const customerMappingData = useSelector(
-    (CustomerMappingSlice) =>
-      CustomerMappingSlice.customerMaster.customerMappingData
-  );
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
@@ -339,7 +327,6 @@ export default function CreateTicketComponent() {
       formData.append('dynamicForm', JSON.stringify(rows));
       var selectCountry = formData.getAll('customer_id');
       var selectQueryGroup = formData.getAll('query_group_id');
-      var selectgetAll = formData.get('ticket_type_id');
 
       if (selectCountry == '') {
         flag = 0;
@@ -360,40 +347,41 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setTimeout(() => {
-                navigate(`/${_base}/Ticket`);
-              }, 2000);
+              toast.success(res?.data?.message);
+              navigate(`/${_base}/Ticket`);
 
               setIsSubmitted(false);
             } else {
               if (formData.getAll('ticket_uploading') == 'REGULAR') {
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.error(res?.data?.message);
+
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
-                  setNotify({ type: 'danger', message: res.data.message });
+                  toast.error(res?.data?.message);
+
                   setIsSubmitted(false);
                   return;
                 }
-                setNotify({ type: 'danger', message: res.data.message });
+                toast.success(res?.data?.message);
+
                 let url = `${_attachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.success(res?.data?.message);
             setIsSubmitted(false);
           }
         })
         .catch((res) => {
-          setNotify({ type: 'danger', message: res.message });
+          toast.success(res?.data?.message);
         });
     }
   };
 
-  const queryTypeRef = useRef(null);
+  const queryTypeRef = useRef();
 
   const handleGetQueryTypeForm = async (e) => {
     if (e && e.value) {
@@ -421,7 +409,7 @@ export default function CreateTicketComponent() {
         setQueryGroupTypeData(null);
       } else {
         var dynamicForm = data[0].dynamic_form;
-        const returnedData = [];
+
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
             formInstance.inputType === 'select' &&
@@ -527,9 +515,7 @@ export default function CreateTicketComponent() {
   const loadData = async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
-
     const status = 1;
-
     dispatch(getEmployeeDataById(localStorage.getItem('id')));
 
     await new CustomerMappingService()
@@ -549,6 +535,19 @@ export default function CreateTicketComponent() {
               }
             });
           }
+        }
+      });
+
+    await new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        const { data } = res?.data;
+
+        
+        if (res?.data?.status === 1 && data) {
+          setCustomerId(data?.customer_type_id);
+
+
         }
       });
 
@@ -573,7 +572,6 @@ export default function CreateTicketComponent() {
       if (res.payload.status == 200) {
       }
     });
-
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status == 1) {
         setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
@@ -702,6 +700,24 @@ export default function CreateTicketComponent() {
     }
   };
 
+  // const handleParentchange = async (e) => {
+  //   if (ticketTypeRefs.current) {
+  //     ticketTypeRefs.current.clearValue();
+  //   }
+  //   await new TaskTicketTypeService().getAllType().then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status === 1) {
+  //         const temp = res.data.data;
+  //         setGetAllType(
+  //           temp
+  //             .filter((d) => d.type === 'TICKET' && d.is_active == 1)
+  //             .map((d) => ({ value: d.id, label: d.type_name }))
+  //         );
+  //       }
+  //     }
+  //   });
+  // };
+
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
@@ -727,6 +743,40 @@ export default function CreateTicketComponent() {
       }
     });
   };
+
+  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
+  //   const primaryLabel = "Primary";
+  //   const options = [];
+
+  //   // Push the primary label if it hasn't been pushed before
+  //   if (!hasPrimaryLabel) {
+  //     options.push({
+  //       ID: null,
+  //       label: primaryLabel,
+  //       isStatic: true,
+  //       options: [],
+  //     });
+  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+  //   }
+
+  //   // Process the ticketData
+  //   ticketsData?.forEach((item) => {
+  //     const label = item.type_name;
+
+  //     if (label !== primaryLabel) {
+  //       // Push API labels directly into options array
+  //       options.push({
+  //         ID: item.parent_id,
+  //         label: label,
+  //         options: item.children
+  //           ? transformDataTicket(item.children, hasPrimaryLabel)
+  //           : [],
+  //       });
+  //     }
+  //   });
+
+  //   return options;
+  // }
 
   function transformDataTicket(ticketsData) {
     const options = [];
@@ -763,16 +813,20 @@ export default function CreateTicketComponent() {
               : item.customer_type_id
           );
 
-          const mappingId = filteredItems.map((item) => item.id);
+          //  const mappingId = filteredItems.map((item) => item.id);
 
-          const confirmationRequiredID = filteredItems
-            .map((item) => item.confirmation_required)
-            .join(',');
+          const customerMapping = filteredItems.filter(
+            (item) => Number(item.customer_type_id) === Number(customerID)
+          );
+          const mappingId = filteredItems.map((item) =>
+            accountFor === 'SELF' ? item.id : customerMapping[0].id
+          );
 
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-            newPrev['confirmation_required'] = x[0].confirmation_required;
+            newPrev['confirmation_required'] =
+              customerMapping[0]?.confirmation_required;
             newPrev['priority'] = x[0].priority;
             return newPrev;
           });
@@ -811,7 +865,6 @@ export default function CreateTicketComponent() {
       <PageHeader headerTitle="Create Ticket" />
 
       {notify && <Alert alertData={notify} />}
-
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
           type="hidden"
@@ -921,7 +974,7 @@ export default function CreateTicketComponent() {
                   )}
                 </div>
 
-                {queryGroupTypeData.length > 0 && (
+                {queryGroupTypeData && (
                   <div className="col-sm-3">
                     <label className="col-form-label">
                       <b>
@@ -996,91 +1049,6 @@ export default function CreateTicketComponent() {
                   </>
                 )}
 
-                {/* <div className="col-sm-3">
-                  <label
-                    // className="form-label font-weight-bold"
-                    className="col-form-label"
-                    readOnly={true}
-                  >
-                    Parent ticket Type: <Astrick color="red" size="13px" />
-                  </label>
-
-                  <div>
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        width: "100%",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "8px",
-                          border: "1px solid #ccc",
-                          cursor: "pointer",
-                          width: "100%",
-                        }}
-                        onClick={(e) => handleSelectOptionClick(e)}
-                      >
-                        {selectedOption ? selectedOption : "Select an option"}
-                      </div>
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: "100%", // Set the width to 100% to match the parent's width
-                            top: "100%",
-                          }}
-                        >
-                          <CustomMenuListTicket
-                            options={transformedOptionsTicket}
-                            onSelect={(label, ID) => handleSelect(label, ID)}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label" readOnly={true}>
-                    Ticket Type Name: <Astrick color="red" size="13px" />
-                  </label>
-                  <div
-                    style={{
-                      position: "relative",
-                      display: "inline-block",
-                      width: "100%",
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: "8px",
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                        width: "100%",
-                      }}
-                      onClick={(e) => handleSelectOptionClick(e)}
-                    >
-                      {selectedOption ? selectedOption : "Select an option"}
-                    </div>
-                    {isMenuOpen && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: "100%", // Set the width to 100% to match the parent's width
-                          top: "100%",
-                          zIndex: 999, // Adjust the z-index as needed
-                        }}
-                      >
-                        <CustomMenuListTicket
-                          options={transformedOptionsTicket}
-                          onSelect={(label, ID) => handleSelect(label, ID)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div> */}
                 <div className="col-sm-3 mt-2">
                   <label
                     className="form-label font-weight-bold"
@@ -1098,36 +1066,13 @@ export default function CreateTicketComponent() {
                       }}
                     >
                       <div
-                        // style={{
-                        //   padding: "8px",
-                        //   border: "1px solid #ccc",
-                        //   cursor: "pointer",
-                        //   width: "100%",
-                        //   borderRadius: "1px",
-                        // }}
                         className="form-control form-control-sm"
                         onClick={(e) => handleSelectOptionClick(e)}
                       >
-                        {/* {selectedOption
-                              ? selectedOption
-                              : modal?.modalData?.parent_name} */}
                         {selectedOption}
                       </div>
                       {isMenuOpen && (
                         <div
-                          // style={{
-                          //   position: "absolute",
-                          //   width: "100%", // Set the width to 100% to match the parent's width
-                          //   top: "100%",
-
-                          //   maxHeight: "150px", // Adjust the maxHeight here as needed
-                          //   overflowY: "auto", // Enable vertical scrolling
-                          //   scrollbarWidth: "none", // Hide scrollbar in Firefox
-                          //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                          //   "&::-webkit-scrollbar": {
-                          //     display: "none", // Hide scrollbar in Webkit browsers
-                          //   },
-                          // }}
                           style={{
                             position: 'absolute',
                             width: '100%', // Set the width to 100% to match the parent's width
@@ -1151,41 +1096,6 @@ export default function CreateTicketComponent() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="col-sm-3">
-                  <label className="col-form-label">
-                    <b>Parent Ticket Type</b>
-                  </label>
-
-                  {parent && (
-                    <Select
-                      id="parent_id"
-                      name="parent_id"
-                      onChange={(e) => handleParentchange(e)}
-                      options={parent}
-                    />
-                  )}
-                </div>
-
-                {getAllType && (
-                  <div className="col-sm-3">
-                    <label className="col-form-label">
-                      <b>Ticket Type</b>
-                    </label>
-
-                    {getAllType && (
-                      <Select
-                        id="ticket_type_id"
-                        name="ticket_type_id"
-                        onChange={(e) => {
-                          handleAutoChanges(e, "Select2", "ticket_type");
-                        }}
-                        ref={ticketTypeRefs}
-                        options={getAllType}
-                      />
-                    )}
-                  </div>
-                )} */}
               </div>
 
               {data.ticket_uploading == 'REGULAR' && (
@@ -1414,13 +1324,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
@@ -1440,14 +1343,6 @@ export default function CreateTicketComponent() {
                             return (
                               <div>
                                 <input
-                                  // id={
-                                  //   data.inputName
-                                  //     ? data.inputName
-                                  //         .replace(/ /g, "_")
-                                  //         .toLowerCase()
-                                  //     : ""
-                                  // }
-
                                   value={d.value}
                                   onChange={handleCheckBoxChange}
                                   defaultChecked={
@@ -1481,8 +1376,6 @@ export default function CreateTicketComponent() {
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
                           max={data.inputAddOn.inputRangeMax}
-                          // min={data.inputAddOn.inputRange ? range[0] : ""}
-                          // max={data.inputAddOn.inputRange ? range[1] : ""}
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1503,31 +1396,6 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         />
                       )}
-                      {/* {data.inputType === "select" && (
-                        <Select
-                          defaultValue={
-                            selectedDropdown
-                              ? selectedDropdown[data.inputName]
-                              : ""
-                          }
-                          options={data.inputAddOn.inputRadio}
-                          id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, "_").toLowerCase()
-                              : ""
-                          }
-                          name={data.inputName}
-                          onChange={(e) => {
-                            dynamicDependancyHandle(
-                              data.inputName,
-                              e,
-                              data.inputAddOn.inputOnChangeSource
-                            );
-                          }}
-                          className="form-control form-control-sm"
-                          required={data.inputMandatory ? true : false}
-                        />
-                      )} */}
 
                       {data.inputType === 'select' && (
                         <select
@@ -1703,7 +1571,7 @@ export default function CreateTicketComponent() {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              disabled={isSubmitted == true ? true : false}
+              disabled={isSubmitted}
             >
               Submit
             </button>

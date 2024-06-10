@@ -1,31 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import { Astrick } from "../../../components/Utilities/Style";
-
-import PageHeader from "../../../components/Common/PageHeader";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { Modal, Form } from "react-bootstrap";
-import { _base } from "../../../settings/constants";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useReducer, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import { Astrick } from '../../../components/Utilities/Style';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import PageHeader from '../../../components/Common/PageHeader';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
+import { _base } from '../../../settings/constants';
 import {
-  getByTestPlanIDListThunk,
-  getTestCaseReviewListThunk,
-} from "../../../redux/services/testCases/testCaseReview";
-import { useParams } from "react-router-dom";
-import Select from "react-select";
-import { getReviewCommentMasterListThunk } from "../../../redux/services/testCases/reviewCommentMaster";
-
+  approveRejectByReviewerMasterThunk,
+  getByTestPlanIDListThunk
+} from '../../../redux/services/testCases/testCaseReview';
+import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
+import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 function TestCaseReviewDetails() {
-  const { test_plan_id } = useParams();
+  const { id } = useParams();
+
+  const planID = id;
+  const dispatch = useDispatch();
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
-  const dispatch = useDispatch();
-
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  );
   const { testPlanIdData } = useSelector((state) => state?.testCaseReview);
+
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
   );
@@ -38,194 +43,477 @@ function TestCaseReviewDetails() {
     ));
   };
 
+  const [selectAllNames, setSelectAllNames] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const draftRowIds = rowData.map((row) => row.id);
+  //     setSelectedRows(draftRowIds);
+  //   } else {
+  //     setSelectedRows([]);
+  //   }
+  // };
+
+  const [rowData, setRowData] = useState([]);
+  const [commonComment, setCommonComment] = useState('');
+  const [commonRemark, setCommonRemark] = useState('');
+
+  // const handleRowChange = (id, field, value) => {
+  //   // const testPlanIdList = testPlanIdData;
+  //   // const testD = testPlanIdList?.map((row) =>
+  //   //   row.id === id ? { ...row, [field]: value } : row
+  //   // );
+  //   setRowData((prevData) =>
+  //     prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+  //   );
+  // };
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const allRowIds = rowData.map((row) => row.id);
+  //     setCheckedIds(allRowIds);
+  //   } else {
+  //     setCheckedIds([]);
+  //   }
+  // };
+
+  // const handleCheckboxChange = (id) => {
+  //   setCheckedIds((prevCheckedIds) => {
+  //     if (prevCheckedIds.includes(id)) {
+  //       // Remove ID if it's already checked
+  //       return prevCheckedIds.filter((checkedId) => checkedId !== id);
+  //     } else {
+  //       // Add ID if it's not checked
+  //       return [...prevCheckedIds, id];
+  //     }
+  //   });
+  // };
+
+  // const handleSelectAllNamesChange = () => {
+  //   const newSelectAllNames = !selectAllNames;
+  //   setSelectAllNames(newSelectAllNames);
+  //   if (newSelectAllNames) {
+  //     const draftRowIds = testPlanIdData.map((row) => row.id);
+  //     setSelectedRows(draftRowIds);
+  //   } else {
+  //     setSelectedRows([]);
+  //   }
+  // };
+
+  // Handles individual checkbox change
+  // const handleCheckboxChange = (row) => {
+  //   setSelectedRows((prevSelectedRows) => {
+  //     if (prevSelectedRows.includes(row.id)) {
+  //       return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
+  //     } else {
+  //       return [...prevSelectedRows, row.id];
+  //     }
+  //   });
+  // };
+
+  const handleSelectAllNamesChange = () => {
+    const newSelectAllNames = !selectAllNames;
+    setSelectAllNames(newSelectAllNames);
+    if (newSelectAllNames) {
+      const allRowIds = rowData.map((row) => row.id);
+      setSelectedRows(allRowIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleCheckboxChange = (row) => {
+    setSelectedRows((prevSelectedRows) => {
+      if (prevSelectedRows.includes(row.id)) {
+        return prevSelectedRows.filter((selectedRow) => selectedRow !== row.id);
+      } else {
+        return [...prevSelectedRows, row.id];
+      }
+    });
+  };
+
+  const handleRowChange = (id, field, value) => {
+    setRowData((prevData) =>
+      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
+    type: '',
+    data: '',
+    open: false
+  });
+
+  const [checkedIds, setCheckedIds] = useState([]);
+
+  // Handle checkbox change
+  // const handleCheckboxChange = (id) => {
+  //   setCheckedIds((prevCheckedIds) => {
+  //     if (prevCheckedIds.includes(id)) {
+  //       // Remove ID if it's already checked
+  //       return prevCheckedIds.filter((checkedId) => checkedId !== id);
+  //     } else {
+  //       // Add ID if it's not checked
+  //       return [...prevCheckedIds, id];
+  //     }
+  //   });
+  // };
+
+  const handleSubmit = async (status) => {
+    // const updatedRows = rowData.map((row) => ({
+    //   id: row.id,
+    //   comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //   other_remark: row.other_remark !== '' ? row.other_remark : ''
+    // }));
+
+    // const updatedRows = rowData
+    //   .filter((row) => checkedIds.includes(row.id))
+    //   .map((row) => ({
+    //     id: row.id,
+    //     comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //     other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //   }));
+
+    // const updatedRows = selectAllNames
+    //   ? rowData.map((row) => ({
+    //       id: row.id,
+    //       comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //       other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //     }))
+    //   : rowData
+    //       .filter((row) => checkedIds.includes(row.id))
+    //       .map((row) => ({
+    //         id: row.id,
+    //         comment_id: row.comment_id !== '' ? row.comment_id : '',
+    //         other_remark: row.other_remark !== '' ? row.other_remark : ''
+    //       }));
+
+    // Create the payload
+
+    const updatedRows = rowData
+      .filter((row) => selectedRows.includes(row.id))
+      .map((row) => ({
+        id: row.id,
+        comment_id: row.comment_id !== '' ? row.comment_id : '',
+        other_remark: row.other_remark !== '' ? row.other_remark : ''
+      }));
+    const formData = {
+      review_testcase_data: updatedRows,
+      status: status, // Adjust as necessary
+      common_comment_id: commonComment,
+      common_remark: commonRemark
+    };
+    dispatch(
+      approveRejectByReviewerMasterThunk({
+        formData,
+
+        onSuccessHandler: () => {
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
+          setRowData(testPlanIdData);
+        },
+        onErrorHandler: () => {}
+      })
+    );
+  };
+
   const handleModal = (data) => {
     setModal(data);
   };
-  // // initial state
-  const data = [
-    {
-      id: 1,
-      name: "John Doe",
-      age: 30,
-      email: "john@example.com",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      age: 25,
-      email: "jane@example.com",
-    },
-    // Add more objects as needed
-  ];
+
+  useEffect(() => {
+    if (testPlanIdData) {
+      setRowData(testPlanIdData);
+    }
+  }, [testPlanIdData]);
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => (
         <>
           <i
-            className="icofont-edit text-primary cp"
-            onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: "", // You can add relevant data here
-                modalHeader: "Edit Test Case Review",
-              });
-            }}
+            // disabled={row.status != 'DRAFT'}
+            // className="icofont-edit text-primary cp me-3"
+            // className={`icofont-edit text-primary cp me-3 ${
+            //   row.status !== 'DRAFT' ? 'disabled-icon' : ''
+            // }`}
+            className="icofont-edit text-primary cp me-3"
+            onClick={() =>
+              setAddEditTestCasesModal({
+                type: 'EDIT',
+                data: row,
+                open: true
+              })
+            }
           />
+
+          <i class="icofont-history cp bg-warning rounded-circle" />
         </>
       ),
       sortable: false,
-      width: "90px",
+      width: '90px'
     },
+
+    // {
+    //   name: (
+    //     <div onClick={handleSelectAllNamesChange}>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectAllNames}
+    //         onChange={handleSelectAllNamesChange}
+    //       />
+    //     </div>
+    //   ),
+    //   selector: 'selectAll',
+    //   width: '5rem',
+    //   center: true,
+    //   // cell: (row) => (
+    //   //   <div>
+    //   //     <input
+    //   //       type="checkbox"
+    //   //       checked={checkedIds.includes(row.id)}
+    //   //       onChange={() => handleCheckboxChange(row.id)}
+    //   //     />
+    //   //   </div>
+    //   // )
+
+    //   cell: (row) => (
+    //     <div>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectedRows.includes(row.id)}
+    //         onChange={() => handleCheckboxChange(row)}
+    //       />
+    //     </div>
+    //   )
+    // },
 
     {
       name: (
-        <div className="d-flex">
-          <input type="checkbox" />
+        <div onClick={handleSelectAllNamesChange}>
+          <input
+            type="checkbox"
+            checked={selectAllNames}
+            onChange={handleSelectAllNamesChange}
+          />
         </div>
       ),
-      selector: "selectAll",
-      width: "5rem",
+      selector: 'selectAll',
       center: true,
       cell: (row) => (
         <div>
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            checked={selectedRows.includes(row.id)}
+            onChange={() => handleCheckboxChange(row)}
+          />
         </div>
-      ),
+      )
     },
 
     {
-      name: "Module",
+      name: 'Module',
       selector: (row) => row.module_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Submodule",
+      name: 'Submodule',
       selector: (row) => row.sub_module_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Function",
+      name: 'Function',
       selector: (row) => row.function_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "field",
+      name: 'field',
       selector: (row) => row.field,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Testing Type",
+      name: 'Testing Type',
       selector: (row) => row.type_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Testing Group",
+      name: 'Testing Group',
       selector: (row) => row.group_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Test ID",
+      name: 'Test ID',
       selector: (row) => row.id,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Severity",
+      name: 'Severity',
       selector: (row) => row.severity,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Test Description",
+      name: 'Test Description',
       selector: (row) => row.test_description,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Steps",
+      name: 'Steps',
       selector: (row) => row.steps,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Expected Result",
+      name: 'Expected Result',
       selector: (row) => row.expected_result,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.status,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
+    // {
+    //   name: 'Reviewer comment',
+    //   selector: (row) => row?.name,
+    //   sortable: true,
+    //   width: '250px',
+    //   cell: (row) => (
+    //     <select
+    //       className="form-select"
+    //       aria-label="Default select example"
+    //       value={row.comment_id || ''}
+    //       id="comment_id"
+    //       name="comment_id"
+    //       onChange={(e) =>
+    //         handleRowChange(row.id, 'comment_id', e.target.value)
+    //       }
+    //     >
+    //       {generateOptions(getFilterReviewCommentMasterList)}
+    //     </select>
+    //   )
+    // },
+
     {
-      name: "Reviewer comment",
-      selector: (row) => row?.name,
+      name: 'Reviewer comment',
+      selector: (row) => row?.comment_id,
       sortable: true,
-      width: "250px",
+
+      width: '250px',
       cell: (row) => (
-        <select className="form-select" aria-label="Default select example">
+        <select
+          className="form-select"
+          aria-label="Default select example"
+          value={row.comment_id || ''}
+          id="comment_id"
+          name="comment_id"
+          onChange={(e) =>
+            handleRowChange(row.id, 'comment_id', e.target.value)
+          }
+        >
           {generateOptions(getFilterReviewCommentMasterList)}
         </select>
-      ),
+      )
     },
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row?.remark,
       sortable: true,
-      width: "300px",
+      width: '300px',
       cell: (row) => (
         <input
-          class="form-control"
+          className="form-control"
           type="text"
+          id="other_remark"
+          name="other_remark"
           placeholder="Enter Remark"
           aria-label="default input example"
-        ></input>
-      ),
+          // value={row.other_remark || ''}
+          onChange={(e) =>
+            handleRowChange(row.id, 'other_remark', e.target.value)
+          }
+        />
+      )
     },
     {
-      name: "Project",
+      name: 'Project',
       selector: (row) => row.project_name,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
       sortable: false,
-      width: "100px",
+      width: '100px'
     },
 
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => row.created_by,
       sortable: false,
-      width: "100px",
-    },
+      width: '100px'
+    }
+  ];
+
+  const exportColumns = [
+    { title: 'Module', field: 'module_name' },
+    { title: 'Submodule', field: 'sub_module_name' },
+    { title: 'Function', field: 'function_name' },
+    { title: 'Field', field: 'field' },
+    { title: 'Testing Type', field: 'type_name' },
+    { title: 'Testing Group', field: 'group_name' },
+    { title: 'Steps', field: 'steps' },
+    { title: 'Severity', field: 'severity' },
+    { title: 'Expected Result', field: 'expected_result' },
+    { title: 'Status', field: 'status' },
+    { title: 'Project', field: 'project_name' },
+    { title: 'Created At', field: 'created_at' },
+    { title: 'Created By', field: 'created_by' },
+    { title: 'Updated At', field: 'updated_at' },
+    { title: 'Updated By', field: 'updated_by' }
   ];
 
   useEffect(() => {
-    // getTestPlanData();
-    dispatch(getByTestPlanIDListThunk({ test_plan_id: test_plan_id }));
+    dispatch(
+      getByTestPlanIDListThunk({
+        id: id,
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
     dispatch(getReviewCommentMasterListThunk());
-  }, []);
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -233,28 +521,39 @@ function TestCaseReviewDetails() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button className="btn btn-primary text-white c">
+              {/* <button className="btn btn-primary text-white c">
                 Filter <i className="icofont-filter" />
-              </button>
+              </button> */}
 
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                //   apiData={ExportData}
-
-                fileName="State master Records"
+                fileName="Test Case Review List"
+                apiData={testPlanIdData}
+                columns={exportColumns}
               />
             </div>
           );
         }}
       />
+      {console.log('rowData', rowData)}
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider " />
         <DataTable
           columns={columns}
-          data={testPlanIdData}
+          // data={rowData.length >= 0 && rowData}
+          data={rowData}
           defaultSortField="role_id"
           pagination
+          paginationServer
+          paginationTotalRows={rowData?.total?.total_count}
+          paginationDefaultPage={rowData?.currentPage}
+          onChangePage={(page) => setPaginationData({ currentPage: page })}
+          onChangeRowsPerPage={(newPageSize) => {
+            setPaginationData({ rowPerPage: newPageSize });
+            setPaginationData({ currentPage: 1 });
+          }}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -264,231 +563,67 @@ function TestCaseReviewDetails() {
       <div className="row mt-4">
         <div className="col-md-3">
           <label className="form-label font-weight-bold">
-            Content Type :<Astrick color="red" size="13px" />{" "}
+            Content Type :<Astrick color="red" size="13px" />{' '}
           </label>
 
-          <select className="form-select">
+          <select
+            className="form-select"
+            value={commonComment}
+            id="common_comment_id"
+            name="common_comment_id"
+            onChange={(e) => setCommonComment(e.target.value)}
+          >
             {generateOptions(getFilterReviewCommentMasterList)}
           </select>
         </div>
         <div className="col-md-3">
           <label className="form-label font-weight-bold">Remark :</label>
-          <input className="form-control"></input>
+          <input
+            className="form-control"
+            id="common_remark"
+            name="common_remark"
+            value={commonRemark}
+            onChange={(e) => setCommonRemark(e.target.value)}
+          />
         </div>
       </div>
 
       <div className=" d-flex  justify-content-end">
         <button
           type="submit"
-          className="btn btn-sm mx-2  btn-warning text-white"
+          onClick={() => handleSubmit('RESEND')}
+          className="btn btn-sm btn-warning text-white"
         >
-          <i class="icofont-paper-plane icon-large"></i>
-          Resend
+          <i class="icofont-paper-plane icon-large mx-2"></i>
+          Send For Modification
         </button>
         <button
+          onClick={() => handleSubmit('REJECTED')}
           type="submit"
-          className="btn btn-lg mx-2 btn-danger text-white "
+          className="btn btn-lg btn-danger text-white "
         >
           Reject
         </button>
 
         <button
           type="submit"
-          className="btn btn-lg mx-2 btn-success  text-white "
+          className="btn btn-lg  btn-success  text-white "
+          onClick={() => handleSubmit('APPROVED')}
         >
           Approve
         </button>
       </div>
-
-      <Modal
-        centered
-        show={modal.showModal}
-        size="lg"
-        onHide={(e) => {
-          handleModal({
-            showModal: false,
-            modalData: "",
-            modalHeader: "",
-          });
-        }}
-      >
-        <form
-          method="post"
-          // onSubmit={handleBulkUpload}
-        >
-          <Modal.Header>
-            <Modal.Title className="fw-bold text-primary ">
-              Edit Test Case
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="row">
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Project Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Module Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Submodule Name
-                  </Form.Label>
-                  <Form.Control as="select">
-                    <option>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Function <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">Field</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Testing Type <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Testing Group <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Test Id <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-              <div className="col-md-4 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Severity <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">Steps</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Test Description <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    className="form-control-lg"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6 mt-2">
-                <Form.Group>
-                  <Form.Label className="font-weight-bold">
-                    Expected Result <Astrick color="red" size="13px" />{" "}
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    className="form-control-lg"
-                    rows={3} // You can adjust the number of rows as per your requirement
-                    placeholder="Enter Submodule Name"
-                  ></Form.Control>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-primary shadow p-2">
-              Update
-            </button>
-            <button
-              type="button"
-              className="btn btn shadow p-2 text-primary text-white"
-              onClick={() => {
-                handleModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
-      </Modal>
+      {addEditTestCasesModal.open === true && (
+        <EditTestCaseModal
+          show={addEditTestCasesModal?.open}
+          type={addEditTestCasesModal?.type}
+          currentTestCasesData={addEditTestCasesModal?.data}
+          close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
+          paginationData={paginationData}
+          id={planID}
+          payloadType={'TestCaseReview'}
+        />
+      )}
     </div>
   );
 }
