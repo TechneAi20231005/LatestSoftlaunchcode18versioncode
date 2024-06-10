@@ -825,6 +825,7 @@ function EditUserComponent({ match }) {
                             className="form-control form-control-sm"
                             id="account_for"
                             name="account_for"
+                            disabled
                             value={accountFor ? accountFor : ''}
                             onChange={e => accountForChange(e.target.value)}
                           >
@@ -846,6 +847,7 @@ function EditUserComponent({ match }) {
                             <CustomerDropdown
                               id="customer_id"
                               name="customer_id"
+
                               defaultValue={data.customer_id ? data.customer_id : ''}
                               readOnly={true}
                               required={true}
