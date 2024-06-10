@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, startTransition } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Dropdown, Modal } from 'react-bootstrap';
-
+import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
 import { _attachmentUrl, userSessionData } from '../../../settings/constants';
 import Alert from '../../../components/Common/Alert';
@@ -32,6 +32,7 @@ import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
+import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
 
 export default function TaskComponent({ match }) {
   const [notify, setNotify] = useState(null);
@@ -162,66 +163,97 @@ export default function TaskComponent({ match }) {
     const taskDataa = [];
     const tasksDataa = [];
     const sprintId = sprint_id ? sprint_id : 0;
-    setIsLoading(true);
-    await new BasketService()
-      .getBasketTaskData(ticketId, sprintId)
 
-      .then((res) => {
-        if (res.status === 200) {
-          setShowLoaderModal(false);
-          setIsLoading(false);
+    const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
-          if (res.data.status === 1) {
+    let counter = 0;
+    const interval = setInterval(() => {
+      counter += 1;
+      toast.update(toastId, {
+        render: `Fetching Latest Api Data... (${counter} sec)`
+      });
+    }, 1000);
+    // setIsLoading(true);
+
+    try {
+      await new BasketService()
+        .getBasketTaskData(ticketId, sprintId)
+        .then((res) => {
+          if (res.status === 200) {
+            setShowLoaderModal(false);
             setIsLoading(false);
+            if (res.data.status === 1) {
+              setIsLoading(false);
 
-            const temp = res.data.data;
-            sortingArr = res.data.basket_id_array;
-            setIsReviewer(res.data.is_reviewer);
-            setOwnership(res.data.ownership);
-            setBasketIdArray(res.data.basket_id_array);
-            // setIsRegularised(res.data.is_regularized)
-            setData(null);
-            res.data.data.sort(sortFunc);
-            setData(res.data.data);
-            res.data.data.map((tasks, index) => {
-              setBasketStartDate(tasks.start_date);
-              tasks.taskData.forEach((d, i) => {
-                let taskOwnerNames = d.taskOwners
-                  .map((owner) => owner.taskOwnerName)
-                  .join(', ');
-                tasksDataa.push({
-                  ticket_id_name: d.ticket_id_name,
-                  Task_Names: d.task_name,
-                  Task_Hours: d.task_hours,
-                  Start_Date: d.task_start_date,
-                  End_Date: d.task_end_date,
-                  Status: d.status,
-                  Priority: d.priority,
-                  Total_Worked: d.total_worked,
-                  Basket_Name: tasks.basket_name,
-                  taskOwnerNames: taskOwnerNames,
+              const temp = res.data.data;
+              sortingArr = res.data.basket_id_array;
+              setIsReviewer(res.data.is_reviewer);
+              setOwnership(res.data.ownership);
+              setBasketIdArray(res.data.basket_id_array);
+              // setIsRegularised(res.data.is_regularized)
+              setData(null);
+              res.data.data.sort(sortFunc);
 
-                  task_type: d.parent_name
+              res.data.data.map((tasks, index) => {
+                setBasketStartDate(tasks.start_date);
+                tasks.taskData.forEach((d, i) => {
+                  let taskOwnerNames = d.taskOwners
+                    .map((owner) => owner.taskOwnerName)
+                    .join(', ');
+                  tasksDataa.push({
+                    ticket_id_name: d.ticket_id_name,
+                    Task_Names: d.task_name,
+                    Task_Hours: d.task_hours,
+                    Start_Date: d.task_start_date,
+                    End_Date: d.task_end_date,
+                    Status: d.status,
+                    Priority: d.priority,
+                    Total_Worked: d.total_worked,
+                    Basket_Name: tasks.basket_name,
+                    taskOwnerNames: taskOwnerNames,
+
+                    task_type: d.parent_name
+                  });
                 });
               });
-            });
-
-            setTasksData(tasksDataa);
-            res.data.data.forEach((dataa) => {
-              dataa.taskData.forEach((task) => {
-                tempAllTaskList.push({ value: task.id, label: task.task_name });
+              startTransition(() => {
+                setData(res.data.data);
+                setTasksData(tasksDataa);
               });
-            });
-            setAllTaskList([]);
-            setAllTaskList(tempAllTaskList);
 
-            setIsLoading(false); // Loading finished
+              res.data.data.forEach((dataa) => {
+                dataa.taskData.forEach((task) => {
+                  tempAllTaskList.push({
+                    value: task.id,
+                    label: task.task_name
+                  });
+                });
+              });
+              setAllTaskList([]);
+              setAllTaskList(tempAllTaskList);
+
+              setIsLoading(false); // Loading finished
+            }
           }
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
+        });
+    } catch (error) {
+      toast.update(toastId, {
+        render: 'Error fetching data!',
+        type: toast.TYPE.ERROR,
+        isLoading: false,
+        autoClose: 3000
       });
+    } finally {
+      clearInterval(interval);
+      if (toastId) {
+        toast.update(toastId, {
+          render: 'Data fetched successfully!',
+          type: toast.TYPE.SUCCESS,
+          isLoading: false,
+          autoClose: 3000
+        });
+      }
+    }
   };
 
   //Task Related
@@ -1125,7 +1157,6 @@ export default function TaskComponent({ match }) {
                 </span>
               </div>
               <div className="fs-5">
-
                 {/* <svg
 
                   xmlns="http://www.w3.org/2000/svg"
@@ -1345,7 +1376,7 @@ export default function TaskComponent({ match }) {
       ) : (
         <div>
           {isLoading == true ? (
-            <LoaderComponent />
+            <CardLoadingSkeleton />
           ) : (
             <>
               <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">
