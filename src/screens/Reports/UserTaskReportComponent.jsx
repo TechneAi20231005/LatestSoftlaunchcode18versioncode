@@ -1,4 +1,4 @@
-import React, { useEffect, useState, } from 'react';
+import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
@@ -19,7 +19,7 @@ function UserTaskReportComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [isLoading, setISLoading] = useState(false);
 
-  const checkRole = useSelector((DashboardSlice) =>
+  const isMenuRoleChecked  = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 24)
   );
 
@@ -196,10 +196,10 @@ function UserTaskReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (isMenuRoleChecked  && isMenuRoleChecked [0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, [isMenuRoleChecked ]);
 
   return (
     <div className="container-xxl">
@@ -270,14 +270,14 @@ function UserTaskReportComponent() {
                     className="btn btn-sm btn-warning text-white"
                     type="submit"
                   >
-                    <i className="icofont-search-1 "></i> Search
+                    <i className="icofont-search-1 "/> Search
                   </button>
                   <button
                     className="btn btn-sm btn-info text-white"
                     type="button"
                     onClick={() => window.location.reload(false)}
                   >
-                    <i className="icofont-refresh text-white"></i> Reset
+                    <i className="icofont-refresh text-white"/> Reset
                   </button>
                 </div>
                 <div className="col-md-6 d-flex justify-content-end">
