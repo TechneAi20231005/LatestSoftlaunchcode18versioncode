@@ -48,6 +48,13 @@ const WeekwiseCalendar = (props) => {
 
     // tooltip.style.display = "none";
   };
+  function goPrevTab() {
+    let prevTab = localStorage.getItem('PreviosTab');
+    localStorage.removeItem('PreviosTab');
+    if (prevTab) {
+      window.location.href = prevTab;
+    }
+  }
 
   return (
     <>
@@ -94,7 +101,9 @@ const WeekwiseCalendar = (props) => {
                       </p>
                     )}
                     {task?.task_name && (
-                      <p className="mb-0">{truncateText(task?.task_name)}</p>
+                      <p className="mb-0" onClick={goPrevTab}>
+                        {truncateText(task?.task_name)}
+                      </p>
                     )}
                   </div>
                 );
