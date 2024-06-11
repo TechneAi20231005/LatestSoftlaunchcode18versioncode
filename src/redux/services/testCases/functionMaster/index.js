@@ -1,14 +1,14 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
-import customAxios from "../../../../http/axios";
-import { errorHandler } from "../../../../utils";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
+import customAxios from '../../../../http/axios';
+import { errorHandler } from '../../../../utils';
 
 export const getFunctionMasterListThunk = createAsyncThunk(
-  "functionMaster/getFunctionMasterList",
+  'functionMaster/getFunctionMasterList',
   async () => {
     try {
       const response = await customAxios.get(
-        `testCases/testingFunction/getTestingFunction`
+        `testCases/testingFunction/getTestingFunction/0`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -25,7 +25,7 @@ export const getFunctionMasterListThunk = createAsyncThunk(
 );
 
 export const addFunctionMasterThunk = createAsyncThunk(
-  "functionMaster/addFunction",
+  'functionMaster/addFunction',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
       const response = await customAxios.post(
@@ -52,7 +52,7 @@ export const addFunctionMasterThunk = createAsyncThunk(
 );
 
 export const editFunctionMasterThunk = createAsyncThunk(
-  "functionMaster/editfunction",
+  'functionMaster/editfunction',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
       const response = await customAxios.post(
