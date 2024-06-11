@@ -65,6 +65,7 @@ export default function CreateCustomerMappingComponent() {
   const [showUserSelect, setShowUserSelect] = useState(false);
 
   const [ratioTotal, setRatioTotal] = useState(0);
+  const [departmentId, setDepartmentId] = useState();
 
   const [confirmationRequired, setConfirmationRequired] = useState('1');
 
@@ -114,6 +115,16 @@ export default function CreateCustomerMappingComponent() {
 
   const loadData = async () => {
     await getDynamicForm();
+
+    await new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        const { data } = res?.data;
+
+        if (res?.data?.status === 1 && data) {
+          setDepartmentId(data?.department_id);
+        }
+      });
   };
 
   const getDynamicForm = async () => {
@@ -227,7 +238,9 @@ export default function CreateCustomerMappingComponent() {
     setUserDropdown(null);
 
     try {
-      const res = await new UserService().getUserWithMultipleDepartment();
+      const res = await new UserService().getUserWithMultipleDepartment(
+        departmentId
+      );
 
       if (res.status === 200) {
         if (res.data.status === 1) {
