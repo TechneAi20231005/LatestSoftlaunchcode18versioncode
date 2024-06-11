@@ -115,12 +115,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [userData, setUserData] = useState([]);
 
-  const [confirmationRequired, setConfirmationRequired] = useState('');
+  const [confirmationRequired, setConfirmationRequired] = useState(null);
+
   const [statusData, setstatusData] = useState('');
   const [ratioData, setRatioData] = useState([]);
 
   const handleConfirmationChange = (e) => {
-    setConfirmationRequired(e?.target?.value);
+    setConfirmationRequired(Number(e?.target?.value));
   };
 
   const handleStatusChange = (e) => {
@@ -169,14 +170,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
               user_policy_label: tempData.user_policy_label
             });
-            setConfirmationRequired(
-              res?.data?.data?.confirmation_required == 1 ? 1 : 0
-            );
-            setstatusData(res?.data?.data?.is_active == 1 ? 1 : 0);
+            setConfirmationRequired(res?.data?.data?.confirmation_required);
+
+            setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
           }
         }
       });
-
     dispatch(getRoles());
 
     await new CustomerTypeService().getCustomerType().then((res) => {
@@ -797,8 +796,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_yes"
                             value="1"
-                            ref={confirmationRequiredDetail}
-                            defaultChecked={confirmationRequired == 1}
+                            // ref={confirmationRequiredDetail}
+                            // defaultChecked={confirmationRequired == 1}
+                            checked={confirmationRequired === 1}
                             onChange={handleConfirmationChange}
                           />
                           <label
@@ -816,8 +816,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_no"
                             value="0"
-                            ref={confirmationRequiredDetail}
-                            defaultChecked={confirmationRequired == 0}
+                            // ref={confirmationRequiredDetail}
+                            checked={confirmationRequired === 0}
                             onChange={handleConfirmationChange}
                           />
                           <label
