@@ -255,16 +255,12 @@ export default function CreateCustomerMappingComponent() {
             );
           } else {
             defaultValue = [...dropdown];
-            setUserData([]);
           }
 
           setUserDropdown(defaultValue.filter((option) => option.value !== ''));
 
           if (dropdown.length === 0) {
             setUserDropdown([]);
-            if (data.approach === 'RW') {
-              setUserData([]);
-            }
           }
         }
       }
