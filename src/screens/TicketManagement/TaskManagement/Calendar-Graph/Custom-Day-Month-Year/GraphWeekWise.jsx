@@ -7,17 +7,19 @@ import Select from 'react-select';
 import PageHeader from '../../../../../components/Common/PageHeader';
 import { useParams } from 'react-router-dom';
 import Alert from '../../../../../components/Common/Alert';
+import TicketCollapse from '../../../../../components/Common/TicketCollapse';
 const GraphWeekWise = () => {
   const params = useParams();
 
   const { id: ticketId, date: sprintRange } = params;
   const [notify, setNotify] = useState({});
   const [selectedOption, setSelectedOption] = useState('week');
+  const [open, setOpen] = useState(false);
   // const [sprintFirstDate, setSprintFirstDate] = useState('');
   // const [sprintLastDate, setSprintLastDate] = useState('');
   const [dropDownData, setDropDownData] = useState([]);
   // const [weekRange, setWeekRange] = useState([]);
-  // const [selectedDropDown, setSelectedDropdown] = useEffect("");
+  const [selectedDropDown, setSelectedDropdown] = useState(null);
 
   const [chartData, setChartData] = useState({
     series: [
@@ -336,6 +338,7 @@ const GraphWeekWise = () => {
     }
   };
   const handleRadioChange = async (event) => {
+    setSelectedDropdown(null);
     setSelectedOption(event.target.value);
     setChartData((prevData) => ({
       ...prevData,
@@ -402,7 +405,7 @@ const GraphWeekWise = () => {
 
   const dropDownHandler = async (event) => {
     const { label } = event;
-
+    setSelectedDropdown(event);
     if (selectedOption === 'week') {
       const currentWeek = event.label.split('-');
       getGraphData(false, currentWeek[0], currentWeek[1]);
@@ -413,6 +416,9 @@ const GraphWeekWise = () => {
       await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
     }
   };
+  function toggleOpen() {
+    setOpen(!open);
+  }
   useEffect(() => {
     getGraphData(true);
   }, []);
@@ -421,21 +427,8 @@ const GraphWeekWise = () => {
     <div className="container-xxl ">
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
-      <div className="card mt-3">
-        <div className="card-body">
-          <div>
-            <div className="d-flex ">
-              <h4 className="col-md-3">
-                <strong className="text-primary">Ticket - TT3711 </strong>
-                <i
-                  className="icofont-eye"
-                  style={{ fontSize: '27px' }}
-                ></i>{' '}
-              </h4>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TicketCollapse ticket={'TT-19994'} open={open} toggleOpen={toggleOpen} />
+
       <div className="range-bar-chart-container card mt-3">
         <div className="col-12 text-end p-2 d-md-flex align-items-center my-3 justify-content-end d-none">
           <div className="form-check ms-5">
@@ -487,7 +480,8 @@ const GraphWeekWise = () => {
               // id="sprint_data"
               options={dropDownData}
               onChange={dropDownHandler}
-              defaultValue={dropDownData[0]?.label}
+              value={selectedDropDown}
+              // defaultValue={dropDownData[0]?.label}
               // ref={sprintDropDownRef}
               // defaultValue={}
             />

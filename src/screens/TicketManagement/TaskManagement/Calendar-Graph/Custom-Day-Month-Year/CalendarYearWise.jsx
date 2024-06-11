@@ -4,7 +4,6 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import SprintService from '../../../../../services/TicketService/SprintService';
 import { useParams } from 'react-router-dom';
-import CustomTooltip from './CustomTooltip';
 
 export const CalendarYearWise = (props) => {
   const { yearData } = props;
@@ -29,6 +28,7 @@ export const CalendarYearWise = (props) => {
       if (yearItem?.task_data?.length > 0) {
         for (let j = 0; j < yearItem.task_data.length; j++) {
           const taskDataItem = yearItem.task_data[j];
+          console.log('taskDataItem', taskDataItem);
           if (Object.keys(taskDataItem).length > 0) {
             const newEvent = {
               title: taskDataItem.sprint_name,
@@ -36,6 +36,7 @@ export const CalendarYearWise = (props) => {
               end: yearItem.date,
               basketName: taskDataItem?.basket_name,
               taskName: taskDataItem?.task_name,
+              totalScheduledHours: taskDataItem?.actual_task_scheduled_Hours,
               scheduledHours: taskDataItem?.task_scheduled_Hours,
               actualWorked: taskDataItem?.task_actual_worked,
               priority: taskDataItem?.task_priority,
@@ -70,6 +71,7 @@ export const CalendarYearWise = (props) => {
   };
 
   const tooltipAccessor = (event) => {
+    console.log('event', event);
     const {
       taskName,
       scheduledHours,
@@ -78,18 +80,20 @@ export const CalendarYearWise = (props) => {
       end,
       actualWorked,
       actualStatus,
-      taskOwners
+      taskOwners,
+      totalScheduledHours
     } = event;
     const users = taskOwners.join(',');
     const tooltipText = `Sprint Name: ${
       event.title
-    }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${start}\nEnd Date:${end}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
+    }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${start}\nEnd Date:${end}\nTotal Scheduled hours:${totalScheduledHours}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
       actualWorked ? actualWorked : '00:00:00'
     }\nStatus:${actualStatus}\nTask Owners:${users}`;
     return tooltipText;
   };
 
   const CustomToolbar = (toolbar) => {
+    console.log('toolbar', toolbar);
     const goToBack = () => {
       toolbar.date.setMonth(toolbar.date.getMonth() - 1);
       toolbar.onNavigate('prev');
@@ -103,7 +107,12 @@ export const CalendarYearWise = (props) => {
     return (
       <div className="custom-toolbar my-1 col-12 col-md-6 d-flex align-items-center">
         <button onClick={goToBack} className="btn col-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="23"
+            viewBox="0 0 23 23"
+          >
             <rect
               width="22.9927"
               height="22.9927"
@@ -119,7 +128,12 @@ export const CalendarYearWise = (props) => {
         </button>
         <span className="col-6 text-center">{toolbar.label}</span>
         <button onClick={goToNext} className="col-3 btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="23"
+            height="23"
+            viewBox="0 0 23 23"
+          >
             <rect
               width="22.9927"
               height="22.9927"
