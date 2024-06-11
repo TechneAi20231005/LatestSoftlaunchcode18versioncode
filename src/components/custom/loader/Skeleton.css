@@ -1,59 +1,9 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.cp {
-  cursor: pointer;
-}
-.text_primary {
-  color: var(--primary-color);
-}
-
-.row_gap_3 {
-  row-gap: 8px;
-}
-
-/* .skeleton {
+.skeleton {
   height: 36px;
   border-radius: 5px;
   background-color: var(--skeleton-bg-1);
   animation: skeleton-loading 1s linear infinite alternate;
-} */
+}
 
 .skeleton-card {
   background-color: #e0e0e0;
@@ -113,19 +63,4 @@
   100% {
     background-color: var(--skeleton-bg-2);
   }
-}
-
-.strikethrough {
-  text-decoration: line-through !important;
-  color: black;
-  opacity: 0.5;
-}
-.link_underline_primary {
-  text-decoration: underline;
-  color: var(--bs-blue);
-}
-.disabled-icon {
-  pointer-events: none;
-  opacity: 0.5;
-  cursor: not-allowed;
 }

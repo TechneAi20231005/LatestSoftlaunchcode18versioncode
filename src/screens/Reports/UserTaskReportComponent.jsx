@@ -19,7 +19,7 @@ function UserTaskReportComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [isLoading, setISLoading] = useState(false);
 
-  const isMenuRoleChecked  = useSelector((DashboardSlice) =>
+  const isMenuRoleChecked = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 24)
   );
 
@@ -27,6 +27,7 @@ function UserTaskReportComponent() {
   const [data, setData] = useState(null);
 
   const [exportData, setExportData] = useState(null);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -129,6 +130,7 @@ function UserTaskReportComponent() {
         .then((res) => {
           if (res.status === 200) {
             setShowLoaderModal(false);
+            setSearchPerformed(true);
             const tempData = [];
             const exportTempData = [];
 
@@ -196,10 +198,10 @@ function UserTaskReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (isMenuRoleChecked  && isMenuRoleChecked [0]?.can_read === 0) {
+    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [isMenuRoleChecked ]);
+  }, [isMenuRoleChecked]);
 
   return (
     <div className="container-xxl">
@@ -270,14 +272,14 @@ function UserTaskReportComponent() {
                     className="btn btn-sm btn-warning text-white"
                     type="submit"
                   >
-                    <i className="icofont-search-1 "/> Search
+                    <i className="icofont-search-1 " /> Search
                   </button>
                   <button
                     className="btn btn-sm btn-info text-white"
                     type="button"
                     onClick={() => window.location.reload(false)}
                   >
-                    <i className="icofont-refresh text-white"/> Reset
+                    <i className="icofont-refresh text-white" /> Reset
                   </button>
                 </div>
                 <div className="col-md-6 d-flex justify-content-end">
@@ -312,7 +314,8 @@ function UserTaskReportComponent() {
                   highlightOnHover={true}
                 />
               ) : (
-                <div className="text-center">No data found</div>
+                searchPerformed &&
+                !isLoading && <div className="text-center">No data found</div>
               )}
             </div>
           </div>

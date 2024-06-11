@@ -9,11 +9,8 @@ import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
 import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
-
 import { Link } from 'react-router-dom';
-import { _base,
-
- } from '../../settings/constants';
+import { _base } from '../../settings/constants';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
@@ -28,8 +25,9 @@ export default function ResourcePlanningReportComponent() {
   const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  const isMenuRoleChecked  = useSelector((DashboardSlice) =>
+  const isMenuRoleChecked = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 25)
   );
 
@@ -137,6 +135,7 @@ export default function ResourcePlanningReportComponent() {
           );
           if (res.status === 200) {
             setIsLoading(false);
+            setSearchPerformed(true);
 
             setShowLoaderModal(false);
             if (res.data.status === 1) {
@@ -252,7 +251,7 @@ export default function ResourcePlanningReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (isMenuRoleChecked  && isMenuRoleChecked[0]?.can_read === 0) {
+    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
@@ -319,14 +318,14 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
                 >
-                  <i className="icofont-search-1 "/> Search
+                  <i className="icofont-search-1 " /> Search
                 </button>
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
                 >
-                  <i className="icofont-refresh text-white"/> Reset
+                  <i className="icofont-refresh text-white" /> Reset
                 </button>
               </div>
               <div className="col-md-6 d-flex justify-content-end">
@@ -360,7 +359,8 @@ export default function ResourcePlanningReportComponent() {
                   expandableRowsComponent={ExpandedComponent}
                 />
               ) : (
-                <div className="text-center">No data found</div>
+                searchPerformed &&
+                !isLoading && <div className="text-center">No data found</div>
               )}
             </div>
           </div>
