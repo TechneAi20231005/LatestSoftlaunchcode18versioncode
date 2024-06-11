@@ -48,12 +48,12 @@
   row-gap: 8px;
 }
 
-/* .skeleton {
-  height: 36px;
+.skeleton {
+  height: 30px;
   border-radius: 5px;
   background-color: var(--skeleton-bg-1);
   animation: skeleton-loading 1s linear infinite alternate;
-} */
+}
 
 .skeleton-card {
   background-color: #e0e0e0;

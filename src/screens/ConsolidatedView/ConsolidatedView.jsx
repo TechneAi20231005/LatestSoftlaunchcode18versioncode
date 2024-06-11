@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Nav, Tab } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Tab } from 'react-bootstrap';
 import CurrentClientProject from './CurrentClientProject';
 import PageHeader from '../../components/Common/PageHeader';
-import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
-import { Spinner } from 'react-bootstrap';
 
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
 import { useDispatch, useSelector } from 'react-redux';
 import { consolidatedData } from './ConsolidatedAction';
 import { getRoles } from '../Dashboard/DashboardAction';
-import ConsolidatedSlice from './ConsolidatedSlice';
-import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+
 import CardLoadingSkeleton from '../../components/custom/loader/CardLoadingSkeleton';
 
 function ConsolidatedView() {
@@ -24,16 +20,9 @@ function ConsolidatedView() {
       ConsolidatedSlice.consolidatedData.isLoading.consolidatedDataList
   );
 
-  const RoleMasterData = useSelector(
-    (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
-  );
-
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 34)
   );
-  const roleId = sessionStorage.getItem('role_id');
-  const [projects, setProjects] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const loadData = async () => {
     dispatch(consolidatedData());
@@ -59,8 +48,8 @@ function ConsolidatedView() {
             <Tab.Content>
               <Tab.Pane eventKey="All">
                 <div className="row  ml-2 mr-2">
-                  {<CardLoadingSkeleton />}
-                  {/* {!isLoading &&
+                  {isLoading && <CardLoadingSkeleton />}
+                  {!isLoading &&
                     consolatedData &&
                     consolatedData.map((data, index) => {
                       return (
@@ -69,7 +58,7 @@ function ConsolidatedView() {
                           projectId={data.projectId}
                         />
                       );
-                    })} */}
+                    })}
                 </div>
               </Tab.Pane>
             </Tab.Content>
