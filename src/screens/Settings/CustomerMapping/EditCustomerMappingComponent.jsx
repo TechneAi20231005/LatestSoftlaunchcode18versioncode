@@ -63,6 +63,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [queryType, setQueryType] = useState();
   const [queryTypeDropdown, setQueryTypeDropdown] = useState();
+  const [userDropDownFilterData, setUserDropDownFilterData] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState();
@@ -83,7 +84,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const [ratioTotal, setRatioTotal] = useState(0);
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
 
   const [data, setData] = useState({
@@ -393,7 +394,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     });
   };
 
-  const handleGetDepartmentUsers = async (e) => {
+  const handleGetDepartmentUsers = async (e, additional_id = null) => {
     setUserDropdown(null);
 
     try {
@@ -404,15 +405,24 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status === 200) {
         if (res?.data?.status === 1) {
           const dropdown = res.data.data
+            .filter((d) => {
+              if (additional_id) {
+                return (
+                  d.is_active === 1 &&
+                  d.multiple_department_id.includes(additional_id)
+                );
+              } else
+                return (
+                  d.is_active === 1 &&
+                  d.multiple_department_id.includes(e.value)
+                );
+            })
 
-            .filter(
-              (d) =>
-                d.is_active === 1 && d.multiple_department_id.includes(e.value)
-            )
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
+          setUserDropDownFilterData(dropdown);
 
           let defaultValue;
           if (data.approach === 'RW') {
@@ -463,6 +473,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }));
         setUserData(newData);
         setRatioTotal(sum);
+
+        
       }
     }
   };
@@ -478,6 +490,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
 
     const getUserData = () => {
+      // Get an array of user IDs
       const userIds = userDropdown?.map((ele) => ele?.value);
       return userIds;
     };
@@ -518,21 +531,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     form.approach = approachId;
     form.department_id = departmentId;
     if (data.approach === 'RW') {
-      const completeUserData =
-        userDropdown.length > 0
-          ? userDropdown.map((user) => {
-              const existingUser = userData.find(
-                (u) => u.user_id === user.value
-              );
-              return existingUser || { user_id: user.value, ratio: 0 };
-            })
-          : [];
-
       form.user_id = RwuserID;
-      form.userData = completeUserData;
+      // form.ratio = ratiosToSend;
+      form.userData = userData?.length > 0 ? userData : ratioData;
     } else {
       form.user_id = userID;
     }
+
     form.status = statusID;
 
     form.tenant_id = sessionStorage.getItem('tenant_id');
@@ -813,6 +818,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_yes"
                             value="1"
+                            // ref={confirmationRequiredDetail}
+                            // defaultChecked={confirmationRequired == 1}
                             checked={confirmationRequired === 1}
                             onChange={handleConfirmationChange}
                           />
@@ -831,6 +838,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             name="confirmation_required"
                             id="confirmation_required_no"
                             value="0"
+                            // ref={confirmationRequiredDetail}
                             checked={confirmationRequired === 0}
                             onChange={handleConfirmationChange}
                           />
@@ -904,40 +912,43 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                   {data.approach !== 'SELF' &&
                     data.approach !== 'AU' &&
-                    userDropdown &&
-                    userDropdown.length > 0 && (
+                    userDropDownFilterData?.length > 0 && (
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
                             Select User :<Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {data && data.approach !== 'RW' && data.approach && (
-                          <div className="col-sm-4">
-                            <Select
-                              isMulti={data.approach != 'SP'}
-                              isSearchable={true}
-                              name="user_id[]"
-                              className="basic-multi-select"
-                              classNamePrefix="select"
-                              ref={useridDetail}
-                              defaultValue={
-                                data && data.approach == 'SP'
-                                  ? userDropdown.filter(
-                                      (d) =>
-                                        d.value === data.user_policy?.user_id
-                                    )
-                                  : data.user_policy?.map((d) => ({
-                                      value: d.user_id,
-                                      label: d.user_name
-                                    }))
-                              }
-                              options={userDropdown}
-                              required
-                              style={{ zIndex: '100' }}
-                            />
-                          </div>
-                        )}
+                        {data &&
+                          userDropdown &&
+                          userDropdown.length > 0 &&
+                          data.approach !== 'RW' &&
+                          data.approach && (
+                            <div className="col-sm-4">
+                              <Select
+                                isMulti={data.approach != 'SP'}
+                                isSearchable={true}
+                                name="user_id[]"
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                ref={useridDetail}
+                                defaultValue={
+                                  data && data.approach == 'SP'
+                                    ? userDropdown.filter(
+                                        (d) =>
+                                          d.value === data.user_policy?.user_id
+                                      )
+                                    : data.user_policy?.map((d) => ({
+                                        value: d.user_id,
+                                        label: d.user_name
+                                      }))
+                                }
+                                options={userDropdown}
+                                required
+                                style={{ zIndex: '100' }}
+                              />
+                            </div>
+                          )}
 
                         {userDropdown &&
                           data.approach == 'RW' &&

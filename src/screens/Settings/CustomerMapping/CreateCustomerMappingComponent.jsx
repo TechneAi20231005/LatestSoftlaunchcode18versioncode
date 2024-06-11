@@ -693,6 +693,7 @@ export default function CreateCustomerMappingComponent() {
 
                 {data.approach !== 'SELF' &&
                   data.approach !== 'AU' &&
+                  userDropDownFilterData?.length > 0 &&
                   userDropDownFilterData?.length > 0 && (
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
