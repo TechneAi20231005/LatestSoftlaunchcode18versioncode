@@ -418,7 +418,7 @@ export default function TaskData(props) {
                   disabled={
                     !props?.data?.taskOwners.some(
                       (owner) =>
-                        owner.id === parseInt(localStorage.getItem('id'), 10)
+                        owner.id === parseInt(sessionStorage.getItem('id'), 10)
                     )
                   }
                   title="Start Group Activity Task"
