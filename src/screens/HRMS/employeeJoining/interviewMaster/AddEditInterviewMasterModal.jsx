@@ -91,6 +91,11 @@ function AddEditInterviewMasterModal({
     open: false,
     formData: ''
   });
+  const [selectedDesignationData, setSelectedDesignationData] = useState({
+    id: '',
+    designationFor: ''
+  });
+  const [employeesName, setEmployeesName] = useState({});
 
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
@@ -113,7 +118,6 @@ function AddEditInterviewMasterModal({
       label: item?.designation,
       value: item?.id
     }));
-
 
   useEffect(() => {
     const filterData = employeeData
