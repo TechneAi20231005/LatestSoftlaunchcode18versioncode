@@ -674,11 +674,12 @@ function ReviewedTestDraftComponent() {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
+          disabled={!allReviewDraftTestListDataByID}
           type="submit"
           className="btn btn-sm btn bg-success text-white"
         >
           <i class="icofont-paper-plane"></i> {''}
-          Send To Reviewer
+          Send To Reviewerll
         </button>
       </div>
       {downloadmodal.showModal === true && (

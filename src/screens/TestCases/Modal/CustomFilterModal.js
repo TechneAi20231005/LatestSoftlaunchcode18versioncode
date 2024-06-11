@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Overlay, Tooltip, Modal, Button } from 'react-bootstrap';
 import './CustomFilterStyle.css'; // Ensure this CSS file includes the .custom-container class
+import { getDraftTestCaseList } from '../../../redux/services/testCases/downloadFormatFile';
+import { useDispatch } from 'react-redux';
 
 const CustomFilterModal = ({
   show,
@@ -13,7 +15,8 @@ const CustomFilterModal = ({
   handleSelectAll,
   uniqueValues,
   searchTerm,
-  setSearchTerm
+  setSearchTerm,
+  paginationData
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -45,6 +48,16 @@ const CustomFilterModal = ({
 
   const handleShow = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const dispatch = useDispatch();
+
+  const handleSubmit = () => {
+    dispatch(
+      getDraftTestCaseList({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  };
 
   if (!show) return null;
 
@@ -127,10 +140,7 @@ const CustomFilterModal = ({
                     </div>
                   </Modal.Body>
                   <Modal.Footer className="modal-footer custom-modal-footer">
-                    <Button
-                      className="bg-custom-color"
-                      onClick={handleCloseModal}
-                    >
+                    <Button className="bg-custom-color" onClick={handleSubmit}>
                       OK
                     </Button>
                     <Button variant="warning" onClick={handleClose}>

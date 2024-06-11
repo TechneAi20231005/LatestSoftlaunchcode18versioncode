@@ -855,7 +855,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          // disabled={!selectAllNames || selectedRows.length === 0}
+          disabled={filteredData?.length <= 0}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer
@@ -961,6 +961,7 @@ function TestDraftDetails(props) {
           uniqueValues={filteredUniqueValues}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          paginationData={paginationData}
         />
       )}
     </>
