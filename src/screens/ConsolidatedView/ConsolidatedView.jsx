@@ -59,8 +59,8 @@ function ConsolidatedView() {
             <Tab.Content>
               <Tab.Pane eventKey="All">
                 <div className="row  ml-2 mr-2">
-                  {isLoading && <CardLoadingSkeleton />}
-                  {!isLoading &&
+                  {<CardLoadingSkeleton />}
+                  {/* {!isLoading &&
                     consolatedData &&
                     consolatedData.map((data, index) => {
                       return (
@@ -69,7 +69,7 @@ function ConsolidatedView() {
                           projectId={data.projectId}
                         />
                       );
-                    })}
+                    })} */}
                 </div>
               </Tab.Pane>
             </Tab.Content>
