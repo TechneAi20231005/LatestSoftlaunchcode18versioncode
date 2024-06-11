@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
 import { _base, userSessionData } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
+
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import DepartmentService from '../../../services/MastersService/DepartmentService';
 
@@ -60,12 +60,10 @@ export default function CreateCustomerMappingComponent() {
   const [user, setUser] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
-  const [ratiowiseData, setRatiowiseData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(0);
   const [showUserSelect, setShowUserSelect] = useState(false);
 
   const [ratioTotal, setRatioTotal] = useState(0);
-  const [departmentId, setDepartmentId] = useState();
 
   const [confirmationRequired, setConfirmationRequired] = useState('1');
 
@@ -115,16 +113,6 @@ export default function CreateCustomerMappingComponent() {
 
   const loadData = async () => {
     await getDynamicForm();
-
-    await new UserService()
-      .getUserById(localStorage.getItem('id'))
-      .then((res) => {
-        const { data } = res?.data;
-
-        if (res?.data?.status === 1 && data) {
-          setDepartmentId(data?.department_id);
-        }
-      });
   };
 
   const getDynamicForm = async () => {
@@ -239,7 +227,7 @@ export default function CreateCustomerMappingComponent() {
 
     try {
       const res = await new UserService().getUserWithMultipleDepartment(
-        departmentId
+        e.value
       );
 
       if (res.status === 200) {
@@ -275,6 +263,8 @@ export default function CreateCustomerMappingComponent() {
           if (dropdown.length === 0) {
             setUserDropdown([]);
           }
+        } else {
+          toast.error('No users found for this department.');
         }
       }
     } catch (res) {

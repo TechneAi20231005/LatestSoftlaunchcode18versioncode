@@ -397,10 +397,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     setUserDropdown(null);
 
     try {
-      const res = await new UserService().getUserWithMultipleDepartment();
+      const res = await new UserService().getUserWithMultipleDepartment(
+        e.value
+      );
 
       if (res.status === 200) {
-        if (res.data.status === 1) {
+        if (res?.data?.status === 1) {
           const dropdown = res.data.data
 
             .filter(
@@ -430,6 +432,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           if (dropdown.length === 0) {
             setUserDropdown([]);
           }
+        } else {
+          toast.error('No users found for this department.');
         }
       }
     } catch (res) {
