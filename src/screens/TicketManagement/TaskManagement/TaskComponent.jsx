@@ -70,7 +70,7 @@ export default function TaskComponent({ match }) {
   const [sprintData, setSprintdata] = useState([]);
   const [sprintCardData, setSprintCardData] = useState([]);
   const [sprintDropDown, setSprintDropDown] = useState([]);
-  const [currentSprintIndex, setCurrentSprintIndex] = useState(0);
+  const [currentSprintIndex, setCurrentSprintIndex] = useState(null);
   const [sprintReport, setSprintReport] = useState([]);
   const [showSprintReport, setShowSprintReport] = useState(false);
   const [exportSprintData, setExportSprintData] = useState([]);
@@ -164,7 +164,7 @@ export default function TaskComponent({ match }) {
     const taskDataa = [];
     const tasksDataa = [];
     const sprintId = sprint_id ? sprint_id : 0;
-
+    toast.clearWaitingQueue();
     const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
     let counter = 0;
@@ -543,10 +543,16 @@ export default function TaskComponent({ match }) {
       (sprint) => sprint.id === currentSprintCard[0].id
     );
 
+    console.log('selected option', sprintData[currentIndex + 1]);
     setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
+      let payload = {
+        value: sprintData[currentIndex + 1]?.id,
+        label: sprintData[currentIndex + 1]?.name
+      };
       setSprintCardData([sprintData[currentIndex + 1]]);
-      await getBasketData(sprintData[currentIndex + 1]?.id);
+      setSelectedOption(payload);
+      await getBasketData(sprintData[currentIndex + 1]?.id, currentTaskStatus);
     } else {
       // setDisableNextBtn(true);
     }
@@ -562,8 +568,13 @@ export default function TaskComponent({ match }) {
     setCurrentSprintIndex(currentIndex);
 
     if (currentIndex !== -1 && currentIndex - 1 >= 0) {
+      let payload = {
+        value: sprintData[currentIndex - 1]?.id,
+        label: sprintData[currentIndex - 1]?.name
+      };
+      setSelectedOption(payload);
       setSprintCardData([sprintData[currentIndex - 1]]);
-      await getBasketData(sprintData[currentIndex - 1]?.id);
+      await getBasketData(sprintData[currentIndex - 1]?.id, currentTaskStatus);
     } else {
       // setDisablePrevBtn(true);
     }
@@ -819,18 +830,14 @@ export default function TaskComponent({ match }) {
   const handleTaskStatusFilter = (e) => {
     setCurrentTaskStatus(e.target.value);
     getBasketData(
-      sprintData[currentSprintIndex]?.id
-        ? sprintData[currentSprintIndex]?.id
-        : 0,
+      selectedOption?.value ? selectedOption?.value : 0,
       e.target.value
     );
   };
 
   useEffect(() => {
     getBasketData(
-      sprintData[currentSprintIndex]?.id
-        ? sprintData[currentSprintIndex]?.id
-        : 0,
+      selectedOption?.value ? selectedOption?.value : 0,
       currentTaskStatus
     );
     loadData();
@@ -907,17 +914,20 @@ export default function TaskComponent({ match }) {
 
               <div className="col-9 col-md-4  d-flex align-items-center justify-content-between">
                 <div className=" col-10">
-                  <Select
-                    className=""
-                    name="sprint_data"
-                    id="sprint_data"
-                    options={sprintDropDown}
-                    onChange={sprintDropDownHandler}
-                    value={selectedOption}
-                    ref={sprintDropDownRef}
-                    // defaultValue={}
-                  />
+                  {sprintDropDown?.length > 0 && (
+                    <Select
+                      className=""
+                      name="sprint_data"
+                      id="sprint_data"
+                      options={sprintDropDown}
+                      onChange={sprintDropDownHandler}
+                      value={selectedOption}
+                      ref={sprintDropDownRef}
+                      // defaultValue={}
+                    />
+                  )}
                 </div>
+
                 {/* Hamburger Menu for manage task */}
                 <div className="col-2 text-end">
                   <Dropdown onClick={handleRegularizationRequest}>
@@ -1364,7 +1374,7 @@ export default function TaskComponent({ match }) {
         </div>
       ) : (
         <div>
-          <Card>
+          <Card className="mt-2">
             <CardBody className="text-end">
               <div className="form-check form-check-inline">
                 <input
@@ -1377,8 +1387,11 @@ export default function TaskComponent({ match }) {
                   checked={currentTaskStatus === 'PENDING'}
                 />
                 <label
-                  cp
-                  className="form-check-label cp"
+                  className={`form-check-label cp ${
+                    currentTaskStatus === 'PENDING'
+                      ? ' text-primary fw-bold'
+                      : ''
+                  }`}
                   for="task_status_inprogress"
                 >
                   In Progress
@@ -1396,7 +1409,11 @@ export default function TaskComponent({ match }) {
                   checked={currentTaskStatus === 'COMPLETED'}
                 />
                 <label
-                  className="form-check-label cp"
+                  className={`form-check-label cp ${
+                    currentTaskStatus === 'COMPLETED'
+                      ? ' text-primary fw-bold'
+                      : ''
+                  }`}
                   for="task_status_completed"
                 >
                   Completed
@@ -1412,7 +1429,12 @@ export default function TaskComponent({ match }) {
                   onChange={handleTaskStatusFilter}
                   checked={currentTaskStatus === 'all'}
                 />
-                <label className="form-check-label cp" for="task_status_all">
+                <label
+                  className={`form-check-label cp ${
+                    currentTaskStatus === 'all' ? ' text-primary fw-bold' : ''
+                  }`}
+                  for="task_status_all"
+                >
                   All
                 </label>
               </div>
@@ -1539,7 +1561,14 @@ export default function TaskComponent({ match }) {
                                     key={task.id.toString()}
                                     data={task}
                                     date={basketStartDate}
-                                    loadBasket={getBasketData}
+                                    loadBasket={() =>
+                                      getBasketData(
+                                        selectedOption?.value
+                                          ? selectedOption?.value
+                                          : 0,
+                                        currentTaskStatus
+                                      )
+                                    }
                                     onShowTaskModal={handleShowTaskModal}
                                     isReviewer={isReviewer}
                                   />
@@ -1557,7 +1586,10 @@ export default function TaskComponent({ match }) {
                     show={showTaskModal}
                     ownership={ownership}
                     loadBasket={() =>
-                      getBasketData(sprintCardData[currentSprintIndex]?.id || 0)
+                      getBasketData(
+                        selectedOption?.value ? selectedOption?.value : 0,
+                        currentTaskStatus
+                      )
                     }
                     allTaskList={allTaskList}
                     taskDropdown={taskDropdown}
@@ -1574,7 +1606,12 @@ export default function TaskComponent({ match }) {
                     show={showBasketModal}
                     hide={handleCloseBasketModal}
                     data={basketData}
-                    loadData={getBasketData}
+                    loadData={() =>
+                      getBasketData(
+                        selectedOption?.value ? selectedOption?.value : 0,
+                        currentTaskStatus
+                      )
+                    }
                   />
                 )}
 
