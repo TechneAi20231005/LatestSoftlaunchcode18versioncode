@@ -97,13 +97,6 @@ function AddEditInterviewMasterModal({
   });
   const [employeesName, setEmployeesName] = useState({});
 
-  const [selectedDesignationData, setSelectedDesignationData] = useState({
-    id: '',
-    designationFor: ''
-  });
-  const [employeesName, setEmployeesName] = useState({});
-
-
   // // dropdown data
   const departmentType = departmentDataList
     ?.filter((item) => item?.is_active === 1)
@@ -139,7 +132,6 @@ function AddEditInterviewMasterModal({
       });
     }
   }, [selectedDesignationData?.id, employeeData]);
-
 
   // // function
   const handelAddEditInterview = () => {
@@ -186,7 +178,6 @@ function AddEditInterviewMasterModal({
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
-
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
     }
@@ -207,7 +198,6 @@ function AddEditInterviewMasterModal({
           initialValues={addInterviewInitialValue}
           enableReinitialize
           validationSchema={addEditInterviewMaster}
-
           onSubmit={(values) => {
             if (type === 'ADD' || type === 'EDIT') {
               setOpenConfirmModal({
@@ -362,7 +352,6 @@ function AddEditInterviewMasterModal({
                                 designationFor: e?.target?.name?.split('.')?.[0]
                               })
                             }
-
                           />
                         </Col>
                         <Col sm={6} md={6} lg={3}>
@@ -381,7 +370,6 @@ function AddEditInterviewMasterModal({
                               type === 'VIEW' ||
                               !values?.step_details[index].designation_id
                             }
-
                             handleChange={(selectedOption) => {
                               const selectedEmployee = employeeData.find(
                                 (employee) =>
