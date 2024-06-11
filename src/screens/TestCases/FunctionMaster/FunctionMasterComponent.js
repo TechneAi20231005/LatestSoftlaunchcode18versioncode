@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
+import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
-import AddFunctionMasterModal from '../FunctionMaster/AddFunctionMasterModal';
-import { Col, Row } from 'react-bootstrap';
+import AddEditFunctionMaster from './AddEditFunctionMaster';
 function FunctionMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { functionMasterList, isLoading } = useSelector((state) => state?.functionMaster);
+  const { functionMasterList, isLoading } = useSelector(
+    (state) => state?.functionMaster
+  );
   const [searchValue, setSearchValue] = useState('');
-  const [filteredFunctionMasterList, setFilterFunctionMasterList] = useState([]);
+
+  const [filteredFunctionMasterList, setFilterFunctionMasterList] = useState(
+    []
+  );
 
   const [addEditFunctionModal, setAddEditFunctionModal] = useState({
     type: '',
@@ -169,11 +174,24 @@ function FunctionMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+        <Col
+          xs={12}
+          md={5}
+          xxl={4}
+          className="d-flex justify-content-sm-end btn_container"
+        >
+          <button
+            className="btn btn-warning text-white"
+            type="button"
+            onClick={handleSearch}
+          >
             <i className="icofont-search-1 " /> Search
           </button>
-          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-info text-white"
+            type="button"
+            onClick={handleReset}
+          >
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel
@@ -197,7 +215,7 @@ function FunctionMasterComponent() {
         progressPending={isLoading?.getFunctionMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
-      <AddFunctionMasterModal
+      <AddEditFunctionMaster
         show={addEditFunctionModal?.open}
         type={addEditFunctionModal?.type}
         currentFunctionData={addEditFunctionModal?.data}
