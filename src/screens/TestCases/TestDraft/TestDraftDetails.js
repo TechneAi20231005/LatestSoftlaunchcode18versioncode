@@ -21,7 +21,7 @@ function TestDraftDetails(props) {
 
   // // initial state
 
-  const { getDraftTestListData, isLoading } = useSelector(
+  const { getDraftTestListData, allDraftListData, isLoading } = useSelector(
     (state) => state?.downloadFormat
   );
 
@@ -81,7 +81,9 @@ function TestDraftDetails(props) {
   const [filterColumn, setFilterColumn] = useState(null);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [filteredData, setFilteredData] = useState(getDraftTestListData);
+  const [filteredData, setFilteredData] = useState(
+    Array?.isArray(getDraftTestListData) ? getDraftTestListData : []
+  );
   const [searchTerm, setSearchTerm] = useState('');
   // const closeModal = () => {
   //   setModalIsOpen(false);
@@ -248,8 +250,6 @@ function TestDraftDetails(props) {
   //         selectedFilters.includes(row[filterColumn])
   //       )
   //     : getDraftTestListData;
-
-  console.log('filteredUniqueValues', filteredData);
 
   const columns = [
     {
@@ -495,7 +495,7 @@ function TestDraftDetails(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.type_name.length < 20
+                  {row.group_name && row.group_name.length < 20
                     ? row.group_name
                     : row.group_name.substring(0, 50) + '....'}
                 </span>
@@ -505,6 +505,33 @@ function TestDraftDetails(props) {
         </div>
       )
     },
+
+    // {
+    //   name: 'Testing Id',
+    //   selector: (row) => row.id,
+    //   width: '7rem',
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.id && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {' '}
+    //               {row.id && row.id.length < 20
+    //                 ? row.id
+    //                 : row.id.substring(0, 50) + '....'}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   )
+    // },
 
     {
       name: 'Steps',
@@ -779,10 +806,14 @@ function TestDraftDetails(props) {
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
-  {
-    console.log('getDraftTestListData', getDraftTestListData);
-    console.log('getDraftTestListData', filteredData);
-  }
+
+  useEffect(() => {
+    // Update the filteredData state when fetchedData changes
+    if (Array?.isArray(getDraftTestListData)) {
+      setFilteredData(getDraftTestListData);
+    }
+  }, [getDraftTestListData]);
+
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -791,18 +822,20 @@ function TestDraftDetails(props) {
         <DataTable
           columns={columns}
           // data={getDraftTestListData}
-          data={filteredData.length > 0 ? filteredData : getDraftTestListData}
+          data={filteredData}
           defaultSortField="role_id"
           pagination
           paginationServer
-          paginationTotalRows={getDraftTestListData?.total?.total_count}
-          paginationDefaultPage={paginationData.currentPage}
+          paginationTotalRows={allDraftListData?.total}
+          paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          paginationRowsPerPageOptions={[
+            50, 100, 150, 200, 300, 500, 700, 1000
+          ]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
 import EditTestCaseModal from './EditTestCaseModal';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
@@ -24,10 +24,8 @@ function ReviewedTestDraftComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { allReviewDraftTestListDataByID } = useSelector(
-    (state) => state?.downloadFormat
-  );
-
+  const { allReviewDraftTestListDataByID, allReviewDraftTestListData } =
+    useSelector((state) => state?.downloadFormat);
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -643,16 +641,16 @@ function ReviewedTestDraftComponent() {
           pagination
           selectableRows={false}
           paginationServer
-          paginationTotalRows={
-            allReviewDraftTestListDataByID?.total?.total_count
-          }
-          paginationDefaultPage={paginationData.currentPage}
+          paginationTotalRows={allReviewDraftTestListData?.total}
+          paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          paginationRowsPerPageOptions={[
+            50, 100, 150, 200, 300, 500, 700, 1000
+          ]}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />

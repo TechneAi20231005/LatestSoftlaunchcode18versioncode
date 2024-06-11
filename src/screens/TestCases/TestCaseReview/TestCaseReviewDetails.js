@@ -24,7 +24,9 @@ function TestCaseReviewDetails() {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
-  const { testPlanIdData } = useSelector((state) => state?.testCaseReview);
+  const { testPlanIdData, allTestPlanIDData } = useSelector(
+    (state) => state?.testCaseReview
+  );
 
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
@@ -611,14 +613,16 @@ function TestCaseReviewDetails() {
           defaultSortField="role_id"
           pagination
           paginationServer
-          paginationTotalRows={rowData?.total?.total_count}
+          paginationTotalRows={allTestPlanIDData?.total}
           paginationDefaultPage={rowData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          paginationRowsPerPageOptions={[
+            50, 100, 150, 200, 300, 500, 700, 1000
+          ]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}

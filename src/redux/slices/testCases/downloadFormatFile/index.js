@@ -22,19 +22,23 @@ const initialState = {
   allDraftTestListData: [],
   allReviewDraftTestListData: [],
   allReviewDraftTestListDataByID: [],
+  allReviewDraftTestListData: [],
 
   getModuleData: [],
   getSubModuleData: [],
   getTestDraftData: [],
+  allDraftListData: [],
   editTestCase: false,
   sendTestCasesReviewer: false,
 
   isLoading: {
     downloadFormatFile: false,
+    allReviewDraftTestListData: false,
     getProjectModuleList: false,
     importTestDraftFile: false,
     getModuleList: false,
     getDraftTestListData: false,
+    allDraftListData: false,
     allDraftTestListData: false,
     allReviewDraftTestListData: false,
     allReviewDraftTestListDataByID: false,
@@ -47,6 +51,8 @@ const initialState = {
   errorMsg: {
     getProjectModuleList: '',
     getDraftTestListData: '',
+    allDraftListData: '',
+    allReviewDraftTestListData: '',
     allDraftTestListData: '',
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: ''
@@ -55,6 +61,8 @@ const initialState = {
     getProjectModuleList: '',
     getDraftTestListData: '',
     allDraftTestListData: '',
+    allReviewDraftTestListData: '',
+    allDraftListData: '',
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: ''
   }
@@ -194,6 +202,7 @@ const downloadFormatSlice = createSlice({
         state.isLoading.getDraftTestListData = false;
         state.successMsg.getDraftTestListData = action?.payload;
         state.getDraftTestListData = action?.payload?.data?.data;
+        state.allDraftListData = action?.payload?.data;
       })
       .addCase(getDraftTestCaseList.rejected, (state, action) => {
         state.isLoading.getDraftTestListData = false;
@@ -237,6 +246,7 @@ const downloadFormatSlice = createSlice({
         state.isLoading.allReviewDraftTestListDataByID = false;
         state.successMsg.allReviewDraftTestListDataByID = action?.payload;
         state.allReviewDraftTestListDataByID = action?.payload?.data?.data;
+        state.allReviewDraftTestListData = action?.payload?.data;
       })
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;
