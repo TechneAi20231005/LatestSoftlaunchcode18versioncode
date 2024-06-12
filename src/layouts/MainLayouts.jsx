@@ -13,7 +13,7 @@ function MainLayouts({ isAuthenticated }) {
       {isAuthenticated ? (
         <>
           <Sidebar />
-          <div className="main px-lg-4 px-md-4">
+          <div className="main px-lg-4 px-md-4 position-relative">
             <Header />
             <Suspense fallback={<SuspenseLoader />}>
               <div className="py-lg-3 py-md-2">

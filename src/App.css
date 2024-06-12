@@ -78,3 +78,6 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.d_hide {
+  visibility: hidden;
+}
