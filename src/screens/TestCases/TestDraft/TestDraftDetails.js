@@ -175,11 +175,17 @@ function TestDraftDetails(props) {
   //       value.toLowerCase().includes(searchTerm.toLowerCase())
   //     )
   //   : [];
+  const moduleMapping = {
+    module_name: 'module_id'
+    // Add more mappings if needed
+  };
 
   const handleFilterClick = (event, column) => {
     const rect = event.target.getBoundingClientRect();
     setModalPosition({ top: rect.bottom, left: rect.left });
-    setFilterColumn(column);
+    const columnId = moduleMapping[column];
+    setFilterColumn(columnId);
+    // setFilterColumn(column);
     setModalIsOpen(true);
   };
 
@@ -232,6 +238,18 @@ function TestDraftDetails(props) {
     }
   };
 
+  // const filteredUniqueValues = filterColumn
+  //   ? Array?.from(
+  //       new Set(
+  //         getDraftTestListData
+  //           .filter((project) => project.is_active === 1)
+  //           .map((row) => row[filterColumn])
+  //       )
+  //     ).filter((value) =>
+  //       value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  //     )
+  //   : [];
+
   const filteredUniqueValues = filterColumn
     ? Array.from(
         new Set(
@@ -239,8 +257,10 @@ function TestDraftDetails(props) {
             .filter((project) => project.is_active === 1)
             .map((row) => row[filterColumn])
         )
-      ).filter((value) =>
-        value.toLowerCase().includes(searchTerm.toLowerCase())
+      ).filter(
+        (value) =>
+          typeof value === 'string' &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 

@@ -23,6 +23,8 @@ const CustomFilterModal = ({
   const target = useRef(null);
   const searchRef = useRef(null);
   const containerRef = useRef(null);
+  const [filterType, setFilterType] = useState('');
+  const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     const handleResize = () => {
@@ -51,12 +53,25 @@ const CustomFilterModal = ({
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    dispatch(
-      getDraftTestCaseList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
-      })
-    );
+    const filterPayload = {
+      filter_testcase_data: [
+        {
+          column: filterColumn,
+          searchText: filterText,
+          filter: filterType
+        }
+      ]
+    };
+
+    // dispatch(
+    //   getDraftTestCaseList({
+    //     limit: paginationData.rowPerPage,
+    //     page: paginationData.currentPage,
+    //     filterPayload // Spread the filter payload into the request payload
+    //   })
+    // );
+
+    handleCloseModal();
   };
 
   if (!show) return null;
@@ -123,11 +138,16 @@ const CustomFilterModal = ({
                         <select
                           className="form-select"
                           aria-label="Default select example"
+                          onChange={(e) => {
+                            setFilterType(e.target.value);
+                          }}
                         >
                           <option defaultValue>Open this select menu</option>
-                          <option value="1">Equals</option>
-                          <option value="2">Does Not Equals</option>
-                          <option value="3">Begins With</option>
+                          <option value="equals">Equals</option>
+                          <option value="does not equals">
+                            Does Not Equals
+                          </option>
+                          <option value="begins with">Begins With</option>
                         </select>
                       </div>
                       <div className="col">
@@ -135,6 +155,7 @@ const CustomFilterModal = ({
                           type="text"
                           className="form-control"
                           placeholder="Type"
+                          onChange={(e) => setFilterText(e.target.value)}
                         />
                       </div>
                     </div>
