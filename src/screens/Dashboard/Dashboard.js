@@ -149,7 +149,8 @@ export default function HrDashboard(props) {
     });
   }
 
-  const [timerState, setTimerState] = useState();
+ 
+  
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
@@ -362,7 +363,7 @@ export default function HrDashboard(props) {
                 <div className=" me-3" style={{ marginLeft: "28%" }}>
                   <div>
                     <button
-                      class=" badge bg-primary p-2"
+                      class=" badge bg-primary p-2 mt-3 "
                       style={{
                         width: "auto",
                         padding: "0.5rem 2rem",
