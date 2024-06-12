@@ -24,8 +24,10 @@ import CityService from '../../../services/MastersService/CityService';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
 
 import { getCountryDataSort, getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
-import { clearRoleDropdown, rolemasterSlice } from '../RoleMaster/RoleMasterSlice';
-import { getRoleData } from '../RoleMaster/RoleMasterAction';
+
+
+
+
 import RoleService from '../../../services/MastersService/RoleService';
 function EditUserComponent({ match }) {
   const history = useNavigate();
@@ -41,16 +43,15 @@ function EditUserComponent({ match }) {
     DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 3),
   );
 
-  // const roleDropdown = useSelector(
-  //   (rolemasterSlice) => rolemasterSlice?.rolemaster?.filterRoleData
-  // );
+
 
   const { id } = useParams();
   const userId = parseInt(id);
 
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
-  const [country, setCountry] = useState(null);
+
+
 
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
@@ -289,9 +290,8 @@ function EditUserComponent({ match }) {
     });
   };
 
-  const handleChangeAccountFor = e => {
-    setAccountFor(e.target.value);
-  };
+
+
 
   const handleForm = async e => {
     e.preventDefault();
@@ -304,7 +304,8 @@ function EditUserComponent({ match }) {
 
     var flag = 1;
     setNotify(null);
-    var a = JSON.stringify(Object.fromEntries(form));
+
+
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
@@ -467,28 +468,14 @@ function EditUserComponent({ match }) {
       }
     });
 
-    // await new RoleService().getRole().then((res) => {
-    //   if (res.status == 200) {
-    //     if (res.data.status == 1) {
-    //       // const data = res.data.data.filter((d) => d.is_active == 1);
-    //       console.log("res",res.data.data)
-    //       // setRoleDropdown(
-    //       //   res.data.data
-    //       //     .filter((d) => d.is_active === 1)
-    //       //     .map((d) => ({ value: d.id, label: d.role }))
-    //       //     );
-    //       const data = res.data.data.filter((d) => d.is_active === 1);
-    //       const dropdownData = data.map((d) => ({ value: d.id, label: d.role }));
-    //       setRoleDropdown(dropdownData);
-    //           console.log("role",roleDropdown)
-    //     }
-    //   }
-    // });
+
+
 
     await new DesignationService().getDesignation().then(res => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-          const data = res.data.data.filter(d => d.is_active == 1);
+
+
           setDesignationDropdown(
             res.data.data
               .filter(d => d.is_active === 1)
@@ -498,7 +485,8 @@ function EditUserComponent({ match }) {
       }
     });
 
-    const data = [];
+
+
     await new UserService()
       .getUserById(userId)
       .then(res => {
@@ -611,9 +599,8 @@ function EditUserComponent({ match }) {
 
     setRows(updatedAssign);
 
-    // const updatedUserErrors = [...userErrors];
-    // updatedUserErrors[index] = "";
-    // setUserErrors(updatedUserErrors);
+
+
   };
 
   const handleTickeTypeShowSelect = (selectedOptions, index) => {
@@ -629,19 +616,15 @@ function EditUserComponent({ match }) {
 
     setRows(updatedAssign);
 
-    // const updatedUserErrors = [...userErrors];
-    // updatedUserErrors[index] = "";
-    // setUserErrors(updatedUserErrors);
+
+
   };
 
   const handleAddRow = async () => {
     setNotify(null);
     let flag = 1;
-    // let last=rows.length-1;
-    // if(!rows[last].department_id ){
-    //     flag=0;
-    //     setNotify({ type: 'danger', message: "Complete Previous Record" })
-    // }
+
+
     if (flag === 1) {
       setRows([...rows, mappingData]);
     } else {
@@ -655,12 +638,12 @@ function EditUserComponent({ match }) {
     }
   };
 
-  const [departmentValue, setDepartmentValue] = useState(false);
+
+
 
   const handleCheckInput = (e, id, type) => {
-    // if (e.value) {
-    //     setDepartmentValue(true)
-    // }
+
+
     let flag = 1;
     if (type == 'DEPARTMENT') {
       rows.forEach((d, i) => {
@@ -697,24 +680,15 @@ function EditUserComponent({ match }) {
     }
   };
 
-  const handleDeparmentChange = e => {
-    setDefaultDepartmentDropdown(e);
-  };
 
-  const handleConfirmedPassword = event => {
-    if (event.target.value === password) {
-      setConfirmPasswordError(false);
-    } else {
-      setConfirmPasswordError(true);
-    }
-  };
+
+
+
+
 
   const [value, setValue] = useState('');
-  const onPaste = e => {
-    const paste = e.clipboardData.getData('text/plain');
-    if (paste.match(/[-\.]/)) return;
-    setValue(paste);
-  };
+
+  ;
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
@@ -825,6 +799,7 @@ function EditUserComponent({ match }) {
                             className="form-control form-control-sm"
                             id="account_for"
                             name="account_for"
+                            dispatch
                             value={accountFor ? accountFor : ''}
                             onChange={e => accountForChange(e.target.value)}
                           >
