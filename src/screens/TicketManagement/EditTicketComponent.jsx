@@ -842,7 +842,8 @@ export default function EditTicketComponent({ match }) {
       userDepRef.current.clearValue();
     }
 
-    console.log('userDepRef', userDepRef);
+
+
     if (e) {
       const select = user
         .filter((d) => d.department_id == e.value)
@@ -1208,8 +1209,8 @@ export default function EditTicketComponent({ match }) {
                       <label className="col-form-label">
                         <b>Entry User : </b>
                       </label>
-                      {console.log('userDrp', userDrp)}
-                      {console.log('userDropdown', userDropdown)}
+
+
 
                       {userDrp && (
                         <Select
@@ -1226,7 +1227,9 @@ export default function EditTicketComponent({ match }) {
                       <label className="col-form-label">
                         <b>Entry user email : </b>
                       </label>
-                      {console.log('filteredData', filteredData)}
+
+
+                 
 
                       <input
                         className="form-control form-control-sm"
